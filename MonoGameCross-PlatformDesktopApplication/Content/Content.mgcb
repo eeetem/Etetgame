@@ -23,7 +23,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:1 Floor - Tiled 256x128.png
+/build:1 Floor - Tiled 256x128.png;Floors.png
 
 #begin 128x192 Brick Walls - Flat 1.png
 /importer:TextureImporter
@@ -35,5 +35,17 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:128x192 Brick Walls - Flat 1.png
+/build:128x192 Brick Walls - Flat 1.png;Walls.png
+
+#begin File.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:File.spritefont;text.spritefont
+
+#begin gun.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:gun.xml
 

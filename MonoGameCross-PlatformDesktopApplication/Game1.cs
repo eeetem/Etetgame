@@ -1,31 +1,76 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Entities;
+using MonoGame.Extended.Sprites;
 
-namespace MonoGameCross_PlatformDesktopApplication
+namespace MultiplayerXeno
 {
 	public class Game1 : Game
 	{
-		private GraphicsDeviceManager _graphics;
+		public GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
-
+		public static SpriteFont SpriteFont;
+		
+		public static Game1 instance;
+		public static World World { get; set; }
+		
 		public Game1()
 		{
+			instance = this;
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
+	
 		}
 
 		protected override void Initialize()
 		{
-			// TODO: Add your initialization logic here
+			World = new WorldBuilder()
+				.AddSystem(new CameraSystem(GraphicsDevice,Window))
+				.AddSystem(new WorldEditSystem())
+				.AddSystem(new WorldObjectManager())
+				.AddSystem(new RenderSystem(GraphicsDevice))
+				.AddSystem(new UiSystem(GraphicsDevice))
+				.Build();
+			
+			
 
+			
 			base.Initialize();
+
+			for (int x = 0; x < 10; x++)
+			{
+				for (int y = 0; y < 10; y++)
+				{
+					WorldObjectManager.MakeGridEntity("basicFloor",new Vector2Int(x, y));
+				}
+			}
+
+			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 5));
+			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 6));
+			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 7));
+			WorldObjectManager.MakeGridEntity("baiscWallS",new Vector2Int(5, 7));
+			WorldObjectManager.MakeGridEntity("baiscWallN",new Vector2Int(5, 7));
+			WorldObjectManager.MakeGridEntity("baiscWallW",new Vector2Int(5, 7));
+
+			
 		}
 
+		
+
+		public static Texture2D[] Floors;
+		public static  Texture2D[] Walls;
 		protected override void LoadContent()
 		{
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
+			int countx=0;
+			int county=0;
+			Floors = Utility.SplitTexture(Content.Load<Texture2D>("Floors"),256,128, out countx, out county);
+			Walls = Utility.SplitTexture(Content.Load<Texture2D>("Walls"),128,192, out countx, out county);
+			SpriteFont = Content.Load<SpriteFont>("text");
+			WorldObjectManager.MakePrefabs();
 
 			// TODO: use this.Content to load your game content here
 		}
@@ -35,7 +80,7 @@ namespace MonoGameCross_PlatformDesktopApplication
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 
-			// TODO: Add your update logic here
+			World.Update(gameTime);
 
 			base.Update(gameTime);
 		}
@@ -44,7 +89,7 @@ namespace MonoGameCross_PlatformDesktopApplication
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			// TODO: Add your drawing code here
+			World.Draw(gameTime);
 
 			base.Draw(gameTime);
 		}

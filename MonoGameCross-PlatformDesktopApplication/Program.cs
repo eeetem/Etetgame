@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonoGameCross_PlatformDesktopApplication
+namespace MultiplayerXeno
 {
 	public static class Program
 	{
