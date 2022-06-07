@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Xml.Serialization;
@@ -43,7 +44,22 @@ namespace MultiplayerXeno
 			return entity;
 		}
 
-	
+		public static void DeleteEntity(int id)//this isnt very efficent but for now it'll do
+		{
+			for (int x = 0; x < 100; x++)
+			{
+				for (int y = 0; y < 100; y++)
+				{
+					if (gridData[x, y].Remove(id))
+					{
+						Game1.World.DestroyEntity(id);
+						return;
+					}
+				}
+			}
+
+
+		}
 		
 	
 		public static List<int> GetEntitiesAtGrid(Vector2Int pos)
@@ -51,8 +67,22 @@ namespace MultiplayerXeno
 			return gridData[pos.X, pos.Y];
 		}
 
-		public WorldObjectManager( ) : base(Aspect.All(typeof(WorldObject)))
+		private static void WipeGrid()
 		{
+			for (int x = 0; x < 100; x++)
+			{
+				for (int y = 0; y < 100; y++)
+				{
+					if (gridData[x, y] != null)
+					{
+						foreach (var entity in gridData[x, y] )
+						{
+							Game1.World.DestroyEntity(entity);
+						}
+					}
+				}
+			}
+			gridData = new List<int>[100,100];
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
@@ -60,8 +90,12 @@ namespace MultiplayerXeno
 					gridData[x, y] = new List<int>();
 				}
 			}
-			saveSerializer = new XmlSerializer(typeof(SaveInfo)) ;
-		
+		}
+		public WorldObjectManager( ) : base(Aspect.All(typeof(WorldObject)))
+		{
+			WipeGrid();
+
+
 		}
 
 		public override void Initialize(IComponentMapperService mapperService)
@@ -149,11 +183,11 @@ namespace MultiplayerXeno
 
 		}
 
-		private static XmlSerializer saveSerializer;
+
 		public static void SaveData()
 		{
-			
-			List<string>[][] prefabData = new List<string>[100][];
+
+			List<string>[,] prefabData = new List<string>[100,100];
 
 			for (int x = 0; x < 100; x++)
 			{
@@ -162,26 +196,20 @@ namespace MultiplayerXeno
 					foreach (var entity in gridData[x, y])
 					{
 						string prefab = Game1.World.GetEntity(entity).Get<WorldObject>().PrefabName;
-						if (prefabData[x][y] == null)
+						if (prefabData[x,y] == null)
 						{
-							prefabData[x][y] = new List<string>();
+							prefabData[x,y] = new List<string>();
 						}
-						prefabData[x][y].Add(prefab);
+						prefabData[x,y].Add(prefab);
 					}
 				
 				}
 			}
-
-			SaveInfo saveInfo = new SaveInfo(prefabData);
-
-			using (XmlWriter writer = XmlWriter.Create("map.xml"))  
-			{  
-
-				saveSerializer.Serialize(writer, saveInfo);
-				
-	
-				writer.Flush();  
-			}  
+			using(Stream stream = File.Open("map.xml", FileMode.Create))
+			{
+				BinaryFormatter bformatter = new BinaryFormatter();
+				bformatter.Serialize(stream, prefabData);
+			}
 
 			
 			
@@ -192,40 +220,30 @@ namespace MultiplayerXeno
 		
 		public static void LoadData()
 		{
-
-
-			using (XmlTextReader xmlTextReader = new XmlTextReader("map.xml"))
+			using(Stream stream = File.Open("map.xml", FileMode.Open))
 			{
-
-				SaveInfo saveInfo = (SaveInfo)saveSerializer.Deserialize(xmlTextReader);
-				List<string>[][] prefabData = saveInfo.gridPrefabList;
-				gridData = new List<int>[100,100];
+				BinaryFormatter bformatter = new BinaryFormatter();
+				List<string>[,] prefabData =bformatter.Deserialize(stream) as List<string>[,] ;
+				WipeGrid();
 				for (int x = 0; x < 100; x++)
 				{
 					for (int y = 0; y < 100; y++)
 					{
-						foreach (var entity in prefabData[x][y])
+						if (prefabData[x, y] != null)
 						{
-							MakeGridEntity(entity, new Vector2Int(x,y));
+							foreach (var entity in prefabData[x, y])
+							{
+								MakeGridEntity(entity, new Vector2Int(x, y));
+							}
 						}
-				
 					}
 				}
-
 			}
-
+			
 		
 			
 		}
-		public struct SaveInfo
-		{
-			public List<string>[][] gridPrefabList;
 
-			public SaveInfo(List<string>[][] gridPrefabList)
-			{
-				this.gridPrefabList = gridPrefabList;
-			}
-		}
 		public struct WorldObjectPrefab
 		{
 			public int drawLayer;//perhaps make this an enum

@@ -87,14 +87,14 @@ namespace MultiplayerXeno
 			if (mouseState.RightButton == ButtonState.Pressed)
 			{
 
-				if(WorldObjectManager.GetEntitiesAtGrid(gridClick)!=null)
+				if(WorldObjectManager.GetEntitiesAtGrid(gridClick).Count > 0)
 				{
-					Game1.World.DestroyEntity(WorldObjectManager.GetEntitiesAtGrid(gridClick)[0]);
-
-
+					
+					WorldObjectManager.DeleteEntity(WorldObjectManager.GetEntitiesAtGrid(gridClick)[0]);
+			
 				}
 
-				WorldObjectManager.GetEntitiesAtGrid(gridClick).Clear();
+				
 			}
 			if (mouseState.LeftButton == ButtonState.Pressed)
 			{

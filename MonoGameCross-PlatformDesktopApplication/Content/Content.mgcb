@@ -40,7 +40,7 @@
 #begin File.spritefont
 /importer:FontDescriptionImporter
 /processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=True
+/processorParam:PremultiplyAlpha=False
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont;text.spritefont
 
