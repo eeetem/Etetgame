@@ -1,20 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
+﻿using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno
 {
-	public class WorldObject
+	public partial class WorldObject
 	{
+		
+		
+		
+		public WorldObject(Vector2Int position, string prefabName)
+		{
+			Position = position;
+			this.PrefabName = prefabName;
+			DesiredPosition = position;
+		}
+
 		public readonly string PrefabName = "";
 		public Vector2Int Position { get; private set; }
 
 		public Vector2Int DesiredPosition { get; private set; }
-
-		public readonly int drawLayer;
 		
-	
+		public void MoveTo(Vector2Int pos)
+		{
+			DesiredPosition = pos;
+
+		}
+		public void UpdatePosition()
+		{
+			Position = DesiredPosition;
+		}
+
+		
 		public Cover SouthCover = Cover.None;
 		public Cover NorthCover = Cover.None; 
 		public Cover EastCover = Cover.None;
@@ -28,28 +43,7 @@ namespace MultiplayerXeno
 			High=2,//small walls and such, hidden when crouched
 			Full=3,//full impassible walls
 		}
-
-		public void MoveTo(Vector2Int pos)
-		{
-			DesiredPosition = pos;
-
-		}
-
-		public void UpdatePosition()
-		{
-			Position = DesiredPosition;
-		}
-
-		public WorldObject(Vector2Int position, int drawLayer, string prefabName)
-		{
-			Position = position;
-			this.drawLayer = drawLayer;
-			this.PrefabName = prefabName;
-			DesiredPosition = position;
-		}
-		
 	}
-
 	public struct Vector2Int
 	{
 		public int X;
@@ -75,7 +69,4 @@ namespace MultiplayerXeno
 			return "{X: " + X + " Y:" + Y + "}";
 		}
 	}
-
-
-
 }

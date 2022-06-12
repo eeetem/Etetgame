@@ -21,13 +21,14 @@ namespace MultiplayerXeno
 		private ComponentMapper<WorldObject> _gridMapper { get; set; }
 		
 		
-		
+		private static bool enabled = false;
 		public WorldEditSystem() : base()
 		{
-			
-			
+			enabled = true;
+
 		}
 
+		
 		public override void Initialize(World world)
 		{
 			
@@ -37,11 +38,13 @@ namespace MultiplayerXeno
 		private static string ActivePrefab = "basicFloor";
 		public static void GenerateUI()
 		{
+			if(!enabled) return;
+			
 			int xpos = 5;
 			int ypos = 5;
 			foreach (var prefabDictElement in WorldObjectManager.Prefabs)
 			{
-				var entity = Game1.World.CreateEntity();
+				var entity = WorldManager.World.CreateEntity();
 				var uiobj = new UiObject(10, 10, xpos, ypos);
 				//uiobj.Click += () => System.Console.WriteLine(prefabDictElement.Key);
 				uiobj.Click += () => ActivePrefab = prefabDictElement.Key;
@@ -50,7 +53,7 @@ namespace MultiplayerXeno
 				xpos += 10;
 				//ypos += 5;
 			}
-			var buttoin = Game1.World.CreateEntity();
+			var buttoin = WorldManager.World.CreateEntity();
 			var uiObj = new UiObject(10, 10, xpos, ypos);
 			//uiobj.Click += () => System.Console.WriteLine(prefabDictElement.Key);
 			uiObj.Click += () => WorldObjectManager.SaveData();
@@ -58,7 +61,7 @@ namespace MultiplayerXeno
 			buttoin.Attach(new Text("save"));
 			xpos += 10;
 			//ypos += 5;
-			buttoin = Game1.World.CreateEntity(); 
+			buttoin = WorldManager.World.CreateEntity(); 
 			uiObj = new UiObject(10, 10, xpos, ypos);
 			//uiobj.Click += () => System.Console.WriteLine(prefabDictElement.Key);
 			uiObj.Click += () => WorldObjectManager.LoadData();

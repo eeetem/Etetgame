@@ -14,32 +14,25 @@ namespace MultiplayerXeno
 		public static SpriteFont SpriteFont;
 		
 		public static Game1 instance;
-		public static World World { get; set; }
-		
+
 		public Game1()
 		{
 			instance = this;
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
+			
 	
 		}
 
 		protected override void Initialize()
 		{
-			World = new WorldBuilder()
-				.AddSystem(new CameraSystem(GraphicsDevice,Window))
-				.AddSystem(new WorldEditSystem())
-				.AddSystem(new WorldObjectManager())
-				.AddSystem(new RenderSystem(GraphicsDevice))
-				.AddSystem(new UiSystem(GraphicsDevice))
-				.Build();
+		
 			
-			
-
+			WorldManager.MakeWorld(GraphicsDevice,Window);
 			
 			base.Initialize();
-
+/*
 			for (int x = 0; x < 10; x++)
 			{
 				for (int y = 0; y < 10; y++)
@@ -55,7 +48,11 @@ namespace MultiplayerXeno
 			WorldObjectManager.MakeGridEntity("baiscWallN",new Vector2Int(5, 7));
 			WorldObjectManager.MakeGridEntity("baiscWallW",new Vector2Int(5, 7));
 
-			
+			*/
+//move this to networking or menu or something
+		WorldObjectManager.LoadData();
+
+
 		}
 
 		
@@ -80,7 +77,8 @@ namespace MultiplayerXeno
 			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
 				Exit();
 
-			World.Update(gameTime);
+			
+			WorldManager.World.Update(gameTime);
 
 			base.Update(gameTime);
 		}
@@ -89,7 +87,7 @@ namespace MultiplayerXeno
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			World.Draw(gameTime);
+			WorldManager.World.Draw(gameTime);
 
 			base.Draw(gameTime);
 		}

@@ -37,12 +37,12 @@ namespace MultiplayerXeno
 			List<int>[] DrawOrderSortedEntities = new List<int>[5];
 			foreach (var entity in ActiveEntities)
 			{
-				WorldObject grid = _worldobjMapper.Get(entity);
-				if (DrawOrderSortedEntities[grid.drawLayer] == null)
+				var sprite = _spriteMapper.Get(entity);
+				if (DrawOrderSortedEntities[(int)sprite.Depth] == null)
 				{
-					DrawOrderSortedEntities[grid.drawLayer] = new List<int>();
+					DrawOrderSortedEntities[(int)sprite.Depth] = new List<int>();
 				}
-				DrawOrderSortedEntities[grid.drawLayer].Add(entity);
+				DrawOrderSortedEntities[(int)sprite.Depth].Add(entity);
 			
 			}
 			

@@ -12,9 +12,10 @@ using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
 using MonoGame.Extended.Sprites;
 
+
 namespace MultiplayerXeno
 {
-	public class WorldObjectManager : EntityUpdateSystem
+	public partial class WorldObjectManager : EntityUpdateSystem
 	{
 		private static List<int>[,] gridData = new List<int>[100,100];
 
@@ -27,12 +28,24 @@ namespace MultiplayerXeno
 				throw new IndexOutOfRangeException();
 			}
 
+
 			WorldObjectPrefab prefab = Prefabs[prefabName];
-			var entity = Game1.World.CreateEntity();
-			entity.Attach(new Transform2(prefab.Offset));
-			entity.Attach(new Sprite(prefab.Sprite));
+
 			
-			WorldObject component = new WorldObject(position,prefab.drawLayer,prefabName);
+			var entity = WorldManager.World.CreateEntity();
+#if CLIENT
+			
+			entity.Attach(new Transform2(prefab.Offset));
+
+			var sprite = new Sprite(prefab.Sprite);
+			sprite.Depth = prefab.drawLayer;
+			entity.Attach(sprite);
+			
+#endif
+			
+		
+			
+			WorldObject component = new WorldObject(position,prefabName);
 			component.EastCover = prefab.EastCover;
 			component.WestCover = prefab.WestCover;
 			component.NorthCover = prefab.NorthCover;
@@ -52,7 +65,7 @@ namespace MultiplayerXeno
 				{
 					if (gridData[x, y].Remove(id))
 					{
-						Game1.World.DestroyEntity(id);
+						WorldManager.World.DestroyEntity(id);
 						return;
 					}
 				}
@@ -77,7 +90,7 @@ namespace MultiplayerXeno
 					{
 						foreach (var entity in gridData[x, y] )
 						{
-							Game1.World.DestroyEntity(entity);
+							WorldManager.World.DestroyEntity(entity);
 						}
 					}
 				}
@@ -153,34 +166,55 @@ namespace MultiplayerXeno
 		public static Dictionary<string, WorldObjectPrefab> Prefabs = new Dictionary<string, WorldObjectPrefab>();
 		public static void MakePrefabs()
 		{
-			WorldObjectPrefab prefab = new WorldObjectPrefab(Game1.Floors[0]);
-			Prefabs.Add("basicFloor",prefab);
-			
-			prefab = new WorldObjectPrefab(Game1.Walls[0]);
-			prefab.Offset = GridToWorldPos(new Vector2(0,-0.5f));
-			prefab.EastCover = WorldObject.Cover.Full;
-			prefab.drawLayer = 1;
-			Prefabs.Add("baiscWallE",prefab);
-			
-			prefab = new WorldObjectPrefab(Game1.Walls[7]);
-			prefab.Offset = GridToWorldPos(new Vector2(-0.5f,0f));
-			prefab.EastCover = WorldObject.Cover.Full;
-			prefab.drawLayer = 1;
-			Prefabs.Add("baiscWallS",prefab);
+			XmlDocument xmlDoc= new XmlDocument(); // Create an XML document object
+			xmlDoc.Load("objectData.xml"); // Load the XML document from the specified file
 
-			prefab = new WorldObjectPrefab(Game1.Walls[1]);
-			prefab.Offset = GridToWorldPos(new Vector2(-0.5f,-1f));
-			prefab.EastCover = WorldObject.Cover.Full;
-			prefab.drawLayer = 1;
-			Prefabs.Add("baiscWallN",prefab);
-			
-			prefab = new WorldObjectPrefab(Game1.Walls[6]);
-			prefab.Offset = GridToWorldPos(new Vector2(-1f,-0.5f));
-			prefab.EastCover = WorldObject.Cover.Full;
-			prefab.drawLayer = 1;
-			Prefabs.Add("baiscWallW",prefab);
-			WorldEditSystem.GenerateUI();
 
+			foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
+			{
+
+				string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+				XmlNode cover = xmlObj.GetElementsByTagName("cover")[0];
+				WorldObject.Cover EastCover = (WorldObject.Cover)int.Parse(cover.Attributes["E"].InnerText);
+				WorldObject.Cover WestCover = (WorldObject.Cover)int.Parse(cover.Attributes["W"].InnerText);
+				WorldObject.Cover SouthCover = (WorldObject.Cover)int.Parse(cover.Attributes["S"].InnerText);
+				WorldObject.Cover NorthCover = (WorldObject.Cover)int.Parse(cover.Attributes["N"].InnerText);
+
+
+
+#if CLIENT
+				string stringoffset = xmlObj.GetElementsByTagName("sprite")[0].Attributes["offset"].InnerText;
+				float x = float.Parse(stringoffset.Substring(0, stringoffset.IndexOf(",")));
+				float y = float.Parse(stringoffset.Substring(stringoffset.IndexOf(",")+1, stringoffset.Length - stringoffset.IndexOf(",")-1));
+				Vector2 Offset = new Vector2(x, y);
+				int drawlayer = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["layer"].InnerText);
+				int spriteIndex = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["index"].InnerText);
+#endif
+				WorldObjectPrefab prefab = new WorldObjectPrefab(1);
+
+#if CLIENT
+				prefab.drawLayer = drawlayer;
+				prefab.Offset = Offset;
+				if (spriteIndex > 8)
+				{
+					spriteIndex -= 8;
+					prefab.Sprite = Game1.Walls[spriteIndex];
+				}
+				else
+				{
+					
+					prefab.Sprite = Game1.Floors[spriteIndex];
+					
+				}
+#endif
+				prefab.SouthCover = SouthCover;
+				prefab.NorthCover = NorthCover;
+				prefab.WestCover = WestCover;
+				prefab.EastCover = EastCover;
+				Prefabs.Add(name,prefab);
+
+
+			}
 		}
 
 
@@ -195,7 +229,7 @@ namespace MultiplayerXeno
 				{
 					foreach (var entity in gridData[x, y])
 					{
-						string prefab = Game1.World.GetEntity(entity).Get<WorldObject>().PrefabName;
+						string prefab = WorldManager.World.GetEntity(entity).Get<WorldObject>().PrefabName;
 						if (prefabData[x,y] == null)
 						{
 							prefabData[x,y] = new List<string>();
@@ -205,7 +239,7 @@ namespace MultiplayerXeno
 				
 				}
 			}
-			using(Stream stream = File.Open("map.xml", FileMode.Create))
+			using(Stream stream = File.Open("map.mapdata", FileMode.Create))
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
 				bformatter.Serialize(stream, prefabData);
@@ -220,7 +254,7 @@ namespace MultiplayerXeno
 		
 		public static void LoadData()
 		{
-			using(Stream stream = File.Open("map.xml", FileMode.Open))
+			using(Stream stream = File.Open("map.mapdata", FileMode.Open))
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
 				List<string>[,] prefabData =bformatter.Deserialize(stream) as List<string>[,] ;
@@ -244,21 +278,26 @@ namespace MultiplayerXeno
 			
 		}
 
-		public struct WorldObjectPrefab
+		public partial struct WorldObjectPrefab
 		{
-			public int drawLayer;//perhaps make this an enum
+#if CLIENT
+			public int drawLayer;
 			public Vector2 Offset;
 			public Texture2D Sprite;
+#endif
+			
 			public WorldObject.Cover SouthCover;
 			public WorldObject.Cover NorthCover;
 			public WorldObject.Cover EastCover;
 			public WorldObject.Cover WestCover;
 
-			public WorldObjectPrefab(Texture2D sprite)
+			public WorldObjectPrefab(int foo)
 			{
+#if CLIENT
 				drawLayer = 0;
-				this.Offset = Vector2.Zero;
-				this.Sprite = sprite;
+				Offset = Vector2.Zero;
+				Sprite = null;
+#endif
 				SouthCover = WorldObject.Cover.None;
 				NorthCover = WorldObject.Cover.None;
 				EastCover = WorldObject.Cover.None;

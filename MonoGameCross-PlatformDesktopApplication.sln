@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameCross-PlatformDesktopApplication", "MonoGameCross-PlatformDesktopApplication\MonoGameCross-PlatformDesktopApplication.csproj", "{E58BB2C1-3616-4042-B614-47FA71C40215}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{EAD53940-9E92-4511-BA5C-98FB8D94B6BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameCross-PlatformDesktopApplication", "MonoGameCross-PlatformDesktopApplication\MonoGameCross-PlatformDesktopApplication.csproj", "{C920CBEC-C74A-47ED-8614-BB796F88F837}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E58BB2C1-3616-4042-B614-47FA71C40215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E58BB2C1-3616-4042-B614-47FA71C40215}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E58BB2C1-3616-4042-B614-47FA71C40215}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E58BB2C1-3616-4042-B614-47FA71C40215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD53940-9E92-4511-BA5C-98FB8D94B6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD53940-9E92-4511-BA5C-98FB8D94B6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD53940-9E92-4511-BA5C-98FB8D94B6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD53940-9E92-4511-BA5C-98FB8D94B6BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C920CBEC-C74A-47ED-8614-BB796F88F837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C920CBEC-C74A-47ED-8614-BB796F88F837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C920CBEC-C74A-47ED-8614-BB796F88F837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C920CBEC-C74A-47ED-8614-BB796F88F837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
