@@ -1,40 +1,77 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 
 namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
-		
-		
-		
-		public WorldObject(Vector2Int position, string prefabName)
+
+		public WorldObject(Vector2Int position, bool faceable, string prefabName, int id)
 		{
+
+			this.Id = id;
+			_faceable = faceable;
 			Position = position;
 			this.PrefabName = prefabName;
-			DesiredPosition = position;
+#if CLIENT
+			Transform = new Transform2();
+#endif
 		}
+
+		public readonly int Id;
+
+
+		public void Face(Direction dir)
+		{
+			if(!_faceable) return;
+			while (dir < 0)
+			{
+				dir += 8;
+			}
+
+			while (dir > (Direction) 7)
+			{
+				dir -= 8;
+			}
+
+			Facing = dir;
+		}
+
+	//	public Point3 UniqueId()
+	//	{
+	//		WorldObjectManager.ge
+	//	}
+
+		private bool _faceable = false;
+		public Direction Facing { get; private set;}
+
+	
 
 		public readonly string PrefabName = "";
 		public Vector2Int Position { get; private set; }
 
-		public Vector2Int DesiredPosition { get; private set; }
-		
-		public void MoveTo(Vector2Int pos)
-		{
-			DesiredPosition = pos;
 
-		}
-		public void UpdatePosition()
+		public void SetCovers(Dictionary<Direction, Cover> newCovers)
 		{
-			Position = DesiredPosition;
+			_covers = newCovers;
 		}
 
-		
-		public Cover SouthCover = Cover.None;
-		public Cover NorthCover = Cover.None; 
-		public Cover EastCover = Cover.None;
-		public Cover WestCover = Cover.None;
-		
+		public Cover GetCover(Direction dir)
+		{
+			Direction resulting = dir - (int) Facing;
+			if (resulting < 0)
+			{
+				resulting += 8;
+			}
+
+			return _covers[resulting];
+
+		}
+
+		private Dictionary<Direction, Cover> _covers = new Dictionary<Direction, Cover>();
+
 
 		public enum Cover
 		{
@@ -43,7 +80,20 @@ namespace MultiplayerXeno
 			High=2,//small walls and such, hidden when crouched
 			Full=3,//full impassible walls
 		}
+		public enum Direction
+		{
+			North = 0,
+			NorthEast = 1,
+			East = 2,
+			SouthEast = 3,
+			South = 4,
+			SouthWest = 5,
+			West = 6,
+			NorthWest = 7
+			
+		}
 	}
+	[Serializable]
 	public struct Vector2Int
 	{
 		public int X;

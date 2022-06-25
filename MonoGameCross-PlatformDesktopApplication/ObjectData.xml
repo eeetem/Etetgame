@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 
-<object>
-  <sprite index = "0" layer = "0" offset= "0,0"/>
+<object Faceable = "false">
+  <sprite layer = "0" offset= "0,0"/>
   <cover E="0" W="0" S="0" N="0"/>
   <name>basicFloor</name>
 </object> 
 <object>
-  <sprite index = "9" layer = "1" offset= "0,-0.5"/>
-  <cover E="4" W="0" S="0" N="0"/>
-  <name>basicWallE</name>
-</object> 
-<object>
-  <sprite index = "16" layer = "1" offset= "-0.5,0"/>
-  <cover E="0" W="0" S="4" N="0"/>
-  <name>basicWallS</name>
+  <sprite layer = "2" offset= "0,0"/>
+  <cover N="4"/>
+  <name>basicWall</name>
 </object>
-<object>
-  <sprite index = "10" layer = "1" offset= "-0.5,1"/>
-  <cover E="0" W="0" S="0" N="4"/>
-  <name>basicWallN</name>
-</object> 
-<object>
-  <sprite index = "15" layer = "1" offset= "-1,-0.5"/>
-  <cover E="0" W="4" S="0" N="0"/>
-  <name>basicWallW</name>
-</object> 
+  <object Faceable = "true" Controllable = "true">
+    <sprite layer = "1" offset= "0,0"/>
+    <cover E="0" W="0" S="0" N="0"/>
+    <name>Human</name>
+  </object>
 </root>

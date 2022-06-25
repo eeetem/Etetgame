@@ -2,12 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.Entities;
-using MultiplayerXeno;
 
-using Network;
 namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 {
 	public static class Program
@@ -22,21 +17,25 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Hello World!");
-			WorldManager.MakeWorld();
+			Networking.Start();
+			
+
+			WorldObjectManager.Init();
+
+			
 			UpdateLoop();
 			
 		}
 		static void UpdateLoop()
 		{
+			_gameTime.ElapsedGameTime = new TimeSpan((long)MSperTick);
 			while (true)
 			{
 				stopWatch.Restart();
 
 
-				
-				WorldManager.World.Update(_gameTime);
-				
-				Console.WriteLine(_gameTime.ElapsedGameTime);
+				WorldObjectManager.Update(_gameTime);
+		
 
 				stopWatch.Stop();
 
@@ -51,8 +50,8 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					// Console.WriteLine("update took: "+ts.Milliseconds);
 					Thread.Sleep((int)(MSperTick - ts.Milliseconds));
 				}
-				
 
+				_gameTime.TotalGameTime += new TimeSpan((long)MSperTick);
 			}
 		}
 	}

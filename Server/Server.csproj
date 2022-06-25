@@ -17,7 +17,6 @@
 
     <ItemGroup>
       <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
-      <PackageReference Include="MonoGame.Extended.Entities" Version="3.8.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
       <PackageReference Include="Network" Version="6.2.5.23" />
     </ItemGroup>
@@ -33,15 +32,18 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Systems\WorldObjectManager.cs">
         <Link>SharedSource\Systems\WorldObjectManager.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WolrdManager.cs">
-        <Link>SharedSource\WolrdManager.cs</Link>
-      </Compile>
     </ItemGroup>
 
     <ItemGroup>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
         <Link>ObjectData.xml</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="map.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

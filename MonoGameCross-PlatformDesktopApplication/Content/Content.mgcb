@@ -13,7 +13,7 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin 1 Floor - Tiled 256x128.png
+#begin basicFloor.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -23,9 +23,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:1 Floor - Tiled 256x128.png;Floors.png
+/build:basicFloor.png
 
-#begin 128x192 Brick Walls - Flat 1.png
+#begin basicWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -35,7 +35,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:128x192 Brick Walls - Flat 1.png;Walls.png
+/build:basicWall.png
 
 #begin File.spritefont
 /importer:FontDescriptionImporter
@@ -44,8 +44,15 @@
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont;text.spritefont
 
-#begin gun.xml
-/importer:XmlImporter
-/processor:PassThroughProcessor
-/build:gun.xml
+#begin HUman.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:HUman.png
 

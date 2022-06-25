@@ -2,26 +2,46 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Xml;
-using System.Xml.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
 using MonoGame.Extended.Sprites;
+using Newtonsoft.Json;
 
 
 namespace MultiplayerXeno
 {
-	public partial class WorldObjectManager : EntityUpdateSystem
+	public static partial class WorldObjectManager
 	{
 		private static List<int>[,] gridData = new List<int>[100,100];
 
-		private ComponentMapper<WorldObject> _gridMapper { get; set; }
+		private static Dictionary<int,WorldObject> WorldObjects = new Dictionary<int,WorldObject>();
 
-		public static Entity MakeGridEntity(string prefabName, Vector2Int position)
+		private static int NextId = 0;
+
+
+		public static void Init()
+		{
+			WipeGrid();
+			
+
+		}
+
+
+
+		public static int GetNextId()
+		{
+			
+			while (WorldObjects.ContainsKey(NextId))//skip all the server-side force assinged IDs
+			{
+				NextId++;
+			}
+
+			return NextId;
+		}
+
+		public static WorldObject MakeWorldObject(string prefabName, Vector2Int position, WorldObject.Direction facing = WorldObject.Direction.North, int id = -1)
 		{
 			if (position.X < 0 || position.Y < 0)
 			{
@@ -32,45 +52,41 @@ namespace MultiplayerXeno
 			WorldObjectPrefab prefab = Prefabs[prefabName];
 
 			
-			var entity = WorldManager.World.CreateEntity();
-#if CLIENT
-			
-			entity.Attach(new Transform2(prefab.Offset));
-
-			var sprite = new Sprite(prefab.Sprite);
-			sprite.Depth = prefab.drawLayer;
-			entity.Attach(sprite);
-			
-#endif
-			
-		
-			
-			WorldObject component = new WorldObject(position,prefabName);
-			component.EastCover = prefab.EastCover;
-			component.WestCover = prefab.WestCover;
-			component.NorthCover = prefab.NorthCover;
-			component.SouthCover = prefab.SouthCover;
-			entity.Attach(component);
-			
-			gridData[position.X,position.Y].Add(entity.Id);
-			
-			return entity;
-		}
-
-		public static void DeleteEntity(int id)//this isnt very efficent but for now it'll do
-		{
-			for (int x = 0; x < 100; x++)
+			if (id == -1)
 			{
-				for (int y = 0; y < 100; y++)
-				{
-					if (gridData[x, y].Remove(id))
-					{
-						WorldManager.World.DestroyEntity(id);
-						return;
-					}
-				}
+				id = GetNextId();
+
 			}
 
+
+			WorldObject WO = new WorldObject(position,prefab.Faceable,prefabName,id);
+			WO.Face(facing);
+			
+#if CLIENT
+			WO.Transform = new Transform2(prefab.Offset);
+			WO.DrawLayer = prefab.DrawLayer;
+		//	entity.Attach(new Transform2(prefab.Offset));
+
+#endif
+			
+			WO.SetCovers(prefab.Covers);
+
+			WorldObjects.EnsureCapacity(id+1);			
+			WorldObjects[id] = WO;
+			return WO;
+		}
+
+		public static void DeleteWorldObject(WorldObject obj)
+		{
+			DeleteWorldObject(obj.Id);
+		}
+
+		public static void DeleteWorldObject(int id)
+		{
+			WorldObject Obj = WorldObjects[id];
+			gridData[Obj.Position.X, Obj.Position.Y].Remove(id);
+			//obj.dispose()
+			WorldObjects.Remove(id);
 
 		}
 		
@@ -80,21 +96,17 @@ namespace MultiplayerXeno
 			return gridData[pos.X, pos.Y];
 		}
 
-		private static void WipeGrid()
+		private static void WipeGrid(bool deleteAll = false)
 		{
-			for (int x = 0; x < 100; x++)
+			if (deleteAll)
 			{
-				for (int y = 0; y < 100; y++)
+				foreach (var obj in WorldObjects)
 				{
-					if (gridData[x, y] != null)
-					{
-						foreach (var entity in gridData[x, y] )
-						{
-							WorldManager.World.DestroyEntity(entity);
-						}
-					}
+					DeleteWorldObject(obj.Key);
 				}
 			}
+
+			
 			gridData = new List<int>[100,100];
 			for (int x = 0; x < 100; x++)
 			{
@@ -104,34 +116,20 @@ namespace MultiplayerXeno
 				}
 			}
 		}
-		public WorldObjectManager( ) : base(Aspect.All(typeof(WorldObject)))
+	
+
+
+		public static void Update(GameTime gameTime)
 		{
 			WipeGrid();
-
-
-		}
-
-		public override void Initialize(IComponentMapperService mapperService)
-		{
-			_gridMapper = mapperService.GetMapper<WorldObject>();
-		}
-
-		public override void Update(GameTime gameTime)
-		{
-			foreach (var entity in ActiveEntities)
+			foreach (var obj in WorldObjects.Values)
 			{
-
-				WorldObject grid = _gridMapper.Get(entity);
-				if (grid.DesiredPosition != grid.Position)
-				{
-					gridData[grid.Position.X, grid.Position.Y].Remove(entity);
-					gridData[grid.DesiredPosition.X, grid.DesiredPosition.Y].Add(entity);
-					grid.UpdatePosition();
-
-				}
+				
+				gridData[obj.Position.X,obj.Position.Y].Add(obj.Id);
 					
 			}
 		}
+
 
 		private const int SIZE = 180;
 		public static Vector2 GridToWorldPos(Vector2 gridpos) {
@@ -166,8 +164,8 @@ namespace MultiplayerXeno
 		public static Dictionary<string, WorldObjectPrefab> Prefabs = new Dictionary<string, WorldObjectPrefab>();
 		public static void MakePrefabs()
 		{
-			XmlDocument xmlDoc= new XmlDocument(); // Create an XML document object
-			xmlDoc.Load("objectData.xml"); // Load the XML document from the specified file
+			XmlDocument xmlDoc= new XmlDocument();
+			xmlDoc.Load("ObjectData.xml"); 
 
 
 			foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
@@ -175,11 +173,45 @@ namespace MultiplayerXeno
 
 				string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
 				XmlNode cover = xmlObj.GetElementsByTagName("cover")[0];
-				WorldObject.Cover EastCover = (WorldObject.Cover)int.Parse(cover.Attributes["E"].InnerText);
-				WorldObject.Cover WestCover = (WorldObject.Cover)int.Parse(cover.Attributes["W"].InnerText);
-				WorldObject.Cover SouthCover = (WorldObject.Cover)int.Parse(cover.Attributes["S"].InnerText);
-				WorldObject.Cover NorthCover = (WorldObject.Cover)int.Parse(cover.Attributes["N"].InnerText);
 
+				WorldObject.Cover eastCover = WorldObject.Cover.None;
+				WorldObject.Cover westCover = WorldObject.Cover.None;
+				WorldObject.Cover southCover = WorldObject.Cover.None;
+				WorldObject.Cover northCover = WorldObject.Cover.None;
+				WorldObject.Cover northeastCover = WorldObject.Cover.None;
+				WorldObject.Cover northwestCover =WorldObject.Cover.None;
+				WorldObject.Cover southeastCover = WorldObject.Cover.None;
+				WorldObject.Cover southwestCover = WorldObject.Cover.None;
+				
+				
+				if (cover != null && cover.Attributes != null)
+				{
+					
+					 eastCover = (WorldObject.Cover) int.Parse(cover.Attributes["E"]?.InnerText ?? "0");
+					 westCover = (WorldObject.Cover)int.Parse(cover.Attributes["W"]?.InnerText ??  "0");
+					 southCover = (WorldObject.Cover)int.Parse(cover.Attributes["S"]?.InnerText ??  "0");
+					 northCover = (WorldObject.Cover)int.Parse(cover.Attributes["N"]?.InnerText ??  "0");
+					 northeastCover = (WorldObject.Cover)int.Parse(cover.Attributes["NE"]?.InnerText ?? "0");
+					 northwestCover = (WorldObject.Cover)int.Parse(cover.Attributes["NW"]?.InnerText ??  "0");
+					 southeastCover = (WorldObject.Cover)int.Parse(cover.Attributes["SE"]?.InnerText ??  "0");
+					 southwestCover = (WorldObject.Cover)int.Parse(cover.Attributes["SW"]?.InnerText ??  "0");
+
+					
+					
+				}
+
+				
+				
+				WorldObjectPrefab prefab = new WorldObjectPrefab(1);
+
+
+				bool faceable = true;
+				if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
+				{
+					 faceable = bool.Parse(xmlObj?.Attributes?["Faceable"].InnerText);
+				}
+
+				prefab.Faceable = faceable;
 
 
 #if CLIENT
@@ -188,30 +220,46 @@ namespace MultiplayerXeno
 				float y = float.Parse(stringoffset.Substring(stringoffset.IndexOf(",")+1, stringoffset.Length - stringoffset.IndexOf(",")-1));
 				Vector2 Offset = new Vector2(x, y);
 				int drawlayer = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["layer"].InnerText);
-				int spriteIndex = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["index"].InnerText);
 #endif
-				WorldObjectPrefab prefab = new WorldObjectPrefab(1);
+			
+				
+				
+				
 
 #if CLIENT
-				prefab.drawLayer = drawlayer;
-				prefab.Offset = Offset;
-				if (spriteIndex > 8)
-				{
-					spriteIndex -= 8;
-					prefab.Sprite = Game1.Walls[spriteIndex];
-				}
-				else
-				{
-					
-					prefab.Sprite = Game1.Floors[spriteIndex];
-					
-				}
+
+				prefab.Offset = GridToWorldPos(Offset+ new Vector2(-0.5f,-0.5f));
+				
+				
+				
 #endif
-				prefab.SouthCover = SouthCover;
-				prefab.NorthCover = NorthCover;
-				prefab.WestCover = WestCover;
-				prefab.EastCover = EastCover;
+
+				Dictionary<WorldObject.Direction, WorldObject.Cover> covers = new Dictionary<WorldObject.Direction, WorldObject.Cover>();
+
+
+				covers.Add(WorldObject.Direction.North, northCover);
+				covers.Add(WorldObject.Direction.South, southCover);
+				covers.Add(WorldObject.Direction.East, eastCover);
+				covers.Add(WorldObject.Direction.West, westCover);
+				covers.Add(WorldObject.Direction.SouthEast, southeastCover);
+				covers.Add(WorldObject.Direction.SouthWest, southwestCover);
+				covers.Add(WorldObject.Direction.NorthEast, northeastCover);
+				covers.Add(WorldObject.Direction.NorthWest, northwestCover);
+				
+				
+				
+				
+				
+				
+				
+				
+				prefab.Covers = covers;
+				prefab.DrawLayer = drawlayer;
 				Prefabs.Add(name,prefab);
+				
+#if CLIENT
+				GenerateSpriteSheet(name, Game1.Textures[name]);
+#endif
 
 
 			}
@@ -221,29 +269,35 @@ namespace MultiplayerXeno
 		public static void SaveData()
 		{
 
-			List<string>[,] prefabData = new List<string>[100,100];
+			List<WorldObjectData> prefabData = new List<WorldObjectData>();
 
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
-					foreach (var entity in gridData[x, y])
+					foreach (var ID in gridData[x, y])
 					{
-						string prefab = WorldManager.World.GetEntity(entity).Get<WorldObject>().PrefabName;
-						if (prefabData[x,y] == null)
-						{
-							prefabData[x,y] = new List<string>();
-						}
-						prefabData[x,y].Add(prefab);
+						WorldObject obj = WorldObjects[ID];
+						string prefab = obj.PrefabName;
+						WorldObjectData worldObjectData = new WorldObjectData(prefab,ID,new Vector2Int(x,y));
+						worldObjectData.Facing = obj.Facing;
+						prefabData.Add(worldObjectData);
 					}
 				
 				}
 			}
-			using(Stream stream = File.Open("map.mapdata", FileMode.Create))
+			using(FileStream stream = File.Open("map.mapdata", FileMode.Create))
 			{
-				BinaryFormatter bformatter = new BinaryFormatter();
-				bformatter.Serialize(stream, prefabData);
+		//		TextWriter textWriter = new StreamWriter(stream);
+//				JsonWriter jsonWriter = new JsonTextWriter(textWriter);
+		//		JsonSerializer jsonSerializer = new JsonSerializer();
+				//bformatter.Serialize(stream, prefabData);	
+				BinaryFormatter bf = new BinaryFormatter();
+				bf.Serialize(stream,prefabData);
+		//		jsonSerializer.Serialize(textWriter, prefabData);
+				
 			}
+			
 
 			
 			
@@ -252,27 +306,27 @@ namespace MultiplayerXeno
 		
 		
 		
-		public static void LoadData()
+		public static void LoadData(byte[] data)
 		{
-			using(Stream stream = File.Open("map.mapdata", FileMode.Open))
+			using (Stream dataStream = new MemoryStream(data))
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
-				List<string>[,] prefabData =bformatter.Deserialize(stream) as List<string>[,] ;
-				WipeGrid();
-				for (int x = 0; x < 100; x++)
+				List<WorldObjectData> prefabData = bformatter.Deserialize(dataStream) as List<WorldObjectData>;
+				WipeGrid(true);
+
+				foreach (var worldObjectDatadata in prefabData)
 				{
-					for (int y = 0; y < 100; y++)
-					{
-						if (prefabData[x, y] != null)
-						{
-							foreach (var entity in prefabData[x, y])
-							{
-								MakeGridEntity(entity, new Vector2Int(x, y));
-							}
-						}
-					}
+					MakeWorldObject(worldObjectDatadata.Prefab, worldObjectDatadata.Position,worldObjectDatadata.Facing,worldObjectDatadata.Id);
 				}
 			}
+				
+			
+
+		
+						
+					
+				
+			
 			
 		
 			
@@ -281,29 +335,45 @@ namespace MultiplayerXeno
 		public partial struct WorldObjectPrefab
 		{
 #if CLIENT
-			public int drawLayer;
 			public Vector2 Offset;
-			public Texture2D Sprite;
+			public int DrawLayer;
 #endif
+
+			public bool Faceable;
+
 			
-			public WorldObject.Cover SouthCover;
-			public WorldObject.Cover NorthCover;
-			public WorldObject.Cover EastCover;
-			public WorldObject.Cover WestCover;
+			
+			public Dictionary<WorldObject.Direction, WorldObject.Cover> Covers;
 
 			public WorldObjectPrefab(int foo)
 			{
+				
 #if CLIENT
-				drawLayer = 0;
+				DrawLayer = 0;
 				Offset = Vector2.Zero;
-				Sprite = null;
 #endif
-				SouthCover = WorldObject.Cover.None;
-				NorthCover = WorldObject.Cover.None;
-				EastCover = WorldObject.Cover.None;
-				WestCover = WorldObject.Cover.None;
+				Faceable = false;
+				Covers = new Dictionary<WorldObject.Direction, WorldObject.Cover>();
 			}
 		}
+		[Serializable]
+		public partial struct WorldObjectData
+		{
+			public WorldObject.Direction Facing;
+			public int Id;
+			//health
+			public string Prefab;
+			public Vector2Int Position;
+			public WorldObjectData(string prefab, int id, Vector2Int position)
+			{
+				this.Prefab = prefab;
+				this.Id = id;
+				Position = position;
+				Facing = WorldObject.Direction.North;
+			}
+		}
+		
+		
 	}
 
 
