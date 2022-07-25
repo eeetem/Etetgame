@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using MultiplayerXeno.Prefabs;
 using Myra;
 using Myra.Graphics2D.UI;
 
@@ -42,6 +43,13 @@ namespace MultiplayerXeno
 				Text = "IP"
 			};
 			grid.Widgets.Add(textBox);
+			var textBox2 = new TextBox()
+			{
+				GridColumn = 1,
+				GridRow = 2,
+				Text = "name"
+			};
+			grid.Widgets.Add(textBox2);
 		
 			var button = new TextButton
 			{
@@ -52,17 +60,18 @@ namespace MultiplayerXeno
 
 			button.Click += (s, a) =>
 			{
-				bool result = Networking.Connect(textBox.Text);
+				bool result = Networking.Connect(textBox.Text,textBox2.Text);
 				if (result)
 				{
 					var messageBox = Dialog.CreateMessageBox("Connection Notice","Connected to server!");
 					messageBox.ShowModal(Desktop);
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
+					GameUi();
 				}
 				else
 				{
-					var messageBox = Dialog.CreateMessageBox("Connection Notice","failed to connect");
+					var messageBox = Dialog.CreateMessageBox("Connection Notice","Failed to connect");
 					messageBox.ShowModal(Desktop);
 					
 				}
@@ -92,7 +101,7 @@ namespace MultiplayerXeno
 
 			int xpos = 0;
 			int ypos = 0;
-			foreach (var prefabDictElement in WorldObjectManager.Prefabs)
+			foreach (var prefabDictElement in PrefabManager.Prefabs)
 			{
 				
 				
@@ -139,6 +148,36 @@ namespace MultiplayerXeno
 			grid.Widgets.Add(load);
 			
 			Desktop.Root = grid;
+			
+			
+		}
+
+		public static void GameUi()
+		{
+			
+			
+			var grid = new Grid
+			{
+				RowSpacing = 8,
+				ColumnSpacing = 8
+			};
+
+			var end = new TextButton
+			{
+				GridColumn = 8,
+				GridRow = 0,
+				Text = "End Turn"
+			};
+			end.Click += (o,a) => GameManager.EndTurn();		
+
+
+
+	
+			grid.Widgets.Add(end);
+	
+			
+			Desktop.Root = grid;
+			
 			
 			
 		}

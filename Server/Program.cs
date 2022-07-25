@@ -11,9 +11,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		static int tickrate = 16;
 		static float MSperTick = 1000 / tickrate;
 		static Stopwatch stopWatch = new Stopwatch();
-
-		private static readonly GameTime _gameTime = new GameTime();
-
+		
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Hello World!");
@@ -28,13 +26,13 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 		static void UpdateLoop()
 		{
-			_gameTime.ElapsedGameTime = new TimeSpan((long)MSperTick);
+
 			while (true)
 			{
 				stopWatch.Restart();
 
 
-				WorldObjectManager.Update(_gameTime);
+				WorldObjectManager.Update(MSperTick);
 		
 
 				stopWatch.Stop();
@@ -50,8 +48,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					// Console.WriteLine("update took: "+ts.Milliseconds);
 					Thread.Sleep((int)(MSperTick - ts.Milliseconds));
 				}
-
-				_gameTime.TotalGameTime += new TimeSpan((long)MSperTick);
+				
 			}
 		}
 	}

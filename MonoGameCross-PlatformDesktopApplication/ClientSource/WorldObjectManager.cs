@@ -11,49 +11,26 @@ namespace MultiplayerXeno
 		
 		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
-		public static void Init(GraphicsDevice graphicsDevice)
+		public static void Init(GraphicsDevice graphicsdevice)
 		{
 
-			graphicsDevice = graphicsDevice;
+			graphicsDevice = graphicsdevice;
 			spriteBatch = new SpriteBatch(graphicsDevice);
 			Init();
 		}
 
-		public static void GenerateSpriteSheet(string prefabName, Texture2D texture)
-		{
-
-			if (!Prefabs[prefabName].Faceable)
-			{
-				WorldObject.spriteSheets.Add(prefabName, new[] {new Sprite(texture)});
-				return;
-			}
-
-			Texture2D[] texture2Ds = Utility.SplitTexture(texture, texture.Width/3, texture.Height/3, out int _, out int _);
-			Sprite[] spriteSheet = new Sprite[8];
-
-			int dir = 0;
-			foreach (var splitTexture in texture2Ds)
-			{
-				if (dir > 7) break;
-				spriteSheet[dir] = new Sprite(splitTexture);
-
-
-
-				dir++;
-			}
-			WorldObject.spriteSheets.Add(prefabName, spriteSheet);
-		}
+	
 		
 		public static void Draw(GameTime gameTime)
 		{
 			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
 			foreach (var WO in WorldObjects.Values)
 			{
-				if (DrawOrderSortedEntities[WO.DrawLayer] == null)
+				if (DrawOrderSortedEntities[WO.Type.DrawLayer] == null)
 				{
-					DrawOrderSortedEntities[WO.DrawLayer] = new List<WorldObject>();
+					DrawOrderSortedEntities[WO.Type.DrawLayer] = new List<WorldObject>();
 				}
-				DrawOrderSortedEntities[WO.DrawLayer].Add(WO);
+				DrawOrderSortedEntities[WO.Type.DrawLayer].Add(WO);
 			
 			}
 

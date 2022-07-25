@@ -22,19 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ServerSource\Systems" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Components\WorldObject.cs">
-        <Link>SharedSource\Components\WorldObject.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Systems\WorldObjectManager.cs">
-        <Link>SharedSource\Systems\WorldObjectManager.cs</Link>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
         <Link>ObjectData.xml</Link>
       </Content>
@@ -44,6 +31,35 @@
       <None Update="map.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MonoGameCross-PlatformDesktopApplication\MonoGameCross-PlatformDesktopApplication.csproj" />
+      <ProjectReference Include="..\Packets\Packets.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Controllable.cs">
+        <Link>SharedSource\Controllable.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\GameManager.cs">
+        <Link>SharedSource\GameManager.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\ControllablePrefab.cs">
+        <Link>SharedSource\Prefabs\ControllablePrefab.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\PrefabManager.cs">
+        <Link>SharedSource\Prefabs\PrefabManager.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\WorldObjectType.cs">
+        <Link>SharedSource\Prefabs\WorldObjectType.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObject.cs">
+        <Link>SharedSource\WorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjectManager.cs">
+        <Link>SharedSource\WorldObjectManager.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

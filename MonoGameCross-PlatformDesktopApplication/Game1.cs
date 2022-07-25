@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MultiplayerXeno.Prefabs;
 
 namespace MultiplayerXeno
 {
@@ -30,31 +31,12 @@ namespace MultiplayerXeno
 		{
 		
 			Camera.Init(GraphicsDevice,Window);
-			WorldEditSystem.Init();
+		//	WorldEditSystem.Init();
 			WorldObjectManager.Init(GraphicsDevice);
 
 			base.Initialize();
-/*
-			for (int x = 0; x < 10; x++)
-			{
-				for (int y = 0; y < 10; y++)
-				{
-					WorldObjectManager.MakeGridEntity("basicFloor",new Vector2Int(x, y));
-				}
-			}
 
-			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 5));
-			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 6));
-			WorldObjectManager.MakeGridEntity("baiscWallE",new Vector2Int(5, 7));
-			WorldObjectManager.MakeGridEntity("baiscWallS",new Vector2Int(5, 7));
-			WorldObjectManager.MakeGridEntity("baiscWallN",new Vector2Int(5, 7));
-			WorldObjectManager.MakeGridEntity("baiscWallW",new Vector2Int(5, 7));
-
-			*/
-//move this to networking or menu or something
-	//	WorldObjectManager.LoadData(File.ReadAllBytes("map.mapdata"));
-		
-	
+			UI.ConnectionMenu();
 		}
 
 		
@@ -67,18 +49,15 @@ namespace MultiplayerXeno
 			
 			UI.Init();
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
-			int countx=0;
-			int county=0;
-
 
 			Textures.Add("basicFloor",Content.Load<Texture2D>("basicFloor"));
 			Textures.Add("Human",Content.Load<Texture2D>("Human"));
 			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
 
-			WorldObjectManager.MakePrefabs();
-			WorldEditSystem.GenerateUI();
+			PrefabManager.MakePrefabs();
+		//	WorldEditSystem.GenerateUI();
 			
-			//UI.ConnectionMenu();
+			
 
 
 
@@ -94,8 +73,8 @@ namespace MultiplayerXeno
 
 			
 			Camera.Update(gameTime);
-			WorldEditSystem.Update(gameTime);
-			WorldObjectManager.Update(gameTime);
+		//	WorldEditSystem.Update(gameTime);
+			WorldObjectManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
 		}

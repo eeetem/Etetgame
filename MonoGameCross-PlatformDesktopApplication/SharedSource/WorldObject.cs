@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using MultiplayerXeno.Prefabs;
 
 namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
 
-		public WorldObject(Vector2Int position, bool faceable, string prefabName, int id)
+		public WorldObject(Vector2Int position, WorldObjectType type, int id)
 		{
 
 			this.Id = id;
-			_faceable = faceable;
 			Position = position;
-			this.PrefabName = prefabName;
+			this.Type = type;
 #if CLIENT
 			Transform = new Transform2();
 #endif
@@ -25,7 +25,7 @@ namespace MultiplayerXeno
 
 		public void Face(Direction dir)
 		{
-			if(!_faceable) return;
+			if(!Type.Faceable) return;
 			while (dir < 0)
 			{
 				dir += 8;
@@ -44,19 +44,14 @@ namespace MultiplayerXeno
 	//		WorldObjectManager.ge
 	//	}
 
-		private bool _faceable = false;
+		public readonly WorldObjectType Type;	
+	
 		public Direction Facing { get; private set;}
 
 	
 
-		public readonly string PrefabName = "";
-		public Vector2Int Position { get; private set; }
-
-
-		public void SetCovers(Dictionary<Direction, Cover> newCovers)
-		{
-			_covers = newCovers;
-		}
+		public Vector2Int Position { get; protected set; }
+		
 
 		public Cover GetCover(Direction dir)
 		{
@@ -66,11 +61,9 @@ namespace MultiplayerXeno
 				resulting += 8;
 			}
 
-			return _covers[resulting];
+			return Type.Covers[resulting];
 
 		}
-
-		private Dictionary<Direction, Cover> _covers = new Dictionary<Direction, Cover>();
 
 
 		public enum Cover
@@ -96,6 +89,21 @@ namespace MultiplayerXeno
 	[Serializable]
 	public struct Vector2Int
 	{
+		public bool Equals(Vector2Int other)
+		{
+			return X == other.X && Y == other.Y;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Vector2Int other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(X, Y);
+		}
+
 		public int X;
 		public int Y;
 
