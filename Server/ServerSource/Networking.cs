@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Xna.Framework;
@@ -89,9 +90,10 @@ namespace MultiplayerXeno
 
 		private static void ReciveAction(GameActionPacket packet, Connection connection)
 		{
-			Client currentPlayer;
+			Client? currentPlayer;
 			if (GameManager.IsPlayer1Turn)
 			{
+			
 				currentPlayer = GameManager.Player1;
 			}
 			else
@@ -99,7 +101,7 @@ namespace MultiplayerXeno
 				currentPlayer = GameManager.Player2;
 			}
 
-			if (currentPlayer.Connection != connection)
+			if (currentPlayer?.Connection != connection)
 			{
 				//out of turn action. perhaps desync or hax? kick perhaps
 				

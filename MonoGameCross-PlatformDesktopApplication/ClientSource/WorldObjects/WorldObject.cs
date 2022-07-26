@@ -11,7 +11,7 @@ namespace MultiplayerXeno
 		public Transform2 Transform;
 		public Sprite GetSprite()
 		{
-			return Type.GetSprite((int)Facing);
+			return Type.spriteSheet[(int)Facing];
 		}
 	}
 

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MultiplayerXeno.Prefabs;
+
 
 namespace MultiplayerXeno
 {
@@ -31,12 +31,12 @@ namespace MultiplayerXeno
 		{
 		
 			Camera.Init(GraphicsDevice,Window);
-		//	WorldEditSystem.Init();
+			WorldEditSystem.Init();
 			WorldObjectManager.Init(GraphicsDevice);
 
 			base.Initialize();
 
-			UI.ConnectionMenu();
+		//	UI.ConnectionMenu();
 		}
 
 		
@@ -55,7 +55,7 @@ namespace MultiplayerXeno
 			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
 
 			PrefabManager.MakePrefabs();
-		//	WorldEditSystem.GenerateUI();
+			WorldEditSystem.GenerateUI();
 			
 			
 
@@ -73,7 +73,7 @@ namespace MultiplayerXeno
 
 			
 			Camera.Update(gameTime);
-		//	WorldEditSystem.Update(gameTime);
+			WorldEditSystem.Update(gameTime);
 			WorldObjectManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);

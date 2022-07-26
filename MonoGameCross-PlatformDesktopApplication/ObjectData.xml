@@ -11,9 +11,12 @@
   <cover N="4"/>
   <name>basicWall</name>
 </object>
-  <object Faceable = "true" Controllable = "true">
+  <object Faceable = "true">
     <sprite layer = "1" offset= "0,0"/>
     <cover E="0" W="0" S="0" N="0"/>
     <name>Human</name>
+    <controllable moveRange = "4">
+      
+    </controllable>
   </object>
 </root>

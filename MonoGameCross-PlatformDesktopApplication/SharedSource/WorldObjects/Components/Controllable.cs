@@ -1,11 +1,16 @@
-﻿using MultiplayerXeno.Prefabs;
+﻿#nullable enable
+using MultiplayerXeno.Structs;
 
 namespace MultiplayerXeno
 {
-	public class Controllable : WorldObject
+	public  class Controllable
 	{
-		public Controllable(Vector2Int position, ControllableType type, int id, bool isPlayerOneTeam) : base(position, type, id)
+		private WorldObject Parent;
+		private ControllableType Type;
+		public Controllable(bool isPlayerOneTeam, WorldObject parent, ControllableType type)
 		{
+			Parent = parent;
+			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
 		}
 
@@ -21,7 +26,7 @@ namespace MultiplayerXeno
 
 		public void Move(Vector2Int pos)
 		{
-			this.Position = pos;
+			Parent.Position = pos;
 			hasMoved = true;
 
 		}
@@ -31,8 +36,9 @@ namespace MultiplayerXeno
 			
 			
 		}
-
-		
-
+		public void Update()
+		{
+			
+		}
 	}
 }

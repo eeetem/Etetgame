@@ -45,9 +45,4 @@
     <ItemGroup>
       <ProjectReference Include="..\Packets\Packets.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="Network, Version=6.2.5.24, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\..\Network\Network\bin\Debug\netstandard2.0\Network.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 </Project>

@@ -4,11 +4,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
-using Newtonsoft.Json;
-using MultiplayerXeno.Prefabs;
+using MultiplayerXeno.Structs;
 
 
 namespace MultiplayerXeno
@@ -42,30 +39,47 @@ namespace MultiplayerXeno
 			return NextId;
 		}
 
-		public static WorldObject MakeWorldObject(string prefabName, Vector2Int position, WorldObject.Direction facing = WorldObject.Direction.North, int id = -1)
+		public static WorldObject MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1)
 		{
-			if (position.X < 0 || position.Y < 0)
+			WorldObjectData data = new WorldObjectData(prefabName, id, position);
+			data.Facing = facing;
+			return MakeWorldObject(data);
+		}
+
+		public static WorldObject MakeWorldObject(WorldObjectData data)
+		{
+			if (data.Position.X < 0 || data.Position.Y < 0)
 			{
 				throw new IndexOutOfRangeException();
 			}
 
 
-			WorldObjectType type = PrefabManager.Prefabs[prefabName];
+			WorldObjectType type = PrefabManager.Prefabs[data.Prefab];
+			WorldObject WO = new WorldObject(data.Position,type,data.Id);
+			WO.Face(data.Facing);
 
-			
-			if (id == -1)
+			if (type.controllable != null && data.ControllableData != null)
 			{
-				id = GetNextId();
-
+				Controllable component = type.controllable.Instantiate(WO,data.ControllableData.Value.Team1);
+				WO.ControllableComponent = component;
 			}
 
-			WorldObject obj = type.InitialisePrefab(id, position, facing);
+
+
+
+			if (data.Id == -1)
+			{
+				data.Id = GetNextId();
+
+			}
+		
 
 			
-			WorldObjects.EnsureCapacity(id+1);			
-			WorldObjects[id] = obj;
+			WorldObjects.EnsureCapacity(data.Id+1);			
+			WorldObjects[data.Id] = WO;
 
-			return obj;
+			return WO;
+	
 
 		}
 
@@ -114,6 +128,12 @@ namespace MultiplayerXeno
 
 		public static void Update(float gameTime)
 		{
+
+			foreach (var obj in WorldObjects.Values)
+			{
+				obj.Update();
+			}
+
 			WipeGrid();
 			foreach (var obj in WorldObjects.Values)
 			{
@@ -208,7 +228,7 @@ namespace MultiplayerXeno
 				if (prefabData != null)
 					foreach (var worldObjectDatadata in prefabData)
 					{
-						MakeWorldObject(worldObjectDatadata.Prefab, worldObjectDatadata.Position, worldObjectDatadata.Facing, worldObjectDatadata.Id);
+						MakeWorldObject(worldObjectDatadata);
 					}
 			}
 				
@@ -225,22 +245,7 @@ namespace MultiplayerXeno
 		}
 
 	
-		[Serializable]
-		public partial struct WorldObjectData
-		{
-			public WorldObject.Direction Facing;
-			public int Id;
-			//health
-			public string Prefab;
-			public Vector2Int Position;
-			public WorldObjectData(string prefab, int id, Vector2Int position)
-			{
-				this.Prefab = prefab;
-				this.Id = id;
-				Position = position;
-				Facing = WorldObject.Direction.North;
-			}
-		}
+	
 		
 		
 	}

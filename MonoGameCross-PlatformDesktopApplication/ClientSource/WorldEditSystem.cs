@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MultiplayerXeno.Structs;
 
 namespace MultiplayerXeno
 {
@@ -17,7 +18,7 @@ namespace MultiplayerXeno
 
 
 		public static string ActivePrefab = "basicFloor";
-		public static WorldObject.Direction ActiveDir = WorldObject.Direction.North;
+		public static Direction ActiveDir = Direction.North;
 		public static void GenerateUI()
 		{
 			if(!enabled) return;

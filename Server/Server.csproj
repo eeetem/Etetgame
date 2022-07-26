@@ -34,31 +34,33 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MonoGameCross-PlatformDesktopApplication\MonoGameCross-PlatformDesktopApplication.csproj" />
       <ProjectReference Include="..\Packets\Packets.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Controllable.cs">
-        <Link>SharedSource\Controllable.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\StructsAndEnums\StructsAndEnums.cs">
+        <Link>SharedSource\StructsAndEnums\StructsAndEnums.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\GameManager.cs">
-        <Link>SharedSource\GameManager.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\Controllable.cs">
+        <Link>SharedSource\WorldObjects\Components\Controllable.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\ControllablePrefab.cs">
-        <Link>SharedSource\Prefabs\ControllablePrefab.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\ControllableType.cs">
+        <Link>SharedSource\WorldObjects\Components\ControllableType.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\PrefabManager.cs">
-        <Link>SharedSource\Prefabs\PrefabManager.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\GameManager.cs">
+        <Link>SharedSource\WorldObjects\GameManager.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Prefabs\WorldObjectType.cs">
-        <Link>SharedSource\Prefabs\WorldObjectType.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObject.cs">
-        <Link>SharedSource\WorldObject.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\WorldObjectType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\WorldObjectType.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjectManager.cs">
-        <Link>SharedSource\WorldObjectManager.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObject.cs">
+        <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObjectManager.cs">
+        <Link>SharedSource\WorldObjects\WorldObjectManager.cs</Link>
       </Compile>
     </ItemGroup>
 
