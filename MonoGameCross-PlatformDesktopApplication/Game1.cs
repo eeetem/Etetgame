@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MultiplayerXeno.Pathfinding;
 
 
 namespace MultiplayerXeno
@@ -31,12 +32,14 @@ namespace MultiplayerXeno
 		{
 		
 			Camera.Init(GraphicsDevice,Window);
-			WorldEditSystem.Init();
-			WorldObjectManager.Init(GraphicsDevice);
+			//WorldEditSystem.Init();
 
+			WorldManager.Init(GraphicsDevice);
+//
+			PathFinding.GenerateNodes();
 			base.Initialize();
+			UI.MainMenu();
 
-		//	UI.ConnectionMenu();
 		}
 
 		
@@ -47,7 +50,7 @@ namespace MultiplayerXeno
 		protected override void LoadContent()
 		{
 			
-			UI.Init();
+			UI.Init(Content,GraphicsDevice);
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			Textures.Add("basicFloor",Content.Load<Texture2D>("basicFloor"));
@@ -74,7 +77,8 @@ namespace MultiplayerXeno
 			
 			Camera.Update(gameTime);
 			WorldEditSystem.Update(gameTime);
-			WorldObjectManager.Update(gameTime.ElapsedGameTime.Milliseconds);
+			WorldManager.Update(gameTime.ElapsedGameTime.Milliseconds);
+			MouseManager.Update(gameTime);
 			
 			base.Update(gameTime);
 		}
@@ -84,9 +88,10 @@ namespace MultiplayerXeno
 		
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			WorldObjectManager.Draw(gameTime);
+			WorldManager.Draw(gameTime);
 			//GraphicsDevice.Clear(Color.Black);
-			UI.Desktop.Render();
+			UI.Render(gameTime.ElapsedGameTime.Milliseconds);
+
 			base.Draw(gameTime);
 		}
 

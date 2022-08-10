@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -6,7 +7,7 @@ using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno
 {
-	public partial class WorldObjectManager
+	public partial class WorldManager
 	{
 		
 		private static SpriteBatch spriteBatch;
@@ -16,15 +17,34 @@ namespace MultiplayerXeno
 
 			graphicsDevice = graphicsdevice;
 			spriteBatch = new SpriteBatch(graphicsDevice);
+			MouseManager.LeftClick += SelectAtPosition;
 			Init();
 		}
 
 	
+		private static void SelectAtPosition(Vector2Int position)
+		{
+			var Tile = GetTileAtGrid(position);
+
+			WorldObject obj = Tile.ObjectAtLocation;
+			if (obj!=null&&obj.ControllableComponent != null) { 
+				obj.ControllableComponent.Select(); 
+				return;
+			}
+			
+			
+			//if nothing was selected then it's a click on an empty tile
+			
+			Controllable.StartOrder(position);
+
+		}
+		
+		
 		
 		public static void Draw(GameTime gameTime)
 		{
 			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
-			foreach (var WO in WorldObjects.Values)
+			foreach (var WO in new List<WorldObject>(WorldObjects.Values))
 			{
 				if (DrawOrderSortedEntities[WO.Type.DrawLayer] == null)
 				{
@@ -43,9 +63,9 @@ namespace MultiplayerXeno
 				foreach (var worldObject in list)
 				{
 					var sprite = worldObject.GetSprite();
-					var transform = worldObject.Transform;
+					var transform = worldObject.Type.Transform;
 					
-					spriteBatch.Draw(sprite, transform.Position + WorldObjectManager.GridToWorldPos(worldObject.Position),transform.Rotation, transform.Scale);
+					spriteBatch.Draw(sprite, transform.Position + GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
 				}
 				spriteBatch.End();
 			}
@@ -69,7 +89,7 @@ namespace MultiplayerXeno
 
 
 
-				return (x.Transform.Position + new Vector2(rectx.Center.X,rectx.Center.Y) + GridToWorldPos(x.Position)).Y.CompareTo((y.Transform.Position + new Vector2(recty.Center.X,recty.Center.Y)+ GridToWorldPos(y.Position)).Y);
+				return (x.Type.Transform.Position + new Vector2(rectx.Center.X,rectx.Center.Y) + GridToWorldPos(x.TileLocation.Position)).Y.CompareTo((y.Type.Transform.Position + new Vector2(recty.Center.X,recty.Center.Y)+ GridToWorldPos(y.TileLocation.Position)).Y);
 			}
 		}
 	}

@@ -2,8 +2,9 @@
 using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
-using MultiplayerXeno.Structs;
+using CommonData;
 
 namespace MultiplayerXeno
 {
@@ -22,52 +23,44 @@ namespace MultiplayerXeno
 			{
 
 				string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
-				XmlNode cover = xmlObj.GetElementsByTagName("cover")[0];
-
-				Cover eastCover = Cover.None;
-				Cover westCover = Cover.None;
-				Cover southCover = Cover.None;
-				Cover northCover = Cover.None;
-				Cover northeastCover = Cover.None;
-				Cover northwestCover =Cover.None;
-				Cover southeastCover = Cover.None;
-				Cover southwestCover = Cover.None;
-				
-				
-				if (cover != null && cover.Attributes != null)
-				{
-					
-					 eastCover = (Cover) int.Parse(cover.Attributes["E"]?.InnerText ?? "0");
-					 westCover = (Cover)int.Parse(cover.Attributes["W"]?.InnerText ??  "0");
-					 southCover = (Cover)int.Parse(cover.Attributes["S"]?.InnerText ??  "0");
-					 northCover = (Cover)int.Parse(cover.Attributes["N"]?.InnerText ??  "0");
-					 northeastCover = (Cover)int.Parse(cover.Attributes["NE"]?.InnerText ?? "0");
-					 northwestCover = (Cover)int.Parse(cover.Attributes["NW"]?.InnerText ??  "0");
-					 southeastCover = (Cover)int.Parse(cover.Attributes["SE"]?.InnerText ??  "0");
-					 southwestCover = (Cover)int.Parse(cover.Attributes["SW"]?.InnerText ??  "0");
-
-					
-					
-				}
+			
 
 				ControllableType? controllableType = null;
 				XmlNode contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
 				if (contollableObj != null)
 				{
 					controllableType = new ControllableType();
-					controllableType.moveRange = int.Parse(contollableObj.Attributes["moveRange"].InnerText);
+					controllableType.moveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
 				}
 
 				WorldObjectType type = new WorldObjectType(name,controllableType);
 
 
 				bool faceable = true;
+				bool edge = false;
+				bool surface = false;
+				Cover cover = Cover.None;
 				if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
 				{
 					 faceable = bool.Parse(xmlObj?.Attributes?["Faceable"].InnerText);
 				}
+				if (xmlObj.HasAttributes && xmlObj.Attributes["Edge"] != null)
+				{
+					edge = bool.Parse(xmlObj?.Attributes?["Edge"].InnerText);
+				}
+				if (xmlObj.HasAttributes && xmlObj.Attributes["Surface"] != null)
+				{
+					surface = bool.Parse(xmlObj?.Attributes?["Surface"].InnerText);
+				}
+				if (xmlObj.HasAttributes && xmlObj.Attributes["Cover"] != null)
+				{
+					cover = (Cover)int.Parse(xmlObj?.Attributes?["Cover"].InnerText);
+				}
 
 				type.Faceable = faceable;
+				type.Cover = cover;
+				type.Edge = edge;
+				type.Surface = surface;
 
 
 #if CLIENT
@@ -84,32 +77,15 @@ namespace MultiplayerXeno
 
 #if CLIENT
 
-				type.Offset = WorldObjectManager.GridToWorldPos(Offset+ new Vector2(-0.5f,-0.5f));
+				type.Transform = new Transform2();
+				type.Transform.Position = WorldManager.GridToWorldPos(Offset+ new Vector2(-0.5f,-0.5f));
 				type.DrawLayer = drawlayer;
+		
 				
 				
 #endif
 
-				Dictionary<Direction, Cover> covers = new Dictionary<Direction, Cover>();
-
-
-				covers.Add(Direction.North, northCover);
-				covers.Add(Direction.South, southCover);
-				covers.Add(Direction.East, eastCover);
-				covers.Add(Direction.West, westCover);
-				covers.Add(Direction.SouthEast, southeastCover);
-				covers.Add(Direction.SouthWest, southwestCover);
-				covers.Add(Direction.NorthEast, northeastCover);
-				covers.Add(Direction.NorthWest, northwestCover);
-				
-				
-				
-				
-				
-				
-				
-				
-				type.Covers = covers;
+			
 				
 				Prefabs.Add(name,type);
 				

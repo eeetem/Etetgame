@@ -1,9 +1,10 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using MultiplayerXeno.Structs;
+
 
 
 namespace MultiplayerXeno
@@ -11,21 +12,36 @@ namespace MultiplayerXeno
 	public partial class WorldObject
 	{
 
-		public WorldObject(Vector2Int position, WorldObjectType type, int id)
+		public WorldObject(WorldObjectType type, int id, WorldTile tileLocation)
 		{
 
 			this.Id = id;
-			Position = position;
+			TileLocation = tileLocation;
 			this.Type = type;
-#if CLIENT
-			Transform = new Transform2();
-#endif
+	
+
 		}
 
+		public WorldTile TileLocation;
 		public Controllable? ControllableComponent { get;  set; }
 
 		public readonly int Id;
 
+
+		public void Move(Vector2Int position)
+		{
+			if (Type.Edge || Type.Surface)
+			{
+				throw new Exception("attempted to  move and  edge or surface");
+			}
+
+			TileLocation.ObjectAtLocation = null;
+			var newTile = WorldManager.GetTileAtGrid(position);
+			newTile.ObjectAtLocation = this;
+			TileLocation = newTile;
+
+
+		}
 
 		public void Face(Direction dir)
 		{
@@ -47,12 +63,12 @@ namespace MultiplayerXeno
 			Facing = dir;
 		}
 
-		public void Update()
+		public void Update(float gametime)
 		{
 
 			if (ControllableComponent != null)
 			{
-				ControllableComponent.Update();
+				ControllableComponent.Update(gametime);
 			}
 		}
 
@@ -60,20 +76,27 @@ namespace MultiplayerXeno
 	
 		public Direction Facing { get; private set;}
 
-	
 
-		public Vector2Int Position { get;  set; }
-		
-
-		public Cover GetCover(Direction dir)
+		public Cover GetCover()
 		{
-			Direction resulting = dir - (int) Facing;
-			if (resulting < 0)
+
+			return Type.Cover;
+
+		}
+
+
+		public WorldObjectData GetData()
+		{
+			WorldObjectData data = new WorldObjectData(Type.TypeName);
+			data.Facing = this.Facing;
+			data.Id = this.Id;
+			if (ControllableComponent != null)
 			{
-				resulting += 8;
+				ControllableData cdata = new ControllableData(ControllableComponent.IsPlayerOneTeam);
+				data.ControllableData = cdata;
 			}
 
-			return Type.Covers[resulting];
+			return data;
 
 		}
 

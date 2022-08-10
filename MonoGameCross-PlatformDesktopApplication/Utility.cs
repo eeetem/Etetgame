@@ -99,7 +99,13 @@ namespace MultiplayerXeno
             return colors2D;
         }
 
-  
+
+        public static Texture2D[] SplitTexture(Texture2D texture, int partWidth, int partHeight)
+        {
+            int xout = 0;
+            int yout = 0;
+            return  SplitTexture(texture, partWidth, partHeight, out xout, out yout);
+        }
     }
     
     

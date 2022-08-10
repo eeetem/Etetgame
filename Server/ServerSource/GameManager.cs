@@ -1,5 +1,6 @@
 ﻿using System;
-using Packets;
+using System.Threading;
+using CommonData;
 namespace MultiplayerXeno
 {
 	public static partial class GameManager
@@ -8,12 +9,7 @@ namespace MultiplayerXeno
 		public static Client? Player2;
 
 		
-		public static void NextTurn()
-		{
-			IsPlayer1Turn = !IsPlayer1Turn;
-
-			SendData();
-		}
+	
 
 		public static void StatGame()
 		{
@@ -22,7 +18,15 @@ namespace MultiplayerXeno
 				return;
 			}
 
-		
+			
+			//not a fan of this, should probably be made a single function
+			ControllableData cdata = new ControllableData(true);
+			WorldManager.MakeWorldObjectPublically("human", new Vector2Int(1, 1),controllableData:cdata);
+
+
+			cdata = new ControllableData(false);
+			WorldManager.MakeWorldObjectPublically("human", new Vector2Int(5, 5),controllableData:cdata);
+
 		}
 
 		public static void SendData()
@@ -30,13 +34,18 @@ namespace MultiplayerXeno
 			GameDataPacket packet = new GameDataPacket
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
-				
+				IsPlayerOne = true
 			};
-			Console.WriteLine("turn: "+IsPlayer1Turn);
+			
 
-			packet.IsPlayerOne = true;
+			//packet.
 			Player1?.Connection.Send(packet);
-			packet.IsPlayerOne = false;
+			
+			packet = new GameDataPacket
+			{
+				IsPlayer1Turn = IsPlayer1Turn,
+				IsPlayerOne = false
+			};
 			Player2?.Connection.Send(packet);
 		}
 	}

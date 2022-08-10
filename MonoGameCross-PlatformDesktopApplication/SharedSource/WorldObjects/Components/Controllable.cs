@@ -1,9 +1,15 @@
-﻿#nullable enable
-using MultiplayerXeno.Structs;
+﻿using System.Collections.Generic;
+using System.Linq;
+using CommonData;
+using Microsoft.Xna.Framework;
+using MultiplayerXeno.Pathfinding;
+
+#nullable enable
+
 
 namespace MultiplayerXeno
 {
-	public  class Controllable
+	public partial class Controllable
 	{
 		private WorldObject Parent;
 		private ControllableType Type;
@@ -24,11 +30,51 @@ namespace MultiplayerXeno
 
 		}
 
-		public void Move(Vector2Int pos)
-		{
-			Parent.Position = pos;
-			hasMoved = true;
 
+		public void MoveAction(Vector2Int position)
+		{
+			if(hasMoved) return;
+			
+			List<Vector2Int> path = PathFinding.GetPath(this.Parent.TileLocation.Position, position);
+			if (path.Count == 0)
+			{
+				#if CLIENT
+				Selected = null;
+				#endif
+				return;//no path
+			}
+
+			if (path.Count > this.Type.moveRange)
+			{
+#if CLIENT
+				Selected = null;
+#endif
+				return; // too far
+			}
+
+			
+			//todo move animation
+			
+			var packet = new MovementPacket(Parent.Id,path);
+
+			Networking.DoAction(packet);
+			//we only move as server - as client we send the action, let server verify it and then the server will force us to do the action
+			#if SERVER
+			Move(path);
+			#endif
+
+
+		}
+
+		private List<Vector2Int> CurrentPath;
+		private bool moving;
+		private float MoveCounter;
+		public void Move(List<Vector2Int> path)
+		{
+			if(hasMoved) return;
+			hasMoved = true;
+			moving = true;
+			CurrentPath = path;
 		}
 
 		public void EndTurn()
@@ -36,9 +82,25 @@ namespace MultiplayerXeno
 			
 			
 		}
-		public void Update()
+		public void Update(float gameTime)
 		{
-			
+			if (moving)
+			{
+				MoveCounter += gameTime;
+				if (MoveCounter > 1000)
+				{
+					MoveCounter = 0;
+
+					Parent.Face(WorldManager.Vec2ToDir(CurrentPath[0] - Parent.TileLocation.Position ));
+					Parent.Move(CurrentPath[0]);
+					CurrentPath.RemoveAt(0);
+					if (CurrentPath.Count == 0)
+					{
+						moving = false;
+					}
+				}
+			}
+
 		}
 	}
 }

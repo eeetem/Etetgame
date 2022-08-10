@@ -8,7 +8,7 @@ namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
-		public Transform2 Transform;
+		
 		public Sprite GetSprite()
 		{
 			return Type.spriteSheet[(int)Facing];

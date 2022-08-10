@@ -1,8 +1,26 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace MultiplayerXeno.Structs
+namespace CommonData
 {
+	
+	[Serializable]
+	public partial struct WorldTileData
+	{
+		public WorldObjectData? NorthEdge;
+		public WorldObjectData? WestEdge;
+		public WorldObjectData? ObjectAtLocation;
+		public WorldObjectData? Surface;
+		public Vector2Int position;
+		public WorldTileData(Vector2Int position)
+		{
+			this.position = position;
+			NorthEdge = null;
+			WestEdge = null;
+			ObjectAtLocation = null;
+			Surface = null;
+		}
+	}
 	[Serializable]
 	public partial struct WorldObjectData
 	{
@@ -10,13 +28,11 @@ namespace MultiplayerXeno.Structs
 		public int Id;
 		//health
 		public string Prefab;
-		public Vector2Int Position;
 		public ControllableData? ControllableData;
-		public WorldObjectData(string prefab, int id, Vector2Int position)
+		public WorldObjectData(string prefab)
 		{
 			this.Prefab = prefab;
-			this.Id = id;
-			Position = position;
+			this.Id = -1;
 			Facing = Direction.North;
 			ControllableData = null;
 		}
@@ -51,7 +67,7 @@ namespace MultiplayerXeno.Structs
 			
 	}
 	[Serializable]
-	public struct Vector2Int
+	public class Vector2Int//should be a struct but networking library is cringe once again
 	{
 		public bool Equals(Vector2Int other)
 		{
@@ -68,8 +84,19 @@ namespace MultiplayerXeno.Structs
 			return HashCode.Combine(X, Y);
 		}
 
-		public int X;
-		public int Y;
+		public static double SqrDistance(Vector2Int from, Vector2Int to)
+		{
+			int x = from.X - to.X;
+			int y = from.Y - to.Y;
+			return y * y + x * x;
+
+		}
+	
+
+		public int X { get; set; }
+		public int Y { get; set; }
+
+
 
 		public Vector2Int(int x, int y)
 		{
@@ -82,6 +109,12 @@ namespace MultiplayerXeno.Structs
 			=> new Vector2Int(a.X*b, a.Y*b);
 		public static Vector2 operator+(Vector2 a, Vector2Int b)
 			=> new Vector2(a.X+b.X, a.Y+b.Y);
+		
+		public static Vector2Int operator+(Vector2Int a, Vector2Int b)
+			=> new Vector2Int(a.X+b.X, a.Y+b.Y);
+		
+		public static Vector2Int operator-(Vector2Int a, Vector2Int b)
+			=> new Vector2Int(a.X-b.X, a.Y-b.Y);
 		public static bool operator ==(Vector2Int lhs, Vector2Int rhs) => (lhs.X == rhs.X)&&(lhs.Y == rhs.Y);
 
 		public static bool operator !=(Vector2Int lhs, Vector2Int rhs) => !(lhs == rhs);
@@ -90,5 +123,13 @@ namespace MultiplayerXeno.Structs
 		{
 			return "{X: " + X + " Y:" + Y + "}";
 		}
+	
+		public void Deconstruct(out int X, out int Y)
+		{
+			X = this.X;
+			Y = this.Y;
+		}
+		
+	
 	}
 }

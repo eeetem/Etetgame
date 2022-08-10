@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 
-<object Faceable = "false">
+<object Faceable = "false" Cover ="0" Surface = "true">
   <sprite layer = "0" offset= "0,0"/>
-  <cover E="0" W="0" S="0" N="0"/>
   <name>basicFloor</name>
 </object> 
-<object>
+<object Cover = "4" Edge = "true">
   <sprite layer = "2" offset= "0,0"/>
-  <cover N="4"/>
   <name>basicWall</name>
 </object>
-  <object Faceable = "true">
-    <sprite layer = "1" offset= "0,0"/>
-    <cover E="0" W="0" S="0" N="0"/>
+  <object Faceable = "true" Cover ="3">
+    <sprite layer = "2" offset= "0,0"/>
     <name>Human</name>
     <controllable moveRange = "4">
-      
     </controllable>
   </object>
 </root>

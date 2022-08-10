@@ -7,7 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
       <PackageReference Include="Network" Version="6.2.5.23" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="StructsAndEnums.cs">
+        <Link>SharedSource\StructsAndEnums\StructsAndEnums.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

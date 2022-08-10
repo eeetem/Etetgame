@@ -1,13 +1,17 @@
 ﻿using System;
 using Network.Packets;
 
-namespace Packets
+namespace CommonData
 {
 	public class GameActionPacket : Packet
 	{
 		public ActionType Type { get; set; }
 		
-		
+		public GameActionPacket()
+		{
+			
+		}
+
 		public override void BeforeReceive()
 		{
 		
@@ -17,15 +21,18 @@ namespace Packets
 		{
 
 		}
+		
 	}
 
 	public enum ActionType
 	{
-		Move=0,
+		EndTurn=0,
 		Attack=1,
-		EndTurn=2
+		Move=2
 	}
-	
-	
-	
+
+
+
+
+
 }

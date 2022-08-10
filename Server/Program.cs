@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Threading;
 using Microsoft.Xna.Framework;
+using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 {
@@ -15,11 +18,12 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		static void Main(string[] args)
 		{
 			Console.WriteLine("Hello World!");
+			PrefabManager.MakePrefabs();
 			Networking.Start();
-			
+			PathFinding.GenerateNodes();
 
-			WorldObjectManager.Init();
-
+			WorldManager.Init();
+			WorldManager.LoadData(File.ReadAllBytes("map.mapdata"));
 			
 			UpdateLoop();
 			
@@ -32,7 +36,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				stopWatch.Restart();
 
 
-				WorldObjectManager.Update(MSperTick);
+				WorldManager.Update(MSperTick);
 		
 
 				stopWatch.Stop();

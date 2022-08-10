@@ -2,6 +2,7 @@
 using System.Security;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
 
 
@@ -10,7 +11,7 @@ namespace MultiplayerXeno
 	public partial class WorldObjectType
 	{
 
-		public Vector2 Offset =Vector2.Zero;
+		public Transform2 Transform;
 		public int DrawLayer = 0;
 		public Sprite[] spriteSheet;
 	
@@ -20,6 +21,7 @@ namespace MultiplayerXeno
 			if (!Faceable)
 			{
 				spriteSheet = new[] {new Sprite(texture)};
+				return;
 			}
 
 			spriteSheet = new Sprite[8];

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using Microsoft.Xna.Framework;
-using Packets;
+
+using CommonData;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -24,13 +27,23 @@ namespace MultiplayerXeno
 			serverConnectionContainer.ConnectionLost += (a, b, c) => Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Port}. Reason {c.ToString()}");
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
 			serverConnectionContainer.AllowUDPConnections = true;
-			
-			
-			
-	
+
+
+
+
 			serverConnectionContainer.Start();
-		}
 		
+		}
+
+		public static void Kick(string reason,Connection connection)
+		{
+			connection.SendRawData(RawDataConverter.FromUnicodeString("notify",reason));
+			Thread.Sleep(1000);
+			connection.Close(CloseReason.ClientClosed);
+		}
+
+
+
 		/// <summary>
 		/// We got a connection.
 		/// </summary>
@@ -38,12 +51,13 @@ namespace MultiplayerXeno
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
 			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
-
+			connection.EnableLogging = true;
 			
-			
-			connection.RegisterRawDataHandler("mapDownload",SendMapData);
+		//	connection.RegisterRawDataHandler("mapDownload",SendMapData);
 			connection.RegisterRawDataHandler("register",RegisterClient);
+			
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
+			connection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
 			//3. Register packet listeners.
 			//connection.RegisterRawDataHandler("HelloWorld", (rawData, con) => Console.WriteLine($"RawDataPacket received. Data: {rawData.ToUTF8String()}"));
 		
@@ -59,6 +73,12 @@ namespace MultiplayerXeno
 			}
 			else if (GameManager.Player1.Name == name)
 			{
+				if (GameManager.Player1.Connection.IsAlive)
+				{
+					Kick("Player with same name is already in the game",connection);
+					return;
+				}
+
 				GameManager.Player1.Connection = connection;//reconnection
 			}
 			else if (GameManager.Player2 == null)
@@ -68,22 +88,52 @@ namespace MultiplayerXeno
 			}
 			else if (GameManager.Player2.Name == name)
 			{
+				if (GameManager.Player2.Connection.IsAlive)
+				{
+					Kick("Player with same name is already in the game",connection);
+					return;
+				}
 				GameManager.Player2.Connection = connection;//reconnection
 			}
 			else
 			{
-				connection.Close(CloseReason.ClientClosed);//kick extra connections
+				Kick("Server Full",connection);
+				return;
 			}
 
 			GameManager.SendData();
+			SendMapData(connection);
+			
+			GameManager.StatGame();//will only go through if 2 palyers are present
 
 
 		}
 
-//since this is just a request we dont read raw data at all
-		private static void SendMapData(RawData rawData, Connection connection)
+		public static void SendTileUpdate(WorldTile wo)
 		{
-			byte[] mapData = File.ReadAllBytes("map.mapdata");
+			WorldTileData worldTileData = wo.GetData();
+
+			using (MemoryStream stream = new MemoryStream())
+			{
+				BinaryFormatter bf = new BinaryFormatter();
+				bf.Serialize(stream,worldTileData);
+				GameManager.Player1?.Connection.SendRawData("TileUpdate",stream.ToArray());
+				GameManager.Player2?.Connection.SendRawData("TileUpdate",stream.ToArray());
+			}
+			
+			
+			
+
+		}
+
+//since this is just a request we dont read raw data at all
+	
+		
+
+		private static void SendMapData(Connection connection)
+		{
+			WorldManager.SaveData("temp.mapdata");
+			byte[] mapData = File.ReadAllBytes("temp.mapdata");
 			connection.SendRawData("mapUpdate", mapData);
 
 		}
@@ -108,13 +158,18 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			if (packet.Type == ActionType.EndTurn)
-			{
-				GameManager.NextTurn();
-			}
-			
-			
-			
+			GameManager.ParsePacket(packet);
+
+
+
+
+		}
+
+		public static void DoAction(GameActionPacket packet)
+		{
+			GameManager.Player1?.Connection.Send(packet);
+			GameManager.Player2?.Connection.Send(packet);
+
 		}
 	}
 }

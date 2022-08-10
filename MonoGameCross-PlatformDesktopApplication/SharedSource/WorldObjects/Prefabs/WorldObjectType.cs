@@ -3,7 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
-using MultiplayerXeno.Structs;
+using CommonData;
+
 
 namespace MultiplayerXeno
 {
@@ -16,16 +17,18 @@ namespace MultiplayerXeno
 			TypeName = name;
 			if (controllableType != null)
 			{
-				controllable = controllableType;
+				Controllable = controllableType;
 			}
 			
 		}
 
-		public Dictionary<Direction, Cover> Covers  = new Dictionary<Direction, Cover>();
+		public Cover Cover;
 
-		public readonly ControllableType? controllable;
+		public readonly ControllableType? Controllable;
 
 
 		public bool Faceable { get; set; }
+		public bool Edge { get; set; }
+		public bool Surface { get; set; }
 	}
 }

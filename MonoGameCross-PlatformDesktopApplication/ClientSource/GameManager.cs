@@ -1,5 +1,5 @@
 ﻿using System;
-using Packets;
+using CommonData;
 namespace MultiplayerXeno
 {
 	public static partial class GameManager
@@ -29,7 +29,6 @@ namespace MultiplayerXeno
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
 			GameActionPacket packet = new GameActionPacket();
-			packet.Type = ActionType.EndTurn;
 			Networking.serverConnection.Send(packet);
 
 		}

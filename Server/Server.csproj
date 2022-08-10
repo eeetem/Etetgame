@@ -17,38 +17,37 @@
 
     <ItemGroup>
       <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
-      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
+      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
       <PackageReference Include="Network" Version="6.2.5.23" />
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="..\MonoGameCross-PlatformDesktopApplication\map.mapdata">
+        <Link>map.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
         <Link>ObjectData.xml</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="map.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+      <ProjectReference Include="..\CommonData\CommonData.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Packets\Packets.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\StructsAndEnums\StructsAndEnums.cs">
-        <Link>SharedSource\StructsAndEnums\StructsAndEnums.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\GameManager.cs">
+        <Link>SharedSource\GameManager.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\PathFinding.cs">
+        <Link>SharedSource\PathFinding.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\Controllable.cs">
         <Link>SharedSource\WorldObjects\Components\Controllable.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\ControllableType.cs">
         <Link>SharedSource\WorldObjects\Components\ControllableType.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\GameManager.cs">
-        <Link>SharedSource\WorldObjects\GameManager.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
@@ -59,8 +58,11 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObjectManager.cs">
-        <Link>SharedSource\WorldObjects\WorldObjectManager.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldManager.cs">
+        <Link>SharedSource\World\WorldManager.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldTile.cs">
+        <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
     </ItemGroup>
 

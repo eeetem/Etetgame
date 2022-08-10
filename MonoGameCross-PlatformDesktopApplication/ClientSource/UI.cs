@@ -1,4 +1,9 @@
 ﻿using System.IO;
+using CommonData;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Myra;
 using Myra.Graphics2D.UI;
 
@@ -7,21 +12,70 @@ namespace MultiplayerXeno
 	public static class UI
 	{
 		public static Desktop Desktop;
-		public static void Init()
+		private static SpriteBatch spriteBatch;
+		private static GraphicsDevice graphicsDevice;
+		private static Texture2D[] coverIndicator = new Texture2D[8];
+
+		public static void Init(ContentManager content, GraphicsDevice graphicsdevice)
 		{
-				
+			graphicsDevice = graphicsdevice;
+			spriteBatch = new SpriteBatch(graphicsDevice);
 			MyraEnvironment.Game = Game1.instance;
 
 			
 			Desktop = new Desktop();
-			
+
+			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("coverIndicator");
+
+			coverIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 3, indicatorSpriteSheet.Width / 3);
+
 		}
 
-		public static void PopUp(string title, string content)
+
+
+		public static void MainMenu()
 		{
+			var grid = new Grid
+			{
+				RowSpacing = 8,
+				ColumnSpacing = 8
+			};
+		
+	
+			var button = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 1,
+				Text = "Join Server"
+			};
+
+			button.Click += (s, a) =>
+			{
+				ConnectionMenu();
+			};
+
+			grid.Widgets.Add(button);
 			
-			var messageBox = Dialog.CreateMessageBox(title,content);
-			messageBox.ShowModal(Desktop);
+			var button2 = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 2,
+				Text = "Map Editor"
+			};
+
+			button2.Click += (s, a) =>
+			{
+				WorldEditSystem.Init();
+				WorldEditSystem.GenerateUI();
+			};
+
+			grid.Widgets.Add(button2);
+
+
+
+			Desktop.Root = grid;
+
+			
 		}
 
 		public static void ConnectionMenu()
@@ -62,17 +116,16 @@ namespace MultiplayerXeno
 				bool result = Networking.Connect(textBox.Text,textBox2.Text);
 				if (result)
 				{
-					var messageBox = Dialog.CreateMessageBox("Connection Notice","Connected to server!");
-					messageBox.ShowModal(Desktop);
+					ShowMessage("Connection Notice","Connected to server!");
+					
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
 					GameUi();
 				}
 				else
 				{
-					var messageBox = Dialog.CreateMessageBox("Connection Notice","Failed to connect");
-					messageBox.ShowModal(Desktop);
-					
+					ShowMessage("Connection Notice","Failed to connect");
+
 				}
 	
 			};
@@ -86,7 +139,14 @@ namespace MultiplayerXeno
 
 
 		}
-		
+
+		public static void ShowMessage(string title, string content)
+		{
+			var messageBox = Dialog.CreateMessageBox(title,content);
+			messageBox.ShowModal(Desktop);
+
+		}
+
 		public static void EditorMenu()
 		{
 			
@@ -129,7 +189,7 @@ namespace MultiplayerXeno
 
 			save.Click += (s, a) =>
 			{ 
-				WorldObjectManager.SaveData();
+				WorldManager.SaveData("map.mapdata");
 			};
 			
 			var load = new TextButton
@@ -141,7 +201,7 @@ namespace MultiplayerXeno
 
 			load.Click += (s, a) =>
 			{ 
-				WorldObjectManager.LoadData(File.ReadAllBytes("map.mapdata"));
+				WorldManager.LoadData(File.ReadAllBytes("map.mapdata"));
 			};
 			grid.Widgets.Add(save);
 			grid.Widgets.Add(load);
@@ -177,6 +237,37 @@ namespace MultiplayerXeno
 			
 			Desktop.Root = grid;
 			
+			
+			
+		}
+
+		public static void Render(float deltaTime)
+		{
+			UI.Desktop.Render();
+			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
+			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0) return;
+			var Mousepos = WorldManager.GridToWorldPos(TileCoordinate + new Vector2(-2f,-1f));
+			for (int i = 0; i < 8; i++)
+			{
+				var indicator = coverIndicator[i];
+				Color c = Color.White;
+				switch (WorldManager.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
+				{
+					case Cover.Full:
+						c = Color.Red;
+						break;
+					case Cover.High:
+						c = Color.Yellow;
+						break;
+					case Cover.Low:
+						c = Color.Green;
+						break;
+				}
+					
+				spriteBatch.Draw(indicator, Mousepos,c);
+			}
+			spriteBatch.End();
 			
 			
 		}
