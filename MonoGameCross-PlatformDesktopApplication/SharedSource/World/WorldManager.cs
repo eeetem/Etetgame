@@ -7,7 +7,7 @@ using System.Xml;
 using CommonData;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-
+using MultiplayerXeno.Pathfinding;
 
 
 namespace MultiplayerXeno
@@ -83,7 +83,7 @@ namespace MultiplayerXeno
 				case (1, 1):
 					return Direction.SouthEast;
 				case (-1, -1):
-					return Direction.North;
+					return Direction.NorthWest;
 			}
 
 			throw new Exception("incorrect vector");
@@ -126,19 +126,19 @@ namespace MultiplayerXeno
 			tile.Wipe();
 			if (data.Surface != null)
 			{
-				tile.Surface = MakeWorldObject((WorldObjectData)data.Surface, tile);
+				MakeWorldObject((WorldObjectData)data.Surface, tile);
 			}
 			if (data.NorthEdge != null)
 			{
-				tile.NorthEdge = MakeWorldObject((WorldObjectData)data.NorthEdge, tile);
+				MakeWorldObject((WorldObjectData)data.NorthEdge, tile);
 			}
 			if (data.ObjectAtLocation != null)
 			{
-				tile.ObjectAtLocation = MakeWorldObject((WorldObjectData)data.ObjectAtLocation, tile);
+				MakeWorldObject((WorldObjectData)data.ObjectAtLocation, tile);
 			}
 			if (data.WestEdge != null)
 			{
-				tile.WestEdge = MakeWorldObject((WorldObjectData)data.WestEdge, tile);
+				MakeWorldObject((WorldObjectData)data.WestEdge, tile);
 			}
 
 
@@ -243,8 +243,10 @@ namespace MultiplayerXeno
 		}
 
 		
-		public static void DeleteWorldObject(WorldObject obj)
+		public static void DeleteWorldObject(WorldObject? obj)
 		{
+			if(obj == null) return;
+			
 			DeleteWorldObject(obj.Id);
 		}
 
@@ -313,6 +315,21 @@ namespace MultiplayerXeno
 			{
 				obj.Update(gameTime);
 			}
+			
+			
+			#if CLIENT
+			if (Controllable.Selected != null)
+			{
+
+
+				Vector2Int currentPos = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
+				if (LastMousePos !=currentPos)
+				{
+					PreviewPath = PathFinding.GetPath(Controllable.Selected.Parent.TileLocation.Position, currentPos);
+					LastMousePos = currentPos;
+				}
+			}
+#endif
 
 		//	WipeGrid();
 		//	foreach (var obj in new List<WorldObject>(WorldObjects.Values))
@@ -409,7 +426,7 @@ namespace MultiplayerXeno
 			
 		}
 
-		
+
 	}
 
 

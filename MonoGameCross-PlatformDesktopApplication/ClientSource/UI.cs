@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MultiplayerXeno.Pathfinding;
 using Myra;
 using Myra.Graphics2D.UI;
+using Network;
 
 namespace MultiplayerXeno
 {
@@ -113,8 +115,8 @@ namespace MultiplayerXeno
 
 			button.Click += (s, a) =>
 			{
-				bool result = Networking.Connect(textBox.Text,textBox2.Text);
-				if (result)
+				ConnectionResult result = Networking.Connect(textBox.Text.Trim(),textBox2.Text.Trim());
+				if (result == ConnectionResult.Connected)
 				{
 					ShowMessage("Connection Notice","Connected to server!");
 					
@@ -124,7 +126,7 @@ namespace MultiplayerXeno
 				}
 				else
 				{
-					ShowMessage("Connection Notice","Failed to connect");
+					ShowMessage("Connection Notice","Failed to connect: "+result);
 
 				}
 	
@@ -252,7 +254,7 @@ namespace MultiplayerXeno
 			{
 				var indicator = coverIndicator[i];
 				Color c = Color.White;
-				switch (WorldManager.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
+				switch ((Cover)WorldManager.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
 				{
 					case Cover.Full:
 						c = Color.Red;
@@ -268,6 +270,35 @@ namespace MultiplayerXeno
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
+			if(WorldManager.PreviewPath == null) return;
+			
+			foreach (var path in WorldManager.PreviewPath)
+			{
+				spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+				if(path.X < 0 || path.Y < 0) return;
+				Mousepos = WorldManager.GridToWorldPos(path + new Vector2(-2f,-1f));
+				for (int i = 0; i < 8; i++)
+				{
+					var indicator = coverIndicator[i];
+					Color c = Color.White;
+					switch ((Cover)WorldManager.GetTileAtGrid(path).GetCover((Direction)i))
+					{
+						case Cover.Full:
+							c = Color.Red;
+							break;
+						case Cover.High:
+							c = Color.Yellow;
+							break;
+						case Cover.Low:
+							c = Color.Green;
+							break;
+					}
+					
+					spriteBatch.Draw(indicator, Mousepos,c);
+				}
+				spriteBatch.End();
+			}
+		
 			
 			
 		}

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using Microsoft.Xna.Framework;
@@ -20,18 +21,17 @@ namespace MultiplayerXeno
 		public static void Start()
 		{
 			//1. Start listen on a portw
-			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(5555, false);
-
-			//2. Apply optional settings.
-
-			serverConnectionContainer.ConnectionLost += (a, b, c) => Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Port}. Reason {c.ToString()}");
+			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(52233, false);
+	
+			serverConnectionContainer.ConnectionLost += (a, b, c) => Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
 			serverConnectionContainer.AllowUDPConnections = true;
 
 
-
-
+	
 			serverConnectionContainer.Start();
+			
+			Console.WriteLine("Started server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
 		
 		}
 

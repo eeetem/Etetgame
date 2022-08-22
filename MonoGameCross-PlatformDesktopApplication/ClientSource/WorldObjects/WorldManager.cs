@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
+using Network;
 
 namespace MultiplayerXeno
 {
@@ -21,7 +22,8 @@ namespace MultiplayerXeno
 			Init();
 		}
 
-	
+		private static Vector2Int LastMousePos;
+		public static List<Vector2Int> PreviewPath;
 		private static void SelectAtPosition(Vector2Int position)
 		{
 			var Tile = GetTileAtGrid(position);
@@ -38,9 +40,34 @@ namespace MultiplayerXeno
 			Controllable.StartOrder(position);
 
 		}
+
+		public static void CalculateFov()
+		{
+			foreach (var tile in gridData)
+			{
+				tile.IsVisible = false;
+			}
+
+			foreach (var obj in WorldObjects.Values)
+			{
+				if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
+				{
+					Vector2Int pos = obj.TileLocation.Position;
 		
-		
-		
+					while (true)
+					{
+						if(!IsPositionValid(pos))return;
+						GetTileAtGrid(pos).IsVisible = true;
+						if(GetTileAtGrid(pos).GetCover(obj.Facing) == Cover.Full) break;
+						pos += DirToVec2(obj.Facing);
+						
+					}
+
+				}
+			}
+		}
+
+
 		public static void Draw(GameTime gameTime)
 		{
 			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
@@ -64,10 +91,24 @@ namespace MultiplayerXeno
 				{
 					var sprite = worldObject.GetSprite();
 					var transform = worldObject.Type.Transform;
-					
+					Color c = Color.White;
+					if (!worldObject.TileLocation.IsVisible)
+					{
+						c = Color.DarkGray;
+						if (worldObject.TileLocation.ObjectAtLocation == worldObject)
+						{
+							continue;
+						}
+					}
+
+					sprite.Color = c;
+
 					spriteBatch.Draw(sprite, transform.Position + GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
 				}
 				spriteBatch.End();
+
+
+			
 			}
 
 			

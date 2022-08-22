@@ -115,7 +115,7 @@ namespace CommonData
 		
 		public static Vector2Int operator-(Vector2Int a, Vector2Int b)
 			=> new Vector2Int(a.X-b.X, a.Y-b.Y);
-		public static bool operator ==(Vector2Int lhs, Vector2Int rhs) => (lhs.X == rhs.X)&&(lhs.Y == rhs.Y);
+		public static bool operator ==(Vector2Int lhs, Vector2Int rhs) => (lhs?.X == rhs?.X)&&(lhs?.Y == rhs?.Y);
 
 		public static bool operator !=(Vector2Int lhs, Vector2Int rhs) => !(lhs == rhs);
 

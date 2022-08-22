@@ -13,14 +13,7 @@ namespace MultiplayerXeno
 
 			IsPlayer1Turn = data.IsPlayer1Turn;
 			IsPlayer1 = data.IsPlayerOne;
-			if (IsPlayer1 != IsPlayer1Turn)
-			{
-				Console.WriteLine("It's enemy turn");
-			}
-			else
-			{
-				Console.WriteLine("It's my turn");
-			}
+
 
 		}
 

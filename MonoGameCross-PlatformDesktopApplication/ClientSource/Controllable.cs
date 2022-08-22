@@ -9,10 +9,15 @@ namespace MultiplayerXeno
 	{
 		public static Controllable Selected { get; set; }
 
+		public bool IsMyTeam()
+		{
+			return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
+		}
+
 		public void Select()
 		{
 
-			if (GameManager.IsPlayer1 == this.IsPlayerOneTeam)
+			if (IsMyTeam())
 			{
 				//ui.fullUI
 				

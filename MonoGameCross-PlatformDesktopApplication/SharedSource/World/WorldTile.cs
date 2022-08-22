@@ -1,10 +1,11 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using CommonData;
 using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno
 {
-	public class WorldTile
+	public partial class WorldTile
 	{
 		public readonly Vector2Int Position;
 
@@ -13,11 +14,16 @@ namespace MultiplayerXeno
 			this.Position = position;
 		}
 
-		private WorldObject _northEdge;
-		public WorldObject NorthEdge{
+		private WorldObject? _northEdge;
+		public WorldObject? NorthEdge{
 			get => _northEdge;
 			set
 			{
+				if (value == null)
+				{
+					_northEdge = null;
+				}
+
 				if (value != null && (!value.Type.Edge || value.Type.Surface))
 					throw new Exception("attempted non edge to edge");
 				if (_northEdge != null)
@@ -28,11 +34,15 @@ namespace MultiplayerXeno
 				_northEdge = value;
 			}
 		}
-		private WorldObject _westEdge;
-		public WorldObject WestEdge 	{
+		private WorldObject? _westEdge;
+		public WorldObject? WestEdge 	{
 			get => _westEdge;
 			set
 			{
+				if (value == null)
+				{
+					_westEdge = null;
+				}
 				if (value != null && (!value.Type.Edge || value.Type.Surface))
 					throw new Exception("attempted non edge to edge");
 				if (_westEdge != null)
@@ -43,12 +53,17 @@ namespace MultiplayerXeno
 				_westEdge = value;
 			}
 		}
-		private WorldObject _objectAtLocation;
-		public WorldObject ObjectAtLocation
+		private WorldObject? _objectAtLocation;
+		public WorldObject? ObjectAtLocation
 		{
 			get => _objectAtLocation;
 			set
 			 {
+				 
+				 if (value == null)
+				 {
+					 _objectAtLocation = null;
+				 }
 				 if (value != null && (value.Type.Edge || value.Type.Surface))
 					 throw new Exception("attempted to set a surface or edge to the main location");
 				 if (_objectAtLocation != null)
@@ -59,11 +74,15 @@ namespace MultiplayerXeno
 				 _objectAtLocation = value;
 			 }
 		}
-		private WorldObject _surface;
-		public WorldObject Surface{
+		private WorldObject? _surface;
+		public WorldObject? Surface{
 			get => _surface;
 			set
 			{
+				if (value == null)
+				{
+					_surface = null;
+				}
 				if (value != null && (value.Type.Edge || !value.Type.Surface))
 					throw new Exception("attempted to set a nonsurface to surface");
 				if (_surface != null)
@@ -86,19 +105,19 @@ namespace MultiplayerXeno
 
 		public void Remove(int id)
 		{
-			if (NorthEdge.Id == id)
+			if (NorthEdge != null && NorthEdge.Id == id)
 			{
 				NorthEdge = null;
 			}
-			if (WestEdge.Id == id)
+			if (WestEdge != null && WestEdge.Id == id)
 			{
 				WestEdge = null;
 			}
-			if (ObjectAtLocation.Id == id)
+			if (ObjectAtLocation != null && ObjectAtLocation.Id == id)
 			{
 				ObjectAtLocation = null;
 			}
-			if (Surface.Id == id)
+			if (Surface != null && Surface.Id == id)
 			{
 				Surface = null;
 			}
@@ -138,11 +157,18 @@ namespace MultiplayerXeno
 			
 		
 			WorldTile tileAtPos = this;
-			if(tileInDir?.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover()  > biggestCover)
+#if CLIENT
+			if (IsVisible)
 			{
+#endif
+				if (tileInDir?.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover() > biggestCover)
+				{
 					biggestCover = tileInDir.ObjectAtLocation.GetCover();
+				}
+				
+#if CLIENT
 			}
-
+#endif
 			Cover cover;
 			switch (dir)
 			{
@@ -217,13 +243,13 @@ namespace MultiplayerXeno
 					{
 						break;
 					}
-						cover = tileInDir.GetCover(Direction.North);
-						if (cover > biggestCover)
-						{
-							biggestCover = cover;
-						}
+					cover = tileInDir.GetCover(Direction.North);
+					if (cover > biggestCover)
+					{
+						biggestCover = cover;
+					}
 
-						cover = tileInDir.GetCover(Direction.West);
+					cover = tileInDir.GetCover(Direction.West);
 					
 
 					if(cover  > biggestCover)

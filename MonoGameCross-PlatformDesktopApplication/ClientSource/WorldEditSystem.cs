@@ -64,12 +64,18 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			
-			
-			
+			if (tile.Surface != null)
+			{
+				WorldManager.DeleteWorldObject(tile.Surface);
+				return;
+			}
+
+
+
+
 		}
 
-		private static bool isValidPlacement(Vector2Int pos)
+		private static bool IsValidPlacement(Vector2Int pos)
 		{
 			var tile = WorldManager.GetTileAtGrid(pos);
 			WorldTile tile2;
@@ -109,7 +115,7 @@ namespace MultiplayerXeno
 		private static void PlacePrefab(Vector2Int Pos)
 		{
 			if(!enabled) return;
-			if (!isValidPlacement(Pos)) return;
+			if (!IsValidPlacement(Pos)) return;
 			WorldManager.MakeWorldObjectPublically(ActivePrefab,Pos,ActiveDir);
 		}
 
@@ -125,6 +131,15 @@ namespace MultiplayerXeno
 			} else if (keyboardState.IsKeyDown(Keys.Q)&& lastState.IsKeyUp(Keys.Q))
 			{
 				ActiveDir -= 1;
+			}
+			while (ActiveDir < 0)
+			{
+				ActiveDir += 8;
+			}
+
+			while (ActiveDir > (Direction) 7)
+			{
+				ActiveDir -= 8;
 			}
 
 			lastState = keyboardState;

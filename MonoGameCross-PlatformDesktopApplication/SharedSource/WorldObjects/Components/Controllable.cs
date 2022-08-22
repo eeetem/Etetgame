@@ -11,13 +11,17 @@ namespace MultiplayerXeno
 {
 	public partial class Controllable
 	{
-		private WorldObject Parent;
+		public WorldObject Parent { get; private set; }
 		private ControllableType Type;
 		public Controllable(bool isPlayerOneTeam, WorldObject parent, ControllableType type)
 		{
 			Parent = parent;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
+#if CLIENT
+			WorldManager.CalculateFov();
+#endif
+			
 		}
 
 		public bool IsPlayerOneTeam { get; private set;}
@@ -87,7 +91,7 @@ namespace MultiplayerXeno
 			if (moving)
 			{
 				MoveCounter += gameTime;
-				if (MoveCounter > 1000)
+				if (MoveCounter > 500)
 				{
 					MoveCounter = 0;
 
@@ -98,6 +102,9 @@ namespace MultiplayerXeno
 					{
 						moving = false;
 					}
+#if CLIENT
+					WorldManager.CalculateFov();
+#endif
 				}
 			}
 

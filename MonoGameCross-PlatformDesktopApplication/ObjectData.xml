@@ -5,11 +5,11 @@
   <sprite layer = "0" offset= "0,0"/>
   <name>basicFloor</name>
 </object> 
-<object Cover = "4" Edge = "true">
+<object Cover = "3" Edge = "true">
   <sprite layer = "2" offset= "0,0"/>
   <name>basicWall</name>
 </object>
-  <object Faceable = "true" Cover ="3">
+  <object Faceable = "true" Cover ="2">
     <sprite layer = "2" offset= "0,0"/>
     <name>Human</name>
     <controllable moveRange = "4">

@@ -21,11 +21,11 @@ namespace MultiplayerXeno
 			
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
-			WorldManager.MakeWorldObjectPublically("human", new Vector2Int(1, 1),controllableData:cdata);
+			WorldManager.MakeWorldObjectPublically("Human", new Vector2Int(10, 5),controllableData:cdata);
 
 
 			cdata = new ControllableData(false);
-			WorldManager.MakeWorldObjectPublically("human", new Vector2Int(5, 5),controllableData:cdata);
+			WorldManager.MakeWorldObjectPublically("Human", new Vector2Int(15, 5),controllableData:cdata);
 
 		}
 

@@ -143,16 +143,20 @@ namespace MultiplayerXeno.Pathfinding
 
 		private static void AddOrUpdateConnected(Node current, Node to, PriorityQueue<Node,double> queue)
 		{
+			if (current.Parent != null && !current.Traversable(current.Parent))
+			{
+				throw new Exception(
+					"how");
+			}
 			foreach (var connected in current.ConnectedNodes)
 			{
 				if (connected is null) return;
-			
 
 				if (!connected.Traversable(current) ||
 				    connected.State == NodeState.Closed)
-				{
-					continue; // Do ignore already checked and not traversable nodes.
-				}
+					{
+						continue; // Do ignore already checked and not traversable nodes.
+					}
 
 				// Adds a previously not "seen" node into the Queue
 				if (connected.State == NodeState.Unconsidered)
@@ -229,8 +233,8 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
-			Cover obstacle = WorldManager.GetTileAtGrid(this.Position).GetCover(WorldManager.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
-			if ((int)obstacle == 4) return false;
+			Cover obstacle = WorldManager.GetTileAtGrid(from.Position).GetCover(WorldManager.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
+			if (obstacle == Cover.Full) return false;
 			
 			return true;
 		}

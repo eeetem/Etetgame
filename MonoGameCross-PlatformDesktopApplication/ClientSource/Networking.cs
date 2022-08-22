@@ -12,15 +12,16 @@ namespace MultiplayerXeno
 	public static class Networking
 	{
 		public static TcpConnection serverConnection;
-		public static bool Connect(string ip,string name)
+		public static ConnectionResult Connect(string ip,string name)
 		{
 			ConnectionResult connectionResult = ConnectionResult.TCPConnectionNotAlive;
 			//1. Establish a connection to the server.
-			serverConnection = ConnectionFactory.CreateTcpConnection(ip, 5555, out connectionResult);
+			serverConnection = ConnectionFactory.CreateTcpConnection(ip, 52233, out connectionResult);
+			
 			//2. Register what happens if we get a connection
 			if(connectionResult != ConnectionResult.Connected)
 			{
-				return false;
+				return connectionResult;
 			}
 			Console.WriteLine($"{serverConnection.ToString()} Connection established");
 
@@ -42,7 +43,7 @@ namespace MultiplayerXeno
 			
 
 
-			return true;
+			return connectionResult;
 
 		}
 
