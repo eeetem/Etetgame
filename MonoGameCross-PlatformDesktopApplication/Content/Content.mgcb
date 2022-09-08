@@ -49,13 +49,6 @@
 /processorParam:TextureFormat=Color
 /build:coverIndicator.png
 
-#begin File.spritefont
-/importer:FontDescriptionImporter
-/processor:LocalizedFontProcessor
-/processorParam:PremultiplyAlpha=False
-/processorParam:TextureFormat=Compressed
-/build:File.spritefont;text.spritefont
-
 #begin HUman.png
 /importer:TextureImporter
 /processor:TextureProcessor

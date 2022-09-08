@@ -245,16 +245,31 @@ namespace MultiplayerXeno
 
 		public static void Render(float deltaTime)
 		{
+			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
+
+			Vector2Int? result = null;
+			if (Controllable.Selected != null)
+			{
+				result = WorldManager.Raycast(Controllable.Selected.Parent.TileLocation.Position, TileCoordinate);
+			}
+			if (result == null)
+			{
+				result = TileCoordinate;
+			}
+			
+			
+			var Mousepos = WorldManager.GridToWorldPos((result + new Vector2(-2f,-1f)));
+			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
-			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0) return;
-			var Mousepos = WorldManager.GridToWorldPos(TileCoordinate + new Vector2(-2f,-1f));
+			
+			if(result.X < 0 || result.Y < 0) return;
+			
 			for (int i = 0; i < 8; i++)
 			{
 				var indicator = coverIndicator[i];
 				Color c = Color.White;
-				switch ((Cover)WorldManager.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
+				switch ((Cover)WorldManager.GetTileAtGrid(result).GetCover((Direction)i))
 				{
 					case Cover.Full:
 						c = Color.Red;
@@ -270,6 +285,10 @@ namespace MultiplayerXeno
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
+			
+			
+			
+			
 			if(WorldManager.PreviewPath == null) return;
 			
 			foreach (var path in WorldManager.PreviewPath)
@@ -298,9 +317,11 @@ namespace MultiplayerXeno
 				}
 				spriteBatch.End();
 			}
-		
+
 			
-			
+
+
+
 		}
 	}
 }

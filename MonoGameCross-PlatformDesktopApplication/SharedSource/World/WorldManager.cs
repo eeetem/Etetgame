@@ -241,6 +241,60 @@ namespace MultiplayerXeno
 	
 
 		}
+		
+		
+		public static Vector2Int? Raycast(Vector2 start, Vector2 end)
+		{
+			Vector2Int checkingSquare = new Vector2Int((int)start.X,(int)start.Y);
+
+			
+			
+
+			Vector2 dir = end - start;
+
+			Vector2Int step = new Vector2Int(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
+			
+
+			float slope = dir.Y / dir.X;
+			float inverseSlope = dir.X / dir.Y;
+
+
+			Vector2 delta = new Vector2((float) Math.Sqrt(1 + slope * slope), (float) Math.Sqrt(1 + inverseSlope * inverseSlope));
+			
+			
+			
+			
+
+
+			while (true)
+			{
+				if ((checkingSquare.X + step.X) * delta.X > (checkingSquare.Y + step.Y) * delta.Y)
+				{
+					checkingSquare.X += step.X;
+
+				}
+				else
+				{
+					checkingSquare.Y += step.Y;
+				}
+				
+				Console.WriteLine(checkingSquare);
+				
+				var tile = GetTileAtGrid(checkingSquare);
+
+				//todo proper colision check
+				if (tile.Surface != null)
+				{
+					return checkingSquare;
+				}
+
+				if (end == checkingSquare)
+				{
+					return null;
+				}
+			}
+
+		}
 
 		
 		public static void DeleteWorldObject(WorldObject? obj)
