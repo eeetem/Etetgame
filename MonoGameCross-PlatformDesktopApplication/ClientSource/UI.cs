@@ -245,20 +245,27 @@ namespace MultiplayerXeno
 
 		public static void Render(float deltaTime)
 		{
+			
 			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
+			var Mousepos = WorldManager.GridToWorldPos((TileCoordinate + new Vector2(-2f,-1f)));
+			
+			
 
 			Vector2Int? result = null;
+			bool found = true;
 			if (Controllable.Selected != null)
 			{
 				result = WorldManager.Raycast(Controllable.Selected.Parent.TileLocation.Position, TileCoordinate);
+
 			}
 			if (result == null)
 			{
+				found = false;
 				result = TileCoordinate;
 			}
 			
 			
-			var Mousepos = WorldManager.GridToWorldPos((result + new Vector2(-2f,-1f)));
+			
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
@@ -269,23 +276,16 @@ namespace MultiplayerXeno
 			{
 				var indicator = coverIndicator[i];
 				Color c = Color.White;
-				switch ((Cover)WorldManager.GetTileAtGrid(result).GetCover((Direction)i))
+				if (found)
 				{
-					case Cover.Full:
-						c = Color.Red;
-						break;
-					case Cover.High:
-						c = Color.Yellow;
-						break;
-					case Cover.Low:
-						c = Color.Green;
-						break;
+					c=Color.Red;
 				}
+			
 					
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
-			
+		
 			
 			
 			

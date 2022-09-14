@@ -243,7 +243,7 @@ namespace MultiplayerXeno
 		}
 		
 		
-		public static Vector2Int? Raycast(Vector2 start, Vector2 end)
+		public static Vector2Int? Raycast(Vector2Int start, Vector2Int end)
 		{
 			Vector2Int checkingSquare = new Vector2Int((int)start.X,(int)start.Y);
 
@@ -251,7 +251,11 @@ namespace MultiplayerXeno
 			
 
 			Vector2 dir = end - start;
-
+			dir.Normalize();
+			
+			
+			
+			
 			Vector2Int step = new Vector2Int(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
 			
 
@@ -259,28 +263,45 @@ namespace MultiplayerXeno
 			float inverseSlope = dir.X / dir.Y;
 
 
-			Vector2 delta = new Vector2((float) Math.Sqrt(1 + slope * slope), (float) Math.Sqrt(1 + inverseSlope * inverseSlope));
-			
-			
-			
-			
+			Vector2 scalingFactor = new Vector2((float) Math.Sqrt(1 + slope * slope), (float) Math.Sqrt(1 + inverseSlope * inverseSlope));
 
+			Vector2 lenght = new Vector2Int(0,0);
+
+			lenght.X = 0.5f *scalingFactor.X;
+			lenght.Y =  0.5f *scalingFactor.Y;
+
+
+			float totalLenght = 0f;
 
 			while (true)
 			{
-				if ((checkingSquare.X + step.X) * delta.X > (checkingSquare.Y + step.Y) * delta.Y)
+				if (lenght.X < lenght.Y)
 				{
 					checkingSquare.X += step.X;
+					totalLenght = lenght.X;
+					lenght.X += scalingFactor.X;
+					
 
 				}
 				else
 				{
 					checkingSquare.Y += step.Y;
+					totalLenght = lenght.Y;
+					lenght.Y += scalingFactor.Y;
 				}
 				
 				Console.WriteLine(checkingSquare);
-				
-				var tile = GetTileAtGrid(checkingSquare);
+				WorldTile tile;
+				if (IsPositionValid(checkingSquare))
+				{
+					tile = GetTileAtGrid(checkingSquare);
+				}
+				else
+				{
+					return null;
+				}
+
+				Vector2 collisionPoint = (totalLenght * dir) + start + new Vector2(0.5f, 0.5f);			
 
 				//todo proper colision check
 				if (tile.Surface != null)
