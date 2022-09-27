@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -132,15 +133,8 @@ namespace MultiplayerXeno
 			{
 				ActiveDir -= 1;
 			}
-			while (ActiveDir < 0)
-			{
-				ActiveDir += 8;
-			}
 
-			while (ActiveDir > (Direction) 7)
-			{
-				ActiveDir -= 8;
-			}
+			ActiveDir = Utility.NormaliseDir(ActiveDir);
 
 			lastState = keyboardState;
 

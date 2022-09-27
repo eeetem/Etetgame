@@ -41,7 +41,7 @@ namespace MultiplayerXeno
 			Controllable.StartOrder(position);
 
 		}
-
+	
 		public static void CalculateFov()
 		{
 			foreach (var tile in gridData)
@@ -49,21 +49,54 @@ namespace MultiplayerXeno
 				tile.IsVisible = false;
 			}
 
+
+	
+
 			foreach (var obj in WorldObjects.Values)
 			{
+			
 				if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
 				{
 					Vector2Int pos = obj.TileLocation.Position;
-		
-					while (true)
-					{
-						if(!IsPositionValid(pos))return;
-						GetTileAtGrid(pos).IsVisible = true;
-						if(GetTileAtGrid(pos).GetCover(obj.Facing) == Cover.Full) break;
-						pos += DirToVec2(obj.Facing);
-						
-					}
 
+					int itteration = 0;
+
+					List<Vector2Int> positionsToCheck = new List<Vector2Int>();
+					while (itteration < obj.ControllableComponent.GetSightRange())
+					{
+						
+						positionsToCheck.Add(pos);
+						Vector2Int offset;
+						Vector2Int invoffset;
+						if (DirToVec2(obj.Facing).Magnitude() > 1)//diagonal
+						{
+							offset = DirToVec2(obj.Facing+3);
+							invoffset = DirToVec2(obj.Facing-3);
+						}
+						else
+						{
+							offset = DirToVec2(obj.Facing+2);
+							invoffset = DirToVec2(obj.Facing-2);
+						}
+
+					
+						for (int x = 0; x < itteration; x++)
+						{
+							positionsToCheck.Add(pos + invoffset*(x+1));
+							positionsToCheck.Add(pos + offset*(x+1));
+						}
+
+						pos += DirToVec2(obj.Facing);
+						itteration++;
+					}
+		
+					//raycast
+
+					foreach (var tile in positionsToCheck)
+					{
+						if(!IsPositionValid(tile))continue;
+						GetTileAtGrid(tile).IsVisible = true;
+					}
 				}
 			}
 		}
@@ -103,6 +136,7 @@ namespace MultiplayerXeno
 							continue;
 						}
 					}
+				
 
 					sprite.Color = c;
 
@@ -116,7 +150,22 @@ namespace MultiplayerXeno
 
 			
 		}
-
+		public static Vector2 RadianToVector2(float radian)
+		{
+			return new Vector2((float) Math.Cos(radian), (float) Math.Sin(radian));
+		}
+		public static Vector2 RadianToVector2(float radian, float length)
+		{
+			return RadianToVector2(radian) * length;
+		}
+		public static Vector2 DegreeToVector2(float degree)
+		{
+			return RadianToVector2(degree * (MathF.PI/180));
+		}
+		public static Vector2 DegreeToVector2(float degree, float length)
+		{
+			return RadianToVector2(degree * (MathF.PI/180)) * length;
+		}
 		
 			
 		

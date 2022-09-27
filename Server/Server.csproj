@@ -43,6 +43,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Utility.cs">
+        <Link>SharedSource\Utility.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\Controllable.cs">
         <Link>SharedSource\WorldObjects\Components\Controllable.cs</Link>
       </Compile>

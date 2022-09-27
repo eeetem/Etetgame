@@ -28,6 +28,12 @@ namespace MultiplayerXeno
 
 		private bool hasMoved = false;
 
+		public int GetSightRange()
+		{
+			//apply effects and offests
+			return Type.sightRange;
+		}
+
 		public void StartTurn()
 		{
 			hasMoved = false;

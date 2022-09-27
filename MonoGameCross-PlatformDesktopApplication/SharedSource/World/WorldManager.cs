@@ -40,6 +40,7 @@ namespace MultiplayerXeno
 
 		public static Vector2Int DirToVec2(Direction dir)
 		{
+			dir = Utility.NormaliseDir(dir);
 			switch (dir)
 			{
 				case Direction.East:
@@ -290,7 +291,6 @@ namespace MultiplayerXeno
 					lenght.Y += scalingFactor.Y;
 				}
 				
-				Console.WriteLine(checkingSquare);
 				WorldTile tile;
 				if (IsPositionValid(checkingSquare))
 				{
@@ -304,8 +304,25 @@ namespace MultiplayerXeno
 				Vector2 collisionPoint = (totalLenght * dir) + start + new Vector2(0.5f, 0.5f);			
 
 				//todo proper colision check
+				Vector2 collisionVector = (collisionPoint - (tile.Position + new Vector2Int(5, 5)));
+				collisionVector.Normalize();
+				float angle = collisionVector.ToAngle();
+				if (angle % 45 == 0)
+				{
+					//no change
+				}else if(angle % 45 >22.5)
+				{
+					angle -= angle % 45;
+				}else if(angle % 45 <22.5){
+					angle += (45- angle % 45);
+				}
+				Vector2Int normalcollisionvector = Utility.
+				
+
+				tile.GetCover(Vec2ToDir(collisionVector));
 				if (tile.Surface != null)
 				{
+					System.Console.WriteLine(collisionPoint);
 					return checkingSquare;
 				}
 

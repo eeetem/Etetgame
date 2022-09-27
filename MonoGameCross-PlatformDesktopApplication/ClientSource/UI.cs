@@ -247,17 +247,14 @@ namespace MultiplayerXeno
 		{
 			
 			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
-			var Mousepos = WorldManager.GridToWorldPos((TileCoordinate + new Vector2(-2f,-1f)));
-			
 			
 
 			Vector2Int? result = null;
 			bool found = true;
-			if (Controllable.Selected != null)
-			{
-				result = WorldManager.Raycast(Controllable.Selected.Parent.TileLocation.Position, TileCoordinate);
+			
+				result = WorldManager.Raycast(new Vector2Int(5,5), TileCoordinate);
 
-			}
+			
 			if (result == null)
 			{
 				found = false;
@@ -265,7 +262,9 @@ namespace MultiplayerXeno
 			}
 			
 			
-			
+			var Mousepos = WorldManager.GridToWorldPos((result + new Vector2(-2f,-1f)));
+
+
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
@@ -287,7 +286,7 @@ namespace MultiplayerXeno
 			spriteBatch.End();
 		
 			
-			
+			return;
 			
 			if(WorldManager.PreviewPath == null) return;
 			

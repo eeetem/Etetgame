@@ -3,6 +3,7 @@
 	public class ControllableType
 	{
 		public int moveRange = 4;
+		public int sightRange = 10;
 
 		public Controllable Instantiate(WorldObject parent,bool team1)
 		{

@@ -79,6 +79,11 @@ namespace CommonData
 			return obj is Vector2Int other && Equals(other);
 		}
 
+		public double Magnitude()
+		{
+			return Math.Sqrt((X * X) + (Y * Y));
+		}
+
 		public override int GetHashCode()
 		{
 			return HashCode.Combine(X, Y);

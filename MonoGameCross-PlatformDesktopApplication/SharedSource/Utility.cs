@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno;
 
 namespace MultiplayerXeno
 {
@@ -105,6 +107,21 @@ namespace MultiplayerXeno
             int xout = 0;
             int yout = 0;
             return  SplitTexture(texture, partWidth, partHeight, out xout, out yout);
+        }
+
+        public static Direction NormaliseDir(Direction dir)
+        {
+            while (dir < 0)
+            {
+                dir += 8;
+            }
+
+            while (dir > (Direction) 7)
+            {
+                dir -= 8;
+            }
+
+            return dir;
         }
     }
     
