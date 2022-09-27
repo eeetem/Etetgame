@@ -304,7 +304,7 @@ namespace MultiplayerXeno
 				Vector2 collisionPoint = (totalLenght * dir) + start + new Vector2(0.5f, 0.5f);			
 
 				//todo proper colision check
-				Vector2 collisionVector = (collisionPoint - (tile.Position + new Vector2Int(5, 5)));
+				Vector2 collisionVector = (collisionPoint - (Vector2)(tile.Position + new Vector2Int(5, 5)));
 				collisionVector.Normalize();
 				float angle = collisionVector.ToAngle();
 				if (angle % 45 == 0)
@@ -316,13 +316,15 @@ namespace MultiplayerXeno
 				}else if(angle % 45 <22.5){
 					angle += (45- angle % 45);
 				}
-				Vector2Int normalcollisionvector = Utility.
+
+				Vector2 normalcollisionvector = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+				normalcollisionvector.Normalize();
 				
 
 				tile.GetCover(Vec2ToDir(collisionVector));
 				if (tile.Surface != null)
 				{
-					System.Console.WriteLine(collisionPoint);
+					System.Console.WriteLine(collisionVector);
 					return checkingSquare;
 				}
 

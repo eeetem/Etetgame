@@ -109,6 +109,7 @@ namespace CommonData
 			Y = y;
 		}
 		public static implicit operator Vector2(Vector2Int vec) => new Vector2(vec.X,vec.Y);
+		public static implicit operator Vector2Int(Vector2 vec) => new Vector2Int((int)vec.X,(int)vec.Y);
 	
 		public static Vector2Int operator*(Vector2Int a, int b)
 			=> new Vector2Int(a.X*b, a.Y*b);

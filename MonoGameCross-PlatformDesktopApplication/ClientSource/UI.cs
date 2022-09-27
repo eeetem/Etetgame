@@ -262,7 +262,7 @@ namespace MultiplayerXeno
 			}
 			
 			
-			var Mousepos = WorldManager.GridToWorldPos((result + new Vector2(-2f,-1f)));
+			var Mousepos = WorldManager.GridToWorldPos(((Vector2)result + new Vector2(-2f,-1f)));
 
 
 			
@@ -294,7 +294,7 @@ namespace MultiplayerXeno
 			{
 				spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 				if(path.X < 0 || path.Y < 0) return;
-				Mousepos = WorldManager.GridToWorldPos(path + new Vector2(-2f,-1f));
+				Mousepos = WorldManager.GridToWorldPos((Vector2)path + new Vector2(-2f,-1f));
 				for (int i = 0; i < 8; i++)
 				{
 					var indicator = coverIndicator[i];
