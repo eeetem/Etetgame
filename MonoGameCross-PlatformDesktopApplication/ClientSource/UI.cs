@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Sprites;
 using MultiplayerXeno.Pathfinding;
 using Myra;
 using Myra.Graphics2D.UI;
@@ -245,44 +247,55 @@ namespace MultiplayerXeno
 
 		public static void Render(float deltaTime)
 		{
+		
 			
 			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
 			
-
-			Vector2Int? result = null;
+			WorldManager.Raycast(new Vector2Int(5,5), TileCoordinate);
 			bool found = true;
 			
-				result = WorldManager.Raycast(new Vector2Int(5,5), TileCoordinate);
-
-			
-			if (result == null)
-			{
-				found = false;
-				result = TileCoordinate;
-			}
 			
 			
-			var Mousepos = WorldManager.GridToWorldPos(((Vector2)result + new Vector2(-2f,-1f)));
+			var Mousepos = WorldManager.GridToWorldPos(((Vector2)TileCoordinate + new Vector2(-2f,-1f)));
 
 
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 			
-			if(result.X < 0 || result.Y < 0) return;
+			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0) return;
 			
 			for (int i = 0; i < 8; i++)
 			{
 				var indicator = coverIndicator[i];
 				Color c = Color.White;
-				if (found)
+				switch ((Cover)WorldManager.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
 				{
-					c=Color.Red;
+					case Cover.Full:
+						c = Color.Red;
+						break;
+					case Cover.High:
+						c = Color.Yellow;
+						break;
+					case Cover.Low:
+						c = Color.Green;
+						break;
 				}
 			
 					
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
+			spriteBatch.End();
+			
+			
+			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+
+			
+			spriteBatch.DrawLine(WorldManager.GridToWorldPos(WorldManager.debugstartpoint),WorldManager.GridToWorldPos(WorldManager.debugendpoint),Color.Green,10);
+			spriteBatch.DrawCircle(WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint), 10, 10, Color.Red, 10f);
+			
+			spriteBatch.DrawLine(WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint), WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint)+WorldManager.GridToWorldPos(WorldManager.debugvector),Color.Red,10);
+			
 			spriteBatch.End();
 		
 			

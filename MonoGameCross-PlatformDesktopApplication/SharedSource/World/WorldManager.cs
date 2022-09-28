@@ -242,10 +242,23 @@ namespace MultiplayerXeno
 	
 
 		}
-		
+
+		public static Vector2 debugcollisionpoint = new Vector2(0,0);
+		public static Vector2 debugstartpoint = new Vector2(0,0);
+		public static Vector2 debugendpoint = new Vector2(0,0);
+		public static Vector2 debugvector = new Vector2(0,0);
 		
 		public static Vector2Int? Raycast(Vector2Int start, Vector2Int end)
 		{
+
+			if (start == end)
+			{
+				return null;
+			}
+
+			debugstartpoint = start;
+			debugendpoint = end;
+			
 			Vector2Int checkingSquare = new Vector2Int((int)start.X,(int)start.Y);
 
 			
@@ -253,10 +266,11 @@ namespace MultiplayerXeno
 
 			Vector2 dir = end - start;
 			dir.Normalize();
-			
-			
-			
-			
+		
+
+
+
+
 			Vector2Int step = new Vector2Int(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
 			
 
@@ -301,32 +315,36 @@ namespace MultiplayerXeno
 					return null;
 				}
 
-				Vector2 collisionPoint = (totalLenght * dir) + start + new Vector2(0.5f, 0.5f);			
-
+				Vector2 collisionPoint = (totalLenght * dir) + start;
+				debugcollisionpoint = collisionPoint;
 				//todo proper colision check
-				Vector2 collisionVector = (collisionPoint - (Vector2)(tile.Position + new Vector2Int(5, 5)));
+				Vector2 collisionVector = (Vector2)(tile.Position) - collisionPoint;
 				collisionVector.Normalize();
-				float angle = collisionVector.ToAngle();
-				if (angle % 45 == 0)
-				{
-					//no change
-				}else if(angle % 45 >22.5)
-				{
-					angle -= angle % 45;
-				}else if(angle % 45 <22.5){
-					angle += (45- angle % 45);
-				}
 
-				Vector2 normalcollisionvector = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
-				normalcollisionvector.Normalize();
+				debugvector = collisionVector;
+
+				float angle = collisionVector.ToAngle() * (float)(180/Math.PI);
 				
 
-				tile.GetCover(Vec2ToDir(collisionVector));
-				if (tile.Surface != null)
+				angle = (float)Math.Round(angle / 45) * 45;
+
+			
+				Vector2 normalcollisionvector = new Vector2((float) Math.Sin(angle*(Math.PI/180)), (float) Math.Cos(angle*(Math.PI/180)));
+				normalcollisionvector.Normalize();
+				
+				normalcollisionvector.Round();
+				
+
+				Cover c = tile.GetCover(Vec2ToDir(normalcollisionvector));
+				if (c != Cover.None)
 				{
-					System.Console.WriteLine(collisionVector);
+					System.Console.WriteLine(c);
+					System.Console.WriteLine(angle);
+					System.Console.WriteLine(normalcollisionvector);
+					
 					return checkingSquare;
 				}
+
 
 				if (end == checkingSquare)
 				{
