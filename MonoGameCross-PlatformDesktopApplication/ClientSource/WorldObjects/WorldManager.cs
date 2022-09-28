@@ -90,11 +90,12 @@ namespace MultiplayerXeno
 						itteration++;
 					}
 		
-					//raycast
+					
 
 					foreach (var tile in positionsToCheck)
 					{
-						if(!IsPositionValid(tile))continue;
+						if(!IsPositionValid(tile)) continue;
+						if (Raycast(obj.TileLocation.Position, tile) != null) continue;
 						GetTileAtGrid(tile).IsVisible = true;
 					}
 				}
