@@ -41,9 +41,12 @@ namespace MultiplayerXeno
 			Controllable.StartOrder(position);
 
 		}
-	
+
+
+		public static List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
 		public static void CalculateFov()
 		{
+			RecentFOVRaycasts = new List<RayCastOutcome>();
 			foreach (var tile in gridData)
 			{
 				tile.IsVisible = false;
@@ -95,7 +98,9 @@ namespace MultiplayerXeno
 					foreach (var tile in positionsToCheck)
 					{
 						if(!IsPositionValid(tile)) continue;
-						if (Raycast(obj.TileLocation.Position, tile) != null) continue;
+						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile);
+						RecentFOVRaycasts.Add(cast);
+						if (cast.hit) continue;
 						GetTileAtGrid(tile).IsVisible = true;
 					}
 				}

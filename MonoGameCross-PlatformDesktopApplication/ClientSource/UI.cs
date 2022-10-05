@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -251,7 +253,8 @@ namespace MultiplayerXeno
 			
 			var TileCoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos());
 			
-			WorldManager.Raycast(new Vector2Int(5,5), TileCoordinate);
+			
+
 			bool found = true;
 			
 			
@@ -286,21 +289,46 @@ namespace MultiplayerXeno
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
-			
-			
-			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 
+		
+			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			var templist = new List<WorldManager.RayCastOutcome>(WorldManager.RecentFOVRaycasts);
+			templist.Add(WorldManager.Raycast(new Vector2Int(5,5), TileCoordinate));
 			
-			spriteBatch.DrawLine(WorldManager.GridToWorldPos(WorldManager.debugstartpoint),WorldManager.GridToWorldPos(WorldManager.debugendpoint),Color.Green,10);
-			spriteBatch.DrawCircle(WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint), 10, 10, Color.Red, 10f);
-			
-			spriteBatch.DrawLine(WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint), WorldManager.GridToWorldPos(WorldManager.debugcollisionpoint)+WorldManager.GridToWorldPos(WorldManager.debugvector),Color.Red,10);
+			foreach (var cast in templist)
+			{
+
+				spriteBatch.DrawLine(WorldManager.GridToWorldPos(cast.StartPoint),WorldManager.GridToWorldPos(cast.EndPoint),Color.Green,5);
+				if(cast.CollisionPoint.Count == 0) break;
+				spriteBatch.DrawCircle(WorldManager.GridToWorldPos(cast.CollisionPoint[0]), 5, 10, Color.Red, 5f);
+				spriteBatch.DrawLine(WorldManager.GridToWorldPos(cast.CollisionPoint[0]), WorldManager.GridToWorldPos(cast.CollisionPoint[0])+WorldManager.GridToWorldPos(cast.VectorToCenter),Color.Red,5);
+
+				foreach (var point in cast.CollisionPoint)
+				{
+					
+					spriteBatch.DrawCircle(WorldManager.GridToWorldPos(point), 5, 10, Color.Green, 5f);
+				}
+				
+			}
 			
 			spriteBatch.End();
 		
 			
-			return;
 			
+
+
+
+			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			for (int x = 0; x < 10; x++)
+			{
+				for (int y = 0; y < 10; y++)
+				{
+				
+					spriteBatch.DrawCircle(WorldManager.GridToWorldPos(new Vector2(x,y)), 5, 10, Color.Black, 5f);
+				}
+			}
+			spriteBatch.End();
+			return;
 			if(WorldManager.PreviewPath == null) return;
 			
 			foreach (var path in WorldManager.PreviewPath)

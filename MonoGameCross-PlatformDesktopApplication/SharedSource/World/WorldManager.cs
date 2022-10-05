@@ -243,28 +243,50 @@ namespace MultiplayerXeno
 
 		}
 
-		public static Vector2 debugcollisionpoint = new Vector2(0,0);
-		public static Vector2 debugstartpoint = new Vector2(0,0);
-		public static Vector2 debugendpoint = new Vector2(0,0);
-		public static Vector2 debugvector = new Vector2(0,0);
 		
-		public static Vector2Int? Raycast(Vector2Int start, Vector2Int end)
-		{
 
-			if (start == end)
+		public struct RayCastOutcome
+		{
+			public  List<Vector2> CollisionPoint;
+			public  Vector2 StartPoint;
+			public Vector2 EndPoint;
+			public  Vector2 VectorToCenter;
+
+			public bool hit;
+
+			public RayCastOutcome(Vector2 start, Vector2 end)
 			{
-				return null;
+				this.hit = false;
+				VectorToCenter = new Vector2(0,0);
+				EndPoint = end;
+				StartPoint = start;
+				CollisionPoint = new List<Vector2>();
 			}
 
-			debugstartpoint = start;
-			debugendpoint = end;
 			
-			Vector2Int checkingSquare = new Vector2Int((int)start.X,(int)start.Y);
+		}
+
+
+
+		public static RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell)
+		{
+
+			Vector2 startPos = (Vector2)startcell + new Vector2(0.5f,0.5f);
+			Vector2 endPos = (Vector2)endcell + new Vector2(0.5f,0.5f);
+			RayCastOutcome result = new RayCastOutcome(startPos,endPos);
+			if (startcell == endcell)
+			{
+				result.hit = false;
+				return result;
+			}
+
 
 			
-			
+			Vector2Int checkingSquare = new Vector2Int(startcell.X,startcell.Y);
 
-			Vector2 dir = end - start;
+
+
+			Vector2 dir = endPos - startPos;
 			dir.Normalize();
 		
 
@@ -281,6 +303,8 @@ namespace MultiplayerXeno
 			Vector2 scalingFactor = new Vector2((float) Math.Sqrt(1 + slope * slope), (float) Math.Sqrt(1 + inverseSlope * inverseSlope));
 
 			Vector2 lenght = new Vector2Int(0,0);
+
+
 
 			lenght.X = 0.5f *scalingFactor.X;
 			lenght.Y =  0.5f *scalingFactor.Y;
@@ -312,16 +336,17 @@ namespace MultiplayerXeno
 				}
 				else
 				{
-					return null;
+					result.hit = false;
+					return result;
 				}
 
-				Vector2 collisionPoint = (totalLenght * dir) + start;
-				debugcollisionpoint = collisionPoint;
+				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
+				result.CollisionPoint.Add(collisionPoint);
 				//todo proper colision check
-				Vector2 collisionVector = (Vector2)(tile.Position) - collisionPoint;
+				Vector2 collisionVector = (((Vector2)tile.Position + new Vector2(0.5f,0.5f))) - collisionPoint;
 				collisionVector.Normalize();
-
-				debugvector = collisionVector;
+				
+				
 
 				float angle = collisionVector.ToAngle() * (float)(180/Math.PI);
 				
@@ -333,31 +358,40 @@ namespace MultiplayerXeno
 				normalcollisionvector.Normalize();
 				
 				normalcollisionvector.Round();
-				
 
-				Cover c = tile.GetCover(Vec2ToDir(normalcollisionvector));
-				if (c != Cover.None)
-				{
+				//take a step back and check cover in the right direction
+				Direction direc = Vec2ToDir(normalcollisionvector);
+				WorldTile tilefrom = GetTileAtGrid(tile.Position + (Vector2Int)normalcollisionvector);
+				
+				Cover c = tilefrom.GetCover(direc+=4);
+				if (c == Cover.Full)
+				{  
 					System.Console.WriteLine(c);
-					System.Console.WriteLine(angle);
-					System.Console.WriteLine(normalcollisionvector);
 					
-					return checkingSquare;
+					System.Console.WriteLine(collisionPoint);
+					System.Console.WriteLine(normalcollisionvector);
+					var exactcoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos(),false);
+					Console.WriteLine(exactcoordinate);	
+					//result.CollisionPoint = collisionPoint;
+					result.VectorToCenter = collisionVector;
+					result.hit = true;
+					return result;
 				}
 
 
-				if (end == checkingSquare)
+				if (endcell == checkingSquare)
 				{
-					return null;
+					result.hit = false;
+					return result;
 				}
 			}
 
 		}
 
 		
-		public static void DeleteWorldObject(WorldObject? obj)
+		public static void DeleteWorldObject(WorldObject obj)
 		{
-			if(obj == null) return;
+		
 			
 			DeleteWorldObject(obj.Id);
 		}
@@ -462,14 +496,23 @@ namespace MultiplayerXeno
 
 			return transformVector;
 		}
-		public static Vector2Int WorldPostoGrid(Vector2 worldPos) {
+		public static Vector2 WorldPostoGrid(Vector2 worldPos, bool clamp = true) {
                     
 			Matrix2 isometricTransform = Matrix2.Multiply(Matrix2.CreateRotationZ((float) (Math.PI / 4)), Matrix2.CreateScale(1, 0.5f));
 			isometricTransform = Matrix2.Invert(isometricTransform);
 	
 			Vector2 transformVector = Vector2.Transform( worldPos, isometricTransform);
 
-			Vector2Int gridPos = new Vector2Int((int)Math.Floor(transformVector.X/SIZE),(int)Math.Floor(transformVector.Y/SIZE));
+			Vector2 gridPos;
+
+			if (clamp)
+			{
+				gridPos	= new Vector2((int)Math.Floor(transformVector.X/SIZE),(int)Math.Floor(transformVector.Y/SIZE));
+			}
+			else
+			{
+				gridPos	= new Vector2(transformVector.X/SIZE,transformVector.Y/SIZE);
+			}
 
 			if (gridPos.X < 0)
 			{
@@ -482,6 +525,7 @@ namespace MultiplayerXeno
 			}
 			return gridPos;
 		}
+
 
 	
 

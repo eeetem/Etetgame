@@ -78,7 +78,7 @@ namespace MultiplayerXeno
 #if CLIENT
 
 				type.Transform = new Transform2();
-				type.Transform.Position = WorldManager.GridToWorldPos(Offset+ new Vector2(-0.5f,-0.5f));
+				type.Transform.Position = WorldManager.GridToWorldPos(Offset);
 				type.DrawLayer = drawlayer;
 		
 				

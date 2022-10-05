@@ -148,6 +148,7 @@ namespace MultiplayerXeno
 
 		public Cover GetCover(Direction dir)
 		{
+			dir = Utility.NormaliseDir(dir);
 			Cover biggestCover = Cover.None;
 			WorldTile? tileInDir=null;
 			if(WorldManager.IsPositionValid(Position + WorldManager.DirToVec2(dir)))
