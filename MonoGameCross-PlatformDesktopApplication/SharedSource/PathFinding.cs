@@ -233,9 +233,10 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
+			if (WorldManager.GetTileAtGrid(this.Position).ObjectAtLocation != null) return false;
 			Cover obstacle = WorldManager.GetTileAtGrid(from.Position).GetCover(WorldManager.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
 			if (obstacle == Cover.Full) return false;
-			
+
 			return true;
 		}
 

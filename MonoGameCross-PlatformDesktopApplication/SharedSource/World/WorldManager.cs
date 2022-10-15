@@ -294,8 +294,7 @@ namespace MultiplayerXeno
 
 
 			Vector2Int step = new Vector2Int(dir.X > 0 ? 1 : -1, dir.Y > 0 ? 1 : -1);
-			
-
+	
 			float slope = dir.Y / dir.X;
 			float inverseSlope = dir.X / dir.Y;
 
@@ -311,9 +310,12 @@ namespace MultiplayerXeno
 
 
 			float totalLenght = 0f;
+			
+	
 
 			while (true)
 			{
+				
 				if (lenght.X < lenght.Y)
 				{
 					checkingSquare.X += step.X;
@@ -328,7 +330,6 @@ namespace MultiplayerXeno
 					totalLenght = lenght.Y;
 					lenght.Y += scalingFactor.Y;
 				}
-				
 				WorldTile tile;
 				if (IsPositionValid(checkingSquare))
 				{
@@ -341,9 +342,11 @@ namespace MultiplayerXeno
 				}
 
 				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
+				
 				result.CollisionPoint.Add(collisionPoint);
-				//todo proper colision check
-				Vector2 collisionVector = (((Vector2)tile.Position + new Vector2(0.5f,0.5f))) - collisionPoint;
+
+				Vector2 collisionVector = (Vector2)tile.Position + new Vector2(0.5f,0.5f) - collisionPoint;
+				
 				collisionVector.Normalize();
 				
 				
@@ -352,27 +355,23 @@ namespace MultiplayerXeno
 				
 
 				angle = (float)Math.Round(angle / 45) * 45;
-
+				
 			
-				Vector2 normalcollisionvector = new Vector2((float) Math.Sin(angle*(Math.PI/180)), (float) Math.Cos(angle*(Math.PI/180)));
+				Vector2 normalcollisionvector = new Vector2(-(float) Math.Sin(angle*(Math.PI/180)), (float) Math.Cos(angle*(Math.PI/180)));
+				
+				
 				normalcollisionvector.Normalize();
 				
 				normalcollisionvector.Round();
-
+				Console.WriteLine(normalcollisionvector);
 				//take a step back and check cover in the right direction
 				Direction direc = Vec2ToDir(normalcollisionvector);
 				WorldTile tilefrom = GetTileAtGrid(tile.Position + (Vector2Int)normalcollisionvector);
+				//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
 				
-				Cover c = tilefrom.GetCover(direc+=4);
+				Cover c = tilefrom.GetCover(direc+4);
 				if (c == Cover.Full)
-				{  
-					System.Console.WriteLine(c);
-					
-					System.Console.WriteLine(collisionPoint);
-					System.Console.WriteLine(normalcollisionvector);
-					var exactcoordinate = WorldManager.WorldPostoGrid(Camera.GetMouseWorldPos(),false);
-					Console.WriteLine(exactcoordinate);	
-					//result.CollisionPoint = collisionPoint;
+				{
 					result.VectorToCenter = collisionVector;
 					result.hit = true;
 					return result;
@@ -384,6 +383,8 @@ namespace MultiplayerXeno
 					result.hit = false;
 					return result;
 				}
+				
+			
 			}
 
 		}
@@ -391,7 +392,7 @@ namespace MultiplayerXeno
 		
 		public static void DeleteWorldObject(WorldObject obj)
 		{
-		
+			if(obj == null) return;
 			
 			DeleteWorldObject(obj.Id);
 		}

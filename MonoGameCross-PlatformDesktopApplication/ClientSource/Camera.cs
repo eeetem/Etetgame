@@ -47,7 +47,7 @@ namespace MultiplayerXeno
 		public static Vector2 GetMouseWorldPos()
 		{
 			var state = Mouse.GetState();
-			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), MultiplayerXeno.Camera.Cam.GetInverseViewMatrix()) + new Vector2(0, 64);
+			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), MultiplayerXeno.Camera.Cam.GetInverseViewMatrix()) + new Vector2(0, 0);
 		}
 		private static int lastScroll;
 		public static void Update(GameTime gameTime)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -259,7 +260,7 @@ namespace MultiplayerXeno
 			
 			
 			
-			var Mousepos = WorldManager.GridToWorldPos(((Vector2)TileCoordinate + new Vector2(-2f,-1f)));
+			var Mousepos = WorldManager.GridToWorldPos(((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f)));//idk why i need to add a vector but i do and im not bothered figuring out why
 
 
 			
@@ -285,7 +286,7 @@ namespace MultiplayerXeno
 						break;
 				}
 			
-					
+				//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
@@ -300,8 +301,8 @@ namespace MultiplayerXeno
 
 				spriteBatch.DrawLine(WorldManager.GridToWorldPos(cast.StartPoint),WorldManager.GridToWorldPos(cast.EndPoint),Color.Green,5);
 				if(cast.CollisionPoint.Count == 0) break;
-				spriteBatch.DrawCircle(WorldManager.GridToWorldPos(cast.CollisionPoint[0]), 5, 10, Color.Red, 5f);
-				spriteBatch.DrawLine(WorldManager.GridToWorldPos(cast.CollisionPoint[0]), WorldManager.GridToWorldPos(cast.CollisionPoint[0])+WorldManager.GridToWorldPos(cast.VectorToCenter),Color.Red,5);
+				spriteBatch.DrawCircle(WorldManager.GridToWorldPos(cast.CollisionPoint.Last()), 5, 10, Color.Red, 5f);
+				spriteBatch.DrawLine(WorldManager.GridToWorldPos(cast.CollisionPoint.Last()), WorldManager.GridToWorldPos(cast.CollisionPoint.Last())+(WorldManager.GridToWorldPos(cast.VectorToCenter)/2f),Color.Red,5);
 
 				foreach (var point in cast.CollisionPoint)
 				{

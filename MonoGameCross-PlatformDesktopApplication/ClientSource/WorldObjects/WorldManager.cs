@@ -145,7 +145,7 @@ namespace MultiplayerXeno
 				
 
 					sprite.Color = c;
-
+					
 					spriteBatch.Draw(sprite, transform.Position + GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
 				}
 				spriteBatch.End();
