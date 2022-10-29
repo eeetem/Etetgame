@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,23 +15,30 @@ namespace MultiplayerXeno
 		
 		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
-		public static void Init(GraphicsDevice graphicsdevice)
+		public void Init(GraphicsDevice graphicsdevice)
 		{
 
 			graphicsDevice = graphicsdevice;
 			spriteBatch = new SpriteBatch(graphicsDevice);
-			MouseManager.LeftClick += SelectAtPosition;
-			Init();
+			UI.LeftClick += LeftClickAtPosition;
+			UI.RightClick += RightClickAtPosition;
+		
+		}
+		private void LeftClickAtPosition(Vector2Int position)
+		{
+			ClickAtPosition(position,false);
+		}
+		private void RightClickAtPosition(Vector2Int position)
+		{
+			ClickAtPosition(position,true);
 		}
 
-		private static Vector2Int LastMousePos;
-		public static List<Vector2Int> PreviewPath;
-		private static void SelectAtPosition(Vector2Int position)
+		private void ClickAtPosition(Vector2Int position,bool righclick)
 		{
 			var Tile = GetTileAtGrid(position);
 
 			WorldObject obj = Tile.ObjectAtLocation;
-			if (obj!=null&&obj.ControllableComponent != null) { 
+			if (obj!=null&&obj.ControllableComponent != null && !Controllable.Targeting) { 
 				obj.ControllableComponent.Select(); 
 				return;
 			}
@@ -38,16 +46,17 @@ namespace MultiplayerXeno
 			
 			//if nothing was selected then it's a click on an empty tile
 			
-			Controllable.StartOrder(position);
+			Controllable.StartOrder(position,righclick);
 
 		}
 
 
-		public static List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
-		public static void CalculateFov()
+
+		public List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
+		public void CalculateFov()
 		{
 			RecentFOVRaycasts = new List<RayCastOutcome>();
-			foreach (var tile in gridData)
+			foreach (var tile in GridData)
 			{
 				tile.IsVisible = false;
 			}
@@ -71,15 +80,15 @@ namespace MultiplayerXeno
 						positionsToCheck.Add(pos);
 						Vector2Int offset;
 						Vector2Int invoffset;
-						if (DirToVec2(obj.Facing).Magnitude() > 1)//diagonal
+						if (Utility.DirToVec2(obj.Facing).Magnitude() > 1)//diagonal
 						{
-							offset = DirToVec2(obj.Facing+3);
-							invoffset = DirToVec2(obj.Facing-3);
+							offset = Utility.DirToVec2(obj.Facing+3);
+							invoffset = Utility.DirToVec2(obj.Facing-3);
 						}
 						else
 						{
-							offset = DirToVec2(obj.Facing+2);
-							invoffset = DirToVec2(obj.Facing-2);
+							offset = Utility.DirToVec2(obj.Facing+2);
+							invoffset = Utility.DirToVec2(obj.Facing-2);
 						}
 
 					
@@ -89,7 +98,7 @@ namespace MultiplayerXeno
 							positionsToCheck.Add(pos + offset*(x+1));
 						}
 
-						pos += DirToVec2(obj.Facing);
+						pos += Utility.DirToVec2(obj.Facing);
 						itteration++;
 					}
 		
@@ -110,7 +119,7 @@ namespace MultiplayerXeno
 		
 
 
-		public static void Draw(GameTime gameTime)
+		public void Draw(GameTime gameTime)
 		{
 			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
 			foreach (var WO in new List<WorldObject>(WorldObjects.Values))
@@ -146,7 +155,11 @@ namespace MultiplayerXeno
 
 					sprite.Color = c;
 					
-					spriteBatch.Draw(sprite, transform.Position + GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
+					spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
+					if (worldObject.ControllableComponent != null)
+					{
+						UI.DrawControllableHoverHud(spriteBatch,worldObject);
+					}
 				}
 				spriteBatch.End();
 
@@ -188,7 +201,7 @@ namespace MultiplayerXeno
 
 
 
-				return (x.Type.Transform.Position + new Vector2(rectx.Center.X,rectx.Center.Y) + GridToWorldPos(x.TileLocation.Position)).Y.CompareTo((y.Type.Transform.Position + new Vector2(recty.Center.X,recty.Center.Y)+ GridToWorldPos(y.TileLocation.Position)).Y);
+				return (x.Type.Transform.Position + new Vector2(rectx.Center.X,rectx.Center.Y) + Utility.GridToWorldPos(x.TileLocation.Position)).Y.CompareTo((y.Type.Transform.Position + new Vector2(recty.Center.X,recty.Center.Y)+ Utility.GridToWorldPos(y.TileLocation.Position)).Y);
 			}
 		}
 	}

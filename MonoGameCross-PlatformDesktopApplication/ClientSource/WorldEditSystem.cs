@@ -25,8 +25,8 @@ namespace MultiplayerXeno
 		{
 			if(!enabled) return;
 			UI.EditorMenu();
-			MouseManager.LeftClick += PlacePrefab;
-			MouseManager.RightClick += DeletePrefab;
+			UI.LeftClick += PlacePrefab;
+			UI.RightClick += DeletePrefab;
 
 
 
@@ -34,40 +34,40 @@ namespace MultiplayerXeno
 
 		private static void DeletePrefab(Vector2Int Pos)
 		{
-			WorldTile tile = WorldManager.GetTileAtGrid(Pos);
+			WorldTile tile = WorldManager.Instance.GetTileAtGrid(Pos);
 
 			if (tile.ObjectAtLocation != null)
 			{
-				WorldManager.DeleteWorldObject(tile.ObjectAtLocation);
+				WorldManager.Instance.DeleteWorldObject(tile.ObjectAtLocation);
 				return;
 			}
 			if (tile.NorthEdge != null)
 			{
-				WorldManager.DeleteWorldObject(tile.NorthEdge);
+				WorldManager.Instance.DeleteWorldObject(tile.NorthEdge);
 				return;
 			}
 			if (tile.WestEdge != null)
 			{
-				WorldManager.DeleteWorldObject(tile.WestEdge);
+				WorldManager.Instance.DeleteWorldObject(tile.WestEdge);
 				return;
 			}
 			
-			WorldTile southTile = WorldManager.GetTileAtGrid(Pos+WorldManager.DirToVec2(Direction.South));
-			WorldTile eastTile = WorldManager.GetTileAtGrid(Pos+WorldManager.DirToVec2(Direction.East));
+			WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
+			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
 			if (eastTile.WestEdge != null)
 			{
-				WorldManager.DeleteWorldObject(eastTile.WestEdge);
+				WorldManager.Instance.DeleteWorldObject(eastTile.WestEdge);
 				return;
 			}
 			if (southTile.NorthEdge != null)
 			{
-				WorldManager.DeleteWorldObject(southTile.NorthEdge);
+				WorldManager.Instance.DeleteWorldObject(southTile.NorthEdge);
 				return;
 			}
 
 			if (tile.Surface != null)
 			{
-				WorldManager.DeleteWorldObject(tile.Surface);
+				WorldManager.Instance.DeleteWorldObject(tile.Surface);
 				return;
 			}
 
@@ -78,7 +78,7 @@ namespace MultiplayerXeno
 
 		private static bool IsValidPlacement(Vector2Int pos)
 		{
-			var tile = WorldManager.GetTileAtGrid(pos);
+			var tile = WorldManager.Instance.GetTileAtGrid(pos);
 			WorldTile tile2;
 			WorldObjectType type = PrefabManager.Prefabs[ActivePrefab];
 			if (type.Surface)
@@ -96,11 +96,11 @@ namespace MultiplayerXeno
 						return (tile.WestEdge == null);
 						break;
 					case Direction.East:
-						tile2 = WorldManager.GetTileAtGrid(tile.Position + WorldManager.DirToVec2(Direction.East));
+						tile2 = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						return (tile2.WestEdge == null);
 						break;
 					case Direction.South:
-						tile2 = WorldManager.GetTileAtGrid(tile.Position + WorldManager.DirToVec2(Direction.South));
+						tile2 = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						return (tile2.NorthEdge == null);
 						break;
 					default:
@@ -117,7 +117,7 @@ namespace MultiplayerXeno
 		{
 			if(!enabled) return;
 			if (!IsValidPlacement(Pos)) return;
-			WorldManager.MakeWorldObjectPublically(ActivePrefab,Pos,ActiveDir);
+			WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
 		}
 
 		private static KeyboardState lastState;

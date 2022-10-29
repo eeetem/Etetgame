@@ -39,6 +39,8 @@ namespace MultiplayerXeno
 			
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
+			serverConnection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
+			serverConnection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
 		
 			
 
@@ -59,7 +61,7 @@ namespace MultiplayerXeno
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
 				WorldTileData prefabData = (WorldTileData)bformatter.Deserialize(dataStream);
-				WorldManager.LoadWorldTile(prefabData);
+				WorldManager.Instance.LoadWorldTile(prefabData);
 
 
 
@@ -75,7 +77,7 @@ namespace MultiplayerXeno
 
 		private static void ReciveMapUpdate(RawData rawData, Connection connection)
 		{
-			WorldManager.LoadData(rawData.Data);
+			WorldManager.Instance.LoadData(rawData.Data);
 			
 		}
 		private static void ReciveGameUpdate(GameDataPacket packet, Connection connection)

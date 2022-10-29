@@ -58,6 +58,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\WorldObjectType.cs">
         <Link>SharedSource\WorldObjects\Prefabs\WorldObjectType.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Projectile.cs">
+        <Link>SharedSource\WorldObjects\Projectile.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
       </Compile>

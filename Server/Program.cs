@@ -19,11 +19,11 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		{
 			Console.WriteLine("Hello World!");
 			PrefabManager.MakePrefabs();
-			Networking.Start();
+			WorldManager.Instance.LoadData(File.ReadAllBytes("map.mapdata"));
 			PathFinding.GenerateNodes();
-
-			WorldManager.Init();
-			WorldManager.LoadData(File.ReadAllBytes("map.mapdata"));
+			Networking.Start();
+			
+			
 			
 			UpdateLoop();
 			
@@ -36,7 +36,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				stopWatch.Restart();
 
 
-				WorldManager.Update(MSperTick);
+				WorldManager.Instance.Update(MSperTick);
 		
 
 				stopWatch.Stop();

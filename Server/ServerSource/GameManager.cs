@@ -8,24 +8,32 @@ namespace MultiplayerXeno
 		public static Client? Player1;
 		public static Client? Player2;
 
-		
-	
 
+
+		public static bool gameStarted = false;
 		public static void StatGame()
 		{
+
 			if (Player1 == null || Player2 == null)
 			{
 				return;
 			}
+			
+			if (gameStarted)
+			{
+				return;
+			}
+
+			gameStarted = true;
 
 			
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
-			WorldManager.MakeWorldObjectPublically("Human", new Vector2Int(10, 5),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(10, 5),controllableData:cdata);
 
 
 			cdata = new ControllableData(false);
-			WorldManager.MakeWorldObjectPublically("Human", new Vector2Int(15, 5),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(15, 5),controllableData:cdata);
 
 		}
 

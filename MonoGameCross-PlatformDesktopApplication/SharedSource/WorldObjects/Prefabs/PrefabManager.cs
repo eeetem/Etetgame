@@ -30,7 +30,7 @@ namespace MultiplayerXeno
 				if (contollableObj != null)
 				{
 					controllableType = new ControllableType();
-					controllableType.moveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
+					controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
 				}
 
 				WorldObjectType type = new WorldObjectType(name,controllableType);
@@ -78,7 +78,7 @@ namespace MultiplayerXeno
 #if CLIENT
 
 				type.Transform = new Transform2();
-				type.Transform.Position = WorldManager.GridToWorldPos(Offset);
+				type.Transform.Position = Utility.GridToWorldPos(Offset);
 				type.DrawLayer = drawlayer;
 		
 				

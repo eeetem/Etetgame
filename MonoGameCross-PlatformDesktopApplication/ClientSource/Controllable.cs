@@ -9,6 +9,7 @@ namespace MultiplayerXeno
 	{
 		public static Controllable Selected { get; set; }
 
+
 		public bool IsMyTeam()
 		{
 			return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
@@ -19,7 +20,7 @@ namespace MultiplayerXeno
 
 			if (IsMyTeam())
 			{
-				//ui.fullUI
+				UI.FullUnitUI(this.worldObject);
 				
 			}
 			else
@@ -33,7 +34,14 @@ namespace MultiplayerXeno
 
 		}
 
-		public static void StartOrder(Vector2Int Position)
+		public static bool Targeting { get; private set; } = false;
+
+		public static void ToggleTarget()
+		{
+			Targeting = !Targeting;
+		}
+
+		public static void StartOrder(Vector2Int Position, bool rightclicked)
 		{
 			if (GameManager.IsPlayer1 != GameManager.IsPlayer1Turn) return;
 
@@ -41,7 +49,29 @@ namespace MultiplayerXeno
 			
 			if (Selected.IsPlayerOneTeam != GameManager.IsPlayer1) return;
 
-			Selected.MoveAction(Position);
+			if (Targeting)
+			{
+				if (rightclicked)
+				{
+					Targeting = false;
+				}
+				else
+				{
+					Selected.FireAction(Position);
+				}
+			}
+			else
+			{
+				if (rightclicked)
+				{
+					Selected.FaceAction(Position);
+				}
+				else
+				{
+					Selected.MoveAction(Position);
+				}
+			}
+			
 
 
 		}

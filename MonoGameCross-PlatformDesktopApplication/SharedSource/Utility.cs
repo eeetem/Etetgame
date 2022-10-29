@@ -1,13 +1,126 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MultiplayerXeno;
 
 namespace MultiplayerXeno
 {
 	public static class Utility
 	{ 
+        
+        public static Direction ToClampedDirection(Vector2 vector2)
+        {
+            vector2.Normalize();
+
+            float angle = vector2.ToAngle() * (float) (180 / Math.PI);
+
+            angle = (float) Math.Round(angle / 45) * 45;
+
+            Vector2 clamped = new Vector2(-(float) Math.Sin(angle * (Math.PI / 180)), (float) Math.Cos(angle * (Math.PI / 180)));
+
+            clamped.Normalize();
+
+            clamped.Round();
+
+            return Vec2ToDir(clamped);
+        }
+        public static Vector2Int DirToVec2(Direction dir)
+        {
+            dir = Utility.NormaliseDir(dir);
+            switch (dir)
+            {
+                case Direction.East:
+                    return new Vector2Int(1, 0);
+                case Direction.North:
+                    return new Vector2Int(0, -1);
+                case Direction.NorthEast:
+                    return new Vector2Int(1, -1);
+                case Direction.West:
+                    return new Vector2Int(-1, 0);
+                case Direction.South:
+                    return new Vector2Int(0, 1);
+                case Direction.SouthWest:
+                    return new Vector2Int(-1, 1);
+                case Direction.SouthEast:
+                    return new Vector2Int(1, 1);
+                case Direction.NorthWest:
+                    return new Vector2Int(-1, -1);
+            }
+
+            throw new Exception("impossible direction");
+        }
+        
+        
+        private const int SIZE = 180;
+
+        public static Vector2 GridToWorldPos(Vector2 gridpos)
+        {
+            Matrix2 isometricTransform = Matrix2.Multiply(Matrix2.CreateRotationZ((float) (Math.PI / 4)), Matrix2.CreateScale(1, 0.5f));
+
+            Vector2 transformVector = Vector2.Transform(new Vector2(gridpos.X * SIZE, gridpos.Y * SIZE), isometricTransform);
+
+            return transformVector;
+        }
+
+        public static Vector2 WorldPostoGrid(Vector2 worldPos, bool clamp = true)
+        {
+            Matrix2 isometricTransform = Matrix2.Multiply(Matrix2.CreateRotationZ((float) (Math.PI / 4)), Matrix2.CreateScale(1, 0.5f));
+            isometricTransform = Matrix2.Invert(isometricTransform);
+
+            Vector2 transformVector = Vector2.Transform(worldPos, isometricTransform);
+
+            Vector2 gridPos;
+
+            if (clamp)
+            {
+                gridPos = new Vector2((int) Math.Floor(transformVector.X / SIZE), (int) Math.Floor(transformVector.Y / SIZE));
+            }
+            else
+            {
+                gridPos = new Vector2(transformVector.X / SIZE, transformVector.Y / SIZE);
+            }
+
+            if (gridPos.X < 0)
+            {
+                gridPos.X = 0;
+            }
+
+            if (gridPos.Y < 0)
+            {
+                gridPos.Y = 0;
+            }
+
+            return gridPos;
+        }
+
+        public static Direction Vec2ToDir(Vector2Int vec2)
+        {
+            switch (vec2)
+            {
+                case (1, 0):
+                    return Direction.East;
+                case (0, -1):
+                    return Direction.North;
+                case (1, -1):
+                    return Direction.NorthEast;
+                case (-1, 0):
+                    return Direction.West;
+                case (0, 1):
+                    return Direction.South;
+                case (-1, 1):
+                    return Direction.SouthWest;
+                case (1, 1):
+                    return Direction.SouthEast;
+                case (-1, -1):
+                    return Direction.NorthWest;
+            }
+
+            throw new Exception("incorrect vector");
+        }
+
         public static Texture2D[] SplitTexture(Texture2D original, int partWidth, int partHeight, out int xCount, out int yCount){
         xCount = original.Width / partWidth + (original.Width % partWidth == 0 ? 0 : 1);//The number of textures in each horizontal row
         yCount = original.Height / partHeight + (original.Height % partHeight == 0 ? 0 : 1);//The number of textures in each vertical column

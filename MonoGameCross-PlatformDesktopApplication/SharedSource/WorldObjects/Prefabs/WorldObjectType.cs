@@ -22,6 +22,7 @@ namespace MultiplayerXeno
 			
 		}
 
+		
 		public Cover Cover;
 
 		public readonly ControllableType? Controllable;

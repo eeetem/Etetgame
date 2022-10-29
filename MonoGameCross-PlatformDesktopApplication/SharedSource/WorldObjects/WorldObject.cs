@@ -11,7 +11,7 @@ namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
-
+		
 		public WorldObject(WorldObjectType type, int id, WorldTile tileLocation)
 		{
 
@@ -36,7 +36,7 @@ namespace MultiplayerXeno
 			}
 
 			TileLocation.ObjectAtLocation = null;
-			var newTile = WorldManager.GetTileAtGrid(position);
+			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
 
@@ -61,6 +61,25 @@ namespace MultiplayerXeno
 			}
 
 			Facing = dir;
+#if CLIENT
+			WorldManager.Instance.CalculateFov();
+#endif
+			
+		}
+		
+		public void TakeDamage(int ammount)
+		{
+			Console.WriteLine(this + "got hit");
+			if (ControllableComponent != null)
+			{//let controlable handle it
+				ControllableComponent.TakeDamage(ammount);
+				
+			}
+			else
+			{
+				//enviroment destruction
+			}
+
 		}
 
 		public void Update(float gametime)
@@ -72,15 +91,20 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public readonly WorldObjectType Type;	
+		public readonly WorldObjectType? Type;	
 	
 		public Direction Facing { get; private set;}
 
 
 		public Cover GetCover()
 		{
+			if (Type != null)
+			{
+				return Type.Cover;
+			}
 
-			return Type.Cover;
+			return Cover.None;
+
 
 		}
 
@@ -100,7 +124,12 @@ namespace MultiplayerXeno
 
 		}
 
-
+		~WorldObject()
+		{
+			#if SERVER
+			Console.WriteLine("object is kill");
+			#endif
+		}
 
 	}
 	

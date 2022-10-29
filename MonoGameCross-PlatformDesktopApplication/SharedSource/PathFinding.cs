@@ -64,12 +64,132 @@ namespace MultiplayerXeno.Pathfinding
 
 		public static readonly object syncobj = new object();
 
-		public static List<Vector2Int> GetPath(Vector2Int from, Vector2Int to)
+		public static List<Vector2Int> GetAllPaths(Vector2Int from, int range)
+		{
+			return GetAllPaths(Nodes[from.X, from.Y], range);
+		}
+		public static List<Vector2Int> GetAllPaths(Node from, int range)
+		{
+			lock (syncobj) //just in case
+			{
+
+				var done = new List<Node>();
+				var inRange = new List<Vector2Int>();
+
+				var open = new PriorityQueue<Node, double>();
+				foreach (var node in from.ConnectedNodes)
+				{
+					if (node is null) continue;
+					// Add connecting nodes if traversable
+					if (node.Traversable(from))
+					{
+						// Calculate the Cost
+						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
+						node.State = NodeState.Open;
+						// Enqueue
+						open.Enqueue(node, node.TotalCost);
+					}
+				}
+
+				while (true)
+				{
+					// End Condition( Path not found )
+					if (open.Count == 0)
+					{
+						ResetNodes(done);
+						ResetNodes(open.UnorderedItems);
+						return inRange;
+					}
+
+					// Selecting next Element from queue
+					var current = open.Dequeue();
+
+					// Add it to the done list
+					done.Add(current);
+					
+				
+
+					current.State = NodeState.Closed;
+					
+					
+					if (current.CurrentCost <= range)
+					{
+						inRange.Add(current.Position);
+								
+					}
+					else
+					{
+						Console.WriteLine("ending at pos: "+ current.Position+" with cost: "+current.CurrentCost);
+						continue;
+					}
+
+
+
+					foreach (var connected in current.ConnectedNodes)
+					{
+						if (connected is null) continue;
+
+						if (!connected.Traversable(current) ||
+						    connected.State == NodeState.Closed)
+						{
+							continue; // Do ignore already checked and not traversable nodes.
+						}
+
+						// Adds a previously not "seen" node into the Queue
+						if (connected.State == NodeState.Unconsidered)
+						{
+							connected.Parent = current;
+							connected.CurrentCost =
+								current.CurrentCost + current.DistanceTo(connected) * connected.TraversalCostMultiplier;
+							connected.State = NodeState.Open;
+
+							open.Enqueue(connected, connected.CurrentCost);
+
+
+
+						}
+						else if (current != connected)
+						{
+							// Updating the cost of the node if the current way is cheaper than the previous
+							var newCCost = current.CurrentCost + current.DistanceTo(connected);
+							if (newCCost < connected.CurrentCost)
+							{
+								connected.Parent = current;
+								connected.CurrentCost = newCCost;
+								open.Enqueue(connected,connected.CurrentCost);//check again
+							}
+							
+						}
+						else
+						{
+							// Codacy made me do it.
+							throw new Exception(
+								"Detected the same node twice. Confusion how this could ever happen");
+						}
+					}
+				}
+			}
+
+		}
+		public struct PathFindResult
+		{
+			public  List<Vector2Int> Path;
+			public  double Cost;
+			public PathFindResult(List<Vector2Int> path, double cost)
+			{
+				Path = path;
+				Cost = cost;
+			}
+
+			
+		}
+
+		public static PathFindResult GetPath(Vector2Int from, Vector2Int to)
 		{
 			return GetPath(Nodes[from.X, from.Y], Nodes[to.X, to.Y]);
 		}
 
-		public static List<Vector2Int> GetPath(Node from, Node to)
+		public static PathFindResult GetPath(Node from, Node to)
 		{
 
 			lock (syncobj)//just in case
@@ -101,7 +221,7 @@ namespace MultiplayerXeno.Pathfinding
 					{
 						ResetNodes(done);
 						ResetNodes(open.UnorderedItems);
-						return new List<Vector2Int>();
+						return new PathFindResult(null, 0);
 					}
 
 					// Selecting next Element from queue
@@ -118,9 +238,11 @@ namespace MultiplayerXeno.Pathfinding
 						var ret = GeneratePath(to); // Create the Path
 
 						// Reset all Nodes that were used.
+						double cost = Nodes[ret.Last().X, ret.Last().Y].CurrentCost;
 						ResetNodes(done);
 						ResetNodes(open.UnorderedItems);
-						return ret;
+						
+						return new PathFindResult(ret, cost);
 					}
 
 					AddOrUpdateConnected(current, to, open);
@@ -215,7 +337,7 @@ namespace MultiplayerXeno.Pathfinding
 		/// <summary>
 		///     Gets a value indicating whether how costly it is to traverse over this node.
 		/// </summary>
-		public double TraversalCostMultiplier { get; }
+		public double TraversalCostMultiplier { get; } = 1;
 
 		/// <summary>
 		///     Gets or sets a value indicating whether to go from the start node to this node.
@@ -233,8 +355,8 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
-			if (WorldManager.GetTileAtGrid(this.Position).ObjectAtLocation != null) return false;
-			Cover obstacle = WorldManager.GetTileAtGrid(from.Position).GetCover(WorldManager.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
+			if (WorldManager.Instance.GetTileAtGrid(this.Position).ObjectAtLocation != null) return false;
+			Cover obstacle = WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
 			if (obstacle == Cover.Full) return false;
 
 			return true;

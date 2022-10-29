@@ -28,7 +28,8 @@ namespace CommonData
 	{
 		EndTurn=0,
 		Attack=1,
-		Move=2
+		Move=2,
+		Turn=3,
 	}
 
 

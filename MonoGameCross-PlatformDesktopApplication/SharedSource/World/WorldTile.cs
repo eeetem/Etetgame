@@ -96,10 +96,10 @@ namespace MultiplayerXeno
 
 		public void Wipe()
 		{
-			WorldManager.DeleteWorldObject(NorthEdge);
-			WorldManager.DeleteWorldObject(WestEdge);
-			WorldManager.DeleteWorldObject(ObjectAtLocation);
-			WorldManager.DeleteWorldObject(Surface);
+			WorldManager.Instance.DeleteWorldObject(NorthEdge);
+			WorldManager.Instance.DeleteWorldObject(WestEdge);
+			WorldManager.Instance.DeleteWorldObject(ObjectAtLocation);
+			WorldManager.Instance.DeleteWorldObject(Surface);
 
 		}
 
@@ -148,12 +148,24 @@ namespace MultiplayerXeno
 
 		public Cover GetCover(Direction dir)
 		{
+			WorldObject? obj = GetCoverObj(dir);
+		
+			return GetCoverObj(dir).GetCover();
+			
+
+
+
+		}
+
+		public WorldObject GetCoverObj(Direction dir)
+		{
+			WorldObject biggestCoverObj = new WorldObject(null,-1,null);
 			dir = Utility.NormaliseDir(dir);
-			Cover biggestCover = Cover.None;
+			//Cover biggestCover = Cover.None;
 			WorldTile? tileInDir=null;
-			if(WorldManager.IsPositionValid(Position + WorldManager.DirToVec2(dir)))
+			if(WorldManager.Instance.IsPositionValid(Position + Utility.DirToVec2(dir)))
 			{
-				tileInDir = WorldManager.GetTileAtGrid(Position + WorldManager.DirToVec2(dir));
+				tileInDir = WorldManager.Instance.GetTileAtGrid(Position + Utility.DirToVec2(dir));
 			}
 			
 		
@@ -162,112 +174,113 @@ namespace MultiplayerXeno
 			if (IsVisible)
 			{
 #endif
-				if (tileInDir?.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover() > biggestCover)
+				if (tileInDir?.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
 				{
-					biggestCover = tileInDir.ObjectAtLocation.GetCover();
+					biggestCoverObj = tileInDir.ObjectAtLocation;
+					
 				}
 				
 #if CLIENT
 			}
 #endif
-			Cover cover;
+			WorldObject coverObj;
 			switch (dir)
 			{
 				case Direction.East:
-					if(tileInDir?.WestEdge != null && tileInDir.WestEdge.GetCover()  > biggestCover)
+					if(tileInDir?.WestEdge != null && tileInDir.WestEdge.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = tileInDir.WestEdge.GetCover();
+						biggestCoverObj = tileInDir.WestEdge;
 					}
 					break;
 				case Direction.North:
-					if(tileAtPos.NorthEdge != null && tileAtPos.NorthEdge.GetCover()  > biggestCover)
+					if(tileAtPos.NorthEdge != null && tileAtPos.NorthEdge.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = tileAtPos.NorthEdge.GetCover();
+						biggestCoverObj = tileAtPos.NorthEdge;
 					}
 					break;
 				
 				case Direction.West:
-					if(tileAtPos.WestEdge != null && tileAtPos.WestEdge.GetCover()  > biggestCover)
+					if(tileAtPos.WestEdge != null && tileAtPos.WestEdge.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = tileAtPos.WestEdge.GetCover();
+						biggestCoverObj = tileAtPos.WestEdge;
 					}
 					break;
 				case Direction.South:
-					if(tileInDir?.NorthEdge != null && tileInDir.NorthEdge.GetCover()  > biggestCover)
+					if(tileInDir?.NorthEdge != null && tileInDir.NorthEdge.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = tileInDir.NorthEdge.GetCover();
+						biggestCoverObj = tileInDir.NorthEdge;
 					}
 					break;
 				case Direction.SouthWest:
-					cover = GetCover(Direction.South);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.South);
+					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
-					cover = GetCover(Direction.West);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.West);
+					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
 					if (tileInDir == null)
 					{
 						break;
 					}
-					cover = tileInDir.GetCover(Direction.North);
-					if (cover > biggestCover)
+					coverObj = tileInDir.GetCoverObj(Direction.North);
+					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
-					cover = tileInDir.GetCover(Direction.East);
+					coverObj = tileInDir.GetCoverObj(Direction.East);
 					
 
-					if(cover  > biggestCover)
+					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 					break;
 				case Direction.SouthEast:
-					cover = GetCover(Direction.South);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.South);
+					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
-					cover = GetCover(Direction.East);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.East);
+					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
 					if (tileInDir == null)
 					{
 						break;
 					}
-					cover = tileInDir.GetCover(Direction.North);
-					if (cover > biggestCover)
+					coverObj = tileInDir.GetCoverObj(Direction.North);
+					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
-					cover = tileInDir.GetCover(Direction.West);
+					coverObj = tileInDir.GetCoverObj(Direction.West);
 					
 
-					if(cover  > biggestCover)
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 					break;
 				case Direction.NorthWest:
-					cover = GetCover(Direction.North);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.North);
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
-					cover = GetCover(Direction.West);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.West);
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
 					if (tileInDir == null)
@@ -275,49 +288,49 @@ namespace MultiplayerXeno
 						break;
 					}
 
-					cover = tileInDir.GetCover(Direction.East);
-					if (cover > biggestCover)
+					coverObj = tileInDir.GetCoverObj(Direction.East);
+					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
-					cover = tileInDir.GetCover(Direction.South);
-					if(cover  > biggestCover)
+					coverObj = tileInDir.GetCoverObj(Direction.South);
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
 					
 					break;
 				case Direction.NorthEast:
-					cover = GetCover(Direction.North);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.North);
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
-					cover = GetCover(Direction.East);
-					if(cover  > biggestCover)
+					coverObj = GetCoverObj(Direction.East);
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
-						biggestCover = cover;
+						biggestCoverObj = coverObj;
 					}
 
 					if (tileInDir == null)
 					{
 						break;
 					}
-						cover = tileInDir.GetCover(Direction.West);
-						if (cover > biggestCover)
-						{
-							biggestCover = cover;
-						}
+					coverObj = tileInDir.GetCoverObj(Direction.West);
+					if (coverObj.GetCover() > biggestCoverObj.GetCover())
+					{
+						biggestCoverObj = coverObj;
+					}
 
-						cover = tileInDir.GetCover(Direction.South);
+					coverObj = tileInDir.GetCoverObj(Direction.South);
 					
 
-						if(cover  > biggestCover)
-						{
-							biggestCover = cover;
-						}
+					if(coverObj.GetCover() > biggestCoverObj.GetCover())
+					{
+						biggestCoverObj = coverObj;
+					}
 					
 					break;
 				
@@ -325,8 +338,13 @@ namespace MultiplayerXeno
 			
 		
 
-			return biggestCover;
+			return biggestCoverObj;
 		}
-		
+
+		~WorldTile()
+		{
+			Console.WriteLine("deleted at "+this.Position);
+		}
+
 	}
 }

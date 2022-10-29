@@ -58,6 +58,8 @@ namespace MultiplayerXeno
 			
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			connection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
+			connection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
+			connection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
 			//3. Register packet listeners.
 			//connection.RegisterRawDataHandler("HelloWorld", (rawData, con) => Console.WriteLine($"RawDataPacket received. Data: {rawData.ToUTF8String()}"));
 		
@@ -132,7 +134,7 @@ namespace MultiplayerXeno
 
 		private static void SendMapData(Connection connection)
 		{
-			WorldManager.SaveData("temp.mapdata");
+			WorldManager.Instance.SaveData("temp.mapdata");
 			byte[] mapData = File.ReadAllBytes("temp.mapdata");
 			connection.SendRawData("mapUpdate", mapData);
 

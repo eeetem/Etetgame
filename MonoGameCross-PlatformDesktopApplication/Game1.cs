@@ -34,7 +34,7 @@ namespace MultiplayerXeno
 			Camera.Init(GraphicsDevice,Window);
 			//WorldEditSystem.Init();
 
-			WorldManager.Init(GraphicsDevice);
+			WorldManager.Instance.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();
 			base.Initialize();
@@ -76,9 +76,10 @@ namespace MultiplayerXeno
 
 			
 			Camera.Update(gameTime);
+			//MouseManager.Update(gameTime);
 			WorldEditSystem.Update(gameTime);
-			WorldManager.Update(gameTime.ElapsedGameTime.Milliseconds);
-			MouseManager.Update(gameTime);
+			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
+			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
 		}
@@ -88,7 +89,7 @@ namespace MultiplayerXeno
 		
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			WorldManager.Draw(gameTime);
+			WorldManager.Instance.Draw(gameTime);
 			//GraphicsDevice.Clear(Color.Black);
 			UI.Render(gameTime.ElapsedGameTime.Milliseconds);
 
