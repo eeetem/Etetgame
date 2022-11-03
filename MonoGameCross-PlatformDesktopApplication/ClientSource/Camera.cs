@@ -9,8 +9,8 @@ namespace MultiplayerXeno
 	public static class Camera
 	{
 
-		public static OrthographicCamera Cam;
-		
+		private static OrthographicCamera Cam { get; set; }
+
 		public static void Init(GraphicsDevice graphicsDevice, GameWindow window)
 		{
 			var viewportAdapter = new BoxingViewportAdapter(window, graphicsDevice, 1920, 1080);
@@ -18,11 +18,25 @@ namespace MultiplayerXeno
 			Cam.MinimumZoom = 0.1f;
 			Cam.MaximumZoom = 10;
 		}
-		
-	
+
+
+		public static Matrix GetViewMatrix()
+		{
+			return Cam.GetViewMatrix();
+		}
+
+		public static void SetPos(Vector2 vec)
+		{
+			vec = Utility.GridToWorldPos(vec);
+			vec.X -= Cam.BoundingRectangle.Width / 2;
+			vec.Y -= Cam.BoundingRectangle.Height / 2;
+			Cam.Position = vec;
+		}
+
 
 		private static Vector2 GetMovementDirection()
 		{
+			
 			var movementDirection = Vector2.Zero;
 			var state = Keyboard.GetState();
 			if (state.IsKeyDown(Keys.S))

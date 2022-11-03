@@ -24,6 +24,7 @@ namespace MultiplayerXeno
 		private static GraphicsDevice graphicsDevice;
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
+		private static Texture2D[] healthIndicator = new Texture2D[2];
 
 		public static void Init(ContentManager content, GraphicsDevice graphicsdevice)
 		{
@@ -38,14 +39,13 @@ namespace MultiplayerXeno
 			
 
 			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("coverIndicator");
-			
-
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 
 			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("indicators");
-			
-
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
+			
+			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("healthbar");
+			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
 
 			previewMoves[0] = new List<Vector2Int>();
 			previewMoves[1] = new List<Vector2Int>();
@@ -362,8 +362,32 @@ namespace MultiplayerXeno
 			foreach (var indicator in indicators)
 			{
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.0f,-0.6f))+new Vector2(60*offset,0),Color.White);
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.2f,-0.8f))+new Vector2(60*offset,0),Color.White);
 				offset++;
+			}
+			
+			for (int i = 0; i < controllable.Type.MaxAwareness; i++)
+			{
+				var indicator = healthIndicator[1];
+				if (controllable.Type.MaxAwareness - i > controllable.Awareness)
+				{
+					indicator= healthIndicator[0];
+				}
+
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-0.8f,-0.4f))+new Vector2(45*i,0),Color.Green);	
+				
+			}
+
+			for (int i = 0; i < controllable.Type.MaxHealth; i++)
+			{
+				var indicator = healthIndicator[1];
+				if (controllable.Type.MaxHealth - i > controllable.Health)
+				{
+					indicator= healthIndicator[0];
+				}
+
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-0.5f,-0.1f))+new Vector2(45*i,0),Color.White);	
+				
 			}
 		}
 		
@@ -381,7 +405,7 @@ namespace MultiplayerXeno
 
 					if (Controllable.Targeting)
 					{
-						previewShot = WorldManager.Instance.Raycast(Controllable.Selected.worldObject.TileLocation.Position, currentPos);
+						previewShot = WorldManager.Instance.Raycast(Controllable.Selected.worldObject.TileLocation.Position, currentPos,Cover.Low);
 					}
 					else
 					{
@@ -415,7 +439,7 @@ namespace MultiplayerXeno
 
 			
 			UI.Desktop.Render();
-			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 			
 			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0) return;
 			
@@ -489,7 +513,7 @@ namespace MultiplayerXeno
 				foreach (var path in moves)
 				{
 				
-					spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+					spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 					if(path.X < 0 || path.Y < 0) return;
 					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 
@@ -522,7 +546,7 @@ namespace MultiplayerXeno
 			{
 				
 
-				spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 
 				var startPoint = Utility.GridToWorldPos(previewShot.StartPoint);
 				var endPoint = Utility.GridToWorldPos(previewShot.EndPoint);
@@ -539,7 +563,7 @@ namespace MultiplayerXeno
 				
 				foreach (var path in previewPath)
 				{
-					spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+					spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 					if(path.X < 0 || path.Y < 0) return;
 					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 				

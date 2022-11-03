@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml;
 using CommonData;
@@ -180,7 +181,7 @@ namespace MultiplayerXeno
 
 			if (type.Controllable != null && data.ControllableData != null)
 			{
-				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value.Team1);
+				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
 			}
 
@@ -221,8 +222,9 @@ namespace MultiplayerXeno
 
 	
 
-		public RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell)
+		public RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell,Cover minHitCover)
 		{
+
 			Vector2 startPos = (Vector2) startcell + new Vector2(0.5f, 0.5f);
 			Vector2 endPos = (Vector2) endcell + new Vector2(0.5f, 0.5f);
 			RayCastOutcome result = new RayCastOutcome(startPos, endPos);
@@ -231,6 +233,7 @@ namespace MultiplayerXeno
 				result.hit = false;
 				return result;
 			}
+			
 
 			Vector2Int checkingSquare = new Vector2Int(startcell.X, startcell.Y);
 
@@ -289,14 +292,19 @@ namespace MultiplayerXeno
 				//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
 
 				WorldObject hitobj = tilefrom.GetCoverObj(direc + 4);
-				Cover c = hitobj.GetCover();
-				if (c == Cover.Full)
+				if (hitobj.Id != -1 &&hitobj.TileLocation.Position != startcell)
 				{
-					result.VectorToCenter = collisionVector;
-					result.hit = true;
-					result.hitObj = hitobj;
-					return result;
+					Cover c = hitobj.GetCover();
+					if (c >= minHitCover)
+					{
+						result.VectorToCenter = collisionVector;
+						result.hit = true;
+						result.hitObj = hitobj;
+						return result;
+					}
 				}
+
+			
 
 				if (endcell == checkingSquare)
 				{
@@ -306,11 +314,12 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public void DeleteWorldObject(WorldObject obj)
+		public void DeleteWorldObject(WorldObject? obj)
 		{
 			if (obj == null) return;
 
 			DeleteWorldObject(obj.Id);
+			
 		}
 
 		public void DeleteWorldObject(int id)
@@ -326,6 +335,9 @@ namespace MultiplayerXeno
 			Obj.TileLocation.Remove(id);
 			//obj.dispose()
 			WorldObjects.Remove(id);
+			#if CLIENT
+			CalculateFov();
+			#endif
 		}
 
 		public  WorldTile GetTileAtGrid(Vector2Int pos)

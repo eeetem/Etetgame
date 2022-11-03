@@ -41,9 +41,22 @@ namespace CommonData
 	public partial struct ControllableData
 	{
 		public bool Team1;
+		public int ActionPoints;
+		public int MovePoints;
+		public int TurnPoints;
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
+			ActionPoints = -1;
+			MovePoints = -1;
+			TurnPoints = -1;
+		}
+		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints)
+		{
+			Team1 = team1;
+			ActionPoints = actionPoints;
+			MovePoints = movePoints;
+			TurnPoints = turnPoints;
 		}
 	}
 	public enum Cover

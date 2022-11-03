@@ -107,7 +107,7 @@ namespace MultiplayerXeno
 					foreach (var tile in positionsToCheck)
 					{
 						if(!IsPositionValid(tile)) continue;
-						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile);
+						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile,Cover.Full);
 						RecentFOVRaycasts.Add(cast);
 						if (cast.hit) continue;
 						GetTileAtGrid(tile).IsVisible = true;
@@ -137,7 +137,7 @@ namespace MultiplayerXeno
 			{
 				if (list == null) continue;
 				list.Sort(new EntityDrawOrderCompare());
-				spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 				foreach (var worldObject in list)
 				{
 					var sprite = worldObject.GetSprite();

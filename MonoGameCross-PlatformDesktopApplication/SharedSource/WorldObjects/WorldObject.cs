@@ -116,7 +116,7 @@ namespace MultiplayerXeno
 			data.Id = this.Id;
 			if (ControllableComponent != null)
 			{
-				ControllableData cdata = new ControllableData(ControllableComponent.IsPlayerOneTeam);
+				ControllableData cdata = ControllableComponent.GetData();
 				data.ControllableData = cdata;
 			}
 

@@ -14,8 +14,9 @@ namespace MultiplayerXeno
 	public partial class Controllable
 	{
 		public WorldObject worldObject { get; private set; }
-		private ControllableType Type;
-		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type)
+		public ControllableType Type { get; private set; }
+
+		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, int movePoints = -1,  int turnPoints = -1, int actionPoints = -1)
 		{
 			this.worldObject = worldObject;
 			Type = type;
@@ -23,14 +24,27 @@ namespace MultiplayerXeno
 #if CLIENT
 			WorldManager.Instance.CalculateFov();
 #endif
+			if (movePoints != -1)
+			{
+				this.movePoints = movePoints;
+			}
+			if (actionPoints != -1)
+			{
+				this.actionPoints = actionPoints;
+			}
+			if (turnPoints != -1)
+			{
+				this.turnPoints = turnPoints;
+			}
 			
+
 		}
 		public int movePoints { get; private set; } = 2;
 		public int turnPoints { get; private set; } = 2;
 		public int actionPoints { get; private set; } = 1;
 
 		public int Health = 5;
-		public int Awareness = 5;
+		public int Awareness = 2;
 
 		public List<Vector2Int>[] GetPossibleMoveLocations()
 		{ 
@@ -49,7 +63,17 @@ namespace MultiplayerXeno
 		{
 			
 			Console.WriteLine(this + " hit for "+ammount);
-			Health -= ammount;
+			if (Awareness > 0)
+			{
+				Awareness--;
+				Health--;
+			}
+			else
+			{
+				Health -= ammount;
+			}
+
+			
 			if (Health <= 0)
 			{
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
@@ -68,6 +92,15 @@ namespace MultiplayerXeno
 			movePoints = 2;
 			turnPoints = 2;
 			actionPoints = 1;
+			if (Awareness < 0)
+			{
+				Awareness = 0;
+			}
+
+			if (Awareness < Type.MaxAwareness)
+			{
+				Awareness++;
+			}
 
 		}
 
@@ -196,9 +229,17 @@ namespace MultiplayerXeno
 
 		public void DoFire(Vector2Int pos)
 		{
+#if CLIENT
+			Camera.SetPos(pos);
+			Targeting = false;
+#endif
+
+			
 			if (actionPoints > 0)
 			{
 				actionPoints--;
+				Awareness--;
+
 			}
 			else
 			{
@@ -209,7 +250,7 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			Projectile p = new Projectile(worldObject.TileLocation.Position,pos,1);
+			Projectile p = new Projectile(worldObject.TileLocation.Position,pos,3);
 			p.Fire();
 
 		}
@@ -242,6 +283,13 @@ namespace MultiplayerXeno
 				}
 			}
 
+		}
+
+		public ControllableData GetData()
+		{
+			var data = new ControllableData(this.IsPlayerOneTeam,actionPoints,movePoints,turnPoints);
+
+			return data;
 		}
 	}
 }

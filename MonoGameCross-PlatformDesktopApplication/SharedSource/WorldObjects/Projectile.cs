@@ -10,7 +10,7 @@ namespace MultiplayerXeno
 		public Projectile(Vector2Int from, Vector2Int to, int dmg)
 		{
 			this.dmg = dmg;
-			result = WorldManager.Instance.Raycast(from, to);
+			result = WorldManager.Instance.Raycast(from, to, Cover.Low);
 		}
 
 		public void Fire()
