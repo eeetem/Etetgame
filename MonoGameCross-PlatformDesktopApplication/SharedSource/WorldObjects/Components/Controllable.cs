@@ -21,9 +21,11 @@ namespace MultiplayerXeno
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
+			Health = type.MaxHealth;
 #if CLIENT
 			WorldManager.Instance.CalculateFov();
 #endif
+			StartTurn();
 			if (movePoints != -1)
 			{
 				this.movePoints = movePoints;
@@ -37,14 +39,14 @@ namespace MultiplayerXeno
 				this.turnPoints = turnPoints;
 			}
 			
-
+			
 		}
 		public int movePoints { get; private set; } = 2;
 		public int turnPoints { get; private set; } = 2;
 		public int actionPoints { get; private set; } = 1;
 
-		public int Health = 5;
-		public int Awareness = 2;
+		public int Health = 0;
+		public int Awareness = 0;
 
 		public List<Vector2Int>[] GetPossibleMoveLocations()
 		{ 

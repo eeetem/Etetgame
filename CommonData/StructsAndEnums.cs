@@ -26,6 +26,8 @@ namespace CommonData
 	{
 		public Direction Facing;
 		public int Id;
+
+		public bool fliped;
 		//health
 		public string Prefab;
 		public ControllableData? ControllableData;
@@ -35,6 +37,7 @@ namespace CommonData
 			this.Id = -1;
 			Facing = Direction.North;
 			ControllableData = null;
+			fliped = false;
 		}
 	}
 	[Serializable]

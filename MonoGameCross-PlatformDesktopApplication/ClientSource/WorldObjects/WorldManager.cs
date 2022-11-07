@@ -107,7 +107,7 @@ namespace MultiplayerXeno
 					foreach (var tile in positionsToCheck)
 					{
 						if(!IsPositionValid(tile)) continue;
-						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile,Cover.Full);
+						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile,Cover.Full,true);
 						RecentFOVRaycasts.Add(cast);
 						if (cast.hit) continue;
 						GetTileAtGrid(tile).IsVisible = true;
@@ -121,17 +121,23 @@ namespace MultiplayerXeno
 
 		public void Draw(GameTime gameTime)
 		{
-			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
-			foreach (var WO in new List<WorldObject>(WorldObjects.Values))
-			{
-				if (DrawOrderSortedEntities[WO.Type.DrawLayer] == null)
-				{
-					DrawOrderSortedEntities[WO.Type.DrawLayer] = new List<WorldObject>();
-				}
-				DrawOrderSortedEntities[WO.Type.DrawLayer].Add(WO);
 			
-			}
+			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
+			lock (WorldManager.syncobj)
+			{
 
+
+				foreach (var WO in WorldObjects.Values)
+				{
+					if (DrawOrderSortedEntities[WO.Type.DrawLayer] == null)
+					{
+						DrawOrderSortedEntities[WO.Type.DrawLayer] = new List<WorldObject>();
+					}
+
+					DrawOrderSortedEntities[WO.Type.DrawLayer].Add(WO);
+
+				}
+			}
 
 			foreach (var list in DrawOrderSortedEntities)
 			{

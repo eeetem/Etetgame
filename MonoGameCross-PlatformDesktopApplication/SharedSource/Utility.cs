@@ -224,17 +224,22 @@ namespace MultiplayerXeno
 
         public static Direction NormaliseDir(Direction dir)
         {
+            return NormaliseDir((int) dir);
+        }
+
+        public static Direction NormaliseDir(int dir)
+        {
             while (dir < 0)
             {
                 dir += 8;
             }
 
-            while (dir > (Direction) 7)
+            while (dir > 7)
             {
                 dir -= 8;
             }
 
-            return dir;
+            return (Direction)dir;
         }
     }
     

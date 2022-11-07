@@ -56,6 +56,7 @@ namespace MultiplayerXeno
 			Textures.Add("basicFloor",Content.Load<Texture2D>("basicFloor"));
 			Textures.Add("Human",Content.Load<Texture2D>("Human"));
 			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
+			Textures.Add("basicHalfWall",Content.Load<Texture2D>("basicHalfWall"));
 
 			PrefabManager.MakePrefabs();
 			WorldEditSystem.GenerateUI();
@@ -71,8 +72,6 @@ namespace MultiplayerXeno
 		{
 			
 			
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-				Exit();
 
 			
 			Camera.Update(gameTime);

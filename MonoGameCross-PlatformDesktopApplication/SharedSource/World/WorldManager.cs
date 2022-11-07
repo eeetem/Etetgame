@@ -17,7 +17,7 @@ namespace MultiplayerXeno
 		private readonly WorldTile[,] GridData;
 
 		private Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>();
-
+	
 		private int NextId = 0;
 
 		private static WorldManager instance;
@@ -127,7 +127,7 @@ namespace MultiplayerXeno
 			data.Id = id;
 			data.Facing = facing;
 			data.ControllableData = controllableData;
-			return MakeWorldObjectFromData(data, GetTileAtGrid(position), true);
+			return MakeWorldObjectFromData(data, GetTileAtGrid(position),true);
 		}
 
 		private WorldObject MakeWorldObjectFromData(WorldObjectData data, WorldTile tile, bool UpdateTile = false)
@@ -143,6 +143,7 @@ namespace MultiplayerXeno
 
 			WorldObjectType type = PrefabManager.Prefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, data.Id, tile);
+			WO.fliped = data.fliped;
 			WO.Face(data.Facing);
 
 			WorldTile newTile;
@@ -163,11 +164,15 @@ namespace MultiplayerXeno
 					case Direction.East:
 						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						newTile.WestEdge = WO;
+						WO.Face(Direction.West);
+						WO.fliped = true;
 						WO.TileLocation = newTile;
 						break;
 					case Direction.South:
 						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						newTile.NorthEdge = WO;
+						WO.Face(Direction.North);
+						WO.fliped = true;
 						WO.TileLocation = newTile;
 						break;
 					default:
@@ -185,8 +190,12 @@ namespace MultiplayerXeno
 				WO.ControllableComponent = component;
 			}
 
-			WorldObjects.EnsureCapacity(data.Id + 1);
-			WorldObjects[data.Id] = WO;
+			lock (syncobj)
+			{
+				
+			
+				WorldObjects.EnsureCapacity(data.Id + 1);
+				WorldObjects[data.Id] = WO;
 #if SERVER
 			//this is resulted when a singlar object is created outside the world manager(the world manager deals with full tiles exclusively)
 			//this could cause issues if multiple objects are cerated on a tile in quick succsesion - but other than loading the map(which happends tile by tile rather than object by object) it shouldnt happen
@@ -195,7 +204,7 @@ namespace MultiplayerXeno
 				Networking.SendTileUpdate(WO.TileLocation);
 			}
 #endif
-
+			}
 			return WO;
 		}
 
@@ -222,7 +231,7 @@ namespace MultiplayerXeno
 
 	
 
-		public RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell,Cover minHitCover)
+		public RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell,Cover minHitCover,bool ignoreControllables = false)
 		{
 
 			Vector2 startPos = (Vector2) startcell + new Vector2(0.5f, 0.5f);
@@ -291,8 +300,8 @@ namespace MultiplayerXeno
 				WorldTile tilefrom = GetTileAtGrid(tile.Position + Utility.DirToVec2(direc));
 				//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
 
-				WorldObject hitobj = tilefrom.GetCoverObj(direc + 4);
-				if (hitobj.Id != -1 &&hitobj.TileLocation.Position != startcell)
+				WorldObject hitobj = tilefrom.GetCoverObj(direc + 4,ignoreControllables);
+				if (hitobj.Id != -1 && !( hitobj.TileLocation.Position == startcell && (hitobj.TileLocation.ObjectAtLocation == hitobj || hitobj.GetCover() != Cover.Full)))//this is super hacky and convoluted
 				{
 					Cover c = hitobj.GetCover();
 					if (c >= minHitCover)
@@ -363,15 +372,21 @@ namespace MultiplayerXeno
 			}
 		}
 
-		
+		public static readonly object syncobj = new object();
+
 
 		public void Update(float gameTime)
 		{
 			//Console.WriteLine(GridData[15,5].WestEdge);
-			foreach (var obj in new List<WorldObject>(WorldObjects.Values))
+			lock (syncobj)
 			{
-				obj.Update(gameTime);
+
+				foreach (var obj in WorldObjects.Values)
+				{
+					obj.Update(gameTime);
+				}
 			}
+
 
 			//	WipeGrid();
 			//	foreach (var obj in new List<WorldObject>(WorldObjects.Values))

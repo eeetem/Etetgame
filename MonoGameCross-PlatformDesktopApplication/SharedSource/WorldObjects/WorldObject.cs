@@ -43,6 +43,7 @@ namespace MultiplayerXeno
 
 		}
 
+		public bool fliped = false;//for display back texture
 		public void Face(Direction dir)
 		{
 			if (!Type.Faceable)
@@ -78,6 +79,11 @@ namespace MultiplayerXeno
 			else
 			{
 				//enviroment destruction
+				if (TileLocation.ObjectAtLocation == null) return;
+
+				var obj = TileLocation.ObjectAtLocation;
+
+			
 			}
 
 		}
@@ -114,6 +120,8 @@ namespace MultiplayerXeno
 			WorldObjectData data = new WorldObjectData(Type.TypeName);
 			data.Facing = this.Facing;
 			data.Id = this.Id;
+			data.fliped = this.fliped;
+
 			if (ControllableComponent != null)
 			{
 				ControllableData cdata = ControllableComponent.GetData();
@@ -126,9 +134,9 @@ namespace MultiplayerXeno
 
 		~WorldObject()
 		{
-			#if SERVER
-			Console.WriteLine("object is kill");
-			#endif
+			//#if SERVER
+			//Console.WriteLine("object is kill");
+		//	#endif
 		}
 
 	}

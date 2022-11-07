@@ -34,8 +34,8 @@ namespace MultiplayerXeno
 
 			
 			Desktop = new Desktop();
-			Desktop.TouchDown += MouseClicked;
-		//	Desktop.TouchUp += MouseManager.UiUnlock;
+			Desktop.TouchDown += MouseDown;
+			Desktop.TouchUp += MouseUp;
 			
 
 			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("coverIndicator");
@@ -55,9 +55,11 @@ namespace MultiplayerXeno
 
 		public static event MouseClick RightClick;
 		public static event MouseClick LeftClick;
+		public static event MouseClick RightClickUp;
+		public static event MouseClick LeftClickUp;
 
-
-		public static void MouseClicked(object? sender, EventArgs e)
+		private static MouseState lastState;
+		public static void MouseDown(object? sender, EventArgs e)
 		{
 			if (UI.Desktop.IsMouseOverGUI)
 			{
@@ -73,10 +75,27 @@ namespace MultiplayerXeno
 			{
 				RightClick?.Invoke(gridClick);
 			}
-
-
-	
+			lastState = mouseState;
 		}
+		public static void MouseUp(object? sender, EventArgs e)
+		{
+			if (UI.Desktop.IsMouseOverGUI)
+			{
+				return;//let myra do it's thing
+			}
+			var mouseState = Mouse.GetState();
+			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			if (lastState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+			{
+				LeftClickUp?.Invoke(gridClick);
+			}
+			if (lastState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
+			{
+				RightClickUp?.Invoke(gridClick);
+			}
+
+		}
+
 	
 
 
@@ -393,7 +412,7 @@ namespace MultiplayerXeno
 		
 		 static Vector2Int lastMousePos;
 		static List<Vector2Int> previewPath = new List<Vector2Int>();
-		private static WorldManager.RayCastOutcome previewShot;
+		private static Projectile previewShot = new Projectile(new Vector2Int(0,0),new Vector2Int(0,0),0);
 
 		public static void Update(float deltatime)
 		{
@@ -405,7 +424,8 @@ namespace MultiplayerXeno
 
 					if (Controllable.Targeting)
 					{
-						previewShot = WorldManager.Instance.Raycast(Controllable.Selected.worldObject.TileLocation.Position, currentPos,Cover.Low);
+						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position, currentPos,0);
+
 					}
 					else
 					{
@@ -441,7 +461,7 @@ namespace MultiplayerXeno
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 			
-			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0) return;
+			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0 ||TileCoordinate.X >= 100 || TileCoordinate.Y >= 100 ) return;
 			
 			for (int i = 0; i < 8; i++)
 			{
@@ -464,34 +484,34 @@ namespace MultiplayerXeno
 				spriteBatch.Draw(indicator, Mousepos,c);
 			}
 			spriteBatch.End();
+/*
+		//raycastdebug
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			var templist = new List<WorldManager.RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
 
-		/*raycastdebug
-			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-			var templist = new List<WorldManager.Instance.RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
-			templist.Add(WorldManager.Instance.Raycast(new Vector2Int(5,5), TileCoordinate));
-			
 			foreach (var cast in templist)
 			{
 
 				spriteBatch.DrawLine(Utility.GridToWorldPos(cast.StartPoint),Utility.GridToWorldPos(cast.EndPoint),Color.Green,5);
-				if(cast.CollisionPoint.Count == 0) break;
+				if(cast.CollisionPoint.Count == 0) continue;
 				spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.CollisionPoint.Last()), 5, 10, Color.Red, 5f);
 				spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPoint.Last()), Utility.GridToWorldPos(cast.CollisionPoint.Last())+(Utility.GridToWorldPos(cast.VectorToCenter)/2f),Color.Red,5);
 
+				
 				foreach (var point in cast.CollisionPoint)
 				{
-					
 					spriteBatch.DrawCircle(Utility.GridToWorldPos(point), 5, 10, Color.Green, 5f);
 				}
+				spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.CollisionPoint.Last()),15,10,Color.Yellow,1f);
 				
 			}
 			
 			spriteBatch.End();
 		
 			
-			
-			
 			*/
+			
+			
 
 /* griddebug
 			spriteBatch.Begin(transformMatrix: Camera.Cam.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
@@ -548,12 +568,39 @@ namespace MultiplayerXeno
 
 				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 
-				var startPoint = Utility.GridToWorldPos(previewShot.StartPoint);
-				var endPoint = Utility.GridToWorldPos(previewShot.EndPoint);
-				spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.Red,10);
-				if (previewShot.hit)
+				var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
+				var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
+				
+				spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.Green,10);
+				if (previewShot.covercast.HasValue)
 				{
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.CollisionPoint.Last()),15,10,Color.Yellow,50f);
+					Color c = Color.Green;
+					var coverPoint = Utility.GridToWorldPos(previewShot.covercast.Value.CollisionPoint.Last());
+
+					switch (previewShot.covercast.Value.hitObj.GetCover())
+					{
+						case Cover.None:
+							c = Color.Green;
+							break;
+						case Cover.Low:
+							c = Color.Yellow;
+							break;
+						case Cover.High:
+							c = Color.Red;
+							break;
+						default:
+							Console.WriteLine("error: full cover on preview shot");
+							break;
+
+					}
+					spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,10);
+				}
+				
+
+				
+				if (previewShot.result.hit)
+				{
+					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint.Last()),15,10,Color.Yellow,50f);
 				}
 				spriteBatch.End();
 				

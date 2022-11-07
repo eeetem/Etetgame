@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using CommonData;
 using Network;
 using Network.Converter;
@@ -28,7 +29,7 @@ namespace MultiplayerXeno
 
 			serverConnection.ConnectionClosed += (a, s) => UI.ShowMessage("Lost connection", a.ToString());
 				
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
+		
 			
 			serverConnection.RegisterRawDataHandler("mapUpdate",ReciveMapUpdate);
 			serverConnection.RegisterStaticPacketHandler<GameDataPacket>(ReciveGameUpdate);
@@ -41,6 +42,9 @@ namespace MultiplayerXeno
 			serverConnection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
+			
+			Thread.Sleep(100);//give server  a second to register the packet handler
+			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
 		
 			
 

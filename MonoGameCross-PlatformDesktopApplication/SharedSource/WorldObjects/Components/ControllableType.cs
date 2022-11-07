@@ -5,11 +5,11 @@ namespace MultiplayerXeno
 	public class ControllableType
 	{
 		public int MoveRange = 4;
-		public int SightRange = 10;
+		public int SightRange = 5;
 
 
 		public int MaxHealth = 5;
-		public int MaxAwareness = 2;
+		public int MaxAwareness = 1;
 
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{

@@ -8,9 +8,13 @@ namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
-		
+
 		public Sprite GetSprite()
 		{
+			if (fliped)
+			{
+				return Type.spriteSheet[(int)Utility.NormaliseDir((int)Facing+4)];
+			}
 			return Type.spriteSheet[(int)Facing];
 		}
 	}

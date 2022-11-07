@@ -357,7 +357,7 @@ namespace MultiplayerXeno.Pathfinding
 		{
 			if (WorldManager.Instance.GetTileAtGrid(this.Position).ObjectAtLocation != null) return false;
 			Cover obstacle = WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
-			if (obstacle == Cover.Full) return false;
+			if (obstacle > Cover.None) return false;
 
 			return true;
 		}

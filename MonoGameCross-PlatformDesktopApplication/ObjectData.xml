@@ -9,7 +9,11 @@
   <sprite layer = "2" offset= "0,0"/>
   <name>basicWall</name>
 </object>
-  <object Faceable = "true" Cover ="2">
+  <object Cover = "2" Edge = "true">
+    <sprite layer = "2" offset= "0,0"/>
+    <name>basicHalfWall</name>
+  </object>
+  <object Faceable = "true" Cover ="3">
     <sprite layer = "2" offset= "0,0"/>
     <name>Human</name>
     <controllable moveRange = "4">

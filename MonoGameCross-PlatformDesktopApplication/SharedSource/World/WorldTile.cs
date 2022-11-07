@@ -157,7 +157,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public WorldObject GetCoverObj(Direction dir)
+		public WorldObject GetCoverObj(Direction dir, bool ignnoreControllables = false)
 		{
 			WorldObject biggestCoverObj = new WorldObject(null,-1,null);
 			dir = Utility.NormaliseDir(dir);
@@ -174,10 +174,14 @@ namespace MultiplayerXeno
 			if (IsVisible)
 			{
 #endif
-				if (tileInDir?.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
+				if (tileInDir?.ObjectAtLocation != null  && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
 				{
-					biggestCoverObj = tileInDir.ObjectAtLocation;
-					
+					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
+					{
+						biggestCoverObj = tileInDir.ObjectAtLocation;
+					}
+
+
 				}
 				
 #if CLIENT
@@ -212,12 +216,12 @@ namespace MultiplayerXeno
 					}
 					break;
 				case Direction.SouthWest:
-					coverObj = GetCoverObj(Direction.South);
+					coverObj = GetCoverObj(Direction.South,ignnoreControllables);
 					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
-					coverObj = GetCoverObj(Direction.West);
+					coverObj = GetCoverObj(Direction.West,ignnoreControllables);
 					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
@@ -227,13 +231,13 @@ namespace MultiplayerXeno
 					{
 						break;
 					}
-					coverObj = tileInDir.GetCoverObj(Direction.North);
+					coverObj = tileInDir.GetCoverObj(Direction.North,ignnoreControllables);
 					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
 
-					coverObj = tileInDir.GetCoverObj(Direction.East);
+					coverObj = tileInDir.GetCoverObj(Direction.East,ignnoreControllables);
 					
 
 					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
@@ -242,12 +246,12 @@ namespace MultiplayerXeno
 					}
 					break;
 				case Direction.SouthEast:
-					coverObj = GetCoverObj(Direction.South);
+					coverObj = GetCoverObj(Direction.South,ignnoreControllables);
 					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
-					coverObj = GetCoverObj(Direction.East);
+					coverObj = GetCoverObj(Direction.East,ignnoreControllables);
 					if(coverObj.GetCover()  > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
@@ -257,13 +261,13 @@ namespace MultiplayerXeno
 					{
 						break;
 					}
-					coverObj = tileInDir.GetCoverObj(Direction.North);
+					coverObj = tileInDir.GetCoverObj(Direction.North,ignnoreControllables);
 					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
 
-					coverObj = tileInDir.GetCoverObj(Direction.West);
+					coverObj = tileInDir.GetCoverObj(Direction.West,ignnoreControllables);
 					
 
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
@@ -272,12 +276,12 @@ namespace MultiplayerXeno
 					}
 					break;
 				case Direction.NorthWest:
-					coverObj = GetCoverObj(Direction.North);
+					coverObj = GetCoverObj(Direction.North,ignnoreControllables);
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
-					coverObj = GetCoverObj(Direction.West);
+					coverObj = GetCoverObj(Direction.West,ignnoreControllables);
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
@@ -288,13 +292,13 @@ namespace MultiplayerXeno
 						break;
 					}
 
-					coverObj = tileInDir.GetCoverObj(Direction.East);
+					coverObj = tileInDir.GetCoverObj(Direction.East,ignnoreControllables);
 					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
 
-					coverObj = tileInDir.GetCoverObj(Direction.South);
+					coverObj = tileInDir.GetCoverObj(Direction.South,ignnoreControllables);
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
@@ -303,12 +307,12 @@ namespace MultiplayerXeno
 					
 					break;
 				case Direction.NorthEast:
-					coverObj = GetCoverObj(Direction.North);
+					coverObj = GetCoverObj(Direction.North,ignnoreControllables);
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
-					coverObj = GetCoverObj(Direction.East);
+					coverObj = GetCoverObj(Direction.East,ignnoreControllables);
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
@@ -318,13 +322,13 @@ namespace MultiplayerXeno
 					{
 						break;
 					}
-					coverObj = tileInDir.GetCoverObj(Direction.West);
+					coverObj = tileInDir.GetCoverObj(Direction.West,ignnoreControllables);
 					if (coverObj.GetCover() > biggestCoverObj.GetCover())
 					{
 						biggestCoverObj = coverObj;
 					}
 
-					coverObj = tileInDir.GetCoverObj(Direction.South);
+					coverObj = tileInDir.GetCoverObj(Direction.South,ignnoreControllables);
 					
 
 					if(coverObj.GetCover() > biggestCoverObj.GetCover())

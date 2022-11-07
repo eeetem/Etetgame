@@ -26,6 +26,7 @@ namespace MultiplayerXeno
 			if(!enabled) return;
 			UI.EditorMenu();
 			UI.LeftClick += PlacePrefab;
+			UI.LeftClickUp += FinishPlacePrefab;
 			UI.RightClick += DeletePrefab;
 
 
@@ -113,11 +114,18 @@ namespace MultiplayerXeno
 			}
 		}
 
+		private static bool placing = false;
 		private static void PlacePrefab(Vector2Int Pos)
 		{
 			if(!enabled) return;
 			if (!IsValidPlacement(Pos)) return;
 			WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
+			placing = true;
+		}
+		
+		private static void FinishPlacePrefab(Vector2Int Pos)
+		{
+			placing = false;
 		}
 
 		private static KeyboardState lastState;
@@ -138,6 +146,11 @@ namespace MultiplayerXeno
 
 			lastState = keyboardState;
 
+			var Pos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			if (placing && IsValidPlacement(Pos))
+			{
+				WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
+			}
 
 		}
 	}

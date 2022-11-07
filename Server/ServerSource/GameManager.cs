@@ -29,11 +29,15 @@ namespace MultiplayerXeno
 			
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(10, 5),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(10, 15),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(11, 15),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(12, 15),controllableData:cdata);
 
 
 			cdata = new ControllableData(false);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(15, 5),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(4, 4),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(5, 4),controllableData:cdata);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(6, 4),controllableData:cdata);
 
 		}
 
