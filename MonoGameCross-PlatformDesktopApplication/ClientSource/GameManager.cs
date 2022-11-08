@@ -6,14 +6,14 @@ namespace MultiplayerXeno
 	{
 
 		public static bool IsPlayer1;
-
+		public static bool intated = false;
 
 		public static void SetData(GameDataPacket data)
 		{
-
+			intated = true;
 			IsPlayer1Turn = data.IsPlayer1Turn;
 			IsPlayer1 = data.IsPlayerOne;
-
+			WorldManager.Instance.CalculateFov();
 
 		}
 

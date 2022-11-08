@@ -14,8 +14,6 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1Turn = true;
 
-
-
 		public static void Update(float delta)
 		{
 

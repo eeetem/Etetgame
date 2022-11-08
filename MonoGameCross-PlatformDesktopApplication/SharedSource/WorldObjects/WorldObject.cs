@@ -42,8 +42,14 @@ namespace MultiplayerXeno
 
 
 		}
+		
+		
 
 		public bool fliped = false;//for display back texture
+
+
+		
+
 		public void Face(Direction dir)
 		{
 			if (!Type.Faceable)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
@@ -55,8 +56,13 @@ namespace MultiplayerXeno
 		public List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
 		public void CalculateFov()
 		{
+			if (!GameManager.intated)
+			{
+				return;//dont update fov untll atleast 1 server update has been recived
+			}
+
 			RecentFOVRaycasts = new List<RayCastOutcome>();
-			foreach (var tile in GridData)
+			foreach (var tile in _gridData)
 			{
 				tile.IsVisible = false;
 			}
@@ -121,57 +127,57 @@ namespace MultiplayerXeno
 
 		public void Draw(GameTime gameTime)
 		{
-			
-			List<WorldObject>[] DrawOrderSortedEntities = new List<WorldObject>[5];
-			lock (WorldManager.syncobj)
+			List<WorldTile> allTiles = new List<WorldTile>();
+
+			foreach (var tile  in _gridData)
 			{
-
-
-				foreach (var WO in WorldObjects.Values)
-				{
-					if (DrawOrderSortedEntities[WO.Type.DrawLayer] == null)
-					{
-						DrawOrderSortedEntities[WO.Type.DrawLayer] = new List<WorldObject>();
-					}
-
-					DrawOrderSortedEntities[WO.Type.DrawLayer].Add(WO);
-
-				}
+					allTiles.Add(tile);
 			}
 
-			foreach (var list in DrawOrderSortedEntities)
-			{
-				if (list == null) continue;
-				list.Sort(new EntityDrawOrderCompare());
-				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-				foreach (var worldObject in list)
-				{
-					var sprite = worldObject.GetSprite();
-					var transform = worldObject.Type.Transform;
-					Color c = Color.White;
-					if (!worldObject.TileLocation.IsVisible)
-					{
-						c = Color.DarkGray;
-						if (worldObject.TileLocation.ObjectAtLocation == worldObject)
-						{
-							continue;
-						}
-					}
+			allTiles.Sort(new WorldTileDrawOrderCompare());
 				
+				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+				List<WorldObject> tileObjs = new List<WorldObject>();
+				foreach (var tile in allTiles)
+				{
+					tileObjs.Clear();
+					tileObjs.Add(tile.Surface);
+					tileObjs.Add(tile.NorthEdge);
+					tileObjs.Add(tile.WestEdge);
+					tileObjs.Add(tile.ObjectAtLocation);
+					//tileObjs.Sort(new DrawLayerSort());
 
-					sprite.Color = c;
-					
-					spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position),transform.Rotation, transform.Scale);
-					if (worldObject.ControllableComponent != null)
+
+					foreach (var worldObject in tileObjs)
 					{
-						UI.DrawControllableHoverHud(spriteBatch,worldObject);
+						if(worldObject == null)continue;
+							var sprite = worldObject.GetSprite();
+						var transform = worldObject.Type.Transform;
+						Color c = Color.White;
+						if (!worldObject.TileLocation.IsVisible)
+						{
+							c = Color.DarkGray;
+							if (worldObject.TileLocation.ObjectAtLocation == worldObject)
+							{
+								continue;
+							}
+						}
+
+
+						sprite.Color = c;
+
+						spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position), transform.Rotation, transform.Scale);
+						if (worldObject.ControllableComponent != null)
+						{
+							UI.DrawControllableHoverHud(spriteBatch, worldObject);
+						}
 					}
 				}
 				spriteBatch.End();
 
 
 			
-			}
+			
 
 			
 		}
@@ -194,20 +200,28 @@ namespace MultiplayerXeno
 		
 			
 		
-		public class EntityDrawOrderCompare : Comparer<WorldObject>
+		public class WorldTileDrawOrderCompare : Comparer<WorldTile>
 		{
+//draws "top" ones first
 
+			public override int Compare(WorldTile x, WorldTile y)
+			{
+
+				int xpos = x.Position.X + x.Position.Y;
+				int ypos = y.Position.X + y.Position.Y;
+				return xpos.CompareTo(ypos);
+			}
+		}
+		public class DrawLayerSort : Comparer<WorldObject>
+		{
+//draws "top" ones first
 
 			public override int Compare(WorldObject x, WorldObject y)
 			{
 
-				Rectangle rectx = Utility.GetSmallestRectangleFromTexture(x.GetSprite().TextureRegion.Texture);
-				Rectangle recty = Utility.GetSmallestRectangleFromTexture(y.GetSprite().TextureRegion.Texture);
-				
-
-
-
-				return (x.Type.Transform.Position + new Vector2(rectx.Center.X,rectx.Center.Y) + Utility.GridToWorldPos(x.TileLocation.Position)).Y.CompareTo((y.Type.Transform.Position + new Vector2(recty.Center.X,recty.Center.Y)+ Utility.GridToWorldPos(y.TileLocation.Position)).Y);
+				int xpos = x.GetDrawLayer();
+				int ypos = y.GetDrawLayer();
+				return xpos.CompareTo(ypos);
 			}
 		}
 	}

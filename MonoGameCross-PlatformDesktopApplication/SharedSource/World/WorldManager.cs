@@ -14,7 +14,7 @@ namespace MultiplayerXeno
 {
 	public  partial class WorldManager
 	{
-		private readonly WorldTile[,] GridData;
+		private readonly WorldTile[,] _gridData;
 
 		private Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>();
 	
@@ -40,12 +40,12 @@ namespace MultiplayerXeno
 		private WorldManager()
 		{
 			
-			GridData = new WorldTile[100, 100];
+			_gridData = new WorldTile[100, 100];
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
-					GridData[x, y] = new WorldTile(new Vector2Int(x, y));
+					_gridData[x, y] = new WorldTile(new Vector2Int(x, y));
 				}
 			}
 		}
@@ -352,7 +352,7 @@ namespace MultiplayerXeno
 		public  WorldTile GetTileAtGrid(Vector2Int pos)
 		{
 
-			return GridData[pos.X, pos.Y];
+			return _gridData[pos.X, pos.Y];
 	
 		}
 
@@ -367,7 +367,7 @@ namespace MultiplayerXeno
 			{
 				for (int y = 0; y < 100; y++)
 				{
-					GridData[x, y].Wipe();
+					_gridData[x, y].Wipe();
 				}
 			}
 		}
@@ -406,7 +406,7 @@ namespace MultiplayerXeno
 			{
 				for (int y = 0; y < 100; y++)
 				{
-					prefabData.Add(GridData[x, y].GetData());
+					prefabData.Add(_gridData[x, y].GetData());
 				}
 			}
 

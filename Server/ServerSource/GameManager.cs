@@ -10,7 +10,7 @@ namespace MultiplayerXeno
 
 
 
-		public static bool gameStarted = false;
+		public static bool GameStarted = false;
 		public static void StatGame()
 		{
 
@@ -19,12 +19,12 @@ namespace MultiplayerXeno
 				return;
 			}
 			
-			if (gameStarted)
+			if (GameStarted)
 			{
 				return;
 			}
 
-			gameStarted = true;
+			GameStarted = true;
 
 			
 			//not a fan of this, should probably be made a single function

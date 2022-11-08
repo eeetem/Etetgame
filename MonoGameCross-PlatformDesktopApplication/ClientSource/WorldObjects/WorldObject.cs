@@ -17,6 +17,15 @@ namespace MultiplayerXeno
 			}
 			return Type.spriteSheet[(int)Facing];
 		}
+		public int GetDrawLayer()
+		{
+			//if (fliped)
+			//{
+		//		return Type.DrawLayer + 1;
+		//	}
+
+			return Type.DrawLayer;
+		}
 	}
 
 

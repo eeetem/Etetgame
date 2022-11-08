@@ -119,7 +119,6 @@ namespace MultiplayerXeno.Pathfinding
 					}
 					else
 					{
-						Console.WriteLine("ending at pos: "+ current.Position+" with cost: "+current.CurrentCost);
 						continue;
 					}
 
