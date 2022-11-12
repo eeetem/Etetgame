@@ -112,6 +112,13 @@ namespace MultiplayerXeno
 			{
 				return;
 			}
+#if CLIENT
+			if (!UI.validShot)
+			{
+				return;
+			}
+#endif
+			
 			
 			var packet = new FirePacket(worldObject.Id,position);
 			Networking.DoAction(packet);

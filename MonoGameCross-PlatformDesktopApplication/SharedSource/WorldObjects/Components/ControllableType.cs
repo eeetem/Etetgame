@@ -15,6 +15,8 @@ namespace MultiplayerXeno
 		{
 			
 			Controllable obj = new Controllable(data.Team1,parent,this,data.MovePoints,data.TurnPoints,data.ActionPoints);
+			obj.Health = data.Health;
+			obj.Awareness = data.Awareness;
 
 			return obj;
 		}

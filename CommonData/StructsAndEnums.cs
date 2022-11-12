@@ -47,6 +47,8 @@ namespace CommonData
 		public int ActionPoints;
 		public int MovePoints;
 		public int TurnPoints;
+		public int Health;
+		public int Awareness;
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
@@ -54,12 +56,14 @@ namespace CommonData
 			MovePoints = -1;
 			TurnPoints = -1;
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints)
+		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int awareness)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
 			MovePoints = movePoints;
 			TurnPoints = turnPoints;
+			Health = health;
+			Awareness = awareness;
 		}
 	}
 	public enum Cover

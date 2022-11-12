@@ -6,7 +6,7 @@ namespace MultiplayerXeno
 	public class Projectile
 	{
 		public WorldManager.RayCastOutcome result { get; private set; }
-		public WorldManager.RayCastOutcome? covercast { get; private set; }
+		public WorldManager.RayCastOutcome? covercast { get; private set; }//tallest cover on the way
 		private int dmg;
 
 		public Projectile(Vector2Int from, Vector2Int to, int dmg)
@@ -14,6 +14,7 @@ namespace MultiplayerXeno
 			this.dmg = dmg;
 
 			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
+			
 			var cast = WorldManager.Instance.Raycast(from, to, Cover.High);
 			if (cast.hit && result.hitObj != cast.hitObj)
 			{

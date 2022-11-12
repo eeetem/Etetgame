@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
+using MonoGame.Extended.TextureAtlases;
 using MultiplayerXeno.Pathfinding;
 using Myra;
 using Myra.Graphics2D.UI;
@@ -400,7 +401,7 @@ namespace MultiplayerXeno
 			for (int i = 0; i < controllable.Type.MaxHealth; i++)
 			{
 				var indicator = healthIndicator[1];
-				if (controllable.Type.MaxHealth - i > controllable.Health)
+				if (i>= controllable.Health)
 				{
 					indicator= healthIndicator[0];
 				}
@@ -414,6 +415,8 @@ namespace MultiplayerXeno
 		static List<Vector2Int> previewPath = new List<Vector2Int>();
 		private static Projectile previewShot = new Projectile(new Vector2Int(0,0),new Vector2Int(0,0),0);
 
+
+		public static bool validShot;
 		public static void Update(float deltatime)
 		{
 			if (Controllable.Selected != null)
@@ -425,6 +428,14 @@ namespace MultiplayerXeno
 					if (Controllable.Targeting)
 					{
 						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position, currentPos,0);
+						if (previewShot.result.hit && previewShot.result.hitObj.ControllableComponent != null)
+						{
+							validShot = true;
+						}
+						else
+						{
+							validShot = false;
+						}
 
 					}
 					else
@@ -600,7 +611,15 @@ namespace MultiplayerXeno
 				
 				if (previewShot.result.hit)
 				{
+					var obj = previewShot.result.hitObj;
+					var transform = previewShot.result.hitObj.Type.Transform;
+					Sprite redSprite = obj.GetSprite();
+					redSprite.Color = Color.Red;
+					
+					spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint.Last()),15,10,Color.Yellow,50f);
+					
 				}
 				spriteBatch.End();
 				
