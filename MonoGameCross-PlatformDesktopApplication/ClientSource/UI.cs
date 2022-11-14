@@ -428,7 +428,7 @@ namespace MultiplayerXeno
 					if (Controllable.Targeting)
 					{
 						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position, currentPos,0);
-						if (previewShot.result.hit && previewShot.result.hitObj.ControllableComponent != null)
+						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID).ControllableComponent != null)
 						{
 							validShot = true;
 						}
@@ -583,12 +583,12 @@ namespace MultiplayerXeno
 				var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
 				
 				spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.Green,10);
-				if (previewShot.covercast.HasValue)
+				if (previewShot.covercast != null)
 				{
 					Color c = Color.Green;
-					var coverPoint = Utility.GridToWorldPos(previewShot.covercast.Value.CollisionPoint.Last());
+					var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
 
-					switch (previewShot.covercast.Value.hitObj.GetCover())
+					switch (WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover())
 					{
 						case Cover.None:
 							c = Color.Green;
@@ -611,14 +611,14 @@ namespace MultiplayerXeno
 				
 				if (previewShot.result.hit)
 				{
-					var obj = previewShot.result.hitObj;
-					var transform = previewShot.result.hitObj.Type.Transform;
+					var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+					var transform = obj.Type.Transform;
 					Sprite redSprite = obj.GetSprite();
 					redSprite.Color = Color.Red;
 					
 					spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
 					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint.Last()),15,10,Color.Yellow,50f);
+					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint),15,10,Color.Yellow,50f);
 					
 				}
 				spriteBatch.End();

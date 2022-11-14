@@ -208,26 +208,7 @@ namespace MultiplayerXeno
 			return WO;
 		}
 
-		public struct RayCastOutcome
-		{
-			public readonly List<Vector2> CollisionPoint;
-			public Vector2 StartPoint;
-			public Vector2 EndPoint;
-			public Vector2 VectorToCenter;
-			public WorldObject hitObj;
-
-			public bool hit;
-
-			public RayCastOutcome(Vector2 start, Vector2 end)
-			{
-				this.hit = false;
-				VectorToCenter = new Vector2(0, 0);
-				EndPoint = end;
-				this.hitObj = null;
-				StartPoint = start;
-				CollisionPoint = new List<Vector2>();
-			}
-		}
+	
 
 	
 
@@ -291,7 +272,7 @@ namespace MultiplayerXeno
 
 				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
 
-				result.CollisionPoint.Add(collisionPoint);
+				//result.CollisionPoint.Add(collisionPoint);
 
 				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPoint;
 
@@ -306,9 +287,10 @@ namespace MultiplayerXeno
 					Cover c = hitobj.GetCover();
 					if (c >= minHitCover)
 					{
+						result.CollisionPoint = collisionPoint;
 						result.VectorToCenter = collisionVector;
 						result.hit = true;
-						result.hitObj = hitobj;
+						result.hitObjID = hitobj.Id;
 						return result;
 					}
 				}

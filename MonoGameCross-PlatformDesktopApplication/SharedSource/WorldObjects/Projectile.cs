@@ -5,9 +5,16 @@ namespace MultiplayerXeno
 {
 	public class Projectile
 	{
-		public WorldManager.RayCastOutcome result { get; private set; }
-		public WorldManager.RayCastOutcome? covercast { get; private set; }//tallest cover on the way
+		public RayCastOutcome result { get; private set; }
+		public RayCastOutcome? covercast { get; private set; }//tallest cover on the way
 		private int dmg;
+
+		public Projectile(ProjectilePacket packet)
+		{
+			this.result = packet.result;
+			this.covercast = packet.covercast;
+			Fire();
+		}
 
 		public Projectile(Vector2Int from, Vector2Int to, int dmg)
 		{
@@ -16,14 +23,14 @@ namespace MultiplayerXeno
 			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
 			
 			var cast = WorldManager.Instance.Raycast(from, to, Cover.High);
-			if (cast.hit && result.hitObj != cast.hitObj)
+			if (cast.hit && result.hitObjID != cast.hitObjID)
 			{
 				covercast = cast;
 			}
 			else
 			{
 				cast = WorldManager.Instance.Raycast(from, to, Cover.Low);
-				if (cast.hit && result.hitObj != cast.hitObj)
+				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
 				}
@@ -41,9 +48,9 @@ namespace MultiplayerXeno
 			if (result.hit)
 			{
 				int finalDmg = dmg;
-				if (covercast.HasValue)
+				if (covercast != null)
 				{
-					switch (covercast.Value.hitObj.GetCover())
+					switch (WorldManager.Instance.GetObject(covercast.hitObjID).GetCover())
 					{
 						case Cover.Full:
 							return;
@@ -61,7 +68,7 @@ namespace MultiplayerXeno
 				}
 				
 
-				result.hitObj.TakeDamage(finalDmg);
+				WorldManager.Instance.GetObject(result.hitObjID).TakeDamage(finalDmg);
 			}
 			else
 			{

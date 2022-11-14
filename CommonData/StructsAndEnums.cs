@@ -55,6 +55,8 @@ namespace CommonData
 			ActionPoints = -1;
 			MovePoints = -1;
 			TurnPoints = -1;
+			Health = -1;
+			Awareness = 1;
 		}
 		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int awareness)
 		{
@@ -64,6 +66,25 @@ namespace CommonData
 			TurnPoints = turnPoints;
 			Health = health;
 			Awareness = awareness;
+		}
+	}
+	[Serializable]
+	public class RayCastOutcome//fuck the network library holy moly
+	{
+		public Vector2 CollisionPoint;
+		public Vector2 StartPoint;
+		public Vector2 EndPoint;
+		public Vector2 VectorToCenter;
+		public int hitObjID{ get; set; }
+
+		public bool hit{ get; set; }
+
+		public RayCastOutcome(Vector2 start, Vector2 end)
+		{
+			this.hit = false;
+			EndPoint = end;
+			this.hitObjID = -1;
+			StartPoint = start;
 		}
 	}
 	public enum Cover

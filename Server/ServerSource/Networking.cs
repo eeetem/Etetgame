@@ -168,7 +168,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public static void DoAction(GameActionPacket packet)
+		public static void DoAction(Packet packet)
 		{
 			GameManager.Player1?.Connection.Send(packet);
 			GameManager.Player2?.Connection.Send(packet);

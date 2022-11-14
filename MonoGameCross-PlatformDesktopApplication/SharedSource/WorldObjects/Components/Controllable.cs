@@ -16,27 +16,44 @@ namespace MultiplayerXeno
 		public WorldObject worldObject { get; private set; }
 		public ControllableType Type { get; private set; }
 
-		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, int movePoints = -1,  int turnPoints = -1, int actionPoints = -1)
+		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
 		{
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
-			Health = type.MaxHealth;
+			if (data.Health == -1)
+			{
+				Health = type.MaxHealth;
+			}
+			else
+			{
+				Health = data.Health;
+			}
+			if (data.Awareness == -1)
+			{
+				Awareness = type.MaxAwareness;
+			}
+			else
+			{
+				Awareness = data.Awareness;
+			}
+
+
 #if CLIENT
 			WorldManager.Instance.CalculateFov();
 #endif
 			StartTurn();
-			if (movePoints != -1)
+			if (data.MovePoints != -1)
 			{
-				this.movePoints = movePoints;
+				this.movePoints = data.MovePoints;
 			}
-			if (actionPoints != -1)
+			if (data.ActionPoints != -1)
 			{
-				this.actionPoints = actionPoints;
+				this.actionPoints = data.ActionPoints;
 			}
-			if (turnPoints != -1)
+			if (data.TurnPoints != -1)
 			{
-				this.turnPoints = turnPoints;
+				this.turnPoints = data.TurnPoints;
 			}
 			
 			
@@ -119,9 +136,9 @@ namespace MultiplayerXeno
 			}
 #endif
 			
-			
 			var packet = new FirePacket(worldObject.Id,position);
 			Networking.DoAction(packet);
+			
 
 #if SERVER
 		DoFire(position);
@@ -258,10 +275,15 @@ namespace MultiplayerXeno
 #endif
 				return;
 			}
-
+			
+			//client shouldnt be allowed to judge what got hit
+#if SERVER
 			Projectile p = new Projectile(worldObject.TileLocation.Position,pos,3);
 			p.Fire();
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast));
 
+#endif
+			
 		}
 
 		public void EndTurn()
@@ -296,7 +318,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,actionPoints,movePoints,turnPoints);
+			var data = new ControllableData(this.IsPlayerOneTeam,actionPoints,movePoints,turnPoints,Health,Awareness);
 
 			return data;
 		}

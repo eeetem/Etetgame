@@ -42,6 +42,7 @@ namespace MultiplayerXeno
 			serverConnection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
+			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
 			
 			Thread.Sleep(100);//give server  a second to register the packet handler
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
@@ -89,7 +90,13 @@ namespace MultiplayerXeno
 			GameManager.SetData(packet);
 			
 		}
-		
+
+		private static void ReciveProjectilePacket(ProjectilePacket packet, Connection connection)
+		{
+			new Projectile(packet);
+			
+		}
+
 		public static void DoAction(GameActionPacket packet)
 		{
 			serverConnection.Send(packet);
