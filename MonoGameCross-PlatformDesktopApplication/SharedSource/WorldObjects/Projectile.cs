@@ -7,12 +7,13 @@ namespace MultiplayerXeno
 	{
 		public RayCastOutcome result { get; private set; }
 		public RayCastOutcome? covercast { get; private set; }//tallest cover on the way
-		private int dmg;
+		public int dmg;
 
 		public Projectile(ProjectilePacket packet)
 		{
 			this.result = packet.result;
 			this.covercast = packet.covercast;
+			this.dmg = packet.dmg;
 			Fire();
 		}
 

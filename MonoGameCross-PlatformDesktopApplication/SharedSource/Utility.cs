@@ -98,6 +98,7 @@ namespace MultiplayerXeno
 
         public static Direction Vec2ToDir(Vector2Int vec2)
         {
+            
             switch (vec2)
             {
                 case (1, 0):

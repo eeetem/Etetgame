@@ -81,20 +81,23 @@ namespace MultiplayerXeno
 		public void TakeDamage(int ammount)
 		{
 			
-			Console.WriteLine(this + " hit for "+ammount);
+			Console.WriteLine(this +"(health:"+this.Health+") hit for "+ammount);
 			if (Awareness > 0)
 			{
+				Console.WriteLine("blocked by awareness");
 				Awareness--;
 				Health--;
 			}
 			else
 			{
+				Console.WriteLine("health - "+ammount);
 				Health -= ammount;
 			}
 
 			
 			if (Health <= 0)
 			{
+				Console.WriteLine("dead");
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
 			}
 
@@ -138,7 +141,6 @@ namespace MultiplayerXeno
 			
 			var packet = new FirePacket(worldObject.Id,position);
 			Networking.DoAction(packet);
-			
 
 #if SERVER
 		DoFire(position);
@@ -211,10 +213,12 @@ namespace MultiplayerXeno
 		}
 
 		private List<Vector2Int> CurrentPath = new List<Vector2Int>();
-		private bool moving;
-		private float MoveCounter;
+		private bool _thisMoving;
+		private static bool moving;
+		private float _moveCounter;
 		public void DoMove(List<Vector2Int> path,int pointCost)
 		{
+			if(moving)return;
 			this.movePoints -= pointCost;
 			if (movePoints < 0)
 			{
@@ -226,6 +230,7 @@ namespace MultiplayerXeno
 			}
 
 			moving = true;
+			_thisMoving = true;
 			CurrentPath = path;
 		}
 
@@ -280,7 +285,7 @@ namespace MultiplayerXeno
 #if SERVER
 			Projectile p = new Projectile(worldObject.TileLocation.Position,pos,3);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg));
 
 #endif
 			
@@ -293,19 +298,28 @@ namespace MultiplayerXeno
 		}
 		public void Update(float gameTime)
 		{
-			if (moving)
+			if (_thisMoving)
 			{
-				MoveCounter += gameTime;
-				if (MoveCounter > 500)
+				_moveCounter += gameTime;
+				if (_moveCounter > 500)
 				{
-					MoveCounter = 0;
+					_moveCounter = 0;
+					try
+					{
+						Console.WriteLine("moving to: "+CurrentPath[0]);
+						worldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - worldObject.TileLocation.Position));
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine("Exception when facing, the values are: "+CurrentPath[0]+" and " +worldObject.TileLocation.Position + " exception: "+e);
+					}
 
-					worldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - worldObject.TileLocation.Position ));
 					worldObject.Move(CurrentPath[0]);
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
 						moving = false;
+						_thisMoving = false;
 					}
 					//todo jump view to move
 #if CLIENT

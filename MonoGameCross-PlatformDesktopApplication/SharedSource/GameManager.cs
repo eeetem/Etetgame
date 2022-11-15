@@ -57,9 +57,9 @@ namespace MultiplayerXeno
 				FirePacket firePacket = (FirePacket) packet;
 				Controllable controllable = WorldManager.Instance.GetObject(firePacket.ID).ControllableComponent;
 #if CLIENT
-				Console.WriteLine("warning: ClientSide Fire(obsolete)");
 				controllable.DoFire(firePacket.Target);
 #else
+				//Console.WriteLine("warning: ClientSide Fire(obsolete)");
 				controllable.FireAction(firePacket.Target);
 #endif
 			}

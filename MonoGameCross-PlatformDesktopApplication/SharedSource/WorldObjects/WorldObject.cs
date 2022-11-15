@@ -39,6 +39,7 @@ namespace MultiplayerXeno
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
+			Console.WriteLine("moved to: "+TileLocation.Position);
 
 
 		}
