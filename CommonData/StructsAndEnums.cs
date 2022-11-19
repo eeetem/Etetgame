@@ -56,7 +56,7 @@ namespace CommonData
 			MovePoints = -1;
 			TurnPoints = -1;
 			Health = -1;
-			Awareness = 1;
+			Awareness = -1;
 		}
 		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int awareness)
 		{
@@ -155,6 +155,8 @@ namespace CommonData
 		public static Vector2Int operator*(Vector2Int a, int b)
 			=> new Vector2Int(a.X*b, a.Y*b);
 		public static Vector2 operator+(Vector2 a, Vector2Int b)
+			=> new Vector2(a.X+b.X, a.Y+b.Y);
+		public static Vector2 operator+(Vector2Int a, Vector2 b)
 			=> new Vector2(a.X+b.X, a.Y+b.Y);
 		
 		public static Vector2Int operator+(Vector2Int a, Vector2Int b)

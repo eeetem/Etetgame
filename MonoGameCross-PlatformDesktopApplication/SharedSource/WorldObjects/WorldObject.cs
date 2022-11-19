@@ -12,12 +12,16 @@ namespace MultiplayerXeno
 	public partial class WorldObject
 	{
 		
-		public WorldObject(WorldObjectType type, int id, WorldTile tileLocation)
+		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
 		{
-
+			if (type == null)
+			{
+				type = new WorldObjectType("nullType",null);
+			}
 			this.Id = id;
 			TileLocation = tileLocation;
 			this.Type = type;
+			Type.SpecialBehaviour(this);
 	
 
 		}
@@ -104,19 +108,15 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public readonly WorldObjectType? Type;	
+		public readonly WorldObjectType Type;	
 	
 		public Direction Facing { get; private set;}
 
 
 		public Cover GetCover()
 		{
-			if (Type != null)
-			{
-				return Type.Cover;
-			}
+			return Type.Cover;
 
-			return Cover.None;
 
 
 		}

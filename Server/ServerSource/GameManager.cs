@@ -11,6 +11,8 @@ namespace MultiplayerXeno
 
 
 		public static bool GameStarted = false;
+		public static readonly List<WorldObject> T1SpawnPoints = new List<WorldObject>();
+		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
 		public static void StatGame()
 		{
 
@@ -29,15 +31,17 @@ namespace MultiplayerXeno
 			
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(10, 15),controllableData:cdata);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(11, 15),controllableData:cdata);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(12, 15),controllableData:cdata);
-
+			foreach (var spawn in T1SpawnPoints)
+			{
+				WorldManager.Instance.MakeWorldObject("Human", spawn.TileLocation.Position,controllableData:cdata);
+			}
 
 			cdata = new ControllableData(false);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(4, 4),controllableData:cdata);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(5, 4),controllableData:cdata);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(6, 4),controllableData:cdata);
+			foreach (var spawn in T2SpawnPoints)
+			{
+				WorldManager.Instance.MakeWorldObject("Human", spawn.TileLocation.Position,controllableData:cdata);
+			}
+			NextTurn();
 
 		}
 

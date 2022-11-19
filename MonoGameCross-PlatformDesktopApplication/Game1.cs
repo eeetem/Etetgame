@@ -54,6 +54,8 @@ namespace MultiplayerXeno
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
 			Textures.Add("basicFloor",Content.Load<Texture2D>("basicFloor"));
+			Textures.Add("capturePoint",Content.Load<Texture2D>("capturePoint"));
+			Textures.Add("spawnPoint",Content.Load<Texture2D>("spawnPoint"));
 			Textures.Add("Human",Content.Load<Texture2D>("Human"));
 			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
 			Textures.Add("basicHalfWall",Content.Load<Texture2D>("basicHalfWall"));

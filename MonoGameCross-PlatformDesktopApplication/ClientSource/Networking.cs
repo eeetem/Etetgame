@@ -18,6 +18,7 @@ namespace MultiplayerXeno
 			ConnectionResult connectionResult = ConnectionResult.TCPConnectionNotAlive;
 			//1. Establish a connection to the server.
 			serverConnection = ConnectionFactory.CreateTcpConnection(ip, 52233, out connectionResult);
+			
 			///serverConnection.NoDelay
 			//2. Register what happens if we get a connection
 			if(connectionResult != ConnectionResult.Connected)
@@ -28,7 +29,7 @@ namespace MultiplayerXeno
 
 
 			serverConnection.ConnectionClosed += (a, s) => UI.ShowMessage("Lost connection", a.ToString());
-					
+			serverConnection.TIMEOUT = 1000000000;
 		
 			
 			serverConnection.RegisterRawDataHandler("mapUpdate",ReciveMapUpdate);

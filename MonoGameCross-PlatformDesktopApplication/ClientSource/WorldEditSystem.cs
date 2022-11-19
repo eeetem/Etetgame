@@ -28,6 +28,8 @@ namespace MultiplayerXeno
 			UI.LeftClick += PlacePrefab;
 			UI.LeftClickUp += FinishPlacePrefab;
 			UI.RightClick += DeletePrefab;
+			ControllableData cdata = new ControllableData(true);
+			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(5, 5),controllableData:cdata);
 
 
 
@@ -119,7 +121,7 @@ namespace MultiplayerXeno
 		{
 			if(!enabled) return;
 			if (!IsValidPlacement(Pos)) return;
-			WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
+		//	WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
 			placing = true;
 		}
 		

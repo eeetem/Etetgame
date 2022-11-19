@@ -1,5 +1,6 @@
 ﻿using System;
 using CommonData;
+using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno
 {
@@ -17,11 +18,12 @@ namespace MultiplayerXeno
 			Fire();
 		}
 
+		
 		public Projectile(Vector2Int from, Vector2Int to, int dmg)
 		{
 			this.dmg = dmg;
 
-			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
+			result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			
 			var cast = WorldManager.Instance.Raycast(from, to, Cover.High);
 			if (cast.hit && result.hitObjID != cast.hitObjID)

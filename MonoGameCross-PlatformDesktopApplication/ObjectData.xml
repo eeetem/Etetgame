@@ -4,8 +4,20 @@
 <object Faceable = "false" Cover ="0" Surface = "true">
   <sprite layer = "0" offset= "0,0"/>
   <name>basicFloor</name>
-</object> 
-<object Cover = "3" Edge = "true">
+</object>
+  <object Faceable = "false" Cover ="0" Surface = "true">
+    <sprite layer = "0" offset= "0,0"/>
+    <name>capturePoint</name>
+  </object>
+  <object Faceable = "false" Cover ="0" Surface = "true">
+    <sprite name="spawnPoint" layer = "0" offset= "0,0"/>
+    <name>spawnPointT1</name>
+  </object>
+  <object Faceable = "false" Cover ="0" Surface = "true">
+    <sprite name="spawnPoint" layer = "0" offset= "0,0"/>
+    <name>spawnPointT2</name>
+  </object>
+  <object Cover = "3" Edge = "true">
   <sprite layer = "2" offset= "0,0"/>
   <name>basicWall</name>
 </object>

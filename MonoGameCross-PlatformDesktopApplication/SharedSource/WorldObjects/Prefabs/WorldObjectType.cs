@@ -22,8 +22,29 @@ namespace MultiplayerXeno
 			
 		}
 
-		
-		public Cover Cover;
+		public void SpecialBehaviour(WorldObject objOfType)
+		{
+			switch (TypeName)
+			{
+				case "capturePoint":
+					GameManager.CapturePoints.Add(objOfType);
+					break;
+				case "spawnPointT1":
+#if SERVER
+					GameManager.T1SpawnPoints.Add(objOfType);
+#endif
+				
+					break;
+				case "spawnPointT2":
+#if SERVER
+					GameManager.T2SpawnPoints.Add(objOfType);
+#endif
+					break;
+			}
+		}
+
+
+		public Cover Cover = Cover.None;
 
 		public readonly ControllableType? Controllable;
 

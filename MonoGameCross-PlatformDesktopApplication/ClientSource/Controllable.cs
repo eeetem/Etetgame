@@ -43,7 +43,7 @@ namespace MultiplayerXeno
 
 		public static void StartOrder(Vector2Int Position, bool rightclicked)
 		{
-			if (GameManager.IsPlayer1 != GameManager.IsPlayer1Turn) return;
+			if (!GameManager.IsMyTurn()) return;
 
 			if(Selected == null) return;
 			

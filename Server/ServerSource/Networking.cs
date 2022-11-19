@@ -22,7 +22,7 @@ namespace MultiplayerXeno
 		{
 			//1. Start listen on a portw
 			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(52233, false);
-	
+
 			serverConnectionContainer.ConnectionLost += (a, b, c) => Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
 			serverConnectionContainer.AllowUDPConnections = true;
@@ -43,6 +43,25 @@ namespace MultiplayerXeno
 			connection.Close(CloseReason.ClientClosed);
 		}
 
+		public static void NotifyAll(string message)
+		{
+		
+			Notify(message,true);
+			Notify(message,false);
+		}
+
+		public static void Notify(string message, bool player1)
+		{
+			if (player1)
+			{
+				GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
+			}
+			else
+			{
+				GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
+			}
+		}
+		
 
 
 		/// <summary>
@@ -53,6 +72,7 @@ namespace MultiplayerXeno
 		{
 			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
+			connection.TIMEOUT = 10000;
 			
 		//	connection.RegisterRawDataHandler("mapDownload",SendMapData);
 			connection.RegisterRawDataHandler("register",RegisterClient);

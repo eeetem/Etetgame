@@ -36,6 +36,7 @@ namespace MultiplayerXeno
 
 		private void ClickAtPosition(Vector2Int position,bool righclick)
 		{
+			if(!GameManager.IsMyTurn()) return;
 			var Tile = GetTileAtGrid(position);
 
 			WorldObject obj = Tile.ObjectAtLocation;
@@ -56,67 +57,82 @@ namespace MultiplayerXeno
 		public List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
 		public void CalculateFov()
 		{
-			if (!GameManager.intated)
+			lock (syncobj)
 			{
-				return;//dont update fov untll atleast 1 server update has been recived
-			}
-
-			RecentFOVRaycasts = new List<RayCastOutcome>();
-			foreach (var tile in _gridData)
-			{
-				tile.IsVisible = false;
-			}
 
 
-	
-
-			foreach (var obj in WorldObjects.Values)
-			{
-			
-				if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
+				if (!GameManager.intated)
 				{
-					Vector2Int pos = obj.TileLocation.Position;
+					return; //dont update fov untll atleast 1 server update has been recived
+				}
 
-					int itteration = 0;
+				RecentFOVRaycasts = new List<RayCastOutcome>();
+				foreach (var tile in _gridData)
+				{
+					tile.IsVisible = false;
+				}
 
-					List<Vector2Int> positionsToCheck = new List<Vector2Int>();
-					while (itteration < obj.ControllableComponent.GetSightRange())
+
+
+
+
+
+				foreach (var obj in WorldObjects.Values)
+				{
+
+					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
 					{
-						
-						positionsToCheck.Add(pos);
-						Vector2Int offset;
-						Vector2Int invoffset;
-						if (Utility.DirToVec2(obj.Facing).Magnitude() > 1)//diagonal
+						Vector2Int pos = obj.TileLocation.Position;
+
+						int itteration = 0;
+
+						List<Vector2Int> positionsToCheck = new List<Vector2Int>();
+						while (itteration < obj.ControllableComponent.GetSightRange())
 						{
-							offset = Utility.DirToVec2(obj.Facing+3);
-							invoffset = Utility.DirToVec2(obj.Facing-3);
-						}
-						else
-						{
-							offset = Utility.DirToVec2(obj.Facing+2);
-							invoffset = Utility.DirToVec2(obj.Facing-2);
+
+							positionsToCheck.Add(pos);
+							Vector2Int offset;
+							Vector2Int invoffset;
+							if (Utility.DirToVec2(obj.Facing).Magnitude() > 1) //diagonal
+							{
+								offset = Utility.DirToVec2(obj.Facing + 3);
+								invoffset = Utility.DirToVec2(obj.Facing - 3);
+							}
+							else
+							{
+								offset = Utility.DirToVec2(obj.Facing + 2);
+								invoffset = Utility.DirToVec2(obj.Facing - 2);
+							}
+
+
+							for (int x = 0; x < itteration; x++)
+							{
+								positionsToCheck.Add(pos + invoffset * (x + 1));
+								positionsToCheck.Add(pos + offset * (x + 1));
+							}
+
+							pos += Utility.DirToVec2(obj.Facing);
+							itteration++;
 						}
 
-					
-						for (int x = 0; x < itteration; x++)
+
+
+						foreach (var tile in positionsToCheck)
 						{
-							positionsToCheck.Add(pos + invoffset*(x+1));
-							positionsToCheck.Add(pos + offset*(x+1));
+							if (!IsPositionValid(tile)) continue;
+							RayCastOutcome[] casts = MultiCornerCast(obj.TileLocation.Position, tile, Cover.Full, true);
+							RecentFOVRaycasts.AddRange(casts);
+							foreach (var cast in casts)
+							{
+								if (!cast.hit)
+								{
+									GetTileAtGrid(tile).IsVisible = true;
+									break;
+								}
+
+							}
+							
 						}
-
-						pos += Utility.DirToVec2(obj.Facing);
-						itteration++;
-					}
-		
-					
-
-					foreach (var tile in positionsToCheck)
-					{
-						if(!IsPositionValid(tile)) continue;
-						RayCastOutcome cast = Raycast(obj.TileLocation.Position, tile,Cover.Full,true);
-						RecentFOVRaycasts.Add(cast);
-						if (cast.hit) continue;
-						GetTileAtGrid(tile).IsVisible = true;
 					}
 				}
 			}

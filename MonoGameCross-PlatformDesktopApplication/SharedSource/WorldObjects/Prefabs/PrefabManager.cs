@@ -69,6 +69,7 @@ namespace MultiplayerXeno
 				float y = float.Parse(stringoffset.Substring(stringoffset.IndexOf(",")+1, stringoffset.Length - stringoffset.IndexOf(",")-1));
 				Vector2 Offset = new Vector2(x, y);
 				int drawlayer = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["layer"].InnerText);
+				var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 #endif
 			
 				
@@ -90,8 +91,16 @@ namespace MultiplayerXeno
 				Prefabs.Add(name,type);
 				
 #if CLIENT
-			
-				type.GenerateSpriteSheet(Game1.Textures[name]);
+				if (spritename != null)
+				{
+					type.GenerateSpriteSheet(Game1.Textures[spritename]);
+				}
+				else
+				{
+					type.GenerateSpriteSheet(Game1.Textures[name]);
+				}
+
+
 #endif
 
 

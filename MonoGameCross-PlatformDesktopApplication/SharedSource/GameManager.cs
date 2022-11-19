@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -18,13 +19,64 @@ namespace MultiplayerXeno
 		{
 
 		}
+
+		public static List<WorldObject> CapturePoints = new List<WorldObject>();
+		private static int score = 0;
+
+
+		private static void EndGame(bool player1Win)
+		{
+#if SERVER
+			if (player1Win)
+			{
+				Networking.NotifyAll(Player1.Name + " Wins!");	
+			}
+			else
+			{
+				Networking.NotifyAll(Player2.Name + " Wins!");	
+			}
+
+
+#endif
+		}
+
 		public static void NextTurn()
 		{
 			IsPlayer1Turn = !IsPlayer1Turn;
 			WorldManager.Instance.ResetControllables(IsPlayer1Turn);
-			#if SERVER
+			foreach (var point in CapturePoints)
+			{
+				bool? team1 = point.TileLocation.ObjectAtLocation?.ControllableComponent?.IsPlayerOneTeam;
+				if(team1 == null)continue;
+
+				if ((bool)team1)
+				{
+					score++;
+				}
+				else
+				{
+					score--;
+				}
+
+			}
+			#if CLIENT
+			UI.SetScore(score);
+			#endif
+			
+			if(score > 10)EndGame(true);
+			if(score < -10)EndGame(false);
+			
+
+
+
+
+
+
+#if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
 			Networking.DoAction(new GameActionPacket());//defaults to end turn
+			#else
+			UI.SetMyTurn(IsMyTurn());
 			#endif
 		}
 

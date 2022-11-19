@@ -1,5 +1,8 @@
 ﻿using System;
 using CommonData;
+using Microsoft.Xna.Framework;
+using Myra.Graphics2D.Brushes;
+
 namespace MultiplayerXeno
 {
 	public static partial class GameManager
@@ -7,6 +10,12 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1;
 		public static bool intated = false;
+
+
+		public static bool IsMyTurn()
+		{
+			return IsPlayer1 == IsPlayer1Turn;
+		}
 
 		public static void SetData(GameDataPacket data)
 		{
@@ -23,6 +32,8 @@ namespace MultiplayerXeno
 
 			GameActionPacket packet = new GameActionPacket();
 			Networking.serverConnection.Send(packet);
+			Controllable.Selected = null;
+			
 
 		}
 
