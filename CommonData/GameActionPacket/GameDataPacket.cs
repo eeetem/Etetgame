@@ -8,7 +8,8 @@ namespace CommonData
 			public bool IsPlayerOne { get; set; }
 			public bool IsPlayer1Turn{ get; set; }
 
-		
+			public int Score { get; set; }
+
 
 		}
 	

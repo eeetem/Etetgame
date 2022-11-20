@@ -59,6 +59,7 @@ namespace MultiplayerXeno
 			Textures.Add("Human",Content.Load<Texture2D>("Human"));
 			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
 			Textures.Add("basicHalfWall",Content.Load<Texture2D>("basicHalfWall"));
+			SpriteFont = Content.Load<SpriteFont>("font");
 
 			PrefabManager.MakePrefabs();
 			WorldEditSystem.GenerateUI();

@@ -19,20 +19,20 @@ namespace MultiplayerXeno
 		}
 
 		
-		public Projectile(Vector2Int from, Vector2Int to, int dmg)
+		public Projectile(Vector2 from, Vector2 to, int dmg)
 		{
 			this.dmg = dmg;
 
 			result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			
-			var cast = WorldManager.Instance.Raycast(from, to, Cover.High);
+			var cast = WorldManager.Instance.Raycast(from, to, Cover.High,true);
 			if (cast.hit && result.hitObjID != cast.hitObjID)
 			{
 				covercast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(from, to, Cover.Low);
+				cast = WorldManager.Instance.Raycast(from, to, Cover.Low,true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;

@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using CommonData;
+using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using MultiplayerXeno.Pathfinding;
@@ -209,6 +211,18 @@ namespace MultiplayerXeno
 
 
 		}
+		
+
+		public static Dialog OptionMessage(string title, string content, string option1text, EventHandler option1,string option2text, EventHandler option2)
+		{
+			var messageBox = Dialog.CreateMessageBox(title,content);
+			messageBox.ButtonCancel.Text = option1text;
+			messageBox.ButtonCancel.Click += option1;
+			messageBox.ButtonOk.Text = option2text;
+			messageBox.ButtonOk.Click += option2;
+			messageBox.ShowModal(Desktop);
+			return messageBox;
+		}
 
 		public static void ShowMessage(string title, string content)
 		{
@@ -338,15 +352,20 @@ namespace MultiplayerXeno
 			};
 			grid.Widgets.Add(turnIndicator);
 			SetMyTurn(GameManager.IsMyTurn());
-			
-			
-			scoreIndicator = new Label()
+
+			if (scoreIndicator == null)
 			{
-				GridColumn = 4,
-				GridRow = 0,
-				GridColumnSpan = 2,
-			};
-			SetScore(0);
+
+
+				scoreIndicator = new Label()
+				{
+					GridColumn = 4,
+					GridRow = 0,
+					GridColumnSpan = 2,
+				};
+				SetScore(0);
+			}
+
 			grid.Widgets.Add(scoreIndicator);
 	
 			
@@ -473,8 +492,8 @@ namespace MultiplayerXeno
 
 					if (Controllable.Targeting)
 					{
-						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position,currentPos,0);
-						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID).ControllableComponent != null)
+						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),0);
+						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID)?.ControllableComponent != null)
 						{
 							validShot = true;
 						}
@@ -518,32 +537,35 @@ namespace MultiplayerXeno
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-			
-			if(TileCoordinate.X < 0 || TileCoordinate.Y < 0 ||TileCoordinate.X >= 100 || TileCoordinate.Y >= 100 ) return;
-			
-			for (int i = 0; i < 8; i++)
-			{
-				var indicator = coverIndicator[i];
-				Color c = Color.White;
-				switch ((Cover)WorldManager.Instance.GetTileAtGrid(TileCoordinate).GetCover((Direction)i))
-				{
-					case Cover.Full:
-						c = Color.Red;
-						break;
-					case Cover.High:
-						c = Color.Yellow;
-						break;
-					case Cover.Low:
-						c = Color.Green;
-						break;
-				}
-			
-				//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
-				spriteBatch.Draw(indicator, Mousepos,c);
-			}
-			
 
-		//raycastdebug
+			if (WorldManager.IsPositionValid(TileCoordinate))
+			{
+
+
+				for (int i = 0; i < 8; i++)
+				{
+					var indicator = coverIndicator[i];
+					Color c = Color.White;
+					switch ((Cover) WorldManager.Instance.GetTileAtGrid(TileCoordinate).GetCover((Direction) i))
+					{
+						case Cover.Full:
+							c = Color.Red;
+							break;
+						case Cover.High:
+							c = Color.Yellow;
+							break;
+						case Cover.Low:
+							c = Color.Green;
+							break;
+					}
+
+					//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
+					spriteBatch.Draw(indicator, Mousepos, c);
+				}
+
+			}
+
+			//raycastdebug
 		int count;
 		if (raycastDebug)
 		{
@@ -558,7 +580,7 @@ namespace MultiplayerXeno
 			foreach (var cast in templist)
 			{
 				
-				if (count > 1000)
+				if (count > 20000)
 				{
 					break;
 				}
@@ -615,7 +637,7 @@ namespace MultiplayerXeno
 				{
 				
 				
-					if(path.X < 0 || path.Y < 0) return;
+					if(path.X < 0 || path.Y < 0) break;
 					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 
 					Color c = Color.White;
@@ -642,7 +664,7 @@ namespace MultiplayerXeno
 			}
 
 
-			if (Controllable.Targeting)
+			if (Controllable.Targeting && previewShot!= null)
 			{
 				
 
@@ -676,18 +698,41 @@ namespace MultiplayerXeno
 				}
 
 
-				if (previewShot != null && previewShot.result.hit)
+				int coverModifier = 0;
+				if ( previewShot != null && previewShot.covercast != null && previewShot.covercast.hit)
 				{
-					var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+					var obj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
 					var transform = obj.Type.Transform;
 					Sprite redSprite = obj.GetSprite();
-					redSprite.Color = Color.Red;
-
+					redSprite.Color = Color.Yellow;
+	
 					spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
 					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Yellow, 50f);
+					coverModifier = 2;
+					if (previewShot.result != null && previewShot.result.hit)
+					{
+						var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+						var transform = obj.Type.Transform;
+						Sprite redSprite = obj.GetSprite();
+						redSprite.Color = Color.Red;
 
+						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Yellow, 25f);
+						if (obj.ControllableComponent != null && obj.ControllableComponent.Awareness > 0)
+						{
+							spriteBatch.DrawString(Game1.SpriteFont,"Shot Damage: 4. (-"+coverModifier+" cover)(has awareness) Total: "+(4-coverModifier)/2, Utility.GridToWorldPos(previewShot.result.CollisionPoint),Color.Black,0,Vector2.Zero, 4,new SpriteEffects(),0);
+						}
+						else
+						{
+							spriteBatch.DrawString(Game1.SpriteFont,"Shot Damage: 4. (-"+coverModifier+" cover)(has awareness) Total: "+(4-coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint),Color.Black,0,Vector2.Zero, 4,new SpriteEffects(),0);
+						}
+
+
+
+					}
 				}
+				
 		
 
 
@@ -698,7 +743,7 @@ namespace MultiplayerXeno
 				foreach (var path in previewPath)
 				{
 					
-					if(path.X < 0 || path.Y < 0) return;
+					if(path.X < 0 || path.Y < 0) break;
 					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 				
 					spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);

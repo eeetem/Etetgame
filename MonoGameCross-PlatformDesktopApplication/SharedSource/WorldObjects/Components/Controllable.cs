@@ -42,7 +42,7 @@ namespace MultiplayerXeno
 #if CLIENT
 			WorldManager.Instance.CalculateFov();
 #endif
-			StartTurn();
+			
 			if (data.MovePoints != -1)
 			{
 				this.movePoints = data.MovePoints;
@@ -86,13 +86,13 @@ namespace MultiplayerXeno
 			{
 				Console.WriteLine("blocked by awareness");
 				Awareness--;
-				Health--;
+				ammount /= 2;
+
 			}
-			else
-			{
-				Console.WriteLine("health - "+ammount);
-				Health -= ammount;
-			}
+			
+			Console.WriteLine("health - "+ammount);
+			Health -= ammount;
+			
 
 			
 			if (Health <= 0)
@@ -283,7 +283,7 @@ namespace MultiplayerXeno
 			
 			//client shouldnt be allowed to judge what got hit
 #if SERVER
-			Projectile p = new Projectile(worldObject.TileLocation.Position,pos,3);
+			Projectile p = new Projectile(worldObject.TileLocation.Position+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2,2)),pos+new Vector2(0.5f,0.5f),4);
 			p.Fire();
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg));
 

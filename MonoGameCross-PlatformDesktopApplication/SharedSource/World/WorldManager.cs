@@ -66,7 +66,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public bool IsPositionValid(Vector2Int pos)
+		public static bool IsPositionValid(Vector2Int pos)
 		{
 			return (pos.X > 0 && pos.X < 100 && pos.Y > 0 && pos.Y < 100);
 		}
@@ -240,6 +240,7 @@ namespace MultiplayerXeno
 			
 
 			Vector2Int checkingSquare = new Vector2Int(startcell.X, startcell.Y);
+			Vector2Int lastCheckingSquare;
 
 			Vector2 dir = endPos - startPos;
 			dir.Normalize();
@@ -288,6 +289,7 @@ namespace MultiplayerXeno
 
 			while (true)
 			{
+				lastCheckingSquare = new Vector2Int(checkingSquare.X,checkingSquare.Y);
 				if (lenght.X > lenght.Y)
 				{
 					checkingSquare.Y += step.Y;
@@ -314,21 +316,18 @@ namespace MultiplayerXeno
 				}
 
 				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
-
-				//result.CollisionPoint.Add(collisionPoint);
-
 				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPoint;
 
 				
 				Direction direc = Utility.ToClampedDirection(collisionVector);
 
-				var pos = tile.Position + Utility.DirToVec2(direc);
-				if (IsPositionValid(pos))
+			
+				if (IsPositionValid(lastCheckingSquare))
 				{
-					WorldTile tilefrom = GetTileAtGrid(pos);
+					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 					//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
 
-					WorldObject hitobj = tilefrom.GetCoverObj(direc + 4, ignoreControllables);
+					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
 
 
 					if (hitobj.Id != -1 && !(hitobj.TileLocation.Position == startcell && (hitobj.TileLocation.ObjectAtLocation == hitobj || hitobj.GetCover() != Cover.Full))) //this is super hacky and convoluted

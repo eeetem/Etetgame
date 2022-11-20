@@ -13,8 +13,12 @@ namespace MultiplayerXeno
 	public static class Networking
 	{
 		public static TcpConnection serverConnection;
+		private static string Ip="";
+		private static string Name="";
 		public static ConnectionResult Connect(string ip,string name)
 		{
+			Ip = ip;
+			Name = name;
 			ConnectionResult connectionResult = ConnectionResult.TCPConnectionNotAlive;
 			//1. Establish a connection to the server.
 			serverConnection = ConnectionFactory.CreateTcpConnection(ip, 52233, out connectionResult);
@@ -28,7 +32,7 @@ namespace MultiplayerXeno
 			Console.WriteLine($"{serverConnection.ToString()} Connection established");
 
 
-			serverConnection.ConnectionClosed += (a, s) => UI.ShowMessage("Lost connection", a.ToString());
+			serverConnection.ConnectionClosed += (a, s) => UI.OptionMessage("Lost Connection: "+a.ToString(),"Do you want to reconnect?","no",null,"yes",Reconnect);
 			serverConnection.TIMEOUT = 1000000000;
 		
 			
@@ -54,6 +58,13 @@ namespace MultiplayerXeno
 			return connectionResult;
 
 		}
+
+		private static void Reconnect(object sender, EventArgs e)
+		{
+			Connect(Ip, Name);
+		}
+
+	
 
 		private static void ReciveNotify(RawData text,Connection connection)
 		{

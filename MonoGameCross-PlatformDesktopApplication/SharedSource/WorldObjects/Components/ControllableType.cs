@@ -8,7 +8,7 @@ namespace MultiplayerXeno
 		public int SightRange = 9;
 
 
-		public int MaxHealth = 5;
+		public int MaxHealth = 10;
 		public int MaxAwareness = 1;
 
 		public Controllable Instantiate(WorldObject parent,ControllableData data)

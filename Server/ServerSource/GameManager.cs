@@ -50,7 +50,8 @@ namespace MultiplayerXeno
 			GameDataPacket packet = new GameDataPacket
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
-				IsPlayerOne = true
+				IsPlayerOne = true,
+				Score = score
 			};
 			
 
@@ -60,7 +61,8 @@ namespace MultiplayerXeno
 			packet = new GameDataPacket
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
-				IsPlayerOne = false
+				IsPlayerOne = false,
+				Score = score
 			};
 			Player2?.Connection.Send(packet);
 		}

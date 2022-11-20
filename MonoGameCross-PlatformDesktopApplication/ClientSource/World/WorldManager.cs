@@ -40,7 +40,7 @@ namespace MultiplayerXeno
 			var Tile = GetTileAtGrid(position);
 
 			WorldObject obj = Tile.ObjectAtLocation;
-			if (obj!=null&&obj.ControllableComponent != null && !Controllable.Targeting) { 
+			if (obj!=null&&obj.TileLocation.IsVisible&&obj.ControllableComponent != null && !Controllable.Targeting) { 
 				obj.ControllableComponent.Select(); 
 				return;
 			}
@@ -154,6 +154,7 @@ namespace MultiplayerXeno
 				
 				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 				List<WorldObject> tileObjs = new List<WorldObject>();
+				List<WorldObject> UIToDraw = new List<WorldObject>();
 				foreach (var tile in allTiles)
 				{
 					tileObjs.Clear();
@@ -178,19 +179,34 @@ namespace MultiplayerXeno
 								continue;
 							}
 						}
+						else if (worldObject.ControllableComponent != null)
+						{
+							if (worldObject.ControllableComponent.IsMyTeam())
+							{
+								c = new Color(200,255,200);
+							}
+							else
+							{
+								c = new Color(255,200,200);
+							}
+
+							UIToDraw.Add(worldObject);
+						}
+
 
 
 						sprite.Color = c;
 
 						spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position), transform.Rotation, transform.Scale);
-						if (worldObject.ControllableComponent != null)
-						{
-							UI.DrawControllableHoverHud(spriteBatch, worldObject);
-						}
 					}
 				}
 				spriteBatch.End();
-
+				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+				foreach (var obj in UIToDraw)
+				{
+					UI.DrawControllableHoverHud(spriteBatch, obj);
+				}
+				spriteBatch.End();
 
 			
 			

@@ -163,30 +163,14 @@ namespace MultiplayerXeno
 			dir = Utility.NormaliseDir(dir);
 			//Cover biggestCover = Cover.None;
 			WorldTile? tileInDir=null;
-			if(WorldManager.Instance.IsPositionValid(Position + Utility.DirToVec2(dir)))
+			if(WorldManager.IsPositionValid(Position + Utility.DirToVec2(dir)))
 			{
 				tileInDir = WorldManager.Instance.GetTileAtGrid(Position + Utility.DirToVec2(dir));
 			}
 			
 		
 			WorldTile tileAtPos = this;
-#if CLIENT
-			if (IsVisible)
-			{
-#endif
-				if (tileInDir?.ObjectAtLocation != null  && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
-				{
-					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
-					{
-						biggestCoverObj = tileInDir.ObjectAtLocation;
-					}
 
-
-				}
-				
-#if CLIENT
-			}
-#endif
 			WorldObject coverObj;
 			switch (dir)
 			{
@@ -340,7 +324,23 @@ namespace MultiplayerXeno
 				
 			}
 			
-		
+#if CLIENT
+			if (IsVisible)
+			{
+#endif
+				if (tileInDir?.ObjectAtLocation != null  && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
+				{
+					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
+					{
+						biggestCoverObj = tileInDir.ObjectAtLocation;
+					}
+
+
+				}
+				
+#if CLIENT
+			}
+#endif
 
 			return biggestCoverObj;
 		}

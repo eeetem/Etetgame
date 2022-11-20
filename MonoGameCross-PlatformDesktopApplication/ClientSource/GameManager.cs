@@ -22,6 +22,7 @@ namespace MultiplayerXeno
 			intated = true;
 			IsPlayer1Turn = data.IsPlayer1Turn;
 			IsPlayer1 = data.IsPlayerOne;
+			score = data.Score;
 			WorldManager.Instance.CalculateFov();
 
 		}

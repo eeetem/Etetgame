@@ -44,27 +44,37 @@ namespace MultiplayerXeno
 		{
 			IsPlayer1Turn = !IsPlayer1Turn;
 			WorldManager.Instance.ResetControllables(IsPlayer1Turn);
+			bool team1Present = false;
+			bool team2Present = false;
 			foreach (var point in CapturePoints)
 			{
 				bool? team1 = point.TileLocation.ObjectAtLocation?.ControllableComponent?.IsPlayerOneTeam;
-				if(team1 == null)continue;
+				if (team1 == null) continue;
 
-				if ((bool)team1)
+				if ((bool) team1)
 				{
-					score++;
+					team1Present = true;
 				}
 				else
 				{
-					score--;
+					team2Present = true;
 				}
 
 			}
-			#if CLIENT
+
+			if (team1Present && !team2Present)
+			{
+				score++;
+			}
+			else if(!team1Present && team2Present){
+				score--;
+			}
+#if CLIENT
 			UI.SetScore(score);
 			#endif
 			
-			if(score > 10)EndGame(true);
-			if(score < -10)EndGame(false);
+			if(score > 5)EndGame(true);
+			if(score < -5)EndGame(false);
 			
 
 
