@@ -11,6 +11,7 @@ namespace MultiplayerXeno
 		public int MaxHealth = 10;
 		public int MaxAwareness = 1;
 
+		public bool RunAndGun = false;
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
 			

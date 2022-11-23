@@ -325,7 +325,7 @@ namespace MultiplayerXeno
 			}
 			
 #if CLIENT
-			if (IsVisible)
+			if (tileInDir != null && tileInDir.IsVisible)
 			{
 #endif
 				if (tileInDir?.ObjectAtLocation != null  && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())

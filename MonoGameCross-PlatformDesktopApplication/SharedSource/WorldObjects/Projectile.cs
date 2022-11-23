@@ -25,14 +25,14 @@ namespace MultiplayerXeno
 
 			result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			
-			var cast = WorldManager.Instance.Raycast(from, to, Cover.High,true);
+			var cast = WorldManager.Instance.Raycast(from, to, Cover.High,true,true);
 			if (cast.hit && result.hitObjID != cast.hitObjID)
 			{
 				covercast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(from, to, Cover.Low,true);
+				cast = WorldManager.Instance.Raycast(from, to, Cover.Low,true,true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;

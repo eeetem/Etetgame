@@ -217,7 +217,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome Raycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false)
+		public RayCastOutcome CenterToCenterRaycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false)
 		{
 			Vector2 startPos = (Vector2) startcell + new Vector2(0.5f, 0.5f);
 			Vector2 endPos = (Vector2) endcell + new Vector2(0.5f, 0.5f);
@@ -225,7 +225,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreNearby = false)
 		{
 			Vector2Int startcell = new Vector2Int((int)Math.Floor(startPos.X), (int)Math.Floor(startPos.Y));
 			Vector2Int endcell = new Vector2Int((int)Math.Floor(endPos.X), (int)Math.Floor(endPos.Y));
@@ -304,6 +304,13 @@ namespace MultiplayerXeno
 					
 				}
 
+				if (ignoreNearby)
+				{
+					//todo probably have some better check for edges if theyre "ont the same tile"
+					ignoreNearby = false;
+					continue;
+				}
+
 				WorldTile tile;
 				if (IsPositionValid(checkingSquare))
 				{
@@ -327,7 +334,7 @@ namespace MultiplayerXeno
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 					//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
 
-					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
+					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
 
 
 					if (hitobj.Id != -1 && !(hitobj.TileLocation.Position == startcell && (hitobj.TileLocation.ObjectAtLocation == hitobj || hitobj.GetCover() != Cover.Full))) //this is super hacky and convoluted
@@ -383,9 +390,7 @@ namespace MultiplayerXeno
 			Obj.TileLocation.Remove(id);
 			//obj.dispose()
 			WorldObjects.Remove(id);
-			#if CLIENT
-			CalculateFov();
-			#endif
+
 		}
 
 		public  WorldTile GetTileAtGrid(Vector2Int pos)
@@ -419,8 +424,10 @@ namespace MultiplayerXeno
 			//Console.WriteLine(GridData[15,5].WestEdge);
 			lock (syncobj)
 			{
+				bool needFoVupdate = false;
 				foreach (var obj in objsToDel)
 				{
+					needFoVupdate = true;
 					DestroyWorldObject(obj);
 					Console.WriteLine("deleting: "+obj);
 				}
@@ -433,6 +440,7 @@ namespace MultiplayerXeno
 
 				foreach (var WO in createdObjects)
 				{
+					needFoVupdate = true;
 					var obj = CreateWorldObj(WO);
 					Console.WriteLine("creatinig: "+obj.Id);
 #if SERVER
@@ -444,6 +452,12 @@ namespace MultiplayerXeno
 #endif
 				}		
 				createdObjects.Clear();
+#if CLIENT
+				if(needFoVupdate){
+					CalculateFov();
+				}
+#endif
+				
 				
 			}
 

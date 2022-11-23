@@ -132,6 +132,10 @@ namespace MultiplayerXeno
 			{
 				return;
 			}
+			if (!Type.RunAndGun && movePoints <= 0)
+			{
+				return;
+			}
 #if CLIENT
 			if (!UI.validShot)
 			{
@@ -220,6 +224,8 @@ namespace MultiplayerXeno
 		{
 			if(moving)return;
 			this.movePoints -= pointCost;
+
+
 			if (movePoints < 0)
 			{
 				//desync
@@ -270,6 +276,10 @@ namespace MultiplayerXeno
 			{
 				actionPoints--;
 				Awareness--;
+				if (!Type.RunAndGun)
+				{
+					movePoints--;
+				}
 
 			}
 			else

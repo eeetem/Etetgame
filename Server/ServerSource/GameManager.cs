@@ -31,15 +31,35 @@ namespace MultiplayerXeno
 			
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
+			int i = 0;
 			foreach (var spawn in T1SpawnPoints)
 			{
-				WorldManager.Instance.MakeWorldObject("Human", spawn.TileLocation.Position,controllableData:cdata);
+				if (i < 3)
+				{
+					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
+				}
+				else
+				{
+					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata);
+				}
+
+				i++;
 			}
 
 			cdata = new ControllableData(false);
+			i = 0;
 			foreach (var spawn in T2SpawnPoints)
 			{
-				WorldManager.Instance.MakeWorldObject("Human", spawn.TileLocation.Position,controllableData:cdata);
+				if (i < 3)
+				{
+					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
+				}
+				else
+				{
+					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata);
+				}
+
+				i++;
 			}
 			NextTurn();
 

@@ -711,15 +711,15 @@ namespace MultiplayerXeno
 					coverModifier = 2;
 					if (previewShot.result != null && previewShot.result.hit)
 					{
-						var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-						var transform = obj.Type.Transform;
-						Sprite redSprite = obj.GetSprite();
-						redSprite.Color = Color.Red;
+						var coverobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+						var coverobjtransform = coverobj.Type.Transform;
+						Sprite yellowsprite = coverobj.GetSprite();
+						yellowsprite.Color = Color.Red;
 
-						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+						spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), coverobjtransform.Rotation, coverobjtransform.Scale);
 						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Yellow, 25f);
-						if (obj.ControllableComponent != null && obj.ControllableComponent.Awareness > 0)
+						if (coverobj.ControllableComponent != null && coverobj.ControllableComponent.Awareness > 0)
 						{
 							spriteBatch.DrawString(Game1.SpriteFont,"Shot Damage: 4. (-"+coverModifier+" cover)(has awareness) Total: "+(4-coverModifier)/2, Utility.GridToWorldPos(previewShot.result.CollisionPoint),Color.Black,0,Vector2.Zero, 4,new SpriteEffects(),0);
 						}

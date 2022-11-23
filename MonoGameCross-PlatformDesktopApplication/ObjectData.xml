@@ -26,9 +26,15 @@
     <name>basicHalfWall</name>
   </object>
   <object Faceable = "true" Cover ="3">
-    <sprite layer = "3" offset= "0,0"/>
-    <name>Human</name>
-    <controllable moveRange = "4">
+    <sprite  name="Human" layer = "3" offset= "0,0"/>
+    <name>Soldier</name>
+    <controllable moveRange = "3" health="12">
+    </controllable>
+  </object>
+  <object Faceable = "true" Cover ="3">
+    <sprite name="Human" layer = "3" offset= "0,0"/>
+    <name>Scout</name>
+    <controllable moveRange = "4" health="6" rNg="true">
     </controllable>
   </object>
 </root>
