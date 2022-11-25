@@ -68,7 +68,15 @@ namespace MultiplayerXeno
 				}
 				else
 				{
-					Selected.MoveAction(Position);
+					if (UI.showPath)
+					{
+						UI.showPath = false;
+						Selected.MoveAction(Position);
+					}
+					else
+					{
+						UI.showPath = true;
+					}
 				}
 			}
 			

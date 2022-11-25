@@ -11,6 +11,9 @@ namespace MultiplayerXeno
 
 		private static OrthographicCamera Cam { get; set; }
 
+		private static Vector2 velocity = new Vector2();
+		private static float ZoomVelocity = 0;
+
 		public static void Init(GraphicsDevice graphicsDevice, GameWindow window)
 		{
 			var viewportAdapter = new BoxingViewportAdapter(window, graphicsDevice, 1920, 1080);
@@ -19,24 +22,43 @@ namespace MultiplayerXeno
 			Cam.MaximumZoom = 10;
 		}
 
+		public static Vector2 GetPos()
+		{
+			return Cam.Center;
+		}
 
 		public static Matrix GetViewMatrix()
 		{
 			return Cam.GetViewMatrix();
 		}
 
+		 static Vector2 MoveTarget;
+		 static bool forceMoving = false;
 		public static void SetPos(Vector2 vec)
 		{
 			vec = Utility.GridToWorldPos(vec);
-			vec.X -= Cam.BoundingRectangle.Width / 2;
-			vec.Y -= Cam.BoundingRectangle.Height / 2;
-			Cam.Position = vec;
+			//vec.X -= Cam.BoundingRectangle.Width / 2;
+		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
+			MoveTarget = vec-Cam.Origin;
+			forceMoving = true;
+
+
 		}
 
 
 		private static Vector2 GetMovementDirection()
 		{
-			
+			if (forceMoving)
+			{
+				Vector2 difference = MoveTarget - Cam.Position;
+				if (difference.Length() < 20)
+				{
+					forceMoving = false;
+				}
+
+				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
+			}
+
 			var movementDirection = Vector2.Zero;
 			var state = Keyboard.GetState();
 			if (state.IsKeyDown(Keys.S))
@@ -69,15 +91,21 @@ namespace MultiplayerXeno
 			
 			
 			var state = Mouse.GetState();
-			float diff = ((float)(state.ScrollWheelValue - lastScroll)/1000)*Cam.Zoom;
+			float diff = (float)(state.ScrollWheelValue - lastScroll)/1000*Cam.Zoom;
 			lastScroll = state.ScrollWheelValue;
+			ZoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
+			Cam.ZoomIn(ZoomVelocity);
+			ZoomVelocity *= gameTime.GetElapsedSeconds()*45;
 			
-			Cam.ZoomIn(diff);
 
 			float movementSpeed = 200*(Cam.MaximumZoom/Cam.Zoom);
-			Cam.Move(GetMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
-			
-	
+
+			Vector2 move = GetMovementDirection();
+			velocity += move*gameTime.GetElapsedSeconds()*25f;
+			Cam.Move(velocity * movementSpeed * gameTime.GetElapsedSeconds());
+			velocity *= gameTime.GetElapsedSeconds()*45;
+
+
 		}
 	}
 }

@@ -482,6 +482,7 @@ namespace MultiplayerXeno
 
 
 		public static bool validShot;
+		public static bool showPath = false;
 		public static void Update(float deltatime)
 		{
 			if (Controllable.Selected != null)
@@ -505,6 +506,7 @@ namespace MultiplayerXeno
 					}
 					else
 					{
+						showPath = false;
 						previewPath = PathFinding.GetPath(Controllable.Selected.worldObject.TileLocation.Position, currentPos).Path;
 						if (previewPath == null)
 						{
@@ -690,7 +692,7 @@ namespace MultiplayerXeno
 							c = Color.Red;
 							break;
 						default:
-							Console.WriteLine("error: full cover on preview shot");
+							
 							break;
 
 					}
@@ -698,40 +700,46 @@ namespace MultiplayerXeno
 				}
 
 
-				int coverModifier = 0;
-				if ( previewShot != null && previewShot.covercast != null && previewShot.covercast.hit)
+				int coverModifier = 0;			
+				if (previewShot.covercast != null && previewShot.covercast.hit)
 				{
-					var obj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
+					coverModifier = 2;
+					var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
+					var coverobjtransform = coverobj.Type.Transform;
+					Sprite yellowsprite = coverobj.GetSprite();
+					yellowsprite.Color = Color.Yellow;
+
+					spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), coverobjtransform.Rotation, coverobjtransform.Scale);
+					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
+					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPoint), 15, 10, Color.Yellow, 25f);
+
+				}
+				
+				if ( previewShot != null && previewShot.result != null && previewShot.result.hit)
+				{
+					var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
 					var transform = obj.Type.Transform;
 					Sprite redSprite = obj.GetSprite();
-					redSprite.Color = Color.Yellow;
+					redSprite.Color = Color.Red;
 	
 					spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
 					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-					coverModifier = 2;
-					if (previewShot.result != null && previewShot.result.hit)
+					if (obj.ControllableComponent != null)
 					{
-						var coverobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-						var coverobjtransform = coverobj.Type.Transform;
-						Sprite yellowsprite = coverobj.GetSprite();
-						yellowsprite.Color = Color.Red;
-
-						spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), coverobjtransform.Rotation, coverobjtransform.Scale);
-						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Yellow, 25f);
-						if (coverobj.ControllableComponent != null && coverobj.ControllableComponent.Awareness > 0)
+						if (obj.ControllableComponent.Awareness > 0)
 						{
-							spriteBatch.DrawString(Game1.SpriteFont,"Shot Damage: 4. (-"+coverModifier+" cover)(has awareness) Total: "+(4-coverModifier)/2, Utility.GridToWorldPos(previewShot.result.CollisionPoint),Color.Black,0,Vector2.Zero, 4,new SpriteEffects(),0);
+							spriteBatch.DrawString(Game1.SpriteFont, "Shot Damage: 4. (-" + coverModifier + " cover)(has awareness) Total: " + (4 - coverModifier) / 2, Utility.GridToWorldPos(previewShot.result.CollisionPoint), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 						}
 						else
 						{
-							spriteBatch.DrawString(Game1.SpriteFont,"Shot Damage: 4. (-"+coverModifier+" cover)(has awareness) Total: "+(4-coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint),Color.Black,0,Vector2.Zero, 4,new SpriteEffects(),0);
+							spriteBatch.DrawString(Game1.SpriteFont, "Shot Damage: 4. (-" + coverModifier + " cover)(has awareness) Total: " + (4 - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 						}
-
-
-
 					}
 				}
+
+
+			
 				
 		
 
@@ -739,23 +747,22 @@ namespace MultiplayerXeno
 			}
 			else
 			{
-				
-				foreach (var path in previewPath)
-				{
+				if(showPath){
+					foreach (var path in previewPath)
+					{
 					
-					if(path.X < 0 || path.Y < 0) break;
-					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
+						if(path.X < 0 || path.Y < 0) break;
+						Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 				
-					spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);
+						spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);
 				
+				
+					}
 				
 				}
 			}
 
-		
-
-			
-
+	
 
 			spriteBatch.End();
 		}

@@ -310,7 +310,7 @@ namespace MultiplayerXeno
 					ignoreNearby = false;
 					continue;
 				}
-
+	
 				WorldTile tile;
 				if (IsPositionValid(checkingSquare))
 				{

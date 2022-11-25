@@ -293,7 +293,7 @@ namespace MultiplayerXeno
 			
 			//client shouldnt be allowed to judge what got hit
 #if SERVER
-			Projectile p = new Projectile(worldObject.TileLocation.Position+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2,2)),pos+new Vector2(0.5f,0.5f),4);
+			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),4);
 			p.Fire();
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg));
 
@@ -316,7 +316,6 @@ namespace MultiplayerXeno
 					_moveCounter = 0;
 					try
 					{
-						Console.WriteLine("moving to: "+CurrentPath[0]);
 						worldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - worldObject.TileLocation.Position));
 					}
 					catch (Exception e)
@@ -330,6 +329,9 @@ namespace MultiplayerXeno
 					{
 						moving = false;
 						_thisMoving = false;
+#if CLIENT
+						UI.FullUnitUI(this.worldObject);
+#endif
 					}
 					//todo jump view to move
 #if CLIENT

@@ -92,6 +92,12 @@ namespace MultiplayerXeno
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
+			if (WorldManager.Instance.GetObject(packet.ID) == null)
+			{
+				Console.WriteLine("Recived packet for a non existant object: "+packet.ID);
+				return;
+			}
+
 			if (packet.Type == ActionType.Move)
 			{
 				MovementPacket movementPacket = (MovementPacket)packet;

@@ -43,7 +43,6 @@ namespace MultiplayerXeno
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
-			Console.WriteLine("moved to: "+TileLocation.Position);
 
 
 		}
@@ -81,7 +80,7 @@ namespace MultiplayerXeno
 		
 		public void TakeDamage(int ammount)
 		{
-			Console.WriteLine(this + "got hit");
+			Console.WriteLine(this + " got hit " + TileLocation.Position);
 			if (ControllableComponent != null)
 			{//let controlable handle it
 				ControllableComponent.TakeDamage(ammount);

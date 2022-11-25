@@ -29,7 +29,7 @@ namespace MultiplayerXeno
 			UI.LeftClickUp += FinishPlacePrefab;
 			UI.RightClick += DeletePrefab;
 			ControllableData cdata = new ControllableData(true);
-			WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(5, 5),controllableData:cdata);
+			//WorldManager.Instance.MakeWorldObject("Human", new Vector2Int(5, 5),controllableData:cdata);
 
 
 
