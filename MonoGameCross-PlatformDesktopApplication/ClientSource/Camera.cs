@@ -46,6 +46,7 @@ namespace MultiplayerXeno
 		}
 
 
+		private static Vector2 lastMousePos;
 		private static Vector2 GetMovementDirection()
 		{
 			if (forceMoving)
@@ -58,9 +59,24 @@ namespace MultiplayerXeno
 
 				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
 			}
+			
+			var state = Keyboard.GetState();
+			var mouseState = Mouse.GetState();
+			if (mouseState.MiddleButton == ButtonState.Pressed)
+			{
+				var lastpos = lastMousePos;
+				lastMousePos = new Vector2(mouseState.Position.X,mouseState.Position.Y);
+				if (lastpos != new Vector2(0, 0))
+				{
+					return Vector2.Clamp((lastpos - new Vector2(mouseState.Position.X, mouseState.Position.Y)) / 30f, new Vector2(-3, -3), new Vector2(3, 3));
+				}
+			}
+			else
+			{
+				lastMousePos = new Vector2(0,0);
+			}
 
 			var movementDirection = Vector2.Zero;
-			var state = Keyboard.GetState();
 			if (state.IsKeyDown(Keys.S))
 			{
 				movementDirection += Vector2.UnitY;
@@ -96,10 +112,8 @@ namespace MultiplayerXeno
 			ZoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
 			Cam.ZoomIn(ZoomVelocity);
 			ZoomVelocity *= gameTime.GetElapsedSeconds()*45;
-			
 
 			float movementSpeed = 200*(Cam.MaximumZoom/Cam.Zoom);
-
 			Vector2 move = GetMovementDirection();
 			velocity += move*gameTime.GetElapsedSeconds()*25f;
 			Cam.Move(velocity * movementSpeed * gameTime.GetElapsedSeconds());

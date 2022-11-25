@@ -36,7 +36,7 @@ namespace MultiplayerXeno
 			spriteBatch = new SpriteBatch(graphicsDevice);
 			MyraEnvironment.Game = Game1.instance;
 
-			
+
 			Desktop = new Desktop();
 			Desktop.TouchDown += MouseDown;
 			Desktop.TouchUp += MouseUp;
