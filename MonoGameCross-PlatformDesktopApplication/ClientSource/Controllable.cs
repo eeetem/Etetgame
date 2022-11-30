@@ -18,16 +18,9 @@ namespace MultiplayerXeno
 		public void Select()
 		{
 
-			if (IsMyTeam())
-			{
-				UI.FullUnitUI(this.worldObject);
+				UI.UnitUI(this.worldObject);
 				
-			}
-			else
-			{
-				//ui.infoui
-				
-			}
+		
 
 			Selected = this;
 

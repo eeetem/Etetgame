@@ -55,12 +55,15 @@ namespace MultiplayerXeno
 			{
 				this.turnPoints = data.TurnPoints;
 			}
-			
-			
+
+			if (data.JustSpawned)
+			{
+				StartTurn();
+			}
 		}
-		public int movePoints { get; private set; } = 2;
-		public int turnPoints { get; private set; } = 2;
-		public int actionPoints { get; private set; } = 1;
+		public int movePoints { get; private set; } = 0;
+		public int turnPoints { get; private set; } = 0;
+		public int actionPoints { get; private set; } = 0;
 
 		public int Health = 0;
 		public int Awareness = 0;
@@ -85,8 +88,8 @@ namespace MultiplayerXeno
 			if (Awareness > 0)
 			{
 				Console.WriteLine("blocked by awareness");
-				Awareness--;
-				ammount /= 2;
+				Awareness--; 
+				ammount= (int)Math.Floor(ammount/2f);
 
 			}
 			
@@ -111,7 +114,7 @@ namespace MultiplayerXeno
 
 		public void StartTurn()
 		{
-			movePoints = 2;
+			movePoints = Type.MaxMovePoints;
 			turnPoints = 2;
 			actionPoints = 1;
 			if (Awareness < 0)
@@ -199,6 +202,9 @@ namespace MultiplayerXeno
 #if CLIENT
 				Selected = null;
 #endif
+				#if SERVER
+				Console.WriteLine("client attempted to move past move points at: "+this.worldObject.TileLocation.Position);
+				#endif
 				return;
 			}
 			
@@ -222,6 +228,7 @@ namespace MultiplayerXeno
 		private float _moveCounter;
 		public void DoMove(List<Vector2Int> path,int pointCost)
 		{
+			Console.WriteLine("DoMove started");
 			if(moving)return;
 			this.movePoints -= pointCost;
 
@@ -238,6 +245,7 @@ namespace MultiplayerXeno
 			moving = true;
 			_thisMoving = true;
 			CurrentPath = path;
+			Console.WriteLine("DoMove finished without returning");
 		}
 
 		public void DoFace(Direction dir)
@@ -293,9 +301,9 @@ namespace MultiplayerXeno
 			
 			//client shouldnt be allowed to judge what got hit
 #if SERVER
-			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),4);
+			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg,p.dropoffRange));
 
 #endif
 			
@@ -324,14 +332,23 @@ namespace MultiplayerXeno
 					}
 
 					worldObject.Move(CurrentPath[0]);
+					Console.WriteLine("moved");
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
 						moving = false;
 						_thisMoving = false;
 #if CLIENT
-						UI.FullUnitUI(this.worldObject);
+						if (Selected != null)
+						{
+							UI.UnitUI(Selected.worldObject);
+						}
+						else
+						{
+							UI.UnitUI(this.worldObject);
+						}
 #endif
+						Console.WriteLine("done moving ");
 					}
 					//todo jump view to move
 #if CLIENT
@@ -345,7 +362,7 @@ namespace MultiplayerXeno
 		public ControllableData GetData()
 		{
 			var data = new ControllableData(this.IsPlayerOneTeam,actionPoints,movePoints,turnPoints,Health,Awareness);
-
+			data.JustSpawned = false;
 			return data;
 		}
 	}

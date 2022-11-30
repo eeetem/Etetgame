@@ -49,6 +49,7 @@ namespace CommonData
 		public int TurnPoints;
 		public int Health;
 		public int Awareness;
+		public bool JustSpawned;
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
@@ -57,6 +58,7 @@ namespace CommonData
 			TurnPoints = -1;
 			Health = -1;
 			Awareness = -1;
+			JustSpawned = true;//it's always truea nd only set to false in getData
 		}
 		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int awareness)
 		{
@@ -66,6 +68,7 @@ namespace CommonData
 			TurnPoints = turnPoints;
 			Health = health;
 			Awareness = awareness;
+			JustSpawned = true;
 		}
 	}
 	[Serializable]

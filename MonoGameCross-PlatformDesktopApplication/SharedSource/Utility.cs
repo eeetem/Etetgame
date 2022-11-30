@@ -54,7 +54,7 @@ namespace MultiplayerXeno
         }
         
         
-        private const int SIZE = 180;
+        public static int SIZE = 180;
 
         public static Vector2 GridToWorldPos(Vector2 gridpos)
         {
@@ -242,6 +242,37 @@ namespace MultiplayerXeno
 
             return (Direction)dir;
         }
+
+        public static bool DoesEdgeBorderTile(WorldObject edge, Vector2Int pos)
+        {
+            WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
+            if (tile.NorthEdge ==edge || tile.WestEdge == edge)
+            {
+                return true;
+            }
+
+            if (WorldManager.IsPositionValid(pos + new Vector2Int(0, 1)))
+            {
+                tile = WorldManager.Instance.GetTileAtGrid(pos + new Vector2Int(0, 1));
+                if (tile.NorthEdge == edge)
+                {
+                    return true;
+                }
+            }
+
+            if (WorldManager.IsPositionValid(pos + new Vector2Int(1, 0)))
+            {
+                tile = WorldManager.Instance.GetTileAtGrid(pos + new Vector2Int(1, 0));
+                if (tile.WestEdge == edge)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
     }
     
     

@@ -9,6 +9,7 @@ namespace CommonData
 			public bool IsPlayer1Turn{ get; set; }
 
 			public int Score { get; set; }
+			public bool GameStarted { get; set; }
 
 
 		}

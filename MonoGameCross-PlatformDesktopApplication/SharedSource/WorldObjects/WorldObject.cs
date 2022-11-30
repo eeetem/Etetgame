@@ -54,7 +54,7 @@ namespace MultiplayerXeno
 
 		
 
-		public void Face(Direction dir)
+		public void Face(Direction dir,bool updateFOV  =true)
 		{
 			if (!Type.Faceable)
 			{
@@ -73,7 +73,10 @@ namespace MultiplayerXeno
 
 			Facing = dir;
 #if CLIENT
-			WorldManager.Instance.CalculateFov();
+			if (updateFOV)
+			{
+				WorldManager.Instance.CalculateFov();
+			}
 #endif
 			
 		}
@@ -81,6 +84,10 @@ namespace MultiplayerXeno
 		public void TakeDamage(int ammount)
 		{
 			Console.WriteLine(this + " got hit " + TileLocation.Position);
+			if (ammount <= 0)
+			{return;
+			}
+
 			if (ControllableComponent != null)
 			{//let controlable handle it
 				ControllableComponent.TakeDamage(ammount);

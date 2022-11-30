@@ -81,10 +81,29 @@ namespace MultiplayerXeno
 			connection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
 			connection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
 			connection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
+			connection.RegisterStaticPacketHandler<StartDataPacket>(ReciveStartData);
 			//3. Register packet listeners.
 			//connection.RegisterRawDataHandler("HelloWorld", (rawData, con) => Console.WriteLine($"RawDataPacket received. Data: {rawData.ToUTF8String()}"));
 		
 		}
+
+		private static void ReciveStartData(StartDataPacket packet, Connection connection)
+		{
+			if (GameManager.Player1?.Connection == connection)
+			{
+				GameManager.Player1.SetStartData(packet);
+			}else if (GameManager.Player2?.Connection == connection)
+			{
+				GameManager.Player2.SetStartData(packet);
+			}
+
+			if (GameManager.Player1?.StartData != null && GameManager.Player2?.StartData != null)
+			{
+				GameManager.SpawnCharacters();
+			}
+		}
+
+
 		private static void RegisterClient(RawData rawData, Connection connection)
 		{
 			string name = RawDataConverter.ToUTF8String(rawData);

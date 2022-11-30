@@ -31,7 +31,10 @@ namespace MultiplayerXeno
 				{
 					controllableType = new ControllableType();
 					controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
+					controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
+					controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
+					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
 					controllableType.RunAndGun = bool.Parse(contollableObj.Attributes?["rNg"]?.InnerText ?? "false");
 				}
 

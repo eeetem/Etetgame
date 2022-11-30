@@ -10,7 +10,6 @@ namespace MultiplayerXeno
 
 
 
-		public static bool GameStarted = false;
 		public static readonly List<WorldObject> T1SpawnPoints = new List<WorldObject>();
 		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
 		public static void StatGame()
@@ -21,20 +20,29 @@ namespace MultiplayerXeno
 				return;
 			}
 			
+	
+
+		
+
+		}
+
+		public static void SpawnCharacters()
+		{
 			if (GameStarted)
 			{
 				return;
 			}
 
 			GameStarted = true;
-
-			
+				
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
+			
 			int i = 0;
 			foreach (var spawn in T1SpawnPoints)
 			{
-				if (i < 3)
+				
+				if (i < Player1.StartData.Soldiers)
 				{
 					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
 				}
@@ -50,7 +58,7 @@ namespace MultiplayerXeno
 			i = 0;
 			foreach (var spawn in T2SpawnPoints)
 			{
-				if (i < 3)
+				if (i < Player2.StartData.Soldiers)
 				{
 					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
 				}
@@ -61,8 +69,6 @@ namespace MultiplayerXeno
 
 				i++;
 			}
-			NextTurn();
-
 		}
 
 		public static void SendData()
@@ -71,7 +77,8 @@ namespace MultiplayerXeno
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
 				IsPlayerOne = true,
-				Score = score
+				Score = score,
+				GameStarted = GameStarted
 			};
 			
 
@@ -82,7 +89,8 @@ namespace MultiplayerXeno
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
 				IsPlayerOne = false,
-				Score = score
+				Score = score,
+				GameStarted = GameStarted
 			};
 			Player2?.Connection.Send(packet);
 		}

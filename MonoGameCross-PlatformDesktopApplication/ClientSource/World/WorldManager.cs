@@ -138,24 +138,23 @@ namespace MultiplayerXeno
 			}
 		}
 
-		
 
-
+		readonly List<WorldTile> _allTiles = new List<WorldTile>();
 		public void Draw(GameTime gameTime)
 		{
-			List<WorldTile> allTiles = new List<WorldTile>();
+			_allTiles.Clear();
 
 			foreach (var tile  in _gridData)
 			{
-					allTiles.Add(tile);
+					_allTiles.Add(tile);
 			}
 
-			allTiles.Sort(new WorldTileDrawOrderCompare());
+			_allTiles.Sort(new WorldTileDrawOrderCompare());
 				
 				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
 				List<WorldObject> tileObjs = new List<WorldObject>();
 				List<WorldObject> UIToDraw = new List<WorldObject>();
-				foreach (var tile in allTiles)
+				foreach (var tile in _allTiles)
 				{
 					tileObjs.Clear();
 					tileObjs.Add(tile.Surface);
@@ -171,6 +170,8 @@ namespace MultiplayerXeno
 							var sprite = worldObject.GetSprite();
 						var transform = worldObject.Type.Transform;
 						Color c = Color.White;
+					
+
 						if (!worldObject.TileLocation.IsVisible)
 						{
 							c = Color.DarkGray;
@@ -181,6 +182,7 @@ namespace MultiplayerXeno
 						}
 						else if (worldObject.ControllableComponent != null)
 						{
+							
 							if (worldObject.ControllableComponent.IsMyTeam())
 							{
 								c = new Color(200,255,200);
@@ -194,9 +196,13 @@ namespace MultiplayerXeno
 						}
 
 
-
+						if (worldObject.Type.Edge&&Utility.DoesEdgeBorderTile(worldObject,Utility.WorldPostoGrid(Camera.GetMouseWorldPos())))
+						{
+							c *= 0.4f;
+						}
+						
+					
 						sprite.Color = c;
-
 						spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position), transform.Rotation, transform.Scale);
 					}
 				}

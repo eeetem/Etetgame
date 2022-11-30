@@ -35,24 +35,46 @@ namespace MultiplayerXeno
 			graphicsDevice = graphicsdevice;
 			spriteBatch = new SpriteBatch(graphicsDevice);
 			MyraEnvironment.Game = Game1.instance;
+			
 
 
 			Desktop = new Desktop();
 			Desktop.TouchDown += MouseDown;
 			Desktop.TouchUp += MouseUp;
-			
+
 
 			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("coverIndicator");
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 
 			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("indicators");
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
-			
+
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
 
 			previewMoves[0] = new List<Vector2Int>();
 			previewMoves[1] = new List<Vector2Int>();
+		}
+
+		
+		public static void RemakeUi(object sender, EventArgs e)
+		{
+			Desktop = new Desktop();
+			Desktop.TouchDown += MouseDown;
+			Desktop.TouchUp += MouseUp;
+			SetUI(null);
+		}
+
+		public delegate void UIGen();
+
+		private static UIGen currentUI;
+		public static void SetUI(UIGen? uiMethod) {
+			if (uiMethod != null)
+			{
+				currentUI = uiMethod;
+			}
+			currentUI.Invoke();
+			
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -63,36 +85,43 @@ namespace MultiplayerXeno
 		public static event MouseClick LeftClickUp;
 
 		private static MouseState lastState;
+
 		public static void MouseDown(object? sender, EventArgs e)
 		{
 			if (UI.Desktop.IsMouseOverGUI)
 			{
-				return;//let myra do it's thing
+				return; //let myra do it's thing
 			}
+
 			var mouseState = Mouse.GetState();
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (mouseState.LeftButton == ButtonState.Pressed)
 			{
 				LeftClick?.Invoke(gridClick);
 			}
+
 			if (mouseState.RightButton == ButtonState.Pressed)
 			{
 				RightClick?.Invoke(gridClick);
 			}
+
 			lastState = mouseState;
 		}
+
 		public static void MouseUp(object? sender, EventArgs e)
 		{
 			if (UI.Desktop.IsMouseOverGUI)
 			{
-				return;//let myra do it's thing
+				return; //let myra do it's thing
 			}
+
 			var mouseState = Mouse.GetState();
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (lastState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
 			{
 				LeftClickUp?.Invoke(gridClick);
 			}
+
 			if (lastState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
 			{
 				RightClickUp?.Invoke(gridClick);
@@ -100,7 +129,7 @@ namespace MultiplayerXeno
 
 		}
 
-	
+
 
 
 
@@ -112,8 +141,8 @@ namespace MultiplayerXeno
 				RowSpacing = 8,
 				ColumnSpacing = 8
 			};
-		
-	
+
+
 			var button = new TextButton
 			{
 				GridColumn = 1,
@@ -121,13 +150,10 @@ namespace MultiplayerXeno
 				Text = "Join Server"
 			};
 
-			button.Click += (s, a) =>
-			{
-				ConnectionMenu();
-			};
+			button.Click += (s, a) => { SetUI(ConnectionMenu); };
 
 			grid.Widgets.Add(button);
-			
+
 			var button2 = new TextButton
 			{
 				GridColumn = 1,
@@ -147,20 +173,20 @@ namespace MultiplayerXeno
 
 			Desktop.Root = grid;
 
-			
+
 		}
 
 		public static void ConnectionMenu()
 		{
-			
-			
-			
+
+
+
 			var grid = new Grid
 			{
 				RowSpacing = 8,
 				ColumnSpacing = 8
 			};
-		
+
 			var textBox = new TextBox()
 			{
 				GridColumn = 1,
@@ -175,7 +201,7 @@ namespace MultiplayerXeno
 				Text = "name"
 			};
 			grid.Widgets.Add(textBox2);
-		
+
 			var button = new TextButton
 			{
 				GridColumn = 2,
@@ -185,21 +211,21 @@ namespace MultiplayerXeno
 
 			button.Click += (s, a) =>
 			{
-				ConnectionResult result = Networking.Connect(textBox.Text.Trim(),textBox2.Text.Trim());
+				ConnectionResult result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
 				if (result == ConnectionResult.Connected)
 				{
-					ShowMessage("Connection Notice","Connected to server!");
-					
+					ShowMessage("Connection Notice", "Connected to server!");
+
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
-					GameUi();
+					SetUI(SetupUi);
 				}
 				else
 				{
-					ShowMessage("Connection Notice","Failed to connect: "+result);
+					ShowMessage("Connection Notice", "Failed to connect: " + result);
 
 				}
-	
+
 			};
 
 			grid.Widgets.Add(button);
@@ -211,7 +237,130 @@ namespace MultiplayerXeno
 
 
 		}
-		
+
+
+		private static int soldierCount = 0;
+		private static int scoutCount = 0;
+		public static void SetupUi()
+		{
+
+
+			var grid = new Grid
+			{
+
+				ColumnSpacing = 8,
+				RowSpacing = 8,
+				
+			};
+
+			
+			//soldier counter
+			var soldierButton = new TextButton
+			{
+			
+				GridColumn = 2,
+				GridRow = 1,
+				Text = "Soldiers: 0"
+			};
+			grid.Widgets.Add(soldierButton);
+			var soldierLeft = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 1,
+				Text = "<"
+			};
+			soldierLeft.Click += (s, a) =>
+			{
+				soldierCount--;
+				if (soldierCount < 0)
+				{
+					soldierCount = 0;
+				}
+
+				soldierButton.Text = "Soldiers: " + soldierCount;
+			};
+			grid.Widgets.Add(soldierLeft);
+			var soldierRight = new TextButton
+			{
+				GridColumn = 3,
+				GridRow = 1,
+				Text = ">"
+			};
+			soldierRight.Click += (s, a) =>
+			{
+				if (soldierCount + scoutCount + 1 > 5)
+				{
+					return;
+				}
+
+				soldierCount++;
+				soldierButton.Text = "Soldiers: " + soldierCount;
+			};
+			grid.Widgets.Add(soldierRight);
+			
+			//scout counter
+			var scoutButton = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = 2,
+				Text = "Scouts: 0"
+			};
+			grid.Widgets.Add(scoutButton);
+			var scountLeft = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 2,
+				Text = "<"
+			};
+			scountLeft.Click += (s, a) =>
+			{
+				scoutCount--;
+				if (scoutCount < 0)
+				{
+					scoutCount = 0;
+				}
+
+				scoutButton.Text = "Scouts: " + scoutCount;
+			};
+			grid.Widgets.Add(scountLeft);
+			var scoutRight = new TextButton
+			{
+				GridColumn = 3,
+				GridRow = 2,
+				Text = ">"
+			};
+			scoutRight.Click += (s, a) =>
+			{
+				if (soldierCount + scoutCount + 1 > 5)
+				{
+					return;
+				}
+
+				scoutCount++;
+				scoutButton.Text = "Scouts: " + scoutCount;
+			};
+			grid.Widgets.Add(scoutRight);
+			
+			
+			var confirm = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 3,
+				Text = "Confirm"
+			};
+			confirm.Click += (s, a) =>
+			{
+				StartDataPacket packet = new StartDataPacket();
+				packet.Scouts = scoutCount;
+				packet.Soldiers = soldierCount;
+				Networking.serverConnection.Send(packet);
+				SetUI(GameUi);
+			};
+			grid.Widgets.Add(confirm);
+
+			Desktop.Root = grid;
+		}
+
 
 		public static Dialog OptionMessage(string title, string content, string option1text, EventHandler option1,string option2text, EventHandler option2)
 		{
@@ -315,6 +464,8 @@ namespace MultiplayerXeno
 			scoreIndicator.Text = "score: " + score;
 		}
 
+		public static bool MousePassthrough { get; private set; }
+
 		public static void GameUi()
 		{
 			
@@ -333,7 +484,7 @@ namespace MultiplayerXeno
 			};
 			end.Click += (o,a) => GameManager.EndTurn();		
 			grid.Widgets.Add(end);
-			
+		/*	
 			var debug = new TextButton
 			{
 				GridColumn = 8,
@@ -342,7 +493,7 @@ namespace MultiplayerXeno
 			};
 			debug.Click += (o,a) => raycastDebug = !raycastDebug;
 			grid.Widgets.Add(debug);
-			
+			*/
 			
 			turnIndicator = new Panel()
 			{
@@ -368,6 +519,13 @@ namespace MultiplayerXeno
 
 			grid.Widgets.Add(scoreIndicator);
 	
+			var PassThroughToggle = new TextButton
+			{
+				GridColumn = 7,
+				GridRow = 8,
+				Text = "TogglePassthrough"
+			};
+			PassThroughToggle.Click += (o, a) => { MousePassthrough = !MousePassthrough;};
 			
 			Desktop.Root = grid;
 
@@ -378,21 +536,24 @@ namespace MultiplayerXeno
 		}
 
 		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
-		public static void FullUnitUI(WorldObject worldObject)
+		public static void UnitUI(WorldObject worldObject)
 		{
-			previewMoves = worldObject.ControllableComponent.GetPossibleMoveLocations();
-			GameUi();
-			var root = (Grid)Desktop.Root;
-			
-			
-			var fire = new TextButton
+			if (worldObject.ControllableComponent.IsMyTeam())
 			{
-				GridColumn = 2,
-				GridRow = 8,
-				Text = "Fire"
-			};
-			fire.Click += (o, a) => Controllable.ToggleTarget();
-			root.Widgets.Add(fire);
+				previewMoves = worldObject.ControllableComponent.GetPossibleMoveLocations();
+				GameUi();
+				var root = (Grid) Desktop.Root;
+
+
+				var fire = new TextButton
+				{
+					GridColumn = 2,
+					GridRow = 8,
+					Text = "Fire"
+				};
+				fire.Click += (o, a) => Controllable.ToggleTarget();
+				root.Widgets.Add(fire);
+			}
 		}
 
 		public static void DrawControllableHoverHud(SpriteBatch batch, WorldObject worldObject)
@@ -402,7 +563,7 @@ namespace MultiplayerXeno
 
 
 			Queue<Texture2D> indicators = new Queue<Texture2D>();
-			for (int i = 1; i <= 2; i++)
+			for (int i = 1; i <= controllable.Type.MaxMovePoints; i++)
 			{
 				
 				if (controllable.movePoints < i)
@@ -447,7 +608,7 @@ namespace MultiplayerXeno
 			foreach (var indicator in indicators)
 			{
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.2f,-0.8f))+new Vector2(60*offset,0),Color.White);
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-2f,-0.9f))+new Vector2(60*offset,0),Color.White);
 				offset++;
 			}
 			
@@ -459,7 +620,7 @@ namespace MultiplayerXeno
 					indicator= healthIndicator[0];
 				}
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-0.8f,-0.4f))+new Vector2(45*i,0),Color.Green);	
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.5f,-0.8f))+new Vector2(45*i,0),Color.Green);	
 				
 			}
 
@@ -471,14 +632,14 @@ namespace MultiplayerXeno
 					indicator= healthIndicator[0];
 				}
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-0.5f,-0.1f))+new Vector2(45*i,0),Color.White);	
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.2f,-0.5f))+new Vector2(45*i,0),Color.White);	
 				
 			}
 		}
 		
 		 static Vector2Int lastMousePos;
 		static List<Vector2Int> previewPath = new List<Vector2Int>();
-		private static Projectile previewShot = new Projectile(new Vector2Int(0,0),new Vector2Int(0,0),0);
+		private static Projectile previewShot = new Projectile(new Vector2Int(0,0),new Vector2Int(0,0),0,0);
 
 
 		public static bool validShot;
@@ -493,7 +654,7 @@ namespace MultiplayerXeno
 
 					if (Controllable.Targeting)
 					{
-						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),0);
+						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange);
 						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID)?.ControllableComponent != null)
 						{
 							validShot = true;
@@ -632,111 +793,159 @@ namespace MultiplayerXeno
 			
 			*/
 
-			count = 0;
-			foreach (var moves in previewMoves.Reverse())
+			if (Controllable.Selected != null)
 			{
-				foreach (var path in moves)
+				count = 0;
+				foreach (var moves in previewMoves.Reverse())
 				{
-				
-				
-					if(path.X < 0 || path.Y < 0) break;
-					Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
-
-					Color c = Color.White;
-					switch (count)
+					foreach (var path in moves)
 					{
-						case 0:
-							c = Color.Yellow;
-							break;
-						case 1:
-							c= Color.Green;
-							break;
-						default:
-							c=Color.Red;
-							break;
-
-					}
-					
-					spriteBatch.DrawRectangle(Mousepos, new Size2(20, 20), c, 5);
-				
-				
-				}
-
-				count++;
-			}
 
 
-			if (Controllable.Targeting && previewShot!= null)
-			{
-				
+						if (path.X < 0 || path.Y < 0) break;
+						Mousepos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
 
-				
-				var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
-				var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
-				
-				spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.Green,10);
-				if (previewShot.covercast != null)
-				{
-					Color c = Color.Green;
-					var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
-
-					switch (WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover())
-					{
-						case Cover.None:
-							c = Color.Green;
-							break;
-						case Cover.Low:
-							c = Color.Yellow;
-							break;
-						case Cover.High:
-							c = Color.Red;
-							break;
-						default:
-							
-							break;
-
-					}
-					spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,10);
-				}
-
-
-				int coverModifier = 0;			
-				if (previewShot.covercast != null && previewShot.covercast.hit)
-				{
-					coverModifier = 2;
-					var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
-					var coverobjtransform = coverobj.Type.Transform;
-					Sprite yellowsprite = coverobj.GetSprite();
-					yellowsprite.Color = Color.Yellow;
-
-					spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), coverobjtransform.Rotation, coverobjtransform.Scale);
-					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPoint), 15, 10, Color.Yellow, 25f);
-
-				}
-				
-				if ( previewShot != null && previewShot.result != null && previewShot.result.hit)
-				{
-					var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-					var transform = obj.Type.Transform;
-					Sprite redSprite = obj.GetSprite();
-					redSprite.Color = Color.Red;
-	
-					spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
-					//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-					if (obj.ControllableComponent != null)
-					{
-						if (obj.ControllableComponent.Awareness > 0)
+						Color c = Color.White;
+						switch (count)
 						{
-							spriteBatch.DrawString(Game1.SpriteFont, "Shot Damage: 4. (-" + coverModifier + " cover)(has awareness) Total: " + (4 - coverModifier) / 2, Utility.GridToWorldPos(previewShot.result.CollisionPoint), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+							case 0:
+								c = Color.Red;
+								break;
+							case 1:
+								c = Color.Yellow;
+								break;
+							default:
+								c = Color.Green;
+								break;
+
+						}
+
+						spriteBatch.DrawRectangle(Mousepos, new Size2(20, 20), c, 5);
+
+
+					}
+
+					count++;
+				}
+			
+
+				if (Controllable.Targeting && previewShot!= null && Controllable.Selected != null)
+				{
+				
+					
+					var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
+					var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
+
+					Vector2 point1 = startPoint;
+					Vector2 point2;
+					int k = 0;
+					var dmg = Controllable.Selected.Type.WeaponDmg;
+					foreach (var dropOff in previewShot.dropOffPoints)
+					{
+						if (dropOff == previewShot.dropOffPoints.Last())
+						{
+							point2 = Utility.GridToWorldPos(previewShot.result.EndPoint);
+							
 						}
 						else
 						{
-							spriteBatch.DrawString(Game1.SpriteFont, "Shot Damage: 4. (-" + coverModifier + " cover)(has awareness) Total: " + (4 - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+							point2 = Utility.GridToWorldPos(dropOff);
+						}
+
+						Color c;
+						switch (k)
+						{
+							case 0:
+								c = Color.DarkGreen;
+								break;
+							case 1:
+								c = Color.Orange;
+								break;
+							case 2:
+								c = Color.DarkRed;
+								break;
+							default:
+								c = Color.Purple;
+								break;
+
+						}
+						
+						spriteBatch.DrawString(Game1.SpriteFont,"Damage: "+dmg,  point1,c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+						spriteBatch.DrawLine(point1.X,point1.Y,point2.X,point2.Y,c,25);
+						dmg = (int)Math.Ceiling(dmg/2f);
+						k++;
+						point1 = point2;
+					
+							
+						
+					}
+					
+				
+					spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,15);
+					int coverModifier = 0;
+					if (previewShot.covercast != null && previewShot.covercast.hit)
+					{
+						Color c = Color.Green;
+						string hint = "";
+						var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
+							
+						switch (WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover())
+						{
+							case Cover.None:
+								c = Color.Green;
+								Console.WriteLine("How: Cover object has no cover");
+								break;
+							case Cover.Low:
+								c = Color.Gray;
+								coverModifier = 1;
+								hint = "Cover: -1 DMG";
+								break;
+							case Cover.High:
+								c = Color.Black;
+								coverModifier = 2;
+								hint = "Cover: -2 DMG";
+								break;
+							default:
+							
+								break;
+
+						}
+						spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(0.5f,0.5f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+						spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,9);
+						
+						var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
+						var coverobjtransform = coverobj.Type.Transform;
+						Sprite yellowsprite = coverobj.GetSprite();
+						yellowsprite.Color = Color.Yellow;
+
+						spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), coverobjtransform.Rotation, coverobjtransform.Scale);
+						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPoint), 15, 10, Color.Yellow, 25f);
+
+					}
+				
+					if ( previewShot != null && previewShot.result != null && previewShot.result.hit)
+					{
+						var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+						var transform = obj.Type.Transform;
+						Sprite redSprite = obj.GetSprite();
+						redSprite.Color = Color.Red;
+	
+						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
+						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
+						if (obj.ControllableComponent != null)
+						{
+							if (obj.ControllableComponent.Awareness > 0)
+							{
+								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: "+(previewShot.dmg-coverModifier)/2+"(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint+new Vector2(-0.5f,-0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+							}
+							else
+							{
+								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: "+(previewShot.dmg-coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint+new Vector2(-0.5f,-0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+							}
 						}
 					}
-				}
 
 
 			
@@ -744,27 +953,30 @@ namespace MultiplayerXeno
 		
 
 
-			}
-			else
-			{
-				if(showPath){
-					foreach (var path in previewPath)
-					{
+				}
+				else
+				{
+					if(showPath){
+						foreach (var path in previewPath)
+						{
 					
-						if(path.X < 0 || path.Y < 0) break;
-						Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
+							if(path.X < 0 || path.Y < 0) break;
+							Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
 				
-						spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);
+							spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);
 				
+				
+						}
 				
 					}
-				
 				}
-			}
 
-	
+			}
 
 			spriteBatch.End();
 		}
+
+		
+	
 	}
 }

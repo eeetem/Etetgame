@@ -94,7 +94,9 @@ namespace MultiplayerXeno
 
 		private static void ReciveMapUpdate(RawData rawData, Connection connection)
 		{
+			var msg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
 			WorldManager.Instance.LoadData(rawData.Data);
+			msg.RemoveFromDesktop();
 			
 		}
 		private static void ReciveGameUpdate(GameDataPacket packet, Connection connection)

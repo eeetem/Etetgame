@@ -23,6 +23,12 @@ namespace MultiplayerXeno
 			IsPlayer1Turn = data.IsPlayer1Turn;
 			IsPlayer1 = data.IsPlayerOne;
 			score = data.Score;
+			GameStarted = data.GameStarted;
+			if (GameStarted)//skip setup
+			{
+				UI.SetUI(UI.GameUi);
+			}
+
 			WorldManager.Instance.CalculateFov();
 
 		}

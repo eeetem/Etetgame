@@ -483,7 +483,7 @@ namespace MultiplayerXeno
 			WorldObjectType type = PrefabManager.Prefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, data.Id, tile);
 			WO.fliped = data.fliped;
-			WO.Face(data.Facing);
+			WO.Face(data.Facing,false);
 			WorldTile newTile;
 			if (WO.Type.Surface)
 			{

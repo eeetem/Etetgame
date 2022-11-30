@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
@@ -13,13 +14,14 @@ namespace MultiplayerXeno
 
 		private static Vector2 velocity = new Vector2();
 		private static float ZoomVelocity = 0;
+		private static float scale = 1;
 
 		public static void Init(GraphicsDevice graphicsDevice, GameWindow window)
 		{
-			var viewportAdapter = new BoxingViewportAdapter(window, graphicsDevice, 1920, 1080);
+			var viewportAdapter = new BoxingViewportAdapter(window, graphicsDevice, window.ClientBounds.Width, window.ClientBounds.Height);
 			Cam = new OrthographicCamera(viewportAdapter);
-			Cam.MinimumZoom = 0.1f;
-			Cam.MaximumZoom = 10;
+			Cam.MinimumZoom = window.ClientBounds.Width / 50000f;
+			Cam.MaximumZoom =  window.ClientBounds.Width/1000f;
 		}
 
 		public static Vector2 GetPos()
@@ -99,7 +101,7 @@ namespace MultiplayerXeno
 		public static Vector2 GetMouseWorldPos()
 		{
 			var state = Mouse.GetState();
-			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), MultiplayerXeno.Camera.Cam.GetInverseViewMatrix()) + new Vector2(0, 0);
+			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), Cam.GetInverseViewMatrix());
 		}
 		private static int lastScroll;
 		public static void Update(GameTime gameTime)
@@ -107,13 +109,13 @@ namespace MultiplayerXeno
 			
 			
 			var state = Mouse.GetState();
-			float diff = (float)(state.ScrollWheelValue - lastScroll)/1000*Cam.Zoom;
+			float diff = (float) (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
 			lastScroll = state.ScrollWheelValue;
 			ZoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
 			Cam.ZoomIn(ZoomVelocity);
 			ZoomVelocity *= gameTime.GetElapsedSeconds()*45;
 
-			float movementSpeed = 200*(Cam.MaximumZoom/Cam.Zoom);
+			float movementSpeed = 400*(Cam.MaximumZoom/Cam.Zoom);
 			Vector2 move = GetMovementDirection();
 			velocity += move*gameTime.GetElapsedSeconds()*25f;
 			Cam.Move(velocity * movementSpeed * gameTime.GetElapsedSeconds());

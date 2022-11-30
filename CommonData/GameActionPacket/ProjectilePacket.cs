@@ -66,11 +66,15 @@ public class ProjectilePacket : Packet
 	public RayCastOutcome result { get;  set; }
 	public RayCastOutcome? covercast { get;  set; }//tallest cover on the way
 	public int dmg { get;  set; }
-	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg)
+	public int dropoffRange { get;  set; }
+
+	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange)
 	{
 		this.result = result;
 		this.covercast = covercast;
 		this.dmg = dmg;
+		this.dropoffRange = dropoffRange;
+
 	}
 
 
