@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
@@ -11,6 +12,7 @@ namespace MultiplayerXeno
 	{
 
 		private static OrthographicCamera Cam { get; set; }
+		public static AudioListener AudioListener{ get; private set; }
 
 		private static Vector2 velocity = new Vector2();
 		private static float ZoomVelocity = 0;
@@ -22,12 +24,15 @@ namespace MultiplayerXeno
 			Cam = new OrthographicCamera(viewportAdapter);
 			Cam.MinimumZoom = window.ClientBounds.Width / 50000f;
 			Cam.MaximumZoom =  window.ClientBounds.Width/1000f;
+			AudioListener = new AudioListener();
 		}
 
+		
 		public static Vector2 GetPos()
 		{
 			return Cam.Center;
 		}
+		
 
 		public static Matrix GetViewMatrix()
 		{
@@ -117,10 +122,13 @@ namespace MultiplayerXeno
 
 			float movementSpeed = 400*(Cam.MaximumZoom/Cam.Zoom);
 			Vector2 move = GetMovementDirection();
-			velocity += move*gameTime.GetElapsedSeconds()*25f;
-			Cam.Move(velocity * movementSpeed * gameTime.GetElapsedSeconds());
+			velocity += move*gameTime.GetElapsedSeconds()*25f* movementSpeed;
+			Cam.Move(velocity  * gameTime.GetElapsedSeconds());
 			velocity *= gameTime.GetElapsedSeconds()*45;
 
+
+			AudioListener.Position =  new Vector3(Cam.Center/80f,0);
+			AudioListener.Velocity = new Vector3(velocity/80f,10);
 
 		}
 	}

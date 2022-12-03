@@ -245,12 +245,14 @@ namespace MultiplayerXeno
 
         public static bool DoesEdgeBorderTile(WorldObject edge, Vector2Int pos)
         {
+            if(!WorldManager.IsPositionValid(pos))return false;
+                
             WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
-            if (tile.NorthEdge ==edge || tile.WestEdge == edge)
-            {
-                return true;
-            }
-
+                if (tile.NorthEdge == edge || tile.WestEdge == edge)
+                {
+                    return true;
+                }
+           
             if (WorldManager.IsPositionValid(pos + new Vector2Int(0, 1)))
             {
                 tile = WorldManager.Instance.GetTileAtGrid(pos + new Vector2Int(0, 1));
@@ -272,6 +274,44 @@ namespace MultiplayerXeno
             return false;
 
         }
+        
+        public static Vector2 RadianToVector2(float radian)
+        {
+            return new Vector2((float) Math.Cos(radian), (float) Math.Sin(radian));
+        }
+        public static Vector2 RadianToVector2(float radian, float length)
+        {
+            return RadianToVector2(radian) * length;
+        }
+        public static Vector2 DegreeToVector2(float degree)
+        {
+            return RadianToVector2(degree * (MathF.PI/180));
+        }
+        public static Vector2 DegreeToVector2(float degree, float length)
+        {
+            return RadianToVector2(degree * (MathF.PI/180)) * length;
+        }
+        public static float RadToDeg(double rad) { return (float) (rad*(180/Math.PI)); }
+        
+        public static float Vector2ToDegree(Vector2 vec) {
+            if (vec.X == 0) // special cases
+                return (vec.Y > 0)? 90
+                    : (vec.Y == 0)? 0
+                    : 270;
+            else if (vec.Y == 0) // special cases
+                return (vec.X >= 0)? 0
+                    : 180;
+            float ret = RadToDeg(Math.Atan(vec.Y/vec.X));
+            if (vec.X < 0 && vec.Y < 0) // quadrant Ⅲ
+                ret = 180 + ret;
+            else if (vec.X < 0) // quadrant Ⅱ
+                ret = 180 + ret; // it actually substracts
+            else if (vec.X < 0) // quadrant Ⅳ
+                ret = 270 + (90 + ret); // it actually substracts
+            return ret;
+        }
+
+
 
     }
     

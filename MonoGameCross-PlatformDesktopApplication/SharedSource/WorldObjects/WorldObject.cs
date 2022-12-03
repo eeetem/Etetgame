@@ -18,10 +18,18 @@ namespace MultiplayerXeno
 			{
 				type = new WorldObjectType("nullType",null);
 			}
+			else
+			{
+#if CLIENT
+				DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+#endif
+			}
+
 			this.Id = id;
 			TileLocation = tileLocation;
 			this.Type = type;
 			Type.SpecialBehaviour(this);
+
 	
 
 		}

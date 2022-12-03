@@ -16,7 +16,7 @@ namespace MultiplayerXeno
 	{
 		private readonly WorldTile[,] _gridData;
 
-		private Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>();
+		private readonly Dictionary<int, WorldObject> _worldObjects = new Dictionary<int, WorldObject>();
 	
 		private int NextId = 0;
 
@@ -49,14 +49,24 @@ namespace MultiplayerXeno
 				}
 			}
 		}
+		private static readonly List<WorldTile> _allTiles = new List<WorldTile>();
+		public List<WorldTile> GetAllTiles()
+		{
+			_allTiles.Clear();
 
+			foreach (var tile  in WorldManager.Instance._gridData)
+			{
+				_allTiles.Add(tile);
+			}
 
+			return _allTiles;
+		}
 
 		public WorldObject? GetObject(int id)
 		{
 			try
 			{
-				return WorldObjects[id];
+				return _worldObjects[id];
 			}
 			catch (Exception e)
 			{
@@ -73,7 +83,7 @@ namespace MultiplayerXeno
 
 		public void ResetControllables(bool teamOneTurn)
 		{
-			foreach (var obj in WorldObjects.Values)
+			foreach (var obj in _worldObjects.Values)
 			{
 				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam == teamOneTurn)
 				{
@@ -81,7 +91,7 @@ namespace MultiplayerXeno
 				}
 			}
 
-			foreach (var obj in WorldObjects.Values)
+			foreach (var obj in _worldObjects.Values)
 			{
 				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam != teamOneTurn)
 				{
@@ -92,7 +102,7 @@ namespace MultiplayerXeno
 
 		public int GetNextId()
 		{
-			while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
+			while (_worldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
 			{
 				NextId++;
 			}
@@ -379,17 +389,25 @@ namespace MultiplayerXeno
 
 		private void DestroyWorldObject(int id)
 		{
-			if (!WorldObjects.ContainsKey(id)) return;
+			if (!_worldObjects.ContainsKey(id)) return;
 
 			if (id < NextId)
 			{
 				NextId = id; //reuse IDs
 			}
 
-			WorldObject Obj = WorldObjects[id];
+			WorldObject Obj = _worldObjects[id];
+#if  CLIENT
+			if (Obj.ControllableComponent != null)
+			{
+				UI.Controllables.Remove(Obj.ControllableComponent);
+			}
+#endif
+			
+
 			Obj.TileLocation.Remove(id);
 			//obj.dispose()
-			WorldObjects.Remove(id);
+			_worldObjects.Remove(id);
 
 		}
 
@@ -402,7 +420,7 @@ namespace MultiplayerXeno
 
 		private  void WipeGrid()
 		{
-			foreach (var worldObject in WorldObjects.Values)
+			foreach (var worldObject in _worldObjects.Values)
 			{
 				DeleteWorldObject(worldObject);
 			}
@@ -433,7 +451,7 @@ namespace MultiplayerXeno
 				}
 				objsToDel.Clear();
 
-				foreach (var obj in WorldObjects.Values)
+				foreach (var obj in _worldObjects.Values)
 				{
 					obj.Update(gameTime);
 				}
@@ -526,10 +544,14 @@ namespace MultiplayerXeno
 			{
 				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
+#if CLIENT
+				UI.Controllables.Add(component);
+#endif
+				
 			}
 
-			WorldObjects.EnsureCapacity(WO.Id + 1);
-			WorldObjects[WO.Id] = WO;
+			_worldObjects.EnsureCapacity(WO.Id + 1);
+			_worldObjects[WO.Id] = WO;
 
 			return WO;
 		}

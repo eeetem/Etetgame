@@ -102,6 +102,16 @@ namespace MultiplayerXeno
 			{
 				Console.WriteLine("dead");
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
+#if CLIENT
+				Audio.PlaySound("death",this.worldObject.TileLocation.Position);
+#endif
+				
+			}
+			else
+			{
+#if CLIENT
+				Audio.PlaySound("grunt",this.worldObject.TileLocation.Position);
+#endif
 			}
 
 		}
@@ -148,6 +158,8 @@ namespace MultiplayerXeno
 			
 			var packet = new FirePacket(worldObject.Id,position);
 			Networking.DoAction(packet);
+			
+
 
 #if SERVER
 		DoFire(position);
@@ -303,10 +315,21 @@ namespace MultiplayerXeno
 #if SERVER
 			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.dmg,p.dropoffRange));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,Type.WeaponDmg,p.dropoffRange));
 
 #endif
-			
+			#if CLIENT
+			if (Type.WeaponRange > 6)
+			{
+				ObjectSpawner.Burst(this.worldObject.TileLocation.Position, pos);
+			}
+			else
+			{
+				ObjectSpawner.ShotGun(this.worldObject.TileLocation.Position,pos);	
+			}
+#endif
+			DoFace(Utility.ToClampedDirection( this.worldObject.TileLocation.Position-pos));
+		
 		}
 
 		public void EndTurn()
@@ -319,7 +342,7 @@ namespace MultiplayerXeno
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
-				if (_moveCounter > 500)
+				if (_moveCounter > 350)
 				{
 					_moveCounter = 0;
 					try
@@ -353,7 +376,12 @@ namespace MultiplayerXeno
 					//todo jump view to move
 #if CLIENT
 					WorldManager.Instance.CalculateFov();
+					if (worldObject.TileLocation.IsVisible)
+					{
+						Audio.PlaySound("footstep", Utility.GridToWorldPos(worldObject.TileLocation.Position));
+					}
 #endif
+				
 				}
 			}
 

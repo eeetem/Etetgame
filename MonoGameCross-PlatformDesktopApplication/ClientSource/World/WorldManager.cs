@@ -16,11 +16,9 @@ namespace MultiplayerXeno
 		
 		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
-		public void Init(GraphicsDevice graphicsdevice)
+		public void Init()
 		{
-
-			graphicsDevice = graphicsdevice;
-			spriteBatch = new SpriteBatch(graphicsDevice);
+			
 			UI.LeftClick += LeftClickAtPosition;
 			UI.RightClick += RightClickAtPosition;
 		
@@ -77,7 +75,7 @@ namespace MultiplayerXeno
 
 
 
-				foreach (var obj in WorldObjects.Values)
+				foreach (var obj in _worldObjects.Values)
 				{
 
 					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
@@ -139,128 +137,6 @@ namespace MultiplayerXeno
 		}
 
 
-		readonly List<WorldTile> _allTiles = new List<WorldTile>();
-		public void Draw(GameTime gameTime)
-		{
-			_allTiles.Clear();
 
-			foreach (var tile  in _gridData)
-			{
-					_allTiles.Add(tile);
-			}
-
-			_allTiles.Sort(new WorldTileDrawOrderCompare());
-				
-				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-				List<WorldObject> tileObjs = new List<WorldObject>();
-				List<WorldObject> UIToDraw = new List<WorldObject>();
-				foreach (var tile in _allTiles)
-				{
-					tileObjs.Clear();
-					tileObjs.Add(tile.Surface);
-					tileObjs.Add(tile.NorthEdge);
-					tileObjs.Add(tile.WestEdge);
-					tileObjs.Add(tile.ObjectAtLocation);
-					//tileObjs.Sort(new DrawLayerSort());
-
-
-					foreach (var worldObject in tileObjs)
-					{
-						if(worldObject == null)continue;
-							var sprite = worldObject.GetSprite();
-						var transform = worldObject.Type.Transform;
-						Color c = Color.White;
-					
-
-						if (!worldObject.TileLocation.IsVisible)
-						{
-							c = Color.DarkGray;
-							if (worldObject.TileLocation.ObjectAtLocation == worldObject)
-							{
-								continue;
-							}
-						}
-						else if (worldObject.ControllableComponent != null)
-						{
-							
-							if (worldObject.ControllableComponent.IsMyTeam())
-							{
-								c = new Color(200,255,200);
-							}
-							else
-							{
-								c = new Color(255,200,200);
-							}
-
-							UIToDraw.Add(worldObject);
-						}
-
-
-						if (worldObject.Type.Edge&&Utility.DoesEdgeBorderTile(worldObject,Utility.WorldPostoGrid(Camera.GetMouseWorldPos())))
-						{
-							c *= 0.4f;
-						}
-						
-					
-						sprite.Color = c;
-						spriteBatch.Draw(sprite, transform.Position + Utility.GridToWorldPos(worldObject.TileLocation.Position), transform.Rotation, transform.Scale);
-					}
-				}
-				spriteBatch.End();
-				spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
-				foreach (var obj in UIToDraw)
-				{
-					UI.DrawControllableHoverHud(spriteBatch, obj);
-				}
-				spriteBatch.End();
-
-			
-			
-
-			
-		}
-		public static Vector2 RadianToVector2(float radian)
-		{
-			return new Vector2((float) Math.Cos(radian), (float) Math.Sin(radian));
-		}
-		public static Vector2 RadianToVector2(float radian, float length)
-		{
-			return RadianToVector2(radian) * length;
-		}
-		public static Vector2 DegreeToVector2(float degree)
-		{
-			return RadianToVector2(degree * (MathF.PI/180));
-		}
-		public static Vector2 DegreeToVector2(float degree, float length)
-		{
-			return RadianToVector2(degree * (MathF.PI/180)) * length;
-		}
-		
-			
-		
-		public class WorldTileDrawOrderCompare : Comparer<WorldTile>
-		{
-//draws "top" ones first
-
-			public override int Compare(WorldTile x, WorldTile y)
-			{
-
-				int xpos = x.Position.X + x.Position.Y;
-				int ypos = y.Position.X + y.Position.Y;
-				return xpos.CompareTo(ypos);
-			}
-		}
-		public class DrawLayerSort : Comparer<WorldObject>
-		{
-//draws "top" ones first
-
-			public override int Compare(WorldObject x, WorldObject y)
-			{
-
-				int xpos = x.GetDrawLayer();
-				int ypos = y.GetDrawLayer();
-				return xpos.CompareTo(ypos);
-			}
-		}
 	}
 }

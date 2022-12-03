@@ -56,34 +56,34 @@ namespace MultiplayerXeno
 			Camera.Init(GraphicsDevice,Window);
 			//WorldEditSystem.Init();
 
-			WorldManager.Instance.Init(GraphicsDevice);
+			WorldManager.Instance.Init();
+			RenderSystem.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();
 			base.Initialize();
 			UI.SetUI(UI.MainMenu);
+			
 
 		}
-
 		
-
-		public static Texture2D[] Floors;
-		public static  Texture2D[] Walls;
 		public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
 		public RenderTarget2D renderTarget;
 		protected override void LoadContent()
 		{
 			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 			UI.Init(Content,GraphicsDevice);
+			Audio.Init(Content);
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			Textures.Add("basicFloor",Content.Load<Texture2D>("basicFloor"));
-			Textures.Add("capturePoint",Content.Load<Texture2D>("capturePoint"));
-			Textures.Add("spawnPoint",Content.Load<Texture2D>("spawnPoint"));
-			Textures.Add("Human",Content.Load<Texture2D>("Human"));
-			Textures.Add("Scout",Content.Load<Texture2D>("Scout"));
-			Textures.Add("basicWall",Content.Load<Texture2D>("basicWall"));
-			Textures.Add("basicHalfWall",Content.Load<Texture2D>("basicHalfWall"));
-			Textures.Add("basicHalfWallLight",Content.Load<Texture2D>("basicHalfWallLight"));
+			Textures.Add("basicFloor",Content.Load<Texture2D>("textures/basicFloor"));
+			Textures.Add("capturePoint",Content.Load<Texture2D>("textures/capturePoint"));
+			Textures.Add("spawnPoint",Content.Load<Texture2D>("textures/spawnPoint"));
+			Textures.Add("Human",Content.Load<Texture2D>("textures/Human"));
+			Textures.Add("Scout",Content.Load<Texture2D>("textures/Scout"));
+			Textures.Add("basicWall",Content.Load<Texture2D>("textures/basicWall"));
+			Textures.Add("basicHalfWall",Content.Load<Texture2D>("textures/basicHalfWall"));
+			Textures.Add("basicHalfWallLight",Content.Load<Texture2D>("textures/basicHalfWallLight"));
+			Textures.Add("bullet",Content.Load<Texture2D>("textures/bullet"));
 			SpriteFont = Content.Load<SpriteFont>("font");
 
 			PrefabManager.MakePrefabs();
@@ -99,27 +99,30 @@ namespace MultiplayerXeno
 		protected override void Update(GameTime gameTime)
 		{
 			
-			
+
 
 			
 			Camera.Update(gameTime);
 			//MouseManager.Update(gameTime);
 			WorldEditSystem.Update(gameTime);
 			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
+			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
 		}
 		private static SpriteBatch spriteBatch;
+		
 		protected override void Draw(GameTime gameTime)
 		{
 			
 			GraphicsDevice.SetRenderTarget(renderTarget);
 			GraphicsDevice.SetRenderTarget(null);
 			GraphicsDevice.Clear(Color.Gray);
-			WorldManager.Instance.Draw(gameTime);
-			//GraphicsDevice.Clear(Color.Black);
-			UI.Render(gameTime.ElapsedGameTime.Milliseconds);
+			
+			RenderSystem.Draw();
+			
+			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system
 
 			base.Draw(gameTime);
 		}

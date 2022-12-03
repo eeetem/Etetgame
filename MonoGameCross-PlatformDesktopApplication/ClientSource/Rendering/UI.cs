@@ -29,6 +29,9 @@ namespace MultiplayerXeno
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
 		private static Texture2D[] healthIndicator = new Texture2D[2];
+		
+		public static readonly List<Controllable> Controllables = new List<Controllable>();
+
 
 		public static void Init(ContentManager content, GraphicsDevice graphicsdevice)
 		{
@@ -43,13 +46,13 @@ namespace MultiplayerXeno
 			Desktop.TouchUp += MouseUp;
 
 
-			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("coverIndicator");
+			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/coverIndicator");
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 
-			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("indicators");
+			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("textures/indicators");
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
 
-			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("healthbar");
+			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
 
 			previewMoves[0] = new List<Vector2Int>();
@@ -556,9 +559,9 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public static void DrawControllableHoverHud(SpriteBatch batch, WorldObject worldObject)
+		public static void DrawControllableHoverHud(SpriteBatch batch, Controllable controllable)
 		{
-			Controllable controllable = worldObject.ControllableComponent;
+	
 			Debug.Assert(controllable != null, nameof(controllable) + " != null");
 
 
@@ -608,7 +611,7 @@ namespace MultiplayerXeno
 			foreach (var indicator in indicators)
 			{
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-2f,-0.9f))+new Vector2(60*offset,0),Color.White);
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-2f,-0.9f))+new Vector2(60*offset,0),Color.White);
 				offset++;
 			}
 			
@@ -620,7 +623,7 @@ namespace MultiplayerXeno
 					indicator= healthIndicator[0];
 				}
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.5f,-0.8f))+new Vector2(45*i,0),Color.Green);	
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-1.5f,-0.8f))+new Vector2(45*i,0),Color.Green);	
 				
 			}
 
@@ -632,7 +635,7 @@ namespace MultiplayerXeno
 					indicator= healthIndicator[0];
 				}
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)worldObject.TileLocation.Position+new Vector2(-1.2f,-0.5f))+new Vector2(45*i,0),Color.White);	
+				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-1.2f,-0.5f))+new Vector2(45*i,0),Color.White);	
 				
 			}
 		}
@@ -700,6 +703,11 @@ namespace MultiplayerXeno
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			
+			
+			
+			
+			
 
 			if (WorldManager.IsPositionValid(TileCoordinate))
 			{
@@ -728,6 +736,14 @@ namespace MultiplayerXeno
 
 			}
 
+			
+			foreach (var obj in Controllables)
+			{
+				if (obj.worldObject.TileLocation.IsVisible)
+				{
+					DrawControllableHoverHud(spriteBatch, obj);
+				}
+			}
 			//raycastdebug
 		int count;
 		if (raycastDebug)
@@ -927,22 +943,25 @@ namespace MultiplayerXeno
 					if ( previewShot != null && previewShot.result != null && previewShot.result.hit)
 					{
 						var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-						var transform = obj.Type.Transform;
-						Sprite redSprite = obj.GetSprite();
-						redSprite.Color = Color.Red;
-	
-						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
-						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-						if (obj.ControllableComponent != null)
+						if (obj != null)
 						{
-							if (obj.ControllableComponent.Awareness > 0)
+							var transform = obj.Type.Transform;
+							Sprite redSprite = obj.GetSprite();
+							redSprite.Color = Color.Red;
+
+							spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+							spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
+							//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
+							if (obj.ControllableComponent != null)
 							{
-								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: "+(previewShot.dmg-coverModifier)/2+"(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint+new Vector2(-0.5f,-0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-							}
-							else
-							{
-								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: "+(previewShot.dmg-coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint+new Vector2(-0.5f,-0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+								if (obj.ControllableComponent.Awareness > 0)
+								{
+									spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier) / 2 + "(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+								}
+								else
+								{
+									spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+								}
 							}
 						}
 					}
