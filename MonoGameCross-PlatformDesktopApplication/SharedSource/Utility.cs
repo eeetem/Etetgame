@@ -4,6 +4,7 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using MonoGame.Extended.Sprites;
 using MultiplayerXeno;
 
 namespace MultiplayerXeno
@@ -198,7 +199,27 @@ namespace MultiplayerXeno
             //We now have our smallest possible rectangle for this texture
             return rect;
         }
- 
+
+        public static Sprite[] MakeSpriteSheet(Texture2D texture, int xsplits, int ysplits)
+        {
+            Sprite[] spriteSheet = new Sprite[8];
+            Texture2D[] texture2Ds = Utility.SplitTexture(texture, texture.Width/xsplits, texture.Height/ysplits, out int _, out int _);
+
+
+            int dir = 0;
+            foreach (var splitTexture in texture2Ds)
+            {
+                if (dir > 7) break;
+                spriteSheet[dir] = new Sprite(splitTexture);
+
+
+
+                dir++;
+            }
+
+            return spriteSheet;
+        }
+
         //convert texture to 2d array
         private static Color[,] TextureTo2DArray(Texture2D texture)
         {

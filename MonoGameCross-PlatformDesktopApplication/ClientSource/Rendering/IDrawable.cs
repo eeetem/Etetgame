@@ -12,7 +12,9 @@ public interface IDrawable
 	public int GetDrawOrder();
 	public Sprite GetSprite();
 
-	public bool IsAlwaysVisible();
+	public Visibility GetMinimumVisibility();
+
+	public bool IsVisible();
 
 	public bool IsTransparentUnderMouse();
 }

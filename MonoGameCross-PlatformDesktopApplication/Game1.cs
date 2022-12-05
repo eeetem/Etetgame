@@ -79,7 +79,9 @@ namespace MultiplayerXeno
 			Textures.Add("capturePoint",Content.Load<Texture2D>("textures/capturePoint"));
 			Textures.Add("spawnPoint",Content.Load<Texture2D>("textures/spawnPoint"));
 			Textures.Add("Human",Content.Load<Texture2D>("textures/Human"));
+			Textures.Add("HumanCrouch",Content.Load<Texture2D>("textures/HumanCrouch"));
 			Textures.Add("Scout",Content.Load<Texture2D>("textures/Scout"));
+			Textures.Add("ScoutCrouch",Content.Load<Texture2D>("textures/ScoutCrouch"));
 			Textures.Add("basicWall",Content.Load<Texture2D>("textures/basicWall"));
 			Textures.Add("basicHalfWall",Content.Load<Texture2D>("textures/basicHalfWall"));
 			Textures.Add("basicHalfWallLight",Content.Load<Texture2D>("textures/basicHalfWallLight"));

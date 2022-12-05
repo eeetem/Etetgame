@@ -83,7 +83,7 @@ namespace MultiplayerXeno
 #if CLIENT
 			if (updateFOV)
 			{
-				WorldManager.Instance.CalculateFov();
+				WorldManager.Instance.MakeFovDirty();
 			}
 #endif
 			
@@ -129,6 +129,12 @@ namespace MultiplayerXeno
 
 		public Cover GetCover()
 		{
+
+			if (ControllableComponent != null && ControllableComponent.Crouching)
+			{
+				return Type.Cover - 1;
+			}
+
 			return Type.Cover;
 
 

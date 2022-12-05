@@ -77,10 +77,19 @@ public class LocalObject : IDrawable
 		return sprite;
 	}
 
-	public bool IsAlwaysVisible()
+	public Visibility GetMinimumVisibility()
 	{
-		return false;
+		return Visibility.Partial;
 	}
+
+	public bool IsVisible()
+	{
+		Vector2Int pos = GetWorldPos();
+		if (!WorldManager.IsPositionValid(pos)) return false;
+		WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
+		return GetMinimumVisibility() <= tile.Visible;
+	}
+
 
 	public bool IsTransparentUnderMouse()
 	{

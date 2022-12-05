@@ -34,8 +34,10 @@ namespace MultiplayerXeno
 					controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
 					controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
+					controllableType.MaxTurnPoints = int.Parse(contollableObj.Attributes?["turns"]?.InnerText ?? "2");
 					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
 					controllableType.RunAndGun = bool.Parse(contollableObj.Attributes?["rNg"]?.InnerText ?? "false");
+				
 				}
 
 				WorldObjectType type = new WorldObjectType(name,controllableType);
@@ -98,11 +100,21 @@ namespace MultiplayerXeno
 #if CLIENT
 				if (spritename != null)
 				{
-					type.GenerateSpriteSheet(Game1.Textures[spritename]);
+					type.GenerateSpriteSheet(Game1.Textures[spritename]);//this is a bit inconsistent but eeeh
+					if (type.Controllable != null)
+					{
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(Game1.Textures[spritename + "Crouch"],3,3);
+					}
+
+					
 				}
 				else
 				{
 					type.GenerateSpriteSheet(Game1.Textures[name]);
+					if (type.Controllable != null)
+					{
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(Game1.Textures[name + "Crouch"],3,3);
+					}
 				}
 
 

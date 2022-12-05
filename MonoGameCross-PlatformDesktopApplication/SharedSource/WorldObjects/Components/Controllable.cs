@@ -40,20 +40,20 @@ namespace MultiplayerXeno
 
 
 #if CLIENT
-			WorldManager.Instance.CalculateFov();
+			WorldManager.Instance.MakeFovDirty();
 #endif
 			
 			if (data.MovePoints != -1)
 			{
-				this.movePoints = data.MovePoints;
+				this.MovePoints = data.MovePoints;
 			}
 			if (data.ActionPoints != -1)
 			{
-				this.actionPoints = data.ActionPoints;
+				this.ActionPoints = data.ActionPoints;
 			}
 			if (data.TurnPoints != -1)
 			{
-				this.turnPoints = data.TurnPoints;
+				this.TurnPoints = data.TurnPoints;
 			}
 
 			if (data.JustSpawned)
@@ -61,19 +61,33 @@ namespace MultiplayerXeno
 				StartTurn();
 			}
 		}
-		public int movePoints { get; private set; } = 0;
-		public int turnPoints { get; private set; } = 0;
-		public int actionPoints { get; private set; } = 0;
+		public int MovePoints { get; private set; } = 0;
+		public int TurnPoints { get; private set; } = 0;
+		public int ActionPoints { get; private set; } = 0;
 
 		public int Health = 0;
 		public int Awareness = 0;
 
+		public bool Crouching { get; private set; } = false;
+
+
+		public int GetMoveRange()
+		{
+			int range = Type.MoveRange;
+			if (Crouching)
+			{
+				range -= 2;
+			}
+
+			return range;
+		}
+
 		public List<Vector2Int>[] GetPossibleMoveLocations()
 		{ 
-			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[movePoints];
-			for (int i = 0; i < movePoints; i++)
+			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints];
+			for (int i = 0; i < MovePoints; i++)
 			{
-				possibleMoves[i] = PathFinding.GetAllPaths(this.worldObject.TileLocation.Position, Type.MoveRange*(i+1));
+				possibleMoves[i] = PathFinding.GetAllPaths(this.worldObject.TileLocation.Position, GetMoveRange()*(i+1));
 			}
 
 			return possibleMoves;
@@ -124,9 +138,9 @@ namespace MultiplayerXeno
 
 		public void StartTurn()
 		{
-			movePoints = Type.MaxMovePoints;
-			turnPoints = 2;
-			actionPoints = 1;
+			MovePoints = Type.MaxMovePoints;
+			TurnPoints = Type.MaxTurnPoints;
+			ActionPoints = 1;
 			if (Awareness < 0)
 			{
 				Awareness = 0;
@@ -139,13 +153,59 @@ namespace MultiplayerXeno
 
 		}
 
+		public void CrouchAction()
+		{
+			if (MovePoints <= 0) return;
+			
+			var packet = new GameActionPacket();
+			packet.ID = worldObject.Id;
+			packet.Type = ActionType.Crouch;
+			Networking.DoAction(packet);
+#if SERVER
+		DoCrouch();	
+#endif
+		}
+
+		public void DoCrouch()
+		{
+			if (MovePoints > 0)
+			{
+				Crouching = !Crouching;
+				MovePoints--;
+#if CLIENT
+		WorldManager.Instance.MakeFovDirty();	
+		if (Selected != null)
+		{
+			UI.UnitUI(Selected.worldObject);
+		}
+		else
+		{
+			UI.UnitUI(this.worldObject);
+		}
+#endif
+			}
+			else
+			{
+#if CLIENT
+				UI.ShowMessage("Desync Error","Unit Does not have enough move points");
+#endif
+				return;
+			}
+
+		}
+
 		public void FireAction(Vector2Int position)
 		{
-			if (actionPoints <= 0)
+			if (position == this.worldObject.TileLocation.Position)
 			{
 				return;
 			}
-			if (!Type.RunAndGun && movePoints <= 0)
+
+			if (ActionPoints <= 0)
+			{
+				return;
+			}
+			if (!Type.RunAndGun && MovePoints <= 0)
 			{
 				return;
 			}
@@ -172,7 +232,7 @@ namespace MultiplayerXeno
 		{
 
 
-			if (turnPoints <= 0 && movePoints <= 0)
+			if (TurnPoints <= 0 && MovePoints <= 0)
 			{
 				return;
 			}
@@ -202,14 +262,14 @@ namespace MultiplayerXeno
 			}
 
 			int moveUse = 1;
-			while (result.Cost > this.Type.MoveRange*moveUse)
+			while (result.Cost > GetMoveRange()*moveUse)
 			{
 				moveUse++;
 
 				
 				
 			}
-			if (moveUse > this.movePoints)
+			if (moveUse > this.MovePoints)
 			{
 #if CLIENT
 				Selected = null;
@@ -242,10 +302,10 @@ namespace MultiplayerXeno
 		{
 			Console.WriteLine("DoMove started");
 			if(moving)return;
-			this.movePoints -= pointCost;
+			this.MovePoints -= pointCost;
 
 
-			if (movePoints < 0)
+			if (MovePoints < 0)
 			{
 				//desync
 #if CLIENT
@@ -262,14 +322,14 @@ namespace MultiplayerXeno
 
 		public void DoFace(Direction dir)
 		{
-			if (turnPoints > 0)
+			if (TurnPoints > 0)
 			{
-				turnPoints--;
-			}else if (movePoints > 0)
+				TurnPoints--;
+			}else if (MovePoints > 0)
 			{
-				movePoints--;
-				turnPoints = 2;
-				turnPoints--;
+				MovePoints--;
+				TurnPoints = 2;
+				TurnPoints--;
 			}
 			else
 			{
@@ -292,13 +352,13 @@ namespace MultiplayerXeno
 #endif
 
 			
-			if (actionPoints > 0)
+			if (ActionPoints > 0)
 			{
-				actionPoints--;
+				ActionPoints--;
 				Awareness--;
 				if (!Type.RunAndGun)
 				{
-					movePoints--;
+					MovePoints--;
 				}
 
 			}
@@ -313,7 +373,19 @@ namespace MultiplayerXeno
 			
 			//client shouldnt be allowed to judge what got hit
 #if SERVER
-			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange);
+			bool lowShot = false;
+			if (this.Crouching)
+			{
+				lowShot = true;
+			}else
+			{
+				WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
+				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+				{
+					lowShot = true;
+				}
+			}
+			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange,lowShot);
 			p.Fire();
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,Type.WeaponDmg,p.dropoffRange));
 
@@ -375,8 +447,8 @@ namespace MultiplayerXeno
 					}
 					//todo jump view to move
 #if CLIENT
-					WorldManager.Instance.CalculateFov();
-					if (worldObject.TileLocation.IsVisible)
+					WorldManager.Instance.MakeFovDirty();
+					if (worldObject.IsVisible())
 					{
 						Audio.PlaySound("footstep", Utility.GridToWorldPos(worldObject.TileLocation.Position));
 					}
@@ -389,7 +461,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,actionPoints,movePoints,turnPoints,Health,Awareness);
+			var data = new ControllableData(this.IsPlayerOneTeam,ActionPoints,MovePoints,TurnPoints,Health,Awareness);
 			data.JustSpawned = false;
 			return data;
 		}

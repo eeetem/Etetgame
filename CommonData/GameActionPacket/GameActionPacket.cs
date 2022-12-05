@@ -6,7 +6,8 @@ namespace CommonData
 	public class GameActionPacket : Packet
 	{
 		public ActionType Type { get; set; }
-		
+		public int ID { get; set; }
+
 		public GameActionPacket()
 		{
 			
@@ -30,6 +31,7 @@ namespace CommonData
 		Attack=1,
 		Move=2,
 		Turn=3,
+		Crouch=4,
 	}
 
 
