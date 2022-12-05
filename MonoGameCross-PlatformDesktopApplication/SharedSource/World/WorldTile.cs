@@ -324,11 +324,14 @@ namespace MultiplayerXeno
 				
 			}
 			
-#if CLIENT
-			if (tileInDir != null && tileInDir.IsVisible)
+
+			if (tileInDir != null)
 			{
-#endif
-				if (tileInDir?.ObjectAtLocation != null  && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
+				if (tileInDir?.ObjectAtLocation != null
+#if CLIENT//god forgive me for writting this mess
+				    && tileInDir.ObjectAtLocation.IsVisible()
+#endif	    
+				    && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
 				{
 					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
 					{
@@ -337,17 +340,16 @@ namespace MultiplayerXeno
 
 
 				}
-				
-#if CLIENT
+
 			}
-#endif
+
 
 			return biggestCoverObj;
 		}
 
 		~WorldTile()
 		{
-			Console.WriteLine("deleted at "+this.Position);
+			Console.WriteLine("TILE DELETED!: "+this.Position);
 		}
 
 	}

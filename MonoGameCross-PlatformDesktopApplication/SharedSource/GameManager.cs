@@ -93,17 +93,16 @@ namespace MultiplayerXeno
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
-			if (WorldManager.Instance.GetObject(packet.ID) == null)
+			if (packet.Type != ActionType.EndTurn && WorldManager.Instance.GetObject(packet.ID) == null)
 			{
 				Console.WriteLine("Recived packet for a non existant object: "+packet.ID);
 				return;
 			}
-
+			Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
 			if (packet.Type == ActionType.Move)
 			{
 				MovementPacket movementPacket = (MovementPacket)packet;
-				Controllable controllable = WorldManager.Instance.GetObject(movementPacket.ID).ControllableComponent;
-				#if CLIENT
+#if CLIENT
 				controllable.DoMove(movementPacket.Path,movementPacket.MovePointsUsed);
 				#else
 				controllable.MoveAction(movementPacket.Path.Last());
@@ -114,7 +113,7 @@ namespace MultiplayerXeno
 			else if (packet.Type == ActionType.Turn)
 			{
 				FacePacket facePacket = (FacePacket) packet;
-				Controllable controllable = WorldManager.Instance.GetObject(facePacket.ID).ControllableComponent;
+			
 #if CLIENT
 				controllable.DoFace(facePacket.Dir);
 #else
@@ -124,7 +123,6 @@ namespace MultiplayerXeno
 			else if (packet.Type == ActionType.Attack)
 			{
 				FirePacket firePacket = (FirePacket) packet;
-				Controllable controllable = WorldManager.Instance.GetObject(firePacket.ID).ControllableComponent;
 #if CLIENT
 				controllable.DoFire(firePacket.Target);
 #else
@@ -132,10 +130,17 @@ namespace MultiplayerXeno
 				controllable.FireAction(firePacket.Target);
 #endif
 			}
-			else if ( packet.Type == ActionType.EndTurn)
+			else if (packet.Type == ActionType.EndTurn)
 			{
 				NextTurn();
 				
+			}else if (packet.Type == ActionType.Crouch)
+			{
+#if CLIENT
+				controllable.DoCrouch();
+#else
+				controllable.CrouchAction();
+#endif
 			}
 		}
 

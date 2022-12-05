@@ -556,6 +556,20 @@ namespace MultiplayerXeno
 				};
 				fire.Click += (o, a) => Controllable.ToggleTarget();
 				root.Widgets.Add(fire);
+				var crouch = new TextButton
+				{
+					GridColumn = 3,
+					GridRow = 8,
+					Text = "Crouch/Stand"
+				};
+				crouch.Click += (o, a) =>
+				{
+					if (Controllable.Selected != null)
+					{
+						Controllable.Selected.CrouchAction();
+					}
+				};
+				root.Widgets.Add(crouch);
 			}
 		}
 
@@ -569,7 +583,7 @@ namespace MultiplayerXeno
 			for (int i = 1; i <= controllable.Type.MaxMovePoints; i++)
 			{
 				
-				if (controllable.movePoints < i)
+				if (controllable.MovePoints < i)
 				{
 					indicators.Enqueue(infoIndicator[0]);
 				}
@@ -579,10 +593,10 @@ namespace MultiplayerXeno
 				}
 
 			}
-			for (int i = 1; i <= 2; i++)
+			for (int i = 1; i <= controllable.Type.MaxTurnPoints; i++)
 			{
 				
-				if (controllable.turnPoints < i)
+				if (controllable.TurnPoints < i)
 				{
 					indicators.Enqueue(infoIndicator[2]);
 				}
@@ -596,7 +610,7 @@ namespace MultiplayerXeno
 			for (int i = 1; i <= 1; i++)
 			{
 				
-				if (controllable.actionPoints < i)
+				if (controllable.ActionPoints < i)
 				{
 					indicators.Enqueue(infoIndicator[4]);
 				}
@@ -657,7 +671,21 @@ namespace MultiplayerXeno
 
 					if (Controllable.Targeting)
 					{
-						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange);
+						bool lowShot = false;
+						if (Controllable.Selected.Crouching)
+						{
+							lowShot = true;
+						}else
+						{
+							WorldTile tile = WorldManager.Instance.GetTileAtGrid(currentPos);
+							if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+							{
+								lowShot = true;
+							}
+						}
+						
+					
+						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange,lowShot);
 						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID)?.ControllableComponent != null)
 						{
 							validShot = true;
@@ -739,7 +767,7 @@ namespace MultiplayerXeno
 			
 			foreach (var obj in Controllables)
 			{
-				if (obj.worldObject.TileLocation.IsVisible)
+				if (obj.worldObject.IsVisible())
 				{
 					DrawControllableHoverHud(spriteBatch, obj);
 				}
@@ -845,7 +873,7 @@ namespace MultiplayerXeno
 				}
 			
 
-				if (Controllable.Targeting && previewShot!= null && Controllable.Selected != null)
+				if (Controllable.Targeting && previewShot!= null && previewShot.result!=null && Controllable.Selected != null)
 				{
 				
 					
@@ -899,13 +927,23 @@ namespace MultiplayerXeno
 				
 					spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,15);
 					int coverModifier = 0;
+					
+					var hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
 					if (previewShot.covercast != null && previewShot.covercast.hit)
 					{
 						Color c = Color.Green;
 						string hint = "";
 						var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
-							
-						switch (WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover())
+						Cover cover = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover();
+						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
+						{
+							if (cover != Cover.Full)
+							{ 
+								cover++;
+							}
+						}
+
+						switch (cover)
 						{
 							case Cover.None:
 								c = Color.Green;
@@ -921,6 +959,11 @@ namespace MultiplayerXeno
 								coverModifier = 2;
 								hint = "Cover: -2 DMG";
 								break;
+							case Cover.Full:
+								c = Color.Black;
+								coverModifier = 10;
+								hint = "Full Cover: -10 DMG";
+								break;
 							default:
 							
 								break;
@@ -928,6 +971,7 @@ namespace MultiplayerXeno
 						}
 						spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(0.5f,0.5f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 						spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,9);
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
 						
 						var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
 						var coverobjtransform = coverobj.Type.Transform;
@@ -940,21 +984,20 @@ namespace MultiplayerXeno
 
 					}
 				
-					if ( previewShot != null && previewShot.result != null && previewShot.result.hit)
-					{
-						var obj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-						if (obj != null)
+					
+						
+						if (hitobj != null)
 						{
-							var transform = obj.Type.Transform;
-							Sprite redSprite = obj.GetSprite();
+							var transform = hitobj.Type.Transform;
+							Sprite redSprite = hitobj.GetSprite();
 							redSprite.Color = Color.Red;
 
-							spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position), transform.Rotation, transform.Scale);
+							spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), transform.Rotation, transform.Scale);
 							spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
 							//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-							if (obj.ControllableComponent != null)
+							if (hitobj.ControllableComponent != null)
 							{
-								if (obj.ControllableComponent.Awareness > 0)
+								if (hitobj.ControllableComponent.Awareness > 0)
 								{
 									spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier) / 2 + "(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 								}
@@ -964,11 +1007,8 @@ namespace MultiplayerXeno
 								}
 							}
 						}
-					}
-
-
-			
-				
+					
+						
 		
 
 

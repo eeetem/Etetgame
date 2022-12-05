@@ -23,32 +23,45 @@ namespace MultiplayerXeno
 		}
 
 		
-		public Projectile(Vector2 from, Vector2 to, int dmg,int dropoffRange)
+		public Projectile(Vector2 from, Vector2 to, int dmg,int dropoffRange,bool lowShot = false)
 		{
 			this.dmg = dmg;
 			this.dropoffRange = dropoffRange;
 
-			result = WorldManager.Instance.Raycast(from , to, Cover.Full);
-			
-			var cast = WorldManager.Instance.Raycast(from, to, Cover.High,true,true);
-			if (cast.hit && result.hitObjID != cast.hitObjID)
+			if (lowShot)
 			{
-				covercast = cast;
+				result = WorldManager.Instance.Raycast(from , to, Cover.High);
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(from, to, Cover.Low,true,true);
+				result = WorldManager.Instance.Raycast(from , to, Cover.Full);
+			}
+
+
+			Vector2 dir = Vector2.Normalize(from - to);
+			to = result.CollisionPoint+Vector2.Normalize(to-from);
+
+			
+			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.High, true,true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
 				}
 				else
 				{
-					covercast = null;
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.Low, true,true);
+					if (cast.hit && result.hitObjID != cast.hitObjID)
+					{
+						covercast = cast;
+					}
+					else
+					{
+						covercast = null;
+					}
 				}
-			}
-	
+
 			
+
 			CalculateDetails();
 		}
 
@@ -83,10 +96,21 @@ namespace MultiplayerXeno
 				int finalDmg = dmg;
 				if (covercast != null)
 				{
-					switch (WorldManager.Instance.GetObject(covercast.hitObjID).GetCover())
+					var hitobj = WorldManager.Instance.GetObject(result.hitObjID);
+					Cover cover = WorldManager.Instance.GetObject(covercast.hitObjID).GetCover();
+						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
+						{
+							if (cover != Cover.Full)
+							{ 
+								cover++;
+							}
+						}
+
+					switch (cover)
 					{
 						case Cover.Full:
-							return;
+							finalDmg -= 10;
+							break;
 						case Cover.High:
 							finalDmg-=2;
 							break;

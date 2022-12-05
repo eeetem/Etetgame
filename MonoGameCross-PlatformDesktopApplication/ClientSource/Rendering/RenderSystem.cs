@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
@@ -54,39 +55,51 @@ public static class RenderSystem
 		
 		Objs.Sort(new DrawableSort());
 		
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			foreach (var obj in Objs)
 			{
 				if(obj == null)continue;
 				var sprite = obj.GetSprite();
 				var transform = obj.GetDrawTransform();
 				var worldPos = obj.GetWorldPos();
-				WorldTile? worldTile = null;
+				WorldTile worldTile = null;
 				if (WorldManager.IsPositionValid(worldPos))
 				{
 					worldTile =WorldManager.Instance.GetTileAtGrid( worldPos);
 
 				}
-
-				
-
-				if (worldTile == null || !worldTile.IsVisible)
+				else
 				{
-					sprite.Color = Color.DarkGray;
-					if (!obj.IsAlwaysVisible())//hide tileobjects
-					{
-						continue;
-					}
+					continue;
 				}
+
+				if (!obj.IsVisible())//hide tileobjects
+				{
+					continue;
+				}
+
+
+				if (worldTile.Visible == Visibility.None)
+				{
+					sprite.Color = Color.DimGray;
+					
+				}else if (worldTile.Visible == Visibility.Partial)
+				{
+					sprite.Color = Color.LightPink;
+				}
+
 
 				if (obj.IsTransparentUnderMouse())
 				{
-					sprite.Color *= 0.4f;
+					sprite.Color *= 0.3f;
 				}
 						
 					
 		
 				spriteBatch.Draw(sprite, transform.Position,  transform.Rotation,  transform.Scale);
+			//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+				
+				
 			}
 			spriteBatch.End();
 		

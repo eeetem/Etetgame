@@ -90,6 +90,13 @@ namespace CommonData
 			StartPoint = start;
 		}
 	}
+	public enum Visibility
+	{
+		None=0,
+		Partial=1,
+		Full=2
+	}
+
 	public enum Cover
 	{
 		None=0,//empty terain tiles

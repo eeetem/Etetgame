@@ -39,14 +39,25 @@ namespace MultiplayerXeno
 		public Sprite GetSprite()
 		{
 			Sprite sprite;
+			int spriteIndex;
 			if (fliped)
 			{
-				sprite =  Type.spriteSheet[(int)Utility.NormaliseDir((int)Facing+4)];
+				spriteIndex = (int)Facing + 4;
 			}
 			else
 			{
-				sprite = Type.spriteSheet[(int) Facing];
+				spriteIndex = (int)Facing;
 			}
+			if (ControllableComponent != null&& ControllableComponent.Crouching)
+			{//this is so fucking convoluted. i'll fix it whenever animations are in
+				sprite = Type.Controllable.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+			
+			}
+			else
+			{	
+				sprite = Type.spriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+			}
+
 
 			if (ControllableComponent != null)
 			{
@@ -58,6 +69,7 @@ namespace MultiplayerXeno
 				{
 					sprite.Color = new Color(255,200,200);
 				}
+				
 			}
 			else
 			{
@@ -67,10 +79,27 @@ namespace MultiplayerXeno
 			return sprite;
 		}
 
-		public bool IsAlwaysVisible()
+		public Visibility GetMinimumVisibility()
 		{
-			return Type.Surface || Type.Edge;
+			if (Type.Surface || Type.Edge)
+			{
+				return Visibility.None;
+			}
+
+			if (ControllableComponent != null && ControllableComponent.Crouching)
+			{
+				return Visibility.Full;
+			}
+
+			return Visibility.Partial;
 		}
+
+		public bool IsVisible()
+		{
+			return GetMinimumVisibility() <= TileLocation.Visible;
+		}
+
+
 
 		public bool IsTransparentUnderMouse()
 		{

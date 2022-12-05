@@ -235,7 +235,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreNearby = false)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreEdgesOnSameTile = false)
 		{
 			Vector2Int startcell = new Vector2Int((int)Math.Floor(startPos.X), (int)Math.Floor(startPos.Y));
 			Vector2Int endcell = new Vector2Int((int)Math.Floor(endPos.X), (int)Math.Floor(endPos.Y));
@@ -314,12 +314,6 @@ namespace MultiplayerXeno
 					
 				}
 
-				if (ignoreNearby)
-				{
-					//todo probably have some better check for edges if theyre "ont the same tile"
-					ignoreNearby = false;
-					continue;
-				}
 	
 				WorldTile tile;
 				if (IsPositionValid(checkingSquare))
@@ -347,7 +341,7 @@ namespace MultiplayerXeno
 					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
 
 
-					if (hitobj.Id != -1 && !(hitobj.TileLocation.Position == startcell && (hitobj.TileLocation.ObjectAtLocation == hitobj || hitobj.GetCover() != Cover.Full))) //this is super hacky and convoluted
+					if (hitobj.Id != -1 && (!ignoreEdgesOnSameTile || !Utility.DoesEdgeBorderTile(hitobj,startcell))) //this is super hacky and convoluted
 					{
 						Cover c = hitobj.GetCover();
 						if (c >= minHitCover)
@@ -442,10 +436,12 @@ namespace MultiplayerXeno
 			//Console.WriteLine(GridData[15,5].WestEdge);
 			lock (syncobj)
 			{
-				bool needFoVupdate = false;
+				
 				foreach (var obj in objsToDel)
 				{
-					needFoVupdate = true;
+#if CLIENT
+					MakeFovDirty();
+#endif
 					DestroyWorldObject(obj);
 					Console.WriteLine("deleting: "+obj);
 				}
@@ -458,7 +454,9 @@ namespace MultiplayerXeno
 
 				foreach (var WO in createdObjects)
 				{
-					needFoVupdate = true;
+					#if CLIENT
+					MakeFovDirty();
+#endif
 					var obj = CreateWorldObj(WO);
 					Console.WriteLine("creatinig: "+obj.Id);
 #if SERVER
@@ -471,7 +469,7 @@ namespace MultiplayerXeno
 				}		
 				createdObjects.Clear();
 #if CLIENT
-				if(needFoVupdate){
+				if(fovDirty){
 					CalculateFov();
 				}
 #endif

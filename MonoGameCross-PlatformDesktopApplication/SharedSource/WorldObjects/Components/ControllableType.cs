@@ -1,13 +1,15 @@
 ﻿using CommonData;
+using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno
 {
 	public class ControllableType
 	{
 		public int MoveRange = 4;
-		public int SightRange = 16;
+		public int SightRange = 10;
 		
 		public int MaxMovePoints = 2;
+		public int MaxTurnPoints = 2;
 		
 
 		public int WeaponDmg = 4;
@@ -17,6 +19,8 @@ namespace MultiplayerXeno
 		public int MaxAwareness = 1;
 
 		public bool RunAndGun = false;
+
+		public Sprite[] CrouchSpriteSheet;
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
 			

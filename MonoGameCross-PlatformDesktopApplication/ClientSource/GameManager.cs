@@ -29,7 +29,7 @@ namespace MultiplayerXeno
 				UI.SetUI(UI.GameUi);
 			}
 
-			WorldManager.Instance.CalculateFov();
+			WorldManager.Instance.MakeFovDirty();
 
 		}
 

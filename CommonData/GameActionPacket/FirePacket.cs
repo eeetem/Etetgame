@@ -12,7 +12,6 @@ namespace CommonData
 			this.Target = target;
 		}
 		
-		public int ID { get; set; }
 		public Vector2Int Target { get; set; }
 	}
 }

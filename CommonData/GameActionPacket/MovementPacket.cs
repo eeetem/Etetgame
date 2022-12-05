@@ -15,7 +15,6 @@ namespace CommonData
 		}
 
 		public int MovePointsUsed { get; set; }
-		public int ID { get; set; }
 		public List<Vector2Int> Path { get; set; }
 	}
 }

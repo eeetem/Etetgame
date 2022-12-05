@@ -32,13 +32,13 @@
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" layer = "3" offset= "0,0"/>
     <name>Soldier</name>
-    <controllable moveRange = "6" moves="2" attack="4" health="13" weaponRange ="13">
+    <controllable moveRange = "4" moves="2" turns="2" attack="4" health="13" weaponRange ="9">
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Scout" layer = "3" offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" attack="5" health="6" weaponRange ="4">
+    <controllable moveRange = "4" moves="3" turns="3" attack="5" health="6" weaponRange ="3">
     </controllable>
   </object>
 </root>

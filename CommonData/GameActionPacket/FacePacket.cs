@@ -12,8 +12,6 @@ namespace CommonData
 			Dir =dir;
 
 		}
-		
-		public int ID { get; set; }
 		public Direction Dir { get; set; }
 	}
 }
