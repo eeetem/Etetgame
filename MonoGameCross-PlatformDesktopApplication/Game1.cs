@@ -124,7 +124,8 @@ namespace MultiplayerXeno
 			
 			RenderSystem.Draw();
 			
-			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system
+			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system!	Long live Forg!
+		
 
 			base.Draw(gameTime);
 		}
