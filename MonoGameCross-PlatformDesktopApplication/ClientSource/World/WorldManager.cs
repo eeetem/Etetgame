@@ -35,6 +35,7 @@ namespace MultiplayerXeno
 		private void ClickAtPosition(Vector2Int position,bool righclick)
 		{
 			if(!GameManager.IsMyTurn()) return;
+			if(!IsPositionValid(position)) return;
 			var Tile = GetTileAtGrid(position);
 
 			WorldObject obj = Tile.ObjectAtLocation;
