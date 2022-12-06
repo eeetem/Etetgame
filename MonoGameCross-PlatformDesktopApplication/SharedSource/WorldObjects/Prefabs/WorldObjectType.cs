@@ -52,5 +52,6 @@ namespace MultiplayerXeno
 		public bool Faceable { get; set; }
 		public bool Edge { get; set; }
 		public bool Surface { get; set; }
+		public bool Impassible { get; set; }
 	}
 }
