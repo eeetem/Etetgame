@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
@@ -12,20 +13,30 @@ namespace MultiplayerXeno
 	{
 
 		public Transform2 Transform;
-		public int DrawLayer = 0;
-		public Sprite[] spriteSheet;
+		public Sprite[][] spriteSheet;
+		public int variations;
+		
 	
-		public void GenerateSpriteSheet(Texture2D texture)
+		public void GenerateSpriteSheet(string name,int variations)
 		{
-			
-			if (!Faceable)
+			this.variations = variations;
+			spriteSheet = new Sprite[variations][];
+			for (int i = 0; i < variations; i++)
 			{
-				spriteSheet = new[] {new Sprite(texture)};
-				return;
-			}
+				string spriteName = name;
+				if (i > 0)
+				{
+					spriteName = name + i;
+				}
 
-			spriteSheet = Utility.MakeSpriteSheet(texture, 3, 3);
-			
+				if (!Faceable)
+				{
+					spriteSheet[i] = new[] {new Sprite(TextureManager.GetTexture(spriteName))};
+					continue;
+				}
+
+				spriteSheet[i] = Utility.MakeSpriteSheet(TextureManager.GetTexture(spriteName), 3, 3);
+			}
 		}
 		
 	}

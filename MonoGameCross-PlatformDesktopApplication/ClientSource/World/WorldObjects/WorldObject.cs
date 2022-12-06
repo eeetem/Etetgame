@@ -11,6 +11,7 @@ namespace MultiplayerXeno
 	public partial class WorldObject : IDrawable
 	{
 		private Transform2 DrawTransform;
+		private int spriteVariation = 0;
 		public Transform2 GetDrawTransform()
 		{
 			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(this.TileLocation.Position);
@@ -22,15 +23,16 @@ namespace MultiplayerXeno
 			return this.TileLocation.Position;
 		}
 
-		public int GetDrawOrder()
+		public float GetDrawOrder()
 		{
-			int order = TileLocation.Position.X + TileLocation.Position.Y;
+			float order = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
 			{
 				order--;
-			}else if (!Type.Surface && !Type.Edge)
+				order--;
+			}else if (!Type.Surface&&!Type.Edge)
 			{
-				order++;
+				order += 0.5f;
 			}
 
 			return order;
@@ -55,7 +57,7 @@ namespace MultiplayerXeno
 			}
 			else
 			{	
-				sprite = Type.spriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+				sprite = Type.spriteSheet[spriteVariation][(int) Utility.NormaliseDir(spriteIndex)];
 			}
 
 
@@ -106,16 +108,7 @@ namespace MultiplayerXeno
 			return Type.Edge && Utility.DoesEdgeBorderTile(this, Utility.WorldPostoGrid(Camera.GetMouseWorldPos()));
 		}
 
-		
-		public int GetDrawLayer()
-		{
-			//if (fliped)
-			//{
-		//		return Type.DrawLayer + 1;
-		//	}
 
-			return Type.DrawLayer;
-		}
 	}
 
 

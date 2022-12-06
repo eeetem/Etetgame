@@ -65,7 +65,7 @@ public class LocalObject : IDrawable
 		return Utility.WorldPostoGrid(Transform.Position);
 	}
 
-	public int GetDrawOrder()
+	public float GetDrawOrder()
 	{
 		Vector2Int gridpos = Utility.WorldPostoGrid(Transform.Position);
 		return gridpos.X + gridpos.Y+1;

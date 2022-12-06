@@ -15,17 +15,24 @@ namespace MultiplayerXeno.Pathfinding
 			foreach (var idkstfu in nodes)
 			{
 				var node = idkstfu.Element;
+				Node Cached = NodeCache[node.Position.X, node.Position.Y];
+				Cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
+				Cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
 			}
 		}
+		public static Node[,] NodeCache = new Node[100, 100];
 		public static void ResetNodes(List<Node> nodes)
 		{
 			foreach (var node in nodes)
 			{
+				Node Cached = NodeCache[node.Position.X, node.Position.Y];
+				Cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
+				Cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
@@ -38,6 +45,7 @@ namespace MultiplayerXeno.Pathfinding
 				for (int y = 0; y < 100; y++)
 				{
 					Nodes[x, y] = new Node(new Vector2Int(x,y));
+					NodeCache[x, y] = new Node(new Vector2Int(x,y));
 				}
 			}
 			for (int x = 0; x < 100; x++)
@@ -115,10 +123,11 @@ namespace MultiplayerXeno.Pathfinding
 					if (current.CurrentCost <= range)
 					{
 						inRange.Add(current.Position);
-								
+						//Console.WriteLine("added with range: "+current.CurrentCost);
 					}
 					else
 					{
+						//Console.WriteLine("rejected with range: "+current.CurrentCost);
 						continue;
 					}
 
@@ -207,7 +216,7 @@ namespace MultiplayerXeno.Pathfinding
 						// Calculate the Costs
 						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
 						node.EstimatedCost = from.CurrentCost + node.DistanceTo(to);
-
+						node.State = NodeState.Open;
 						// Enqueue
 						open.Enqueue(node, node.TotalCost);
 					}
@@ -291,7 +300,6 @@ namespace MultiplayerXeno.Pathfinding
 				}
 				else if (current != connected)
 				{
-					// Updating the cost of the node if the current way is cheaper than the previous
 					var newCCost = current.CurrentCost + current.DistanceTo(connected);
 					var newTCost = newCCost + current.EstimatedCost;
 					if (newTCost < connected.TotalCost)
