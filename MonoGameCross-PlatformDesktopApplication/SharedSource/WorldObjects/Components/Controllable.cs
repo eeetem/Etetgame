@@ -255,6 +255,7 @@ namespace MultiplayerXeno
 			PathFinding.PathFindResult result = PathFinding.GetPath(this.worldObject.TileLocation.Position, position);
 			if (result.Cost == 0)
 			{
+				Console.WriteLine("move action rejected: cost is 0");
 				#if CLIENT
 				Selected = null;
 				#endif
@@ -274,9 +275,9 @@ namespace MultiplayerXeno
 #if CLIENT
 				Selected = null;
 #endif
-				#if SERVER
-				Console.WriteLine("client attempted to move past move points at: "+this.worldObject.TileLocation.Position);
-				#endif
+				
+				Console.WriteLine("client attempted to move past move points at: "+this.worldObject.TileLocation.Position +" to "+result.Path.Last());
+				
 				return;
 			}
 			
@@ -302,18 +303,17 @@ namespace MultiplayerXeno
 		{
 			Console.WriteLine("DoMove started");
 			if(moving)return;
-			this.MovePoints -= pointCost;
-
-
-			if (MovePoints < 0)
+			if (MovePoints - pointCost < 0)
 			{
 				//desync
 #if CLIENT
 				UI.ShowMessage("Desync Error","Unit Does not have enough move points");
+#else
+				Console.WriteLine("move action rejected: not enough  movepoints");
 #endif
 				return;
 			}
-
+			this.MovePoints -= pointCost;
 			moving = true;
 			_thisMoving = true;
 			CurrentPath = path;
@@ -400,7 +400,7 @@ namespace MultiplayerXeno
 				ObjectSpawner.ShotGun(this.worldObject.TileLocation.Position,pos);	
 			}
 #endif
-			DoFace(Utility.ToClampedDirection( this.worldObject.TileLocation.Position-pos));
+			worldObject.Face(Utility.ToClampedDirection( this.worldObject.TileLocation.Position-pos));
 		
 		}
 

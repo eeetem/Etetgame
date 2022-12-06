@@ -22,15 +22,16 @@ namespace MultiplayerXeno
 			return this.TileLocation.Position;
 		}
 
-		public int GetDrawOrder()
+		public float GetDrawOrder()
 		{
-			int order = TileLocation.Position.X + TileLocation.Position.Y;
+			float order = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
 			{
 				order--;
-			}else if (!Type.Surface && !Type.Edge)
+				order--;
+			}else if (!Type.Surface&&!Type.Edge)
 			{
-				order++;
+				order += 0.5f;
 			}
 
 			return order;

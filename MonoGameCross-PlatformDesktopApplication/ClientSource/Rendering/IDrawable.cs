@@ -9,7 +9,7 @@ public interface IDrawable
 {
 	public Transform2 GetDrawTransform();
 	public Vector2Int GetWorldPos();
-	public int GetDrawOrder();
+	public float GetDrawOrder();
 	public Sprite GetSprite();
 
 	public Visibility GetMinimumVisibility();
