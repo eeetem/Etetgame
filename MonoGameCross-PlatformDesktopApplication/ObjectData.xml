@@ -2,7 +2,7 @@
 <root>
 
 <object Faceable = "false" Cover ="0" Surface = "true">
-  <sprite layer = "0" offset= "0,0"/>
+  <sprite variations = "2" offset= "0,0"/>
   <name>basicFloor</name>
 </object>
   <object Faceable = "false" Cover ="0" Surface = "true">

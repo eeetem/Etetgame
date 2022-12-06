@@ -75,8 +75,8 @@ namespace MultiplayerXeno
 				float x = float.Parse(stringoffset.Substring(0, stringoffset.IndexOf(",")));
 				float y = float.Parse(stringoffset.Substring(stringoffset.IndexOf(",")+1, stringoffset.Length - stringoffset.IndexOf(",")-1));
 				Vector2 Offset = new Vector2(x, y);
-				int drawlayer = int.Parse(xmlObj.GetElementsByTagName("sprite")[0].Attributes["layer"].InnerText);
 				var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
+				int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
 #endif
 			
 				
@@ -87,9 +87,7 @@ namespace MultiplayerXeno
 
 				type.Transform = new Transform2();
 				type.Transform.Position = Utility.GridToWorldPos(Offset);
-				type.DrawLayer = drawlayer;
-		
-				
+
 				
 #endif
 
@@ -100,20 +98,20 @@ namespace MultiplayerXeno
 #if CLIENT
 				if (spritename != null)
 				{
-					type.GenerateSpriteSheet(Game1.Textures[spritename]);//this is a bit inconsistent but eeeh
+					type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
 					if (type.Controllable != null)
 					{
-						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(Game1.Textures[spritename + "Crouch"],3,3);
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(spritename + "Crouch"),3,3);
 					}
 
 					
 				}
 				else
 				{
-					type.GenerateSpriteSheet(Game1.Textures[name]);
+					type.GenerateSpriteSheet(name,spriteVariations);
 					if (type.Controllable != null)
 					{
-						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(Game1.Textures[name + "Crouch"],3,3);
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(name + "Crouch"),3,3);
 					}
 				}
 

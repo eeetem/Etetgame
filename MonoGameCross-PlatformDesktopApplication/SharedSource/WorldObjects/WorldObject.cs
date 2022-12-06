@@ -22,6 +22,7 @@ namespace MultiplayerXeno
 			{
 #if CLIENT
 				DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+				this.spriteVariation = Random.Shared.Next(type.variations);
 #endif
 			}
 

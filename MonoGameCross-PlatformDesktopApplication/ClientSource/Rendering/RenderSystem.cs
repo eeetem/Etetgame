@@ -134,16 +134,5 @@ public static class RenderSystem
 			return xpos.CompareTo(ypos);
 		}
 	}
-	public class DrawLayerSort : Comparer<WorldObject>
-	{
-//draws "top" ones first
 
-		public override int Compare(WorldObject x, WorldObject y)
-		{
-
-			int xpos = x.GetDrawLayer();
-			int ypos = y.GetDrawLayer();
-			return xpos.CompareTo(ypos);
-		}
-	}
 }
