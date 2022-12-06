@@ -284,9 +284,9 @@ namespace MultiplayerXeno.Pathfinding
 
 				if (!connected.Traversable(current) ||
 				    connected.State == NodeState.Closed)
-					{
-						continue; // Do ignore already checked and not traversable nodes.
-					}
+				{
+					continue; // Do ignore already checked and not traversable nodes.
+				}
 
 				// Adds a previously not "seen" node into the Queue
 				if (connected.State == NodeState.Unconsidered)
@@ -362,8 +362,10 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
-			if (WorldManager.Instance.GetTileAtGrid(this.Position).ObjectAtLocation != null) return false;
-			Cover obstacle = WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
+			var tile = WorldManager.Instance.GetTileAtGrid(this.Position);
+			if (tile.ObjectAtLocation != null) return false;
+			if (tile.Surface != null && tile.Surface.Type.Impassible) return false;
+			Cover obstacle =tile.GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
 			if (obstacle > Cover.None) return false;
 
 			return true;

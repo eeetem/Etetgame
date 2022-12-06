@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -46,6 +47,7 @@ namespace MultiplayerXeno
 				bool faceable = true;
 				bool edge = false;
 				bool surface = false;
+				bool impassible = false;
 				Cover cover = Cover.None;
 				if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
 				{
@@ -58,6 +60,12 @@ namespace MultiplayerXeno
 				if (xmlObj.HasAttributes && xmlObj.Attributes["Surface"] != null)
 				{
 					surface = bool.Parse(xmlObj?.Attributes?["Surface"].InnerText);
+					if (xmlObj.HasAttributes && xmlObj.Attributes["Impassible"] != null)
+					{
+						impassible = bool.Parse(xmlObj?.Attributes?["Impassible"].InnerText);
+					}
+
+					
 				}
 				if (xmlObj.HasAttributes && xmlObj.Attributes["Cover"] != null)
 				{
@@ -68,6 +76,7 @@ namespace MultiplayerXeno
 				type.Cover = cover;
 				type.Edge = edge;
 				type.Surface = surface;
+				type.Impassible = true;
 
 
 #if CLIENT
