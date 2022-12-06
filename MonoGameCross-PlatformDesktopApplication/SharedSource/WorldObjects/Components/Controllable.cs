@@ -385,7 +385,8 @@ namespace MultiplayerXeno
 					lowShot = true;
 				}
 			}
-			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(worldObject.Facing)/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange,lowShot);
+			Vector2 shotDir = Vector2.Normalize(pos - worldObject.TileLocation.Position);
+			Projectile p = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),pos+new Vector2(0.5f,0.5f),Type.WeaponDmg,Type.WeaponRange,lowShot);
 			p.Fire();
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,Type.WeaponDmg,p.dropoffRange));
 

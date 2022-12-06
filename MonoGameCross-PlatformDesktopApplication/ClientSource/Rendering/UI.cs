@@ -683,9 +683,9 @@ namespace MultiplayerXeno
 								lowShot = true;
 							}
 						}
-						
-					
-						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(Utility.DirToVec2(Controllable.Selected.worldObject.Facing)/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange,lowShot);
+
+						Vector2 shotDir = Vector2.Normalize(currentPos - Controllable.Selected.worldObject.TileLocation.Position);
+						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange,lowShot);
 						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID)?.ControllableComponent != null)
 						{
 							validShot = true;
