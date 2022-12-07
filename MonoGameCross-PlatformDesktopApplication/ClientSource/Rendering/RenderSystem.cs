@@ -18,7 +18,7 @@ public static class RenderSystem
 		spriteBatch = new SpriteBatch(graphicsDevice);
 	}
 
-	
+
 
 
 
@@ -27,12 +27,13 @@ public static class RenderSystem
 
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		List<IDrawable> Objs = new List<IDrawable>();
-		
+		List<IDrawable> UnsortedObjs = new List<IDrawable>();
+
 		foreach (var tile in allTiles)
 		{
 			if (tile.Surface != null)
-			{ 
-				Objs.Add(tile.Surface);
+			{
+				UnsortedObjs.Add(tile.Surface);
 			}
 
 			if (tile.NorthEdge != null)
@@ -52,52 +53,52 @@ public static class RenderSystem
 			//tileObjs.Sort(new DrawLayerSort());
 
 		}
-		Objs.AddRange(LocalObject.Objects);
-		
-		Objs.Sort(new DrawableSort());
-		
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
-			foreach (var obj in Objs)
-			{
-				if(obj == null)continue;
-				var sprite = obj.GetSprite();
-				var transform = obj.GetDrawTransform();
-				var worldPos = obj.GetWorldPos();
-				WorldTile worldTile = null;
-				if (WorldManager.IsPositionValid(worldPos))
-				{
-					worldTile =WorldManager.Instance.GetTileAtGrid( worldPos);
 
-				}
-				else
-				{
-					continue;
-				}
+		Objs.AddRange(LocalObject.Objects);
+
+		Objs.Sort(new DrawableSort());
+
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
+		foreach (var obj in UnsortedObjs)
+		{
+			
+				if(obj == null)continue;
+				var texture = obj.GetTexture();
+				var transform = obj.GetDrawTransform();
 
 				if (!obj.IsVisible())//hide tileobjects
 				{
 					continue;
 				}
+			
+				spriteBatch.Draw(texture,transform.Position,obj.GetColor());
+				
+				
+				//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
+				//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+				//	spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[worldPos.X,worldPos.Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
+				
+				
+			
+		}
+		spriteBatch.End();
 
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
+			foreach (var obj in Objs)
+			{
+				if(obj == null)continue;
+				var texture = obj.GetTexture();
+				var transform = obj.GetDrawTransform();
 
-				if (worldTile.Visible == Visibility.None)
+				if (!obj.IsVisible())//hide tileobjects
 				{
-					sprite.Color = Color.DimGray;
-					
-				}else if (worldTile.Visible == Visibility.Partial)
-				{
-					sprite.Color = Color.LightPink;
+					continue;
 				}
-
-
-				if (obj.IsTransparentUnderMouse())
-				{
-					sprite.Color *= 0.3f;
-				}
-						
-					
-		
-				spriteBatch.Draw(sprite, transform.Position,  transform.Rotation,  transform.Scale);
+			
+				spriteBatch.Draw(texture,transform.Position,obj.GetColor());
+				
+				
+				//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
 			//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			//	spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[worldPos.X,worldPos.Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
 				

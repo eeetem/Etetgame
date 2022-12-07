@@ -12,6 +12,7 @@ namespace MultiplayerXeno
 	{
 		private Transform2 DrawTransform;
 		private int spriteVariation = 0;
+		private float DrawOrder;
 		public Transform2 GetDrawTransform()
 		{
 			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(this.TileLocation.Position);
@@ -23,24 +24,28 @@ namespace MultiplayerXeno
 			return this.TileLocation.Position;
 		}
 
-		public float GetDrawOrder()
+		private void GenerateDrawOrder()
 		{
-			float order = TileLocation.Position.X + TileLocation.Position.Y;
+			
+			DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
 			{
-				order--;
-				order--;
+				DrawOrder--;
+				DrawOrder--;
 			}else if (!Type.Surface&&!Type.Edge)
 			{
-				order += 0.5f;
+				DrawOrder += 0.5f;
 			}
-
-			return order;
 		}
 
-		public Sprite GetSprite()
+		public float GetDrawOrder()
 		{
-			Sprite sprite;
+			return DrawOrder;
+		}
+
+		public Texture2D GetTexture()
+		{
+			Texture2D sprite;
 			int spriteIndex;
 			if (fliped)
 			{
@@ -61,24 +66,46 @@ namespace MultiplayerXeno
 			}
 
 
+			return sprite;
+		}
+
+		public Color GetColor()
+		{
+			
+			Color color = Color.White;
+				
 			if (ControllableComponent != null)
 			{
 				if (ControllableComponent.IsMyTeam())
 				{
-					sprite.Color = new Color(200,255,200);
+					color = new Color(200,255,200);
 				}
 				else
 				{
-					sprite.Color = new Color(255,200,200);
+					color = new Color(255,200,200);
 				}
 				
 			}
-			else
+
+
+			if (TileLocation.Visible == Visibility.None)
 			{
-				sprite.Color = Color.White;
+				color = Color.DimGray;
+					
+			}else if (TileLocation.Visible == Visibility.Partial)
+			{
+				color = Color.LightPink;
 			}
 
-			return sprite;
+
+			if (IsTransparentUnderMouse())
+			{
+				color *= 0.3f;
+			}
+
+			return color;
+
+
 		}
 
 		public Visibility GetMinimumVisibility()

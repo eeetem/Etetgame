@@ -1,7 +1,7 @@
 ﻿using CommonData;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno;
 
@@ -10,11 +10,11 @@ public interface IDrawable
 	public Transform2 GetDrawTransform();
 	public Vector2Int GetWorldPos();
 	public float GetDrawOrder();
-	public Sprite GetSprite();
+	public Texture2D GetTexture();
 
-	public Visibility GetMinimumVisibility();
+	public Color GetColor();
 
 	public bool IsVisible();
 
-	public bool IsTransparentUnderMouse();
+
 }

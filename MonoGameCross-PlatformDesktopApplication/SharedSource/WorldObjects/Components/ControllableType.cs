@@ -1,4 +1,5 @@
 ﻿using CommonData;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno
@@ -20,7 +21,7 @@ namespace MultiplayerXeno
 
 		public bool RunAndGun = false;
 
-		public Sprite[] CrouchSpriteSheet;
+		public Texture2D[] CrouchSpriteSheet;
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
 			

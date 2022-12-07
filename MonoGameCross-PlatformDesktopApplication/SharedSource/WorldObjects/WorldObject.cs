@@ -14,22 +14,34 @@ namespace MultiplayerXeno
 		
 		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
 		{
+			
+			
+			
+			this.Id = id;
+			TileLocation = tileLocation;
+			
+			
+			
+			
 			if (type == null)
 			{
 				type = new WorldObjectType("nullType",null);
-			}
-			else
-			{
-#if CLIENT
-				DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
-				this.spriteVariation = Random.Shared.Next(type.variations);
-#endif
+				this.Type = type;
+				return;
 			}
 
-			this.Id = id;
-			TileLocation = tileLocation;
+
+			
+
+
 			this.Type = type;
+			
 			Type.SpecialBehaviour(this);
+#if CLIENT
+			DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+			this.spriteVariation = Random.Shared.Next(type.variations);
+			GenerateDrawOrder();	
+#endif
 
 	
 
@@ -52,8 +64,9 @@ namespace MultiplayerXeno
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
-
-
+#if CLIENT
+			GenerateDrawOrder();
+#endif
 		}
 		
 		

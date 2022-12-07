@@ -13,14 +13,14 @@ namespace MultiplayerXeno
 	{
 
 		public Transform2 Transform;
-		public Sprite[][] spriteSheet;
+		public Texture2D[][] spriteSheet;
 		public int variations;
 		
 	
 		public void GenerateSpriteSheet(string name,int variations)
 		{
 			this.variations = variations;
-			spriteSheet = new Sprite[variations][];
+			spriteSheet = new Texture2D[variations][];
 			for (int i = 0; i < variations; i++)
 			{
 				string spriteName = name;
@@ -31,7 +31,7 @@ namespace MultiplayerXeno
 
 				if (!Faceable)
 				{
-					spriteSheet[i] = new[] {new Sprite(TextureManager.GetTexture(spriteName))};
+					spriteSheet[i] = new[] {TextureManager.GetTexture(spriteName)};
 					continue;
 				}
 

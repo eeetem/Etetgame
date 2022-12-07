@@ -200,24 +200,12 @@ namespace MultiplayerXeno
             return rect;
         }
 
-        public static Sprite[] MakeSpriteSheet(Texture2D texture, int xsplits, int ysplits)
+        public static Texture2D[] MakeSpriteSheet(Texture2D texture, int xsplits, int ysplits)
         {
-            Sprite[] spriteSheet = new Sprite[8];
+           
             Texture2D[] texture2Ds = Utility.SplitTexture(texture, texture.Width/xsplits, texture.Height/ysplits, out int _, out int _);
 
-
-            int dir = 0;
-            foreach (var splitTexture in texture2Ds)
-            {
-                if (dir > 7) break;
-                spriteSheet[dir] = new Sprite(splitTexture);
-
-
-
-                dir++;
-            }
-
-            return spriteSheet;
+            return texture2Ds;
         }
 
         //convert texture to 2d array

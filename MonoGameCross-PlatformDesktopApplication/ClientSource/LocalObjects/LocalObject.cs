@@ -11,7 +11,7 @@ public class LocalObject : IDrawable
 {
 	private Transform2 Transform;
 	private Vector2 Velocity;
-	private Sprite sprite;
+	private Texture2D sprite;
 	private float lifeTime;
 	private float aliveTime;
 	
@@ -24,7 +24,7 @@ public class LocalObject : IDrawable
 	public LocalObject(Texture2D sprite,Vector2 position, Vector2 velocity,float lifeTime)
 	{
 		Transform = new Transform2();
-		this.sprite = new Sprite(sprite);//inefficient but fuck it
+		this.sprite = sprite;//inefficient but fuck it
 		Transform.Position = position;
 		Transform.Scale = new Vector2(5, 5);
 		this.Velocity = velocity;
@@ -72,9 +72,14 @@ public class LocalObject : IDrawable
 
 	}
 
-	public Sprite GetSprite()
+	public Texture2D GetTexture()
 	{
 		return sprite;
+	}
+
+	public Color GetColor()
+	{
+		return Color.White;
 	}
 
 	public Visibility GetMinimumVisibility()
