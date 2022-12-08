@@ -558,10 +558,29 @@ namespace MultiplayerXeno
 		public void SaveData(string path)
 		{
 			List<WorldTileData> prefabData = new List<WorldTileData>();
-
+			Vector2Int biggestPos = new Vector2Int(0, 0);//only save the big of the map that has stuff
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
+				{
+					if (_gridData[x, y].NorthEdge != null || _gridData[x, y].WestEdge!=null || _gridData[x, y].ObjectAtLocation != null)
+					{
+						if (x > biggestPos.X)
+						{
+							biggestPos.X = x;
+						}
+						
+						if (y > biggestPos.Y)
+						{
+							biggestPos.Y = y;
+						}
+					}
+				}
+			}
+			
+			for (int x = 0; x <= biggestPos.X; x++)
+			{
+				for (int y = 0; y <= biggestPos.Y; y++)
 				{
 					prefabData.Add(_gridData[x, y].GetData());
 				}

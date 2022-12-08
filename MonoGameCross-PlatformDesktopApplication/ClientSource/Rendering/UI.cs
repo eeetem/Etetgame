@@ -715,7 +715,6 @@ namespace MultiplayerXeno
 		private static bool raycastDebug;
 		public static void Render(float deltaTime)
 		{
-		
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			
@@ -725,8 +724,7 @@ namespace MultiplayerXeno
 			
 			
 			
-			var Mousepos = Utility.GridToWorldPos(((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f)));//idk why i need to add a vector but i do and im not bothered figuring out why
-
+			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
 
 			
 			UI.Desktop.Render();

@@ -83,7 +83,7 @@ namespace MultiplayerXeno
 				string stringoffset = xmlObj.GetElementsByTagName("sprite")[0].Attributes["offset"].InnerText;
 				float x = float.Parse(stringoffset.Substring(0, stringoffset.IndexOf(",")));
 				float y = float.Parse(stringoffset.Substring(stringoffset.IndexOf(",")+1, stringoffset.Length - stringoffset.IndexOf(",")-1));
-				Vector2 Offset = new Vector2(x, y);
+				Vector2 Offset = new Vector2(x-1.5f, y-0.5f);
 				var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 				int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
 #endif
