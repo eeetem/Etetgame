@@ -76,7 +76,7 @@ namespace MultiplayerXeno
 				type.Cover = cover;
 				type.Edge = edge;
 				type.Surface = surface;
-				type.Impassible = true;
+				type.Impassible = impassible;
 
 
 #if CLIENT
