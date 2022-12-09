@@ -26,7 +26,11 @@ namespace MultiplayerXeno
 
 		private void GenerateDrawOrder()
 		{
-			
+			if (Type == null)
+			{
+				return;
+			}
+
 			DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
 			{

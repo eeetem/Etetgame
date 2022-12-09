@@ -14,40 +14,54 @@ namespace MultiplayerXeno
 		
 		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
 		{
-			
-			
-			
 			this.Id = id;
-			TileLocation = tileLocation;
-			
-			
-			
-			
 			if (type == null)
 			{
 				type = new WorldObjectType("nullType",null);
 				this.Type = type;
 				return;
 			}
-
-
-			
-
-
 			this.Type = type;
+
+
 			
+
+
+			
+			
+			TileLocation = tileLocation;
 			Type.SpecialBehaviour(this);
 #if CLIENT
 			DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
 			this.spriteVariation = Random.Shared.Next(type.variations);
-			GenerateDrawOrder();	
+		
 #endif
+			this.Id = id;
+			TileLocation = tileLocation;
+
 
 	
 
 		}
 
-		public WorldTile TileLocation;
+		private WorldTile _tileLocation;
+		public WorldTile TileLocation
+		{
+			get => _tileLocation;
+
+			set
+			{
+				_tileLocation = value;
+#if CLIENT
+				
+
+				if (_tileLocation != null)
+				{
+					GenerateDrawOrder();
+				}
+#endif
+			}
+		}
 		public Controllable? ControllableComponent { get;  set; }
 
 		public readonly int Id;

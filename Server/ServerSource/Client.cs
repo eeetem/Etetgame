@@ -20,7 +20,7 @@ namespace MultiplayerXeno
 
 		public void SetStartData(StartDataPacket packet)
 		{
-			if (packet.Scouts + packet.Soldiers > 5)
+			if (packet.Scouts + packet.Soldiers > 6)
 			{
 				Console.WriteLine("Recived "+packet.Scouts + packet.Soldiers+" total units. StartData Rejected");
 				return;

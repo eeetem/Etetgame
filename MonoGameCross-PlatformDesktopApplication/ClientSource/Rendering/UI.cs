@@ -77,6 +77,18 @@ namespace MultiplayerXeno
 				currentUI = uiMethod;
 			}
 			currentUI.Invoke();
+
+			Grid grid = (Grid)Desktop.Root;
+				//	grid.ColumnSpacing = 10;
+			foreach (var obj in grid.Widgets)
+			{
+				if (obj is TextButton)
+				{
+					obj.HorizontalAlignment = HorizontalAlignment.Center;
+				}
+
+				obj.Scale = new Vector2(Game1.instance.Window.ClientBounds.Width/1000f, Game1.instance.Window.ClientBounds.Width/1000f);
+			}
 			
 		}
 
@@ -136,7 +148,6 @@ namespace MultiplayerXeno
 
 
 
-
 		public static void MainMenu()
 		{
 			var grid = new Grid
@@ -168,6 +179,7 @@ namespace MultiplayerXeno
 			{
 				WorldEditSystem.Init();
 				WorldEditSystem.GenerateUI();
+
 			};
 
 			grid.Widgets.Add(button2);
@@ -291,7 +303,7 @@ namespace MultiplayerXeno
 			};
 			soldierRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + 1 > 5)
+				if (soldierCount + scoutCount + 1 > 6)
 				{
 					return;
 				}
@@ -334,7 +346,7 @@ namespace MultiplayerXeno
 			};
 			scoutRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + 1 > 5)
+				if (soldierCount + scoutCount + 1 > 6)
 				{
 					return;
 				}
@@ -394,7 +406,6 @@ namespace MultiplayerXeno
 				ColumnSpacing = 8
 			};
 
-			int xpos = 0;
 			int ypos = 0;
 			foreach (var prefabDictElement in PrefabManager.Prefabs)
 			{
@@ -402,8 +413,8 @@ namespace MultiplayerXeno
 				
 				var button = new TextButton
 				{
-					GridColumn = ypos,
-					GridRow = xpos,
+					GridColumn = 0,
+					GridRow = ypos,
 					Text = prefabDictElement.Key
 				};
 
@@ -412,13 +423,15 @@ namespace MultiplayerXeno
 					WorldEditSystem.ActivePrefab = prefabDictElement.Key;
 				};
 				grid.Widgets.Add(button);
+				
+				
 			
-				xpos += 1;
+				ypos += 1;
 			
 			}
 			var save = new TextButton
 			{
-				GridColumn = ypos+1,
+				GridColumn = 5,
 				GridRow = 0,
 				Text = "save"
 			};
@@ -430,7 +443,7 @@ namespace MultiplayerXeno
 			
 			var load = new TextButton
 			{
-				GridColumn = ypos+1,
+				GridColumn = 5,
 				GridRow = 1,
 				Text = "load"
 			};
@@ -441,6 +454,67 @@ namespace MultiplayerXeno
 			};
 			grid.Widgets.Add(save);
 			grid.Widgets.Add(load);
+			
+			var point = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = ypos,
+				Text = "Point(1)"
+			};
+			point.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Point;
+			};
+			grid.Widgets.Add(point);
+			var selection = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = ypos,
+				Text = "Selection(2)"
+			};
+			selection.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Selection;
+			};
+			grid.Widgets.Add(selection);
+			var line = new TextButton
+			{
+				GridColumn = 3,
+				GridRow = ypos,
+				Text = "Line(3)"
+			};
+			line.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Line;
+			};
+			grid.Widgets.Add(line);
+			
+			
+			var rotateq = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = ypos-1,
+				Text = "<- Rotate(Q)"
+			};
+			rotateq.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveDir--;
+			};
+			grid.Widgets.Add(rotateq);
+			
+			var rotatee = new TextButton
+			{
+				GridColumn = 3,
+				GridRow = ypos-1,
+				Text = "Rotate(E) -->"
+			};
+			rotatee.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveDir++;
+			};
+			grid.Widgets.Add(rotatee);
+			
+			
 			
 			Desktop.Root = grid;
 			
@@ -1028,6 +1102,8 @@ namespace MultiplayerXeno
 
 			}
 
+			WorldEditSystem.Draw(spriteBatch);
+			
 			spriteBatch.End();
 		}
 

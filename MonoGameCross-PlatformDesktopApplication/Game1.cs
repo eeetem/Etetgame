@@ -42,11 +42,14 @@ namespace MultiplayerXeno
 			Window.ClientSizeChanged += (s, a) =>
 			{
 				Camera.Init(GraphicsDevice,Window);
+				UI.SetUI(null);
+			};
+	
+		}
 
-						};
-			/*		//Window.ClientSizeChanged += UI.RemakeUi;
-			
-			*/
+		public float GetWindowWidth()
+		{
+			return Window.ClientBounds.Width;
 		}
 
 		protected override void Initialize()

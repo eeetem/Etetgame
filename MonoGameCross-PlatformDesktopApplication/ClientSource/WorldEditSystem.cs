@@ -1,9 +1,12 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using CommonData;
+using FontStashSharp.Rasterizers.StbTrueTypeSharp;
+using MonoGame.Extended;
 
 namespace MultiplayerXeno
 {
@@ -18,16 +21,35 @@ namespace MultiplayerXeno
 
 		}
 
+		public enum Brush 
+		{
+			Point,
+			Line,
+			Selection
+			
+		}
 
+
+		public static Brush ActiveBrush = Brush.Point;
 		public static string ActivePrefab = "basicFloor";
 		public static Direction ActiveDir = Direction.North;
+
+		private static bool rightMouseDown;
+		private static bool leftMouseDown;
+
+		private static bool MouseDown => rightMouseDown || leftMouseDown;
+
 		public static void GenerateUI()
 		{
 			if(!enabled) return;
-			UI.EditorMenu();
-			UI.LeftClick += PlacePrefab;
-			UI.LeftClickUp += FinishPlacePrefab;
-			UI.RightClick += DeletePrefab;
+			UI.SetUI(UI.EditorMenu);
+			UI.LeftClick += (s) =>
+			{
+				leftMouseDown = true;
+			};
+			UI.LeftClickUp += (s) => { leftMouseDown = false; };
+			UI.RightClick += (s) => { rightMouseDown = true; };
+			UI.RightClickUp += (s) => { rightMouseDown = false; };
 
 			for (int x = 0; x < 100; x++)
 			{
@@ -122,18 +144,19 @@ namespace MultiplayerXeno
 			}
 		}
 
-		private static bool placing = false;
-		private static void PlacePrefab(Vector2Int Pos)
-		{
-			placing = true;
-		}
-		
-		private static void FinishPlacePrefab(Vector2Int Pos)
-		{
-			placing = false;
-		}
+
 
 		private static KeyboardState lastState;
+		private static bool lastMouseDown;
+		private static bool lastLeftMouseDown;
+		private static bool lastRghtMouseDown;
+		private static Vector2Int lastMousePos;
+
+		private static Vector2Int startPoint = new Vector2Int(0,0);
+		private static Vector2Int currentPoint = new Vector2Int(0,0);
+		private static Vector2Int topLeftSelection = new Vector2Int(0,0);
+		private static Vector2Int bottomRightSelection = new Vector2Int(0,0);
+		
 		public static void Update(GameTime gameTime)
 		{
 			if(!enabled) return;
@@ -146,17 +169,128 @@ namespace MultiplayerXeno
 			{
 				ActiveDir -= 1;
 			}
+			if(keyboardState.IsKeyDown(Keys.D1))
+			{
+				ActiveBrush = Brush.Point;
+			}
+			if(keyboardState.IsKeyDown(Keys.D2))
+			{
+				ActiveBrush = Brush.Selection;
+			}
+			if(keyboardState.IsKeyDown(Keys.D3))
+			{
+				ActiveBrush = Brush.Line;
+			}
 
 			ActiveDir = Utility.NormaliseDir(ActiveDir);
 
 			lastState = keyboardState;
 
-			var Pos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			if (placing && IsValidPlacement(Pos))
+			Vector2Int mousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			switch (ActiveBrush)
 			{
-				WorldManager.Instance.MakeWorldObject(ActivePrefab,Pos,ActiveDir);
-			}
+				case Brush.Point:
+					if (leftMouseDown && IsValidPlacement(mousePos))
+					{
+						WorldManager.Instance.MakeWorldObject(ActivePrefab,mousePos,ActiveDir);
+					}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
+					{
+						DeletePrefab(mousePos);
 
+					}
+
+					break;
+				case Brush.Selection:
+					if (MouseDown && !lastMouseDown)
+					{
+						startPoint = mousePos;
+						break;
+					}
+
+					currentPoint = mousePos;
+					if (startPoint.X > currentPoint.X)
+					{
+						topLeftSelection.X = currentPoint.X;
+						bottomRightSelection.X = startPoint.X;
+
+					}
+					else
+					{
+						topLeftSelection.X = startPoint.X;
+						bottomRightSelection.X = currentPoint.X;
+					}
+					if (startPoint.Y > currentPoint.Y)
+					{
+						topLeftSelection.Y = currentPoint.Y;
+						bottomRightSelection.Y = startPoint.Y;
+
+					}
+					else
+					{
+						topLeftSelection.Y = startPoint.Y;
+						bottomRightSelection.Y = currentPoint.Y;
+					}
+					if (lastRghtMouseDown && !rightMouseDown)
+					{
+				
+						
+						for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
+						{
+							for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
+							{
+								DeletePrefab(new Vector2Int(x,y));
+								
+							}
+						}
+					}else if (lastLeftMouseDown && !leftMouseDown)
+					{
+						for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
+						{
+							for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
+							{
+								if(IsValidPlacement(new Vector2Int(x,y)))
+								{
+									WorldManager.Instance.MakeWorldObject(ActivePrefab,new Vector2Int(x,y),ActiveDir);	
+								}
+								
+								
+							}
+						}
+					}
+
+
+					break;
+			}
+			//Console.WriteLine(MouseDown+" "+lastMouseDown);
+			lastLeftMouseDown = leftMouseDown;
+			lastMouseDown = MouseDown;
+			lastRghtMouseDown = rightMouseDown;
+			lastMousePos = mousePos;
+		}
+
+
+		public static void Draw(SpriteBatch batch)
+		{
+			if(!enabled) return;
+			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y +" Mode: "+ActiveBrush,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X, 100)), Color.White, 5);
+			batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X+1, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X+1, 100)), Color.White, 5);
+			batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y)), Color.White, 5);
+			batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y+1)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y+1)), Color.White, 5);
+			switch (ActiveBrush)
+			{
+				case Brush.Selection:
+					if (MouseDown)
+					{
+						batch.DrawLine(Utility.GridToWorldPos(new Vector2(topLeftSelection.X, topLeftSelection.Y)), Utility.GridToWorldPos(new Vector2(topLeftSelection.X, bottomRightSelection.Y + 1)), Color.Peru, 5);
+						batch.DrawLine(Utility.GridToWorldPos(new Vector2(topLeftSelection.X, topLeftSelection.Y)), Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, topLeftSelection.Y)), Color.Peru, 5);
+						batch.DrawLine(Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, bottomRightSelection.Y + 1)), Utility.GridToWorldPos(new Vector2(topLeftSelection.X, bottomRightSelection.Y + 1)), Color.Peru, 5);
+						batch.DrawLine(Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, bottomRightSelection.Y + 1)), Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, topLeftSelection.Y)), Color.Peru, 5);
+					}
+
+					break;
+			}
 		}
 	}
 }
