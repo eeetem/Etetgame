@@ -194,6 +194,7 @@ namespace MultiplayerXeno.Pathfinding
 
 		public static PathFindResult GetPath(Vector2Int from, Vector2Int to)
 		{
+			if (!WorldManager.IsPositionValid(from) || !WorldManager.IsPositionValid(to)) return new PathFindResult(new List<Vector2Int>(),0);
 			return GetPath(Nodes[from.X, from.Y], Nodes[to.X, to.Y]);
 		}
 
@@ -301,8 +302,7 @@ namespace MultiplayerXeno.Pathfinding
 				else if (current != connected)
 				{
 					var newCCost = current.CurrentCost + current.DistanceTo(connected);
-					var newTCost = newCCost + current.EstimatedCost;
-					if (newTCost < connected.TotalCost)
+					if (newCCost < connected.CurrentCost)
 					{
 						connected.Parent = current;
 						connected.CurrentCost = newCCost;
@@ -365,7 +365,7 @@ namespace MultiplayerXeno.Pathfinding
 			var tile = WorldManager.Instance.GetTileAtGrid(this.Position);
 			if (tile.ObjectAtLocation != null) return false;
 			if (tile.Surface != null && tile.Surface.Type.Impassible) return false;
-			Cover obstacle =tile.GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
+			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
 			if (obstacle > Cover.None) return false;
 
 			return true;
