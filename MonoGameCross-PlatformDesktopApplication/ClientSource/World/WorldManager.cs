@@ -124,7 +124,7 @@ namespace MultiplayerXeno
 							RayCastOutcome[] PartalCasts;
 							if (obj.ControllableComponent.Crouching)
 							{
-								FullCasts = MultiCornerCast(obj.TileLocation.Position, tile, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+								FullCasts = MultiCornerCast(obj.TileLocation.Position, tile, Cover.High, true,Cover.High);//full vsson does not go past high cover and no partial sigh
 								PartalCasts = Array.Empty<RayCastOutcome>();
 							}
 							else
