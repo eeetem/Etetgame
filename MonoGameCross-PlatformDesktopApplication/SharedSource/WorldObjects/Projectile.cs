@@ -42,14 +42,14 @@ namespace MultiplayerXeno
 			to = result.CollisionPoint+Vector2.Normalize(to-from);
 
 			
-			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.High, true,true);
+			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.High, true,Cover.Full);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
 				}
 				else
 				{
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.Low, true,true);
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.Low, true,Cover.Full);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;

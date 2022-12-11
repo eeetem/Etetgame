@@ -169,31 +169,14 @@ namespace MultiplayerXeno
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
 
 
-		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false, bool returnFirstMiss = false)
+		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,Cover ignoreEdgesOnSameTilenCover = Cover.None)
 		{
 
-			RayCastOutcome[] result = new RayCastOutcome[16];
-			Vector2 startPos =startcell;
+			RayCastOutcome[] result = new RayCastOutcome[4];
+			Vector2 startPos =startcell+new Vector2(0.5f,0.5f);
 			Vector2 endpos = endcell;
 			int index = 0;
-			for (int i = 0; i < 4; i++)
-			{
-				switch (i)
-				{
-					case 0:
-						startPos = startcell;
-						break;
-					case 1:
-						startPos = startcell + new Vector2(0f, 0.99f);
-						break;
-					case 2:
-						startPos = startcell + new Vector2(0.99f, 0f);
-						break;
-					case 3:
-						startPos = startcell + new Vector2(0.99f, 0.99f);
-						break;
-					
-				}
+			
 				for (int j = 0; j < 4; j++)
 				{
 				
@@ -214,12 +197,13 @@ namespace MultiplayerXeno
 					
 					}
 					
-					result[index] = Raycast(startPos, endpos, minHitCover, ignoreControllables);
+					Vector2 Dir = Vector2.Normalize(startcell - endcell);
+					result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover, ignoreControllables,ignoreEdgesOnSameTilenCover);
 					index++;
 
 				}
 				
-			}
+			
 
 
 
@@ -235,7 +219,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreEdgesOnSameTile = false)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,Cover ignoreEdgesOnSameTilenCover = Cover.None)
 		{
 			Vector2Int startcell = new Vector2Int((int)Math.Floor(startPos.X), (int)Math.Floor(startPos.Y));
 			Vector2Int endcell = new Vector2Int((int)Math.Floor(endPos.X), (int)Math.Floor(endPos.Y));
@@ -340,10 +324,10 @@ namespace MultiplayerXeno
 
 					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
 
-
-					if (hitobj.Id != -1 && (!ignoreEdgesOnSameTile || !Utility.DoesEdgeBorderTile(hitobj,startcell))) //this is super hacky and convoluted
+					 Cover c = hitobj.GetCover();
+					if (hitobj.Id != -1 && (c <= ignoreEdgesOnSameTilenCover|| !Utility.DoesEdgeBorderTile(hitobj,startcell))) //this is super hacky and convoluted
 					{
-						Cover c = hitobj.GetCover();
+						
 						if (c >= minHitCover)
 						{
 							result.CollisionPoint = collisionPoint;
