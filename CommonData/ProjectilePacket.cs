@@ -30,10 +30,10 @@ public class ProjectilePacket : Packet
 		RCollisionPointY = result.CollisionPoint.Y;
 		
 		RStartPointX = result.StartPoint.X;
-		RStartPointX = result.StartPoint.Y;
+		RStartPointY = result.StartPoint.Y;
 		
 		REndPointX = result.EndPoint.X;
-		REndPointX = result.EndPoint.Y;
+		REndPointY = result.EndPoint.Y;
 
 		if (covercast != null)
 		{
