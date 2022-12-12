@@ -102,7 +102,15 @@ namespace MultiplayerXeno
 			if (Awareness > 0)
 			{
 				Console.WriteLine("blocked by awareness");
-				Awareness--; 
+				List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(this.worldObject.TileLocation.Position);
+				foreach (var tile in tiles)
+				{
+					if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
+					{
+						tile.ObjectAtLocation.ControllableComponent.Awareness--;
+					}
+				}
+
 				ammount= (int)Math.Floor(ammount/2f);
 
 			}

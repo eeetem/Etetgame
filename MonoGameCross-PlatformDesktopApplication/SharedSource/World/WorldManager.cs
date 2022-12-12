@@ -417,6 +417,26 @@ namespace MultiplayerXeno
 	
 		}
 
+		public List<WorldTile> GetTilesAround(Vector2Int pos)
+		{
+			int x = pos.X;
+			int y = pos.Y;
+			List<WorldTile> tiles = new List<WorldTile>();
+			if (IsPositionValid(pos))
+			{
+				tiles.Add(GetTileAtGrid(pos));
+			}
+			if(x-1 > 0 && y-1 > 0)    tiles.Add( _gridData[x - 1, y - 1]);
+			if(y-1 > 0)               tiles.Add( _gridData[x    , y - 1]);
+			if(x+1 < 99 && y-1 > 0)   tiles.Add( _gridData[x + 1, y - 1]);
+			if(x+1 < 99)              tiles.Add( _gridData[x + 1, y]);
+			if(x-1 > 0)               tiles.Add( _gridData[x - 1, y]);
+			if(x-1 > 0 && y+1 < 99)   tiles.Add( _gridData[x - 1, y + 1]);
+			if(y+1 < 99)              tiles.Add( _gridData[x    , y + 1]);
+			if(x+1 < 99 && y+1 < 99)  tiles.Add( _gridData[x + 1, y + 1]);
+			return tiles;
+		}
+
 		private  void WipeGrid()
 		{
 			foreach (var worldObject in _worldObjects.Values)

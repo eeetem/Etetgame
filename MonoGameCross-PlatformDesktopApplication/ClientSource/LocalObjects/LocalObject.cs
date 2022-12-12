@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,13 +27,14 @@ public class LocalObject : IDrawable
 		Transform = new Transform2();
 		this.sprite = sprite;//inefficient but fuck it
 		Transform.Position = position;
-		Transform.Scale = new Vector2(5, 5);
+		Transform.Scale = new Vector2(6, 6);
 		this.Velocity = velocity;
 		this.lifeTime = lifeTime;
 		lock (syncobj)
 		{
 			Objects.Add(this);
 		}
+		Console.WriteLine("created obj");
 	}
 
 	public static void Update(float deltaTime)
@@ -49,6 +51,7 @@ public class LocalObject : IDrawable
 				if (obj.lifeTime != -1 && obj.aliveTime > obj.lifeTime)
 				{
 					Objects.Remove(obj);
+					Console.WriteLine("deleted obj");
 				}
 
 			}
@@ -68,7 +71,7 @@ public class LocalObject : IDrawable
 	public float GetDrawOrder()
 	{
 		Vector2Int gridpos = Utility.WorldPostoGrid(Transform.Position);
-		return gridpos.X + gridpos.Y+1;
+		return gridpos.X + gridpos.Y;
 
 	}
 
@@ -89,6 +92,7 @@ public class LocalObject : IDrawable
 
 	public bool IsVisible()
 	{
+		
 		Vector2Int pos = GetWorldPos();
 		if (!WorldManager.IsPositionValid(pos)) return false;
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);

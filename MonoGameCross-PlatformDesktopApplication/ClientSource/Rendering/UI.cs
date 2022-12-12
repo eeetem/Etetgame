@@ -802,7 +802,7 @@ namespace MultiplayerXeno
 
 			
 			UI.Desktop.Render();
-			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate);
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
 			
 			
@@ -948,6 +948,15 @@ namespace MultiplayerXeno
 				if (Controllable.Targeting && previewShot!= null && previewShot.result!=null && Controllable.Selected != null)
 				{
 				
+					List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y));
+					foreach (var tile in tiles)
+					{
+						if (tile.Surface == null) continue;
+							
+						Texture2D sprite = tile.Surface.GetTexture();
+
+						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.Cyan*0.3f);
+					}
 					
 					var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
 					var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
@@ -1041,7 +1050,7 @@ namespace MultiplayerXeno
 								break;
 
 						}
-						spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(0.5f,0.5f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+						spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(1f,1f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 						spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,9);
 						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
 						
@@ -1061,6 +1070,7 @@ namespace MultiplayerXeno
 					{
 						var transform = hitobj.Type.Transform;
 						Texture2D redSprite = hitobj.GetTexture();
+						
 
 						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
 						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
@@ -1077,6 +1087,7 @@ namespace MultiplayerXeno
 							}
 						}
 					}
+
 					
 						
 		

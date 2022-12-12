@@ -43,10 +43,10 @@ public class ProjectilePacket : Packet
 			CCollisionPointY = covercast.CollisionPoint.Y;
 
 			CStartPointX = covercast.StartPoint.X;
-			CStartPointX = covercast.StartPoint.Y;
+			CStartPointY = covercast.StartPoint.Y;
 
 			CEndPointX = covercast.EndPoint.X;
-			CEndPointX = covercast.EndPoint.Y;
+			CEndPointY = covercast.EndPoint.Y;
 		}
 	}
 	public float RCollisionPointX{get;set;}

@@ -26,40 +26,40 @@ public static class RenderSystem
 	{
 
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
-		List<IDrawable> Objs = new List<IDrawable>();
-		List<IDrawable> UnsortedObjs = new List<IDrawable>();
+		List<IDrawable> objs = new List<IDrawable>();
+		List<IDrawable> unsortedObjs = new List<IDrawable>();
 
 		foreach (var tile in allTiles)
 		{
 			if (tile.Surface != null)
 			{
-				UnsortedObjs.Add(tile.Surface);
+				unsortedObjs.Add(tile.Surface);
 			}
 
 			if (tile.NorthEdge != null)
 			{
-				Objs.Add(tile.NorthEdge);
+				objs.Add(tile.NorthEdge);
 			}
 
 			if (tile.WestEdge != null)
 			{
-				Objs.Add(tile.WestEdge);
+				objs.Add(tile.WestEdge);
 			}
 
 			if (tile.ObjectAtLocation != null)
 			{
-				Objs.Add(tile.ObjectAtLocation);
+				objs.Add(tile.ObjectAtLocation);
 			}
 			//tileObjs.Sort(new DrawLayerSort());
 
 		}
 
-		Objs.AddRange(LocalObject.Objects);
+		objs.AddRange(LocalObject.Objects);
 
-		Objs.Sort(new DrawableSort());
+		objs.Sort(new DrawableSort());
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
-		foreach (var obj in UnsortedObjs)
+		foreach (var obj in unsortedObjs)
 		{
 			
 				if(obj == null)continue;
@@ -84,7 +84,7 @@ public static class RenderSystem
 		spriteBatch.End();
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
-			foreach (var obj in Objs)
+			foreach (var obj in objs)
 			{
 				if(obj == null)continue;
 				var texture = obj.GetTexture();
@@ -94,10 +94,9 @@ public static class RenderSystem
 				{
 					continue;
 				}
-			
-				spriteBatch.Draw(texture,transform.Position,obj.GetColor());
-				
-				//spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
+
+				spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			//	spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
 
 				//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
 			//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
