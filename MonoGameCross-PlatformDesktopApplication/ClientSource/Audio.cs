@@ -18,8 +18,11 @@ public static class Audio
 	public static void Init(ContentManager content)
 	{
 		
-		soundEffects.Add("death",content.Load<SoundEffect>("audio/damage/death"));
-		soundEffects.Add("grunt",content.Load<SoundEffect>("audio/damage/grunt"));
+		soundEffects.Add("death1",content.Load<SoundEffect>("audio/damage/death"));
+		soundEffects.Add("death2",content.Load<SoundEffect>("audio/damage/death2"));
+		soundEffects.Add("death3",content.Load<SoundEffect>("audio/damage/death3"));
+		soundEffects.Add("grunt1",content.Load<SoundEffect>("audio/damage/grunt"));
+		soundEffects.Add("grunt2",content.Load<SoundEffect>("audio/damage/grunt2"));
 		soundEffects.Add("wilhelm",content.Load<SoundEffect>("audio/damage/wilhelm"));
 		soundEffects.Add("rifle",content.Load<SoundEffect>("audio/rifle"));
 		soundEffects.Add("mg",content.Load<SoundEffect>("audio/mg"));
@@ -48,7 +51,7 @@ public static class Audio
 				}
 				else
 				{
-					sfxID = "death";
+					sfxID = "death"+Random.Shared.Next(1,4);
 				}
 
 				break;
@@ -59,7 +62,7 @@ public static class Audio
 
 		
 		SoundEffectInstance instance = soundEffects[sfxID].CreateInstance();
-		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 1f;
+		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 1.1f;
 		AudioEmitter emitter = new AudioEmitter();
 		emitter.Position = new Vector3((Vector2)location/80f, 0);
 		instance.Play();

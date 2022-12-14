@@ -27,7 +27,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public static bool Targeting { get; private set; } = false;
+		public static bool Targeting { get; set; } = false;
 
 		public static void ToggleTarget()
 		{
@@ -50,21 +50,21 @@ namespace MultiplayerXeno
 				}
 				else
 				{
-					Selected.FireAction(Position);
+					Selected.DoAction(Action.Actions[ActionType.Attack],Position);
 				}
 			}
 			else
 			{
 				if (rightclicked)
 				{
-					Selected.FaceAction(Position);
+					Selected.DoAction(Action.Actions[ActionType.Face],Position);
 				}
 				else
 				{
 					if (UI.showPath)
 					{
 						UI.showPath = false;
-						Selected.MoveAction(Position);
+						Selected.DoAction(Action.Actions[ActionType.Move],Position);
 					}
 					else
 					{
@@ -75,6 +75,20 @@ namespace MultiplayerXeno
 			
 
 
+		}
+		public void DoAction(Action a,Vector2Int target)
+		{
+			
+			
+			if (!a.CanPerform(this, target))
+			{
+				return;
+			}
+
+			a.ToPacket(this, target);
+
+	
+	
 		}
 
 	

@@ -60,6 +60,7 @@ namespace MultiplayerXeno
 			//WorldEditSystem.Init();
 
 			WorldManager.Instance.Init();
+			Action.Init();
 			RenderSystem.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();

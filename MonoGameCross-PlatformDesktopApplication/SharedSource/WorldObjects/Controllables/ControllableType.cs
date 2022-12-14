@@ -19,7 +19,6 @@ namespace MultiplayerXeno
 		public int MaxHealth = 10;
 		public int MaxAwareness = 2;
 
-		public bool RunAndGun = false;
 
 		public Texture2D[] CrouchSpriteSheet;
 		public Controllable Instantiate(WorldObject parent,ControllableData data)

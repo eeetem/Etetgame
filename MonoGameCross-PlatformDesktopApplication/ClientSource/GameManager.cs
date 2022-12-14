@@ -37,7 +37,7 @@ namespace MultiplayerXeno
 		{
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
-			GameActionPacket packet = new GameActionPacket();
+			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
 			Networking.serverConnection.Send(packet);
 			Controllable.Selected = null;
 			

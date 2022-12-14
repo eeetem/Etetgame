@@ -21,6 +21,21 @@ namespace CommonData
 			Surface = null;
 		}
 	}
+
+	public struct ActionResult
+	{
+		public int TurnPointsUsed;
+		public int ActionPointsUsed;
+		public int MovePointsUsed;
+
+		public ActionResult()
+		{
+			TurnPointsUsed = 0;
+			ActionPointsUsed = 0;
+			MovePointsUsed = 0;
+		}
+	}
+
 	[Serializable]
 	public partial struct WorldObjectData
 	{

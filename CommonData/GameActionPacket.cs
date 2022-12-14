@@ -7,22 +7,16 @@ namespace CommonData
 	{
 		public ActionType Type { get; set; }
 		public int ID { get; set; }
-
-		public GameActionPacket()
-		{
-			
-		}
-
-		public override void BeforeReceive()
-		{
 		
-		}
+		public Vector2Int Target { get; set; }
 
-		public override void BeforeSend()
+		public GameActionPacket(int id, Vector2Int target, ActionType type)
 		{
-
+			ID = id;
+			Target = target;
+			Type = type;
 		}
-		
+
 	}
 
 	public enum ActionType
@@ -30,7 +24,7 @@ namespace CommonData
 		EndTurn=0,
 		Attack=1,
 		Move=2,
-		Turn=3,
+		Face=3,
 		Crouch=4,
 	}
 

@@ -19,11 +19,29 @@
 /processorParam:Quality=Best
 /build:audio/damage/death.wav
 
+#begin audio/damage/death2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/damage/death2.wav
+
+#begin audio/damage/death3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/damage/death3.wav
+
 #begin audio/damage/grunt.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/damage/grunt.wav
+
+#begin audio/damage/grunt2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/damage/grunt2.wav
 
 #begin audio/damage/wilhelm.ogg
 /importer:OggImporter

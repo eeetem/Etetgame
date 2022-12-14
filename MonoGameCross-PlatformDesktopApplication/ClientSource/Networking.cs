@@ -44,9 +44,6 @@ namespace MultiplayerXeno
 
 			
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
-			serverConnection.RegisterStaticPacketHandler<MovementPacket>(ReciveAction);
-			serverConnection.RegisterStaticPacketHandler<FacePacket>(ReciveAction);
-			serverConnection.RegisterStaticPacketHandler<FirePacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
 			
 			Thread.Sleep(100);//give server  a second to register the packet handler

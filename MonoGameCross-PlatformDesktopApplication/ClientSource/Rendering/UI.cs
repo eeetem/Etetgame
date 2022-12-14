@@ -640,7 +640,7 @@ namespace MultiplayerXeno
 				{
 					if (Controllable.Selected != null)
 					{
-						Controllable.Selected.CrouchAction();
+						Controllable.Selected.DoAction(Action.Actions[ActionType.Crouch],null);
 					}
 				};
 				root.Widgets.Add(crouch);
