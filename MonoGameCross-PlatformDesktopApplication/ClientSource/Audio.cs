@@ -55,6 +55,9 @@ public static class Audio
 				}
 
 				break;
+			case "grunt":
+				sfxID = "grunt"+Random.Shared.Next(1,2);//todo standartised audio system with variations
+				break;
 			
 			
 		}
@@ -62,7 +65,7 @@ public static class Audio
 
 		
 		SoundEffectInstance instance = soundEffects[sfxID].CreateInstance();
-		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 1.1f;
+		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 1.2f;
 		AudioEmitter emitter = new AudioEmitter();
 		emitter.Position = new Vector3((Vector2)location/80f, 0);
 		instance.Play();

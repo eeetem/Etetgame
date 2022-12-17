@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 
@@ -12,6 +13,16 @@ namespace MultiplayerXeno
 		public WorldTile(Vector2Int position)
 		{
 			this.Position = position;
+		}
+
+		private List<Controllable> Watchers = new List<Controllable>();
+		public void Watch(Controllable watcher)
+		{
+			Watchers.Add(watcher);
+		}
+		public void UnWatch(Controllable watcher)
+		{
+			Watchers.Remove(watcher);
 		}
 
 		private WorldObject? _northEdge;
@@ -72,6 +83,10 @@ namespace MultiplayerXeno
 				 }
 
 				 _objectAtLocation = value;
+				 foreach (var watcher in Watchers)
+				 {
+					 watcher.OverWatchSpoted(this.Position);
+				 }
 			 }
 		}
 		private WorldObject? _surface;

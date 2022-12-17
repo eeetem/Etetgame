@@ -39,8 +39,7 @@ namespace MultiplayerXeno
 
 			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
 			Networking.serverConnection.Send(packet);
-			Controllable.Selected = null;
-			
+			UI.SelectControllable(null);
 
 		}
 

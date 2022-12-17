@@ -62,6 +62,7 @@ namespace MultiplayerXeno
 			WorldManager.Instance.Init();
 			Action.Init();
 			RenderSystem.Init(GraphicsDevice);
+			PopUpText.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();
 			base.Initialize();
@@ -102,6 +103,7 @@ namespace MultiplayerXeno
 			WorldEditSystem.Update(gameTime);
 			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
+			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
@@ -116,9 +118,8 @@ namespace MultiplayerXeno
 			GraphicsDevice.Clear(Color.Gray);
 			
 			RenderSystem.Draw();
-			
 			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system!	Long live Forg!
-		
+			PopUpText.Draw();
 
 			base.Draw(gameTime);
 		}

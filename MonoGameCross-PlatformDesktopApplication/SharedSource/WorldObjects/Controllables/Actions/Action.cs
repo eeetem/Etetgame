@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using CommonData;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
 
@@ -9,11 +10,33 @@ public abstract class Action
 
 	public static readonly Dictionary<ActionType, Action> Actions = new Dictionary<ActionType, Action>();
 	public readonly ActionType ActionType;
+	public static Action? ActiveAction { get; private set; }
 
 	public Action(ActionType type)
 	{
 		ActionType = type;
 		Actions.Add(type, this);
+	}
+
+	public static void SetActiveAction(ActionType? type)
+	{
+		if (type == null)
+		{
+			ActiveAction = null;
+			return;
+		}
+
+		ActiveAction = Actions[(ActionType)type];
+		ActiveAction.InitAction();
+	}
+	public static ActionType? GetActiveActionType()
+	{
+		if (ActiveAction != null)
+		{
+			return ActiveAction.ActionType;
+		}
+
+		return null;
 	}
 
 	public static void Init()
@@ -24,7 +47,11 @@ public abstract class Action
 		new Fire();
 
 	}
-	
+
+	public virtual void InitAction()
+	{
+		
+	}
 
 	public abstract bool CanPerform(Controllable actor, Vector2Int target);
 
@@ -32,11 +59,14 @@ public abstract class Action
 	{
 		
 		Execute(actor,target);
+		
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
-		if (Controllable.Selected != null)
+		Action.SetActiveAction(null);
+		return;
+		if (UI.SelectedControllable != null)
 		{
-			UI.UnitUI(Controllable.Selected.worldObject);
+			UI.UnitUI(UI.SelectedControllable.worldObject);
 		}
 		else
 		{
@@ -47,7 +77,9 @@ public abstract class Action
 	}
 
 	protected abstract void Execute(Controllable actor, Vector2Int target);
-	
+#if CLIENT
+	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
+#endif
 	public void ToPacket(Controllable actor,Vector2Int target)
 	{
 		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);

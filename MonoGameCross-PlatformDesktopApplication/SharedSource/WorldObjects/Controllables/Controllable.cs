@@ -110,6 +110,10 @@ namespace MultiplayerXeno
 					if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Awareness--;
+						if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
+						{
+							tile.ObjectAtLocation.ControllableComponent.Panic();
+						}
 					}
 				}
 
@@ -145,12 +149,13 @@ namespace MultiplayerXeno
 			//apply effects and offests
 			return Type.SightRange;
 		}
-
+		
+		
 		public void StartTurn()
 		{
 			MovePoints = Type.MaxMovePoints;
 			TurnPoints = Type.MaxTurnPoints;
-			ActionPoints = 1;
+			ActionPoints = Type.MaxActionPoints;
 			if (Awareness < 0)
 			{
 				Awareness = 0;
@@ -160,13 +165,49 @@ namespace MultiplayerXeno
 			{
 				Awareness++;
 			}
+			if(paniced)
+			{
+#if CLIENT
+				if (worldObject.IsVisible())
+				{
+					new PopUpText("Recovering From Panic", this.worldObject.TileLocation.Position);
+				}	
+#endif
+			
+
+				paniced = false;
+				Awareness--;
+				MovePoints--;
+				TurnPoints--;
+			}
 
 		}
 
+		private bool paniced = false;
+		public void Panic()
+		{
+			Crouching = true;
+			paniced = true;
+#if CLIENT
+			new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+#endif
+			
+		}
 
-	
-	
+		public bool overWatch { get; private set; } = false;
 
+		public void OverWatchSpoted(Vector2Int location)
+		{
+#if CLIENT
+			DoAction(Action.Actions[ActionType.Attack],location);		
+#endif
+			
+		}
+
+		public void ClearOverWatch()
+		{
+			overWatch = false;
+		}
 
 
 
@@ -213,9 +254,9 @@ namespace MultiplayerXeno
 						moving = false;
 						_thisMoving = false;
 #if CLIENT
-						if (Selected != null)
+						if (UI.SelectedControllable != null)
 						{
-							UI.UnitUI(Selected.worldObject);
+							UI.UnitUI(UI.SelectedControllable.worldObject);
 						}
 						else
 						{

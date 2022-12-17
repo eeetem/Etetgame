@@ -26,6 +26,7 @@ namespace CommonData
 		Move=2,
 		Face=3,
 		Crouch=4,
+		OverWatch = 5,
 	}
 
 

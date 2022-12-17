@@ -16,39 +16,9 @@ namespace MultiplayerXeno
 		
 		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
+
 		public void Init()
 		{
-			
-			UI.LeftClick += LeftClickAtPosition;
-			UI.RightClick += RightClickAtPosition;
-		
-		}
-		private void LeftClickAtPosition(Vector2Int position)
-		{
-			ClickAtPosition(position,false);
-		}
-		private void RightClickAtPosition(Vector2Int position)
-		{
-			ClickAtPosition(position,true);
-		}
-
-		private void ClickAtPosition(Vector2Int position,bool righclick)
-		{
-			if(!GameManager.IsMyTurn()) return;
-			if(!IsPositionValid(position)) return;
-			var Tile = GetTileAtGrid(position);
-
-			WorldObject obj = Tile.ObjectAtLocation;
-			if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && !Controllable.Targeting) { 
-				obj.ControllableComponent.Select(); 
-				return;
-			}
-			
-			
-			//if nothing was selected then it's a click on an empty tile
-			
-			Controllable.StartOrder(position,righclick);
-
 		}
 
 

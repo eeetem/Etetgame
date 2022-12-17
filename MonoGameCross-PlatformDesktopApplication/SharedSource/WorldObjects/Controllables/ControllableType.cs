@@ -11,6 +11,7 @@ namespace MultiplayerXeno
 		
 		public int MaxMovePoints = 2;
 		public int MaxTurnPoints = 2;
+		public int MaxActionPoints = 2;
 		
 
 		public int WeaponDmg = 4;

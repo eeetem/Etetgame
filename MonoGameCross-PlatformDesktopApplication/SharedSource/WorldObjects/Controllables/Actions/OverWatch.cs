@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
 
-public class Crouch : Action
+public class OverWatch : Action
 {
-	public Crouch() :base(ActionType.Crouch)
+	public OverWatch() :base(ActionType.OverWatch)
 	{
 	}
 
@@ -13,9 +13,17 @@ public class Crouch : Action
 	public override bool CanPerform(Controllable actor, Vector2Int position)
 	{
 
-		if (actor.MovePoints > 0)
+		if (actor.TurnPoints <= 0)
 		{
-			return true;
+			return false;
+		}
+		if (actor.MovePoints <= 0)
+		{
+			return false;
+		}
+		if (actor.ActionPoints <= 0)
+		{
+			return false;
 		}
 	
 
@@ -24,15 +32,16 @@ public class Crouch : Action
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
+		actor.TurnPoints--;
+		actor.ActionPoints--;
 		actor.MovePoints--;
-		actor.Crouching = !actor.Crouching;
+		
+		
 	}
 
-#if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		throw new System.NotImplementedException();
 	}
-#endif
 }
 

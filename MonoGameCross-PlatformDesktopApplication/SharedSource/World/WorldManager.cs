@@ -305,6 +305,7 @@ namespace MultiplayerXeno
 
 	
 				WorldTile tile;
+				result.Path.Add(checkingSquare);
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);

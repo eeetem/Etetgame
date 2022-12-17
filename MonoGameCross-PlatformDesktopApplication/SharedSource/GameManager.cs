@@ -98,6 +98,7 @@ namespace MultiplayerXeno
 			if (packet.Type == ActionType.EndTurn)
 			{
 				NextTurn();
+				return;
 			}
 
 			if (WorldManager.Instance.GetObject(packet.ID) == null)
