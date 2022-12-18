@@ -7,7 +7,7 @@ namespace MultiplayerXeno
 	public class ControllableType
 	{
 		public int MoveRange = 4;
-		public int SightRange = 15;
+		public int SightRange = 16;
 		
 		public int MaxMovePoints = 2;
 		public int MaxTurnPoints = 2;

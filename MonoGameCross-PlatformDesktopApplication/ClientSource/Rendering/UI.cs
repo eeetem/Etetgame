@@ -143,8 +143,10 @@ namespace MultiplayerXeno
 
 		public static void SelectControllable(Controllable controllable)
 		{
-			UnitUI(controllable.worldObject);
+			
 			SelectedControllable = controllable;
+			if(controllable==null) return;
+			UnitUI(controllable.worldObject);
 			previewMoves = SelectedControllable.GetPossibleMoveLocations();
 		}
 		
@@ -173,9 +175,6 @@ namespace MultiplayerXeno
 		
 		if (!GameManager.IsMyTurn()) return;
 
-		if(SelectedControllable == null) return;
-			
-		if (!SelectedControllable.IsMyTeam()) return;
 
 
 		if (righclick)
@@ -184,7 +183,7 @@ namespace MultiplayerXeno
 			{
 
 				case null:
-					SelectedControllable.DoAction(Action.Actions[ActionType.Face],position);
+					SelectedControllable?.DoAction(Action.Actions[ActionType.Face],position);
 					break;
 				default:
 					Action.SetActiveAction(null);
@@ -199,10 +198,13 @@ namespace MultiplayerXeno
 			{
 			
 				case null:
-					Action.SetActiveAction(ActionType.Move);
+					if (SelectedControllable != null)
+					{
+						Action.SetActiveAction(ActionType.Move);
+					}
 					break;
 				default:
-					SelectedControllable.DoAction(Action.ActiveAction,position);
+					SelectedControllable?.DoAction(Action.ActiveAction,position);
 					break;
 					
 
@@ -700,17 +702,25 @@ namespace MultiplayerXeno
 				};
 				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
 				root.Widgets.Add(fire);
-				var crouch = new TextButton
+				var watch = new TextButton
 				{
 					GridColumn = 3,
+					GridRow = 8,
+					Text = "Overwatch"
+				};
+				watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
+				root.Widgets.Add(watch);
+				var crouch = new TextButton
+				{
+					GridColumn = 4,
 					GridRow = 8,
 					Text = "Crouch/Stand"
 				};
 				crouch.Click += (o, a) =>
 				{
-					if (UI.SelectControllable != null)
+					if (SelectedControllable != null)
 					{
-						UI.SelectedControllable.DoAction(Action.Actions[ActionType.Crouch],null);
+						SelectedControllable.DoAction(Action.Actions[ActionType.Crouch],null);
 					}
 				};
 				root.Widgets.Add(crouch);
@@ -810,24 +820,11 @@ namespace MultiplayerXeno
 		{
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			
-			
-
-			bool found = true;
-			
-			
-			
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-			
-			
-			
-			
-
 			if (WorldManager.IsPositionValid(TileCoordinate))
 			{
 
@@ -904,7 +901,7 @@ namespace MultiplayerXeno
 			if (raycastDebug)
 			{
 				var templist = new List<RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
-				if (UI.SelectControllable != null)
+				if (SelectedControllable != null)
 				{
 					templist.Add(WorldManager.Instance.Raycast((Vector2) UI.SelectedControllable.worldObject.TileLocation.Position,(Vector2)UI.SelectedControllable.worldObject.TileLocation.Position + new Vector2(2,-1), Cover.Full));
 					templist.Reverse();
@@ -972,7 +969,8 @@ namespace MultiplayerXeno
 			}
 
 			WorldEditSystem.Draw(spriteBatch);
-			
+			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
 		}
 

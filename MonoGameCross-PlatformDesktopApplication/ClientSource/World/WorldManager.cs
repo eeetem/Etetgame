@@ -31,6 +31,7 @@ namespace MultiplayerXeno
 			fovDirty = true;
 		}
 
+		
 		private void CalculateFov()
 		{
 			fovDirty = false;
@@ -56,7 +57,7 @@ namespace MultiplayerXeno
 						int itteration = 0;
 
 						List<Vector2Int> positionsToCheck = new List<Vector2Int>();
-						while (itteration < obj.ControllableComponent.GetSightRange())
+						while (itteration < obj.ControllableComponent.GetSightRange()+2)
 						{
 
 							positionsToCheck.Add(pos);
@@ -90,43 +91,13 @@ namespace MultiplayerXeno
 						foreach (var tile in positionsToCheck)
 						{
 							if (!IsPositionValid(tile)) continue;
-							RayCastOutcome[] FullCasts;
-							RayCastOutcome[] PartalCasts;
-							if (obj.ControllableComponent.Crouching)
+							var visibility = CanSee(obj.ControllableComponent, tile);
+							if(GetTileAtGrid(tile).Visible < visibility)
 							{
-								FullCasts = MultiCornerCast(obj.TileLocation.Position, tile, Cover.High, true);//full vsson does not go past high cover and no partial sigh
-								PartalCasts = Array.Empty<RayCastOutcome>();
+								GetTileAtGrid(tile).Visible = visibility;
 							}
-							else
-							{
-								FullCasts = MultiCornerCast(obj.TileLocation.Position, tile, Cover.High, true,Cover.Full);//full vission does not go past high cover
-								PartalCasts  = MultiCornerCast(obj.TileLocation.Position, tile, Cover.Full, true);//partial visson over high cover
 							
-							}
-
-							//RecentFOVRaycasts.AddRange(casts);
-							foreach (var cast in PartalCasts)
-							{
-								if (!cast.hit)
-								{
-									if (GetTileAtGrid(tile).Visible != Visibility.Full)
-									{
-										GetTileAtGrid(tile).Visible = Visibility.Partial;
-									}
-
-									break;
-								}
-
-							}
-							foreach (var cast in FullCasts)
-							{
-								if (!cast.hit)
-								{
-									GetTileAtGrid(tile).Visible = Visibility.Full;
-									break;
-								}
-
-							}
+							
 							
 						}
 					}

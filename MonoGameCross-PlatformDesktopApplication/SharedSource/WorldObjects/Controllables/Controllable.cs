@@ -180,7 +180,26 @@ namespace MultiplayerXeno
 				MovePoints--;
 				TurnPoints--;
 			}
+			ClearOverWatch();
 
+		}
+		public void DoAction(Action a,Vector2Int target)
+		{
+#if CLIENT
+			if (!IsMyTeam()) return;
+#endif
+			if (!a.CanPerform(this, target))
+			{
+				return;
+			}
+#if CLIENT
+			a.ToPacket(this, target);
+#else
+			a.Perform(this, target);
+			a.ToPacket(this,target);
+#endif
+			
+			
 		}
 
 		private bool paniced = false;
@@ -191,15 +210,19 @@ namespace MultiplayerXeno
 #if CLIENT
 			new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
 #endif
+			ClearOverWatch();
 			
 		}
 
-		public bool overWatch { get; private set; } = false;
-
+		public bool overWatch { get; set; } = false;
+		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 		public void OverWatchSpoted(Vector2Int location)
 		{
-#if CLIENT
-			DoAction(Action.Actions[ActionType.Attack],location);		
+#if SERVER
+			if (this.IsPlayerOneTeam != WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam&&WorldManager.Instance.CanSee(this,location) >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			{
+				DoAction(Action.Actions[ActionType.Attack], location);
+			}
 #endif
 			
 		}
@@ -207,6 +230,11 @@ namespace MultiplayerXeno
 		public void ClearOverWatch()
 		{
 			overWatch = false;
+			foreach (var tile in overWatchedTiles)
+			{
+				WorldManager.Instance.GetTileAtGrid(tile).UnWatch(this);
+			}
+			overWatchedTiles.Clear();
 		}
 
 

@@ -168,8 +168,45 @@ namespace MultiplayerXeno
 
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
 
+		public Visibility CanSee(Controllable controllable, Vector2 to)
+		{
+			if(Vector2.Distance(controllable.worldObject.TileLocation.Position, to) > controllable.Type.SightRange)
+			{
+				return Visibility.None;
+			}
+			RayCastOutcome[] FullCasts;
+			RayCastOutcome[] PartalCasts;
+			if (controllable.Crouching)
+			{
+				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+				PartalCasts = Array.Empty<RayCastOutcome>();
+			}
+			else
+			{
+				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
+				PartalCasts  = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.Full, true);//partial visson over high cover
+							
+			}
 
-		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,Cover minHitCoverSameTile = Cover.None)
+			foreach (var cast in FullCasts)
+			{
+				if (!cast.hit)
+				{
+					return Visibility.Full;
+				}
+			}
+			foreach (var cast in PartalCasts)
+			{
+				if (!cast.hit)
+				{
+					return Visibility.Partial;
+				}
+			}
+
+			return Visibility.None;
+		}
+
+		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,Cover? minHitCoverSameTile = null)
 		{
 
 			RayCastOutcome[] result = new RayCastOutcome[4];
@@ -305,7 +342,7 @@ namespace MultiplayerXeno
 
 	
 				WorldTile tile;
-				result.Path.Add(checkingSquare);
+				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);
@@ -473,10 +510,17 @@ namespace MultiplayerXeno
 				}
 				objsToDel.Clear();
 
+				foreach (var tile in _gridData)
+				{
+					tile.Update(gameTime);
+					
+				}
+
 				foreach (var obj in _worldObjects.Values)
 				{
 					obj.Update(gameTime);
 				}
+				
 
 				foreach (var WO in createdObjects)
 				{

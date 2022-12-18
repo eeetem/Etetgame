@@ -66,14 +66,12 @@ namespace MultiplayerXeno
 
 		public readonly int Id;
 
-
 		public void Move(Vector2Int position)
 		{
 			if (Type.Edge || Type.Surface)
 			{
 				throw new Exception("attempted to  move and  edge or surface");
 			}
-
 			TileLocation.ObjectAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			newTile.ObjectAtLocation = this;
@@ -116,7 +114,20 @@ namespace MultiplayerXeno
 #endif
 			
 		}
-		
+		public Visibility GetMinimumVisibility()
+		{
+			if (Type.Surface || Type.Edge)
+			{
+				return Visibility.None;
+			}
+
+			if (ControllableComponent != null && ControllableComponent.Crouching)
+			{
+				return Visibility.Full;
+			}
+
+			return Visibility.Partial;
+		}
 		public void TakeDamage(int ammount)
 		{
 			Console.WriteLine(this + " got hit " + TileLocation.Position);

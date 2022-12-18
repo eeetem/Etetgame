@@ -13,24 +13,6 @@ namespace MultiplayerXeno
 			return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
 		}
 
-	
 
-	
-		public void DoAction(Action a,Vector2Int target)
-		{
-			
-			
-			if (!a.CanPerform(this, target))
-			{
-				return;
-			}
-
-			a.ToPacket(this, target);
-
-	
-	
-		}
-
-	
 	}
 }

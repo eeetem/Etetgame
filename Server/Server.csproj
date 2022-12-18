@@ -61,6 +61,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Move.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Move.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Controllable.cs">
         <Link>SharedSource\WorldObjects\Controllables\Controllable.cs</Link>
       </Compile>
