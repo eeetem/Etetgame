@@ -21,6 +21,21 @@ namespace CommonData
 			Surface = null;
 		}
 	}
+
+	public struct ActionResult
+	{
+		public int TurnPointsUsed;
+		public int ActionPointsUsed;
+		public int MovePointsUsed;
+
+		public ActionResult()
+		{
+			TurnPointsUsed = 0;
+			ActionPointsUsed = 0;
+			MovePointsUsed = 0;
+		}
+	}
+
 	[Serializable]
 	public partial struct WorldObjectData
 	{
@@ -78,6 +93,7 @@ namespace CommonData
 		public Vector2 StartPoint;
 		public Vector2 EndPoint;
 		public Vector2 VectorToCenter;
+		public List<Vector2Int> Path;
 		public int hitObjID{ get; set; }
 
 		public bool hit{ get; set; }
@@ -88,6 +104,7 @@ namespace CommonData
 			EndPoint = end;
 			this.hitObjID = -1;
 			StartPoint = start;
+			Path = new List<Vector2Int>();
 		}
 	}
 	public enum Visibility

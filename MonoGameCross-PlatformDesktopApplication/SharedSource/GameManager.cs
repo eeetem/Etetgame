@@ -85,7 +85,7 @@ namespace MultiplayerXeno
 
 #if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
-			Networking.DoAction(new GameActionPacket());//defaults to end turn
+			Networking.DoAction(new GameActionPacket(-1,null,ActionType.EndTurn));//defaults to end turn
 			#else
 			UI.SetMyTurn(IsMyTurn());
 			#endif
@@ -93,55 +93,23 @@ namespace MultiplayerXeno
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
-			if (packet.Type != ActionType.EndTurn && WorldManager.Instance.GetObject(packet.ID) == null)
+
+
+			if (packet.Type == ActionType.EndTurn)
+			{
+				NextTurn();
+				return;
+			}
+
+			if (WorldManager.Instance.GetObject(packet.ID) == null)
 			{
 				Console.WriteLine("Recived packet for a non existant object: "+packet.ID);
 				return;
 			}
 			Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
-			if (packet.Type == ActionType.Move)
-			{
-				MovementPacket movementPacket = (MovementPacket)packet;
-#if CLIENT
-				controllable.DoMove(movementPacket.Path,movementPacket.MovePointsUsed);
-				#else
-				controllable.MoveAction(movementPacket.Path.Last());
-				#endif
-				//if client we just initiate the move and trust the server since that's the move from another player
-				//if server we verify the move and then tell both clients to move
-			}
-			else if (packet.Type == ActionType.Turn)
-			{
-				FacePacket facePacket = (FacePacket) packet;
-			
-#if CLIENT
-				controllable.DoFace(facePacket.Dir);
-#else
-				controllable.FaceAction(controllable.worldObject.TileLocation.Position + Utility.DirToVec2(facePacket.Dir));
-#endif
-			}
-			else if (packet.Type == ActionType.Attack)
-			{
-				FirePacket firePacket = (FirePacket) packet;
-#if CLIENT
-				controllable.DoFire(firePacket.Target);
-#else
-				//Console.WriteLine("warning: ClientSide Fire(obsolete)");
-				controllable.FireAction(firePacket.Target);
-#endif
-			}
-			else if (packet.Type == ActionType.EndTurn)
-			{
-				NextTurn();
-				
-			}else if (packet.Type == ActionType.Crouch)
-			{
-#if CLIENT
-				controllable.DoCrouch();
-#else
-				controllable.CrouchAction();
-#endif
-			}
+			Action act = Action.Actions[packet.Type];//else get controllable specific actions
+			act.PerformFromPacket(controllable, packet.Target);
+		
 		}
 
 

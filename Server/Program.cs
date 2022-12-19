@@ -19,6 +19,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		{
 			Console.WriteLine("Hello World!");
 			PrefabManager.MakePrefabs();
+			Action.Init();
 			WorldManager.Instance.LoadData(File.ReadAllBytes("map.mapdata"));
 			PathFinding.GenerateNodes();
 			

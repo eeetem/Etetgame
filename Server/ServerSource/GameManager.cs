@@ -44,7 +44,7 @@ namespace MultiplayerXeno
 				
 				if (i < Player1.StartData.Soldiers)
 				{
-					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
+					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
 				}
 				else
 				{
@@ -60,7 +60,7 @@ namespace MultiplayerXeno
 			{
 				if (i < Player2.StartData.Soldiers)
 				{
-					WorldManager.Instance.MakeWorldObject("Soldier", spawn.TileLocation.Position, controllableData: cdata);
+					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
 				}
 				else
 				{

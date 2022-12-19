@@ -54,19 +54,13 @@ namespace MultiplayerXeno
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
+			LeftClick += LeftClickAtPosition;
+			RightClick += RightClickAtPosition;
 
 			previewMoves[0] = new List<Vector2Int>();
 			previewMoves[1] = new List<Vector2Int>();
 		}
 
-		
-		public static void RemakeUi(object sender, EventArgs e)
-		{
-			Desktop = new Desktop();
-			Desktop.TouchDown += MouseDown;
-			Desktop.TouchUp += MouseUp;
-			SetUI(null);
-		}
 
 		public delegate void UIGen();
 
@@ -145,7 +139,86 @@ namespace MultiplayerXeno
 		}
 
 
+		public static Controllable SelectedControllable { get; private set;}
 
+		public static void SelectControllable(Controllable controllable)
+		{
+			
+			SelectedControllable = controllable;
+			if(controllable==null) return;
+			UnitUI(controllable.worldObject);
+			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+		}
+		
+	
+	private static void LeftClickAtPosition(Vector2Int position)
+	{
+		ClickAtPosition(position,false);
+	}
+	private static void RightClickAtPosition(Vector2Int position)
+	{
+		ClickAtPosition(position,true);
+	}
+
+	private static void ClickAtPosition(Vector2Int position,bool righclick)
+	{
+		if(!GameManager.IsMyTurn()) return;
+		if(!WorldManager.IsPositionValid(position)) return;
+		var Tile = WorldManager.Instance.GetTileAtGrid(position);
+
+		WorldObject obj = Tile.ObjectAtLocation;
+		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
+			SelectControllable(obj.ControllableComponent);
+			return;
+		}
+			
+		
+		if (!GameManager.IsMyTurn()) return;
+
+
+
+		if (righclick)
+		{
+			switch (Action.GetActiveActionType())
+			{
+
+				case null:
+					SelectedControllable?.DoAction(Action.Actions[ActionType.Face],position);
+					break;
+				default:
+					Action.SetActiveAction(null);
+					break;
+					
+
+			}
+		}
+		else
+		{
+			switch (Action.GetActiveActionType())
+			{
+			
+				case null:
+					if (SelectedControllable != null)
+					{
+						Action.SetActiveAction(ActionType.Move);
+					}
+					break;
+				default:
+					SelectedControllable?.DoAction(Action.ActiveAction,position);
+					break;
+					
+
+			}
+			
+		}
+		
+		
+
+
+		}
+
+	
+		
 
 
 		public static void MainMenu()
@@ -612,12 +685,11 @@ namespace MultiplayerXeno
 
 		}
 
-		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
 		public static void UnitUI(WorldObject worldObject)
 		{
 			if (worldObject.ControllableComponent.IsMyTeam())
 			{
-				previewMoves = worldObject.ControllableComponent.GetPossibleMoveLocations();
+				
 				GameUi();
 				var root = (Grid) Desktop.Root;
 
@@ -628,22 +700,45 @@ namespace MultiplayerXeno
 					GridRow = 8,
 					Text = "Fire"
 				};
-				fire.Click += (o, a) => Controllable.ToggleTarget();
+				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
 				root.Widgets.Add(fire);
-				var crouch = new TextButton
+				var watch = new TextButton
 				{
 					GridColumn = 3,
+					GridRow = 8,
+					Text = "Overwatch"
+				};
+				watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
+				root.Widgets.Add(watch);
+				var crouch = new TextButton
+				{
+					GridColumn = 4,
 					GridRow = 8,
 					Text = "Crouch/Stand"
 				};
 				crouch.Click += (o, a) =>
 				{
-					if (Controllable.Selected != null)
+					if (SelectedControllable != null)
 					{
-						Controllable.Selected.CrouchAction();
+						SelectedControllable.DoAction(Action.Actions[ActionType.Crouch],null);
 					}
 				};
 				root.Widgets.Add(crouch);
+				int column = 5;
+				foreach (var act in worldObject.ControllableComponent.Type.extraActions)
+				{
+					var actBtn = new TextButton
+					{
+						GridColumn = column,
+						GridRow = 8,
+						Text = act.Item1
+					};
+					actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
+					root.Widgets.Add(actBtn);
+					column++;
+				}
+			
+				
 			}
 		}
 
@@ -681,7 +776,7 @@ namespace MultiplayerXeno
 
 		
 			}
-			for (int i = 1; i <= 1; i++)
+			for (int i = 1; i <=  controllable.Type.MaxActionPoints; i++)
 			{
 				
 				if (controllable.ActionPoints < i)
@@ -727,88 +822,24 @@ namespace MultiplayerXeno
 				
 			}
 		}
-		
-		 static Vector2Int lastMousePos;
-		static List<Vector2Int> previewPath = new List<Vector2Int>();
-		private static Projectile previewShot = new Projectile(new Vector2Int(0,0),new Vector2Int(0,0),0,0);
 
 
-		public static bool validShot;
-		public static bool showPath = false;
 		public static void Update(float deltatime)
 		{
-			if (Controllable.Selected != null)
-			{
-				Vector2Int currentPos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-				if (lastMousePos !=currentPos)
-				{
-
-					if (Controllable.Targeting)
-					{
-						bool lowShot = false;
-						if (Controllable.Selected.Crouching)
-						{
-							lowShot = true;
-						}else
-						{
-							WorldTile tile = WorldManager.Instance.GetTileAtGrid(currentPos);
-							if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
-							{
-								lowShot = true;
-							}
-						}
-
-						Vector2 shotDir = Vector2.Normalize(currentPos - Controllable.Selected.worldObject.TileLocation.Position);
-						previewShot = new Projectile(Controllable.Selected.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),currentPos+new Vector2(0.5f,0.5f),Controllable.Selected.Type.WeaponDmg,Controllable.Selected.Type.WeaponRange,lowShot);
-						if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID)?.ControllableComponent != null)
-						{
-							validShot = true;
-						}
-						else
-						{
-							validShot = false;
-						}
-
-					}
-					else
-					{
-						showPath = false;
-						previewPath = PathFinding.GetPath(Controllable.Selected.worldObject.TileLocation.Position, currentPos).Path;
-						if (previewPath == null)
-						{
-							previewPath = new List<Vector2Int>();
-						}
-					}
-
-					
-					lastMousePos = currentPos;
-				}
-			}
+			
 		}
 
 		private static bool raycastDebug;
+		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
 		public static void Render(float deltaTime)
 		{
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			
-			
-
-			bool found = true;
-			
-			
-			
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-
 			
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-			
-			
-			
-			
-
 			if (WorldManager.IsPositionValid(TileCoordinate))
 			{
 
@@ -835,6 +866,43 @@ namespace MultiplayerXeno
 				}
 
 			}
+		
+		
+			var count = 0;
+			foreach (var moves in previewMoves.Reverse())
+			{
+				foreach (var path in moves)
+				{
+
+
+					if (path.X < 0 || path.Y < 0) break;
+					var  pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+
+					Color c = Color.White;
+					switch (count)
+					{
+						case 0:
+							c = Color.Red;
+							break;
+						case 1:
+							c = Color.Yellow;
+							break;
+						case 2:
+							c = Color.Green;
+							break;
+						default:
+							c = Color.LightGreen;
+							break;
+
+					}
+
+					spriteBatch.DrawRectangle(pos, new Size2(20, 20), c, 5);
+
+
+				}
+
+				count++;
+			}
 
 			
 			foreach (var obj in Controllables)
@@ -845,51 +913,50 @@ namespace MultiplayerXeno
 				}
 			}
 			//raycastdebug
-		int count;
-		if (raycastDebug)
-		{
-			var templist = new List<RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
-			if (Controllable.Selected != null)
+			if (raycastDebug)
 			{
-				templist.Add(WorldManager.Instance.Raycast((Vector2) Controllable.Selected.worldObject.TileLocation.Position,(Vector2)Controllable.Selected.worldObject.TileLocation.Position + new Vector2(2,-1), Cover.Full));
-				templist.Reverse();
-			}
-
-			count = 0;
-			foreach (var cast in templist)
-			{
-				
-				if (count > 20000)
+				var templist = new List<RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
+				if (SelectedControllable != null)
 				{
-					break;
+					templist.Add(WorldManager.Instance.Raycast((Vector2) UI.SelectedControllable.worldObject.TileLocation.Position,(Vector2)UI.SelectedControllable.worldObject.TileLocation.Position + new Vector2(2,-1), Cover.Full));
+					templist.Reverse();
 				}
-				spriteBatch.DrawLine(Utility.GridToWorldPos(cast.StartPoint), Utility.GridToWorldPos(cast.EndPoint), Color.Green, 1);
-				if (cast.hit)
+
+				count = 0;
+				foreach (var cast in templist)
 				{
-					count++;
+				
+					if (count > 20000)
+					{
+						break;
+					}
+					spriteBatch.DrawLine(Utility.GridToWorldPos(cast.StartPoint), Utility.GridToWorldPos(cast.EndPoint), Color.Green, 1);
+					if (cast.hit)
+					{
+						count++;
 					
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Red, 5f);
-					spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPoint), Color.Yellow, 2);
-					spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPoint), Utility.GridToWorldPos(cast.CollisionPoint) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
-				}
-				else
-				{
-					spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Green, 5f);
-				}
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Red, 5f);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPoint), Color.Yellow, 2);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPoint), Utility.GridToWorldPos(cast.CollisionPoint) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
+					}
+					else
+					{
+						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Green, 5f);
+					}
 				
 
 
 
 
-				//foreach (var point in cast.CollisionPoint)
-				//	{
-				//		spriteBatch.DrawCircle(Utility.GridToWorldPos(point), 5, 10, Color.Green, 5f);
-				//	}
+					//foreach (var point in cast.CollisionPoint)
+					//	{
+					//		spriteBatch.DrawCircle(Utility.GridToWorldPos(point), 5, 10, Color.Green, 5f);
+					//	}
 				
+
+				}
 
 			}
-
-		}
 
 
 
@@ -909,212 +976,16 @@ namespace MultiplayerXeno
 			
 			*/
 
-			if (Controllable.Selected != null)
+			if (SelectedControllable != null && Action.GetActiveActionType() != null)
 			{
-				count = 0;
-				foreach (var moves in previewMoves.Reverse())
-				{
-					foreach (var path in moves)
-					{
-
-
-						if (path.X < 0 || path.Y < 0) break;
-						Mousepos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-
-						Color c = Color.White;
-						switch (count)
-						{
-							case 0:
-								c = Color.Red;
-								break;
-							case 1:
-								c = Color.Yellow;
-								break;
-							default:
-								c = Color.Green;
-								break;
-
-						}
-
-						spriteBatch.DrawRectangle(Mousepos, new Size2(20, 20), c, 5);
-
-
-					}
-
-					count++;
-				}
-			
-
-				if (Controllable.Targeting && previewShot!= null && previewShot.result!=null && Controllable.Selected != null)
-				{
+				Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,spriteBatch);
 				
-					List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y));
-					foreach (var tile in tiles)
-					{
-						if (tile.Surface == null) continue;
-							
-						Texture2D sprite = tile.Surface.GetTexture();
-
-						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.Cyan*0.3f);
-					}
-					
-					var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
-					var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
-
-					Vector2 point1 = startPoint;
-					Vector2 point2;
-					int k = 0;
-					var dmg = Controllable.Selected.Type.WeaponDmg;
-					foreach (var dropOff in previewShot.dropOffPoints)
-					{
-						if (dropOff == previewShot.dropOffPoints.Last())
-						{
-							point2 = Utility.GridToWorldPos(previewShot.result.EndPoint);
-							
-						}
-						else
-						{
-							point2 = Utility.GridToWorldPos(dropOff);
-						}
-
-						Color c;
-						switch (k)
-						{
-							case 0:
-								c = Color.DarkGreen;
-								break;
-							case 1:
-								c = Color.Orange;
-								break;
-							case 2:
-								c = Color.DarkRed;
-								break;
-							default:
-								c = Color.Purple;
-								break;
-
-						}
-						
-						spriteBatch.DrawString(Game1.SpriteFont,"Damage: "+dmg,  point1,c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-						spriteBatch.DrawLine(point1.X,point1.Y,point2.X,point2.Y,c,25);
-						dmg = (int)Math.Ceiling(dmg/2f);
-						k++;
-						point1 = point2;
-					
-							
-						
-					}
-					
-				
-					spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,15);
-					int coverModifier = 0;
-					
-					var hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
-					if (previewShot.covercast != null && previewShot.covercast.hit)
-					{
-						Color c = Color.Green;
-						string hint = "";
-						var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
-						Cover cover = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover();
-						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
-						{
-							if (cover != Cover.Full)
-							{ 
-								cover++;
-							}
-						}
-
-						switch (cover)
-						{
-							case Cover.None:
-								c = Color.Green;
-								Console.WriteLine("How: Cover object has no cover");
-								break;
-							case Cover.Low:
-								c = Color.Gray;
-								coverModifier = 1;
-								hint = "Cover: -1 DMG";
-								break;
-							case Cover.High:
-								c = Color.Black;
-								coverModifier = 2;
-								hint = "Cover: -2 DMG";
-								break;
-							case Cover.Full:
-								c = Color.Black;
-								coverModifier = 10;
-								hint = "Full Cover: -10 DMG";
-								break;
-							default:
-							
-								break;
-
-						}
-						spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(1f,1f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-						spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,9);
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
-						
-						var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
-						var coverobjtransform = coverobj.Type.Transform;
-						Texture2D yellowsprite = coverobj.GetTexture();
-
-						spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
-						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPoint), 15, 10, Color.Yellow, 25f);
-
-					}
-				
-					
-						
-					if (hitobj != null)
-					{
-						var transform = hitobj.Type.Transform;
-						Texture2D redSprite = hitobj.GetTexture();
-						
-
-						spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
-						//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-						if (hitobj.ControllableComponent != null)
-						{
-							if (hitobj.ControllableComponent.Awareness > 0)
-							{
-								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier) / 2 + "(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-							}
-							else
-							{
-								spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-							}
-						}
-					}
-
-					
-						
-		
-
-
-				}
-				else
-				{
-					if(showPath){
-						foreach (var path in previewPath)
-						{
-					
-							if(path.X < 0 || path.Y < 0) break;
-							Mousepos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
-				
-							spriteBatch.DrawCircle(Mousepos,20,10,Color.Green,20f);
-				
-				
-						}
-				
-					}
-				}
 
 			}
 
 			WorldEditSystem.Draw(spriteBatch);
-			
+			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
 		}
 

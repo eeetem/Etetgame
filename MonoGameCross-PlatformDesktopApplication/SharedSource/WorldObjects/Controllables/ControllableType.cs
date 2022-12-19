@@ -1,4 +1,6 @@
-﻿using CommonData;
+﻿using System;
+using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
@@ -7,10 +9,11 @@ namespace MultiplayerXeno
 	public class ControllableType
 	{
 		public int MoveRange = 4;
-		public int SightRange = 15;
+		public int SightRange = 16;
 		
 		public int MaxMovePoints = 2;
 		public int MaxTurnPoints = 2;
+		public int MaxActionPoints = 2;
 		
 
 		public int WeaponDmg = 4;
@@ -19,9 +22,10 @@ namespace MultiplayerXeno
 		public int MaxHealth = 10;
 		public int MaxAwareness = 2;
 
-		public bool RunAndGun = false;
 
 		public Texture2D[] CrouchSpriteSheet;
+
+		public List<Tuple<string, ActionType>> extraActions = new List<Tuple<string, ActionType>>();
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
 			

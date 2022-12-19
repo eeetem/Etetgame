@@ -46,11 +46,32 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Utility.cs">
         <Link>SharedSource\Utility.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\Controllable.cs">
-        <Link>SharedSource\WorldObjects\Components\Controllable.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Action.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Action.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Components\ControllableType.cs">
-        <Link>SharedSource\WorldObjects\Components\ControllableType.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Crouch.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Crouch.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Face.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Face.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Fire.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Fire.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Move.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Sprint.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Sprint.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Controllable.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Controllable.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\ControllableType.cs">
+        <Link>SharedSource\WorldObjects\Controllables\ControllableType.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 
@@ -12,6 +13,37 @@ namespace MultiplayerXeno
 		public WorldTile(Vector2Int position)
 		{
 			this.Position = position;
+		}
+		public static readonly object syncobj = new object();
+
+		private List<Controllable> Watchers = new List<Controllable>();
+		private List<Controllable> UnWatchQueue = new List<Controllable>();
+		public void Watch(Controllable watcher)
+		{
+			lock (syncobj)
+			{
+				Watchers.Add(watcher);
+			}
+			
+		}
+		public void UnWatch(Controllable watcher)
+		{
+			lock (syncobj)
+			{
+				UnWatchQueue.Add(watcher);
+			}
+		}
+
+		public void Update(float delta)
+		{
+			lock (syncobj)
+			{
+				foreach (var Watcher in UnWatchQueue)
+				{
+					Watchers.Remove(Watcher);
+				}
+				UnWatchQueue.Clear();
+			}	
 		}
 
 		private WorldObject? _northEdge;
@@ -63,8 +95,9 @@ namespace MultiplayerXeno
 				 if (value == null)
 				 {
 					 _objectAtLocation = null;
+					 return;
 				 }
-				 if (value != null && (value.Type.Edge || value.Type.Surface))
+				 if (value.Type.Edge || value.Type.Surface)
 					 throw new Exception("attempted to set a surface or edge to the main location");
 				 if (_objectAtLocation != null)
 				 {
@@ -72,6 +105,14 @@ namespace MultiplayerXeno
 				 }
 
 				 _objectAtLocation = value;
+				 lock (syncobj)
+				 {
+					 foreach (var watcher in Watchers)
+					 {
+						 watcher.OverWatchSpoted(this.Position);
+					 }
+
+				 }
 			 }
 		}
 		private WorldObject? _surface;

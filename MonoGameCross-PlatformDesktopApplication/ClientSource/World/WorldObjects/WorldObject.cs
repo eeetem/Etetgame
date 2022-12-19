@@ -75,8 +75,8 @@ namespace MultiplayerXeno
 
 		public Color GetColor()
 		{
-			
-			Color color = Color.White;
+
+			Color color = TileLocation.GetTileColor();
 				
 			if (ControllableComponent != null)
 			{
@@ -90,16 +90,7 @@ namespace MultiplayerXeno
 				}
 				
 			}
-
-
-			if (TileLocation.Visible == Visibility.None)
-			{
-				color = Color.DimGray;
-					
-			}else if (TileLocation.Visible == Visibility.Partial)
-			{
-				color = Color.LightPink;
-			}
+			
 
 
 			if (IsTransparentUnderMouse())
@@ -112,20 +103,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public Visibility GetMinimumVisibility()
-		{
-			if (Type.Surface || Type.Edge)
-			{
-				return Visibility.None;
-			}
 
-			if (ControllableComponent != null && ControllableComponent.Crouching)
-			{
-				return Visibility.Full;
-			}
-
-			return Visibility.Partial;
-		}
 
 		public bool IsVisible()
 		{
