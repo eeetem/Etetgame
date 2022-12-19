@@ -34,10 +34,18 @@ namespace MultiplayerXeno
 					controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
 					controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
+					controllableType.MaxAwareness = int.Parse(contollableObj.Attributes?["awareness"]?.InnerText ?? "2");
 					controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
 					controllableType.MaxTurnPoints = int.Parse(contollableObj.Attributes?["turns"]?.InnerText ?? "2");
 					controllableType.MaxActionPoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
 					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
+					XmlNode extraction = ((XmlElement)contollableObj).GetElementsByTagName("action")[0];
+					if (extraction != null)
+					{
+						var action = new Tuple<string, ActionType>(extraction.Attributes?["name"]?.InnerText,(ActionType)int.Parse(extraction.Attributes?["type"]?.InnerText));
+						controllableType.extraActions.Add(action);
+					}
+
 				}
 
 				WorldObjectType type = new WorldObjectType(name,controllableType);

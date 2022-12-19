@@ -27,6 +27,9 @@ namespace CommonData
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
+		Sprint = 6,
+		HeadShot = 7,
+		Suppress = 8,
 	}
 
 

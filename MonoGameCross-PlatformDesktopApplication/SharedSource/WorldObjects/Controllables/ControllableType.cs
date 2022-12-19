@@ -1,4 +1,6 @@
-﻿using CommonData;
+﻿using System;
+using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 
@@ -22,6 +24,8 @@ namespace MultiplayerXeno
 
 
 		public Texture2D[] CrouchSpriteSheet;
+
+		public List<Tuple<string, ActionType>> extraActions = new List<Tuple<string, ActionType>>();
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
 			

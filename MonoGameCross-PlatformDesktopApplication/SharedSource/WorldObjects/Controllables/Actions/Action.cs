@@ -46,6 +46,7 @@ public abstract class Action
 		new Crouch();
 		new Fire();
 		new OverWatch();
+		new Sprint();
 
 	}
 

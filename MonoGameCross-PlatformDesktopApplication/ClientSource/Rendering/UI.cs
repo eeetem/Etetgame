@@ -724,6 +724,21 @@ namespace MultiplayerXeno
 					}
 				};
 				root.Widgets.Add(crouch);
+				int column = 5;
+				foreach (var act in worldObject.ControllableComponent.Type.extraActions)
+				{
+					var actBtn = new TextButton
+					{
+						GridColumn = column,
+						GridRow = 8,
+						Text = act.Item1
+					};
+					actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
+					root.Widgets.Add(actBtn);
+					column++;
+				}
+			
+				
 			}
 		}
 
