@@ -31,7 +31,7 @@ public static class Audio
 
 		for (int i = 1; i < 10; i++)
 		{
-			soundEffects.Add("footstep"+i,content.Load<SoundEffect>("audio/footsteps/footstep "+i));
+			soundEffects.Add("footstep"+i,content.Load<SoundEffect>("audio/footsteps/Footstep "+i));
 		}
 
 	}
