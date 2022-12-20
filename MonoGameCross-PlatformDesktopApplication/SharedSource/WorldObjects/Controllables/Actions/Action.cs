@@ -47,6 +47,7 @@ public abstract class Action
 		new Fire();
 		new OverWatch();
 		new Sprint();
+		new Headshot();
 
 	}
 
@@ -65,7 +66,6 @@ public abstract class Action
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
 		Action.SetActiveAction(null);
-		return;
 		if (UI.SelectedControllable != null)
 		{
 			UI.UnitUI(UI.SelectedControllable.worldObject);
