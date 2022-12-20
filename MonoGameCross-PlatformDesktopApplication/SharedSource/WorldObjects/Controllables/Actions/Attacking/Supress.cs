@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CommonData;
-using Microsoft.Xna.Framework;
+﻿using CommonData;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 
 namespace MultiplayerXeno;
 
-public class Fire : Attack
+public class Supress : Attack
 {
-	public Fire() :base(ActionType.Attack)
+	public Supress() : base(ActionType.Suppress)
 	{
 	}
 
 	
 	public override bool CanPerform(Controllable actor, Vector2Int position)
 	{
-		
+
 		if (position == actor.worldObject.TileLocation.Position)
 		{
 			return false;
 		}
-
-		if (actor.overWatch)
+		if (actor.Awareness != actor.Type.MaxAwareness)
 		{
-			return true;//can overwatch fire without points
+			return false;
 		}
-
 		if (actor.ActionPoints <= 0)
 		{
 			return false;
@@ -38,47 +31,43 @@ public class Fire : Attack
 		}
 
 		return true;
-
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-			actor.ActionPoints--;
-			actor.MovePoints--;
-
+		actor.ActionPoints--;
+		actor.Awareness=0;
+		actor.MovePoints--;
+	
+		
 #if CLIENT
 		Camera.SetPos(target);
-		if (actor.Type.WeaponRange < 6)
-		{
+		ObjectSpawner.MG2(actor.worldObject.TileLocation.Position, target);
 		
-			ObjectSpawner.ShotGun(actor.worldObject.TileLocation.Position,target);	
-		}
-		else if (actor.Type.MaxActionPoints == 2)
-		{
-			ObjectSpawner.MG(actor.worldObject.TileLocation.Position, target);
-		}
-		else
-		{
-			ObjectSpawner.Burst(actor.worldObject.TileLocation.Position, target);
-		}
 #endif
 
+	
 	}
 
 	protected override int GetDamage(Controllable actor)
 	{
-		return actor.Type.WeaponDmg;
+		return 4;
 	}
 
 	protected override int GetSupressionRange(Controllable actor)
 	{
-		return  actor.Type.SupressionRange;
+		return 5;
+	}
+	protected override int GetSupressionStrenght(Controllable actor)
+	{
+		return 2;
 	}
 
 	protected override int GetAwarenessResistanceEffect(Controllable actor)
 	{
 		return 1;
 	}
+
 }
 

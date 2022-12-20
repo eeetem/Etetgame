@@ -15,6 +15,7 @@ namespace MultiplayerXeno
 		public Vector2[] dropOffPoints;
 		public int awarenessResistanceCoefficient = 1;
 		public int supressionRange;
+		public int supressionStrenght;
 		public Projectile(ProjectilePacket packet)
 		{
 			this.result = packet.result;
@@ -24,18 +25,20 @@ namespace MultiplayerXeno
 			this.dropoffRange = packet.dropoffRange;
 			this.awarenessResistanceCoefficient = packet.awarenessResistanceCoefficient;
 			this.supressionRange = packet.suppresionRange;
+			this.supressionStrenght = packet.supressionStrenght;
 			CalculateDetails();
 			Fire();
 		}
 
 
-		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool lowShot = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2)
+		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool lowShot = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
 			this.originalDmg = dmg;
 			this.dropoffRange = dropoffRange;
 			this.awarenessResistanceCoefficient = awarenessResistanceCoefficient;
 			this.supressionRange = supressionRange;
+			this.supressionStrenght = supressionStrenght;
 
 			if (lowShot)
 			{

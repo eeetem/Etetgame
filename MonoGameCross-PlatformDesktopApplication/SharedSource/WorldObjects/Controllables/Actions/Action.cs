@@ -49,6 +49,7 @@ public abstract class Action
 		new OverWatch();
 		new Sprint();
 		new Headshot();
+		new Supress();
 
 	}
 

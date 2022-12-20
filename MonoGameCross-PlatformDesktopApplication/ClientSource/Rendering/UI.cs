@@ -329,6 +329,7 @@ namespace MultiplayerXeno
 
 		private static int soldierCount = 0;
 		private static int scoutCount = 0;
+		private static int heavyCount = 0;
 		public static void SetupUi()
 		{
 

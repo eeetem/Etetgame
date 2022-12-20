@@ -32,7 +32,7 @@ public abstract class Attack : Action
 			}
 
 			Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor));
+			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
 
 		
 
@@ -49,7 +49,7 @@ public abstract class Attack : Action
 #if SERVER
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange,p.superssionStrenght));
 
 #endif
 		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
@@ -59,6 +59,10 @@ public abstract class Attack : Action
 	protected abstract int GetDamage(Controllable actor);
 	protected abstract int GetSupressionRange(Controllable actor);
 	protected abstract int GetAwarenessResistanceEffect(Controllable actor);
+	protected virtual int GetSupressionStrenght(Controllable actor)
+	{
+		return 1;
+	}
 
 
 #if CLIENT
