@@ -34,7 +34,6 @@ public class LocalObject : IDrawable
 		{
 			Objects.Add(this);
 		}
-		Console.WriteLine("created obj");
 	}
 
 	public static void Update(float deltaTime)
@@ -51,7 +50,6 @@ public class LocalObject : IDrawable
 				if (obj.lifeTime != -1 && obj.aliveTime > obj.lifeTime)
 				{
 					Objects.Remove(obj);
-					Console.WriteLine("deleted obj");
 				}
 
 			}

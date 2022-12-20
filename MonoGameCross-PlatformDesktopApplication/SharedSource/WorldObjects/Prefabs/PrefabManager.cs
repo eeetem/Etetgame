@@ -39,6 +39,7 @@ namespace MultiplayerXeno
 					controllableType.MaxTurnPoints = int.Parse(contollableObj.Attributes?["turns"]?.InnerText ?? "2");
 					controllableType.MaxActionPoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
 					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
+					controllableType.SupressionRange = int.Parse(contollableObj.Attributes?["supression"]?.InnerText ?? "1");
 					XmlNode extraction = ((XmlElement)contollableObj).GetElementsByTagName("action")[0];
 					if (extraction != null)
 					{

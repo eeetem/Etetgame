@@ -32,14 +32,32 @@ public abstract class Attack : Action
 			}
 
 			Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot);
+			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor));
 
 		
 
 		return projectile;
 	}
 
+	protected override void Execute(Controllable actor, Vector2Int target)
+	{
+		actor.ClearOverWatch();
+			
+		//client shouldnt be allowed to judge what got hit
+		//fire packet just makes the unit "shoot"
+		//actual damage and projectile is handled elsewhere
+#if SERVER
+			Projectile p = MakeProjectile(actor, target);
+			p.Fire();
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange));
+
+#endif
+		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
+
+	}
+
 	protected abstract int GetDamage(Controllable actor);
+	protected abstract int GetSupressionRange(Controllable actor);
 	protected abstract int GetAwarenessResistanceEffect(Controllable actor);
 
 
@@ -58,7 +76,7 @@ public abstract class Attack : Action
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
 		}	
-		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y));
+		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y),previewShot.supressionRange);
 		foreach (var tile in tiles)
 		{
 			if (tile.Surface == null) continue;
@@ -74,7 +92,7 @@ public abstract class Attack : Action
 		Vector2 point1 = startPoint;
 		Vector2 point2;
 		int k = 0;
-		var dmg = UI.SelectedControllable.Type.WeaponDmg;
+		var dmg = previewShot.originalDmg;
 		foreach (var dropOff in previewShot.dropOffPoints)
 		{
 			if (dropOff == previewShot.dropOffPoints.Last())
@@ -189,7 +207,7 @@ public abstract class Attack : Action
 			{
 				if (hitobj.ControllableComponent.Awareness > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier) / 2 + "(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.awarenessResistanceCoefficient) + ("  (-"+previewShot.awarenessResistanceCoefficient+" due to awareness)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 				else
 				{

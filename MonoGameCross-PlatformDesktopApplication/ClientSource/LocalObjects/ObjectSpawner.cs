@@ -25,7 +25,18 @@ public static class ObjectSpawner
 
 
 	}
-	public static void ShotGun(Vector2Int from, Vector2Int to)
+	public static void Single(Vector2Int from, Vector2Int to)
+	{
+		float dist = Vector2.Distance(from, to)/2f;
+		from = Utility.GridToWorldPos(from);
+		to = Utility.GridToWorldPos(to);
+		
+			Vector2 dir = Vector2.Normalize(to - from);
+			Audio.PlaySound("rifle", from);
+			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from, dir * 3, dist * 300);
+	}
+
+		public static void ShotGun(Vector2Int from, Vector2Int to)
 	{
 		float dist = Vector2.Distance(from, to)/2f;
 		from = Utility.GridToWorldPos(from);

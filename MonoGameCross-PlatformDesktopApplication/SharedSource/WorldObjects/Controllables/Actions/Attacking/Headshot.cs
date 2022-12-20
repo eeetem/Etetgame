@@ -35,15 +35,29 @@ public class Headshot : Attack
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
+		base.Execute(actor,target);
 		actor.ActionPoints--;
 		actor.Awareness=0;
 		actor.MovePoints--;
+	
 		
+#if CLIENT
+		Camera.SetPos(target);
+		ObjectSpawner.Single(actor.worldObject.TileLocation.Position, target);
+		
+#endif
+
+	
 	}
 
 	protected override int GetDamage(Controllable actor)
 	{
 		return 10;
+	}
+
+	protected override int GetSupressionRange(Controllable actor)
+	{
+		return 0;
 	}
 
 	protected override int GetAwarenessResistanceEffect(Controllable actor)

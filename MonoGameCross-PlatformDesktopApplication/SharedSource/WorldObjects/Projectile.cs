@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 
@@ -9,24 +10,32 @@ namespace MultiplayerXeno
 		public RayCastOutcome result { get; private set; }
 		public RayCastOutcome? covercast { get; private set; }//tallest cover on the way
 		public int dmg;
+		public int originalDmg;
 		public int dropoffRange;
 		public Vector2[] dropOffPoints;
-
+		public int awarenessResistanceCoefficient = 1;
+		public int supressionRange;
 		public Projectile(ProjectilePacket packet)
 		{
 			this.result = packet.result;
 			this.covercast = packet.covercast;
 			this.dmg = packet.dmg;
+			this.originalDmg = packet.dmg;
 			this.dropoffRange = packet.dropoffRange;
+			this.awarenessResistanceCoefficient = packet.awarenessResistanceCoefficient;
+			this.supressionRange = packet.suppresionRange;
 			CalculateDetails();
 			Fire();
 		}
 
-		
-		public Projectile(Vector2 from, Vector2 to, int dmg,int dropoffRange,bool lowShot = false)
+
+		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool lowShot = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2)
 		{
 			this.dmg = dmg;
+			this.originalDmg = dmg;
 			this.dropoffRange = dropoffRange;
+			this.awarenessResistanceCoefficient = awarenessResistanceCoefficient;
+			this.supressionRange = supressionRange;
 
 			if (lowShot)
 			{
@@ -93,7 +102,6 @@ namespace MultiplayerXeno
 			
 			if (result.hit)
 			{
-				int finalDmg = dmg;
 				if (covercast != null)
 				{
 					var hitobj = WorldManager.Instance.GetObject(result.hitObjID);
@@ -109,13 +117,13 @@ namespace MultiplayerXeno
 					switch (cover)
 					{
 						case Cover.Full:
-							finalDmg -= 10;
+							dmg -= 10;
 							break;
 						case Cover.High:
-							finalDmg-=2;
+							dmg-=4;
 							break;
 						case Cover.Low:
-							finalDmg-=1;
+							dmg-=2;
 							break;
 						case Cover.None:
 							Console.Write("coverless object hit, this shouldnt happen");
@@ -126,14 +134,25 @@ namespace MultiplayerXeno
 
 				
 				
-				WorldManager.Instance.GetObject(result.hitObjID).TakeDamage(finalDmg);
+				WorldManager.Instance.GetObject(result.hitObjID).TakeDamage(this);
 			}
 			else
 			{
 				Console.WriteLine("MISS");
 				//nothing is hit
 			}
-			
+			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.EndPoint,supressionRange);
+			foreach (var tile in tiles)
+			{
+				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
+				{
+					tile.ObjectAtLocation.ControllableComponent.Awareness--;
+					if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
+					{
+						tile.ObjectAtLocation.ControllableComponent.Panic();
+					}
+				}
+			}
 			
 		}
 

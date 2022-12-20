@@ -97,35 +97,20 @@ namespace MultiplayerXeno
 
 		public bool IsPlayerOneTeam { get; private set;}
 
-		public void TakeDamage(int ammount)
+		public void TakeDamage(Projectile projectile)
 		{
-			
-			Console.WriteLine(this +"(health:"+this.Health+") hit for "+ammount);
+			var dmg = projectile.dmg;
+			Console.WriteLine(this +"(health:"+this.Health+") hit for "+dmg);
 			if (Awareness > 0)
 			{
 				Console.WriteLine("blocked by awareness");
-				List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(this.worldObject.TileLocation.Position);
-				foreach (var tile in tiles)
-				{
-					if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
-					{
-						tile.ObjectAtLocation.ControllableComponent.Awareness--;
-						if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
-						{
-							tile.ObjectAtLocation.ControllableComponent.Panic();
-						}
-					}
-				}
-
-				ammount= (int)Math.Floor(ammount/2f);
+				dmg = projectile.dmg - projectile.awarenessResistanceCoefficient;
 
 			}
 			
-			Console.WriteLine("health - "+ammount);
-			Health -= ammount;
-			
+			Console.WriteLine("health - "+dmg);
+			Health -= dmg;
 
-			
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
