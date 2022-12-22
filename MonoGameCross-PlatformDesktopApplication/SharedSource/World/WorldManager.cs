@@ -452,23 +452,27 @@ namespace MultiplayerXeno
 	
 		}
 
-		public List<WorldTile> GetTilesAround(Vector2Int pos)
+		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1)
 		{
 			int x = pos.X;
 			int y = pos.Y;
 			List<WorldTile> tiles = new List<WorldTile>();
-			if (IsPositionValid(pos))
+
+			var topLeft = new Vector2Int(x - range, y - range);
+			var bottomRight = new Vector2Int(x + range, y + range);
+			for (int i = topLeft.X; i < bottomRight.X; i++)
 			{
-				tiles.Add(GetTileAtGrid(pos));
+				for (int j = topLeft.Y; j < bottomRight.Y; j++)
+				{
+					if(Math.Pow(i-x,2) + Math.Pow(j-y,2) < Math.Pow(range,2)){
+						if (IsPositionValid(new Vector2Int(i,j)))
+						{
+							tiles.Add(GetTileAtGrid(new Vector2Int(i,j)));
+						}
+					}
+				}
 			}
-			if(x-1 > 0 && y-1 > 0)    tiles.Add( _gridData[x - 1, y - 1]);
-			if(y-1 > 0)               tiles.Add( _gridData[x    , y - 1]);
-			if(x+1 < 99 && y-1 > 0)   tiles.Add( _gridData[x + 1, y - 1]);
-			if(x+1 < 99)              tiles.Add( _gridData[x + 1, y]);
-			if(x-1 > 0)               tiles.Add( _gridData[x - 1, y]);
-			if(x-1 > 0 && y+1 < 99)   tiles.Add( _gridData[x - 1, y + 1]);
-			if(y+1 < 99)              tiles.Add( _gridData[x    , y + 1]);
-			if(x+1 < 99 && y+1 < 99)  tiles.Add( _gridData[x + 1, y + 1]);
+
 			return tiles;
 		}
 

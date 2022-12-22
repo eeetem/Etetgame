@@ -128,16 +128,16 @@ namespace MultiplayerXeno
 
 			return Visibility.Partial;
 		}
-		public void TakeDamage(int ammount)
+		public void TakeDamage(Projectile proj)
 		{
 			Console.WriteLine(this + " got hit " + TileLocation.Position);
-			if (ammount <= 0)
+			if (proj.dmg <= 0)
 			{return;
 			}
 
 			if (ControllableComponent != null)
 			{//let controlable handle it
-				ControllableComponent.TakeDamage(ammount);
+				ControllableComponent.TakeDamage(proj);
 				
 			}
 			else
