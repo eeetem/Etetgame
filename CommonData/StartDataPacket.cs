@@ -7,6 +7,7 @@ namespace CommonData
 		{
 			public int Soldiers { get; set; }
 			public int Scouts { get; set; }
+			public int Heavies { get; set; }
 		}
 	
 }

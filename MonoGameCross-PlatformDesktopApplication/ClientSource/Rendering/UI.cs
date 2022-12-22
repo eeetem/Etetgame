@@ -377,7 +377,7 @@ namespace MultiplayerXeno
 			};
 			soldierRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + 1 > 6)
+				if (soldierCount + scoutCount + heavyCount+1 > 6)
 				{
 					return;
 				}
@@ -391,14 +391,14 @@ namespace MultiplayerXeno
 			var scoutButton = new TextButton
 			{
 				GridColumn = 2,
-				GridRow = 2,
+				GridRow = 3,
 				Text = "Scouts: 0"
 			};
 			grid.Widgets.Add(scoutButton);
 			var scountLeft = new TextButton
 			{
 				GridColumn = 1,
-				GridRow = 2,
+				GridRow = 3,
 				Text = "<"
 			};
 			scountLeft.Click += (s, a) =>
@@ -415,12 +415,12 @@ namespace MultiplayerXeno
 			var scoutRight = new TextButton
 			{
 				GridColumn = 3,
-				GridRow = 2,
+				GridRow = 3,
 				Text = ">"
 			};
 			scoutRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + 1 > 6)
+				if (soldierCount + scoutCount + heavyCount+ 1 > 6)
 				{
 					return;
 				}
@@ -431,10 +431,54 @@ namespace MultiplayerXeno
 			grid.Widgets.Add(scoutRight);
 			
 			
-			var confirm = new TextButton
+			//heavy counter
+			var heavyButton = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = 2,
+				Text = "Heavies: 0"
+			};
+			grid.Widgets.Add(heavyButton);
+			var heavyLeft = new TextButton
 			{
 				GridColumn = 1,
-				GridRow = 3,
+				GridRow = 2,
+				Text = "<"
+			};
+			heavyLeft.Click += (s, a) =>
+			{
+				heavyCount--;
+				if (heavyCount < 0)
+				{
+					heavyCount = 0;
+				}
+
+				heavyButton.Text = "Heavies: " + heavyCount;
+			};
+			grid.Widgets.Add(heavyLeft);
+			var heavyRight = new TextButton
+			{
+				GridColumn = 3,
+				GridRow = 2,
+				Text = ">"
+			};
+			heavyRight.Click += (s, a) =>
+			{
+				if (soldierCount + scoutCount + heavyCount+ 1 > 6)
+				{
+					return;
+				}
+
+				heavyCount++;
+				heavyButton.Text = "Heavies: " + heavyCount;
+			};
+			grid.Widgets.Add(heavyRight);
+
+
+			var confirm = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = 4,
 				Text = "Confirm"
 			};
 			confirm.Click += (s, a) =>
@@ -442,10 +486,12 @@ namespace MultiplayerXeno
 				StartDataPacket packet = new StartDataPacket();
 				packet.Scouts = scoutCount;
 				packet.Soldiers = soldierCount;
+				packet.Heavies = heavyCount;
 				Networking.serverConnection.Send(packet);
 				SetUI(GameUi);
 			};
 			grid.Widgets.Add(confirm);
+			
 
 			Desktop.Root = grid;
 		}

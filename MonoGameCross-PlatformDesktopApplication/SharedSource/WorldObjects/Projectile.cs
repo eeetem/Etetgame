@@ -149,7 +149,7 @@ namespace MultiplayerXeno
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.Awareness--;
+					tile.ObjectAtLocation.ControllableComponent.Awareness -= supressionStrenght;
 					if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();

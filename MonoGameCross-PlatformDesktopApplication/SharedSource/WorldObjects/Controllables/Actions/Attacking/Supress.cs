@@ -1,4 +1,5 @@
 ﻿using CommonData;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -26,6 +27,11 @@ public class Supress : Attack
 			return false;
 		}
 		if (actor.MovePoints <= 0)
+		{
+			return false;
+		}
+
+		if (Vector2.Distance(actor.worldObject.TileLocation.Position, position) < 6) ;
 		{
 			return false;
 		}

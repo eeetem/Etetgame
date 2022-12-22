@@ -25,7 +25,7 @@ public static class Audio
 		soundEffects.Add("grunt2",content.Load<SoundEffect>("audio/damage/grunt2"));
 		soundEffects.Add("wilhelm",content.Load<SoundEffect>("audio/damage/wilhelm"));
 		soundEffects.Add("rifle",content.Load<SoundEffect>("audio/rifle"));
-		soundEffects.Add("mg",content.Load<SoundEffect>("audio/mg"));
+		soundEffects.Add("MG",content.Load<SoundEffect>("audio/mg"));
 		soundEffects.Add("shotgun",content.Load<SoundEffect>("audio/shotgun"));
 
 

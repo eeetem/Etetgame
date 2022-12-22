@@ -465,7 +465,7 @@ namespace MultiplayerXeno
 				for (int j = topLeft.Y; j < bottomRight.Y; j++)
 				{
 					if(Math.Pow(i-x,2) + Math.Pow(j-y,2) < Math.Pow(range,2)){
-						if (IsPositionValid(pos))
+						if (IsPositionValid(new Vector2Int(i,j)))
 						{
 							tiles.Add(GetTileAtGrid(new Vector2Int(i,j)));
 						}
