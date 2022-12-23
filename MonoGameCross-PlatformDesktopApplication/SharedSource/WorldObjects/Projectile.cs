@@ -42,7 +42,7 @@ namespace MultiplayerXeno
 
 			if (lowShot)
 			{
-				result = WorldManager.Instance.Raycast(from , to, Cover.High);
+				result = WorldManager.Instance.Raycast(from , to, Cover.High,false,Cover.Full);
 			}
 			else
 			{

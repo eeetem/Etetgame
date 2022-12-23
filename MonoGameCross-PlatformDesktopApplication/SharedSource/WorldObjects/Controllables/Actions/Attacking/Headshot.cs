@@ -52,7 +52,7 @@ public class Headshot : Attack
 
 	protected override int GetDamage(Controllable actor)
 	{
-		return 10;
+		return 15;
 	}
 
 	protected override int GetSupressionRange(Controllable actor)

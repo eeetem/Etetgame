@@ -49,7 +49,7 @@ public class Fire : Attack
 
 #if CLIENT
 		Camera.SetPos(target);
-		if (actor.Type.WeaponRange < 6)
+		if (actor.Type.WeaponRange < 8)
 		{
 		
 			ObjectSpawner.ShotGun(actor.worldObject.TileLocation.Position,target);	
