@@ -31,7 +31,7 @@ public class Supress : Attack
 			return false;
 		}
 
-		if (Vector2.Distance(actor.worldObject.TileLocation.Position, position) < 6) ;
+		if (Vector2.Distance(actor.worldObject.TileLocation.Position, position) < 6) 
 		{
 			return false;
 		}

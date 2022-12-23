@@ -36,21 +36,21 @@
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" offset= "0,0"/>
     <name>Gunner</name>
-    <controllable moveRange = "6" moves="2" turns="2" attack="5" supression="2" health="13" weaponRange ="17">
+    <controllable moveRange = "6" moves="2" turns="2" attack="6" supression="2" health="13" weaponRange ="17">
       <action name="HeadShot" type="7"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "4" moves="3" turns="3" supression="1" attack="6" health="8" weaponRange ="6">
+    <controllable moveRange = "4" moves="3" turns="3" supression="1" attack="7" health="8" weaponRange ="6">
       <action name="Sprint" type="6"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "3" moves="2" actions="2" supression="3" overwatch="3" turns="1" attack="5" awareness="4" health="16" weaponRange ="11">
+    <controllable moveRange = "3" moves="2" actions="2" supression="3" overwatch="3" turns="1" attack="6" awareness="4" health="16" weaponRange ="11">
       <action name="Suppress" type="8"/>
     </controllable>
   </object>
