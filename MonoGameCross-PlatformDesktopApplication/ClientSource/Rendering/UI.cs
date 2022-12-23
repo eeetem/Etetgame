@@ -349,7 +349,7 @@ namespace MultiplayerXeno
 			
 				GridColumn = 2,
 				GridRow = 1,
-				Text = "Soldiers: 0"
+				Text = "Soldiers: "+soldierCount
 			};
 			grid.Widgets.Add(soldierButton);
 			var soldierLeft = new TextButton
@@ -392,7 +392,7 @@ namespace MultiplayerXeno
 			{
 				GridColumn = 2,
 				GridRow = 3,
-				Text = "Scouts: 0"
+				Text = "Scouts: "+scoutCount
 			};
 			grid.Widgets.Add(scoutButton);
 			var scountLeft = new TextButton
@@ -436,7 +436,7 @@ namespace MultiplayerXeno
 			{
 				GridColumn = 2,
 				GridRow = 2,
-				Text = "Heavies: 0"
+				Text = "Heavies: "+heavyCount
 			};
 			grid.Widgets.Add(heavyButton);
 			var heavyLeft = new TextButton

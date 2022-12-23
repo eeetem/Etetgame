@@ -1,4 +1,9 @@
-headshots ignore cover
+
+buggy unit selection
+show possible moves fix
+overlapping
+supression at collision point
+long cover
 turn prompt
 units with actions counter
 unit placement
