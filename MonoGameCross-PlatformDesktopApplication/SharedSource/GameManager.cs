@@ -74,8 +74,8 @@ namespace MultiplayerXeno
 			UI.SetScore(score);
 			#endif
 			
-			if(score > 5)EndGame(true);
-			if(score < -5)EndGame(false);
+			if(score > 10)EndGame(true);
+			if(score < -10)EndGame(false);
 			
 
 

@@ -19,7 +19,12 @@ public class Face : Action
 		{
 			return false;
 		}//dont let the action happen if the player is already facing that direction 
-		
+
+		if (Controllable.moving)
+		{
+			return false;
+		}
+
 		if (actor.TurnPoints > 0)
 		{
 			return true;

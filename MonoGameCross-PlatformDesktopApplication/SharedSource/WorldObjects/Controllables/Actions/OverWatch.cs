@@ -50,7 +50,7 @@ public class OverWatch : Action
 
 	private HashSet<Vector2Int> GetOverWatchPositions(Controllable actor,Vector2Int target)
 	{
-		var tiles = WorldManager.Instance.GetTilesAround(target);
+		var tiles = WorldManager.Instance.GetTilesAround(target,actor.Type.OverWatchSize);
 		HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
 		foreach (var endTile in tiles)
 		{
