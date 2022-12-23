@@ -10,6 +10,7 @@ namespace MultiplayerXeno
 	{
 		public int MoveRange = 4;
 		public int SightRange = 16;
+		public int SupressionRange = 2;
 		
 		public int MaxMovePoints = 2;
 		public int MaxTurnPoints = 2;

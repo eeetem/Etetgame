@@ -8,51 +8,16 @@ using MonoGame.Extended;
 
 namespace MultiplayerXeno;
 
-public class Fire : Action
+public abstract class Attack : Action
 {
-	public Fire() :base(ActionType.Attack)
-	{
-	}
-
-	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public Attack(ActionType actionType) : base(actionType)
 	{
 		
-		if (position == actor.worldObject.TileLocation.Position)
-		{
-			return false;
-		}
-
-		if (actor.overWatch)
-		{
-			return true;//can overwatch fire without points
-		}
-
-		if (actor.ActionPoints <= 0)
-		{
-			return false;
-		}
-		if (actor.MovePoints <= 0)
-		{
-			return false;
-		}
-
-		return true;
-
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-
-			actor.ActionPoints--;
-			actor.Awareness--;
-			actor.MovePoints--;
-			actor.ClearOverWatch();
-			
-		//client shouldnt be allowed to judge what got hit
-		//fire packet just makes the unit "shoot"
-		//actual damage and projectile is handled elsewhere
-#if SERVER
+		
 			bool lowShot = false;
 			if (actor.Crouching)
 			{
@@ -65,56 +30,57 @@ public class Fire : Action
 					lowShot = true;
 				}
 			}
-			Vector2 shotDir = Vector2.Normalize(target - actor.worldObject.TileLocation.Position);
-			Projectile p = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),actor.Type.WeaponDmg,actor.Type.WeaponRange,lowShot);
-			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,actor.Type.WeaponDmg,p.dropoffRange));
 
-#endif
-#if CLIENT
-		Camera.SetPos(target);
-		if (actor.Type.WeaponRange > 6)
-		{
-			ObjectSpawner.Burst(actor.worldObject.TileLocation.Position, target);
-		}
-		else
-		{
-			ObjectSpawner.ShotGun(actor.worldObject.TileLocation.Position,target);	
-		}
+			Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
+			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
+
+		
+
+		return projectile;
+	}
+
+	protected override void Execute(Controllable actor, Vector2Int target)
+	{
+		actor.ClearOverWatch();
+			
+		//client shouldnt be allowed to judge what got hit
+		//fire packet just makes the unit "shoot"
+		//actual damage and projectile is handled elsewhere
+#if SERVER
+			Projectile p = MakeProjectile(actor, target);
+			p.Fire();
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange,p.supressionStrenght));
+
 #endif
 		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
 
 	}
+
+	protected abstract int GetDamage(Controllable actor);
+	protected abstract int GetSupressionRange(Controllable actor);
+	protected abstract int GetAwarenessResistanceEffect(Controllable actor);
+	protected virtual int GetSupressionStrenght(Controllable actor)
+	{
+		return 1;
+	}
+
+
 #if CLIENT
 
 	private static Projectile previewShot;
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
+	
+	
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
+
 		if (target != lastTarget)
 		{
-			bool lowShot = false;
-			if (UI.SelectedControllable.Crouching)
-			{
-				lowShot = true;
-			}else
-			{
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
-				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
-				{
-					lowShot = true;
-				}
-			}
-
-			Vector2 shotDir = Vector2.Normalize(target - UI.SelectedControllable.worldObject.TileLocation.Position);
-			previewShot = new Projectile(UI.SelectedControllable.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),UI.SelectedControllable.Type.WeaponDmg,UI.SelectedControllable.Type.WeaponRange,lowShot);
-
+			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
-		}
-
-				
-		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y));
+		}	
+		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y),previewShot.supressionRange);
 		foreach (var tile in tiles)
 		{
 			if (tile.Surface == null) continue;
@@ -130,7 +96,7 @@ public class Fire : Action
 		Vector2 point1 = startPoint;
 		Vector2 point2;
 		int k = 0;
-		var dmg = UI.SelectedControllable.Type.WeaponDmg;
+		var dmg = previewShot.originalDmg;
 		foreach (var dropOff in previewShot.dropOffPoints)
 		{
 			if (dropOff == previewShot.dropOffPoints.Last())
@@ -198,13 +164,13 @@ public class Fire : Action
 					break;
 				case Cover.Low:
 					c = Color.Gray;
-					coverModifier = 1;
-					hint = "Cover: -1 DMG";
+					coverModifier = 2;
+					hint = "Cover: -2 DMG";
 					break;
 				case Cover.High:
 					c = Color.Black;
-					coverModifier = 2;
-					hint = "Cover: -2 DMG";
+					coverModifier = 4;
+					hint = "Cover: -4 DMG";
 					break;
 				case Cover.Full:
 					c = Color.Black;
@@ -245,7 +211,7 @@ public class Fire : Action
 			{
 				if (hitobj.ControllableComponent.Awareness > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier) / 2 + "(Saved By Awareness)", Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.awarenessResistanceCoefficient) + ("  (-"+previewShot.awarenessResistanceCoefficient+" due to awareness)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 				else
 				{
@@ -255,5 +221,7 @@ public class Fire : Action
 		}
 	}
 #endif
+
+
 }
 

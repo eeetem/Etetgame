@@ -46,6 +46,10 @@ namespace MultiplayerXeno
 				{
 					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
 				}
+				else if (i < Player1.StartData.Soldiers+ Player1.StartData.Heavies)
+				{
+					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata);
+				}
 				else
 				{
 					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata);
@@ -61,6 +65,10 @@ namespace MultiplayerXeno
 				if (i < Player2.StartData.Soldiers)
 				{
 					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
+				}
+				else if (i < Player1.StartData.Soldiers+ Player1.StartData.Heavies)
+				{
+					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata);
 				}
 				else
 				{

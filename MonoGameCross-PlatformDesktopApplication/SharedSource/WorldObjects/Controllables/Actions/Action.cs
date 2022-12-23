@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using CommonData;
 using Microsoft.Xna.Framework.Graphics;
@@ -47,6 +48,8 @@ public abstract class Action
 		new Fire();
 		new OverWatch();
 		new Sprint();
+		new Headshot();
+		new Supress();
 
 	}
 
@@ -65,7 +68,6 @@ public abstract class Action
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
 		Action.SetActiveAction(null);
-		return;
 		if (UI.SelectedControllable != null)
 		{
 			UI.UnitUI(UI.SelectedControllable.worldObject);
