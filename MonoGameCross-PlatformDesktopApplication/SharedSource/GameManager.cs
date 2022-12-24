@@ -72,6 +72,7 @@ namespace MultiplayerXeno
 			}
 #if CLIENT
 			UI.SetScore(score);
+			Audio.PlaySound("turn");
 			#endif
 			
 			if(score > 10)EndGame(true);

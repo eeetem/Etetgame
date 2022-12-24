@@ -67,7 +67,7 @@ public class Supress : Attack
 	}
 	protected override int GetSupressionStrenght(Controllable actor)
 	{
-		return 2;
+		return 5;
 	}
 
 	protected override int GetAwarenessResistanceEffect(Controllable actor)

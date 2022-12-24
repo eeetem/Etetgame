@@ -340,28 +340,23 @@ namespace MultiplayerXeno
 	
 				WorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
+				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);
 				}
 				else
 				{
+					result.CollisionPoint = collisionPoint;
 					result.hit = false;
 					return result;
 				}
-
-				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
 				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPoint;
 
-				
-				Direction direc = Utility.ToClampedDirection(collisionVector);
-
-			
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
-					//Console.WriteLine("Direction: "+ direc +" Reverse Dir: "+ (direc+4));
-
+	
 					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
 
 					
@@ -398,6 +393,7 @@ namespace MultiplayerXeno
 
 				if (endcell == checkingSquare)
 				{
+					result.CollisionPoint = endcell + new Vector2(0.5f, 0.5f);
 					result.hit = false;
 					return result;
 				}

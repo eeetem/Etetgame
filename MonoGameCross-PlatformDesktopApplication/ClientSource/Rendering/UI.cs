@@ -147,7 +147,7 @@ namespace MultiplayerXeno
 			SelectedControllable = controllable;
 			if(controllable==null) return;
 			UnitUI(controllable.worldObject);
-			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+			
 		}
 		
 	
@@ -739,7 +739,7 @@ namespace MultiplayerXeno
 				
 				GameUi();
 				var root = (Grid) Desktop.Root;
-
+				previewMoves = SelectedControllable.GetPossibleMoveLocations();
 
 				var fire = new TextButton
 				{
