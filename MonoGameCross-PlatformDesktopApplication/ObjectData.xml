@@ -2,35 +2,35 @@
 <root>
 
 <object Faceable = "false" Cover ="0" Surface = "true">
-  <sprite variations = "2" offset= "0,0"/>
+  <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
   <name>basicFloor</name>
 </object>
   <object Faceable = "false" Cover ="0" Impassible = "true" Surface = "true">
-    <sprite variations = "1" offset= "0,0"/>
+    <sprite name="Environment/water" variations = "1" offset= "0,0"/>
     <name>water</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite offset= "0,0"/>
+    <sprite name="Environment/capturePoint" offset= "0,0"/>
     <name>capturePoint</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="spawnPoint" offset= "0,0"/>
+    <sprite name="Environment/spawnPoint" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="spawnPoint"  offset= "0,0"/>
+    <sprite name="Environment/spawnPoint"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
   <object Cover = "3" Edge = "true">
-  <sprite offset= "0,0"/>
+  <sprite  name="Environment/basicWall"  offset= "0,0"/>
   <name>basicWall</name>
 </object>
   <object Cover = "2" Edge = "true">
-    <sprite  offset= "0,0"/>
+    <sprite  name="Environment/basicHalfWall" offset= "0,0"/>
     <name>basicHalfWall</name>
   </object>
   <object Cover = "1" Edge = "true">
-    <sprite  offset= "0,0"/>
+    <sprite name="Environment/basicHalfWallLight" offset= "0,0"/>
     <name>basicHalfWallLight</name>
   </object>
   <object Faceable = "true" Cover ="3">

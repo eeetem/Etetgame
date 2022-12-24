@@ -46,13 +46,13 @@ namespace MultiplayerXeno
 			Desktop.TouchUp += MouseUp;
 
 
-			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/coverIndicator");
+			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/coverIndicator");
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 
-			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("textures/indicators");
+			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("textures/UI/indicators");
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
 
-			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/healthbar");
+			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
