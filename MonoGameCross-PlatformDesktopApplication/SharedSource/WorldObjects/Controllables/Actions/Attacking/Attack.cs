@@ -80,7 +80,7 @@ public abstract class Attack : Action
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
 		}	
-		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.EndPoint.X, (int)previewShot.result.EndPoint.Y),previewShot.supressionRange);
+		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.CollisionPoint.X, (int)previewShot.result.CollisionPoint.Y),previewShot.supressionRange);
 		foreach (var tile in tiles)
 		{
 			if (tile.Surface == null) continue;
@@ -101,7 +101,7 @@ public abstract class Attack : Action
 		{
 			if (dropOff == previewShot.dropOffPoints.Last())
 			{
-				point2 = Utility.GridToWorldPos(previewShot.result.EndPoint);
+				point2 = Utility.GridToWorldPos(previewShot.result.CollisionPoint);
 							
 			}
 			else
@@ -127,8 +127,9 @@ public abstract class Attack : Action
 
 			}
 						
-			spriteBatch.DrawString(Game1.SpriteFont,"Damage: "+dmg,  point1,c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			
 			spriteBatch.DrawLine(point1.X,point1.Y,point2.X,point2.Y,c,25);
+			spriteBatch.DrawString(Game1.SpriteFont,"Damage: "+dmg,  point1,c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			dmg = (int)Math.Ceiling(dmg/2f);
 			k++;
 			point1 = point2;
@@ -138,7 +139,7 @@ public abstract class Attack : Action
 		}
 					
 				
-		spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,15);
+		spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,5);
 		int coverModifier = 0;
 					
 		var hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
@@ -182,8 +183,7 @@ public abstract class Attack : Action
 					break;
 
 			}
-			spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(1f,1f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			spriteBatch.DrawLine(coverPoint.X,coverPoint.Y,endPoint.X,endPoint.Y,c,9);
+			spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(2f,2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
 						
 			var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);

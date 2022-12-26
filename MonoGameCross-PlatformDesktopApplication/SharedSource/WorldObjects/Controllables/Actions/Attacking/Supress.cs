@@ -8,6 +8,7 @@ public class Supress : Attack
 {
 	public Supress() : base(ActionType.Suppress)
 	{
+		Description = "Loose all awareness to suppress a big area. All uits in the area will instantly panic(reach 0 awareness). Cost: 1 action point, 1 move point";
 	}
 
 	
@@ -67,7 +68,7 @@ public class Supress : Attack
 	}
 	protected override int GetSupressionStrenght(Controllable actor)
 	{
-		return 2;
+		return 5;
 	}
 
 	protected override int GetAwarenessResistanceEffect(Controllable actor)

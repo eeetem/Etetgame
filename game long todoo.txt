@@ -1,11 +1,5 @@
-
-buggy unit selection
-show possible moves fix
-overlapping
-supression at collision point
-long cover
-turn prompt
-units with actions counter
+unit view at top
+easy to see action cost
 unit placement
 useable level editor
 ghosting with pathfinding

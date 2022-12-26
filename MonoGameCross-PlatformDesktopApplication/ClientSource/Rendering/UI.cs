@@ -5,19 +5,20 @@ using System.IO;
 using System.Linq;
 using CommonData;
 using FontStashSharp;
+using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MonoGame.Extended.BitmapFonts;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended.TextureAtlases;
-using MultiplayerXeno.Pathfinding;
 using Myra;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Myra.Utility;
 using Network;
+using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno
 {
@@ -46,13 +47,13 @@ namespace MultiplayerXeno
 			Desktop.TouchUp += MouseUp;
 
 
-			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/coverIndicator");
+			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/coverIndicator");
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 
-			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("textures/indicators");
+			Texture2D indicatorSpriteSheet = content.Load<Texture2D>("textures/UI/indicators");
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
 
-			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/healthbar");
+			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
@@ -65,25 +66,16 @@ namespace MultiplayerXeno
 		public delegate void UIGen();
 
 		private static UIGen currentUI;
+		private static Vector2 globalScale = new Vector2(1, 1);
 		public static void SetUI(UIGen? uiMethod) {
+			
+			globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width/1000f)*1f, (Game1.instance.Window.ClientBounds.Width/1000f)*1f);
 			if (uiMethod != null)
 			{
 				currentUI = uiMethod;
 			}
 			currentUI.Invoke();
 
-			Grid grid = (Grid)Desktop.Root;
-				//	grid.ColumnSpacing = 10;
-			foreach (var obj in grid.Widgets)
-			{
-				if (obj is TextButton)
-				{
-					obj.HorizontalAlignment = HorizontalAlignment.Center;
-				}
-
-				obj.Scale = new Vector2(Game1.instance.Window.ClientBounds.Width/1000f, Game1.instance.Window.ClientBounds.Width/1000f);
-			}
-			
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -146,8 +138,8 @@ namespace MultiplayerXeno
 			
 			SelectedControllable = controllable;
 			if(controllable==null) return;
-			UnitUI(controllable.worldObject);
-			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+			SetUI(UnitUi);
+			
 		}
 		
 	
@@ -218,15 +210,13 @@ namespace MultiplayerXeno
 		}
 
 	
-		
-
 
 		public static void MainMenu()
 		{
 			var grid = new Grid
 			{
-				RowSpacing = 8,
-				ColumnSpacing = 8
+				RowSpacing = 0,
+				ColumnSpacing = 0
 			};
 
 
@@ -271,8 +261,8 @@ namespace MultiplayerXeno
 
 			var grid = new Grid
 			{
-				RowSpacing = 8,
-				ColumnSpacing = 8
+				RowSpacing = 0,
+				ColumnSpacing = 0
 			};
 
 			var textBox = new TextBox()
@@ -337,8 +327,8 @@ namespace MultiplayerXeno
 			var grid = new Grid
 			{
 
-				ColumnSpacing = 8,
-				RowSpacing = 8,
+				ColumnSpacing = 0,
+				RowSpacing = 0,
 				
 			};
 
@@ -522,8 +512,8 @@ namespace MultiplayerXeno
 			
 			var grid = new Grid
 			{
-				RowSpacing = 8,
-				ColumnSpacing = 8
+				RowSpacing = 0,
+				ColumnSpacing = 0
 			};
 
 			int ypos = 0;
@@ -667,20 +657,23 @@ namespace MultiplayerXeno
 		{
 			
 			
-			var grid = new Grid
+			var panel = new Panel
 			{
-				RowSpacing = 8,
-				ColumnSpacing = 8
+				
 			};
 
 			var end = new TextButton
 			{
-				GridColumn = 8,
-				GridRow = 0,
-				Text = "End Turn"
+				Top= (int)(0f*globalScale.Y),
+				Left = (int)(-10f*globalScale.X),
+				Width = (int)(80 * globalScale.X),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Top,
+				Text = "End Turn",
+				//Scale = globalScale
 			};
 			end.Click += (o,a) => GameManager.EndTurn();		
-			grid.Widgets.Add(end);
+			panel.Widgets.Add(end);
 		/*	
 			var debug = new TextButton
 			{
@@ -694,11 +687,16 @@ namespace MultiplayerXeno
 			
 			turnIndicator = new Panel()
 			{
-				GridColumn = 7,
-				GridRow = 0,
-				Background = new SolidBrush(Color.Red)
+				Top= (int)(-1f*globalScale.Y),
+				Left =(int)(-150f*globalScale.X),
+				Height =50,
+				Width = (int)(80 * globalScale.X),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Top,
+				Background = new SolidBrush(Color.Red),
+				//Scale = globalScale
 			};
-			grid.Widgets.Add(turnIndicator);
+			panel.Widgets.Add(turnIndicator);
 			SetMyTurn(GameManager.IsMyTurn());
 
 			if (scoreIndicator == null)
@@ -707,24 +705,16 @@ namespace MultiplayerXeno
 
 				scoreIndicator = new Label()
 				{
-					GridColumn = 4,
-					GridRow = 0,
-					GridColumnSpan = 2,
+					Top=0,
+					VerticalAlignment = VerticalAlignment.Top,
+					HorizontalAlignment = HorizontalAlignment.Center
 				};
 				SetScore(0);
 			}
 
-			grid.Widgets.Add(scoreIndicator);
-	
-			var PassThroughToggle = new TextButton
-			{
-				GridColumn = 7,
-				GridRow = 8,
-				Text = "TogglePassthrough"
-			};
-			PassThroughToggle.Click += (o, a) => { MousePassthrough = !MousePassthrough;};
-			
-			Desktop.Root = grid;
+			panel.Widgets.Add(scoreIndicator);
+
+			Desktop.Root = panel;
 
 
 
@@ -732,37 +722,85 @@ namespace MultiplayerXeno
 
 		}
 
-		public static void UnitUI(WorldObject worldObject)
+		private static string PreviewDesc;
+		private static Label descBox;
+		private static void SetPreviewDesc(string desc)
 		{
-			if (worldObject.ControllableComponent.IsMyTeam())
+			PreviewDesc = desc;
+			if(descBox!= null){
+				descBox.Text = desc;
+			}
+		}
+		public static void UnitUi()
+		{
+			if (SelectedControllable!=null && SelectedControllable.IsMyTeam())
 			{
 				
 				GameUi();
-				var root = (Grid) Desktop.Root;
+				var root = (Panel) Desktop.Root;
+				previewMoves = SelectedControllable.GetPossibleMoveLocations();
 
 
-				var fire = new TextButton
+				descBox = new Label()
 				{
-					GridColumn = 2,
-					GridRow = 8,
-					Text = "Fire"
+					Top = -100,
+					MaxWidth = (int)(600 * globalScale.X),
+					MinHeight = 40,
+					MaxHeight = 80,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Bottom,
+					Background = new SolidBrush(Color.DimGray),
+					Text = PreviewDesc,
+					TextAlign = TextHorizontalAlignment.Center,
+					Wrap = true
+				};
+				root.Widgets.Add(descBox);
+
+
+				var buttonContainer = new Grid()
+				{
+					GridColumn = 1,
+					GridRow = 3,
+					GridColumnSpan = 4,
+					GridRowSpan = 1,
+					RowSpacing = 10,
+					ColumnSpacing = 10,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Bottom,
+					//ShowGridLines = true,
+				};
+				root.Widgets.Add(buttonContainer);
+				
+				var fire = new ImageButton()
+				{
+					GridColumn = 0,
+					GridRow = 0,
+					//Text = "Fire",
+					
+					Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
+				//	Scale = new Vector2(1.5f)
 				};
 				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
-				root.Widgets.Add(fire);
-				var watch = new TextButton
+				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and loose awareness. Costs 1 action point and 1 move point");
+				buttonContainer.Widgets.Add(fire);
+				var watch = new ImageButton
 				{
-					GridColumn = 3,
-					GridRow = 8,
-					Text = "Overwatch"
+					GridColumn = 1,
+					GridRow = 0,
+				//	Text = "Overwatch",
+					Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
 				};
 				watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
-				root.Widgets.Add(watch);
-				var crouch = new TextButton
+				watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. 1st Enemy to enter the area will be shot at automatically. Costs 1 actions points, 1 move poits and 1 turn point. Unit Cannot act anymore in this turn");
+				buttonContainer.Widgets.Add(watch);
+				var crouch = new ImageButton
 				{
-					GridColumn = 4,
-					GridRow = 8,
-					Text = "Crouch/Stand"
+					GridColumn = 2,
+					GridRow = 0,
+			//		Text = "Crouch/Stand",
+					Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 				};
+				crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Costs 1 move point");
 				crouch.Click += (o, a) =>
 				{
 					if (SelectedControllable != null)
@@ -770,18 +808,20 @@ namespace MultiplayerXeno
 						SelectedControllable.DoAction(Action.Actions[ActionType.Crouch],null);
 					}
 				};
-				root.Widgets.Add(crouch);
-				int column = 5;
-				foreach (var act in worldObject.ControllableComponent.Type.extraActions)
+				buttonContainer.Widgets.Add(crouch);
+				int column = 3;
+				foreach (var act in SelectedControllable.Type.extraActions)
 				{
-					var actBtn = new TextButton
+					var actBtn = new ImageButton	
 					{
 						GridColumn = column,
-						GridRow = 8,
-						Text = act.Item1
+						GridRow = 0,
+					//	Text = act.Item1,
+						Image = new TextureRegion(TextureManager.GetTexture("UI/"+act.Item1))
 					};
 					actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
-					root.Widgets.Add(actBtn);
+					actBtn.MouseEntered += (o, a) => SetPreviewDesc(Action.Actions[act.Item2].Description);
+					buttonContainer.Widgets.Add(actBtn);
 					column++;
 				}
 			

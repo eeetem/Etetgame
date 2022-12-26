@@ -267,14 +267,7 @@ namespace MultiplayerXeno
 						moving = false;
 						_thisMoving = false;
 #if CLIENT
-						if (UI.SelectedControllable != null)
-						{
-							UI.UnitUI(UI.SelectedControllable.worldObject);
-						}
-						else
-						{
-							UI.UnitUI(this.worldObject);
-						}
+						UI.SetUI(UI.UnitUi);
 #endif
 						Console.WriteLine("done moving ");
 					}

@@ -7,6 +7,7 @@ public class Sprint : Action
 {
 	public Sprint() :base(ActionType.Sprint)
 	{
+		Description = "Loose all awareness however regain all of your action points. Cost: Free";
 	}
 
 	

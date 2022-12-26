@@ -54,14 +54,14 @@ namespace MultiplayerXeno
 			to = result.CollisionPoint+Vector2.Normalize(to-from);
 
 			
-			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.High, true);
+			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
 				}
 				else
 				{
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2.5f, to, Cover.Low, true);
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;
@@ -144,7 +144,7 @@ namespace MultiplayerXeno
 				Console.WriteLine("MISS");
 				//nothing is hit
 			}
-			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.EndPoint,supressionRange);
+			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.CollisionPoint,supressionRange);
 			foreach (var tile in tiles)
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
