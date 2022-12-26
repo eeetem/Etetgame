@@ -1,5 +1,5 @@
-overlapping
-units with actions counter
+unit view at top
+easy to see action cost
 unit placement
 useable level editor
 ghosting with pathfinding

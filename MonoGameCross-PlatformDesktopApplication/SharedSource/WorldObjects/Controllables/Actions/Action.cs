@@ -12,7 +12,7 @@ public abstract class Action
 	public static readonly Dictionary<ActionType, Action> Actions = new Dictionary<ActionType, Action>();
 	public readonly ActionType ActionType;
 	public static Action? ActiveAction { get; private set; }
-
+	public string Description { get; protected set; } = "";
 	public Action(ActionType type)
 	{
 		ActionType = type;
@@ -68,14 +68,7 @@ public abstract class Action
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
 		Action.SetActiveAction(null);
-		if (UI.SelectedControllable != null)
-		{
-			UI.UnitUI(UI.SelectedControllable.worldObject);
-		}
-		else
-		{
-			UI.UnitUI(actor.worldObject);
-		}
+		UI.SetUI(UI.UnitUi);
 #endif
 		
 	}

@@ -37,7 +37,7 @@
     <sprite  name="Human" offset= "0,0"/>
     <name>Gunner</name>
     <controllable moveRange = "6" moves="2" turns="2" attack="6" supression="2" health="13" weaponRange ="17">
-      <action name="HeadShot" type="7"/>
+      <action name="Headshot" type="7"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">

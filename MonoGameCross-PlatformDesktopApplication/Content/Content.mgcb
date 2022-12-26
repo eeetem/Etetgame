@@ -374,6 +374,18 @@
 /processorParam:TextureFormat=Color
 /build:textures/ScoutCrouch.png
 
+#begin textures/UI/Courch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Courch.png
+
 #begin textures/UI/coverIndicator.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -386,7 +398,7 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/coverIndicator.png
 
-#begin textures/UI/healthbar.png
+#begin textures/UI/Fire.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -396,7 +408,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/healthbar.png
+/build:textures/UI/Fire.png
+
+#begin textures/UI/Headshot.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Headshot.png
 
 #begin textures/UI/healthbar.png
 /importer:TextureImporter
@@ -422,7 +446,7 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/indicators.png
 
-#begin textures/UI/indicators.png
+#begin textures/UI/Overwatch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -432,9 +456,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/indicators.png
+/build:textures/UI/Overwatch.png
 
-#begin textures/UI/walkie.png
+#begin textures/UI/Sprint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -444,7 +468,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/walkie.png
+/build:textures/UI/Sprint.png
+
+#begin textures/UI/Suppress.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Suppress.png
 
 #begin textures/UI/walkie.png
 /importer:TextureImporter
