@@ -297,6 +297,7 @@ namespace MultiplayerXeno
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
 					SetUI(SetupUi);
+					DiscordManager.client.UpdateState("In Battle");
 				}
 				else
 				{
@@ -781,7 +782,7 @@ namespace MultiplayerXeno
 				//	Scale = new Vector2(1.5f)
 				};
 				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
-				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and loose awareness. Costs 1 action point and 1 move point");
+				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose awareness. Cost: 1 action, 1 move");
 				buttonContainer.Widgets.Add(fire);
 				var watch = new ImageButton
 				{
@@ -791,7 +792,7 @@ namespace MultiplayerXeno
 					Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
 				};
 				watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
-				watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. 1st Enemy to enter the area will be shot at automatically. Costs 1 actions points, 1 move poits and 1 turn point. Unit Cannot act anymore in this turn");
+				watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move, 1 turn. Unit Cannot act anymore in this turn");
 				buttonContainer.Widgets.Add(watch);
 				var crouch = new ImageButton
 				{
@@ -800,7 +801,7 @@ namespace MultiplayerXeno
 			//		Text = "Crouch/Stand",
 					Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 				};
-				crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Costs 1 move point");
+				crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
 				crouch.Click += (o, a) =>
 				{
 					if (SelectedControllable != null)

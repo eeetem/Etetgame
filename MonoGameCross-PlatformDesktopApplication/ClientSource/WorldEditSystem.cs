@@ -18,7 +18,7 @@ namespace MultiplayerXeno
 		public static void Init()
 		{
 			enabled = true;
-
+			DiscordManager.client.UpdateState("In Level Editor");
 		}
 
 		public enum Brush 
