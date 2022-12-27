@@ -73,10 +73,10 @@ namespace MultiplayerXeno
 #if CLIENT
 			UI.SetScore(score);
 			Audio.PlaySound("turn");
-			#endif
+#endif
 			
-			if(score > 10)EndGame(true);
-			if(score < -10)EndGame(false);
+			if(score > 8)EndGame(true);
+			if(score < -8)EndGame(false);
 			
 
 

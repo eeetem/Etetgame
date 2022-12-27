@@ -8,7 +8,7 @@ public class Supress : Attack
 {
 	public Supress() : base(ActionType.Suppress)
 	{
-		Description = "Loose all awareness to suppress a big area. All uits in the area will instantly panic(reach 0 awareness). Cost: 1 action point, 1 move point";
+		Description = "Suppress a big area. All units in the area will instantly panic(reach 0 awareness). Cost: 1 Action, 1 Move, 4 Awareness";
 	}
 
 	

@@ -67,6 +67,7 @@ namespace MultiplayerXeno
 			PathFinding.GenerateNodes();
 			base.Initialize();
 			UI.SetUI(UI.MainMenu);
+			DiscordManager.Init();
 			
 
 		}
@@ -105,6 +106,7 @@ namespace MultiplayerXeno
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
 			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
+			DiscordManager.Update();
 			
 			base.Update(gameTime);
 		}

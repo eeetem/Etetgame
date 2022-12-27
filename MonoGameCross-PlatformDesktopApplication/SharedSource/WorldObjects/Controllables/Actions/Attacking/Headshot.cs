@@ -7,7 +7,7 @@ public class Headshot : Attack
 {
 	public Headshot() : base(ActionType.HeadShot)
 	{
-		Description = "Loose all awareness to shoot for 15 Damage. Can only hit targets with 0 awareness. Cost: 1 action point, 1 move point";
+		Description = "Shoot for 15 Damage. Can only hit targets with 0 awareness. Cost: 1 Action, 1 Move, 2 Awareness";
 	}
 
 	
