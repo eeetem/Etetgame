@@ -63,7 +63,7 @@ public class Headshot : Attack
 
 	protected override int GetAwarenessResistanceEffect(Controllable actor)
 	{
-		return 10;
+		return GetDamage(actor);
 	}
 
 }
