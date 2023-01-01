@@ -43,7 +43,7 @@ public class Supress : Attack
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.ActionPoints--;
+		actor.ActionPoints-=2;
 		actor.Awareness=0;
 		actor.MovePoints--;
 	
