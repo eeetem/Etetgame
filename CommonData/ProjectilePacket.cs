@@ -71,14 +71,14 @@ public class ProjectilePacket : Packet
 	public int suppresionRange { get;  set; }
 	public int supressionStrenght { get;  set; }
 
-	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int awarenessResistanceCoefficient,int suppressionRange,int supressionStrenght)
+	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int awarenessResistanceCoefficient,int suppresionRange,int supressionStrenght)
 	{
 		this.result = result;
 		this.covercast = covercast;
 		this.dmg = dmg;
 		this.dropoffRange = dropoffRange;
 		this.awarenessResistanceCoefficient = awarenessResistanceCoefficient;
-		this.suppresionRange = suppressionRange;
+		this.suppresionRange = suppresionRange;
 		this.supressionStrenght = supressionStrenght;
 
 	}

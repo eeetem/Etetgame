@@ -193,7 +193,10 @@ namespace MultiplayerXeno
 			Crouching = true;
 			paniced = true;
 #if CLIENT
-			new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+			if (worldObject.IsVisible())
+			{
+				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+			}
 #endif
 			ClearOverWatch();
 			

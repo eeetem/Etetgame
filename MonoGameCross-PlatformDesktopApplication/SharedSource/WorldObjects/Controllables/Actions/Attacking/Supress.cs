@@ -8,7 +8,7 @@ public class Supress : Attack
 {
 	public Supress() : base(ActionType.Suppress)
 	{
-		Description = "Suppress a big area. All units in the area will instantly panic(reach 0 awareness). Cost: 1 Action, 1 Move, 4 Awareness";
+		Description = "Suppress a big area. All units in the area will instantly panic(reach 0 awareness). Cost: 2 Action, 1 Move, 4 Awareness";
 	}
 
 	
@@ -23,7 +23,7 @@ public class Supress : Attack
 		{
 			return false;
 		}
-		if (actor.ActionPoints <= 0)
+		if (actor.ActionPoints <= 1)
 		{
 			return false;
 		}
@@ -59,12 +59,12 @@ public class Supress : Attack
 
 	protected override int GetDamage(Controllable actor)
 	{
-		return 4;
+		return 5;
 	}
 
 	protected override int GetSupressionRange(Controllable actor)
 	{
-		return 5;
+		return 4;
 	}
 	protected override int GetSupressionStrenght(Controllable actor)
 	{
