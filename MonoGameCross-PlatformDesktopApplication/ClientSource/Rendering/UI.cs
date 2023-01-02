@@ -29,7 +29,7 @@ namespace MultiplayerXeno
 		private static GraphicsDevice graphicsDevice;
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
-		private static Texture2D[] healthIndicator = new Texture2D[2];
+		private static Texture2D[] healthIndicator = new Texture2D[3];
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
 
@@ -54,7 +54,7 @@ namespace MultiplayerXeno
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
-			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
+			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
 
@@ -889,7 +889,11 @@ namespace MultiplayerXeno
 			for (int i = 0; i < controllable.Type.MaxAwareness; i++)
 			{
 				var indicator = healthIndicator[1];
-				if (controllable.Type.MaxAwareness - i > controllable.Awareness)
+				if (controllable.Type.MaxAwareness  - i  == controllable.Awareness+1 && !controllable.paniced)
+				{
+					indicator= healthIndicator[2];
+				}
+				else if (controllable.Type.MaxAwareness - i > controllable.Awareness)
 				{
 					indicator= healthIndicator[0];
 				}

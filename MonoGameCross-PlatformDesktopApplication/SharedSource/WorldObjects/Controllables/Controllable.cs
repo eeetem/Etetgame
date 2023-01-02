@@ -78,7 +78,14 @@ namespace MultiplayerXeno
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-				range -= 2;
+				if (Type.MaxMovePoints == 3)//shitcode
+				{
+					range -= 1;
+				}
+				else
+				{
+					range -= 2;
+				}
 			}
 
 			return range;
@@ -114,10 +121,11 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			Console.WriteLine("unit hit for: "+dmg);
-			Console.WriteLine("outcome: health="+this.Health +" awareness="+this.Awareness);
-			Health -= dmg;
 
+			Health -= dmg;
+			
+			Console.WriteLine("unit hit for: "+dmg);
+			Console.WriteLine("outcome: health="+this.Health);
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
@@ -194,7 +202,7 @@ namespace MultiplayerXeno
 			
 		}
 
-		private bool paniced = false;
+		public bool paniced { get; private set; }= false;
 		public void Panic()
 		{
 			Crouching = true;
@@ -270,7 +278,6 @@ namespace MultiplayerXeno
 					}
 
 					worldObject.Move(CurrentPath[0]);
-					Console.WriteLine("moved");
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
@@ -279,7 +286,7 @@ namespace MultiplayerXeno
 #if CLIENT
 						UI.SetUI(UI.UnitUi);
 #endif
-						Console.WriteLine("done moving ");
+					
 					}
 					//todo jump view to move
 #if CLIENT

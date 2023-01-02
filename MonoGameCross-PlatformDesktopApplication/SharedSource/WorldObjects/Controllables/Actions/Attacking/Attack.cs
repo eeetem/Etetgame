@@ -17,22 +17,19 @@ public abstract class Attack : Action
 
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-		
-			bool lowShot = false;
-			if (actor.Crouching)
-			{
-				lowShot = true;
-			}else
-			{
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
-				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
-				{
-					lowShot = true;
-				}
-			}
 
-			Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
+		bool lowShot =false;
+
+
+		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
+		if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+		{
+			lowShot = true;
+		}
+			
+
+		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
+		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,actor.Crouching,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
 
 		
 
@@ -90,7 +87,7 @@ public abstract class Attack : Action
 			}
 			Texture2D sprite = tile.Surface.GetTexture();
 
-			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.Cyan*0.3f);
+			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue*0.45f);
 		}
 					
 		var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
@@ -187,8 +184,6 @@ public abstract class Attack : Action
 
 			}
 			spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(2f,2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
-						
 			var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
 			var coverobjtransform = coverobj.Type.Transform;
 			Texture2D yellowsprite = coverobj.GetTexture();

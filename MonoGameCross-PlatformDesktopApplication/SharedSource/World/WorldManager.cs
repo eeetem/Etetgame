@@ -318,7 +318,7 @@ namespace MultiplayerXeno
 				lenght.Y = 0;
 			}
 
-			float totalLenght = 0f;
+			float totalLenght = 0.05f;
 
 			while (true)
 			{
@@ -340,7 +340,7 @@ namespace MultiplayerXeno
 	
 				WorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
-				Vector2 collisionPoint = (totalLenght * dir) + (startPos);
+				Vector2 collisionPoint = ((totalLenght+0.05f) * dir) + (startPos);
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);

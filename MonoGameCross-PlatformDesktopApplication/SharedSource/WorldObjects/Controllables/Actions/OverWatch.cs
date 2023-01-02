@@ -44,7 +44,7 @@ public class OverWatch : Action
 		}
 
 		actor.overWatch = true;
-
+		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
 
 	}
 

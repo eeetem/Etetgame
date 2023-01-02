@@ -31,7 +31,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool lowShot = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
+		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
 			this.originalDmg = dmg;
@@ -40,7 +40,10 @@ namespace MultiplayerXeno
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
 
-			if (lowShot)
+			if (shooterLow)
+			{
+				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.High);
+			}else if (targetLow)
 			{
 				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.Full);
 			}
@@ -49,45 +52,43 @@ namespace MultiplayerXeno
 				result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			}
 
-
-			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.CollisionPoint+Vector2.Normalize(to-from);
-
-
-
-			RayCastOutcome cast;
-			if (Vector2.Distance(from, to) <= 1.5)
+			if (result.hit)
 			{
-				cast  = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true);//ignore cover pointblank
-				if (cast.hit && result.hitObjID != cast.hitObjID)
+				Vector2 dir = Vector2.Normalize(from - to);
+				to = result.CollisionPoint + Vector2.Normalize(to - from);
+				RayCastOutcome cast;
+				if (Vector2.Distance(from, to) <= 1.5)
 				{
-					covercast = cast;
-				}
-			}
-			else
-			{
-				cast  = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
-				if (cast.hit && result.hitObjID != cast.hitObjID)
-				{
-					covercast = cast;
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true); //ignore cover pointblank
+					if (cast.hit && result.hitObjID != cast.hitObjID)
+					{
+						covercast = cast;
+					}
 				}
 				else
 				{
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;
 					}
 					else
 					{
-						covercast = null;
+						cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
+						if (cast.hit && result.hitObjID != cast.hitObjID)
+						{
+							covercast = cast;
+						}
+						else
+						{
+							covercast = null;
+						}
 					}
 				}
+
+
 			}
 
-			
-
-			
 
 			CalculateDetails();
 		}
@@ -169,6 +170,7 @@ namespace MultiplayerXeno
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
 					tile.ObjectAtLocation.ControllableComponent.Awareness -= supressionStrenght;
+					Console.WriteLine("supressed: awareness="+tile.ObjectAtLocation.ControllableComponent.Awareness);
 					if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();

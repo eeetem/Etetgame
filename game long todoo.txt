@@ -1,10 +1,17 @@
+overwatch color coding
+partial awareness not synced
+client sent an impossible action fix
+seperate human shot vs free shot
+determination rename
 point blank supression
 checks for desyncs
 resync code fix
 spectator mode
+failure popup
 turn prompt
 units with actions counter
 fix discord time? timezone issue?
+version number
 unit placement
 smoke greandes
 useable level editor

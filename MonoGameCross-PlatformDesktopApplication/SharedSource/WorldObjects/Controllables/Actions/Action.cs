@@ -95,7 +95,7 @@ public abstract class Action
 #else
 		if(!CanPerform(actor,target))
 		{
-			Console.WriteLine("Cilent sent an impossible action");
+			Console.WriteLine("Client sent an impossible action");
 			return;
 		}
 		Perform(actor, target);
