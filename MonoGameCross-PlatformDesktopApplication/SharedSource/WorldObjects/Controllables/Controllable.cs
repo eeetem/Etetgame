@@ -114,7 +114,8 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			Console.WriteLine("health - "+dmg);
+			Console.WriteLine("unit hit for: "+dmg);
+			Console.WriteLine("outcome: health="+this.Health +" awareness="+this.Awareness);
 			Health -= dmg;
 
 			if (Health <= 0)
