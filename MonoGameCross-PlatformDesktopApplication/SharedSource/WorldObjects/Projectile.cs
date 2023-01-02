@@ -53,8 +53,20 @@ namespace MultiplayerXeno
 			Vector2 dir = Vector2.Normalize(from - to);
 			to = result.CollisionPoint+Vector2.Normalize(to-from);
 
-			
-			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
+
+
+			RayCastOutcome cast;
+			if (Vector2.Distance(from, to) <= 1.5)
+			{
+				cast  = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true);//ignore cover pointblank
+				if (cast.hit && result.hitObjID != cast.hitObjID)
+				{
+					covercast = cast;
+				}
+			}
+			else
+			{
+				cast  = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
@@ -71,6 +83,9 @@ namespace MultiplayerXeno
 						covercast = null;
 					}
 				}
+			}
+
+			
 
 			
 
@@ -147,6 +162,10 @@ namespace MultiplayerXeno
 			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.CollisionPoint,supressionRange);
 			foreach (var tile in tiles)
 			{
+				if(WorldManager.Instance.CenterToCenterRaycast(result.CollisionPoint,tile.Position,Cover.High,true).hit)
+				{
+					continue;
+				}
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
 					tile.ObjectAtLocation.ControllableComponent.Awareness -= supressionStrenght;

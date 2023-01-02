@@ -1,6 +1,12 @@
-unit view at top
-easy to see action cost
+point blank supression
+checks for desyncs
+resync code fix
+spectator mode
+turn prompt
+units with actions counter
+fix discord time? timezone issue?
 unit placement
+smoke greandes
 useable level editor
 ghosting with pathfinding
 turn timer

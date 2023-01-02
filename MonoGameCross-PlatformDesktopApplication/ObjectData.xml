@@ -43,7 +43,7 @@
   <object Faceable = "true" Cover ="3">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" turns="3" supression="1" attack="7" health="8" weaponRange ="6">
+    <controllable moveRange = "5" moves="3" turns="3" supression="1" attack="8" health="8" weaponRange ="6">
       <action name="Sprint" type="6"/>
     </controllable>
   </object>

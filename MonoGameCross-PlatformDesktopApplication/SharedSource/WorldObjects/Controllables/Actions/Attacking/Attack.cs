@@ -84,7 +84,10 @@ public abstract class Attack : Action
 		foreach (var tile in tiles)
 		{
 			if (tile.Surface == null) continue;
-							
+			if(WorldManager.Instance.CenterToCenterRaycast(previewShot.result.CollisionPoint,tile.Position,Cover.High,true).hit)
+			{
+				continue;
+			}
 			Texture2D sprite = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.Cyan*0.3f);

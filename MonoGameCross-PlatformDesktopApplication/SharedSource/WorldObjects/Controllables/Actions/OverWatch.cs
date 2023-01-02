@@ -61,7 +61,13 @@ public class OverWatch : Action
 				positions.Add(pos);
 			}
 
-			
+		}
+
+		foreach (var position in positions)
+		{
+			//idely this should be merged into projectile and have some sort of "can shoot" function
+			Vector2 shotDir = Vector2.Normalize(position -actor.worldObject.TileLocation.Position);
+			RayCastOutcome cast = WorldManager.Instance.Raycast(actor.worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), position + new Vector2(0.5f, 0.5f), Cover.Full, true);
 		}
 
 		return positions;

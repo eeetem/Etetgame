@@ -105,17 +105,23 @@ namespace MultiplayerXeno
 				 }
 
 				 _objectAtLocation = value;
-				 lock (syncobj)
-				 {
-					 foreach (var watcher in Watchers)
-					 {
-						 watcher.OverWatchSpoted(this.Position);
-					 }
-
-				 }
+				 OverWatchTrigger();
 			 }
 		}
 		private WorldObject? _surface;
+
+		public void OverWatchTrigger()
+		{
+			lock (syncobj)
+			{
+				foreach (var watcher in Watchers)
+				{
+					watcher.OverWatchSpoted(this.Position);
+				}
+
+			}
+		}
+
 		public WorldObject? Surface{
 			get => _surface;
 			set

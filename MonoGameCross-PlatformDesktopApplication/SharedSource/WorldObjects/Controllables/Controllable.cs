@@ -107,7 +107,13 @@ namespace MultiplayerXeno
 				dmg = projectile.dmg - projectile.awarenessResistanceCoefficient;
 
 			}
-			
+
+			if (dmg <= 0)
+			{
+				Console.WriteLine("0 damage");
+				return;
+			}
+
 			Console.WriteLine("health - "+dmg);
 			Health -= dmg;
 

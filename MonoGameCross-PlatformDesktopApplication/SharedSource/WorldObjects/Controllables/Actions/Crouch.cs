@@ -26,6 +26,7 @@ public class Crouch : Action
 	{
 		actor.MovePoints--;
 		actor.Crouching = !actor.Crouching;
+		actor.worldObject.TileLocation.OverWatchTrigger();
 	}
 
 #if CLIENT
