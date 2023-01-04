@@ -1,4 +1,5 @@
-﻿using CommonData;
+﻿using System;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -8,43 +9,46 @@ public class Supress : Attack
 {
 	public Supress() : base(ActionType.Suppress)
 	{
-		Description = "Suppress a big area. All units in the area will instantly panic(reach 0 awareness). Cost: 2 Action, 1 Move, 4 Awareness";
+		Description = "Suppress a big area. All units in the area will instantly panic(reach 0 determination). Cost: 2 Action, 1 Move, 4 determination";
 	}
 
-	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
-	{
 
-		if (position == actor.worldObject.TileLocation.Position)
+	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int position)
+	{
+		var parentReply = base.CanPerform(actor, position);
+		if (!parentReply.Item1)
 		{
-			return false;
+			return parentReply;
 		}
-		if (actor.Awareness != actor.Type.MaxAwareness)
+
+		if (actor.determination != actor.Type.Maxdetermination)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
-		if (actor.ActionPoints <= 1)
+
+		if (actor.FirePoints <= 1)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
+
 		if (actor.MovePoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough move points!");
 		}
 
-		if (Vector2.Distance(actor.worldObject.TileLocation.Position, position) < 6) 
+		if (Vector2.Distance(actor.worldObject.TileLocation.Position, position) < 5)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Target is too close!");
 		}
 
-		return true;
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.ActionPoints-=2;
-		actor.Awareness=0;
+		actor.FirePoints-=2;
+		actor.determination=0;
 		actor.MovePoints--;
 	
 		
@@ -71,7 +75,7 @@ public class Supress : Attack
 		return 5;
 	}
 
-	protected override int GetAwarenessResistanceEffect(Controllable actor)
+	protected override int GetdeterminationResistanceEffect(Controllable actor)
 	{
 		return 1;
 	}

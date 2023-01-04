@@ -50,7 +50,7 @@
   <object Faceable = "true" Cover ="3">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "3" moves="2" actions="2" supression="3" overwatch="3" turns="1" attack="6" awareness="4" health="16" weaponRange ="11">
+    <controllable moveRange = "3" moves="2" actions="2" supression="3" overwatch="3" turns="1" attack="6" determination="4" health="16" weaponRange ="11">
       <action name="Suppress" type="8"/>
     </controllable>
   </object>

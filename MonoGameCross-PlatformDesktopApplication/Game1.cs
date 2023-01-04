@@ -18,9 +18,6 @@ namespace MultiplayerXeno
 
 		public Game1()
 		{
-			
-		
-			
 			instance = this;
 			_graphics = new GraphicsDeviceManager(this);
 			_graphics.HardwareModeSwitch = false;

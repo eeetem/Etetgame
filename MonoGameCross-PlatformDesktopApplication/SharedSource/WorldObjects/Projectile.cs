@@ -13,7 +13,7 @@ namespace MultiplayerXeno
 		public int originalDmg;
 		public int dropoffRange;
 		public Vector2[] dropOffPoints;
-		public int awarenessResistanceCoefficient = 1;
+		public int determinationResistanceCoefficient = 1;
 		public int supressionRange;
 		public int supressionStrenght;
 		public Projectile(ProjectilePacket packet)
@@ -23,7 +23,7 @@ namespace MultiplayerXeno
 			this.dmg = packet.dmg;
 			this.originalDmg = packet.dmg;
 			this.dropoffRange = packet.dropoffRange;
-			this.awarenessResistanceCoefficient = packet.awarenessResistanceCoefficient;
+			this.determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
 			this.supressionRange = packet.suppresionRange;
 			this.supressionStrenght = packet.supressionStrenght;
 			CalculateDetails();
@@ -31,12 +31,12 @@ namespace MultiplayerXeno
 		}
 
 
-		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
+		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
 			this.originalDmg = dmg;
 			this.dropoffRange = dropoffRange;
-			this.awarenessResistanceCoefficient = awarenessResistanceCoefficient;
+			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
 
@@ -169,9 +169,9 @@ namespace MultiplayerXeno
 				}
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.Awareness -= supressionStrenght;
-					Console.WriteLine("supressed: awareness="+tile.ObjectAtLocation.ControllableComponent.Awareness);
-					if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
+					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
+					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
+					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();
 					}

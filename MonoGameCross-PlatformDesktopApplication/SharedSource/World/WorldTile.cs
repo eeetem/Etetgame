@@ -18,13 +18,16 @@ namespace MultiplayerXeno
 
 		private List<Controllable> Watchers = new List<Controllable>();
 		private List<Controllable> UnWatchQueue = new List<Controllable>();
+		private int HighestWatchLevel = 0;
 		public void Watch(Controllable watcher)
 		{
 			lock (syncobj)
 			{
 				Watchers.Add(watcher);
 			}
-			
+#if CLIENT
+			CalcWatchLevel();
+#endif
 		}
 		public void UnWatch(Controllable watcher)
 		{
@@ -32,17 +35,30 @@ namespace MultiplayerXeno
 			{
 				UnWatchQueue.Add(watcher);
 			}
+
+
 		}
+
+		
 
 		public void Update(float delta)
 		{
 			lock (syncobj)
 			{
+				bool recalcflag = false;
 				foreach (var Watcher in UnWatchQueue)
 				{
+					recalcflag = true;
 					Watchers.Remove(Watcher);
 				}
 				UnWatchQueue.Clear();
+#if CLIENT
+				if (recalcflag)
+				{
+					CalcWatchLevel();
+				}
+#endif
+
 			}	
 		}
 

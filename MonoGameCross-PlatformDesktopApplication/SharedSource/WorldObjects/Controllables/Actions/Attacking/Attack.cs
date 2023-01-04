@@ -15,6 +15,16 @@ public abstract class Attack : Action
 		
 	}
 
+	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	{
+		if (target == actor.worldObject.TileLocation.Position)
+		{
+			return new Tuple<bool, string>(false, "You can't shoot yourself!");
+		}
+	
+		return new Tuple<bool, string>(true, "");
+	}
+
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
 
@@ -29,7 +39,7 @@ public abstract class Attack : Action
 			
 
 		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,actor.Crouching,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
+		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,actor.Crouching,GetdeterminationResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
 
 		
 
@@ -46,7 +56,7 @@ public abstract class Attack : Action
 #if SERVER
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange,p.supressionStrenght));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght));
 
 #endif
 		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
@@ -55,7 +65,7 @@ public abstract class Attack : Action
 
 	protected abstract int GetDamage(Controllable actor);
 	protected abstract int GetSupressionRange(Controllable actor);
-	protected abstract int GetAwarenessResistanceEffect(Controllable actor);
+	protected abstract int GetdeterminationResistanceEffect(Controllable actor);
 	protected virtual int GetSupressionStrenght(Controllable actor)
 	{
 		return 1;
@@ -71,12 +81,18 @@ public abstract class Attack : Action
 	
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-
-		if (target != lastTarget)
+		
+		if (target != lastTarget && (UI.ffmode || (WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
-		}	
+		}
+
+		if (previewShot == null)
+		{
+			return;
+		}
+
 		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.CollisionPoint.X, (int)previewShot.result.CollisionPoint.Y),previewShot.supressionRange);
 		foreach (var tile in tiles)
 		{
@@ -207,9 +223,9 @@ public abstract class Attack : Action
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			if (hitobj.ControllableComponent != null)
 			{
-				if (hitobj.ControllableComponent.Awareness > 0)
+				if (hitobj.ControllableComponent.determination > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.awarenessResistanceCoefficient) + ("  (-"+previewShot.awarenessResistanceCoefficient+" due to awareness)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.determinationResistanceCoefficient) + ("  (-"+previewShot.determinationResistanceCoefficient+" due to determination)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 				else
 				{

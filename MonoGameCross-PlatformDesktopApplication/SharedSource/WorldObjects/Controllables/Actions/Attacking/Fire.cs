@@ -15,36 +15,37 @@ public class Fire : Attack
 	}
 
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
 		
-		if (position == actor.worldObject.TileLocation.Position)
+		var parentReply = base.CanPerform(actor, position);
+		if (!parentReply.Item1)
 		{
-			return false;
+			return parentReply;
 		}
 
 		if (actor.overWatch)
 		{
-			return true;//can overwatch fire without points
+			return new Tuple<bool, string>(true, "");
 		}
 
-		if (actor.ActionPoints <= 0)
+		if (actor.FirePoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
 		if (actor.MovePoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough move points");
 		}
 
-		return true;
+		return new Tuple<bool, string>(true, "");
 
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-			actor.ActionPoints--;
+			actor.FirePoints--;
 			actor.MovePoints--;
 
 #if CLIENT
@@ -76,7 +77,7 @@ public class Fire : Attack
 		return  actor.Type.SupressionRange;
 	}
 
-	protected override int GetAwarenessResistanceEffect(Controllable actor)
+	protected override int GetdeterminationResistanceEffect(Controllable actor)
 	{
 		return 1;
 	}
