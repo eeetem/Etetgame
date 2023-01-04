@@ -1,4 +1,6 @@
 client sent an impossible action fix
+targeting cursor
+line wrap chat
 point blank supression
 checks for desyncs
 resync code fix

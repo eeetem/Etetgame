@@ -30,6 +30,7 @@ namespace MultiplayerXeno
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
 		private static Texture2D[] healthIndicator = new Texture2D[3];
+		private static Texture2D targetingCUrsor;
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
 
@@ -55,6 +56,9 @@ namespace MultiplayerXeno
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
+			
+			targetingCUrsor = TextureManager.GetTexture("UI/targetingCursor");
+			
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
 
@@ -640,7 +644,8 @@ namespace MultiplayerXeno
 		{
 			var label = new Label
 			{
-				Text = msg
+				Text = msg,
+				Wrap = true
 			};
 			if (chatBox != null)
 			{
@@ -1020,6 +1025,7 @@ namespace MultiplayerXeno
 
 		private static bool raycastDebug;
 		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
+		public static bool targeting = false;
 		public static void Render(float deltaTime)
 		{
 			
@@ -1055,8 +1061,13 @@ namespace MultiplayerXeno
 				}
 
 			}
-		
-		
+
+			if (targeting)
+			{
+				spriteBatch.Draw(targetingCUrsor, Mousepos, Color.Red);
+			}
+
+
 			var count = 0;
 			foreach (var moves in previewMoves.Reverse())
 			{
@@ -1164,12 +1175,10 @@ namespace MultiplayerXeno
 			spriteBatch.End();
 			
 			*/
-
+			targeting = false;
 			if (SelectedControllable != null && Action.GetActiveActionType() != null)
 			{
 				Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,spriteBatch);
-				
-
 			}
 
 			WorldEditSystem.Draw(spriteBatch);

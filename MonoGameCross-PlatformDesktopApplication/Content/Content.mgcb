@@ -482,6 +482,18 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/Suppress.png
 
+#begin textures/UI/targetingCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/targetingCursor.png
+
 #begin textures/UI/walkie.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -17,6 +17,7 @@ public abstract class Attack : Action
 
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
 	{
+		
 		if (target == actor.worldObject.TileLocation.Position)
 		{
 			return new Tuple<bool, string>(false, "You can't shoot yourself!");
@@ -81,7 +82,7 @@ public abstract class Attack : Action
 	
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		
+		UI.targeting = true;
 		if (target != lastTarget && (UI.ffmode || (WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
 		{
 			previewShot = MakeProjectile(actor, target);

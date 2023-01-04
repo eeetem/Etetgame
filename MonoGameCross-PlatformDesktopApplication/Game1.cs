@@ -73,9 +73,10 @@ namespace MultiplayerXeno
 		protected override void LoadContent()
 		{
 			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			TextureManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
 			Audio.Init(Content);
-			TextureManager.Init(Content);
+		
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 			
 			SpriteFont = Content.Load<SpriteFont>("font");
