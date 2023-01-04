@@ -19,11 +19,6 @@ namespace MultiplayerXeno
 			{
 				return;
 			}
-			
-	
-
-		
-
 		}
 
 		public static void SpawnCharacters()

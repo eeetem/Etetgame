@@ -634,6 +634,19 @@ namespace MultiplayerXeno
 
 		private static Panel turnIndicator;
 		private static Label scoreIndicator;
+		private static VerticalStackPanel chatBox;
+		
+		public static void RecieveChatMessage(string msg)
+		{
+			var label = new Label
+			{
+				Text = msg
+			};
+			if (chatBox != null)
+			{
+				chatBox.Widgets.Add(label);
+			}
+		}
 
 		public static void SetMyTurn(bool myTurn)
 		{
@@ -699,7 +712,6 @@ namespace MultiplayerXeno
 			};
 			panel.Widgets.Add(turnIndicator);
 			SetMyTurn(GameManager.IsMyTurn());
-
 			if (scoreIndicator == null)
 			{
 
@@ -715,12 +727,75 @@ namespace MultiplayerXeno
 
 			panel.Widgets.Add(scoreIndicator);
 
+
+			var chatBoxViewer = new ScrollViewer()
+			{
+				Left = 0,
+				Width = 240,
+				Height = 250,
+				Top = 0,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+			};
+			if(chatBox== null)
+			{
+				chatBox = new VerticalStackPanel()
+				{
+					VerticalAlignment = VerticalAlignment.Bottom,
+					HorizontalAlignment = HorizontalAlignment.Left,
+				};
+			}
+			chatBoxViewer.Content = chatBox;
+
+			var input = new TextBox()
+			{
+				Width = 200,
+				Height = 20,
+				Top = 135,
+				Left = 0,
+				Text = "",
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+				
+			};
+			input.KeyDown += (o, a) =>
+			{
+				if (a.Data == Keys.Enter)
+				{
+					if (input.Text != "")
+					{
+						Networking.ChatMSG(input.Text);
+						input.Text = "";
+					}
+				}
+			};
+			var inputbtn = new TextButton()
+			{
+				Width = 55,
+				Height = 20,
+				Top = 135,
+				Left = 200,
+				Text = "Send",
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+				
+			};
+			inputbtn.Click += (o,a) =>
+			{
+				if (input.Text != "")
+				{
+					Networking.ChatMSG(input.Text);
+					input.Text = "";
+				}
+			};
+			panel.Widgets.Add(inputbtn);
+			panel.Widgets.Add(input);
+			panel.Widgets.Add(chatBoxViewer);
+		
+			
+			
+			
 			Desktop.Root = panel;
-
-
-
-
-
 		}
 
 		public static bool ffmode { get; private set; } = false;
