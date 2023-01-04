@@ -124,6 +124,7 @@ namespace MultiplayerXeno
 			Vector2 move = GetMovementDirection();
 			velocity += move*gameTime.GetElapsedSeconds()*25f* movementSpeed;
 			Cam.Move(velocity  * gameTime.GetElapsedSeconds());
+			Cam.Position = Vector2.Clamp(Cam.Position, new Vector2(-15000, -1000), new Vector2(15000, 12000));
 			velocity *= gameTime.GetElapsedSeconds()*45;
 
 

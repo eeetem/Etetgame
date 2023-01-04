@@ -75,8 +75,8 @@ namespace MultiplayerXeno
 			Audio.PlaySound("turn");
 #endif
 			
-			if(score > 8)EndGame(true);
-			if(score < -8)EndGame(false);
+			if(score > 6)EndGame(true);
+			if(score < -6)EndGame(false);
 			
 
 
@@ -91,6 +91,8 @@ namespace MultiplayerXeno
 			UI.SetMyTurn(IsMyTurn());
 			#endif
 		}
+
+	
 
 		public static void ParsePacket(GameActionPacket packet)
 		{

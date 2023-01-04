@@ -1,4 +1,5 @@
-﻿using CommonData;
+﻿using System;
+using CommonData;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -10,22 +11,23 @@ public class Crouch : Action
 	}
 
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
-
-		if (actor.MovePoints > 0)
+		if (actor.MovePoints <= 0 )
 		{
-			return true;
+			return new Tuple<bool, string>(false, "Not enough move points!");
 		}
-	
-
-		return false;
+		
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
+
 		actor.MovePoints--;
+		
 		actor.Crouching = !actor.Crouching;
+		actor.worldObject.TileLocation.OverWatchTrigger();
 	}
 
 #if CLIENT

@@ -1,6 +1,14 @@
-unit view at top
-easy to see action cost
+client sent an impossible action fix
+point blank supression
+checks for desyncs
+resync code fix
+spectator mode
+units with actions counter
+fix discord time? timezone issue?
+version number
+officer that stops units panicing
 unit placement
+smoke greandes
 useable level editor
 ghosting with pathfinding
 turn timer

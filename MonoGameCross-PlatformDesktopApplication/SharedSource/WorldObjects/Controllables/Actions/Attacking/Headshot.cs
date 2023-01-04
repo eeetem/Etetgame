@@ -1,4 +1,5 @@
-﻿using CommonData;
+﻿using System;
+using CommonData;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -7,38 +8,40 @@ public class Headshot : Attack
 {
 	public Headshot() : base(ActionType.HeadShot)
 	{
-		Description = "Shoot for 15 Damage. Can only hit targets with 0 awareness. Cost: 1 Action, 1 Move, 2 Awareness";
+		Description = "Shoot for 15 Damage. Can only hit targets with 0 determination. Cost: 1 Action, 1 Move, 2 determination";
 	}
 
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
+		var parentReply = base.CanPerform(actor, position);
+		if (!parentReply.Item1)
+		{
+			return parentReply;
+		}
 
-		if (position == actor.worldObject.TileLocation.Position)
+	
+		if (actor.determination != actor.Type.Maxdetermination)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
-		if (actor.Awareness != actor.Type.MaxAwareness)
+		if (actor.FirePoints <= 0)
 		{
-			return false;
-		}
-		if (actor.ActionPoints <= 0)
-		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough fire points!");
 		}
 		if (actor.MovePoints <= 0)
-		{
-			return false;
+		{ 
+			return new Tuple<bool, string>(false, "Not enough move points!");
 		}
 
-		return true;
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.ActionPoints--;
-		actor.Awareness=0;
+		actor.FirePoints--;
+		actor.determination=0;
 		actor.MovePoints--;
 	
 		
@@ -61,9 +64,9 @@ public class Headshot : Attack
 		return 0;
 	}
 
-	protected override int GetAwarenessResistanceEffect(Controllable actor)
+	protected override int GetdeterminationResistanceEffect(Controllable actor)
 	{
-		return 10;
+		return GetDamage(actor);
 	}
 
 }

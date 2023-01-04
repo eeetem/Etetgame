@@ -15,24 +15,31 @@ public abstract class Attack : Action
 		
 	}
 
+	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	{
+		if (target == actor.worldObject.TileLocation.Position)
+		{
+			return new Tuple<bool, string>(false, "You can't shoot yourself!");
+		}
+	
+		return new Tuple<bool, string>(true, "");
+	}
+
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-		
-			bool lowShot = false;
-			if (actor.Crouching)
-			{
-				lowShot = true;
-			}else
-			{
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
-				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
-				{
-					lowShot = true;
-				}
-			}
 
-			Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-			Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,GetAwarenessResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
+		bool lowShot =false;
+
+
+		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
+		if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+		{
+			lowShot = true;
+		}
+			
+
+		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
+		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,actor.Crouching,GetdeterminationResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
 
 		
 
@@ -49,7 +56,7 @@ public abstract class Attack : Action
 #if SERVER
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.awarenessResistanceCoefficient,p.supressionRange,p.supressionStrenght));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght));
 
 #endif
 		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
@@ -58,7 +65,7 @@ public abstract class Attack : Action
 
 	protected abstract int GetDamage(Controllable actor);
 	protected abstract int GetSupressionRange(Controllable actor);
-	protected abstract int GetAwarenessResistanceEffect(Controllable actor);
+	protected abstract int GetdeterminationResistanceEffect(Controllable actor);
 	protected virtual int GetSupressionStrenght(Controllable actor)
 	{
 		return 1;
@@ -74,20 +81,29 @@ public abstract class Attack : Action
 	
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-
-		if (target != lastTarget)
+		
+		if (target != lastTarget && (UI.ffmode || (WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
-		}	
+		}
+
+		if (previewShot == null)
+		{
+			return;
+		}
+
 		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.CollisionPoint.X, (int)previewShot.result.CollisionPoint.Y),previewShot.supressionRange);
 		foreach (var tile in tiles)
 		{
 			if (tile.Surface == null) continue;
-							
+			if(WorldManager.Instance.CenterToCenterRaycast(previewShot.result.CollisionPoint,tile.Position,Cover.High,true).hit)
+			{
+				continue;
+			}
 			Texture2D sprite = tile.Surface.GetTexture();
 
-			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.Cyan*0.3f);
+			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue*0.45f);
 		}
 					
 		var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
@@ -184,8 +200,6 @@ public abstract class Attack : Action
 
 			}
 			spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(2f,2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Red, 25f);
-						
 			var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
 			var coverobjtransform = coverobj.Type.Transform;
 			Texture2D yellowsprite = coverobj.GetTexture();
@@ -209,9 +223,9 @@ public abstract class Attack : Action
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			if (hitobj.ControllableComponent != null)
 			{
-				if (hitobj.ControllableComponent.Awareness > 0)
+				if (hitobj.ControllableComponent.determination > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.awarenessResistanceCoefficient) + ("  (-"+previewShot.awarenessResistanceCoefficient+" due to awareness)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.determinationResistanceCoefficient) + ("  (-"+previewShot.determinationResistanceCoefficient+" due to determination)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 				else
 				{

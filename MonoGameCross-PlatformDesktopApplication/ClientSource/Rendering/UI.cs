@@ -29,7 +29,7 @@ namespace MultiplayerXeno
 		private static GraphicsDevice graphicsDevice;
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
-		private static Texture2D[] healthIndicator = new Texture2D[2];
+		private static Texture2D[] healthIndicator = new Texture2D[3];
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
 
@@ -54,7 +54,7 @@ namespace MultiplayerXeno
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
-			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 2, healthIndicatorSpriteSheet.Height);
+			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
 
@@ -85,7 +85,7 @@ namespace MultiplayerXeno
 		public static event MouseClick RightClickUp;
 		public static event MouseClick LeftClickUp;
 
-		private static MouseState lastState;
+		private static MouseState lastMouseState;
 
 		public static void MouseDown(object? sender, EventArgs e)
 		{
@@ -106,7 +106,7 @@ namespace MultiplayerXeno
 				RightClick?.Invoke(gridClick);
 			}
 
-			lastState = mouseState;
+			lastMouseState = mouseState;
 		}
 
 		public static void MouseUp(object? sender, EventArgs e)
@@ -118,12 +118,12 @@ namespace MultiplayerXeno
 
 			var mouseState = Mouse.GetState();
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			if (lastState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
+			if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
 			{
 				LeftClickUp?.Invoke(gridClick);
 			}
 
-			if (lastState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
+			if (lastMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
 			{
 				RightClickUp?.Invoke(gridClick);
 			}
@@ -723,8 +723,10 @@ namespace MultiplayerXeno
 
 		}
 
+		public static bool ffmode { get; private set; } = false;
 		private static string PreviewDesc;
 		private static Label descBox;
+		private static TextButton ffmodebtn;
 		private static void SetPreviewDesc(string desc)
 		{
 			PreviewDesc = desc;
@@ -771,23 +773,36 @@ namespace MultiplayerXeno
 					//ShowGridLines = true,
 				};
 				root.Widgets.Add(buttonContainer);
+				ffmodebtn = new TextButton()
+				{
+					Text = "FreeFire Mode: " + (ffmode ? "On" : "Off"),
+					GridColumn = 0,
+					GridRow = 0,
 				
+				};
+				ffmodebtn.Click += (o, a) =>
+				{
+					ffmode = !ffmode;
+					ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
+				};
+				
+				buttonContainer.RowsProportions.Add(new Proportion(ProportionType.Pixels,20));
+				buttonContainer.Widgets.Add(ffmodebtn);
 				var fire = new ImageButton()
 				{
 					GridColumn = 0,
-					GridRow = 0,
-					//Text = "Fire",
-					
+					GridRow = 1,
+
 					Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
 				//	Scale = new Vector2(1.5f)
 				};
 				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
-				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose awareness. Cost: 1 action, 1 move");
+				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose determination. Cost: 1 action, 1 move");
 				buttonContainer.Widgets.Add(fire);
 				var watch = new ImageButton
 				{
 					GridColumn = 1,
-					GridRow = 0,
+					GridRow = 1,
 				//	Text = "Overwatch",
 					Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
 				};
@@ -797,7 +812,7 @@ namespace MultiplayerXeno
 				var crouch = new ImageButton
 				{
 					GridColumn = 2,
-					GridRow = 0,
+					GridRow = 1,
 			//		Text = "Crouch/Stand",
 					Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 				};
@@ -816,7 +831,7 @@ namespace MultiplayerXeno
 					var actBtn = new ImageButton	
 					{
 						GridColumn = column,
-						GridRow = 0,
+						GridRow = 1,
 					//	Text = act.Item1,
 						Image = new TextureRegion(TextureManager.GetTexture("UI/"+act.Item1))
 					};
@@ -867,7 +882,7 @@ namespace MultiplayerXeno
 			for (int i = 1; i <=  controllable.Type.MaxActionPoints; i++)
 			{
 				
-				if (controllable.ActionPoints < i)
+				if (controllable.FirePoints < i)
 				{
 					indicators.Enqueue(infoIndicator[4]);
 				}
@@ -886,10 +901,14 @@ namespace MultiplayerXeno
 				offset++;
 			}
 			
-			for (int i = 0; i < controllable.Type.MaxAwareness; i++)
+			for (int i = 0; i < controllable.Type.Maxdetermination; i++)
 			{
 				var indicator = healthIndicator[1];
-				if (controllable.Type.MaxAwareness - i > controllable.Awareness)
+				if (controllable.Type.Maxdetermination  - i  == controllable.determination+1 && !controllable.paniced)
+				{
+					indicator= healthIndicator[2];
+				}
+				else if (controllable.Type.Maxdetermination - i > controllable.determination)
 				{
 					indicator= healthIndicator[0];
 				}
@@ -911,10 +930,17 @@ namespace MultiplayerXeno
 			}
 		}
 
-
+		private static KeyboardState lastState;
 		public static void Update(float deltatime)
 		{
-			
+			var keyboardState = Keyboard.GetState();
+			if (keyboardState.IsKeyDown(Keys.Tab) && lastState.IsKeyUp(Keys.Tab))
+			{
+				ffmode = !ffmode;
+				ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
+			}
+
+			lastState = keyboardState;
 		}
 
 		private static bool raycastDebug;

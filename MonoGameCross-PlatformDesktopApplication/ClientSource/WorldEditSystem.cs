@@ -109,6 +109,11 @@ namespace MultiplayerXeno
 
 		private static bool IsValidPlacement(Vector2Int pos)
 		{
+			if (!WorldManager.IsPositionValid(pos))
+			{
+				return false;
+			}
+
 			var tile = WorldManager.Instance.GetTileAtGrid(pos);
 			WorldTile tile2;
 			WorldObjectType type = PrefabManager.Prefabs[ActivePrefab];

@@ -22,7 +22,7 @@ namespace MultiplayerXeno
 		public int WeaponRange = 10;
 		
 		public int MaxHealth = 10;
-		public int MaxAwareness = 2;
+		public int Maxdetermination = 2;
 
 
 		public Texture2D[] CrouchSpriteSheet;

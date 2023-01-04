@@ -13,7 +13,7 @@ namespace MultiplayerXeno
 		public int originalDmg;
 		public int dropoffRange;
 		public Vector2[] dropOffPoints;
-		public int awarenessResistanceCoefficient = 1;
+		public int determinationResistanceCoefficient = 1;
 		public int supressionRange;
 		public int supressionStrenght;
 		public Projectile(ProjectilePacket packet)
@@ -23,7 +23,7 @@ namespace MultiplayerXeno
 			this.dmg = packet.dmg;
 			this.originalDmg = packet.dmg;
 			this.dropoffRange = packet.dropoffRange;
-			this.awarenessResistanceCoefficient = packet.awarenessResistanceCoefficient;
+			this.determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
 			this.supressionRange = packet.suppresionRange;
 			this.supressionStrenght = packet.supressionStrenght;
 			CalculateDetails();
@@ -31,16 +31,19 @@ namespace MultiplayerXeno
 		}
 
 
-		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool lowShot = false, int awarenessResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
+		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
 			this.originalDmg = dmg;
 			this.dropoffRange = dropoffRange;
-			this.awarenessResistanceCoefficient = awarenessResistanceCoefficient;
+			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
 
-			if (lowShot)
+			if (shooterLow)
+			{
+				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.High);
+			}else if (targetLow)
 			{
 				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.Full);
 			}
@@ -49,30 +52,43 @@ namespace MultiplayerXeno
 				result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			}
 
-
-			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.CollisionPoint+Vector2.Normalize(to-from);
-
-			
-			RayCastOutcome cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
-				if (cast.hit && result.hitObjID != cast.hitObjID)
+			if (result.hit)
+			{
+				Vector2 dir = Vector2.Normalize(from - to);
+				to = result.CollisionPoint + Vector2.Normalize(to - from);
+				RayCastOutcome cast;
+				if (Vector2.Distance(from, to) <= 1.5)
 				{
-					covercast = cast;
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true); //ignore cover pointblank
+					if (cast.hit && result.hitObjID != cast.hitObjID)
+					{
+						covercast = cast;
+					}
 				}
 				else
 				{
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;
 					}
 					else
 					{
-						covercast = null;
+						cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
+						if (cast.hit && result.hitObjID != cast.hitObjID)
+						{
+							covercast = cast;
+						}
+						else
+						{
+							covercast = null;
+						}
 					}
 				}
 
-			
+
+			}
+
 
 			CalculateDetails();
 		}
@@ -147,10 +163,15 @@ namespace MultiplayerXeno
 			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.CollisionPoint,supressionRange);
 			foreach (var tile in tiles)
 			{
+				if(WorldManager.Instance.CenterToCenterRaycast(result.CollisionPoint,tile.Position,Cover.High,true).hit)
+				{
+					continue;
+				}
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.Awareness -= supressionStrenght;
-					if (tile.ObjectAtLocation.ControllableComponent.Awareness <= 0)
+					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
+					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
+					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();
 					}

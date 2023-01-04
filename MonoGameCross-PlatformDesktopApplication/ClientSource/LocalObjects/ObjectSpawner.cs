@@ -35,7 +35,7 @@ public static class ObjectSpawner
 		for (int i = 0; i < 10; i++)
 		{
 			Vector2 dir = Vector2.Normalize(to - from);
-			dir += new Vector2( Random.Shared.Next(-50,50)/100f,Random.Shared.Next(-50,50)/100f);
+			dir += new Vector2( Random.Shared.Next(-20,20)/100f,Random.Shared.Next(-20,20)/100f);
 			Audio.PlaySound("MG", from);
 			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
 			Thread.Sleep(50);
@@ -53,7 +53,7 @@ public static class ObjectSpawner
 		for (int i = 0; i < 20; i++)
 		{
 			Vector2 dir = Vector2.Normalize(to - from);
-			dir += new Vector2( Random.Shared.Next(-100,100)/100f,Random.Shared.Next(-100,100)/100f);
+			dir += new Vector2( Random.Shared.Next(-50,50)/100f,Random.Shared.Next(-50,50)/100f);
 			Audio.PlaySound("MG", from);
 			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
 			Thread.Sleep(35);

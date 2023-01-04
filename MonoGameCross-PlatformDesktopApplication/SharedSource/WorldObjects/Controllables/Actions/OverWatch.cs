@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,30 +12,30 @@ public class OverWatch : Action
 	}
 
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int position)
 	{
 
 		if (actor.TurnPoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough turn points");
 		}
 		if (actor.MovePoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough move points");
 		}
-		if (actor.ActionPoints <= 0)
+		if (actor.FirePoints <= 0)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
 	
 
-		return true;
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		actor.TurnPoints=0;
-		actor.ActionPoints=0;
+		actor.FirePoints=0;
 		actor.MovePoints=0;
 		var positions = GetOverWatchPositions(actor, target);
 		foreach (var position in positions)
@@ -44,7 +45,7 @@ public class OverWatch : Action
 		}
 
 		actor.overWatch = true;
-
+		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
 
 	}
 
@@ -61,7 +62,14 @@ public class OverWatch : Action
 				positions.Add(pos);
 			}
 
-			
+		}
+
+		foreach (var position in new List<Vector2Int>(positions))
+		{
+			if (!actor.CanHit(position))
+			{
+				positions.Remove(position);
+			}
 		}
 
 		return positions;
@@ -78,10 +86,17 @@ public class OverWatch : Action
 
 			var tile = WorldManager.Instance.GetTileAtGrid(pos);
 			if (tile.Surface == null) continue;
+			
+			Color c = Color.Yellow * 0.45f;
+			
+			if (actor.CanHit(pos,true))
+			{
+				c = Color.Green * 0.45f;
+			}
 							
 			Texture2D texture = tile.Surface.GetTexture();
 
-			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, Color.Orange*0.3f);
+			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
 		}
 
 	}

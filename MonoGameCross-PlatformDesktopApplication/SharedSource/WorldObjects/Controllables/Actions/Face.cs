@@ -1,4 +1,5 @@
-﻿using CommonData;
+﻿using System;
+using CommonData;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -10,28 +11,28 @@ public class Face : Action
 	}
 
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
 		
 		
 		var targetDir = Utility.ToClampedDirection(actor.worldObject.TileLocation.Position - position);
 		if (targetDir == actor.worldObject.Facing)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Already facing that direction");
 		}//dont let the action happen if the player is already facing that direction 
 
 		if (Controllable.moving)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Can't face while moving");
 		}
 
-		if (actor.TurnPoints > 0)
+		if (actor.TurnPoints <= 0)
 		{
-			return true;
+			return new Tuple<bool, string>(false, "Not enough turn points");
 		}
 	
 
-		return false;
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)

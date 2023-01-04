@@ -9,8 +9,6 @@ public static class DiscordManager
 {
 	public static DiscordRPC client { get; private set; }
 	private static bool enabled = false;
-	public static string details = "gaming";
-	static DateTime startTime = DateTime.Now;
 	public static void Init()
 	{
 		client = new DiscordRPC("1056950888956178485");
@@ -35,7 +33,7 @@ public static class DiscordManager
 			State = "In Menu",
 			Timestamps = new Timestamps()
 			{
-				Start = startTime,
+				Start = DateTime.Now,
 
 			},			
 			Assets = new Assets()

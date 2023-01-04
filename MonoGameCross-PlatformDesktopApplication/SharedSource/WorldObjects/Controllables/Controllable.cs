@@ -30,13 +30,13 @@ namespace MultiplayerXeno
 			{
 				Health = data.Health;
 			}
-			if (data.Awareness == -1)
+			if (data.Determination == -1)
 			{
-				Awareness = type.MaxAwareness;
+				determination = type.Maxdetermination;
 			}
 			else
 			{
-				Awareness = data.Awareness;
+				determination = data.Determination;
 			}
 
 
@@ -50,7 +50,7 @@ namespace MultiplayerXeno
 			}
 			if (data.ActionPoints != -1)
 			{
-				this.ActionPoints = data.ActionPoints;
+				this.FirePoints = data.ActionPoints;
 			}
 			if (data.TurnPoints != -1)
 			{
@@ -64,10 +64,10 @@ namespace MultiplayerXeno
 		}
 		public int MovePoints { get;  set; } = 0;
 		public int  TurnPoints { get;  set; } = 0;
-		public int ActionPoints { get;  set; } = 0;
+		public int FirePoints { get;  set; } = 0;
 
 		public int Health = 0;
-		public int Awareness = 0;
+		public int determination = 0;
 
 		public bool Crouching { get;  set; } = false;
 
@@ -78,7 +78,14 @@ namespace MultiplayerXeno
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-				range -= 2;
+				if (Type.MaxMovePoints == 3)//shitcode
+				{
+					range -= 1;
+				}
+				else
+				{
+					range -= 2;
+				}
 			}
 
 			return range;
@@ -101,16 +108,24 @@ namespace MultiplayerXeno
 		{
 			var dmg = projectile.dmg;
 			Console.WriteLine(this +"(health:"+this.Health+") hit for "+dmg);
-			if (Awareness > 0)
+			if (determination > 0)
 			{
-				Console.WriteLine("blocked by awareness");
-				dmg = projectile.dmg - projectile.awarenessResistanceCoefficient;
+				Console.WriteLine("blocked by determination");
+				dmg = projectile.dmg - projectile.determinationResistanceCoefficient;
 
 			}
-			
-			Console.WriteLine("health - "+dmg);
-			Health -= dmg;
 
+			if (dmg <= 0)
+			{
+				Console.WriteLine("0 damage");
+				return;
+			}
+
+
+			Health -= dmg;
+			
+			Console.WriteLine("unit hit for: "+dmg);
+			Console.WriteLine("outcome: health="+this.Health);
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
@@ -134,21 +149,42 @@ namespace MultiplayerXeno
 			//apply effects and offests
 			return Type.SightRange;
 		}
-		
-		
+
+		public bool CanHit(Vector2Int target, bool lowTarget = false)
+		{
+			
+			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
+			RayCastOutcome cast;
+			if (lowTarget)
+			{
+				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.High, true,Cover.Full);
+			}
+			else
+			{
+				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.Full, true);
+			}
+
+			if (cast.hit)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public void StartTurn()
 		{
 			MovePoints = Type.MaxMovePoints;
 			TurnPoints = Type.MaxTurnPoints;
-			ActionPoints = Type.MaxActionPoints;
-			if (Awareness < 0)
+			FirePoints = Type.MaxActionPoints;
+			if (determination < 0)
 			{
-				Awareness = 0;
+				determination = 0;
 			}
 
-			if (Awareness < Type.MaxAwareness)
+			if (determination < Type.Maxdetermination)
 			{
-				Awareness++;
+				determination++;
 			}
 			if(paniced)
 			{
@@ -161,7 +197,7 @@ namespace MultiplayerXeno
 			
 
 				paniced = false;
-				Awareness--;
+				determination--;
 				MovePoints--;
 				TurnPoints--;
 			}
@@ -173,8 +209,12 @@ namespace MultiplayerXeno
 #if CLIENT
 			if (!IsMyTeam()) return;
 #endif
-			if (!a.CanPerform(this, target))
+			var result = a.CanPerform(this, target);
+			if (!result.Item1)
 			{
+#if CLIENT
+				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
+#endif
 				return;
 			}
 #if CLIENT
@@ -187,13 +227,16 @@ namespace MultiplayerXeno
 			
 		}
 
-		private bool paniced = false;
+		public bool paniced { get; private set; }= false;
 		public void Panic()
 		{
 			Crouching = true;
 			paniced = true;
 #if CLIENT
-			new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+			if (worldObject.IsVisible())
+			{
+				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+			}
 #endif
 			ClearOverWatch();
 			
@@ -260,7 +303,6 @@ namespace MultiplayerXeno
 					}
 
 					worldObject.Move(CurrentPath[0]);
-					Console.WriteLine("moved");
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
@@ -269,7 +311,7 @@ namespace MultiplayerXeno
 #if CLIENT
 						UI.SetUI(UI.UnitUi);
 #endif
-						Console.WriteLine("done moving ");
+					
 					}
 					//todo jump view to move
 #if CLIENT
@@ -287,7 +329,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,ActionPoints,MovePoints,TurnPoints,Health,Awareness);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination);
 			data.JustSpawned = false;
 			return data;
 		}
