@@ -95,6 +95,7 @@ namespace MultiplayerXeno
 							if(GetTileAtGrid(tile).Visible < visibility)
 							{
 								GetTileAtGrid(tile).Visible = visibility;
+								GetTileAtGrid(tile)?.ObjectAtLocation?.ControllableComponent.Spoted();
 							}
 							
 							
