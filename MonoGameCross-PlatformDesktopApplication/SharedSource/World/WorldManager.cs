@@ -190,6 +190,9 @@ namespace MultiplayerXeno
 				if (!cast.hit)
 				{
 					return Visibility.Full;
+				}else if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && GetObject(cast.hitObjID).GetCover() != Cover.Full)
+				{
+					return Visibility.Partial;
 				}
 			}
 			foreach (var cast in PartalCasts)
@@ -362,7 +365,7 @@ namespace MultiplayerXeno
 					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables);
 
 					
-					if (hitobj.Id != -1 ) //this is super hacky and convoluted
+					if (hitobj.Id != -1 )
 					{
 						Cover c = hitobj.GetCover();
 						if (Utility.DoesEdgeBorderTile(hitobj, startcell))

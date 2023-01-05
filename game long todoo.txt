@@ -1,8 +1,4 @@
 client sent an impossible action fix
-targeting cursor
-movement locks all actions
-see one tile behind cover
-pointblank cover blocking crouch
 only direct shots???how??
 face preview
 resync after every turn
