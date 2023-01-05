@@ -72,6 +72,11 @@ namespace MultiplayerXeno
 
 				i++;
 			}
+
+			if (Random.Shared.Next(100) > 50)
+			{
+				NextTurn();
+			}
 		}
 
 		public static void SendData()

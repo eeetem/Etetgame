@@ -8,14 +8,15 @@ public class ProjectilePacket : Packet
 
 	public override void BeforeReceive()
 	{
-		result.CollisionPoint = new Vector2(RCollisionPointX, RCollisionPointY);
+		result.CollisionPointLong = new Vector2(RCollisionPointX, RCollisionPointY);
+		result.CollisionPointShort = new Vector2(RCollisionPointshortX, RCollisionPointshortY);
 		result.StartPoint = new Vector2(RStartPointX, RStartPointY);
 		result.EndPoint = new Vector2(REndPointX, REndPointY);
 
 		if (covercast != null)
 		{
 			
-			covercast.CollisionPoint = new Vector2(CCollisionPointX, CCollisionPointY);
+			covercast.CollisionPointLong = new Vector2(CCollisionPointX, CCollisionPointY);
 			covercast.StartPoint = new Vector2(CStartPointX, CStartPointY);
 			covercast.EndPoint = new Vector2(CEndPointX, CEndPointY);
 
@@ -26,8 +27,11 @@ public class ProjectilePacket : Packet
 
 	public override void BeforeSend()
 	{
-		RCollisionPointX = result.CollisionPoint.X;
-		RCollisionPointY = result.CollisionPoint.Y;
+		RCollisionPointX = result.CollisionPointLong.X;
+		RCollisionPointY = result.CollisionPointLong.Y;
+		
+		RCollisionPointshortX = result.CollisionPointShort.Y;
+		RCollisionPointshortY = result.CollisionPointShort.Y;
 		
 		RStartPointX = result.StartPoint.X;
 		RStartPointY = result.StartPoint.Y;
@@ -39,8 +43,8 @@ public class ProjectilePacket : Packet
 		{
 
 
-			CCollisionPointX = covercast.CollisionPoint.X;
-			CCollisionPointY = covercast.CollisionPoint.Y;
+			CCollisionPointX = covercast.CollisionPointLong.X;
+			CCollisionPointY = covercast.CollisionPointLong.Y;
 
 			CStartPointX = covercast.StartPoint.X;
 			CStartPointY = covercast.StartPoint.Y;
@@ -51,6 +55,8 @@ public class ProjectilePacket : Packet
 	}
 	public float RCollisionPointX{get;set;}
 	public float RCollisionPointY{get;set;}
+	public float RCollisionPointshortX{get;set;}
+	public float RCollisionPointshortY{get;set;}
 	public float RStartPointX{get;set;}
 	public float RStartPointY{get;set;}
 	public float REndPointX{get;set;}

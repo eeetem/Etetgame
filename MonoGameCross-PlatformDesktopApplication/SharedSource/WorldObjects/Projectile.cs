@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
+using Network;
 
 namespace MultiplayerXeno
 {
@@ -51,11 +52,12 @@ namespace MultiplayerXeno
 			{
 				result = WorldManager.Instance.Raycast(from , to, Cover.Full);
 			}
-
+			
 			if (result.hit)
 			{
-				Vector2 dir = Vector2.Normalize(from - to);
-				to = result.CollisionPoint + Vector2.Normalize(to - from);
+
+				Vector2 dir = Vector2.Normalize(to - from);
+				to = result.CollisionPointLong + Vector2.Normalize(to - from);
 				RayCastOutcome cast;
 				if (Vector2.Distance(from, to) <= 1.5)
 				{
@@ -95,7 +97,7 @@ namespace MultiplayerXeno
 
 		public void CalculateDetails()
 		{
-			float range = Math.Min( Vector2.Distance(result.StartPoint, result.CollisionPoint), Vector2.Distance(result.StartPoint, result.EndPoint));
+			float range = Math.Min( Vector2.Distance(result.StartPoint, result.CollisionPointLong), Vector2.Distance(result.StartPoint, result.EndPoint));
 			int dropOffs = 0;
 			while (range > dropoffRange)
 			{
@@ -113,6 +115,25 @@ namespace MultiplayerXeno
 
 				dropOffPoints[i] = result.StartPoint + (Vector2.Normalize(result.EndPoint - result.StartPoint)* dropoffRange *(i+1));
 			}
+		}
+
+		public List<WorldTile> SupressedTiles()
+		{
+			var pos = new Vector2Int((int) result.CollisionPointLong.X, (int) result.CollisionPointLong.Y);
+			var worldTile = WorldManager.Instance.GetTileAtGrid(pos);
+			if (result.CollisionPointLong != result.EndPoint)
+			{
+				
+				var dir = Utility.GetDirectionToSideWithPoint(pos, result.CollisionPointLong);
+				
+				if (worldTile.GetCover(dir,true)>Cover.High)
+				{
+					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
+		
+				}
+			}
+			var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,true);
+			return tiles;
 		}
 
 		public void Fire()
@@ -160,15 +181,15 @@ namespace MultiplayerXeno
 				Console.WriteLine("MISS");
 				//nothing is hit
 			}
-			List<WorldTile> tiles = WorldManager.Instance.GetTilesAround(result.CollisionPoint,supressionRange);
+
+			List<WorldTile> tiles = SupressedTiles();
+			Console.WriteLine("starting to supress");
+			Console.WriteLine("checking " + tiles.Count + " tiles");
 			foreach (var tile in tiles)
 			{
-				if(WorldManager.Instance.CenterToCenterRaycast(result.CollisionPoint,tile.Position,Cover.High,true).hit)
-				{
-					continue;
-				}
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
+					Console.WriteLine("found controllable");
 					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
 					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
 					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)

@@ -15,7 +15,7 @@ public class Face : Action
 	{
 		
 		
-		var targetDir = Utility.ToClampedDirection(actor.worldObject.TileLocation.Position - position);
+		var targetDir =  Utility.GetDirection(actor.worldObject.TileLocation.Position, position);
 		if (targetDir == actor.worldObject.Facing)
 		{
 			return new Tuple<bool, string>(false, "Already facing that direction");
@@ -37,7 +37,7 @@ public class Face : Action
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
-		var targetDir = Utility.ToClampedDirection(actor.worldObject.TileLocation.Position - target);
+		var targetDir = Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
 		actor.TurnPoints--;
 		actor.worldObject.Face(targetDir);
 	}

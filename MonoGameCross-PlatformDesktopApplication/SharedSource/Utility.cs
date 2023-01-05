@@ -12,22 +12,7 @@ namespace MultiplayerXeno
 	public static class Utility
 	{ 
         
-        public static Direction ToClampedDirection(Vector2 vector2)
-        {
-            vector2.Normalize();
 
-            float angle = vector2.ToAngle() * (float) (180 / Math.PI);
-
-            angle = (float) Math.Round(angle / 45) * 45;
-
-            Vector2 clamped = new Vector2(-(float) Math.Sin(angle * (Math.PI / 180)), (float) Math.Cos(angle * (Math.PI / 180)));
-
-            clamped.Normalize();
-
-            clamped.Round();
-
-            return Vec2ToDir(clamped);
-        }
         public static Vector2Int DirToVec2(Direction dir)
         {
             dir = Utility.NormaliseDir(dir);
@@ -97,10 +82,21 @@ namespace MultiplayerXeno
             return gridPos;
         }
 
-        public static Direction Vec2ToDir(Vector2Int vec2)
+        public static Direction Vec2ToDir(Vector2 vec2)
         {
+            vec2.Normalize();
+
+            float angle = vec2.ToAngle() * (float) (180 / Math.PI);
+
+            angle = (float) Math.Round(angle / 45) * 45;
+
+            Vector2 clamped = new Vector2((float) Math.Sin(angle * (Math.PI / 180)), -(float) Math.Cos(angle * (Math.PI / 180)));
+
+            clamped.Normalize();
+
+            clamped.Round();
             
-            switch (vec2)
+            switch (clamped)
             {
                 case (1, 0):
                     return Direction.East;
@@ -251,7 +247,44 @@ namespace MultiplayerXeno
 
             return (Direction)dir;
         }
+    
+        
+        public static Direction GetDirection(Vector2Int from, Vector2Int to)
+        {
+            Vector2Int dir = to - from;
+            return Vec2ToDir(dir);
+        }
+        public static Direction GetDirectionToSideWithPoint(Vector2Int tile, Vector2 point)
+        {
+            Vector2 dir = point - (Vector2)(tile);
+            Console.WriteLine(dir);
+            if (dir.X == dir.Y || dir.X == 1-dir.Y || 1-dir.X == dir.Y)
+            {
+                return Vec2ToDir(dir);
+            }
 
+
+            if (dir.X < 0.1 && dir.X > -0.1)
+                {
+                    return Direction.West;
+                }
+                if (dir.X < 1.1 && dir.X > 0.9)
+                {
+                    return Direction.East;
+                }
+                if (dir.Y < 0.1 && dir.Y > -0.1)
+                {
+                    return Direction.North;
+                }
+                if (dir.Y < 1.1 && dir.Y > 0.9)
+                {
+                    return Direction.South;
+                }
+                throw new Exception("not an side");
+
+        }
+        
+        
         public static bool DoesEdgeBorderTile(WorldObject edge, Vector2Int pos)
         {
             if(!WorldManager.IsPositionValid(pos))return false;

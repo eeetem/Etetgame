@@ -1,6 +1,12 @@
 client sent an impossible action fix
 targeting cursor
-line wrap chat
+movement locks all actions
+see one tile behind cover
+pointblank cover blocking crouch
+only direct shots???how??
+face preview
+resync after every turn
+chat autoscroll
 point blank supression
 checks for desyncs
 resync code fix
@@ -16,7 +22,4 @@ ghosting with pathfinding
 turn timer
 bomb defuse gamemode
 random map generation
-
-
-qol polish stuff
 remember server and login

@@ -209,11 +209,11 @@ namespace MultiplayerXeno
 			return data;
 		}
 
-		public Cover GetCover(Direction dir)
+		public Cover GetCover(Direction dir, bool ignoreControllables = false)
 		{
 			WorldObject? obj = GetCoverObj(dir);
 		
-			return GetCoverObj(dir).GetCover();
+			return GetCoverObj(dir,ignoreControllables).GetCover();
 			
 
 

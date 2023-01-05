@@ -273,7 +273,7 @@ namespace MultiplayerXeno
 			{
 				GridColumn = 1,
 				GridRow = 1,
-				Text = "localhost"
+				Text = "46.7.175.47"
 			};
 			grid.Widgets.Add(textBox);
 			var textBox2 = new TextBox()
@@ -1030,14 +1030,14 @@ namespace MultiplayerXeno
 		{
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			//TileCoordinate = new Vector2(34, 33);
+			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-			
+		
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-			if (WorldManager.IsPositionValid(TileCoordinate))
-			{
-
+		
 
 				for (int i = 0; i < 8; i++)
 				{
@@ -1060,7 +1060,7 @@ namespace MultiplayerXeno
 					spriteBatch.Draw(indicator, Mousepos, c);
 				}
 
-			}
+			
 
 			if (targeting)
 			{
@@ -1136,8 +1136,8 @@ namespace MultiplayerXeno
 						count++;
 					
 						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Red, 5f);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPoint), Color.Yellow, 2);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPoint), Utility.GridToWorldPos(cast.CollisionPoint) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPointLong), Color.Yellow, 2);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPointLong), Utility.GridToWorldPos(cast.CollisionPointLong) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
 					}
 					else
 					{

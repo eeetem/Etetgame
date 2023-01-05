@@ -28,7 +28,7 @@ public abstract class Attack : Action
 
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-
+	//	target = actor.worldObject.TileLocation.Position + new Vector2(-2,0);
 		bool lowShot =false;
 
 
@@ -60,7 +60,7 @@ public abstract class Attack : Action
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght));
 
 #endif
-		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
+		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 
 	}
 
@@ -83,6 +83,11 @@ public abstract class Attack : Action
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		UI.targeting = true;
+		if (actor.worldObject.TileLocation.Position == target)
+		{
+			return;
+		}
+
 		if (target != lastTarget && (UI.ffmode || (WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
 		{
 			previewShot = MakeProjectile(actor, target);
@@ -94,18 +99,19 @@ public abstract class Attack : Action
 			return;
 		}
 
-		var tiles = WorldManager.Instance.GetTilesAround(new Vector2Int((int)previewShot.result.CollisionPoint.X, (int)previewShot.result.CollisionPoint.Y),previewShot.supressionRange);
-		foreach (var tile in tiles)
-		{
-			if (tile.Surface == null) continue;
-			if(WorldManager.Instance.CenterToCenterRaycast(previewShot.result.CollisionPoint,tile.Position,Cover.High,true).hit)
-			{
-				continue;
-			}
-			Texture2D sprite = tile.Surface.GetTexture();
+		
 
-			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue*0.45f);
+		foreach (var tile in previewShot.SupressedTiles())
+		{
+
+				if (tile.Surface == null) continue;
+
+				Texture2D sprite = tile.Surface.GetTexture();
+
+				spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue*0.45f);
+			
 		}
+		
 					
 		var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
 		var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
@@ -118,7 +124,7 @@ public abstract class Attack : Action
 		{
 			if (dropOff == previewShot.dropOffPoints.Last())
 			{
-				point2 = Utility.GridToWorldPos(previewShot.result.CollisionPoint);
+				point2 = Utility.GridToWorldPos(previewShot.result.CollisionPointLong);
 							
 			}
 			else
@@ -158,13 +164,18 @@ public abstract class Attack : Action
 				
 		spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,5);
 		int coverModifier = 0;
-					
-		var hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+		WorldObject? hitobj = null;
+		if (previewShot.result.hitObjID != -1)
+		{
+			hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+		}
+
+		 
 		if (previewShot.covercast != null && previewShot.covercast.hit)
 		{
 			Color c = Color.Green;
 			string hint = "";
-			var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPoint);
+			var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong);
 			Cover cover = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover();
 			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 			{
@@ -207,7 +218,7 @@ public abstract class Attack : Action
 
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPoint), 15, 10, Color.Yellow, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
 
 		}
 				
@@ -220,17 +231,17 @@ public abstract class Attack : Action
 						
 
 			spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPoint), 15, 10, Color.Red, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPointLong), 15, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			if (hitobj.ControllableComponent != null)
 			{
 				if (hitobj.ControllableComponent.determination > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.determinationResistanceCoefficient) + ("  (-"+previewShot.determinationResistanceCoefficient+" due to determination)"), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.determinationResistanceCoefficient) + ("  (-"+previewShot.determinationResistanceCoefficient+" due to determination)"), Utility.GridToWorldPos(previewShot.result.CollisionPointLong + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 				else
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPoint + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPointLong + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 				}
 			}
 		}

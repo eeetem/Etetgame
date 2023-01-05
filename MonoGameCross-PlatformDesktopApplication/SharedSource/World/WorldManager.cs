@@ -340,24 +340,26 @@ namespace MultiplayerXeno
 	
 				WorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
-				Vector2 collisionPoint = ((totalLenght+0.05f) * dir) + (startPos);
+				Vector2 collisionPointlong = ((totalLenght+0.05f) * dir) + (startPos);
+				Vector2 collisionPointshort = ((totalLenght-0.1f) * dir) + (startPos);
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);
 				}
 				else
 				{
-					result.CollisionPoint = collisionPoint;
+					result.CollisionPointLong = collisionPointlong;
+					result.CollisionPointShort = collisionPointshort;
 					result.hit = false;
 					return result;
 				}
-				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPoint;
+				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPointlong;
 
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 	
-					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
+					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables);
 
 					
 					if (hitobj.Id != -1 ) //this is super hacky and convoluted
@@ -367,7 +369,8 @@ namespace MultiplayerXeno
 						{
 							if (c >= minHtCoverSameTile)
 							{
-								result.CollisionPoint = collisionPoint;
+								result.CollisionPointLong = collisionPointlong;
+								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
@@ -380,7 +383,8 @@ namespace MultiplayerXeno
 						{
 							if (c >= minHitCover)
 							{
-								result.CollisionPoint = collisionPoint;
+								result.CollisionPointLong = collisionPointlong;
+								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
@@ -393,7 +397,8 @@ namespace MultiplayerXeno
 
 				if (endcell == checkingSquare)
 				{
-					result.CollisionPoint = endcell + new Vector2(0.5f, 0.5f);
+					result.CollisionPointLong = endcell + new Vector2(0.5f, 0.5f);
+					result.CollisionPointShort = endcell + new Vector2(0.5f, 0.5f);
 					result.hit = false;
 					return result;
 				}
@@ -448,7 +453,7 @@ namespace MultiplayerXeno
 	
 		}
 
-		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1)
+		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, bool lineOfSight = false)
 		{
 			int x = pos.X;
 			int y = pos.Y;
@@ -465,6 +470,17 @@ namespace MultiplayerXeno
 						{
 							tiles.Add(GetTileAtGrid(new Vector2Int(i,j)));
 						}
+					}
+				}
+			}
+
+			if (lineOfSight)
+			{
+				foreach (var tile in new List<WorldTile>(tiles))
+				{
+					if(CenterToCenterRaycast(pos,tile.Position,Cover.High,true).hit)
+					{
+						tiles.Remove(tile);
 					}
 				}
 			}

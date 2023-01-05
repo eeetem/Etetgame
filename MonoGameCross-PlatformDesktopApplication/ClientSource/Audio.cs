@@ -28,6 +28,7 @@ public static class Audio
 		soundEffects.Add("MG",content.Load<SoundEffect>("audio/mg"));
 		soundEffects.Add("shotgun",content.Load<SoundEffect>("audio/shotgun"));
 		soundEffects.Add("turn",content.Load<SoundEffect>("audio/turn"));
+		soundEffects.Add("capture",content.Load<SoundEffect>("audio/capture"));
 
 
 		for (int i = 1; i < 10; i++)

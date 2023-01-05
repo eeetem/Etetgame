@@ -39,6 +39,8 @@ namespace MultiplayerXeno
 				determination = data.Determination;
 			}
 
+			this.Crouching = data.Crouching;
+
 
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
@@ -330,7 +332,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching);
 			data.JustSpawned = false;
 			return data;
 		}
