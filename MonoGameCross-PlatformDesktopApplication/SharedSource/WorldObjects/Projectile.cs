@@ -40,35 +40,45 @@ namespace MultiplayerXeno
 			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
-
-			if (shooterLow)
+				
+		/*	if (Vector2.Distance(from, to) <= 1.5)
 			{
-				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.High);
-			}else if (targetLow)
-			{
-				result = WorldManager.Instance.Raycast(from , to, Cover.High, false, Cover.Full);
-			}
-			else
-			{
-				result = WorldManager.Instance.Raycast(from , to, Cover.Full);
-			}
-			
-			if (result.hit)
-			{
+				result = WorldManager.Instance.Raycast(from , to, Cover.High,false,Cover.Full);
 
 				Vector2 dir = Vector2.Normalize(to - from);
-				to = result.CollisionPointLong + Vector2.Normalize(to - from);
-				RayCastOutcome cast;
-				if (Vector2.Distance(from, to) <= 1.5)
-				{
+					to = result.CollisionPointLong + Vector2.Normalize(to - from);
+					RayCastOutcome cast;
 					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true); //ignore cover pointblank
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;
 					}
+				
+			}
+			else
+			{*/
+
+				if (shooterLow)
+				{
+					result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.High);
+				}
+				else if (targetLow)
+				{
+					result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.Full);
 				}
 				else
 				{
+					result = WorldManager.Instance.Raycast(from, to, Cover.Full);
+				}
+
+				if (result.hit)
+				{
+
+					Vector2 dir = Vector2.Normalize(to - from);
+					to = result.CollisionPointLong + Vector2.Normalize(to - from);
+					RayCastOutcome cast;
+
+
 					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
@@ -86,11 +96,11 @@ namespace MultiplayerXeno
 							covercast = null;
 						}
 					}
+
+
+
 				}
-
-
-			}
-
+			
 
 			CalculateDetails();
 		}

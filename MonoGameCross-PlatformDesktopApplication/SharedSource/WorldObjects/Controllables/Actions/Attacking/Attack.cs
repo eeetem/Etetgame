@@ -28,7 +28,7 @@ public abstract class Attack : Action
 
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-	//	target = actor.worldObject.TileLocation.Position + new Vector2(-2,0);
+		//target = actor.worldObject.TileLocation.Position + new Vector2(-1,0);
 		bool lowShot =false;
 
 
