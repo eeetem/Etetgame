@@ -167,21 +167,26 @@ namespace MultiplayerXeno
 
 		public Visibility CanSee(Controllable controllable, Vector2 to)
 		{
-			if(Vector2.Distance(controllable.worldObject.TileLocation.Position, to) > controllable.Type.SightRange)
+			return CanSee(controllable.worldObject.TileLocation.Position, to, controllable.GetSightRange(), controllable.Crouching);
+		}
+
+		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
+		{
+			if(Vector2.Distance(From, to) > sightRange)
 			{
 				return Visibility.None;
 			}
 			RayCastOutcome[] FullCasts;
 			RayCastOutcome[] PartalCasts;
-			if (controllable.Crouching)
+			if (crouched)
 			{
-				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+				FullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
 				PartalCasts = Array.Empty<RayCastOutcome>();
 			}
 			else
 			{
-				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
-				PartalCasts  = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.Full, true);//partial visson over high cover
+				FullCasts = MultiCornerCast(From, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
+				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true);//partial visson over high cover
 							
 			}
 

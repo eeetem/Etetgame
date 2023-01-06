@@ -179,7 +179,10 @@ namespace MultiplayerXeno
 			{
 
 				case null:
-					SelectedControllable?.DoAction(Action.Actions[ActionType.Face],position);
+					Action.SetActiveAction(ActionType.Face);
+					break;
+				case ActionType.Face:
+					SelectedControllable?.DoAction(Action.ActiveAction,position);
 					break;
 				default:
 					Action.SetActiveAction(null);

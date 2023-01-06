@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CommonData;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -42,9 +44,46 @@ public class Face : Action
 		actor.worldObject.Face(targetDir);
 	}
 #if CLIENT
+
+	private Vector2Int lastTarget;
+	private List<Tuple<Vector2Int,Visibility>> previewTiles = new List<Tuple<Vector2Int, Visibility>>();
+	public override void InitAction()
+	{
+		lastTarget = new Vector2Int(0, 0);
+		base.InitAction();
+	}
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		throw new System.NotImplementedException();
+		if (lastTarget == new Vector2Int(0, 0))
+		{
+			var targetDir =  Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
+			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.worldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
+			lastTarget = target;
+		}
+		if (lastTarget != target)
+		{
+			Action.SetActiveAction(null);
+			
+		}
+		
+		foreach (var visTuple in previewTiles)
+		{
+			WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Item1);
+			if (tile.Surface == null) continue;
+
+			Texture2D sprite = tile.Surface.GetTexture();
+			Color c = Color.Pink;
+			if (visTuple.Item2 == Visibility.Full)
+			{
+				c = Color.Brown * 0.45f;
+			}else if (visTuple.Item2 == Visibility.Partial)
+			{
+				c = Color.RosyBrown * 0.45f;
+			}
+
+			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
+			
+		}
 	}
 #endif
 
