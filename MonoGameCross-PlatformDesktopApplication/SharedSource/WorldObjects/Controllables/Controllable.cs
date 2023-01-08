@@ -154,21 +154,19 @@ namespace MultiplayerXeno
 
 		public bool CanHit(Vector2Int target, bool lowTarget = false)
 		{
-			
 			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
-			RayCastOutcome cast;
-			if (lowTarget)
-			{
-				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.High, true,Cover.Full);
-			}
-			else
-			{
-				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.Full, true);
-			}
+			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
 
-			if (cast.hit)
+
+		
+				
+			if (proj.result.hit)
 			{
-				return false;
+				var hitobj = WorldManager.Instance.GetObject(proj.result.hitObjID);
+				if (hitobj.Type.Edge || hitobj.TileLocation.Position != target)
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -268,15 +266,21 @@ namespace MultiplayerXeno
 			Visibility vis = Visibility.None;
 			foreach (var unit in units)
 			{
-				var tempVis = WorldManager.Instance.CanSee(this, location);
-				if (tempVis > vis)
+				var WO = WorldManager.Instance.GetObject(unit);
+				if (WO != null)
 				{
-					vis = tempVis;
+					var tempVis = WorldManager.Instance.CanSee(WO.ControllableComponent, location);
+					if (tempVis > vis)
+					{
+						vis = tempVis;
+					}
 				}
+
+			
 			}
 			
 			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
-			if (!isFriendly && vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
 			{
 				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);

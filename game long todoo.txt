@@ -1,8 +1,8 @@
 overwatch sync
 only direct shots???how??
 resync after every turn(at some point)+checks for desyncs
-chat autoscroll
 point blank supression
+high ping overwatch fix
 resync code fix
 spectator mode
 units with actions counter

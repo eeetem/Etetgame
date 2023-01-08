@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno
@@ -99,6 +100,8 @@ namespace MultiplayerXeno
 
 		public int GetNextId()
 		{
+			
+			NextId++;
 			while (_worldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
 			{
 				NextId++;
@@ -137,16 +140,17 @@ namespace MultiplayerXeno
 			return tile;
 		}
 
-		public int MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
+		public void MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
 		{
 			WorldObjectData data = new WorldObjectData(prefabName);
 			data.Id = id;
 			data.Facing = facing;
 			data.ControllableData = controllableData;
-			return MakeWorldObjectFromData(data, GetTileAtGrid(position));
+			MakeWorldObjectFromData(data, GetTileAtGrid(position));
+			return;
 		}
 
-		private int MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
+		private void MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
 		{
 			lock (syncobj)
 			{
@@ -154,13 +158,10 @@ namespace MultiplayerXeno
 				{
 					DeleteWorldObject(data.Id); //delete existing object with same id, most likely caused by server updateing a specific entity
 				}
-
-
-			
 				createdObjects.Add(new Tuple<WorldObjectData, WorldTile>(data,tile));
 			}
 
-			return data.Id;
+			return;
 		}
 
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();

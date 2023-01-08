@@ -33,7 +33,7 @@ namespace MultiplayerXeno
 			Fire();
 		}
 
-
+	
 		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
@@ -60,19 +60,19 @@ namespace MultiplayerXeno
 			}
 			else
 			{*/
+		if (shooterLow)
+		{
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.High);
+		}
+		else if (targetLow)
+		{
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.Full);
+		}
+		else
+		{
+			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
+		}
 
-				if (shooterLow)
-				{
-					result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.High);
-				}
-				else if (targetLow)
-				{
-					result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.Full);
-				}
-				else
-				{
-					result = WorldManager.Instance.Raycast(from, to, Cover.Full);
-				}
 
 				if (result.hit)
 				{
@@ -207,9 +207,10 @@ namespace MultiplayerXeno
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					Console.WriteLine("found controllable");
 					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
+					#if SERVER
 					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
+					#endif
 					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();
