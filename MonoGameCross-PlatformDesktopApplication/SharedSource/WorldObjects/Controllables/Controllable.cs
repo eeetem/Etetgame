@@ -80,14 +80,9 @@ namespace MultiplayerXeno
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-				if (Type.MaxMovePoints == 3)//shitcode
-				{
-					range -= 1;
-				}
-				else
-				{
+
 					range -= 2;
-				}
+				
 			}
 
 			return range;
@@ -131,6 +126,11 @@ namespace MultiplayerXeno
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
+				if (_thisMoving)
+				{
+					moving = false;
+				}
+
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
 #if CLIENT
 				Audio.PlaySound("death",this.worldObject.TileLocation.Position);
@@ -216,7 +216,10 @@ namespace MultiplayerXeno
 			{
 #if CLIENT
 				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
-#endif
+#else
+				Console.WriteLine("tried to do action but failed: "+result.Item2);
+				#endif
+				
 				return;
 			}
 #if CLIENT
@@ -248,9 +251,14 @@ namespace MultiplayerXeno
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 		public void OverWatchSpoted(Vector2Int location)
 		{
+			
 #if SERVER
-			if (this.IsPlayerOneTeam != WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam&&WorldManager.Instance.CanSee(this,location) >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam;
+			Visibility vis = WorldManager.Instance.CanSee(this, location,true);
+			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
+			if (!isFriendly && vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
 			{
+				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
 			}
 #endif
@@ -293,7 +301,7 @@ namespace MultiplayerXeno
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
-				if (_moveCounter > 350)
+				if (_moveCounter > 250)
 				{
 					_moveCounter = 0;
 					try

@@ -55,6 +55,7 @@ namespace MultiplayerXeno
 
 		public static void Kick(string reason,Connection connection)
 		{
+			Console.WriteLine("Kicking " + connection.IPRemoteEndPoint.Address + " for " + reason);
 			connection.SendRawData(RawDataConverter.FromUnicodeString("notify",reason));
 			Thread.Sleep(1000);
 			connection.Close(CloseReason.ClientClosed);

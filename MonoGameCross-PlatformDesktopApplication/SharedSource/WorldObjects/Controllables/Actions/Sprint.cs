@@ -14,12 +14,20 @@ public class Sprint : Action
 	
 	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
-		if (actor.determination == actor.Type.Maxdetermination)
+		
+		if (actor.overWatch)
 		{
-			return new Tuple<bool, string>(true, "");
+			return new Tuple<bool, string>(false, "You cannot sprint while overwatching");
+		}
+		if (actor.determination != actor.Type.Maxdetermination)
+		{
+			return new Tuple<bool, string>(false, "Not enough determination");
+		
 		}
 
-		return new Tuple<bool, string>(false, "Not enough determination");
+	
+		return new Tuple<bool, string>(true, "");
+	
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)

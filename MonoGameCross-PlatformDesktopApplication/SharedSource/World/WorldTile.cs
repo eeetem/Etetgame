@@ -394,7 +394,7 @@ namespace MultiplayerXeno
 #if CLIENT//god forgive me for writting this mess
 				    && tileInDir.ObjectAtLocation.IsVisible()
 #endif	    
-				    && tileInDir.ObjectAtLocation.GetCover() >= biggestCoverObj.GetCover())
+				    && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
 				{
 					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
 					{

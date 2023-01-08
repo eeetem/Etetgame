@@ -642,6 +642,7 @@ namespace MultiplayerXeno
 		private static Panel turnIndicator;
 		private static Label scoreIndicator;
 		private static VerticalStackPanel chatBox;
+		private static ScrollViewer chatBoxViewer;
 		
 		public static void RecieveChatMessage(string msg)
 		{
@@ -653,6 +654,7 @@ namespace MultiplayerXeno
 			if (chatBox != null)
 			{
 				chatBox.Widgets.Add(label);
+				chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
 			}
 		}
 
@@ -735,16 +737,20 @@ namespace MultiplayerXeno
 
 			panel.Widgets.Add(scoreIndicator);
 
-
-			var chatBoxViewer = new ScrollViewer()
+			if (chatBoxViewer == null)
 			{
-				Left = 0,
-				Width = 240,
-				Height = 250,
-				Top = 0,
-				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Center,
-			};
+				chatBoxViewer = new ScrollViewer()
+				{
+					Left = 0,
+					Width = 240,
+					Height = 250,
+					Top = 0,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					VerticalAlignment = VerticalAlignment.Center,
+				};
+			}
+
+			
 			if(chatBox== null)
 			{
 				chatBox = new VerticalStackPanel()

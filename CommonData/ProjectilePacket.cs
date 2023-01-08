@@ -30,7 +30,7 @@ public class ProjectilePacket : Packet
 		RCollisionPointX = result.CollisionPointLong.X;
 		RCollisionPointY = result.CollisionPointLong.Y;
 		
-		RCollisionPointshortX = result.CollisionPointShort.Y;
+		RCollisionPointshortX = result.CollisionPointShort.X;
 		RCollisionPointshortY = result.CollisionPointShort.Y;
 		
 		RStartPointX = result.StartPoint.X;
@@ -76,8 +76,9 @@ public class ProjectilePacket : Packet
 	public int determinationResistanceCoefficient { get;  set; }
 	public int suppresionRange { get;  set; }
 	public int supressionStrenght { get;  set; }
+	public bool shooterLow { get;  set; }
 
-	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int determinationResistanceCoefficient,int suppresionRange,int supressionStrenght)
+	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int determinationResistanceCoefficient,int suppresionRange,int supressionStrenght,bool shooterLow)
 	{
 		this.result = result;
 		this.covercast = covercast;
@@ -86,6 +87,7 @@ public class ProjectilePacket : Packet
 		this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 		this.suppresionRange = suppresionRange;
 		this.supressionStrenght = supressionStrenght;
+		this.shooterLow = shooterLow;
 
 	}
 

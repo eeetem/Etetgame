@@ -28,7 +28,7 @@ public abstract class Attack : Action
 
 	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
-		//target = actor.worldObject.TileLocation.Position + new Vector2(-1,0);
+		//target = actor.worldObject.TileLocation.Position + new Vector2(-10,0);
 		bool lowShot =false;
 
 
@@ -57,7 +57,7 @@ public abstract class Attack : Action
 #if SERVER
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght,p.shooterLow));
 
 #endif
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
@@ -78,8 +78,14 @@ public abstract class Attack : Action
 	private static Projectile previewShot;
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
-	
-	
+
+	public override void InitAction()
+	{
+		previewShot = null;
+		lastTarget = new Vector2Int(0,0);
+		base.InitAction();
+	}
+
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		UI.targeting = true;
@@ -219,6 +225,8 @@ public abstract class Attack : Action
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
+		//	spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Green, 25f);
+		//	spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.EndPoint), 40, 10, Color.Pink, 25f);
 
 		}
 				

@@ -165,8 +165,12 @@ namespace MultiplayerXeno
 
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
 
-		public Visibility CanSee(Controllable controllable, Vector2 to)
+		public Visibility CanSee(Controllable controllable, Vector2 to, bool ignoreRange = false)
 		{
+			if (ignoreRange)
+			{
+				return CanSee(controllable.worldObject.TileLocation.Position, to, 200, controllable.Crouching);
+			}
 			return CanSee(controllable.worldObject.TileLocation.Position, to, controllable.GetSightRange(), controllable.Crouching);
 		}
 

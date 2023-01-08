@@ -1,13 +1,12 @@
-client sent an impossible action fix
+overwatch sync
 only direct shots???how??
-face preview
-resync after every turn
+resync after every turn(at some point)+checks for desyncs
 chat autoscroll
 point blank supression
-checks for desyncs
 resync code fix
 spectator mode
 units with actions counter
+client sent an impossible action fix(double click)
 fix discord time? timezone issue?
 version number
 officer that stops units panicing

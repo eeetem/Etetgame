@@ -17,6 +17,7 @@ namespace MultiplayerXeno
 		public int determinationResistanceCoefficient = 1;
 		public int supressionRange;
 		public int supressionStrenght;
+		public bool shooterLow;
 		public Projectile(ProjectilePacket packet)
 		{
 			this.result = packet.result;
@@ -27,6 +28,7 @@ namespace MultiplayerXeno
 			this.determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
 			this.supressionRange = packet.suppresionRange;
 			this.supressionStrenght = packet.supressionStrenght;
+			this.shooterLow = packet.shooterLow;
 			CalculateDetails();
 			Fire();
 		}
@@ -40,6 +42,7 @@ namespace MultiplayerXeno
 			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
+			this.shooterLow = shooterLow;
 				
 		/*	if (Vector2.Distance(from, to) <= 1.5)
 			{
@@ -74,19 +77,19 @@ namespace MultiplayerXeno
 				if (result.hit)
 				{
 
-					Vector2 dir = Vector2.Normalize(to - from);
-					to = result.CollisionPointLong + Vector2.Normalize(to - from);
+					Vector2 dir = Vector2.Normalize(from - to);
+					to = result.CollisionPointLong + Vector2.Normalize(to - from)/2;
 					RayCastOutcome cast;
 
 
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.High, true);
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, true);
 					if (cast.hit && result.hitObjID != cast.hitObjID)
 					{
 						covercast = cast;
 					}
 					else
 					{
-						cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Low, true);
+						cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, true);
 						if (cast.hit && result.hitObjID != cast.hitObjID)
 						{
 							covercast = cast;
@@ -135,8 +138,13 @@ namespace MultiplayerXeno
 			{
 				
 				var dir = Utility.GetDirectionToSideWithPoint(pos, result.CollisionPointLong);
-				
-				if (worldTile.GetCover(dir,true)>Cover.High)
+				Cover passCover = Cover.High;
+				if (this.shooterLow)
+				{
+					passCover = Cover.Low;
+				}
+
+				if (worldTile.GetCover(dir,true)>passCover)
 				{
 					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
 		

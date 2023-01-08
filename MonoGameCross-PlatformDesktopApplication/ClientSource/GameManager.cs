@@ -40,6 +40,7 @@ namespace MultiplayerXeno
 			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
 			Networking.serverConnection.Send(packet);
 			UI.SelectControllable(null);
+			Action.SetActiveAction(null);
 
 		}
 
