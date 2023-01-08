@@ -12,6 +12,8 @@ namespace MultiplayerXeno
 
 		public static readonly List<WorldObject> T1SpawnPoints = new List<WorldObject>();
 		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
+		public static readonly List<int> T1Units = new List<int>();
+		public static readonly List<int> T2Units = new List<int>();
 		public static void StatGame()
 		{
 
@@ -39,15 +41,16 @@ namespace MultiplayerXeno
 				
 				if (i < Player1.StartData.Soldiers)
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
+					T1Units.Add(WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata));
+					
 				}
 				else if (i < Player1.StartData.Soldiers+ Player1.StartData.Heavies)
 				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata);
+					T1Units.Add( WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata));
 				}
 				else
 				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata);
+					T1Units.Add( WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata));
 				}
 
 				i++;
@@ -59,15 +62,15 @@ namespace MultiplayerXeno
 			{
 				if (i < Player2.StartData.Soldiers)
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata);
+					T2Units.Add( WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position, controllableData: cdata));
 				}
 				else if (i < Player2.StartData.Soldiers+ Player2.StartData.Heavies)
 				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata);
+					T2Units.Add(WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position, controllableData: cdata));
 				}
 				else
 				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata);
+					T2Units.Add(WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position, controllableData: cdata));
 				}
 
 				i++;

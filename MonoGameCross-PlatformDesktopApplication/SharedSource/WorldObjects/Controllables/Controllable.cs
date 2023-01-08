@@ -254,7 +254,27 @@ namespace MultiplayerXeno
 			
 #if SERVER
 			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam;
-			Visibility vis = WorldManager.Instance.CanSee(this, location,true);
+			//make this "can player see" fucntion
+			List<int> units;
+			if (this.IsPlayerOneTeam)
+			{
+				units = GameManager.T1Units;
+			}
+			else
+			{
+				units = GameManager.T2Units;
+			}
+
+			Visibility vis = Visibility.None;
+			foreach (var unit in units)
+			{
+				var tempVis = WorldManager.Instance.CanSee(this, location);
+				if (tempVis > vis)
+				{
+					vis = tempVis;
+				}
+			}
+			
 			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
 			if (!isFriendly && vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
 			{
