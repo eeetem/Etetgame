@@ -1,9 +1,12 @@
-client sent an impossible action fix
+overwatch sync
+only direct shots???how??
+resync after every turn(at some point)+checks for desyncs
 point blank supression
-checks for desyncs
+high ping overwatch fix
 resync code fix
 spectator mode
 units with actions counter
+client sent an impossible action fix(double click)
 fix discord time? timezone issue?
 version number
 officer that stops units panicing
@@ -14,7 +17,4 @@ ghosting with pathfinding
 turn timer
 bomb defuse gamemode
 random map generation
-
-
-qol polish stuff
 remember server and login

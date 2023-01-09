@@ -14,7 +14,7 @@ public static class DiscordManager
 		client = new DiscordRPC("1056950888956178485");
 		//Connect to the RPC
 		//Set the logger
-		client.Logger = new ConsoleLogger();
+		//client.Logger = new ConsoleLogger();
 
 		client.Initialize();
 		client.OnReady += (sender, e) =>

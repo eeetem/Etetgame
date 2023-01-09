@@ -64,6 +64,7 @@ namespace CommonData
 		public int TurnPoints;
 		public int Health;
 		public int Determination;
+		public bool Crouching;
 		public bool JustSpawned;
 		public ControllableData(bool team1)
 		{
@@ -73,9 +74,10 @@ namespace CommonData
 			TurnPoints = -1;
 			Health = -1;
 			Determination = -1;
+			Crouching = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int determination)
+		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int determination, bool crouching)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -83,6 +85,7 @@ namespace CommonData
 			TurnPoints = turnPoints;
 			Health = health;
 			Determination = determination;
+			Crouching =	crouching;
 			JustSpawned = true;
 			
 		}
@@ -90,7 +93,8 @@ namespace CommonData
 	[Serializable]
 	public class RayCastOutcome//fuck the network library holy moly
 	{
-		public Vector2 CollisionPoint;
+		public Vector2 CollisionPointLong;
+		public Vector2 CollisionPointShort;
 		public Vector2 StartPoint;
 		public Vector2 EndPoint;
 		public Vector2 VectorToCenter;
@@ -101,11 +105,14 @@ namespace CommonData
 
 		public RayCastOutcome(Vector2 start, Vector2 end)
 		{
+			CollisionPointLong = new Vector2(0, 0);
+			CollisionPointShort = new Vector2(0, 0);
 			this.hit = false;
 			EndPoint = end;
 			this.hitObjID = -1;
 			StartPoint = start;
 			Path = new List<Vector2Int>();
+	
 		}
 	}
 	public enum Visibility

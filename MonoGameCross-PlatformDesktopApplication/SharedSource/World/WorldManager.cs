@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno
@@ -99,6 +100,8 @@ namespace MultiplayerXeno
 
 		public int GetNextId()
 		{
+			
+			NextId++;
 			while (_worldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
 			{
 				NextId++;
@@ -137,16 +140,17 @@ namespace MultiplayerXeno
 			return tile;
 		}
 
-		public int MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
+		public void MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
 		{
 			WorldObjectData data = new WorldObjectData(prefabName);
 			data.Id = id;
 			data.Facing = facing;
 			data.ControllableData = controllableData;
-			return MakeWorldObjectFromData(data, GetTileAtGrid(position));
+			MakeWorldObjectFromData(data, GetTileAtGrid(position));
+			return;
 		}
 
-		private int MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
+		private void MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
 		{
 			lock (syncobj)
 			{
@@ -154,34 +158,40 @@ namespace MultiplayerXeno
 				{
 					DeleteWorldObject(data.Id); //delete existing object with same id, most likely caused by server updateing a specific entity
 				}
-
-
-			
 				createdObjects.Add(new Tuple<WorldObjectData, WorldTile>(data,tile));
 			}
 
-			return data.Id;
+			return;
 		}
 
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
 
-		public Visibility CanSee(Controllable controllable, Vector2 to)
+		public Visibility CanSee(Controllable controllable, Vector2 to, bool ignoreRange = false)
 		{
-			if(Vector2.Distance(controllable.worldObject.TileLocation.Position, to) > controllable.Type.SightRange)
+			if (ignoreRange)
+			{
+				return CanSee(controllable.worldObject.TileLocation.Position, to, 200, controllable.Crouching);
+			}
+			return CanSee(controllable.worldObject.TileLocation.Position, to, controllable.GetSightRange(), controllable.Crouching);
+		}
+
+		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
+		{
+			if(Vector2.Distance(From, to) > sightRange)
 			{
 				return Visibility.None;
 			}
 			RayCastOutcome[] FullCasts;
 			RayCastOutcome[] PartalCasts;
-			if (controllable.Crouching)
+			if (crouched)
 			{
-				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+				FullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
 				PartalCasts = Array.Empty<RayCastOutcome>();
 			}
 			else
 			{
-				FullCasts = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
-				PartalCasts  = MultiCornerCast(controllable.worldObject.TileLocation.Position, to, Cover.Full, true);//partial visson over high cover
+				FullCasts = MultiCornerCast(From, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
+				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true);//partial visson over high cover
 							
 			}
 
@@ -190,6 +200,9 @@ namespace MultiplayerXeno
 				if (!cast.hit)
 				{
 					return Visibility.Full;
+				}else if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && GetObject(cast.hitObjID).GetCover() != Cover.Full)
+				{
+					return Visibility.Partial;
 				}
 			}
 			foreach (var cast in PartalCasts)
@@ -340,34 +353,37 @@ namespace MultiplayerXeno
 	
 				WorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
-				Vector2 collisionPoint = ((totalLenght+0.05f) * dir) + (startPos);
+				Vector2 collisionPointlong = ((totalLenght+0.05f) * dir) + (startPos);
+				Vector2 collisionPointshort = ((totalLenght-0.1f) * dir) + (startPos);
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);
 				}
 				else
 				{
-					result.CollisionPoint = collisionPoint;
+					result.CollisionPointLong = collisionPointlong;
+					result.CollisionPointShort = collisionPointshort;
 					result.hit = false;
 					return result;
 				}
-				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPoint;
+				Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPointlong;
 
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 	
-					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), ignoreControllables);
+					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables);
 
 					
-					if (hitobj.Id != -1 ) //this is super hacky and convoluted
+					if (hitobj.Id != -1 )
 					{
 						Cover c = hitobj.GetCover();
 						if (Utility.DoesEdgeBorderTile(hitobj, startcell))
 						{
 							if (c >= minHtCoverSameTile)
 							{
-								result.CollisionPoint = collisionPoint;
+								result.CollisionPointLong = collisionPointlong;
+								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
@@ -380,7 +396,8 @@ namespace MultiplayerXeno
 						{
 							if (c >= minHitCover)
 							{
-								result.CollisionPoint = collisionPoint;
+								result.CollisionPointLong = collisionPointlong;
+								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
@@ -393,7 +410,8 @@ namespace MultiplayerXeno
 
 				if (endcell == checkingSquare)
 				{
-					result.CollisionPoint = endcell + new Vector2(0.5f, 0.5f);
+					result.CollisionPointLong = endcell + new Vector2(0.5f, 0.5f);
+					result.CollisionPointShort = endcell + new Vector2(0.5f, 0.5f);
 					result.hit = false;
 					return result;
 				}
@@ -448,7 +466,7 @@ namespace MultiplayerXeno
 	
 		}
 
-		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1)
+		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, bool lineOfSight = false)
 		{
 			int x = pos.X;
 			int y = pos.Y;
@@ -465,6 +483,17 @@ namespace MultiplayerXeno
 						{
 							tiles.Add(GetTileAtGrid(new Vector2Int(i,j)));
 						}
+					}
+				}
+			}
+
+			if (lineOfSight)
+			{
+				foreach (var tile in new List<WorldTile>(tiles))
+				{
+					if(CenterToCenterRaycast(pos,tile.Position,Cover.High,true).hit)
+					{
+						tiles.Remove(tile);
 					}
 				}
 			}

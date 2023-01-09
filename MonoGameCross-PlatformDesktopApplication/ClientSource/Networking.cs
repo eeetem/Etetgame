@@ -43,6 +43,8 @@ namespace MultiplayerXeno
 			serverConnection.RegisterRawDataHandler("notify",ReciveNotify);
 
 			
+			serverConnection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
+			
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
 			
@@ -113,7 +115,18 @@ namespace MultiplayerXeno
 			serverConnection.Send(packet);
 		}
 
+		public static void ChatMSG(string content)
+		{
+			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
+			
+		}
+
+		private static void ReciveChatMessage(RawData rawData, Connection connection)
+		{
+			UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));
+		}
 	
+
 
 	}
 }

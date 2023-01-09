@@ -52,7 +52,7 @@ namespace MultiplayerXeno
 
 			return color;
 		}
-		private void CalcWatchLevel()
+		public void CalcWatchLevel()
 		{
 			HighestWatchLevel = 0;
 			foreach (var watcher in Watchers)

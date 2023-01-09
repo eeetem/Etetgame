@@ -23,7 +23,24 @@ namespace MultiplayerXeno
 			//1. Start listen on a portw
 			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(52233, false);
 
-			serverConnectionContainer.ConnectionLost += (a, b, c) => Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
+			serverConnectionContainer.ConnectionLost += (a, b, c) =>
+			{
+				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
+				string name;
+				if (a == GameManager.Player1?.Connection)
+				{
+					name = GameManager.Player1.Name;
+				}else if (a == GameManager.Player2?.Connection)
+				{
+					name = GameManager.Player2.Name;
+				}
+				else
+				{
+					return;
+				}
+
+				SendChatMessage(name+" left the game");
+			};
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
 			serverConnectionContainer.AllowUDPConnections = true;
 
@@ -38,6 +55,7 @@ namespace MultiplayerXeno
 
 		public static void Kick(string reason,Connection connection)
 		{
+			Console.WriteLine("Kicking " + connection.IPRemoteEndPoint.Address + " for " + reason);
 			connection.SendRawData(RawDataConverter.FromUnicodeString("notify",reason));
 			Thread.Sleep(1000);
 			connection.Close(CloseReason.ClientClosed);
@@ -76,9 +94,11 @@ namespace MultiplayerXeno
 			
 		//	connection.RegisterRawDataHandler("mapDownload",SendMapData);
 			connection.RegisterRawDataHandler("register",RegisterClient);
+			connection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
 			
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			connection.RegisterStaticPacketHandler<StartDataPacket>(ReciveStartData);
+			
 			//3. Register packet listeners.
 			//connection.RegisterRawDataHandler("HelloWorld", (rawData, con) => Console.WriteLine($"RawDataPacket received. Data: {rawData.ToUTF8String()}"));
 		
@@ -119,6 +139,7 @@ namespace MultiplayerXeno
 				}
 
 				GameManager.Player1.Connection = connection;//reconnection
+				
 			}
 			else if (GameManager.Player2 == null)
 			{
@@ -142,7 +163,7 @@ namespace MultiplayerXeno
 
 			GameManager.SendData();
 			SendMapData(connection);
-			
+			SendChatMessage(name+" joined the game");
 			GameManager.StatGame();//will only go through if 2 palyers are present
 
 
@@ -209,6 +230,34 @@ namespace MultiplayerXeno
 			GameManager.Player1?.Connection.Send(packet);
 			GameManager.Player2?.Connection.Send(packet);
 
+		}
+
+
+		public static void ReciveChatMessage(RawData rawData, Connection connection)
+		{
+			string message = RawDataConverter.ToUTF8String(rawData);
+			string name;
+			if (GameManager.Player1?.Connection == connection)
+			{
+				name = GameManager.Player1.Name;
+			}
+			else if (GameManager.Player2?.Connection == connection)
+			{
+				name = GameManager.Player2.Name;
+			}
+			else
+			{
+				return;
+			}
+
+			message = $"{name}: {message}";
+			SendChatMessage(message);
+		}
+
+		public static void SendChatMessage(string text)
+		{
+			GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
+			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 		}
 	}
 }

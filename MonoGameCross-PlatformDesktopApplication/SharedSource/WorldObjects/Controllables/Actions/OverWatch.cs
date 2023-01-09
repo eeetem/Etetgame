@@ -14,7 +14,7 @@ public class OverWatch : Action
 	
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int position)
 	{
-
+	
 		if (actor.TurnPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough turn points");
@@ -45,7 +45,7 @@ public class OverWatch : Action
 		}
 
 		actor.overWatch = true;
-		actor.worldObject.Face(Utility.ToClampedDirection( actor.worldObject.TileLocation.Position-target));
+		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position, target));
 
 	}
 

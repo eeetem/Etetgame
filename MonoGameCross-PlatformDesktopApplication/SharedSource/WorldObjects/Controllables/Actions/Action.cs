@@ -94,7 +94,7 @@ public abstract class Action
 #if CLIENT
 				UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform: "+result.Item2);
 #else
-				Console.WriteLine("Client sent an impossible action");
+				Console.WriteLine("Client sent an impossible action: "+result.Item2);
 #endif
 				return;
 		}

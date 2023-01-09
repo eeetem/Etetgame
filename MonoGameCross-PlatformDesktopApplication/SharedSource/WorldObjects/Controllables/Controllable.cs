@@ -39,6 +39,8 @@ namespace MultiplayerXeno
 				determination = data.Determination;
 			}
 
+			this.Crouching = data.Crouching;
+
 
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
@@ -78,14 +80,9 @@ namespace MultiplayerXeno
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-				if (Type.MaxMovePoints == 3)//shitcode
-				{
-					range -= 1;
-				}
-				else
-				{
+
 					range -= 2;
-				}
+				
 			}
 
 			return range;
@@ -129,6 +126,11 @@ namespace MultiplayerXeno
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
+				if (_thisMoving)
+				{
+					moving = false;
+				}
+
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
 #if CLIENT
 				Audio.PlaySound("death",this.worldObject.TileLocation.Position);
@@ -152,21 +154,19 @@ namespace MultiplayerXeno
 
 		public bool CanHit(Vector2Int target, bool lowTarget = false)
 		{
-			
 			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
-			RayCastOutcome cast;
-			if (lowTarget)
-			{
-				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.High, true,Cover.Full);
-			}
-			else
-			{
-				cast = WorldManager.Instance.Raycast(worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + (shotDir / new Vector2(2.5f, 2.5f)), target + new Vector2(0.5f, 0.5f), Cover.Full, true);
-			}
+			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
 
-			if (cast.hit)
+
+		
+				
+			if (proj.result.hit)
 			{
-				return false;
+				var hitobj = WorldManager.Instance.GetObject(proj.result.hitObjID);
+				if (hitobj.Type.Edge || hitobj.TileLocation.Position != target)
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -214,7 +214,10 @@ namespace MultiplayerXeno
 			{
 #if CLIENT
 				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
-#endif
+#else
+				Console.WriteLine("tried to do action but failed: "+result.Item2);
+				#endif
+				
 				return;
 			}
 #if CLIENT
@@ -246,14 +249,46 @@ namespace MultiplayerXeno
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 		public void OverWatchSpoted(Vector2Int location)
 		{
+			
 #if SERVER
-			if (this.IsPlayerOneTeam != WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam&&WorldManager.Instance.CanSee(this,location) >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam;
+			//make this "can player see" fucntion
+			List<int> units;
+			if (this.IsPlayerOneTeam)
 			{
+				units = GameManager.T1Units;
+			}
+			else
+			{
+				units = GameManager.T2Units;
+			}
+
+			Visibility vis = Visibility.None;
+			foreach (var unit in units)
+			{
+				var WO = WorldManager.Instance.GetObject(unit);
+				if (WO != null)
+				{
+					var tempVis = WorldManager.Instance.CanSee(WO.ControllableComponent, location);
+					if (tempVis > vis)
+					{
+						vis = tempVis;
+					}
+				}
+
+			
+			}
+			
+			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
+			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			{
+				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
 			}
 #endif
 			
 		}
+
 
 		public void ClearOverWatch()
 		{
@@ -290,7 +325,7 @@ namespace MultiplayerXeno
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
-				if (_moveCounter > 350)
+				if (_moveCounter > 250)
 				{
 					_moveCounter = 0;
 					try
@@ -329,7 +364,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching);
 			data.JustSpawned = false;
 			return data;
 		}

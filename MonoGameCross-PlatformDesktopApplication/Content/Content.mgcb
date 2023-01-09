@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/capture.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/capture.wav
+
 #begin audio/damage/death.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -109,6 +115,18 @@
 /processorParam:Quality=Best
 /build:audio/mg.wav
 
+#begin audio/mg.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/mg.wav
+
+#begin audio/rifle.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/rifle.wav
+
 #begin audio/rifle.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -120,6 +138,18 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/shotgun.wav
+
+#begin audio/shotgun.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/shotgun.wav
+
+#begin audio/turn.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/turn.wav
 
 #begin audio/turn.wav
 /importer:WavImporter
@@ -481,6 +511,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/UI/Suppress.png
+
+#begin textures/UI/targetingCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/targetingCursor.png
 
 #begin textures/UI/walkie.png
 /importer:TextureImporter

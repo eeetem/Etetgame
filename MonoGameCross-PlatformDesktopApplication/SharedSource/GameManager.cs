@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
@@ -47,6 +48,7 @@ namespace MultiplayerXeno
 			WorldManager.Instance.ResetControllables(IsPlayer1Turn);
 			bool team1Present = false;
 			bool team2Present = false;
+			Vector2Int capPoint = Vector2.Zero;
 			foreach (var point in CapturePoints)
 			{
 				bool? team1 = point.TileLocation.ObjectAtLocation?.ControllableComponent?.IsPlayerOneTeam;
@@ -55,19 +57,32 @@ namespace MultiplayerXeno
 				if ((bool) team1)
 				{
 					team1Present = true;
+					capPoint = point.TileLocation.Position;
 				}
 				else
 				{
 					team2Present = true;
+					capPoint = point.TileLocation.Position;
 				}
 
 			}
 
 			if (team1Present && !team2Present)
 			{
+#if CLIENT
+Audio.PlaySound("capture");
+				Thread.Sleep(2000);
+				Camera.SetPos(capPoint);
+#endif
 				score++;
 			}
 			else if(!team1Present && team2Present){
+				
+#if CLIENT
+Audio.PlaySound("capture");
+				Thread.Sleep(2000);
+				Camera.SetPos(capPoint);
+#endif
 				score--;
 			}
 #if CLIENT

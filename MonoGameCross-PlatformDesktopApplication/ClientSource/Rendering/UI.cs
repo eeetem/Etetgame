@@ -30,6 +30,7 @@ namespace MultiplayerXeno
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
 		private static Texture2D[] healthIndicator = new Texture2D[3];
+		private static Texture2D targetingCUrsor;
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
 
@@ -55,6 +56,9 @@ namespace MultiplayerXeno
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
+			
+			targetingCUrsor = TextureManager.GetTexture("UI/targetingCursor");
+			
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
 
@@ -175,7 +179,10 @@ namespace MultiplayerXeno
 			{
 
 				case null:
-					SelectedControllable?.DoAction(Action.Actions[ActionType.Face],position);
+					Action.SetActiveAction(ActionType.Face);
+					break;
+				case ActionType.Face:
+					SelectedControllable?.DoAction(Action.ActiveAction,position);
 					break;
 				default:
 					Action.SetActiveAction(null);
@@ -269,7 +276,7 @@ namespace MultiplayerXeno
 			{
 				GridColumn = 1,
 				GridRow = 1,
-				Text = "localhost"
+				Text = "46.7.175.47"
 			};
 			grid.Widgets.Add(textBox);
 			var textBox2 = new TextBox()
@@ -634,6 +641,22 @@ namespace MultiplayerXeno
 
 		private static Panel turnIndicator;
 		private static Label scoreIndicator;
+		private static VerticalStackPanel chatBox;
+		private static ScrollViewer chatBoxViewer;
+		
+		public static void RecieveChatMessage(string msg)
+		{
+			var label = new Label
+			{
+				Text = msg,
+				Wrap = true
+			};
+			if (chatBox != null)
+			{
+				chatBox.Widgets.Add(label);
+				chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
+			}
+		}
 
 		public static void SetMyTurn(bool myTurn)
 		{
@@ -699,7 +722,6 @@ namespace MultiplayerXeno
 			};
 			panel.Widgets.Add(turnIndicator);
 			SetMyTurn(GameManager.IsMyTurn());
-
 			if (scoreIndicator == null)
 			{
 
@@ -715,12 +737,79 @@ namespace MultiplayerXeno
 
 			panel.Widgets.Add(scoreIndicator);
 
+			if (chatBoxViewer == null)
+			{
+				chatBoxViewer = new ScrollViewer()
+				{
+					Left = 0,
+					Width = 240,
+					Height = 250,
+					Top = 0,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					VerticalAlignment = VerticalAlignment.Center,
+				};
+			}
+
+			
+			if(chatBox== null)
+			{
+				chatBox = new VerticalStackPanel()
+				{
+					VerticalAlignment = VerticalAlignment.Bottom,
+					HorizontalAlignment = HorizontalAlignment.Left,
+				};
+			}
+			chatBoxViewer.Content = chatBox;
+
+			var input = new TextBox()
+			{
+				Width = 200,
+				Height = 20,
+				Top = 135,
+				Left = 0,
+				Text = "",
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+				
+			};
+			input.KeyDown += (o, a) =>
+			{
+				if (a.Data == Keys.Enter)
+				{
+					if (input.Text != "")
+					{
+						Networking.ChatMSG(input.Text);
+						input.Text = "";
+					}
+				}
+			};
+			var inputbtn = new TextButton()
+			{
+				Width = 55,
+				Height = 20,
+				Top = 135,
+				Left = 200,
+				Text = "Send",
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Center,
+				
+			};
+			inputbtn.Click += (o,a) =>
+			{
+				if (input.Text != "")
+				{
+					Networking.ChatMSG(input.Text);
+					input.Text = "";
+				}
+			};
+			panel.Widgets.Add(inputbtn);
+			panel.Widgets.Add(input);
+			panel.Widgets.Add(chatBoxViewer);
+		
+			
+			
+			
 			Desktop.Root = panel;
-
-
-
-
-
 		}
 
 		public static bool ffmode { get; private set; } = false;
@@ -945,18 +1034,19 @@ namespace MultiplayerXeno
 
 		private static bool raycastDebug;
 		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
+		public static bool targeting = false;
 		public static void Render(float deltaTime)
 		{
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			//TileCoordinate = new Vector2(34, 33);
+			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-			
+		
 			UI.Desktop.Render();
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-			if (WorldManager.IsPositionValid(TileCoordinate))
-			{
-
+		
 
 				for (int i = 0; i < 8; i++)
 				{
@@ -979,9 +1069,14 @@ namespace MultiplayerXeno
 					spriteBatch.Draw(indicator, Mousepos, c);
 				}
 
+			
+
+			if (targeting)
+			{
+				spriteBatch.Draw(targetingCUrsor, Mousepos, Color.Red);
 			}
-		
-		
+
+
 			var count = 0;
 			foreach (var moves in previewMoves.Reverse())
 			{
@@ -1050,8 +1145,8 @@ namespace MultiplayerXeno
 						count++;
 					
 						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Red, 5f);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPoint), Color.Yellow, 2);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPoint), Utility.GridToWorldPos(cast.CollisionPoint) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPointLong), Color.Yellow, 2);
+						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPointLong), Utility.GridToWorldPos(cast.CollisionPointLong) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
 					}
 					else
 					{
@@ -1089,12 +1184,10 @@ namespace MultiplayerXeno
 			spriteBatch.End();
 			
 			*/
-
+			targeting = false;
 			if (SelectedControllable != null && Action.GetActiveActionType() != null)
 			{
 				Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,spriteBatch);
-				
-
 			}
 
 			WorldEditSystem.Draw(spriteBatch);

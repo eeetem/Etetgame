@@ -52,49 +52,14 @@ namespace MultiplayerXeno
 
 					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
 					{
-						Vector2Int pos = obj.TileLocation.Position;
-
-						int itteration = 0;
-
-						List<Vector2Int> positionsToCheck = new List<Vector2Int>();
-						while (itteration < obj.ControllableComponent.GetSightRange()+2)
+						foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.ControllableComponent.GetSightRange(),obj.ControllableComponent.Crouching))
 						{
-
-							positionsToCheck.Add(pos);
-							Vector2Int offset;
-							Vector2Int invoffset;
-							if (Utility.DirToVec2(obj.Facing).Magnitude() > 1) //diagonal
-							{
-								offset = Utility.DirToVec2(obj.Facing + 3);
-								invoffset = Utility.DirToVec2(obj.Facing - 3);
-							}
-							else
-							{
-								offset = Utility.DirToVec2(obj.Facing + 2);
-								invoffset = Utility.DirToVec2(obj.Facing - 2);
-							}
-
-
-							for (int x = 0; x < itteration; x++)
-							{
-								positionsToCheck.Add(pos + invoffset * (x + 1));
-								positionsToCheck.Add(pos + offset * (x + 1));
-							}
-
-							pos += Utility.DirToVec2(obj.Facing);
-							itteration++;
-						}
-
-
+							
 					
-
-						foreach (var tile in positionsToCheck)
-						{
-							if (!IsPositionValid(tile)) continue;
-							var visibility = CanSee(obj.ControllableComponent, tile);
-							if(GetTileAtGrid(tile).Visible < visibility)
+							if(GetTileAtGrid(visTuple.Item1).Visible < visTuple.Item2)
 							{
-								GetTileAtGrid(tile).Visible = visibility;
+								GetTileAtGrid(visTuple.Item1).Visible = visTuple.Item2;
+								GetTileAtGrid(visTuple.Item1)?.ObjectAtLocation?.ControllableComponent.Spoted();
 							}
 							
 							
@@ -103,6 +68,70 @@ namespace MultiplayerXeno
 					}
 				}
 			
+		}
+		
+		public List<Tuple<Vector2Int,Visibility>> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
+		{
+
+			int itteration = 0;
+
+			List<Tuple<Vector2Int,Visibility>> positionsToCheck = new List<Tuple<Vector2Int, Visibility>>();
+			Vector2Int initialpos = pos;
+			while (itteration < range+2)
+			{
+				
+				
+				if (IsPositionValid(pos))
+				{
+					var visibility = CanSee(initialpos,pos,range,crouched);
+					if (visibility > Visibility.None)
+					{
+						positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos,visibility));
+					}
+				}
+				
+				Vector2Int offset;
+				Vector2Int invoffset;
+				if (Utility.DirToVec2(dir).Magnitude() > 1) //diagonal
+				{
+					offset = Utility.DirToVec2(dir + 3);
+					invoffset = Utility.DirToVec2(dir - 3);
+				}
+				else
+				{
+					offset = Utility.DirToVec2(dir+ 2);
+					invoffset = Utility.DirToVec2(dir - 2);
+				}
+
+
+				for (int x = 0; x < itteration; x++)
+				{
+					
+					if (IsPositionValid(pos + invoffset * (x + 1)))
+					{
+						var visibility = CanSee(initialpos,pos + invoffset * (x + 1),range,crouched);
+						if (visibility > Visibility.None)
+						{
+							positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos + invoffset * (x + 1),visibility));
+						}
+					}
+
+					if (IsPositionValid(pos + offset * (x + 1)))
+					{
+						var visibility = CanSee(initialpos,pos + offset * (x + 1),range,crouched);
+						if (visibility > Visibility.None)
+						{
+							positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos + offset * (x + 1),visibility));
+						}
+					}
+				}
+
+				pos += Utility.DirToVec2(dir);
+				itteration++;
+			}
+
+
+			return positionsToCheck;
 		}
 
 
