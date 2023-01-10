@@ -8,6 +8,13 @@ namespace MultiplayerXeno
 {
 	public class ControllableType
 	{
+
+		public ControllableType(string name)
+		{
+			Name = name;
+		}
+
+		public readonly string Name;
 		public int MoveRange = 4;
 		public int SightRange = 16;
 		public int SupressionRange = 2;

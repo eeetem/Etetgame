@@ -56,16 +56,7 @@ namespace MultiplayerXeno
 		private static Vector2 lastMousePos;
 		private static Vector2 GetMovementDirection()
 		{
-			if (forceMoving)
-			{
-				Vector2 difference = MoveTarget - Cam.Position;
-				if (difference.Length() < 20)
-				{
-					forceMoving = false;
-				}
 
-				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
-			}
 			
 			var state = Keyboard.GetState();
 			var mouseState = Mouse.GetState();
@@ -100,6 +91,25 @@ namespace MultiplayerXeno
 			{
 				movementDirection += Vector2.UnitX;
 			}
+
+			if (movementDirection.Length() > 1)
+			{
+				forceMoving = false;
+				return movementDirection;
+			}//overrideforcemove
+
+			if (forceMoving)
+			{
+				Vector2 difference = MoveTarget - Cam.Position;
+				if (difference.Length() < 20)
+				{
+					forceMoving = false;
+				}
+
+				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
+			}
+			
+			
 			return movementDirection;
 		}
 

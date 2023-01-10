@@ -806,7 +806,48 @@ namespace MultiplayerXeno
 			panel.Widgets.Add(input);
 			panel.Widgets.Add(chatBoxViewer);
 		
-			
+			var UnitContainer = new Grid()
+			{
+				GridColumnSpan = 4,
+				GridRowSpan = 1,
+				RowSpacing = 10,
+				ColumnSpacing = 10,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Top,
+				//ShowGridLines = true,
+			};
+			panel.Widgets.Add(UnitContainer);
+
+			var column = 0;
+			foreach (var unit in GameManager.MyUnits)
+			{
+				var unitPanel = new Panel()
+				{
+					Width = 100,
+					Height = 150,
+					GridColumn = column,
+					Background = new SolidBrush(Color.White),
+
+				};
+				UnitContainer.Widgets.Add(unitPanel);
+				var unitName = new Label()
+				{
+					Text = unit.Type.Name,
+					VerticalAlignment = VerticalAlignment.Top,
+					HorizontalAlignment = HorizontalAlignment.Center,
+				};
+				unitPanel.Widgets.Add(unitName);
+				var unitImage = new Image()
+				{
+					Width = 100,
+					Height = 100,
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
+				};
+				unitPanel.Widgets.Add(unitImage);
+				column++;
+			}
 			
 			
 			Desktop.Root = panel;
