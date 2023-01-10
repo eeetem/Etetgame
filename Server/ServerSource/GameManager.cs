@@ -83,6 +83,7 @@ namespace MultiplayerXeno
 			{
 				NextTurn();
 			}
+			GameManager.SendData();
 		}
 
 		public static void SendData()

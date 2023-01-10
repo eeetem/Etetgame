@@ -14,7 +14,7 @@ namespace MultiplayerXeno
 	{
 		private readonly WorldTile[,] _gridData;
 
-		private readonly Dictionary<int, WorldObject> _worldObjects = new Dictionary<int, WorldObject>();
+		public readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
 	
 		private int NextId = 0;
 
@@ -64,7 +64,7 @@ namespace MultiplayerXeno
 		{
 			try
 			{
-				return _worldObjects[id];
+				return WorldObjects[id];
 			}
 			catch (Exception e)
 			{
@@ -81,7 +81,7 @@ namespace MultiplayerXeno
 
 		public void ResetControllables(bool teamOneTurn)
 		{
-			foreach (var obj in _worldObjects.Values)
+			foreach (var obj in WorldObjects.Values)
 			{
 				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam == teamOneTurn)
 				{
@@ -89,7 +89,7 @@ namespace MultiplayerXeno
 				}
 			}
 
-			foreach (var obj in _worldObjects.Values)
+			foreach (var obj in WorldObjects.Values)
 			{
 				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam != teamOneTurn)
 				{
@@ -102,7 +102,7 @@ namespace MultiplayerXeno
 		{
 			
 			NextId++;
-			while (_worldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
+			while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
 			{
 				NextId++;
 			}
@@ -437,14 +437,14 @@ namespace MultiplayerXeno
 
 		private void DestroyWorldObject(int id)
 		{
-			if (!_worldObjects.ContainsKey(id)) return;
+			if (!WorldObjects.ContainsKey(id)) return;
 
 			if (id < NextId)
 			{
 				NextId = id; //reuse IDs
 			}
 
-			WorldObject Obj = _worldObjects[id];
+			WorldObject Obj = WorldObjects[id];
 #if  CLIENT
 			if (Obj.ControllableComponent != null)
 			{
@@ -455,7 +455,7 @@ namespace MultiplayerXeno
 
 			Obj.TileLocation.Remove(id);
 			//obj.dispose()
-			_worldObjects.Remove(id);
+			WorldObjects.Remove(id);
 
 		}
 
@@ -503,7 +503,7 @@ namespace MultiplayerXeno
 
 		private  void WipeGrid()
 		{
-			foreach (var worldObject in _worldObjects.Values)
+			foreach (var worldObject in WorldObjects.Values)
 			{
 				DeleteWorldObject(worldObject);
 			}
@@ -542,7 +542,7 @@ namespace MultiplayerXeno
 					
 				}
 
-				foreach (var obj in _worldObjects.Values)
+				foreach (var obj in WorldObjects.Values)
 				{
 					obj.Update(gameTime);
 				}
@@ -644,8 +644,8 @@ namespace MultiplayerXeno
 				
 			}
 
-			_worldObjects.EnsureCapacity(WO.Id + 1);
-			_worldObjects[WO.Id] = WO;
+			WorldObjects.EnsureCapacity(WO.Id + 1);
+			WorldObjects[WO.Id] = WO;
 
 			return WO;
 		}
