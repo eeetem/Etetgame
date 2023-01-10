@@ -71,15 +71,19 @@ namespace MultiplayerXeno
 
 		private static UIGen currentUI;
 		private static Vector2 globalScale = new Vector2(1, 1);
-		public static void SetUI(UIGen? uiMethod) {
-			
-			globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width/1000f)*1f, (Game1.instance.Window.ClientBounds.Width/1000f)*1f);
-			if (uiMethod != null)
-			{
-				currentUI = uiMethod;
-			}
-			currentUI.Invoke();
+		public static readonly object myrasyncobj = new object();
 
+		public static void SetUI(UIGen? uiMethod) {
+			lock (myrasyncobj)
+			{
+				globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f);
+				if (uiMethod != null)
+				{
+					currentUI = uiMethod;
+				}
+
+				currentUI.Invoke();
+			}
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -819,6 +823,7 @@ namespace MultiplayerXeno
 			panel.Widgets.Add(UnitContainer);
 
 			var column = 0;
+			
 			foreach (var unit in GameManager.MyUnits)
 			{
 				var unitPanel = new Panel()
@@ -826,9 +831,16 @@ namespace MultiplayerXeno
 					Width = 100,
 					Height = 150,
 					GridColumn = column,
-					Background = new SolidBrush(Color.White),
+					Background = new SolidBrush(Color.Black),
 
 				};
+				if (SelectedControllable == unit)
+				{
+					unitPanel.Background = new SolidBrush(Color.Black);
+					unitPanel.Top = 50;
+				}
+				
+
 				UnitContainer.Widgets.Add(unitPanel);
 				var unitName = new Label()
 				{
@@ -1083,8 +1095,12 @@ namespace MultiplayerXeno
 			//TileCoordinate = new Vector2(34, 33);
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-		
-			UI.Desktop.Render();
+
+			lock (myrasyncobj)
+			{
+				UI.Desktop.Render();
+			}
+
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
 		

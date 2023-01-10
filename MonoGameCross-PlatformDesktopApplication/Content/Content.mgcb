@@ -380,7 +380,7 @@
 /processorParam:TextureFormat=Color
 /build:textures/ScoutCrouch.png
 
-#begin textures/UI/Courch.png
+#begin textures/UI/Crouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -390,9 +390,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/Courch.png
+/build:textures/UI/Crouch.png
 
-#begin textures/UI/Courch.png
+#begin textures/UI/Crouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -402,7 +402,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/Courch.png
+/build:textures/UI/Crouch.png
 
 #begin textures/UI/coverIndicator.png
 /importer:TextureImporter

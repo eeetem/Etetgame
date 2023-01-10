@@ -14,16 +14,8 @@ namespace MultiplayerXeno
 		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
 		public static readonly List<int> T1Units = new List<int>();
 		public static readonly List<int> T2Units = new List<int>();
-		public static void StatGame()
-		{
 
-			if (Player1 == null || Player2 == null)
-			{
-				return;
-			}
-		}
-
-		public static void SpawnCharacters()
+		public static void StartGame()
 		{
 			if (GameStarted)
 			{
@@ -83,7 +75,8 @@ namespace MultiplayerXeno
 			{
 				NextTurn();
 			}
-			GameManager.SendData();
+
+			Networking.StartGame();
 		}
 
 		public static void SendData()

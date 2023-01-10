@@ -11,7 +11,19 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1;
 		public static bool intated = false;
-		public static List<Controllable> MyUnits = new List<Controllable>();
+		public static List<Controllable> _myUnits = new List<Controllable>();
+		public static List<Controllable> MyUnits
+		{
+			get {
+				if (_myUnits.Count == 0)
+				{
+					CountMyUnits();
+				}
+
+				return _myUnits;
+			}
+			set { _myUnits = value; }
+		} 
 
 
 		public static bool IsMyTurn()
@@ -27,11 +39,11 @@ namespace MultiplayerXeno
 			GameStarted = data.GameStarted;
 			if (GameStarted)//skip setup
 			{
-				StartGame();
 				UI.SetUI(UI.GameUi);
 			}
 
-			WorldManager.Instance.MakeFovDirty();
+			
+			
 
 		}
 
@@ -39,7 +51,7 @@ namespace MultiplayerXeno
 		{
 			if(intated)return;
 			intated = true;
-			
+			WorldManager.Instance.MakeFovDirty();
 		}
 
 		public static void CountMyUnits()
