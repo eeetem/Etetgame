@@ -53,6 +53,7 @@ namespace MultiplayerXeno
 			intated = true;
 			CountMyUnits();
 			WorldManager.Instance.MakeFovDirty();
+			UI.SetUI(UI.GameUi);
 		}
 
 		public static void CountMyUnits()

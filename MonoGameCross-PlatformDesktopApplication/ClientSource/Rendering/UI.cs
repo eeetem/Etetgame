@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -860,9 +861,10 @@ namespace MultiplayerXeno
 				unitPanel.Widgets.Add(unitName);
 				var unitImage = new Image()
 				{
-					Width = 50,
-					Height = 50,
-					VerticalAlignment = VerticalAlignment.Center,
+					Width = 80,
+					Height = 80,
+					Top = 20,
+					VerticalAlignment = VerticalAlignment.Top,
 					HorizontalAlignment = HorizontalAlignment.Center,
 					Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
 				};
@@ -871,56 +873,85 @@ namespace MultiplayerXeno
 					unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
 					unitPanel.Top = -10;
 					unitPanel.Background = new SolidBrush(Color.DarkRed);
-				}
+				}unitPanel.Widgets.Add(unitImage);
+			
+				List<Texture2D> indicators1 = new List<Texture2D>();
 				for (int i = 1; i <= unit.Type.MaxMovePoints; i++)
 				{
 					if (unit.MovePoints < i)
 					{
-						indicators.Enqueue(infoIndicator[0]);
+						indicators1.Add(infoIndicator[0]);
 					}
 					else
 					{
-						indicators.Enqueue(infoIndicator[1]);
+						indicators1.Add(infoIndicator[1]);
 					}
 
 				}
-				for (int i = 1; i <= controllable.Type.MaxTurnPoints; i++)
+				List<Texture2D> indicators2 = new List<Texture2D>();
+				for (int i = 1; i <= unit.Type.MaxTurnPoints; i++)
 				{
 				
-					if (controllable.TurnPoints < i)
+					if (unit.TurnPoints < i)
 					{
-						indicators.Enqueue(infoIndicator[2]);
+						indicators2.Add(infoIndicator[2]);
 					}
 					else
 					{
-						indicators.Enqueue(infoIndicator[3]);
+						indicators2.Add(infoIndicator[3]);
 					}
 
 		
 				}
-				for (int i = 1; i <=  controllable.Type.MaxActionPoints; i++)
+				List<Texture2D> indicators3 = new List<Texture2D>();
+				for (int i = 1; i <=  unit.Type.MaxActionPoints; i++)
 				{
 				
-					if (controllable.FirePoints < i)
+					if (unit.FirePoints < i)
 					{
-						indicators.Enqueue(infoIndicator[4]);
+						indicators3.Add(infoIndicator[4]);
 					}
 					else
 					{
-						indicators.Enqueue(infoIndicator[5]);
+						indicators3.Add(infoIndicator[5]);
 					}
 
 				}
 
-				int offset = 0;
-				foreach (var indicator in indicators)
+				int xsize = Math.Clamp((int) (20 * globalScale.X), 0, 35);
+				int ysize = Math.Clamp((int) (20 * globalScale.Y), 0, 35);
+				
+				int xpos = 0;
+				int ypos = -ysize;
+				List<List<Texture2D>> indicators = new List<List<Texture2D>>();
+				indicators.Add(indicators1);
+				indicators.Add(indicators2);
+				indicators.Add(indicators3);
+				foreach (var indicatorList in indicators)
 				{
+					
+					xpos = 0;
+					ypos += ysize;
+					
+					foreach (var indicator in indicatorList)
+					{
 
-					batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-2f,-0.9f))+new Vector2(60*offset,0),Color.White);
-					offset++;
+						var icon = new Image()
+						{
+							Width = xsize,
+							Height = ysize,
+							Left = xpos,
+							Top = -ypos,
+							VerticalAlignment = VerticalAlignment.Bottom,
+							HorizontalAlignment = HorizontalAlignment.Left,
+							Renderable = new TextureRegion(indicator)
+						};
+						xpos += xsize;
+						unitPanel.Widgets.Add(icon);
+					}
+
 				}
-	
-				unitPanel.Widgets.Add(unitImage);
+
 				column++;
 			}
 
@@ -1198,10 +1229,6 @@ namespace MultiplayerXeno
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
 
-			lock (myrasyncobj)
-			{
-				UI.Desktop.Render();
-			}
 
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
@@ -1353,6 +1380,11 @@ namespace MultiplayerXeno
 			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
+			
+			lock (myrasyncobj)
+			{
+				UI.Desktop.Render();
+			}
 		}
 
 		
