@@ -51,16 +51,17 @@ namespace MultiplayerXeno
 		{
 			if(intated)return;
 			intated = true;
+			CountMyUnits();
 			WorldManager.Instance.MakeFovDirty();
 		}
 
 		public static void CountMyUnits()
 		{
-			foreach (var obj in WorldManager.Instance.WorldObjects.Values)
+			foreach (var obj in UI.Controllables)
 			{
-				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam == IsPlayer1)
+				if (obj.IsPlayerOneTeam == IsPlayer1)
 				{
-					MyUnits.Add(obj.ControllableComponent);
+					_myUnits.Add(obj);
 				}
 			}
 

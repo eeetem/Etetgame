@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,6 +26,7 @@ namespace MultiplayerXeno
 			Cam.MinimumZoom = window.ClientBounds.Width / 50000f;
 			Cam.MaximumZoom =  window.ClientBounds.Width/1000f;
 			AudioListener = new AudioListener();
+			Cam.Position = MoveTarget;
 		}
 
 		
@@ -41,12 +43,12 @@ namespace MultiplayerXeno
 
 		 static Vector2 MoveTarget;
 		 static bool forceMoving = false;
-		public static void SetPos(Vector2 vec)
+		public static void SetPos(Vector2Int vec)
 		{
 			vec = Utility.GridToWorldPos(vec);
 			//vec.X -= Cam.BoundingRectangle.Width / 2;
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
-			MoveTarget = vec-Cam.Origin;
+			MoveTarget = vec-(Vector2Int)Cam.Origin;
 			forceMoving = true;
 
 
@@ -92,7 +94,7 @@ namespace MultiplayerXeno
 				movementDirection += Vector2.UnitX;
 			}
 
-			if (movementDirection.Length() > 1)
+			if (movementDirection.Length() != 0)
 			{
 				forceMoving = false;
 				return movementDirection;

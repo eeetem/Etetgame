@@ -76,6 +76,7 @@ namespace MultiplayerXeno
 				NextTurn();
 			}
 
+			Thread.Sleep(1000);//let the clients process spawns
 			Networking.StartGame();
 		}
 

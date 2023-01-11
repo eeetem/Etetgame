@@ -74,8 +74,7 @@ namespace MultiplayerXeno
 		public static readonly object myrasyncobj = new object();
 
 		public static void SetUI(UIGen? uiMethod) {
-			lock (myrasyncobj)
-			{
+			
 				globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f);
 				if (uiMethod != null)
 				{
@@ -83,7 +82,7 @@ namespace MultiplayerXeno
 				}
 
 				currentUI.Invoke();
-			}
+			
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -147,6 +146,7 @@ namespace MultiplayerXeno
 			SelectedControllable = controllable;
 			if(controllable==null) return;
 			SetUI(UnitUi);
+			Camera.SetPos(controllable.worldObject.TileLocation.Position);
 			
 		}
 		
@@ -734,7 +734,7 @@ namespace MultiplayerXeno
 				{
 					Top=0,
 					VerticalAlignment = VerticalAlignment.Top,
-					HorizontalAlignment = HorizontalAlignment.Center
+					HorizontalAlignment = HorizontalAlignment.Left
 				};
 				SetScore(0);
 			}
@@ -823,23 +823,32 @@ namespace MultiplayerXeno
 			panel.Widgets.Add(UnitContainer);
 
 			var column = 0;
-			
+
 			foreach (var unit in GameManager.MyUnits)
 			{
+
 				var unitPanel = new Panel()
 				{
-					Width = 100,
-					Height = 150,
+					Width = Math.Clamp((int) (100 * globalScale.X), 0, 110),
+					Height = Math.Clamp((int) (200 * globalScale.Y), 0, 210),
 					GridColumn = column,
 					Background = new SolidBrush(Color.Black),
 
 				};
-				if (SelectedControllable == unit)
+				if (unit.Equals(SelectedControllable))
 				{
-					unitPanel.Background = new SolidBrush(Color.Black);
-					unitPanel.Top = 50;
+					unitPanel.Background = new SolidBrush(Color.DimGray);
+					unitPanel.Top = 25;
 				}
-				
+
+				unitPanel.TouchDown += (sender, args) =>
+				{
+					Console.WriteLine("select");
+					if (unit.Health > 0)
+					{
+						SelectControllable(unit);
+					}
+				};
 
 				UnitContainer.Widgets.Add(unitPanel);
 				var unitName = new Label()
@@ -851,18 +860,74 @@ namespace MultiplayerXeno
 				unitPanel.Widgets.Add(unitName);
 				var unitImage = new Image()
 				{
-					Width = 100,
-					Height = 100,
+					Width = 50,
+					Height = 50,
 					VerticalAlignment = VerticalAlignment.Center,
 					HorizontalAlignment = HorizontalAlignment.Center,
 					Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
 				};
+				if (unit.Health <= 0)
+				{
+					unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
+					unitPanel.Top = -10;
+					unitPanel.Background = new SolidBrush(Color.DarkRed);
+				}
+				for (int i = 1; i <= unit.Type.MaxMovePoints; i++)
+				{
+					if (unit.MovePoints < i)
+					{
+						indicators.Enqueue(infoIndicator[0]);
+					}
+					else
+					{
+						indicators.Enqueue(infoIndicator[1]);
+					}
+
+				}
+				for (int i = 1; i <= controllable.Type.MaxTurnPoints; i++)
+				{
+				
+					if (controllable.TurnPoints < i)
+					{
+						indicators.Enqueue(infoIndicator[2]);
+					}
+					else
+					{
+						indicators.Enqueue(infoIndicator[3]);
+					}
+
+		
+				}
+				for (int i = 1; i <=  controllable.Type.MaxActionPoints; i++)
+				{
+				
+					if (controllable.FirePoints < i)
+					{
+						indicators.Enqueue(infoIndicator[4]);
+					}
+					else
+					{
+						indicators.Enqueue(infoIndicator[5]);
+					}
+
+				}
+
+				int offset = 0;
+				foreach (var indicator in indicators)
+				{
+
+					batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-2f,-0.9f))+new Vector2(60*offset,0),Color.White);
+					offset++;
+				}
+	
 				unitPanel.Widgets.Add(unitImage);
 				column++;
 			}
-			
-			
-			Desktop.Root = panel;
+
+			lock (myrasyncobj)
+			{
+				Desktop.Root = panel;
+			}
 		}
 
 		public static bool ffmode { get; private set; } = false;
@@ -1080,6 +1145,43 @@ namespace MultiplayerXeno
 			{
 				ffmode = !ffmode;
 				ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
+			}
+			if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
+			{
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable) + 1;
+					if (index >= GameManager.MyUnits.Count)
+					{
+						index = 0;
+					}
+
+					SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (SelectedControllable.Health <= 0);
+
+
+			}
+			if (keyboardState.IsKeyDown(Keys.Q) && lastState.IsKeyUp(Keys.Q))
+			{
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable)-1;
+					if (index < 0)
+					{
+						index = GameManager.MyUnits.Count-1;
+					}
+			
+					SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (SelectedControllable.Health <= 0);
+
 			}
 
 			lastState = keyboardState;
