@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -71,15 +72,18 @@ namespace MultiplayerXeno
 
 		private static UIGen currentUI;
 		private static Vector2 globalScale = new Vector2(1, 1);
+		public static readonly object myrasyncobj = new object();
+
 		public static void SetUI(UIGen? uiMethod) {
 			
-			globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width/1000f)*1f, (Game1.instance.Window.ClientBounds.Width/1000f)*1f);
-			if (uiMethod != null)
-			{
-				currentUI = uiMethod;
-			}
-			currentUI.Invoke();
+				globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f);
+				if (uiMethod != null)
+				{
+					currentUI = uiMethod;
+				}
 
+				currentUI.Invoke();
+			
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -143,6 +147,7 @@ namespace MultiplayerXeno
 			SelectedControllable = controllable;
 			if(controllable==null) return;
 			SetUI(UnitUi);
+			Camera.SetPos(controllable.worldObject.TileLocation.Position);
 			
 		}
 		
@@ -730,7 +735,7 @@ namespace MultiplayerXeno
 				{
 					Top=0,
 					VerticalAlignment = VerticalAlignment.Top,
-					HorizontalAlignment = HorizontalAlignment.Center
+					HorizontalAlignment = HorizontalAlignment.Left
 				};
 				SetScore(0);
 			}
@@ -806,10 +811,154 @@ namespace MultiplayerXeno
 			panel.Widgets.Add(input);
 			panel.Widgets.Add(chatBoxViewer);
 		
+			var UnitContainer = new Grid()
+			{
+				GridColumnSpan = 4,
+				GridRowSpan = 1,
+				RowSpacing = 10,
+				ColumnSpacing = 10,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Top,
+				//ShowGridLines = true,
+			};
+			panel.Widgets.Add(UnitContainer);
+
+			var column = 0;
+
+			foreach (var unit in GameManager.MyUnits)
+			{
+
+				var unitPanel = new Panel()
+				{
+					Width = Math.Clamp((int) (100 * globalScale.X), 0, 110),
+					Height = Math.Clamp((int) (200 * globalScale.Y), 0, 210),
+					GridColumn = column,
+					Background = new SolidBrush(Color.Black),
+
+				};
+				if (unit.Equals(SelectedControllable))
+				{
+					unitPanel.Background = new SolidBrush(Color.DimGray);
+					unitPanel.Top = 25;
+				}
+
+				unitPanel.TouchDown += (sender, args) =>
+				{
+					Console.WriteLine("select");
+					if (unit.Health > 0)
+					{
+						SelectControllable(unit);
+					}
+				};
+
+				UnitContainer.Widgets.Add(unitPanel);
+				var unitName = new Label()
+				{
+					Text = unit.Type.Name,
+					VerticalAlignment = VerticalAlignment.Top,
+					HorizontalAlignment = HorizontalAlignment.Center,
+				};
+				unitPanel.Widgets.Add(unitName);
+				var unitImage = new Image()
+				{
+					Width = 80,
+					Height = 80,
+					Top = 20,
+					VerticalAlignment = VerticalAlignment.Top,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
+				};
+				if (unit.Health <= 0)
+				{
+					unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
+					unitPanel.Top = -10;
+					unitPanel.Background = new SolidBrush(Color.DarkRed);
+				}unitPanel.Widgets.Add(unitImage);
 			
-			
-			
-			Desktop.Root = panel;
+				List<Texture2D> indicators1 = new List<Texture2D>();
+				for (int i = 1; i <= unit.Type.MaxMovePoints; i++)
+				{
+					if (unit.MovePoints < i)
+					{
+						indicators1.Add(infoIndicator[0]);
+					}
+					else
+					{
+						indicators1.Add(infoIndicator[1]);
+					}
+
+				}
+				List<Texture2D> indicators2 = new List<Texture2D>();
+				for (int i = 1; i <= unit.Type.MaxTurnPoints; i++)
+				{
+				
+					if (unit.TurnPoints < i)
+					{
+						indicators2.Add(infoIndicator[2]);
+					}
+					else
+					{
+						indicators2.Add(infoIndicator[3]);
+					}
+
+		
+				}
+				List<Texture2D> indicators3 = new List<Texture2D>();
+				for (int i = 1; i <=  unit.Type.MaxActionPoints; i++)
+				{
+				
+					if (unit.FirePoints < i)
+					{
+						indicators3.Add(infoIndicator[4]);
+					}
+					else
+					{
+						indicators3.Add(infoIndicator[5]);
+					}
+
+				}
+
+				int xsize = Math.Clamp((int) (20 * globalScale.X), 0, 35);
+				int ysize = Math.Clamp((int) (20 * globalScale.Y), 0, 35);
+				
+				int xpos = 0;
+				int ypos = -ysize;
+				List<List<Texture2D>> indicators = new List<List<Texture2D>>();
+				indicators.Add(indicators1);
+				indicators.Add(indicators2);
+				indicators.Add(indicators3);
+				foreach (var indicatorList in indicators)
+				{
+					
+					xpos = 0;
+					ypos += ysize;
+					
+					foreach (var indicator in indicatorList)
+					{
+
+						var icon = new Image()
+						{
+							Width = xsize,
+							Height = ysize,
+							Left = xpos,
+							Top = -ypos,
+							VerticalAlignment = VerticalAlignment.Bottom,
+							HorizontalAlignment = HorizontalAlignment.Left,
+							Renderable = new TextureRegion(indicator)
+						};
+						xpos += xsize;
+						unitPanel.Widgets.Add(icon);
+					}
+
+				}
+
+				column++;
+			}
+
+			lock (myrasyncobj)
+			{
+				Desktop.Root = panel;
+			}
 		}
 
 		public static bool ffmode { get; private set; } = false;
@@ -1028,6 +1177,43 @@ namespace MultiplayerXeno
 				ffmode = !ffmode;
 				ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
 			}
+			if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
+			{
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable) + 1;
+					if (index >= GameManager.MyUnits.Count)
+					{
+						index = 0;
+					}
+
+					SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (SelectedControllable.Health <= 0);
+
+
+			}
+			if (keyboardState.IsKeyDown(Keys.Q) && lastState.IsKeyUp(Keys.Q))
+			{
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable)-1;
+					if (index < 0)
+					{
+						index = GameManager.MyUnits.Count-1;
+					}
+			
+					SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (SelectedControllable.Health <= 0);
+
+			}
 
 			lastState = keyboardState;
 		}
@@ -1042,8 +1228,8 @@ namespace MultiplayerXeno
 			//TileCoordinate = new Vector2(34, 33);
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
-		
-			UI.Desktop.Render();
+
+
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
 		
@@ -1194,6 +1380,11 @@ namespace MultiplayerXeno
 			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
+			
+			lock (myrasyncobj)
+			{
+				UI.Desktop.Render();
+			}
 		}
 
 		

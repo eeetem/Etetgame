@@ -47,7 +47,7 @@ namespace MultiplayerXeno
 				}
 
 
-				foreach (var obj in _worldObjects.Values)
+				foreach (var obj in WorldObjects.Values)
 				{
 
 					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())

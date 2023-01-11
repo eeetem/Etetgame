@@ -30,7 +30,7 @@ namespace MultiplayerXeno
 				XmlNode contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
 				if (contollableObj != null)
 				{
-					controllableType = new ControllableType();
+					controllableType = new ControllableType(name);
 					controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
 					controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");

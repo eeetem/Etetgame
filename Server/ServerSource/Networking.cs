@@ -116,7 +116,7 @@ namespace MultiplayerXeno
 
 			if (GameManager.Player1?.StartData != null && GameManager.Player2?.StartData != null)
 			{
-				GameManager.SpawnCharacters();
+				GameManager.StartGame();
 			}
 		}
 
@@ -164,7 +164,6 @@ namespace MultiplayerXeno
 			GameManager.SendData();
 			SendMapData(connection);
 			SendChatMessage(name+" joined the game");
-			GameManager.StatGame();//will only go through if 2 palyers are present
 
 
 		}
@@ -258,6 +257,12 @@ namespace MultiplayerXeno
 		{
 			GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
+		}
+
+		public static void StartGame()
+		{
+			GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUTF8String("gamestate","start"));
+			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("gamestate","start"));
 		}
 	}
 }

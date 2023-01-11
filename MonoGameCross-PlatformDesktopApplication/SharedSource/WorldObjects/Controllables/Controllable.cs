@@ -368,5 +368,23 @@ namespace MultiplayerXeno
 			data.JustSpawned = false;
 			return data;
 		}
+
+		protected bool Equals(Controllable other)
+		{
+			return worldObject.Equals(other.worldObject);
+		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((Controllable) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return worldObject.GetHashCode();
+		}
 	}
 }
