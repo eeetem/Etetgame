@@ -34,7 +34,13 @@ namespace MultiplayerXeno
 		{
 			return Cam.Center;
 		}
-		
+
+		//function that checks if a specfic position is visible
+		public static bool IsOnScreen(Vector2Int vec)
+		{
+			vec = Utility.GridToWorldPos(vec);
+			return Cam.BoundingRectangle.Contains((Vector2)vec);
+		}
 
 		public static Matrix GetViewMatrix()
 		{

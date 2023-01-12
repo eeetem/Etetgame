@@ -31,6 +31,7 @@ namespace MultiplayerXeno
 		private static Texture2D[] coverIndicator = new Texture2D[8];
 		private static Texture2D[] infoIndicator = new Texture2D[6];
 		private static Texture2D[] healthIndicator = new Texture2D[3];
+		private static Texture2D[] vissionIndicator = new Texture2D[2];
 		private static Texture2D targetingCUrsor;
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
@@ -57,6 +58,9 @@ namespace MultiplayerXeno
 
 			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
 			healthIndicator = Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
+
+			Texture2D vissionIndicatorSpriteSheet = TextureManager.GetTexture("UI/VissionIndicator");
+			vissionIndicator = Utility.SplitTexture(vissionIndicatorSpriteSheet, vissionIndicatorSpriteSheet.Width / 2, vissionIndicatorSpriteSheet.Height);
 			
 			targetingCUrsor = TextureManager.GetTexture("UI/targetingCursor");
 			
@@ -144,6 +148,11 @@ namespace MultiplayerXeno
 		public static void SelectControllable(Controllable controllable)
 		{
 			
+			if (controllable!= null&&!controllable.IsMyTeam())
+			{
+				return;
+			}
+
 			SelectedControllable = controllable;
 			if(controllable==null) return;
 			SetUI(UnitUi);
@@ -600,7 +609,7 @@ namespace MultiplayerXeno
 				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Selection;
 			};
 			grid.Widgets.Add(selection);
-			var line = new TextButton
+			/*var line = new TextButton
 			{
 				GridColumn = 3,
 				GridRow = ypos,
@@ -610,7 +619,7 @@ namespace MultiplayerXeno
 			{
 				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Line;
 			};
-			grid.Widgets.Add(line);
+			grid.Widgets.Add(line);*/
 			
 			
 			var rotateq = new TextButton
@@ -1169,6 +1178,8 @@ namespace MultiplayerXeno
 		}
 
 		private static KeyboardState lastState;
+		private static Dictionary<Vector2Int, Visibility> EnemyVisiblityCache = new Dictionary<Vector2Int, Visibility>();
+		private static Controllable enemySelected;
 		public static void Update(float deltatime)
 		{
 			var keyboardState = Keyboard.GetState();
@@ -1232,8 +1243,6 @@ namespace MultiplayerXeno
 
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-		
-
 				for (int i = 0; i < 8; i++)
 				{
 					var indicator = coverIndicator[i];
@@ -1254,8 +1263,7 @@ namespace MultiplayerXeno
 					//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
 					spriteBatch.Draw(indicator, Mousepos, c);
 				}
-
-			
+				
 
 			if (targeting)
 			{
@@ -1298,7 +1306,6 @@ namespace MultiplayerXeno
 
 				count++;
 			}
-
 			
 			foreach (var obj in Controllables)
 			{
@@ -1307,53 +1314,6 @@ namespace MultiplayerXeno
 					DrawControllableHoverHud(spriteBatch, obj);
 				}
 			}
-			//raycastdebug
-			if (raycastDebug)
-			{
-				var templist = new List<RayCastOutcome>(WorldManager.Instance.RecentFOVRaycasts);
-				if (SelectedControllable != null)
-				{
-					templist.Add(WorldManager.Instance.Raycast((Vector2) UI.SelectedControllable.worldObject.TileLocation.Position,(Vector2)UI.SelectedControllable.worldObject.TileLocation.Position + new Vector2(2,-1), Cover.Full));
-					templist.Reverse();
-				}
-
-				count = 0;
-				foreach (var cast in templist)
-				{
-				
-					if (count > 20000)
-					{
-						break;
-					}
-					spriteBatch.DrawLine(Utility.GridToWorldPos(cast.StartPoint), Utility.GridToWorldPos(cast.EndPoint), Color.Green, 1);
-					if (cast.hit)
-					{
-						count++;
-					
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Red, 5f);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.EndPoint), Utility.GridToWorldPos(cast.CollisionPointLong), Color.Yellow, 2);
-						spriteBatch.DrawLine(Utility.GridToWorldPos(cast.CollisionPointLong), Utility.GridToWorldPos(cast.CollisionPointLong) + (Utility.GridToWorldPos(cast.VectorToCenter) / 2f), Color.Red, 5);
-					}
-					else
-					{
-						spriteBatch.DrawCircle(Utility.GridToWorldPos(cast.EndPoint), 5, 10, Color.Green, 5f);
-					}
-				
-
-
-
-
-					//foreach (var point in cast.CollisionPoint)
-					//	{
-					//		spriteBatch.DrawCircle(Utility.GridToWorldPos(point), 5, 10, Color.Green, 5f);
-					//	}
-				
-
-				}
-
-			}
-
-
 
 
 
@@ -1371,9 +1331,34 @@ namespace MultiplayerXeno
 			
 			*/
 			targeting = false;
+			var tile = WorldManager.Instance.GetTileAtGrid(TileCoordinate);
 			if (SelectedControllable != null && Action.GetActiveActionType() != null)
 			{
 				Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,spriteBatch);
+			}else if (tile.ObjectAtLocation?.ControllableComponent != null && tile.ObjectAtLocation.IsVisible() && !tile.ObjectAtLocation.ControllableComponent.IsMyTeam())
+			{
+				if (tile.ObjectAtLocation.ControllableComponent != enemySelected)
+				{
+					EnemyVisiblityCache = WorldManager.Instance.GetVisibleTiles(tile.ObjectAtLocation.TileLocation.Position, tile.ObjectAtLocation.Facing,tile.ObjectAtLocation.ControllableComponent.GetSightRange(),tile.ObjectAtLocation.ControllableComponent.Crouching );
+					enemySelected = tile.ObjectAtLocation.ControllableComponent;
+				}
+
+				foreach (var unit in GameManager.MyUnits)
+				{
+					if (Camera.IsOnScreen(unit.worldObject.TileLocation.Position))
+					{
+						Action.Actions[ActionType.Attack].Preview(tile.ObjectAtLocation.ControllableComponent,unit.worldObject.TileLocation.Position,spriteBatch);
+						if(EnemyVisiblityCache.ContainsKey(unit.worldObject.TileLocation.Position) && EnemyVisiblityCache[unit.worldObject.TileLocation.Position] >= unit.worldObject.GetMinimumVisibility())
+						{
+							spriteBatch.Draw(vissionIndicator[0],Utility.GridToWorldPos(unit.worldObject.TileLocation.Position),  Color.White);
+						}
+						else
+						{
+							spriteBatch.Draw(vissionIndicator[1],Utility.GridToWorldPos(unit.worldObject.TileLocation.Position),  Color.White);
+						}
+					}
+
+				}
 			}
 
 			WorldEditSystem.Draw(spriteBatch);

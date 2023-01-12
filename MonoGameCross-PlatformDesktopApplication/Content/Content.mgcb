@@ -380,30 +380,6 @@
 /processorParam:TextureFormat=Color
 /build:textures/ScoutCrouch.png
 
-#begin textures/UI/Crouch.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/Crouch.png
-
-#begin textures/UI/Crouch.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/Crouch.png
-
 #begin textures/UI/coverIndicator.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -427,6 +403,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/UI/coverIndicator.png
+
+#begin textures/UI/Crouch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Crouch.png
+
+#begin textures/UI/Crouch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Crouch.png
 
 #begin textures/UI/Fire.png
 /importer:TextureImporter
@@ -560,6 +560,30 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/PortraitAlive.png
 
+#begin textures/UI/PortraitAlive.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/PortraitAlive.png
+
+#begin textures/UI/PortraitDead.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/PortraitDead.png
+
 #begin textures/UI/PortraitDead.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -643,6 +667,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/UI/targetingCursor.png
+
+#begin textures/UI/VissionIndicator.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/VissionIndicator.png
 
 #begin textures/UI/walkie.png
 /importer:TextureImporter
