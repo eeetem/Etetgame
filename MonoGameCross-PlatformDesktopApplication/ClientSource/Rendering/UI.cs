@@ -290,7 +290,7 @@ namespace MultiplayerXeno
 			{
 				GridColumn = 1,
 				GridRow = 1,
-				Text = "46.7.175.47"
+				Text = "46.7.175.47:52233"
 			};
 			grid.Widgets.Add(textBox);
 			var textBox2 = new TextBox()
@@ -317,7 +317,7 @@ namespace MultiplayerXeno
 
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
-					SetUI(SetupUi);
+					SetUI(UnitAssemblyUI);
 					DiscordManager.client.UpdateState("In Battle");
 				}
 				else
@@ -337,12 +337,27 @@ namespace MultiplayerXeno
 
 
 		}
+		public static void PreGameLobby()
+		{
+
+
+			var panel = new Panel
+			{
+				
+			};
+			AttachChatBox(panel);
+			
+			Desktop.Root = panel;
+
+
+
+		}
 
 
 		private static int soldierCount = 0;
 		private static int scoutCount = 0;
 		private static int heavyCount = 0;
-		public static void SetupUi()
+		public static void UnitAssemblyUI()
 		{
 
 
@@ -527,6 +542,7 @@ namespace MultiplayerXeno
 
 		}
 
+		private static string lastMapName = "";
 		public static void EditorMenu()
 		{
 
@@ -569,8 +585,24 @@ namespace MultiplayerXeno
 			};
 
 			save.Click += (s, a) =>
-			{ 
-				WorldManager.Instance.SaveData("map.mapdata");
+			{ 			
+				var panel = new Panel();
+				var label = new Label()
+				{
+					Text = "Enter Map Name"
+				};
+				panel.Widgets.Add(label);
+				var input = new TextBox();
+				input.Text = lastMapName;
+				panel.Widgets.Add(input);
+				var dialog = Dialog.CreateMessageBox("Save Map", panel);
+				dialog.ButtonOk.Click += (sender, args) =>
+				{
+					lastMapName = input.Text;
+					WorldManager.Instance.SaveData("./Maps/"+input.Text+".mapdata");
+				};
+				dialog.ShowModal(Desktop);
+				
 			};
 			
 			var load = new TextButton
@@ -582,7 +614,32 @@ namespace MultiplayerXeno
 
 			load.Click += (s, a) =>
 			{ 
-				WorldManager.Instance.LoadData(File.ReadAllBytes("map.mapdata"));
+				//dropdown with all maps
+				string[] filePaths = Directory.GetFiles("./Maps/", "*.mapdata");
+				var panel = new Panel();
+				var label = new Label()
+				{
+					Text = "Select a map to load"
+				};
+				panel.Widgets.Add(label);
+				var selection = new ListBox();
+				panel.Widgets.Add(selection);
+				foreach (var path in filePaths)
+				{
+					var item = new ListItem()
+					{
+						Text = path,
+					};
+					selection.Items.Add(item);
+				}
+				var dialog = Dialog.CreateMessageBox("Load Map", panel);
+				dialog.ButtonOk.Click += (sender, args) =>
+				{
+					lastMapName = selection.SelectedItem.Text.Split("/").Last().Split(".").First();
+					WorldManager.Instance.LoadData(File.ReadAllBytes(selection.SelectedItem.Text));
+				};
+				dialog.ShowModal(Desktop);
+				
 			};
 			grid.Widgets.Add(save);
 			grid.Widgets.Add(load);
@@ -691,66 +748,8 @@ namespace MultiplayerXeno
 
 		public static bool MousePassthrough { get; private set; }
 
-		public static void GameUi()
+		private static void AttachChatBox(Panel parent)
 		{
-			
-			
-			var panel = new Panel
-			{
-				
-			};
-
-			var end = new TextButton
-			{
-				Top= (int)(0f*globalScale.Y),
-				Left = (int)(-10f*globalScale.X),
-				Width = (int)(80 * globalScale.X),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top,
-				Text = "End Turn",
-				//Scale = globalScale
-			};
-			end.Click += (o,a) => GameManager.EndTurn();		
-			panel.Widgets.Add(end);
-		/*	
-			var debug = new TextButton
-			{
-				GridColumn = 8,
-				GridRow = 1,
-				Text = "Raycast Toggle"
-			};
-			debug.Click += (o,a) => raycastDebug = !raycastDebug;
-			grid.Widgets.Add(debug);
-			*/
-			
-			turnIndicator = new Panel()
-			{
-				Top= (int)(-1f*globalScale.Y),
-				Left =(int)(-150f*globalScale.X),
-				Height =50,
-				Width = (int)(80 * globalScale.X),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top,
-				Background = new SolidBrush(Color.Red),
-				//Scale = globalScale
-			};
-			panel.Widgets.Add(turnIndicator);
-			SetMyTurn(GameManager.IsMyTurn());
-			if (scoreIndicator == null)
-			{
-
-
-				scoreIndicator = new Label()
-				{
-					Top=0,
-					VerticalAlignment = VerticalAlignment.Top,
-					HorizontalAlignment = HorizontalAlignment.Left
-				};
-				SetScore(0);
-			}
-
-			panel.Widgets.Add(scoreIndicator);
-
 			if (chatBoxViewer == null)
 			{
 				chatBoxViewer = new ScrollViewer()
@@ -816,9 +815,72 @@ namespace MultiplayerXeno
 					input.Text = "";
 				}
 			};
-			panel.Widgets.Add(inputbtn);
-			panel.Widgets.Add(input);
-			panel.Widgets.Add(chatBoxViewer);
+			parent.Widgets.Add(inputbtn);
+			parent.Widgets.Add(input);
+			parent.Widgets.Add(chatBoxViewer);
+		}
+
+		public static void GameUi()
+		{
+			
+			
+			var panel = new Panel
+			{
+				
+			};
+
+			var end = new TextButton
+			{
+				Top= (int)(0f*globalScale.Y),
+				Left = (int)(-10f*globalScale.X),
+				Width = (int)(80 * globalScale.X),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Top,
+				Text = "End Turn",
+				//Scale = globalScale
+			};
+			end.Click += (o,a) => GameManager.EndTurn();		
+			panel.Widgets.Add(end);
+		/*	
+			var debug = new TextButton
+			{
+				GridColumn = 8,
+				GridRow = 1,
+				Text = "Raycast Toggle"
+			};
+			debug.Click += (o,a) => raycastDebug = !raycastDebug;
+			grid.Widgets.Add(debug);
+			*/
+			
+			turnIndicator = new Panel()
+			{
+				Top= (int)(-1f*globalScale.Y),
+				Left =(int)(-150f*globalScale.X),
+				Height =50,
+				Width = (int)(80 * globalScale.X),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Top,
+				Background = new SolidBrush(Color.Red),
+				//Scale = globalScale
+			};
+			panel.Widgets.Add(turnIndicator);
+			SetMyTurn(GameManager.IsMyTurn());
+			if (scoreIndicator == null)
+			{
+
+
+				scoreIndicator = new Label()
+				{
+					Top=0,
+					VerticalAlignment = VerticalAlignment.Top,
+					HorizontalAlignment = HorizontalAlignment.Left
+				};
+				SetScore(0);
+			}
+
+			panel.Widgets.Add(scoreIndicator);
+
+			AttachChatBox(panel);
 		
 			var UnitContainer = new Grid()
 			{
@@ -1183,6 +1245,7 @@ namespace MultiplayerXeno
 		public static void Update(float deltatime)
 		{
 			var keyboardState = Keyboard.GetState();
+			if(WorldEditSystem.enabled) return;
 			if (keyboardState.IsKeyDown(Keys.Tab) && lastState.IsKeyUp(Keys.Tab))
 			{
 				ffmode = !ffmode;

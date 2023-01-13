@@ -13,15 +13,16 @@ namespace MultiplayerXeno
 	public static class Networking
 	{
 		public static TcpConnection serverConnection;
-		private static string Ip="";
+		private static string Ipport="";
 		private static string Name="";
-		public static ConnectionResult Connect(string ip,string name)
+		public static ConnectionResult Connect(string ipport,string name)
 		{
-			Ip = ip;
+			Ipport = ipport;
 			Name = name;
 			ConnectionResult connectionResult = ConnectionResult.TCPConnectionNotAlive;
 			//1. Establish a connection to the server.
-			serverConnection = ConnectionFactory.CreateTcpConnection(ip, 52233, out connectionResult);
+			var ipAndPort = ipport.Split(":");
+			serverConnection = ConnectionFactory.CreateTcpConnection(ipAndPort[0], int.Parse(ipAndPort[1]), out connectionResult);
 			
 			///serverConnection.NoDelay
 			//2. Register what happens if we get a connection
@@ -61,7 +62,7 @@ namespace MultiplayerXeno
 
 		private static void Reconnect(object sender, EventArgs e)
 		{
-			Connect(Ip, Name);
+			Connect(Ipport, Name);
 		}
 
 	

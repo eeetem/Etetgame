@@ -14,7 +14,7 @@ namespace MultiplayerXeno
 	{
 
 		
-		private static bool enabled = false;
+		public static bool enabled = false;
 		public static void Init()
 		{
 			enabled = true;
@@ -296,6 +296,10 @@ namespace MultiplayerXeno
 
 					break;
 			}
+			Texture2D previewSprite = PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][(int)ActiveDir];
+						
+
+			batch.Draw(previewSprite, Utility.GridToWorldPos(MousePos+new Vector2(-1.5f,-0.5f)), Color.White*0.5f);
 		}
 	}
 }

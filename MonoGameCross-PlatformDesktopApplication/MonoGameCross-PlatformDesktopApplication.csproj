@@ -21,7 +21,10 @@
         <None Update="ObjectData.xml">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="map.mapdata">
+        <None Update="Maps\map.mapdata">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Maps\map2.mapdata">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>

@@ -18,10 +18,10 @@ namespace MultiplayerXeno
 	public static class Networking
 	{
 		private static ServerConnectionContainer serverConnectionContainer;
-		public static void Start()
+		public static void Start(int port)
 		{
 			//1. Start listen on a portw
-			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(52233, false);
+			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(port, false);
 
 			serverConnectionContainer.ConnectionLost += (a, b, c) =>
 			{

@@ -22,8 +22,9 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			Action.Init();
 			WorldManager.Instance.LoadData(File.ReadAllBytes("map.mapdata"));
 			PathFinding.GenerateNodes();
-			
-			Networking.Start();
+			Console.WriteLine("Enter Port:");
+			string userName = Console.ReadLine();
+			Networking.Start(Int32.Parse(userName));
 			
 			UpdateLoop();
 			
