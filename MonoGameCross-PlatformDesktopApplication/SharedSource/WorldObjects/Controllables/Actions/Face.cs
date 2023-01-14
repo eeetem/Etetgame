@@ -46,7 +46,7 @@ public class Face : Action
 #if CLIENT
 
 	private Vector2Int lastTarget;
-	private List<Tuple<Vector2Int,Visibility>> previewTiles = new List<Tuple<Vector2Int, Visibility>>();
+	private Dictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 	public override void InitAction()
 	{
 		lastTarget = new Vector2Int(0, 0);
@@ -68,15 +68,15 @@ public class Face : Action
 		
 		foreach (var visTuple in previewTiles)
 		{
-			WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Item1);
+			WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Key);
 			if (tile.Surface == null) continue;
 
 			Texture2D sprite = tile.Surface.GetTexture();
 			Color c = Color.Pink;
-			if (visTuple.Item2 == Visibility.Full)
+			if (visTuple.Value == Visibility.Full)
 			{
 				c = Color.Brown * 0.45f;
-			}else if (visTuple.Item2 == Visibility.Partial)
+			}else if (visTuple.Value == Visibility.Partial)
 			{
 				c = Color.RosyBrown * 0.45f;
 			}

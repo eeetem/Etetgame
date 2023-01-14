@@ -56,10 +56,10 @@ namespace MultiplayerXeno
 						{
 							
 					
-							if(GetTileAtGrid(visTuple.Item1).Visible < visTuple.Item2)
+							if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
 							{
-								GetTileAtGrid(visTuple.Item1).Visible = visTuple.Item2;
-								GetTileAtGrid(visTuple.Item1)?.ObjectAtLocation?.ControllableComponent.Spoted();
+								GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
+								GetTileAtGrid(visTuple.Key)?.ObjectAtLocation?.ControllableComponent.Spoted();
 							}
 							
 							
@@ -70,12 +70,12 @@ namespace MultiplayerXeno
 			
 		}
 		
-		public List<Tuple<Vector2Int,Visibility>> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
+		public Dictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
 		{
 
 			int itteration = 0;
 
-			List<Tuple<Vector2Int,Visibility>> positionsToCheck = new List<Tuple<Vector2Int, Visibility>>();
+			Dictionary<Vector2Int, Visibility> positionsToCheck = new Dictionary<Vector2Int, Visibility>();
 			Vector2Int initialpos = pos;
 			while (itteration < range+2)
 			{
@@ -86,7 +86,7 @@ namespace MultiplayerXeno
 					var visibility = CanSee(initialpos,pos,range,crouched);
 					if (visibility > Visibility.None)
 					{
-						positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos,visibility));
+						positionsToCheck.Add(pos, visibility);
 					}
 				}
 				
@@ -112,7 +112,7 @@ namespace MultiplayerXeno
 						var visibility = CanSee(initialpos,pos + invoffset * (x + 1),range,crouched);
 						if (visibility > Visibility.None)
 						{
-							positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos + invoffset * (x + 1),visibility));
+							positionsToCheck.Add(pos + invoffset * (x + 1),visibility);
 						}
 					}
 
@@ -121,7 +121,7 @@ namespace MultiplayerXeno
 						var visibility = CanSee(initialpos,pos + offset * (x + 1),range,crouched);
 						if (visibility > Visibility.None)
 						{
-							positionsToCheck.Add(new Tuple<Vector2Int,Visibility>(pos + offset * (x + 1),visibility));
+							positionsToCheck.Add(pos + offset * (x + 1),visibility);
 						}
 					}
 				}
