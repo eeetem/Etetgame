@@ -24,6 +24,7 @@
     <ItemGroup>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\Maps\map.mapdata">
         <Link>Maps\map.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
         <Link>ObjectData.xml</Link>
