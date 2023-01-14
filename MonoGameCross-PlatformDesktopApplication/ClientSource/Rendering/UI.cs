@@ -628,15 +628,15 @@ namespace MultiplayerXeno
 				{
 					var item = new ListItem()
 					{
-						Text = path,
+						Text = selection.SelectedItem.Text.Split("/").Last().Split(".").First(),
 					};
 					selection.Items.Add(item);
 				}
 				var dialog = Dialog.CreateMessageBox("Load Map", panel);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
-					lastMapName = selection.SelectedItem.Text.Split("/").Last().Split(".").First();
-					WorldManager.Instance.LoadData(File.ReadAllBytes(selection.SelectedItem.Text));
+					lastMapName = selection.SelectedItem.Text;
+					WorldManager.Instance.LoadData(File.ReadAllBytes("./Maps/"+selection.SelectedItem.Text+".mapdata"));
 				};
 				dialog.ShowModal(Desktop);
 				
