@@ -12,6 +12,17 @@ namespace MultiplayerXeno
 		public static bool IsPlayer1;
 		public static bool intated = false;
 		public static List<Controllable> _myUnits = new List<Controllable>();
+		private static PreGameDataPacket _preGameData;
+		public static PreGameDataPacket PreGameData
+		{
+			get => _preGameData;
+			set
+			{
+				_preGameData = value;
+				UI.SetUI(null);
+			}
+		}
+
 		public static List<Controllable> MyUnits
 		{
 			get {
@@ -36,15 +47,19 @@ namespace MultiplayerXeno
 			IsPlayer1Turn = data.IsPlayer1Turn;
 			IsPlayer1 = data.IsPlayerOne;
 			score = data.Score;
-			GameStarted = data.GameStarted;
-			if (GameStarted)//skip setup
+			GameState = data.GameState;
+			switch (GameState)
 			{
-				UI.SetUI(UI.GameUi);
+				case GameState.Lobby:
+					UI.SetUI(UI.PreGameLobby);
+					break;
+				case GameState.Setup:
+					UI.SetUI(UI.SetupUI);
+					break;
+				case GameState.Playing:
+					StartGame();
+					break;
 			}
-
-			
-			
-
 		}
 
 		public static void StartGame()

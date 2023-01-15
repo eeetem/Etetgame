@@ -317,7 +317,7 @@ namespace MultiplayerXeno
 
 					grid.Widgets.Remove(button);
 					grid.Widgets.Remove(textBox);
-					SetUI(UnitAssemblyUI);
+					SetUI(PreGameLobby);
 					DiscordManager.client.UpdateState("In Battle");
 				}
 				else
@@ -340,12 +340,82 @@ namespace MultiplayerXeno
 		public static void PreGameLobby()
 		{
 
-
+			
 			var panel = new Panel
 			{
 				
 			};
 			AttachChatBox(panel);
+			
+			if(GameManager.PreGameData ==null) return;
+			var selection = new ListBox()
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Right,
+
+			};
+			panel.Widgets.Add(selection);
+			foreach (var path in GameManager.PreGameData.MapList)
+			{
+				var item = new ListItem()
+				{
+					Text = path.Split("/").Last().Split(".").First(),
+				};
+				selection.Items.Add(item);
+			}
+			selection.SelectedIndex = GameManager.PreGameData.SelectedIndex;
+			if (GameManager.IsPlayer1)
+			{
+				selection.SelectedIndexChanged += (s, a) =>
+				{
+					GameManager.PreGameData.SelectedIndex = (int)selection.SelectedIndex;
+					Networking.SendPreGameUpdate();
+				};
+				var btn = new TextButton()
+				{
+					Text = "Start Game",
+					GridColumn = 1,
+					GridRow = 2,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Center,
+					Top = 60,
+				};
+				btn.Click += (s, a) =>
+				{
+					Networking.SendStartGame();
+				};
+				panel.Widgets.Add(btn);
+			}
+			else
+			{
+				
+				selection.SelectedIndexChanged += (s, a) =>
+				{
+					selection.SelectedIndex = GameManager.PreGameData.SelectedIndex;
+				};
+				
+			}
+
+
+
+			var label = new Label()
+			{
+				Text = GameManager.PreGameData.HostName,
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				Top = -25,
+				Background = new SolidBrush(Color.Black)
+			};
+			var label2 = new Label()
+			{
+				Text = GameManager.PreGameData.Player2Name,
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				Top = 25,
+				Background = new SolidBrush(Color.Black)
+			};
+			panel.Widgets.Add(label);
+			panel.Widgets.Add(label2);
 			
 			Desktop.Root = panel;
 
@@ -357,7 +427,7 @@ namespace MultiplayerXeno
 		private static int soldierCount = 0;
 		private static int scoutCount = 0;
 		private static int heavyCount = 0;
-		public static void UnitAssemblyUI()
+		public static void SetupUI()
 		{
 
 
@@ -510,7 +580,7 @@ namespace MultiplayerXeno
 			};
 			confirm.Click += (s, a) =>
 			{
-				StartDataPacket packet = new StartDataPacket();
+				UnitStartDataPacket packet = new UnitStartDataPacket();
 				packet.Scouts = scoutCount;
 				packet.Soldiers = soldierCount;
 				packet.Heavies = heavyCount;

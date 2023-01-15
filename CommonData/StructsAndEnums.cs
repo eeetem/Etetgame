@@ -121,6 +121,13 @@ namespace CommonData
 		Partial=1,
 		Full=2
 	}
+	public enum GameState
+	{
+		Lobby=0,
+		Setup=1,
+		Playing=2,
+		Over=3,
+	}
 
 	public enum Cover
 	{

@@ -112,33 +112,33 @@ namespace MultiplayerXeno
 
 		public WorldTile LoadWorldTile(WorldTileData data)
 		{
-			WorldTile tile = GetTileAtGrid(data.position);
-			tile.Wipe();
-			if (data.Surface != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
-			}
+			
+				WorldTile tile = GetTileAtGrid(data.position);
+				tile.Wipe();
+				if (data.Surface != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
+				}
 
-			if (data.NorthEdge != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
-			}
+				if (data.NorthEdge != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
+				}
 
-			if (data.ObjectAtLocation != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.ObjectAtLocation, tile);
-			}
+				if (data.ObjectAtLocation != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.ObjectAtLocation, tile);
+				}
 
-			if (data.WestEdge != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
-			}
+				if (data.WestEdge != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
+				}
 
-#if SERVER
-			Networking.SendTileUpdate(tile);
-#endif
-			return tile;
+				return tile;
+		
 		}
+		
 
 		public void MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
 		{
@@ -532,7 +532,7 @@ namespace MultiplayerXeno
 					MakeFovDirty();
 #endif
 					DestroyWorldObject(obj);
-					Console.WriteLine("deleting: "+obj);
+				//	Console.WriteLine("deleting: "+obj);
 				}
 				objsToDel.Clear();
 
@@ -546,24 +546,28 @@ namespace MultiplayerXeno
 				{
 					obj.Update(gameTime);
 				}
-				
-
+#if SERVER
+				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
+#endif
 				foreach (var WO in createdObjects)
 				{
-					#if CLIENT
+#if CLIENT
 					MakeFovDirty();
 #endif
 					var obj = CreateWorldObj(WO);
 					Console.WriteLine("creatinig: "+obj.Id);
 #if SERVER
-			//this is resulted when a singlar object is created outside the world manager(the world manager deals with full tiles exclusively)
-			//this could cause issues if multiple objects are cerated on a tile in quick succsesion - but other than loading the map(which happends tile by tile rather than object by object) it shouldnt happen
-			
-				Networking.SendTileUpdate(WO.Item2);
-
+					tilesToUpdate.Add(WO.Item2);
 #endif
-				}		
+				}
 				createdObjects.Clear();
+#if SERVER
+				foreach (var tile in tilesToUpdate)
+				{
+					Networking.SendTileUpdate(tile);
+				}
+				tilesToUpdate.Clear();
+#endif
 #if CLIENT
 				if(fovDirty){
 					CalculateFov();
@@ -599,6 +603,7 @@ namespace MultiplayerXeno
 			WorldTile newTile;
 			if (WO.Type.Surface)
 			{
+				Console.WriteLine("creatin surface at "+tile.Position);
 				tile.Surface = WO;
 			}
 			else if (type.Edge)
