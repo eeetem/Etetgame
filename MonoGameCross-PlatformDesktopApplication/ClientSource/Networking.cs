@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using CommonData;
+using Microsoft.Xna.Framework;
 using Network;
 using Network.Converter;
 using Network.Packets;
@@ -45,12 +46,18 @@ namespace MultiplayerXeno
 
 			
 			serverConnection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
-			serverConnection.RegisterRawDataHandler("gamestate",ReciveStartGame);
-			
+
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
-			
-			Thread.Sleep(100);//give server  a second to register the packet handler
+			serverConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
+			{
+				Console.WriteLine("LobbyData Recived");
+				GameManager.PreGameData = i;
+
+			});
+			Console.WriteLine("Registered Handlers");
+			Thread.Sleep(500);//give server  a second to register the packet handler
+			Console.WriteLine("Registering Player");
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
 		
 			
@@ -75,10 +82,12 @@ namespace MultiplayerXeno
 
 		private static void ReciveTileUpdate(RawData rawData, Connection connection)
 		{
+			
 			using (Stream dataStream = new MemoryStream(rawData.Data))
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
 				WorldTileData prefabData = (WorldTileData)bformatter.Deserialize(dataStream);
+				Console.WriteLine("recived tile update "+prefabData.position);
 				WorldManager.Instance.LoadWorldTile(prefabData);
 
 
@@ -127,12 +136,17 @@ namespace MultiplayerXeno
 		{
 			UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));
 		}
-		private static void ReciveStartGame(RawData rawData, Connection connection)
+
+
+
+		public static void SendPreGameUpdate()
 		{
-			GameManager.StartGame();
+			serverConnection.SendRawData(RawDataConverter.FromInt32("mapSelect",GameManager.PreGameData.SelectedIndex));
 		}
 
-
-
+		public static void SendStartGame()
+		{
+			serverConnection.SendRawData(RawDataConverter.FromUTF8String("gameState",""));
+		}
 	}
 }

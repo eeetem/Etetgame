@@ -4,9 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
+using CommonData;
 using Microsoft.Xna.Framework;
-
 using CommonData;
 using Network;
 using Network.Converter;
@@ -42,7 +41,7 @@ namespace MultiplayerXeno
 				SendChatMessage(name+" left the game");
 			};
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
-			serverConnectionContainer.AllowUDPConnections = true;
+			serverConnectionContainer.AllowUDPConnections = false;
 
 
 
@@ -91,20 +90,30 @@ namespace MultiplayerXeno
 			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
 			connection.TIMEOUT = 10000;
-			
-		//	connection.RegisterRawDataHandler("mapDownload",SendMapData);
+
 			connection.RegisterRawDataHandler("register",RegisterClient);
 			connection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
+			connection.RegisterRawDataHandler("gameState", (packet, con) =>
+			{
+				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
+					return;
+				GameManager.StartSetup(Directory.GetFiles("./Maps/", "*.mapdata").ToList()[mapIndex]);
+			});
+			connection.RegisterRawDataHandler("mapSelect", (i, con) =>
+			{
+				if(con != GameManager.Player1.Connection  || GameManager.GameState != GameState.Lobby)
+					return;
+				mapIndex = RawDataConverter.ToInt32(i);
+				SendPreGameInfo();
+
+			});
 			
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
-			connection.RegisterStaticPacketHandler<StartDataPacket>(ReciveStartData);
-			
-			//3. Register packet listeners.
-			//connection.RegisterRawDataHandler("HelloWorld", (rawData, con) => Console.WriteLine($"RawDataPacket received. Data: {rawData.ToUTF8String()}"));
-		
+			connection.RegisterStaticPacketHandler<UnitStartDataPacket>(ReciveUnitStartData);
+			Console.WriteLine("Registered handlers");
 		}
 
-		private static void ReciveStartData(StartDataPacket packet, Connection connection)
+		private static void ReciveUnitStartData(UnitStartDataPacket packet, Connection connection)
 		{
 			if (GameManager.Player1?.Connection == connection)
 			{
@@ -123,6 +132,7 @@ namespace MultiplayerXeno
 
 		private static void RegisterClient(RawData rawData, Connection connection)
 		{
+			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData);
 
 			if (GameManager.Player1 == null)
@@ -162,14 +172,28 @@ namespace MultiplayerXeno
 			}
 
 			GameManager.SendData();
+			SendPreGameInfo();
 			SendMapData(connection);
 			SendChatMessage(name+" joined the game");
-			if (GameManager.GameStarted)
-			{
-				StartGame();
-			}
+			
+			Console.WriteLine("Client Register Done");
 
 
+		}
+
+		private static int mapIndex = 0;
+		public static void SendPreGameInfo()
+		{
+			var data = new PreGameDataPacket();
+			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "Empty Slot";
+			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "Empty Slot";
+			data.Spectators = new List<string>();
+			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
+			data.SelectedIndex = mapIndex;
+			if (GameManager.Player1 != null)
+				GameManager.Player1.Connection.Send(data);
+			if (GameManager.Player2 != null)
+				GameManager.Player2.Connection.Send(data);
 		}
 
 		public static void SendTileUpdate(WorldTile wo)
@@ -193,7 +217,7 @@ namespace MultiplayerXeno
 	
 		
 
-		private static void SendMapData(Connection connection)
+		public static void SendMapData(Connection connection)
 		{
 			WorldManager.Instance.SaveData("temp.mapdata");
 			byte[] mapData = File.ReadAllBytes("temp.mapdata");
@@ -263,10 +287,6 @@ namespace MultiplayerXeno
 			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 		}
 
-		public static void StartGame()
-		{
-			GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUTF8String("gamestate","start"));
-			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("gamestate","start"));
-		}
+	
 	}
 }

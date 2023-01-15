@@ -9,7 +9,7 @@ namespace MultiplayerXeno
 		public int Team;
 		public Connection Connection;
 		public string Name;
-		public StartDataPacket? StartData { get; private set; }
+		public UnitStartDataPacket? StartData { get; private set; }
 
 		public Client(string name,Connection con, int team)
 		{
@@ -18,7 +18,7 @@ namespace MultiplayerXeno
 			Team = team;
 		}
 
-		public void SetStartData(StartDataPacket packet)
+		public void SetStartData(UnitStartDataPacket packet)
 		{
 			if (packet.Scouts + packet.Soldiers > 6)
 			{

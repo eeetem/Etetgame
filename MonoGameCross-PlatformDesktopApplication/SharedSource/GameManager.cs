@@ -16,7 +16,7 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1Turn = true;
 
-		public static bool GameStarted = false;
+		public static GameState GameState;
 		public static void Update(float delta)
 		{
 
@@ -29,6 +29,7 @@ namespace MultiplayerXeno
 		private static void EndGame(bool player1Win)
 		{
 #if SERVER
+			GameState = GameState.Over;
 			if (player1Win)
 			{
 				Networking.NotifyAll(Player1.Name + " Wins!");	

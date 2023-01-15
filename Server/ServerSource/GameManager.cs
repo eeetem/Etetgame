@@ -15,14 +15,27 @@ namespace MultiplayerXeno
 		public static readonly List<int> T1Units = new List<int>();
 		public static readonly List<int> T2Units = new List<int>();
 
+		public static void StartSetup(string map)
+		{
+			if (GameState != GameState.Lobby) return;
+			if(Player1==null || Player2==null)return;
+
+			GameState = GameState.Setup;
+			WorldManager.Instance.LoadData(File.ReadAllBytes(map));
+			Networking.SendMapData(Player1.Connection);
+			Networking.SendMapData(Player2.Connection);
+			SendData();
+		}
+
 		public static void StartGame()
 		{
-			if (GameStarted)
+			if (GameState != GameState.Setup)
 			{
 				return;
 			}
 
-			GameStarted = true;
+			GameState = GameState.Playing;
+			
 				
 			//not a fan of this, should probably be made a single function
 			ControllableData cdata = new ControllableData(true);
@@ -76,8 +89,9 @@ namespace MultiplayerXeno
 				NextTurn();
 			}
 
+		
 			Thread.Sleep(1000);//let the clients process spawns
-			Networking.StartGame();
+			SendData();
 		}
 
 		public static void SendData()
@@ -87,7 +101,7 @@ namespace MultiplayerXeno
 				IsPlayer1Turn = IsPlayer1Turn,
 				IsPlayerOne = true,
 				Score = score,
-				GameStarted = GameStarted
+				GameState = GameState
 			};
 			
 
@@ -99,7 +113,7 @@ namespace MultiplayerXeno
 				IsPlayer1Turn = IsPlayer1Turn,
 				IsPlayerOne = false,
 				Score = score,
-				GameStarted = GameStarted
+				GameState = GameState
 			};
 			Player2?.Connection.Send(packet);
 		}
