@@ -74,6 +74,7 @@ namespace MultiplayerXeno
 				lastMousePos = new Vector2(mouseState.Position.X,mouseState.Position.Y);
 				if (lastpos != new Vector2(0, 0))
 				{
+					forceMoving = false;
 					return Vector2.Clamp((lastpos - new Vector2(mouseState.Position.X, mouseState.Position.Y)) / 30f, new Vector2(-3, -3), new Vector2(3, 3));
 				}
 			}

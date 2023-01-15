@@ -22,7 +22,7 @@ namespace MultiplayerXeno
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
-			if (data.Health == -1)
+			if (data.Health == -100)
 			{
 				Health = type.MaxHealth;
 			}
@@ -30,7 +30,7 @@ namespace MultiplayerXeno
 			{
 				Health = data.Health;
 			}
-			if (data.Determination == -1)
+			if (data.Determination == -100)
 			{
 				determination = type.Maxdetermination;
 			}
@@ -46,15 +46,15 @@ namespace MultiplayerXeno
 			WorldManager.Instance.MakeFovDirty();
 #endif
 			
-			if (data.MovePoints != -1)
+			if (data.MovePoints != -100)
 			{
 				this.MovePoints = data.MovePoints;
 			}
-			if (data.ActionPoints != -1)
+			if (data.ActionPoints != -100)
 			{
 				this.FirePoints = data.ActionPoints;
 			}
-			if (data.TurnPoints != -1)
+			if (data.TurnPoints != -100)
 			{
 				this.TurnPoints = data.TurnPoints;
 			}
@@ -235,7 +235,15 @@ namespace MultiplayerXeno
 		{
 			Crouching = true;
 			paniced = true;
+			if (moving)
+			{
+				moving = false;
+				_thisMoving = false;
+			}
+
+		
 #if CLIENT
+	UI.SetUI(UI.UnitUi);
 			if (worldObject.IsVisible())
 			{
 				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
@@ -348,7 +356,6 @@ namespace MultiplayerXeno
 #endif
 					
 					}
-					//todo jump view to move
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();
 					if (worldObject.IsVisible())
