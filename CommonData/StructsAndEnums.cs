@@ -69,11 +69,11 @@ namespace CommonData
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
-			ActionPoints = -1;
-			MovePoints = -1;
-			TurnPoints = -1;
-			Health = -1;
-			Determination = -1;
+			ActionPoints = -100;
+			MovePoints = -100;
+			TurnPoints = -100;
+			Health = -100;
+			Determination = -100;
 			Crouching = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 		}

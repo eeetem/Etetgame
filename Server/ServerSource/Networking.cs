@@ -164,6 +164,10 @@ namespace MultiplayerXeno
 			GameManager.SendData();
 			SendMapData(connection);
 			SendChatMessage(name+" joined the game");
+			if (GameManager.GameStarted)
+			{
+				StartGame();
+			}
 
 
 		}

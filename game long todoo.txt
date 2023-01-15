@@ -1,4 +1,3 @@
-overwatch sync
 only direct shots???how??
 resync after every turn(at some point)+checks for desyncs
 point blank supression

@@ -1052,105 +1052,106 @@ namespace MultiplayerXeno
 				var root = (Panel) Desktop.Root;
 				previewMoves = SelectedControllable.GetPossibleMoveLocations();
 
-
-				descBox = new Label()
+				lock (myrasyncobj)
 				{
-					Top = -100,
-					MaxWidth = (int)(600 * globalScale.X),
-					MinHeight = 40,
-					MaxHeight = 80,
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					Background = new SolidBrush(Color.DimGray),
-					Text = PreviewDesc,
-					TextAlign = TextHorizontalAlignment.Center,
-					Wrap = true
-				};
-				root.Widgets.Add(descBox);
-
-
-				var buttonContainer = new Grid()
-				{
-					GridColumn = 1,
-					GridRow = 3,
-					GridColumnSpan = 4,
-					GridRowSpan = 1,
-					RowSpacing = 10,
-					ColumnSpacing = 10,
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					//ShowGridLines = true,
-				};
-				root.Widgets.Add(buttonContainer);
-				ffmodebtn = new TextButton()
-				{
-					Text = "FreeFire Mode: " + (ffmode ? "On" : "Off"),
-					GridColumn = 0,
-					GridRow = 0,
-				
-				};
-				ffmodebtn.Click += (o, a) =>
-				{
-					ffmode = !ffmode;
-					ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
-				};
-				
-				buttonContainer.RowsProportions.Add(new Proportion(ProportionType.Pixels,20));
-				buttonContainer.Widgets.Add(ffmodebtn);
-				var fire = new ImageButton()
-				{
-					GridColumn = 0,
-					GridRow = 1,
-
-					Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
-				//	Scale = new Vector2(1.5f)
-				};
-				fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
-				fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose determination. Cost: 1 action, 1 move");
-				buttonContainer.Widgets.Add(fire);
-				var watch = new ImageButton
-				{
-					GridColumn = 1,
-					GridRow = 1,
-				//	Text = "Overwatch",
-					Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
-				};
-				watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
-				watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move, 1 turn. Unit Cannot act anymore in this turn");
-				buttonContainer.Widgets.Add(watch);
-				var crouch = new ImageButton
-				{
-					GridColumn = 2,
-					GridRow = 1,
-			//		Text = "Crouch/Stand",
-					Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
-				};
-				crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
-				crouch.Click += (o, a) =>
-				{
-					if (SelectedControllable != null)
+					descBox = new Label()
 					{
-						SelectedControllable.DoAction(Action.Actions[ActionType.Crouch],null);
-					}
-				};
-				buttonContainer.Widgets.Add(crouch);
-				int column = 3;
-				foreach (var act in SelectedControllable.Type.extraActions)
-				{
-					var actBtn = new ImageButton	
-					{
-						GridColumn = column,
-						GridRow = 1,
-					//	Text = act.Item1,
-						Image = new TextureRegion(TextureManager.GetTexture("UI/"+act.Item1))
+						Top = -100,
+						MaxWidth = (int) (600 * globalScale.X),
+						MinHeight = 40,
+						MaxHeight = 80,
+						HorizontalAlignment = HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Bottom,
+						Background = new SolidBrush(Color.DimGray),
+						Text = PreviewDesc,
+						TextAlign = TextHorizontalAlignment.Center,
+						Wrap = true
 					};
-					actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
-					actBtn.MouseEntered += (o, a) => SetPreviewDesc(Action.Actions[act.Item2].Description);
-					buttonContainer.Widgets.Add(actBtn);
-					column++;
+					root.Widgets.Add(descBox);
+
+
+					var buttonContainer = new Grid()
+					{
+						GridColumn = 1,
+						GridRow = 3,
+						GridColumnSpan = 4,
+						GridRowSpan = 1,
+						RowSpacing = 10,
+						ColumnSpacing = 10,
+						HorizontalAlignment = HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Bottom,
+						//ShowGridLines = true,
+					};
+					root.Widgets.Add(buttonContainer);
+					ffmodebtn = new TextButton()
+					{
+						Text = "FreeFire Mode: " + (ffmode ? "On" : "Off"),
+						GridColumn = 0,
+						GridRow = 0,
+
+					};
+					ffmodebtn.Click += (o, a) =>
+					{
+						ffmode = !ffmode;
+						ffmodebtn.Text = "FreeFire Mode: " + (ffmode ? "On" : "Off");
+					};
+
+					buttonContainer.RowsProportions.Add(new Proportion(ProportionType.Pixels, 20));
+					buttonContainer.Widgets.Add(ffmodebtn);
+					var fire = new ImageButton()
+					{
+						GridColumn = 0,
+						GridRow = 1,
+
+						Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
+						//	Scale = new Vector2(1.5f)
+					};
+					fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
+					fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose determination. Cost: 1 action, 1 move");
+					buttonContainer.Widgets.Add(fire);
+					var watch = new ImageButton
+					{
+						GridColumn = 1,
+						GridRow = 1,
+						//	Text = "Overwatch",
+						Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
+					};
+					watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
+					watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move, 1 turn. Unit Cannot act anymore in this turn");
+					buttonContainer.Widgets.Add(watch);
+					var crouch = new ImageButton
+					{
+						GridColumn = 2,
+						GridRow = 1,
+						//		Text = "Crouch/Stand",
+						Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
+					};
+					crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
+					crouch.Click += (o, a) =>
+					{
+						if (SelectedControllable != null)
+						{
+							SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], null);
+						}
+					};
+					buttonContainer.Widgets.Add(crouch);
+					int column = 3;
+					foreach (var act in SelectedControllable.Type.extraActions)
+					{
+						var actBtn = new ImageButton
+						{
+							GridColumn = column,
+							GridRow = 1,
+							//	Text = act.Item1,
+							Image = new TextureRegion(TextureManager.GetTexture("UI/" + act.Item1))
+						};
+						actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
+						actBtn.MouseEntered += (o, a) => SetPreviewDesc(Action.Actions[act.Item2].Description);
+						buttonContainer.Widgets.Add(actBtn);
+						column++;
+					}
 				}
-			
-				
+
 			}
 		}
 
@@ -1246,6 +1247,7 @@ namespace MultiplayerXeno
 		{
 			var keyboardState = Keyboard.GetState();
 			if(WorldEditSystem.enabled) return;
+			if(Desktop.FocusedKeyboardWidget != null) return;
 			if (keyboardState.IsKeyDown(Keys.Tab) && lastState.IsKeyUp(Keys.Tab))
 			{
 				ffmode = !ffmode;
@@ -1408,6 +1410,7 @@ namespace MultiplayerXeno
 
 				foreach (var unit in GameManager.MyUnits)
 				{
+					if (unit.Health <= 0) continue;
 					if (Camera.IsOnScreen(unit.worldObject.TileLocation.Position))
 					{
 						Action.Actions[ActionType.Attack].Preview(tile.ObjectAtLocation.ControllableComponent,unit.worldObject.TileLocation.Position,spriteBatch);

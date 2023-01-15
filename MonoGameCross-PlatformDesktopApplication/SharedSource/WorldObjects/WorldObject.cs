@@ -74,8 +74,9 @@ namespace MultiplayerXeno
 			}
 			TileLocation.ObjectAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
+			newTile.ObjectAtLocation = this;
+			
 #if CLIENT
 			GenerateDrawOrder();
 #endif
