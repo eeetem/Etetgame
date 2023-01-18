@@ -19,6 +19,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Utility;
 using Network;
+using Salaros.Configuration;
 using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno
@@ -76,8 +77,8 @@ namespace MultiplayerXeno
 
 		private static UIGen currentUI;
 		private static Vector2 globalScale = new Vector2(1, 1);
-		public static readonly object myrasyncobj = new object();
 
+		private static Widget root;
 		public static void SetUI(UIGen? uiMethod) {
 			
 				globalScale = new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f);
@@ -230,7 +231,60 @@ namespace MultiplayerXeno
 
 		}
 
-	
+		public static void LobbyBrowser()
+		{
+			var panel = new Panel();
+
+			AttachChatBox(panel);
+			var lobbyViewer = new ScrollViewer()
+			{
+					Left = 0,
+					Width = (int)(600f*globalScale.X),
+					Height = (int)(1000f*globalScale.Y),
+					Top = 0,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					VerticalAlignment = VerticalAlignment.Top,
+			};
+			panel.Widgets.Add(lobbyViewer);
+
+			var lobbies = new VerticalStackPanel()
+			{
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Left,
+			};
+			foreach (var lobby in MasterServerNetworking.Lobbies)
+			{
+				var lobbybtn = new TextButton()
+				{
+					Text = lobby.Name +" "+ lobby.Players +"/"+ 2 + " Password :"+lobby.HasPassword,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					
+				};
+				lobbybtn.Click += (sender, args) =>
+				{
+					var ip = Game1.config.GetValue("config", "MasterServerIP", "");
+					ip = ip.Substring(0, ip.LastIndexOf(':'));
+					ip += ":" + lobby.Port;
+					var result = Networking.Connect(ip, Game1.config.GetValue("config", "Name", "john"));
+					if (result == ConnectionResult.Connected)
+					{
+						ShowMessage("Connection Notice", "Connected to server!");
+						SetUI(PreGameLobby);
+						DiscordManager.client.UpdateState("In Battle");
+					}
+					else
+					{
+						ShowMessage("Connection Notice", "Failed to connect: " + result);
+
+					}
+				};
+				lobbies.Widgets.Add(lobbybtn);			
+			}
+			
+			lobbyViewer.Content = lobbies;
+
+			root = panel;
+		}
 
 		public static void MainMenu()
 		{
@@ -240,12 +294,50 @@ namespace MultiplayerXeno
 				ColumnSpacing = 0
 			};
 
+			var lobybtn = new TextButton
+			{
+				GridColumn = 1,
+				GridRow = 1,
+				Text = "Server Browser",
+			};
+
+			lobybtn.Click += (s, a) =>
+			{
+				var panel = new Panel();
+				var label = new Label()
+				{
+					Text = "Enter Name"
+				};
+				panel.Widgets.Add(label);
+				var input = new TextBox();
+				input.Text = Game1.config.GetValue("config","Name","john doe");
+				panel.Widgets.Add(input);
+				var dialog = Dialog.CreateMessageBox("Connecting to Master Server...", panel);
+				dialog.ButtonOk.Click += (sender, args) =>
+				{
+					Game1.config.SetValue("config","Name",input.Text);
+					Game1.config.Save();
+					var result = MasterServerNetworking.Connect(Game1.config.GetValue("config","MasterServerIP",""),input.Text);
+					if (result == ConnectionResult.Connected)
+					{
+						SetUI(LobbyBrowser);
+					}
+					else
+					{
+						ShowMessage("Error", "Could not connect to master server");
+					}
+				};
+				dialog.ShowModal(Desktop);
+				
+				
+			};
+			grid.Widgets.Add(lobybtn);
 
 			var button = new TextButton
 			{
 				GridColumn = 1,
-				GridRow = 1,
-				Text = "Join Server"
+				GridRow = 2,
+				Text = "Direct Connect"
 			};
 
 			button.Click += (s, a) => { SetUI(ConnectionMenu); };
@@ -255,7 +347,7 @@ namespace MultiplayerXeno
 			var button2 = new TextButton
 			{
 				GridColumn = 1,
-				GridRow = 2,
+				GridRow = 3,
 				Text = "Map Editor"
 			};
 
@@ -270,7 +362,7 @@ namespace MultiplayerXeno
 
 
 
-			Desktop.Root = grid;
+			root = grid;
 
 
 		}
@@ -332,7 +424,7 @@ namespace MultiplayerXeno
 
 
 
-			Desktop.Root = grid;
+			root = grid;
 
 
 
@@ -363,12 +455,12 @@ namespace MultiplayerXeno
 				};
 				selection.Items.Add(item);
 			}
-			selection.SelectedIndex = GameManager.PreGameData.SelectedIndex;
+			selection.SelectedIndex = GameManager.PreGameData.MapIndex;
 			if (GameManager.IsPlayer1)
 			{
 				selection.SelectedIndexChanged += (s, a) =>
 				{
-					GameManager.PreGameData.SelectedIndex = (int)selection.SelectedIndex;
+					GameManager.PreGameData.MapIndex = (int)selection.SelectedIndex;
 					Networking.SendPreGameUpdate();
 				};
 				var btn = new TextButton()
@@ -391,7 +483,7 @@ namespace MultiplayerXeno
 				
 				selection.SelectedIndexChanged += (s, a) =>
 				{
-					selection.SelectedIndex = GameManager.PreGameData.SelectedIndex;
+					selection.SelectedIndex = GameManager.PreGameData.MapIndex;
 				};
 				
 			}
@@ -417,7 +509,7 @@ namespace MultiplayerXeno
 			panel.Widgets.Add(label);
 			panel.Widgets.Add(label2);
 			
-			Desktop.Root = panel;
+			root = panel;
 
 
 
@@ -590,7 +682,7 @@ namespace MultiplayerXeno
 			grid.Widgets.Add(confirm);
 			
 
-			Desktop.Root = grid;
+			root = grid;
 		}
 
 
@@ -775,7 +867,7 @@ namespace MultiplayerXeno
 			
 			
 			
-			Desktop.Root = grid;
+			root = grid;
 			
 			
 		}
@@ -832,7 +924,7 @@ namespace MultiplayerXeno
 					VerticalAlignment = VerticalAlignment.Center,
 				};
 			}
-
+			chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
 			
 			if(chatBox== null)
 			{
@@ -861,7 +953,16 @@ namespace MultiplayerXeno
 				{
 					if (input.Text != "")
 					{
-						Networking.ChatMSG(input.Text);
+						if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+						{
+							Networking.ChatMSG(input.Text);
+						}
+						else
+						{
+							MasterServerNetworking.ChatMSG(input.Text);
+						}
+
+
 						input.Text = "";
 					}
 				}
@@ -881,7 +982,14 @@ namespace MultiplayerXeno
 			{
 				if (input.Text != "")
 				{
-					Networking.ChatMSG(input.Text);
+					if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+					{
+						Networking.ChatMSG(input.Text);
+					}
+					else
+					{
+						MasterServerNetworking.ChatMSG(input.Text);
+					}
 					input.Text = "";
 				}
 			};
@@ -1096,10 +1204,9 @@ namespace MultiplayerXeno
 				column++;
 			}
 
-			lock (myrasyncobj)
-			{
-				Desktop.Root = panel;
-			}
+			
+			root = panel;
+			
 		}
 
 		public static bool ffmode { get; private set; } = false;
@@ -1122,8 +1229,7 @@ namespace MultiplayerXeno
 				var root = (Panel) Desktop.Root;
 				previewMoves = SelectedControllable.GetPossibleMoveLocations();
 
-				lock (myrasyncobj)
-				{
+			
 					descBox = new Label()
 					{
 						Top = -100,
@@ -1220,7 +1326,7 @@ namespace MultiplayerXeno
 						buttonContainer.Widgets.Add(actBtn);
 						column++;
 					}
-				}
+				
 
 			}
 		}
@@ -1501,11 +1607,10 @@ namespace MultiplayerXeno
 			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
+
+			Desktop.Root = root;
+			UI.Desktop.Render();
 			
-			lock (myrasyncobj)
-			{
-				UI.Desktop.Render();
-			}
 		}
 
 		

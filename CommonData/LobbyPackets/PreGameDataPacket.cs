@@ -8,6 +8,6 @@ public class PreGameDataPacket : Packet
 	public string HostName { get; set; }
 	public string Player2Name { get; set; }
 	public List<string> Spectators { get; set; }
-	public int SelectedIndex { get; set; }
+	public int MapIndex { get; set; }
 
 }

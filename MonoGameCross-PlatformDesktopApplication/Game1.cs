@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MultiplayerXeno.Pathfinding;
+using Salaros.Configuration;
 
 
 namespace MultiplayerXeno
@@ -70,6 +71,7 @@ namespace MultiplayerXeno
 		}
 
 		public RenderTarget2D renderTarget;
+		public static ConfigParser config;
 		protected override void LoadContent()
 		{
 			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
@@ -83,8 +85,9 @@ namespace MultiplayerXeno
 
 			PrefabManager.MakePrefabs();
 			WorldEditSystem.GenerateUI();
-			
-			
+			config = new ConfigParser("config.txt");
+
+
 
 
 

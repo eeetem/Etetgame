@@ -39,6 +39,11 @@ namespace MultiplayerXeno
 				}
 
 				SendChatMessage(name+" left the game");
+
+				if (GameManager.Player1 == null && GameManager.Player2 == null)
+				{
+					Environment.Exit(0);
+				}
 			};
 			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
 			serverConnectionContainer.AllowUDPConnections = false;
@@ -189,7 +194,7 @@ namespace MultiplayerXeno
 			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "Empty Slot";
 			data.Spectators = new List<string>();
 			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
-			data.SelectedIndex = mapIndex;
+			data.MapIndex = mapIndex;
 			if (GameManager.Player1 != null)
 				GameManager.Player1.Connection.Send(data);
 			if (GameManager.Player2 != null)

@@ -3,12 +3,12 @@ TEAAAAAAAAAAAAAAAAASH
 only direct shots???how??
 resync after every turn(at some point)+checks for desyncs
 point blank supression
-high ping overwatch fix
 resync code fix
 spectator mode
 units with actions counter
 client sent an impossible action fix(double click)
 fix discord time? timezone issue?
+upnp
 version number
 officer that stops units panicing
 unit placement

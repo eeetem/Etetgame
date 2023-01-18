@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameCross-PlatformDeskt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonData", "CommonData\CommonData.csproj", "{D0E6181A-F000-42C7-B6B1-8E0DB8F194A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterServer", "MasterServer\MasterServer.csproj", "{1567A6C1-C444-4E33-8024-30CF823498ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{D0E6181A-F000-42C7-B6B1-8E0DB8F194A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0E6181A-F000-42C7-B6B1-8E0DB8F194A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0E6181A-F000-42C7-B6B1-8E0DB8F194A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1567A6C1-C444-4E33-8024-30CF823498ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1567A6C1-C444-4E33-8024-30CF823498ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1567A6C1-C444-4E33-8024-30CF823498ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1567A6C1-C444-4E33-8024-30CF823498ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
 	EndGlobalSection

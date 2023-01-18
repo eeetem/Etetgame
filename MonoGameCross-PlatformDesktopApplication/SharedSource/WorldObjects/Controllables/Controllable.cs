@@ -40,6 +40,7 @@ namespace MultiplayerXeno
 			}
 
 			this.Crouching = data.Crouching;
+			this.paniced = data.Panic;
 
 
 #if CLIENT
@@ -371,7 +372,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching,paniced);
 			data.JustSpawned = false;
 			return data;
 		}

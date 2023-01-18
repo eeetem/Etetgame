@@ -7,6 +7,7 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using Network;
 using Network.Converter;
+using Network.Enums;
 using Network.Packets;
 
 namespace MultiplayerXeno
@@ -34,7 +35,20 @@ namespace MultiplayerXeno
 			Console.WriteLine($"{serverConnection.ToString()} Connection established");
 
 
-			serverConnection.ConnectionClosed += (a, s) => UI.OptionMessage("Lost Connection: "+a.ToString(),"Do you want to reconnect?","no",null,"yes",Reconnect);
+			serverConnection.ConnectionClosed += (a, s) =>
+			{
+				if (a == CloseReason.Timeout)
+				{
+					UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", null, "yes", Reconnect);
+				}
+				else
+				{
+					UI.ShowMessage("Lost Connection", a.ToString());
+					//UI.SetUI(); lobby browser
+				}
+
+
+			};
 			serverConnection.TIMEOUT = 1000000000;
 		
 			
@@ -42,10 +56,16 @@ namespace MultiplayerXeno
 			serverConnection.RegisterStaticPacketHandler<GameDataPacket>(ReciveGameUpdate);
 
 			serverConnection.RegisterRawDataHandler("TileUpdate",ReciveTileUpdate);
-			serverConnection.RegisterRawDataHandler("notify",ReciveNotify);
+			serverConnection.RegisterRawDataHandler("notify", (i, a) =>
+			{
+				UI.ShowMessage("Server Notice",RawDataConverter.ToUnicodeString(i));
+			});
 
 			
-			serverConnection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
+			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
+			{
+				UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+			});
 
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
@@ -71,15 +91,7 @@ namespace MultiplayerXeno
 		{
 			Connect(Ipport, Name);
 		}
-
-	
-
-		private static void ReciveNotify(RawData text,Connection connection)
-		{
-			
-			UI.ShowMessage("Server Notice",RawDataConverter.ToUnicodeString(text));
-		}
-
+		
 		private static void ReciveTileUpdate(RawData rawData, Connection connection)
 		{
 			
@@ -131,17 +143,13 @@ namespace MultiplayerXeno
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
-
-		private static void ReciveChatMessage(RawData rawData, Connection connection)
-		{
-			UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));
-		}
+		
 
 
 
 		public static void SendPreGameUpdate()
 		{
-			serverConnection.SendRawData(RawDataConverter.FromInt32("mapSelect",GameManager.PreGameData.SelectedIndex));
+			serverConnection.SendRawData(RawDataConverter.FromInt32("mapSelect",GameManager.PreGameData.MapIndex));
 		}
 
 		public static void SendStartGame()
