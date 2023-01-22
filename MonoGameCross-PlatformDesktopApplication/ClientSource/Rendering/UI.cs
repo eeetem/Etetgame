@@ -233,19 +233,24 @@ namespace MultiplayerXeno
 
 		public static void LobbyBrowser()
 		{
-			var panel = new Panel();
-
-			AttachChatBox(panel);
+			var Grid = new Grid();
+			var chatPanel = new Panel()
+			{
+				GridColumn = 0,
+				GridRow = 0,
+			};
+Grid.Widgets.Add(chatPanel);
+			AttachChatBox(chatPanel);
 			var lobbyViewer = new ScrollViewer()
 			{
-					Left = 0,
 					Width = (int)(600f*globalScale.X),
 					Height = (int)(1000f*globalScale.Y),
-					Top = 0,
 					HorizontalAlignment = HorizontalAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Top,
+					GridColumn = 1,
+					GridRow = 0,
 			};
-			panel.Widgets.Add(lobbyViewer);
+			Grid.Widgets.Add(lobbyViewer);
 
 			var lobbies = new VerticalStackPanel()
 			{
@@ -256,7 +261,7 @@ namespace MultiplayerXeno
 			{
 				var lobbybtn = new TextButton()
 				{
-					Text = lobby.Name +" "+ lobby.Players +"/"+ 2 + " Password :"+lobby.HasPassword,
+					Text = lobby.Name +" Password :"+lobby.HasPassword,
 					HorizontalAlignment = HorizontalAlignment.Center,
 					
 				};
@@ -280,10 +285,89 @@ namespace MultiplayerXeno
 				};
 				lobbies.Widgets.Add(lobbybtn);			
 			}
-			
 			lobbyViewer.Content = lobbies;
 
-			root = panel;
+			var btn = new TextButton()
+			{
+				Text = "Create Lobby",
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				GridColumn = 1,
+				GridRow = 1,
+			};
+			btn.Click += (sender, args) =>
+			{
+				//lobby creation popup
+				var popup = new Panel();
+				var txt = new TextBox()
+				{
+					Top = -10,
+					Text = "Enter Lobby Name"
+				};
+				popup.Widgets.Add(txt);
+				var password = new TextBox()
+				{
+					Top = 50,
+					Text = "Enter Password"
+				};
+				popup.Widgets.Add(password);
+				var dialog = Dialog.CreateMessageBox("Creating Server...", popup);
+				dialog.ButtonOk.Click += (sender, args) =>
+				{
+					var packet = new LobbyStartPacket();
+					packet.LobbyName = txt.Text;
+					packet.Password = password.Text;
+					MasterServerNetworking.CreateLobby(packet);
+				};
+				
+				dialog.ShowModal(Desktop);
+			};
+		
+			Grid.Widgets.Add(btn);
+			
+			var btn2 = new TextButton()
+			{
+				Text = "Refresh",
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
+				GridColumn = 1,
+				GridRow = 1,
+				Top = 50,
+			};
+			btn2.Click += (sender, args) =>
+			{
+				MasterServerNetworking.RefreshServers();
+			};
+			Grid.Widgets.Add(btn2);
+
+			var players = new VerticalStackPanel()
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Left,
+				GridColumn = 2,
+				GridRow = 1,
+			};
+			var playerlbl2 = new Label()
+			{
+				Text = "Players Online",
+				HorizontalAlignment = HorizontalAlignment.Center,
+					
+			};
+			players.Widgets.Add(playerlbl2);	
+			foreach (var player in MasterServerNetworking.Players)
+			{
+				var playerlbl = new Label()
+				{
+					Text = player,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					
+				};
+				players.Widgets.Add(playerlbl);			
+			}
+			Grid.Widgets.Add(players);
+			lobbyViewer.Content = lobbies;
+
+			root = Grid;
 		}
 
 		public static void MainMenu()

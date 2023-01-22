@@ -51,15 +51,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			serverConnectionContainer.Start();
 			
 			Console.WriteLine("Started master-server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
-			var packet = new LobbyStartPacket();
-			packet.LobbyName = "amongus lobby";
-			packet.Password = "";
-			StartLobby(packet,null);
-			 packet = new LobbyStartPacket();
-			packet.LobbyName = "amongus 2 lobby";
-			packet.Password = "";
-			StartLobby(packet,null);
-			
+
 			UpdateLoop();
 			
 			
@@ -85,14 +77,24 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				}
 				
 			});
-			connection.RegisterRawDataHandler("RequestLobbies", (a, b) =>
+			connection.RegisterRawDataHandler("RequestLobbies", (a, connection) =>
 			{
 				Console.WriteLine("RequestLobbies");
 				foreach (var lobby in Lobbies)
 				{
-					b.Send(lobby.Value.Item2);
+					connection.Send(lobby.Value.Item2);
 				}
+				string allPLayers = String.Join(";",Players.Keys);
+				connection.SendRawData(RawDataConverter.FromUTF8String("playerList",allPLayers));
+			
+				
 			});
+
+			string allPLayers = String.Join(";",Players.Keys);
+			foreach (var con in Players)
+			{
+				connection.SendRawData(RawDataConverter.FromUTF8String("playerList",allPLayers));
+			}
 
 			Console.WriteLine("Registered handlers");
 		}
@@ -148,6 +150,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					lobbyData.HasPassword = true;
 				}
 				Lobbies.Add(port,new Tuple<Process, LobbyData>(process,lobbyData));
+				connection.Send(lobbyData);
 
 			
 		}

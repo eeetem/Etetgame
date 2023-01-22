@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using CommonData;
 using Network;
 using Network.Converter;
+using Network.Extensions;
 
 namespace MultiplayerXeno;
 
@@ -32,23 +34,32 @@ public class MasterServerNetworking
 			
 			serverConnection.ConnectionClosed += (a, s) =>
 			{
-				
 				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
 				{
 					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
 					UI.SetUI(UI.MainMenu);
 				}
-
-
 			};
 			
 			serverConnection.RegisterRawDataHandler("notify", (i, a) =>
 			{
 				UI.ShowMessage("Server Notice",RawDataConverter.ToUnicodeString(i));
 			});
+			serverConnection.RegisterRawDataHandler("playerList", (data, a) =>
+			{
+				string list = RawDataConverter.ToUTF8String(data);
+				Players = list.Split(";").ToList();
+				UI.SetUI(null);
+			});
 			
 			serverConnection.RegisterStaticPacketHandler<LobbyData>((data, a) =>
 			{
+				if (AwaitingLobby)
+				{
+					AwaitingLobby = false;
+					Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+				}
+
 				Lobbies.Add(data);
 				UI.SetUI(UI.LobbyBrowser);
 			});
@@ -69,6 +80,16 @@ public class MasterServerNetworking
 		}
 
 		public static List<LobbyData> Lobbies = new List<LobbyData>();
+		public static List<string> Players = new List<string>();
+
+		private static bool AwaitingLobby = false;
+		public static void CreateLobby(LobbyStartPacket packet)
+		{
+			serverConnection.Send(packet);
+			AwaitingLobby = true;
+
+		}
+
 		public static void RefreshServers()
 		{
 			Lobbies.Clear();
