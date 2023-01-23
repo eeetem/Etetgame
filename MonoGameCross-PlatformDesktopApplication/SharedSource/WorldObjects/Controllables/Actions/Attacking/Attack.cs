@@ -94,7 +94,7 @@ public abstract class Attack : Action
 			return;
 		}
 
-		if (target != lastTarget && (UI.ffmode || (WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && !WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.ControllableComponent.IsMyTeam() && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
+		if (target != lastTarget && ((WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation != null && !WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.ControllableComponent.IsMyTeam() && WorldManager.Instance.GetTileAtGrid(target).ObjectAtLocation.IsVisible())))
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;

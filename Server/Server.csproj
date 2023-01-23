@@ -22,6 +22,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="..\MonoGameCross-PlatformDesktopApplication\Maps\Custom\oldmap.mapdata">
+        <Link>Maps\Custom\oldmap.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\Maps\map.mapdata">
         <Link>Maps\map.mapdata</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>

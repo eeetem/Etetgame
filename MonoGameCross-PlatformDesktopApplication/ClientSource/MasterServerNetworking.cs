@@ -5,6 +5,7 @@ using System.Threading;
 using CommonData;
 using Network;
 using Network.Converter;
+using Network.Enums;
 using Network.Extensions;
 
 namespace MultiplayerXeno;
@@ -99,5 +100,10 @@ public class MasterServerNetworking
 		{
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
+		}
+
+		public static void Disconnect()
+		{
+			serverConnection.Close(CloseReason.ClientClosed);
 		}
 }

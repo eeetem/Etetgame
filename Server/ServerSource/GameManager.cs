@@ -7,6 +7,7 @@ namespace MultiplayerXeno
 	{
 		public static Client? Player1;
 		public static Client? Player2;
+		public static List<Client> Spectators = new List<Client>();
 
 
 
@@ -15,17 +16,18 @@ namespace MultiplayerXeno
 		public static readonly List<int> T1Units = new List<int>();
 		public static readonly List<int> T2Units = new List<int>();
 
-		public static void StartSetup(string map)
+		public static void StartSetup()
 		{
 			if (GameState != GameState.Lobby) return;
 			if(Player1==null || Player2==null)return;
 
 			GameState = GameState.Setup;
-			WorldManager.Instance.LoadData(File.ReadAllBytes(map));
+			
 			Networking.SendMapData(Player1.Connection);
 			Networking.SendMapData(Player2.Connection);
 			SendData();
 		}
+	
 
 		public static void StartGame()
 		{
@@ -116,6 +118,17 @@ namespace MultiplayerXeno
 				GameState = GameState
 			};
 			Player2?.Connection.Send(packet);
+			packet = new GameDataPacket
+			{
+				IsPlayer1Turn = IsPlayer1Turn,
+				IsPlayerOne = null,
+				Score = score,
+				GameState = GameState
+			};
+			foreach (var spectator in Spectators)
+			{
+				spectator?.Connection.Send(packet);
+			}
 		}
 	}
 }

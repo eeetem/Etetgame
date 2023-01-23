@@ -1,21 +1,15 @@
 TEAAAAAAAAAAAAAAAAASH
 
-only direct shots???how??
-resync after every turn(at some point)+checks for desyncs
+player disconnecting makes a new host
+migrate maps to a JSON with metadata
+only direct shots???how?? only hit on frontal hitbox
 point blank supression
-resync code fix
-spectator mode
-units with actions counter
-client sent an impossible action fix(double click)
 fix discord time? timezone issue?
 upnp
 version number
 officer that stops units panicing
 unit placement
 smoke greandes
-useable level editor
-ghosting with pathfinding
 turn timer
 bomb defuse gamemode
 random map generation
-remember server and login

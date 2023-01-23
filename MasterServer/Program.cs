@@ -60,7 +60,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		{
 			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
-			connection.TIMEOUT = 10000;
+			connection.TIMEOUT = 1000;
 			//need some sort of ddos protection
 			connection.RegisterStaticPacketHandler<LobbyStartPacket>(StartLobby);
 			connection.RegisterRawDataHandler("register",RegisterClient);
@@ -102,7 +102,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		{
 			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData);
-			if (Players.ContainsKey(name))
+			if (Players.ContainsKey(name) && Players[name].IPRemoteEndPoint != connection.IPRemoteEndPoint)
 			{
 				Kick("Player with the same name already exists",connection);
 				return;
@@ -119,40 +119,38 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			Thread.Sleep(1000);
 			connection.Close(CloseReason.ClientClosed);
 		}
+		public static readonly object syncobj = new object();
+
 		private static void StartLobby(LobbyStartPacket lobbyStartPacket, Connection connection)
 		{
-
+			lock (syncobj)
+			{
 				Console.WriteLine("StartLobby");
 				int port = GetNextFreePort();
 				Console.WriteLine("Port: " + port); //ddos or spam protection is needed
 				var process = new Process();
 				process.StartInfo.RedirectStandardError = true;
-				process.StartInfo.RedirectStandardOutput= true;
+				process.StartInfo.RedirectStandardOutput = true;
 				process.StartInfo.FileName = "./Server.exe";
 				List<string> args = new List<string>();
 				args.Add(port.ToString());
-				args.Add( lobbyStartPacket.Password);
+				args.Add(lobbyStartPacket.Password);
 				process.StartInfo.Arguments = string.Join(" ", args);
-				process.ErrorDataReceived += (a, b) =>
-				{
-					Console.WriteLine("ERROR - Server("+port+"):"+b.Data);
-				};
-				process.OutputDataReceived += (sender, args) =>
-				{
-					Console.WriteLine("Server("+port+"): "+args.Data);
-				};
+				process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
+				process.OutputDataReceived += (sender, args) => { Console.WriteLine("Server(" + port + "): " + args.Data); };
 				process.Start();
 				process.BeginErrorReadLine();
 				process.BeginOutputReadLine();
 				LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, 0, port);
-				if(lobbyStartPacket.Password != "")
+				if (lobbyStartPacket.Password != "")
 				{
 					lobbyData.HasPassword = true;
 				}
-				Lobbies.Add(port,new Tuple<Process, LobbyData>(process,lobbyData));
-				connection.Send(lobbyData);
 
-			
+				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
+				connection.Send(lobbyData);
+			}
+
 		}
 
 		private static  Dictionary<int, Tuple<Process,LobbyData>> Lobbies = new Dictionary<int,  Tuple<Process,LobbyData>>();

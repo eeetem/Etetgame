@@ -86,6 +86,27 @@ namespace MultiplayerXeno
 			return connectionResult;
 
 		}
+		public static void Disconnect()
+		{
+			serverConnection.Close(CloseReason.ClientClosed);
+			WorldManager.Instance.WipeGrid();
+			if (MasterServerNetworking.serverConnection != null && MasterServerNetworking.serverConnection.IsAlive)
+			{
+				UI.SetUI(UI.LobbyBrowser);
+			}
+			else
+			{
+				UI.SetUI(UI.MainMenu);
+			}
+		}
+
+		public static void UploadMap(string path)
+		{
+			var packet = new MapData();
+			packet.ByteData= File.ReadAllBytes(path);
+			packet.Name = Path.GetFileName(path);
+			serverConnection.Send(packet);
+		}
 
 		private static void Reconnect(object sender, EventArgs e)
 		{
@@ -149,7 +170,7 @@ namespace MultiplayerXeno
 
 		public static void SendPreGameUpdate()
 		{
-			serverConnection.SendRawData(RawDataConverter.FromInt32("mapSelect",GameManager.PreGameData.MapIndex));
+			serverConnection.SendRawData(RawDataConverter.FromUTF8String("mapSelect",GameManager.PreGameData.SelectedMap));
 		}
 
 		public static void SendStartGame()

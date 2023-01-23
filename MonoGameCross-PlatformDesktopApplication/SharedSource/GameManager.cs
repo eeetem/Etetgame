@@ -24,7 +24,15 @@ namespace MultiplayerXeno
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
 		private static int score = 0;
-
+		public static void Forget(WorldObject wo)
+		{
+#if SERVER
+			T1SpawnPoints.Remove(wo);
+			T2SpawnPoints.Remove(wo);
+#endif
+			
+			CapturePoints.Remove(wo);
+		}
 
 		private static void EndGame(bool player1Win)
 		{
@@ -132,7 +140,7 @@ Audio.PlaySound("capture");
 		}
 
 
-
+		
 	}
 	
 }
