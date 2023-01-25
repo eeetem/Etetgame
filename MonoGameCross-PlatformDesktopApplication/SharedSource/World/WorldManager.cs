@@ -374,8 +374,8 @@ namespace MultiplayerXeno
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
-	
-					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables);
+					
+					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables,lastCheckingSquare == startcell);
 
 					
 					if (hitobj.Id != -1 )
@@ -390,6 +390,12 @@ namespace MultiplayerXeno
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
+								//if this is true then we're hitting a controllable form behind
+								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								{
+									result.CollisionPointLong += -0.3f * dir;
+									result.CollisionPointShort += -0.3f * dir;
+								}
 								return result;
 								
 							}
@@ -404,6 +410,11 @@ namespace MultiplayerXeno
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
+								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								{
+									result.CollisionPointLong += -0.3f * dir;
+									result.CollisionPointShort += -0.3f * dir;
+								}
 								return result;
 							}
 						}

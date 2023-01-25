@@ -127,6 +127,7 @@ namespace MultiplayerXeno
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
+				ClearOverWatch();
 				if (_thisMoving)
 				{
 					moving = false;

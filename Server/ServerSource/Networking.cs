@@ -22,14 +22,14 @@ namespace MultiplayerXeno
 			//1. Start listen on a portw
 			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(port, false);
 
-			serverConnectionContainer.ConnectionLost += (a, b, c) =>
+			serverConnectionContainer.ConnectionLost += (conn, b, cl) =>
 			{
-				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {a.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
+				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {conn.IPRemoteEndPoint.Address}. Reason {cl.ToString()}");
 				string name;
-				if (a == GameManager.Player1?.Connection)
+				if (conn == GameManager.Player1?.Connection)
 				{
 					name = GameManager.Player1.Name;
-				}else if (a == GameManager.Player2?.Connection)
+				}else if (conn == GameManager.Player2?.Connection)
 				{
 					name = GameManager.Player2.Name;
 				}
@@ -38,7 +38,10 @@ namespace MultiplayerXeno
 					return;
 				}
 
+				
 				SendChatMessage(name+" left the game");
+				Thread.Sleep(1000);
+				SendPreGameInfo();
 
 				if (serverConnectionContainer.Count == 0)
 				{
@@ -50,7 +53,8 @@ namespace MultiplayerXeno
 
 
 
-	
+			selectedMap = "./Maps/Map1.mapdata";
+			WorldManager.Instance.LoadData(File.ReadAllBytes("./Maps/map.mapdata"));
 			serverConnectionContainer.Start();
 			
 			Console.WriteLine("Started server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
@@ -59,8 +63,12 @@ namespace MultiplayerXeno
 
 		public static void Kick(string reason,Connection connection)
 		{
-			Console.WriteLine("Kicking " + connection.IPRemoteEndPoint.Address + " for " + reason);
-			connection.SendRawData(RawDataConverter.FromUnicodeString("notify",reason));
+			Console.WriteLine("Kicking " + connection.IPRemoteEndPoint?.Address + " for " + reason);
+			if (connection.IsAlive)
+			{
+				connection.SendRawData(RawDataConverter.FromUnicodeString("notify", reason));
+			}
+
 			Thread.Sleep(1000);
 			connection.Close(CloseReason.ClientClosed);
 		}
@@ -98,6 +106,19 @@ namespace MultiplayerXeno
 
 			connection.RegisterRawDataHandler("register",RegisterClient);
 			connection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
+			connection.RegisterRawDataHandler("kick", (i, conn) =>
+			{
+				if (conn != GameManager.Player1?.Connection)return;
+
+				if (GameManager.Player2 != null)
+				{
+					if (GameManager.Player2?.Connection != null) Kick("Kicked by host", GameManager.Player2?.Connection);
+					GameManager.Player2 = null;
+				}
+
+				SendPreGameInfo();
+
+			});
 			connection.RegisterRawDataHandler("gameState", (packet, con) =>
 			{
 				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
@@ -112,10 +133,6 @@ namespace MultiplayerXeno
 				WorldManager.Instance.LoadData(File.ReadAllBytes(selectedMap));
 	
 				SendPreGameInfo();
-				
-
-				
-
 			});
 			connection.RegisterStaticPacketHandler<MapData>((data, con) =>
 			{
@@ -129,6 +146,7 @@ namespace MultiplayerXeno
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			connection.RegisterStaticPacketHandler<UnitStartDataPacket>(ReciveUnitStartData);
 			Console.WriteLine("Registered handlers");
+
 		}
 
 		private static void ReciveUnitStartData(UnitStartDataPacket packet, Connection connection)
@@ -152,6 +170,7 @@ namespace MultiplayerXeno
 		{
 			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData);
+			
 
 			if (GameManager.Player1 == null)
 			{
@@ -208,6 +227,10 @@ namespace MultiplayerXeno
 			var data = new PreGameDataPacket();
 			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "Empty Slot";
 			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "Empty Slot";
+			if (GameManager.Player2 != null && !GameManager.Player2.Connection.IsAlive)
+			{
+				data.Player2Name = "Reserved: " + data.Player2Name;
+			}
 			data.Spectators = new List<string>();
 			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
 			data.CustomMapList = Directory.GetFiles("./Maps/Custom", "*.mapdata").ToList();
@@ -286,6 +309,10 @@ namespace MultiplayerXeno
 		{
 			GameManager.Player1?.Connection.Send(packet);
 			GameManager.Player2?.Connection.Send(packet);
+			foreach (var spectator in GameManager.Spectators)
+			{
+				spectator.Connection.Send(packet);
+			}
 
 		}
 

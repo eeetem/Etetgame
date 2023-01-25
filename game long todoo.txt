@@ -2,7 +2,6 @@ TEAAAAAAAAAAAAAAAAASH
 
 player disconnecting makes a new host
 migrate maps to a JSON with metadata
-only direct shots???how?? only hit on frontal hitbox
 point blank supression
 fix discord time? timezone issue?
 upnp

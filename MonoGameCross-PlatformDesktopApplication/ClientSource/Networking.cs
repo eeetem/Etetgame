@@ -39,12 +39,12 @@ namespace MultiplayerXeno
 			{
 				if (a == CloseReason.Timeout)
 				{
-					UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", null, "yes", Reconnect);
+					UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", Reconnect);
 				}
 				else
 				{
 					UI.ShowMessage("Lost Connection", a.ToString());
-					//UI.SetUI(); lobby browser
+					Disconnect();
 				}
 
 
@@ -90,6 +90,7 @@ namespace MultiplayerXeno
 		{
 			serverConnection.Close(CloseReason.ClientClosed);
 			WorldManager.Instance.WipeGrid();
+			GameManager.intated = false;
 			if (MasterServerNetworking.serverConnection != null && MasterServerNetworking.serverConnection.IsAlive)
 			{
 				UI.SetUI(UI.LobbyBrowser);
@@ -104,6 +105,7 @@ namespace MultiplayerXeno
 		{
 			var packet = new MapData();
 			packet.ByteData= File.ReadAllBytes(path);
+			packet.Name = Path.GetFileName(path);
 			packet.Name = Path.GetFileName(path);
 			serverConnection.Send(packet);
 		}

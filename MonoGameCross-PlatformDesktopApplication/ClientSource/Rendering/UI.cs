@@ -20,6 +20,7 @@ using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.File;
 using Myra.Utility;
 using Network;
+using Network.Converter;
 using Salaros.Configuration;
 using Thickness = Myra.Graphics2D.Thickness;
 
@@ -363,16 +364,16 @@ Grid.Widgets.Add(chatPanel);
 
 			var players = new VerticalStackPanel()
 			{
-				VerticalAlignment = VerticalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Left,
 				GridColumn = 2,
-				GridRow = 1,
+				GridRow = 0,
 			};
 			var playerlbl2 = new Label()
 			{
 				Text = "Players Online",
 				HorizontalAlignment = HorizontalAlignment.Center,
-					
+		
 			};
 			players.Widgets.Add(playerlbl2);	
 			foreach (var player in MasterServerNetworking.Players)
@@ -504,7 +505,14 @@ Grid.Widgets.Add(chatPanel);
 				GridRow = 1,
 				Text = "Connect"
 			};
-
+			var exit = new TextButton
+			{
+				GridColumn = 2,
+				GridRow = 2,
+				Text = "Main Menu"
+			};
+			exit.Click += (s, a) => { SetUI(MainMenu); };
+			grid.Widgets.Add(exit);
 			button.Click += (s, a) =>
 			{
 				ConnectionResult result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
@@ -563,6 +571,19 @@ Grid.Widgets.Add(chatPanel);
 					Networking.SendStartGame();
 				};
 				panel.Widgets.Add(btn);
+				var kick = new TextButton()
+				{
+					Text = "Kick",
+					VerticalAlignment = VerticalAlignment.Center,
+					HorizontalAlignment = HorizontalAlignment.Center,
+					Top = 25,
+					Left = 100,
+				};
+				kick.Click += (s, a) =>
+				{
+					Networking.serverConnection.SendRawData(RawDataConverter.FromBoolean("kick",true));
+				};
+				panel.Widgets.Add(kick);
 				var mapGrid = new Grid()
 				{
 					HorizontalAlignment = HorizontalAlignment.Right,
@@ -1069,8 +1090,6 @@ Grid.Widgets.Add(chatPanel);
 			};
 			lock (myrasyncobj)
 			{
-				
-			
 				if (chatBox != null)
 				{
 					chatBox.Widgets.Add(label);
@@ -1100,44 +1119,76 @@ Grid.Widgets.Add(chatPanel);
 
 		private static void AttachChatBox(Panel parent)
 		{
-			if (chatBoxViewer == null)
+			lock (myrasyncobj)
 			{
-				chatBoxViewer = new ScrollViewer()
+				if (chatBoxViewer == null)
 				{
+					chatBoxViewer = new ScrollViewer()
+					{
+						Left = 0,
+						Width = 240,
+						Height = 250,
+						Top = 0,
+						HorizontalAlignment = HorizontalAlignment.Left,
+						VerticalAlignment = VerticalAlignment.Center,
+					};
+				}
+
+				if (chatBox == null)
+				{
+					chatBox = new VerticalStackPanel()
+					{
+						VerticalAlignment = VerticalAlignment.Bottom,
+						HorizontalAlignment = HorizontalAlignment.Left,
+					};
+				}
+
+				chatBoxViewer.Content = chatBox;
+				chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0, 50);
+
+				var input = new TextBox()
+				{
+					Width = 200,
+					Height = 20,
+					Top = 135,
 					Left = 0,
-					Width = 240,
-					Height = 250,
-					Top = 0,
+					Text = "",
 					HorizontalAlignment = HorizontalAlignment.Left,
 					VerticalAlignment = VerticalAlignment.Center,
-				};
-			}
-			
-			if(chatBox== null)
-			{
-				chatBox = new VerticalStackPanel()
-				{
-					VerticalAlignment = VerticalAlignment.Bottom,
-					HorizontalAlignment = HorizontalAlignment.Left,
-				};
-			}
-			chatBoxViewer.Content = chatBox;
-			chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
 
-			var input = new TextBox()
-			{
-				Width = 200,
-				Height = 20,
-				Top = 135,
-				Left = 0,
-				Text = "",
-				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Center,
-				
-			};
-			input.KeyDown += (o, a) =>
-			{
-				if (a.Data == Keys.Enter)
+				};
+				input.KeyDown += (o, a) =>
+				{
+					if (a.Data == Keys.Enter)
+					{
+						if (input.Text != "")
+						{
+							if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+							{
+								Networking.ChatMSG(input.Text);
+							}
+							else
+							{
+								MasterServerNetworking.ChatMSG(input.Text);
+							}
+
+
+							input.Text = "";
+						}
+					}
+				};
+				var inputbtn = new TextButton()
+				{
+					Width = 55,
+					Height = 20,
+					Top = 135,
+					Left = 200,
+					Text = "Send",
+					HorizontalAlignment = HorizontalAlignment.Left,
+					VerticalAlignment = VerticalAlignment.Center,
+
+				};
+				inputbtn.Click += (o, a) =>
 				{
 					if (input.Text != "")
 					{
@@ -1150,40 +1201,13 @@ Grid.Widgets.Add(chatPanel);
 							MasterServerNetworking.ChatMSG(input.Text);
 						}
 
-
 						input.Text = "";
 					}
-				}
-			};
-			var inputbtn = new TextButton()
-			{
-				Width = 55,
-				Height = 20,
-				Top = 135,
-				Left = 200,
-				Text = "Send",
-				HorizontalAlignment = HorizontalAlignment.Left,
-				VerticalAlignment = VerticalAlignment.Center,
-				
-			};
-			inputbtn.Click += (o,a) =>
-			{
-				if (input.Text != "")
-				{
-					if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
-					{
-						Networking.ChatMSG(input.Text);
-					}
-					else
-					{
-						MasterServerNetworking.ChatMSG(input.Text);
-					}
-					input.Text = "";
-				}
-			};
-			parent.Widgets.Add(inputbtn);
-			parent.Widgets.Add(input);
-			parent.Widgets.Add(chatBoxViewer);
+				};
+				parent.Widgets.Add(inputbtn);
+				parent.Widgets.Add(input);
+				parent.Widgets.Add(chatBoxViewer);
+			}
 		}
 
 		public static void GameUi()
@@ -1639,9 +1663,10 @@ Grid.Widgets.Add(chatPanel);
 			var keyboardState = Keyboard.GetState();
 			if(WorldEditSystem.enabled) return;
 			if(Desktop.FocusedKeyboardWidget != null) return;
-
+			if(GameManager.MyUnits.Count == 0) return;
 			if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
 			{
+				
 				int fails = 0;
 				do
 				{

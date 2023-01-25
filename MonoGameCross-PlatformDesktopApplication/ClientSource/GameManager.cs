@@ -54,6 +54,7 @@ namespace MultiplayerXeno
 			{
 				IsPlayer1 = (bool)data.IsPlayerOne;
 			}
+			Console.WriteLine("IsPlayer1: " + IsPlayer1);
 
 			
 			score = data.Score;

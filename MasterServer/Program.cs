@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using CommonData;
 using Network;
 using Network.Converter;
@@ -86,8 +87,6 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				}
 				string allPLayers = String.Join(";",Players.Keys);
 				connection.SendRawData(RawDataConverter.FromUTF8String("playerList",allPLayers));
-			
-				
 			});
 
 			string allPLayers = String.Join(";",Players.Keys);
@@ -131,24 +130,55 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				var process = new Process();
 				process.StartInfo.RedirectStandardError = true;
 				process.StartInfo.RedirectStandardOutput = true;
-				process.StartInfo.FileName = "./Server.exe";
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+				{
+					Console.WriteLine("Filename: ./Server");
+					process.StartInfo.FileName = "./Server";
+				}
+				else
+				{
+					Console.WriteLine("Filename: ./Server.exe");
+					process.StartInfo.FileName = "./Server.exe";
+				}
+				
 				List<string> args = new List<string>();
 				args.Add(port.ToString());
 				args.Add(lobbyStartPacket.Password);
 				process.StartInfo.Arguments = string.Join(" ", args);
 				process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
 				process.OutputDataReceived += (sender, args) => { Console.WriteLine("Server(" + port + "): " + args.Data); };
-				process.Start();
-				process.BeginErrorReadLine();
-				process.BeginOutputReadLine();
-				LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, 0, port);
-				if (lobbyStartPacket.Password != "")
+				Console.WriteLine("starting...");
+				try
 				{
-					lobbyData.HasPassword = true;
+					process.Start();
+					Console.WriteLine("process started with id: "+process.Id);
+					process.BeginErrorReadLine();
+					process.BeginOutputReadLine();
+					LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, 0, port);
+					if (lobbyStartPacket.Password != "")
+					{
+						lobbyData.HasPassword = true;
+					}
+
+					Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
+					connection.Send(lobbyData);
+					foreach (var player in Players)
+					{
+						foreach (var lobby in Lobbies)
+						{
+							connection.Send(lobby.Value.Item2);
+						}
+						string allPLayers = String.Join(";",Players.Keys);
+						player.Value.SendRawData(RawDataConverter.FromUTF8String("playerList",allPLayers));
+					}
+				}catch(Exception e)
+				{
+					Console.WriteLine(e);
 				}
 
-				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
-				connection.Send(lobbyData);
+				
+				
+				
 			}
 
 		}

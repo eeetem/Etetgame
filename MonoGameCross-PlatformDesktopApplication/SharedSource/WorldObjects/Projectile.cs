@@ -74,35 +74,35 @@ namespace MultiplayerXeno
 		}
 
 
-				if (result.hit)
+		if (result.hit)
+		{
+
+			Vector2 dir = Vector2.Normalize(from - to);
+			to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
+			RayCastOutcome cast;
+
+
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, true);
+			if (cast.hit && result.hitObjID != cast.hitObjID)
+			{
+				covercast = cast;
+			}
+			else
+			{
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, true);
+				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
-
-					Vector2 dir = Vector2.Normalize(from - to);
-					to = result.CollisionPointLong + Vector2.Normalize(to - from)/2;
-					RayCastOutcome cast;
-
-
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, true);
-					if (cast.hit && result.hitObjID != cast.hitObjID)
-					{
-						covercast = cast;
-					}
-					else
-					{
-						cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, true);
-						if (cast.hit && result.hitObjID != cast.hitObjID)
-						{
-							covercast = cast;
-						}
-						else
-						{
-							covercast = null;
-						}
-					}
-
-
-
+					covercast = cast;
 				}
+				else
+				{
+					covercast = null;
+				}
+			}
+
+
+
+		}
 			
 
 			CalculateDetails();
@@ -136,18 +136,26 @@ namespace MultiplayerXeno
 			var worldTile = WorldManager.Instance.GetTileAtGrid(pos);
 			if (result.CollisionPointLong != result.EndPoint)
 			{
-				
-				var dir = Utility.GetDirectionToSideWithPoint(pos, result.CollisionPointLong);
-				Cover passCover = Cover.High;
-				if (this.shooterLow)
+				try
 				{
-					passCover = Cover.Low;
-				}
+					var dir = Utility.GetDirectionToSideWithPoint(pos, result.CollisionPointLong);
+				
 
-				if (worldTile.GetCover(dir,true)>passCover)
+					Cover passCover = Cover.High;
+					if (this.shooterLow)
+					{
+						passCover = Cover.Low;
+					}
+
+					if (worldTile.GetCover(dir,true)>passCover)
+					{
+						pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
+		
+					}
+				}
+				catch (Exception e)
 				{
 					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
-		
 				}
 			}
 			var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,true);

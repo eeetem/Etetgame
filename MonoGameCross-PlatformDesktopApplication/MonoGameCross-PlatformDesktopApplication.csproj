@@ -53,4 +53,10 @@
     <ItemGroup>
       <ProjectReference Include="..\CommonData\CommonData.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\Server\Maps\map.mapdata">
+        <Link>Maps\map.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>
