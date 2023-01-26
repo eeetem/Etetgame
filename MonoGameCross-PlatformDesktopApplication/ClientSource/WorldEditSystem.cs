@@ -65,6 +65,11 @@ namespace MultiplayerXeno
 
 		private static void DeletePrefab(Vector2Int Pos)
 		{
+			if (!WorldManager.IsPositionValid(Pos))
+			{
+				return;
+			}
+
 			WorldTile tile = WorldManager.Instance.GetTileAtGrid(Pos);
 
 			if (tile.ObjectAtLocation != null)

@@ -36,6 +36,12 @@ public abstract class Attack : Action
 		if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
 		{
 			lowShot = true;
+#if CLIENT
+			if (!tile.ObjectAtLocation.IsVisible())
+			{
+				lowShot = false;
+			}
+#endif
 		}
 			
 

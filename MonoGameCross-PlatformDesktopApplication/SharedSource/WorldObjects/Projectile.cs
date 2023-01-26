@@ -73,6 +73,18 @@ namespace MultiplayerXeno
 			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
 		}
 
+		if (!result.hit)
+		{
+			if (WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation != null)
+			{
+				result = new RayCastOutcome(from,to)
+				{
+					hit = true,
+					hitObjID = WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.Id,
+					CollisionPointLong = to,
+				};	
+			}
+		}
 
 		if (result.hit)
 		{
