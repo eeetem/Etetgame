@@ -11,6 +11,7 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1;
 		public static bool intated = false;
+		public static bool spectating = false;
 		public static List<Controllable> _myUnits = new List<Controllable>();
 		private static PreGameDataPacket _preGameData;
 		public static PreGameDataPacket PreGameData
@@ -45,21 +46,40 @@ namespace MultiplayerXeno
 		public static void SetData(GameDataPacket data)
 		{
 			IsPlayer1Turn = data.IsPlayer1Turn;
-			IsPlayer1 = data.IsPlayerOne;
+			if (data.IsPlayerOne == null)
+			{
+				spectating = true;
+			}
+			else
+			{
+				IsPlayer1 = (bool)data.IsPlayerOne;
+			}
+			Console.WriteLine("IsPlayer1: " + IsPlayer1);
+
+			
 			score = data.Score;
 			GameState = data.GameState;
-			switch (GameState)
-			{
-				case GameState.Lobby:
-					UI.SetUI(UI.PreGameLobby);
-					break;
-				case GameState.Setup:
-					UI.SetUI(UI.SetupUI);
-					break;
-				case GameState.Playing:
-					StartGame();
-					break;
-			}
+		
+			
+				switch (GameState)
+				{
+					case GameState.Lobby:
+						UI.SetUI(UI.PreGameLobby);
+						break;
+					case GameState.Setup:
+						if (spectating)
+						{
+							break;
+						}
+
+						UI.SetUI(UI.SetupUI);
+						break;
+					case GameState.Playing:
+						StartGame();
+						break;
+				}
+			
+
 		}
 
 		public static void StartGame()
@@ -73,6 +93,7 @@ namespace MultiplayerXeno
 
 		public static void CountMyUnits()
 		{
+			_myUnits.Clear();
 			foreach (var obj in UI.Controllables)
 			{
 				if (obj.IsPlayerOneTeam == IsPlayer1)

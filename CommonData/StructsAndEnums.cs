@@ -65,7 +65,9 @@ namespace CommonData
 		public int Health;
 		public int Determination;
 		public bool Crouching;
+		public bool Panic;
 		public bool JustSpawned;
+		
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
@@ -75,9 +77,10 @@ namespace CommonData
 			Health = -100;
 			Determination = -100;
 			Crouching = false;
+			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int determination, bool crouching)
+		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int determination, bool crouching,bool panic)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -87,7 +90,8 @@ namespace CommonData
 			Determination = determination;
 			Crouching =	crouching;
 			JustSpawned = true;
-			
+			Panic = panic;
+
 		}
 	}
 	[Serializable]
@@ -149,6 +153,7 @@ namespace CommonData
 		NorthWest = 7
 			
 	}
+
 	[Serializable]
 	public class Vector2Int//should be a struct but networking library is cringe once again
 	{

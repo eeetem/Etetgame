@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System;
 using CommonData;
 using Microsoft.Xna.Framework;
@@ -112,8 +113,10 @@ namespace MultiplayerXeno
 
 		public WorldTile LoadWorldTile(WorldTileData data)
 		{
+
 			
-				WorldTile tile = GetTileAtGrid(data.position);
+
+			WorldTile tile = GetTileAtGrid(data.position);
 				tile.Wipe();
 				if (data.Surface != null)
 				{
@@ -371,8 +374,8 @@ namespace MultiplayerXeno
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
-	
-					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables);
+					
+					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables,lastCheckingSquare == startcell);
 
 					
 					if (hitobj.Id != -1 )
@@ -387,6 +390,12 @@ namespace MultiplayerXeno
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
+								//if this is true then we're hitting a controllable form behind
+								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								{
+									result.CollisionPointLong += -0.3f * dir;
+									result.CollisionPointShort += -0.3f * dir;
+								}
 								return result;
 								
 							}
@@ -401,6 +410,11 @@ namespace MultiplayerXeno
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
+								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								{
+									result.CollisionPointLong += -0.3f * dir;
+									result.CollisionPointShort += -0.3f * dir;
+								}
 								return result;
 							}
 						}
@@ -445,6 +459,9 @@ namespace MultiplayerXeno
 			}
 
 			WorldObject Obj = WorldObjects[id];
+
+			GameManager.Forget(Obj);
+
 #if  CLIENT
 			if (Obj.ControllableComponent != null)
 			{
@@ -456,6 +473,7 @@ namespace MultiplayerXeno
 			Obj.TileLocation.Remove(id);
 			//obj.dispose()
 			WorldObjects.Remove(id);
+			
 
 		}
 
@@ -501,18 +519,23 @@ namespace MultiplayerXeno
 			return tiles;
 		}
 
-		private  void WipeGrid()
+		public void WipeGrid()
 		{
-			foreach (var worldObject in WorldObjects.Values)
+			lock (syncobj)
 			{
-				DeleteWorldObject(worldObject);
-			}
-
-			for (int x = 0; x < 100; x++)
-			{
-				for (int y = 0; y < 100; y++)
+				
+			
+				foreach (var worldObject in WorldObjects.Values)
 				{
-					_gridData[x, y].Wipe();
+					DeleteWorldObject(worldObject);
+				}
+
+				for (int x = 0; x < 100; x++)
+				{
+					for (int y = 0; y < 100; y++)
+					{
+						_gridData[x, y].Wipe();
+					}
 				}
 			}
 		}
@@ -525,11 +548,19 @@ namespace MultiplayerXeno
 			//Console.WriteLine(GridData[15,5].WestEdge);
 			lock (syncobj)
 			{
-				
+#if SERVER
+				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
+#endif
 				foreach (var obj in objsToDel)
 				{
 #if CLIENT
 					MakeFovDirty();
+#endif
+#if SERVER
+					if (WorldObjects.ContainsKey(obj))
+					{
+						tilesToUpdate.Add(WorldObjects[obj].TileLocation);
+					}
 #endif
 					DestroyWorldObject(obj);
 				//	Console.WriteLine("deleting: "+obj);
@@ -546,28 +577,40 @@ namespace MultiplayerXeno
 				{
 					obj.Update(gameTime);
 				}
-#if SERVER
-				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
-#endif
+
 				foreach (var WO in createdObjects)
 				{
 #if CLIENT
 					MakeFovDirty();
+
+					if (GameManager.GameState != GameState.Playing)
+					{
+						Camera.SetPos(WO.Item2.Position);
+					}
+
 #endif
 					var obj = CreateWorldObj(WO);
-					Console.WriteLine("creatinig: "+obj.Id);
+					Console.WriteLine("creatinig: "+obj.Id + "at: "+obj.TileLocation.Position);
 #if SERVER
 					tilesToUpdate.Add(WO.Item2);
 #endif
 				}
+
+				
 				createdObjects.Clear();
 #if SERVER
-				foreach (var tile in tilesToUpdate)
+				//no need to update if we're loading an entire map
+				if (!Loading)
 				{
-					Networking.SendTileUpdate(tile);
+					foreach (var tile in tilesToUpdate)
+					{
+						Networking.SendTileUpdate(tile);
+					}
 				}
+
 				tilesToUpdate.Clear();
 #endif
+				Loading = false;
 #if CLIENT
 				if(fovDirty){
 					CalculateFov();
@@ -699,20 +742,41 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public void LoadData(byte[] data)
+		private static bool Loading = false;
+		public bool LoadData(byte[] data)
 		{
-			using (Stream dataStream = new MemoryStream(data))
+			if (Loading)
 			{
-				BinaryFormatter bformatter = new BinaryFormatter();
-				List<WorldTileData> prefabData = bformatter.Deserialize(dataStream) as List<WorldTileData>;
-				WipeGrid();
-
-				if (prefabData != null)
-					foreach (var worldTileData in prefabData)
-					{
-						LoadWorldTile(worldTileData);
-					}
+				return false;
 			}
+
+			Loading = true;
+				using (Stream dataStream = new MemoryStream(data))
+				{
+					BinaryFormatter bformatter = new BinaryFormatter();
+					List<WorldTileData> prefabData = bformatter.Deserialize(dataStream) as List<WorldTileData>;
+					WipeGrid();
+
+					if (prefabData != null)
+						foreach (var worldTileData in prefabData)
+						{
+							Loading = true;
+							LoadWorldTile(worldTileData);
+						}
+				}
+				
+
+				#if SERVER
+				Thread.Sleep(2000);
+				if (GameManager.Player1?.Connection != null) Networking.SendMapData(GameManager.Player1.Connection);
+				if (GameManager.Player2?.Connection != null)  Networking.SendMapData(GameManager.Player2.Connection);
+			foreach (var spec in GameManager.Spectators)
+			{
+				Networking.SendMapData(spec.Connection);
+			}
+			
+				#endif
+				return true;
 		}
 	}
 }

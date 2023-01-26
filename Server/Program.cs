@@ -21,9 +21,15 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			PrefabManager.MakePrefabs();
 			Action.Init();
 			PathFinding.GenerateNodes();
-			Console.WriteLine("Enter Port:");
+		//	Console.WriteLine("Enter Port:");
 			//string port = Console.ReadLine();
 			string port = "52233";
+			if (args.Length > 0)
+			{
+				port = args[0];
+			}
+
+		
 			Networking.Start(Int32.Parse(port));
 			
 			UpdateLoop();

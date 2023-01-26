@@ -220,7 +220,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public WorldObject GetCoverObj(Direction dir, bool ignnoreControllables = false)
+		public WorldObject GetCoverObj(Direction dir, bool ignnoreControllables = false, bool ignoreObjAtLoc = true)
 		{
 			WorldObject biggestCoverObj = new WorldObject(null,-1,null);
 			dir = Utility.NormaliseDir(dir);
@@ -386,15 +386,30 @@ namespace MultiplayerXeno
 					break;
 				
 			}
-			
+
+			if (!ignoreObjAtLoc)
+			{
+				if (ObjectAtLocation != null && ObjectAtLocation.GetCover() > biggestCoverObj.GetCover() && (ObjectAtLocation.Facing == dir || ObjectAtLocation.Facing == Utility.NormaliseDir(dir+1) ||  ObjectAtLocation.Facing == Utility.NormaliseDir(dir-1)))
+				{
+					if (ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
+					{
+						biggestCoverObj = ObjectAtLocation;
+					}
+				}
+			}
 
 			if (tileInDir != null)
 			{
-				if (tileInDir?.ObjectAtLocation != null
-#if CLIENT//god forgive me for writting this mess
-				    && tileInDir.ObjectAtLocation.IsVisible()
-#endif	    
-				    && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover())
+#if CLIENT
+				if(tileInDir.ObjectAtLocation != null && !tileInDir.ObjectAtLocation.IsVisible())
+				{
+					return biggestCoverObj;
+				}
+#endif
+
+
+				Direction inverseDir = Utility.NormaliseDir(dir - 4);
+				if (tileInDir.ObjectAtLocation != null && tileInDir.ObjectAtLocation.GetCover() > biggestCoverObj.GetCover() && ( tileInDir.ObjectAtLocation.Facing == inverseDir || tileInDir.ObjectAtLocation.Facing == Utility.NormaliseDir(inverseDir+1) ||  tileInDir.ObjectAtLocation.Facing == Utility.NormaliseDir(inverseDir+2) || tileInDir.ObjectAtLocation.Facing == Utility.NormaliseDir(inverseDir-2) ||tileInDir.ObjectAtLocation.Facing == Utility.NormaliseDir(inverseDir-1)))//only hit people from the front
 				{
 					if (tileInDir.ObjectAtLocation.ControllableComponent == null || !ignnoreControllables)
 					{

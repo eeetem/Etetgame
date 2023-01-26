@@ -40,6 +40,7 @@ namespace MultiplayerXeno
 			}
 
 			this.Crouching = data.Crouching;
+			this.paniced = data.Panic;
 
 
 #if CLIENT
@@ -126,6 +127,7 @@ namespace MultiplayerXeno
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
+				ClearOverWatch();
 				if (_thisMoving)
 				{
 					moving = false;
@@ -371,7 +373,7 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,TurnPoints,Health,determination,Crouching,paniced);
 			data.JustSpawned = false;
 			return data;
 		}

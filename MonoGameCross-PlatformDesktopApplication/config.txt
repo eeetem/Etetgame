@@ -1,0 +1,3 @@
+﻿[config]
+Name = shitass
+MasterServerIP = 3.87.184.102:1630
