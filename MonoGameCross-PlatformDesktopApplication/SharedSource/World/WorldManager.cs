@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno
@@ -381,7 +382,7 @@ namespace MultiplayerXeno
 					if (hitobj.Id != -1 )
 					{
 						Cover c = hitobj.GetCover();
-						if (Utility.DoesEdgeBorderTile(hitobj, startcell))
+						if (Utility.IsClose(hitobj, startcell))
 						{
 							if (c >= minHtCoverSameTile)
 							{
@@ -580,17 +581,17 @@ namespace MultiplayerXeno
 
 				foreach (var WO in createdObjects)
 				{
+					var obj = CreateWorldObj(WO);
 #if CLIENT
 					MakeFovDirty();
 
-					if (GameManager.GameState != GameState.Playing)
+					if (GameManager.GameState != GameState.Playing && !WorldEditSystem.enabled)
 					{
+
 						Camera.SetPos(WO.Item2.Position);
 					}
-
 #endif
-					var obj = CreateWorldObj(WO);
-					Console.WriteLine("creatinig: "+obj.Id + "at: "+obj.TileLocation.Position);
+					
 #if SERVER
 					tilesToUpdate.Add(WO.Item2);
 #endif
@@ -646,7 +647,6 @@ namespace MultiplayerXeno
 			WorldTile newTile;
 			if (WO.Type.Surface)
 			{
-				Console.WriteLine("creatin surface at "+tile.Position);
 				tile.Surface = WO;
 			}
 			else if (type.Edge)
@@ -698,8 +698,9 @@ namespace MultiplayerXeno
 			return WO;
 		}
 
-
-		public void SaveData(string path)
+		public MapData CurrentMap { get; set; }
+		
+		public void SaveCurrentMapTo(string path)
 		{
 			List<WorldTileData> prefabData = new List<WorldTileData>();
 			Vector2Int biggestPos = new Vector2Int(0, 0);//only save the big of the map that has stuff
@@ -730,20 +731,44 @@ namespace MultiplayerXeno
 				}
 			}
 
+			CurrentMap.Data = prefabData;
+			string json = CurrentMap.Serialise();
+			File.Delete(path);
 			using (FileStream stream = File.Open(path, FileMode.Create))
 			{
-				//		TextWriter textWriter = new StreamWriter(stream);
-//				JsonWriter jsonWriter = new JsonTextWriter(textWriter);
-				//		JsonSerializer jsonSerializer = new JsonSerializer();
-				//bformatter.Serialize(stream, prefabData);	
-				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(stream, prefabData);
-				//		jsonSerializer.Serialize(textWriter, prefabData);
+				using (StreamWriter writer = new StreamWriter(stream))
+				{
+					writer.Write(json);
+				}
 			}
 		}
 
 		private static bool Loading = false;
-		public bool LoadData(byte[] data)
+
+		public void LoadMapLegacy(string path)
+		{
+			var data = File.ReadAllBytes(path);
+			WipeGrid();
+			using (Stream dataStream = new MemoryStream(data))
+			{
+				BinaryFormatter bformatter = new BinaryFormatter();
+				List<WorldTileData> prefabData = bformatter.Deserialize(dataStream) as List<WorldTileData>;
+				WipeGrid();
+
+				if (prefabData != null)
+					foreach (var worldTileData in prefabData)
+					{
+						LoadWorldTile(worldTileData);
+					}
+			}
+		}
+
+		public bool LoadMap(string path)
+		{
+			return LoadMap(MapData.Deserialse(File.ReadAllText(path)));
+		}
+
+		public bool LoadMap(MapData mapData)
 		{
 			if (Loading)
 			{
@@ -751,19 +776,15 @@ namespace MultiplayerXeno
 			}
 
 			Loading = true;
-				using (Stream dataStream = new MemoryStream(data))
-				{
-					BinaryFormatter bformatter = new BinaryFormatter();
-					List<WorldTileData> prefabData = bformatter.Deserialize(dataStream) as List<WorldTileData>;
-					WipeGrid();
 
-					if (prefabData != null)
-						foreach (var worldTileData in prefabData)
-						{
-							Loading = true;
-							LoadWorldTile(worldTileData);
-						}
-				}
+			WipeGrid();
+			CurrentMap = mapData;
+			foreach (var worldTileData in mapData.Data)
+			{
+				Loading = true;
+				LoadWorldTile(worldTileData);
+			}
+				
 				
 
 				#if SERVER

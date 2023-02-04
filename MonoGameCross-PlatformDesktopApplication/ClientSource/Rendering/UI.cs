@@ -745,6 +745,15 @@ Grid.Widgets.Add(chatPanel);
 				Text = "Soldiers: "+soldierCount
 			};
 			grid.Widgets.Add(soldierButton);
+			var freeslots = new Label()
+			{
+			
+				GridColumn = 2,
+				GridRow = 0,
+				Text = "Free Units "+(WorldManager.Instance.CurrentMap.unitCount-soldierCount-scoutCount-heavyCount),
+			};
+			grid.Widgets.Add(freeslots);
+			
 			var soldierLeft = new TextButton
 			{
 				GridColumn = 1,
@@ -760,6 +769,7 @@ Grid.Widgets.Add(chatPanel);
 				}
 
 				soldierButton.Text = "Soldiers: " + soldierCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(soldierLeft);
 			var soldierRight = new TextButton
@@ -770,13 +780,14 @@ Grid.Widgets.Add(chatPanel);
 			};
 			soldierRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + heavyCount+1 > 6)
+				if (soldierCount + scoutCount + heavyCount+1 >  WorldManager.Instance.CurrentMap.unitCount)
 				{
 					return;
 				}
 
 				soldierCount++;
 				soldierButton.Text = "Soldiers: " + soldierCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(soldierRight);
 			
@@ -803,6 +814,7 @@ Grid.Widgets.Add(chatPanel);
 				}
 
 				scoutButton.Text = "Scouts: " + scoutCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(scountLeft);
 			var scoutRight = new TextButton
@@ -813,13 +825,14 @@ Grid.Widgets.Add(chatPanel);
 			};
 			scoutRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + heavyCount+ 1 > 6)
+				if (soldierCount + scoutCount + heavyCount+ 1 > WorldManager.Instance.CurrentMap.unitCount)
 				{
 					return;
 				}
 
 				scoutCount++;
 				scoutButton.Text = "Scouts: " + scoutCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(scoutRight);
 			
@@ -847,6 +860,7 @@ Grid.Widgets.Add(chatPanel);
 				}
 
 				heavyButton.Text = "Heavies: " + heavyCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(heavyLeft);
 			var heavyRight = new TextButton
@@ -857,13 +871,14 @@ Grid.Widgets.Add(chatPanel);
 			};
 			heavyRight.Click += (s, a) =>
 			{
-				if (soldierCount + scoutCount + heavyCount+ 1 > 6)
+				if (soldierCount + scoutCount + heavyCount+ 1 >  WorldManager.Instance.CurrentMap.unitCount)
 				{
 					return;
 				}
 
 				heavyCount++;
 				heavyButton.Text = "Heavies: " + heavyCount;
+				freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - soldierCount - scoutCount - heavyCount);
 			};
 			grid.Widgets.Add(heavyRight);
 
@@ -907,8 +922,7 @@ Grid.Widgets.Add(chatPanel);
 			messageBox.ShowModal(Desktop);
 
 		}
-
-		private static string lastMapName = "";
+		
 		public static void EditorMenu()
 		{
 
@@ -955,17 +969,63 @@ Grid.Widgets.Add(chatPanel);
 				var panel = new Panel();
 				var label = new Label()
 				{
-					Text = "Enter Map Name"
+					Text = "Enter Map Name",
+					Top = 0,
 				};
 				panel.Widgets.Add(label);
-				var input = new TextBox();
-				input.Text = lastMapName;
-				panel.Widgets.Add(input);
+				
+				var mapname = new TextBox()
+				{
+					Top = 25,
+				};
+				mapname.Text = WorldManager.Instance.CurrentMap.Name;
+				panel.Widgets.Add(mapname);
+				label = new Label()
+				{
+					Text = "Author Name",
+					Top = 50
+				};
+				panel.Widgets.Add(label);
+				var authorname = new TextBox()
+				{
+					Top = 75,
+					Text = WorldManager.Instance.CurrentMap.Author,
+				};
+				panel.Widgets.Add(authorname);
+				label = new Label()
+				{
+					Text = "Unit Count",
+					Top = 100,
+				};
+				panel.Widgets.Add(label);
+				var unitCount = new TextBox()
+				{
+					Top = 125,
+					Text = WorldManager.Instance.CurrentMap.unitCount.ToString(),
+				};
+				panel.Widgets.Add(unitCount);
+				
+				
+				
 				var dialog = Dialog.CreateMessageBox("Save Map", panel);
+				dialog.Height = 250;
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
-					lastMapName = input.Text;
-					WorldManager.Instance.SaveData("./Maps/"+input.Text+".mapdata");
+					
+					WorldManager.Instance.CurrentMap = new MapData();
+					WorldManager.Instance.CurrentMap.Name = mapname.Text;
+					WorldManager.Instance.CurrentMap.Author = authorname.Text;
+					int units = 6;
+					bool result  = int.TryParse(unitCount.Text, out units);
+					if (result)
+					{
+						WorldManager.Instance.CurrentMap.unitCount = units;
+					}
+					else
+					{
+						WorldManager.Instance.CurrentMap.unitCount = 6;
+					}
+					WorldManager.Instance.SaveCurrentMapTo("./Maps/"+mapname.Text+".mapdata");
 				};
 				dialog.ShowModal(Desktop);
 				
@@ -988,21 +1048,24 @@ Grid.Widgets.Add(chatPanel);
 					Text = "Select a map to load"
 				};
 				panel.Widgets.Add(label);
+				
 				var selection = new ListBox();
 				panel.Widgets.Add(selection);
+				
 				foreach (var path in filePaths)
 				{
 					var item = new ListItem()
 					{
-						Text = selection.SelectedItem.Text.Split("/").Last().Split(".").First(),
+						Text = path.Split("/").Last().Split(".").First(),
 					};
 					selection.Items.Add(item);
 				}
 				var dialog = Dialog.CreateMessageBox("Load Map", panel);
+				dialog.Width = 100;
+				dialog.Height = (int) (1000f * globalScale.Y);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
-					lastMapName = selection.SelectedItem.Text;
-					WorldManager.Instance.LoadData(File.ReadAllBytes("./Maps/"+selection.SelectedItem.Text+".mapdata"));
+					WorldManager.Instance.LoadMap("./Maps/"+selection.SelectedItem.Text+".mapdata");
 				};
 				dialog.ShowModal(Desktop);
 				

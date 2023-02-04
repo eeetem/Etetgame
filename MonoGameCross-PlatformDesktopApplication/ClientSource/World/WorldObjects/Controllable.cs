@@ -16,6 +16,7 @@ namespace MultiplayerXeno
 		{
 			foreach (var tile in overWatchedTiles)
 			{
+				//todo fix this
 				WorldManager.Instance.GetTileAtGrid(tile).CalcWatchLevel();
 			}
 			

@@ -1,7 +1,12 @@
 TEAAAAAAAAAAAAAAAAASH
 
 player disconnecting makes a new host
-migrate maps to a JSON with metadata
+map info in lobby
+nicer lobby browser
+turn indicator unit bar
+crouch shot toggle
+spoted overwatch crash
+cursor focus
 point blank supression
 fix discord time? timezone issue?
 upnp

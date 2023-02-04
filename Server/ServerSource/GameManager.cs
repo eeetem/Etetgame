@@ -129,6 +129,7 @@ namespace MultiplayerXeno
 			{
 				spectator?.Connection.Send(packet);
 			}
+			Program.InformMasterServer();
 		}
 	}
 }

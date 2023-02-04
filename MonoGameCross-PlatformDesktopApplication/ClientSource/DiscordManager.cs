@@ -29,7 +29,7 @@ public static class DiscordManager
 		enabled = true;
 		client.SetPresence(new RichPresence()
 		{
-			Details = "https://discord.gg/SjfmWDaJzz",
+			Details = "https://discord.gg/TrmAJbMaQ3",
 			State = "In Menu",
 			Timestamps = new Timestamps()
 			{

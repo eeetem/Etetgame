@@ -99,17 +99,20 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 		private static void RegisterClient(RawData rawData, Connection connection)
 		{
-			Console.WriteLine("Begining Client Register");
+		
 			string name = RawDataConverter.ToUTF8String(rawData);
+			Console.WriteLine("Registering client: " + name);
+			if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
+			{
+				Kick("Invalid name",connection);
+				return;
+			}
 			if (Players.ContainsKey(name) && Players[name].IPRemoteEndPoint != connection.IPRemoteEndPoint)
 			{
 				Kick("Player with the same name already exists",connection);
 				return;
 			}
 			Players.Add(name,connection);
-			Console.WriteLine("Client Register Done");
-
-
 		}
 		public static void Kick(string reason,Connection connection)
 		{
@@ -146,7 +149,18 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				args.Add(lobbyStartPacket.Password);
 				process.StartInfo.Arguments = string.Join(" ", args);
 				process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
-				process.OutputDataReceived += (sender, args) => { Console.WriteLine("Server(" + port + "): " + args.Data); };
+				process.OutputDataReceived += (sender, args) =>
+				{
+					if (args.Data != null && args.Data.Contains("[UPDATE]"))
+					{
+						Lobbies[port].Item2.GameState = ExtractBetweenTags(args.Data, "STATE");
+						Lobbies[port].Item2.PlayerCount = Int32.Parse(ExtractBetweenTags(args.Data, "PLAYERCOUNT"));
+						Lobbies[port].Item2.MapName = ExtractBetweenTags(args.Data, "MAP");
+						Lobbies[port].Item2.Spectators =  Int32.Parse(ExtractBetweenTags(args.Data, "SPECTATORS"));
+					}
+
+					Console.WriteLine("Server(" + port + "): " + args.Data);
+				};
 				Console.WriteLine("starting...");
 				try
 				{
@@ -154,7 +168,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					Console.WriteLine("process started with id: "+process.Id);
 					process.BeginErrorReadLine();
 					process.BeginOutputReadLine();
-					LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, 0, port);
+					LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, port);
 					if (lobbyStartPacket.Password != "")
 					{
 						lobbyData.HasPassword = true;
@@ -181,6 +195,14 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				
 			}
 
+		}   
+		public static string ExtractBetweenTags(string STR , string tag)
+		{       
+			string FinalString;     
+			int Pos1 = STR.IndexOf("["+tag+"]") + tag.Length+2;
+			int Pos2 = STR.IndexOf("[/"+tag+"]");
+			FinalString = STR.Substring(Pos1, Pos2 - Pos1);
+			return FinalString;
 		}
 
 		private static  Dictionary<int, Tuple<Process,LobbyData>> Lobbies = new Dictionary<int,  Tuple<Process,LobbyData>>();

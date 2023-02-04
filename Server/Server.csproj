@@ -99,10 +99,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Maps\map.mapdata">
+      <None Update="Maps\Ground Zero.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="Maps\Custom\oldmap.mapdata">
+      <None Update="Maps\Not One Step Back.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Custom\gggg.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

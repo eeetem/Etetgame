@@ -54,7 +54,7 @@ namespace MultiplayerXeno
 
 
 			selectedMap = "./Maps/Map1.mapdata";
-			WorldManager.Instance.LoadData(File.ReadAllBytes("./Maps/map.mapdata"));
+			WorldManager.Instance.LoadMap("./Maps/Ground Zero.mapdata");
 			serverConnectionContainer.Start();
 			
 			Console.WriteLine("Started server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
@@ -130,16 +130,16 @@ namespace MultiplayerXeno
 				if(con != GameManager.Player1.Connection  || GameManager.GameState != GameState.Lobby)
 					return;
 				selectedMap = RawDataConverter.ToUTF8String(i);
-				WorldManager.Instance.LoadData(File.ReadAllBytes(selectedMap));
+				WorldManager.Instance.LoadMap(selectedMap);
 	
 				SendPreGameInfo();
 			});
-			connection.RegisterStaticPacketHandler<MapData>((data, con) =>
+			connection.RegisterStaticPacketHandler<MapDataPacket>((data, con) =>
 			{
 				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
 					return;
-				
-				File.WriteAllBytes("./Maps/Custom/"+data.Name, data.ByteData);
+				File.Delete("./Maps/Custom/"+data.MapData.Name+".mapdata");
+				File.WriteAllText("./Maps/Custom/"+data.MapData.Name+".mapdata", data.MapData.Serialise());
 				SendPreGameInfo();
 			});
 			
@@ -170,7 +170,11 @@ namespace MultiplayerXeno
 		{
 			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData);
-			
+			if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
+			{
+				Kick("Invalid name",connection);
+				return;
+			}
 
 			if (GameManager.Player1 == null)
 			{
@@ -217,6 +221,7 @@ namespace MultiplayerXeno
 			SendMapData(connection);
 
 			Console.WriteLine("Client Register Done");
+			
 
 
 		}
@@ -243,6 +248,7 @@ namespace MultiplayerXeno
 			{
 				spectator.Connection.Send(data);
 			}
+			Program.InformMasterServer();
 		}
 
 		public static void SendTileUpdate(WorldTile wo)
@@ -272,9 +278,9 @@ namespace MultiplayerXeno
 
 		public static void SendMapData(Connection connection)
 		{
-			WorldManager.Instance.SaveData("temp.mapdata");
-			byte[] mapData = File.ReadAllBytes("temp.mapdata");
-			connection.SendRawData("mapUpdate", mapData);
+			WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
+			var packet = new MapDataPacket(WorldManager.Instance.CurrentMap);
+			connection.Send(packet);
 
 		}
 

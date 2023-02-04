@@ -19,6 +19,7 @@ namespace MultiplayerXeno
 		{
 			enabled = true;
 			DiscordManager.client.UpdateState("In Level Editor");
+			WorldManager.Instance.CurrentMap = new MapData();
 		}
 
 		public enum Brush 
@@ -87,19 +88,27 @@ namespace MultiplayerXeno
 				WorldManager.Instance.DeleteWorldObject(tile.WestEdge);
 				return;
 			}
-			
-			WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
-			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
-			if (eastTile.WestEdge != null)
-			{
-				WorldManager.Instance.DeleteWorldObject(eastTile.WestEdge);
-				return;
+			if(Pos.Y != 100){
+				WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
+				if (southTile.NorthEdge != null)
+				{
+					WorldManager.Instance.DeleteWorldObject(southTile.NorthEdge);
+					return;
+				}
 			}
-			if (southTile.NorthEdge != null)
+
+			if (Pos.X != 100)
 			{
-				WorldManager.Instance.DeleteWorldObject(southTile.NorthEdge);
-				return;
+				WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
+				if (eastTile.WestEdge != null)
+				{
+					WorldManager.Instance.DeleteWorldObject(eastTile.WestEdge);
+					return;
+				}
 			}
+
+		
+
 
 			if (tile.Surface != null)
 			{
@@ -301,8 +310,24 @@ namespace MultiplayerXeno
 
 					break;
 			}
-			Texture2D previewSprite = PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][(int)ActiveDir];
-						
+
+			Texture2D previewSprite;
+			if (PrefabManager.Prefabs[ActivePrefab].Faceable)
+			{
+				previewSprite= PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][(int) ActiveDir];
+				if ((int)ActiveDir == 2)
+				{
+					MousePos += new Vector2(1, 0);
+				}else if ((int)ActiveDir == 4)
+				{
+					MousePos += new Vector2(0, 1);
+				}
+			}else
+			{
+				 previewSprite = PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][0];
+			}
+
+
 
 			batch.Draw(previewSprite, Utility.GridToWorldPos(MousePos+new Vector2(-1.5f,-0.5f)), Color.White*0.5f);
 		}

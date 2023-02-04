@@ -75,14 +75,22 @@ namespace MultiplayerXeno
 
 		if (!result.hit)
 		{
+			//if we didnt hit anything autohit object at the end tile
 			if (WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation != null)
 			{
-				result = new RayCastOutcome(from,to)
+#if CLIENT
+				if (WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.IsVisible())
 				{
-					hit = true,
-					hitObjID = WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.Id,
-					CollisionPointLong = to,
-				};	
+#endif
+					result = new RayCastOutcome(from, to)
+					{
+						hit = true,
+						hitObjID = WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.Id,
+						CollisionPointLong = to,
+					};
+#if CLIENT
+				}
+#endif
 			}
 		}
 

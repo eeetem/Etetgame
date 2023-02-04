@@ -31,7 +31,8 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 
 		
 			Networking.Start(Int32.Parse(port));
-			
+
+			InformMasterServer();
 			UpdateLoop();
 			
 		}
@@ -61,6 +62,19 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				}
 				
 			}
+		}
+
+		public static void InformMasterServer()
+		{
+			string msg = "[UPDATE]";
+			msg += "[PLAYERCOUNT]" +((GameManager.Player1 != null ? 0 : 1) + (GameManager.Player2 != null ? 0 : 1)) + "[/PLAYERCOUNT]";
+			msg += "[SPECTATORS]" +(GameManager.Spectators.Count) + "[/SPECTATORS]";
+			msg += "[STATE]" +(GameManager.GameState) + "[/STATE]";
+			msg += "[MAP]" +(WorldManager.Instance.CurrentMap.Name) + "[/MAP]";
+			Console.WriteLine(msg);
+
+			
+
 		}
 	}
 };

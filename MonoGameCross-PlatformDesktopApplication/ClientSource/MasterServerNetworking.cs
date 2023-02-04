@@ -37,8 +37,8 @@ public class MasterServerNetworking
 			{
 				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
 				{
-					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
 					UI.SetUI(UI.MainMenu);
+					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
 				}
 			};
 			

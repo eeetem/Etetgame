@@ -283,8 +283,17 @@ namespace MultiplayerXeno
                 throw new Exception("not an side");
 
         }
-        
-        
+
+        public static bool IsClose(WorldObject edge, Vector2Int pos)
+        {
+            if(DoesEdgeBorderTile(edge, pos+new Vector2(1,0)))return true;
+            if(DoesEdgeBorderTile(edge, pos+new Vector2(0,1)))return true;
+            if(DoesEdgeBorderTile(edge, pos+new Vector2(-1,0)))return true;
+            if(DoesEdgeBorderTile(edge, pos+new Vector2(0,-1)))return true;
+            return false;
+        }
+
+
         public static bool DoesEdgeBorderTile(WorldObject edge, Vector2Int pos)
         {
             if(!WorldManager.IsPositionValid(pos))return false;

@@ -52,7 +52,12 @@ namespace MultiplayerXeno
 			serverConnection.TIMEOUT = 1000000000;
 		
 			
-			serverConnection.RegisterRawDataHandler("mapUpdate",ReciveMapUpdate);
+			serverConnection.RegisterStaticPacketHandler<MapDataPacket>((data, b) =>
+			{
+				var msg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
+				WorldManager.Instance.LoadMap(data.MapData);
+				msg.RemoveFromDesktop();
+			});
 			serverConnection.RegisterStaticPacketHandler<GameDataPacket>(ReciveGameUpdate);
 
 			serverConnection.RegisterRawDataHandler("TileUpdate",ReciveTileUpdate);
@@ -103,10 +108,8 @@ namespace MultiplayerXeno
 
 		public static void UploadMap(string path)
 		{
-			var packet = new MapData();
-			packet.ByteData= File.ReadAllBytes(path);
-			packet.Name = Path.GetFileName(path);
-			packet.Name = Path.GetFileName(path);
+			
+			var packet = new MapDataPacket(MapData.Deserialse(File.ReadAllText(path)));
 			serverConnection.Send(packet);
 		}
 
@@ -137,13 +140,7 @@ namespace MultiplayerXeno
 			GameManager.ParsePacket(packet);
 		}
 
-		private static void ReciveMapUpdate(RawData rawData, Connection connection)
-		{
-			var msg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
-			WorldManager.Instance.LoadData(rawData.Data);
-			msg.RemoveFromDesktop();
-			
-		}
+
 		private static void ReciveGameUpdate(GameDataPacket packet, Connection connection)
 		{
 			GameManager.SetData(packet);
