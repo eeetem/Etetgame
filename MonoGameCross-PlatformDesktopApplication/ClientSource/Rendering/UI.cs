@@ -236,6 +236,9 @@ namespace MultiplayerXeno
 		public static void LobbyBrowser()
 		{
 			var Grid = new Grid();
+			Grid.ColumnsProportions.Add(Proportion.Auto);
+			Grid.ColumnsProportions.Add(Proportion.Fill);
+			Grid.ColumnsProportions.Add(Proportion.Auto);
 			var chatPanel = new Panel()
 			{
 				GridColumn = 0,
@@ -245,26 +248,127 @@ Grid.Widgets.Add(chatPanel);
 			AttachChatBox(chatPanel);
 			var lobbyViewer = new ScrollViewer()
 			{
-					Width = (int)(600f*globalScale.X),
+					Width = (int)(500f*globalScale.X),
 					Height = (int)(1000f*globalScale.Y),
 					HorizontalAlignment = HorizontalAlignment.Center,
 					VerticalAlignment = VerticalAlignment.Top,
 					GridColumn = 1,
 					GridRow = 0,
+			
 			};
 			Grid.Widgets.Add(lobbyViewer);
 
-			var lobbies = new VerticalStackPanel()
+			var lobbies = new Grid()
 			{
-					VerticalAlignment = VerticalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center,
 					HorizontalAlignment = HorizontalAlignment.Left,
+					ColumnSpacing = 10,
+
 			};
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+
+
+			lobbies.Widgets.Add(new Label()
+			{
+				Text = "Name",
+				GridRow = 0,
+				GridColumn = 1,
+				TextAlign = TextHorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Left
+			});
+			lobbies.Widgets.Add(new Label()
+			{
+				Text = "Map",
+				GridRow = 0,
+				GridColumn = 2,
+				TextAlign = TextHorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Left
+			});
+			lobbies.Widgets.Add(new Label()
+			{
+				Text = "Players",
+				GridRow = 0,
+				GridColumn = 3,
+				TextAlign = TextHorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Left
+			});
+			lobbies.Widgets.Add(new Label()
+			{
+				Text = "Spectators",
+				GridRow = 0,
+				GridColumn = 4,
+				TextAlign = TextHorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Left
+			});
+			lobbies.Widgets.Add(new Label()
+			{
+				Text = "State",
+				GridRow = 0,
+				GridColumn = 5,
+				TextAlign = TextHorizontalAlignment.Left,
+				HorizontalAlignment = HorizontalAlignment.Left
+			});
+			
+			
+			int row = 1;
 			foreach (var lobby in MasterServerNetworking.Lobbies)
 			{
-				var lobbybtn = new TextButton()
+				lobbies.Widgets.Add(new Label()
 				{
 					Text = lobby.Name,
+					GridRow = row,
+					GridColumn = 1,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.MapName,
+					GridRow = row,
+					GridColumn = 2,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.PlayerCount+"/2",
+					GridRow = row,
+					GridColumn = 3,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.Spectators.ToString(),
+					GridRow = row,
+					GridColumn = 4,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.GameState,
+					GridRow = row,
+					GridColumn = 5,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left
+				});
+				
+				var lobbybtn = new TextButton()
+				{
+					Text = "Join",
 					HorizontalAlignment = HorizontalAlignment.Center,
+					GridRow = row,
+					GridColumn =0,
 					
 				};
 				lobbybtn.Click += (sender, args) =>
@@ -285,7 +389,8 @@ Grid.Widgets.Add(chatPanel);
 
 					}
 				};
-				lobbies.Widgets.Add(lobbybtn);			
+				lobbies.Widgets.Add(lobbybtn);
+				row++;
 			}
 			lobbyViewer.Content = lobbies;
 
@@ -1377,6 +1482,7 @@ Grid.Widgets.Add(chatPanel);
 				ColumnSpacing = 10,
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Top,
+				MaxWidth = (int)(700f*globalScale.X),
 				//ShowGridLines = true,
 			};
 			panel.Widgets.Add(UnitContainer);

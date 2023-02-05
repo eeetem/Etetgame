@@ -1,9 +1,9 @@
-TEAAAAAAAAAAAAAAAAASH
 
+only see current unit turn preview
+glow the damage an attack will do
+point blank supression
 player disconnecting makes a new host
-map info in lobby
 nicer lobby browser
-turn indicator unit bar
 crouch shot toggle
 spoted overwatch crash
 cursor focus
@@ -17,3 +17,7 @@ smoke greandes
 turn timer
 bomb defuse gamemode
 random map generation
+
+
+goal for itch release:
+brush up ui? hire someone??? ???????????
