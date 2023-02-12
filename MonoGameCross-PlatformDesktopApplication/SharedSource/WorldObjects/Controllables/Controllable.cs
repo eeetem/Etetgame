@@ -22,7 +22,7 @@ namespace MultiplayerXeno
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
-			if (data.Health == -1)
+			if (data.Health == -100)
 			{
 				Health = type.MaxHealth;
 			}
@@ -30,31 +30,34 @@ namespace MultiplayerXeno
 			{
 				Health = data.Health;
 			}
-			if (data.Awareness == -1)
+			if (data.Determination == -100)
 			{
-				Awareness = type.MaxAwareness;
+				determination = type.Maxdetermination;
 			}
 			else
 			{
-				Awareness = data.Awareness;
+				determination = data.Determination;
 			}
+
+			this.Crouching = data.Crouching;
+			this.paniced = data.Panic;
 
 
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
 #endif
 			
-			if (data.MovePoints != -1)
+			if (data.MovePoints != -100)
 			{
 				this.MovePoints = data.MovePoints;
 			}
-			if (data.ActionPoints != -1)
+			if (data.ActionPoints != -100)
 			{
-				this.ActionPoints = data.ActionPoints;
+				this.FirePoints = data.ActionPoints;
 			}
-			if (data.TurnPoints != -1)
+			if (data.canTurn != null)
 			{
-				this.TurnPoints = data.TurnPoints;
+				this.canTurn = (bool)data.canTurn;
 			}
 
 			if (data.JustSpawned)
@@ -63,11 +66,11 @@ namespace MultiplayerXeno
 			}
 		}
 		public int MovePoints { get;  set; } = 0;
-		public int  TurnPoints { get;  set; } = 0;
-		public int ActionPoints { get;  set; } = 0;
+		public bool canTurn { get; set; } = false;
+		public int FirePoints { get;  set; } = 0;
 
 		public int Health = 0;
-		public int Awareness = 0;
+		public int determination = 0;
 
 		public bool Crouching { get;  set; } = false;
 
@@ -78,7 +81,9 @@ namespace MultiplayerXeno
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-				range -= 2;
+
+					range -= 2;
+				
 			}
 
 			return range;
@@ -101,19 +106,33 @@ namespace MultiplayerXeno
 		{
 			var dmg = projectile.dmg;
 			Console.WriteLine(this +"(health:"+this.Health+") hit for "+dmg);
-			if (Awareness > 0)
+			if (determination > 0)
 			{
-				Console.WriteLine("blocked by awareness");
-				dmg = projectile.dmg - projectile.awarenessResistanceCoefficient;
+				Console.WriteLine("blocked by determination");
+				dmg = projectile.dmg - projectile.determinationResistanceCoefficient;
 
 			}
-			
-			Console.WriteLine("health - "+dmg);
-			Health -= dmg;
 
+			if (dmg <= 0)
+			{
+				Console.WriteLine("0 damage");
+				return;
+			}
+
+
+			Health -= dmg;
+			
+			Console.WriteLine("unit hit for: "+dmg);
+			Console.WriteLine("outcome: health="+this.Health);
 			if (Health <= 0)
 			{
 				Console.WriteLine("dead");
+				ClearOverWatch();
+				if (_thisMoving)
+				{
+					moving = false;
+				}
+
 				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
 #if CLIENT
 				Audio.PlaySound("death",this.worldObject.TileLocation.Position);
@@ -134,21 +153,40 @@ namespace MultiplayerXeno
 			//apply effects and offests
 			return Type.SightRange;
 		}
+
+		public bool CanHit(Vector2Int target, bool lowTarget = false)
+		{
+			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
+			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
+
+
 		
-		
+				
+			if (proj.result.hit)
+			{
+				var hitobj = WorldManager.Instance.GetObject(proj.result.hitObjID);
+				if (hitobj.Type.Edge || hitobj.TileLocation.Position != target)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		public void StartTurn()
 		{
 			MovePoints = Type.MaxMovePoints;
-			TurnPoints = Type.MaxTurnPoints;
-			ActionPoints = Type.MaxActionPoints;
-			if (Awareness < 0)
+			canTurn = true;
+			FirePoints = Type.MaxFirePoints;
+			if (determination < 0)
 			{
-				Awareness = 0;
+				determination = 0;
 			}
 
-			if (Awareness < Type.MaxAwareness)
+			if (determination < Type.Maxdetermination)
 			{
-				Awareness++;
+				determination++;
 			}
 			if(paniced)
 			{
@@ -161,9 +199,9 @@ namespace MultiplayerXeno
 			
 
 				paniced = false;
-				Awareness--;
+				determination--;
 				MovePoints--;
-				TurnPoints--;
+				canTurn = false;
 			}
 			ClearOverWatch();
 
@@ -173,8 +211,15 @@ namespace MultiplayerXeno
 #if CLIENT
 			if (!IsMyTeam()) return;
 #endif
-			if (!a.CanPerform(this, target))
+			var result = a.CanPerform(this, target);
+			if (!result.Item1)
 			{
+#if CLIENT
+				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
+#else
+				Console.WriteLine("tried to do action but failed: "+result.Item2);
+				#endif
+				
 				return;
 			}
 #if CLIENT
@@ -187,13 +232,24 @@ namespace MultiplayerXeno
 			
 		}
 
-		private bool paniced = false;
+		public bool paniced { get; private set; }= false;
 		public void Panic()
 		{
 			Crouching = true;
 			paniced = true;
+			if (moving)
+			{
+				moving = false;
+				_thisMoving = false;
+			}
+
+		
 #if CLIENT
-			new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+	UI.SetUI(UI.UnitUi);
+			if (worldObject.IsVisible())
+			{
+				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+			}
 #endif
 			ClearOverWatch();
 			
@@ -203,14 +259,46 @@ namespace MultiplayerXeno
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 		public void OverWatchSpoted(Vector2Int location)
 		{
+			
 #if SERVER
-			if (this.IsPlayerOneTeam != WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam&&WorldManager.Instance.CanSee(this,location) >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam;
+			//make this "can player see" fucntion
+			List<int> units;
+			if (this.IsPlayerOneTeam)
 			{
+				units = GameManager.T1Units;
+			}
+			else
+			{
+				units = GameManager.T2Units;
+			}
+
+			Visibility vis = Visibility.None;
+			foreach (var unit in units)
+			{
+				var WO = WorldManager.Instance.GetObject(unit);
+				if (WO != null)
+				{
+					var tempVis = WorldManager.Instance.CanSee(WO.ControllableComponent, location);
+					if (tempVis > vis)
+					{
+						vis = tempVis;
+					}
+				}
+
+			
+			}
+			
+			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
+			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			{
+				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
 			}
 #endif
 			
 		}
+
 
 		public void ClearOverWatch()
 		{
@@ -247,7 +335,7 @@ namespace MultiplayerXeno
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
-				if (_moveCounter > 350)
+				if (_moveCounter > 250)
 				{
 					_moveCounter = 0;
 					try
@@ -260,25 +348,16 @@ namespace MultiplayerXeno
 					}
 
 					worldObject.Move(CurrentPath[0]);
-					Console.WriteLine("moved");
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
 						moving = false;
 						_thisMoving = false;
 #if CLIENT
-						if (UI.SelectedControllable != null)
-						{
-							UI.UnitUI(UI.SelectedControllable.worldObject);
-						}
-						else
-						{
-							UI.UnitUI(this.worldObject);
-						}
+						UI.SetUI(UI.UnitUi);
 #endif
-						Console.WriteLine("done moving ");
+					
 					}
-					//todo jump view to move
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();
 					if (worldObject.IsVisible())
@@ -294,9 +373,27 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,ActionPoints,MovePoints,TurnPoints,Health,Awareness);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Health,determination,Crouching,paniced);
 			data.JustSpawned = false;
 			return data;
+		}
+
+		protected bool Equals(Controllable other)
+		{
+			return worldObject.Equals(other.worldObject);
+		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((Controllable) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return worldObject.GetHashCode();
 		}
 	}
 }

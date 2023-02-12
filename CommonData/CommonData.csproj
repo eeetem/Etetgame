@@ -9,6 +9,7 @@
     <ItemGroup>
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
       <PackageReference Include="Network" Version="6.2.5.23" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,7 +3,7 @@
 namespace CommonData
 {
 	
-		public class StartDataPacket : Packet
+		public class UnitStartDataPacket : Packet
 		{
 			public int Soldiers { get; set; }
 			public int Scouts { get; set; }

@@ -14,7 +14,6 @@ public class PopUpText
 	private string text;
 	
 	public static readonly object syncobj = new object();
-
 	
 
 	public static List<PopUpText> Objects = new List<PopUpText>();

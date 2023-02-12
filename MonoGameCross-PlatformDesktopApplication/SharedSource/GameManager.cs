@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Media;
@@ -15,7 +16,7 @@ namespace MultiplayerXeno
 
 		public static bool IsPlayer1Turn = true;
 
-		public static bool GameStarted = false;
+		public static GameState GameState;
 		public static void Update(float delta)
 		{
 
@@ -23,11 +24,20 @@ namespace MultiplayerXeno
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
 		private static int score = 0;
-
+		public static void Forget(WorldObject wo)
+		{
+#if SERVER
+			T1SpawnPoints.Remove(wo);
+			T2SpawnPoints.Remove(wo);
+#endif
+			
+			CapturePoints.Remove(wo);
+		}
 
 		private static void EndGame(bool player1Win)
 		{
 #if SERVER
+			GameState = GameState.Over;
 			if (player1Win)
 			{
 				Networking.NotifyAll(Player1.Name + " Wins!");	
@@ -47,6 +57,7 @@ namespace MultiplayerXeno
 			WorldManager.Instance.ResetControllables(IsPlayer1Turn);
 			bool team1Present = false;
 			bool team2Present = false;
+			Vector2Int capPoint = Vector2.Zero;
 			foreach (var point in CapturePoints)
 			{
 				bool? team1 = point.TileLocation.ObjectAtLocation?.ControllableComponent?.IsPlayerOneTeam;
@@ -55,27 +66,41 @@ namespace MultiplayerXeno
 				if ((bool) team1)
 				{
 					team1Present = true;
+					capPoint = point.TileLocation.Position;
 				}
 				else
 				{
 					team2Present = true;
+					capPoint = point.TileLocation.Position;
 				}
 
 			}
 
 			if (team1Present && !team2Present)
 			{
+#if CLIENT
+Audio.PlaySound("capture");
+				Thread.Sleep(2000);
+				Camera.SetPos(capPoint);
+#endif
 				score++;
 			}
 			else if(!team1Present && team2Present){
+				
+#if CLIENT
+Audio.PlaySound("capture");
+				Thread.Sleep(2000);
+				Camera.SetPos(capPoint);
+#endif
 				score--;
 			}
 #if CLIENT
 			UI.SetScore(score);
-			#endif
+			Audio.PlaySound("turn");
+#endif
 			
-			if(score > 5)EndGame(true);
-			if(score < -5)EndGame(false);
+			if(score > 6)EndGame(true);
+			if(score < -6)EndGame(false);
 			
 
 
@@ -90,6 +115,8 @@ namespace MultiplayerXeno
 			UI.SetMyTurn(IsMyTurn());
 			#endif
 		}
+
+	
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
@@ -113,7 +140,7 @@ namespace MultiplayerXeno
 		}
 
 
-
+		
 	}
 	
 }

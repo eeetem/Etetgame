@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using CommonData;
@@ -12,7 +13,7 @@ public abstract class Action
 	public static readonly Dictionary<ActionType, Action> Actions = new Dictionary<ActionType, Action>();
 	public readonly ActionType ActionType;
 	public static Action? ActiveAction { get; private set; }
-
+	public string Description { get; protected set; } = "";
 	public Action(ActionType type)
 	{
 		ActionType = type;
@@ -58,7 +59,8 @@ public abstract class Action
 		
 	}
 
-	public abstract bool CanPerform(Controllable actor, Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target);
+
 
 	public void Perform(Controllable actor, Vector2Int target)
 	{
@@ -68,14 +70,7 @@ public abstract class Action
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
 		Action.SetActiveAction(null);
-		if (UI.SelectedControllable != null)
-		{
-			UI.UnitUI(UI.SelectedControllable.worldObject);
-		}
-		else
-		{
-			UI.UnitUI(actor.worldObject);
-		}
+		UI.SetUI(UI.UnitUi);
 #endif
 		
 	}
@@ -92,22 +87,21 @@ public abstract class Action
 	public void PerformFromPacket(Controllable actor,Vector2Int target)
 	{
 
-#if CLIENT
-		if(!CanPerform(actor,target))
-		{
-				UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform");
-		}
-		Perform(actor, target);
 
-#else
-		if(!CanPerform(actor,target))
+		var result = CanPerform(actor, target);
+		if(!result.Item1)
 		{
-			Console.WriteLine("Cilent sent an impossible action");
-			return;
+#if CLIENT
+				UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform: "+result.Item2);
+#else
+				Console.WriteLine("Client sent an impossible action: "+result.Item2);
+#endif
+				return;
 		}
 		Perform(actor, target);
+#if SERVER
 		ToPacket(actor,target);
 #endif
-	}
 	
+	}
 }

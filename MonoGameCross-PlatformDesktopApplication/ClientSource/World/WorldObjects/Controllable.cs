@@ -12,6 +12,15 @@ namespace MultiplayerXeno
 		{
 			return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
 		}
+		public void Spoted()
+		{
+			foreach (var tile in overWatchedTiles)
+			{
+				//todo fix this
+				WorldManager.Instance.GetTileAtGrid(tile).CalcWatchLevel();
+			}
+			
+		}
 
 
 	}

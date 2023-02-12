@@ -15,15 +15,13 @@ public class Move : Action
 	{
 	}
 	
-	public override bool CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
 	{
 		
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, position);
 		if (result.Cost == 0)
 		{
-			Console.WriteLine("move action rejected: cost is 0");
-
-			return false;//no path
+			return new Tuple<bool, string>(false, "No path found");
 		}
 
 		int moveUse = 1;
@@ -33,19 +31,15 @@ public class Move : Action
 		}
 		if (moveUse > actor.MovePoints)
 		{
-
-			Console.WriteLine("client attempted to move past move points at: "+actor.worldObject.TileLocation.Position +" to "+result.Path.Last());
-				
-			return false;
+			return new Tuple<bool, string>(false, "Not enough move points");
 		}
 
 		if (Controllable.moving)
 		{
-			return false;
+			return new Tuple<bool, string>(false, "Can't move multiple units at once");
 		}
-
-
-		return true;
+		
+		return new Tuple<bool, string>(true, "");
 	}
 
 	protected override void Execute(Controllable actor,Vector2Int target)
@@ -58,6 +52,7 @@ public class Move : Action
 		}
 
 		actor.MovePoints -= moveUse;
+		actor.canTurn = true;
 		actor.MoveAnimation(result.Path);
 
 	}

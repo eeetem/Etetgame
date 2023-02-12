@@ -8,20 +8,27 @@ namespace MultiplayerXeno
 {
 	public class ControllableType
 	{
+
+		public ControllableType(string name)
+		{
+			Name = name;
+		}
+
+		public readonly string Name;
 		public int MoveRange = 4;
 		public int SightRange = 16;
 		public int SupressionRange = 2;
+		public int OverWatchSize = 2;
 		
 		public int MaxMovePoints = 2;
-		public int MaxTurnPoints = 2;
-		public int MaxActionPoints = 2;
+		public int MaxFirePoints = 2;
 		
 
 		public int WeaponDmg = 4;
 		public int WeaponRange = 10;
 		
 		public int MaxHealth = 10;
-		public int MaxAwareness = 2;
+		public int Maxdetermination = 2;
 
 
 		public Texture2D[] CrouchSpriteSheet;

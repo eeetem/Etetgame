@@ -61,35 +61,44 @@ namespace CommonData
 		public bool Team1;
 		public int ActionPoints;
 		public int MovePoints;
-		public int TurnPoints;
+		public bool? canTurn;
 		public int Health;
-		public int Awareness;
+		public int Determination;
+		public bool Crouching;
+		public bool Panic;
 		public bool JustSpawned;
+		
 		public ControllableData(bool team1)
 		{
 			Team1 = team1;
-			ActionPoints = -1;
-			MovePoints = -1;
-			TurnPoints = -1;
-			Health = -1;
-			Awareness = -1;
+			ActionPoints = -100;
+			MovePoints = -100;
+			canTurn = null;
+			Health = -100;
+			Determination = -100;
+			Crouching = false;
+			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int awareness)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int health, int determination, bool crouching,bool panic)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
 			MovePoints = movePoints;
-			TurnPoints = turnPoints;
+			this.canTurn = canTurn;
 			Health = health;
-			Awareness = awareness;
+			Determination = determination;
+			Crouching =	crouching;
 			JustSpawned = true;
+			Panic = panic;
+
 		}
 	}
 	[Serializable]
 	public class RayCastOutcome//fuck the network library holy moly
 	{
-		public Vector2 CollisionPoint;
+		public Vector2 CollisionPointLong;
+		public Vector2 CollisionPointShort;
 		public Vector2 StartPoint;
 		public Vector2 EndPoint;
 		public Vector2 VectorToCenter;
@@ -100,11 +109,14 @@ namespace CommonData
 
 		public RayCastOutcome(Vector2 start, Vector2 end)
 		{
+			CollisionPointLong = new Vector2(0, 0);
+			CollisionPointShort = new Vector2(0, 0);
 			this.hit = false;
 			EndPoint = end;
 			this.hitObjID = -1;
 			StartPoint = start;
 			Path = new List<Vector2Int>();
+	
 		}
 	}
 	public enum Visibility
@@ -112,6 +124,13 @@ namespace CommonData
 		None=0,
 		Partial=1,
 		Full=2
+	}
+	public enum GameState
+	{
+		Lobby=0,
+		Setup=1,
+		Playing=2,
+		Over=3,
 	}
 
 	public enum Cover
@@ -134,6 +153,7 @@ namespace CommonData
 		NorthWest = 7
 			
 	}
+
 	[Serializable]
 	public class Vector2Int//should be a struct but networking library is cringe once again
 	{

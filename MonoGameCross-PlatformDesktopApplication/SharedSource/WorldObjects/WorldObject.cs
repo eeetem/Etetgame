@@ -11,7 +11,7 @@ namespace MultiplayerXeno
 {
 	public partial class WorldObject
 	{
-		
+
 		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
 		{
 			this.Id = id;
@@ -74,8 +74,9 @@ namespace MultiplayerXeno
 			}
 			TileLocation.ObjectAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			newTile.ObjectAtLocation = this;
 			TileLocation = newTile;
+			newTile.ObjectAtLocation = this;
+			
 #if CLIENT
 			GenerateDrawOrder();
 #endif
@@ -197,13 +198,24 @@ namespace MultiplayerXeno
 			return data;
 
 		}
-
-		~WorldObject()
+		protected bool Equals(WorldObject other)
 		{
-			//#if SERVER
-			//Console.WriteLine("object is kill");
-		//	#endif
+			return Id == other.Id;
 		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((WorldObject) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return Id;
+		}
+		
 
 	}
 	

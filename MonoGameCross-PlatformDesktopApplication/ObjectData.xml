@@ -2,55 +2,55 @@
 <root>
 
 <object Faceable = "false" Cover ="0" Surface = "true">
-  <sprite variations = "2" offset= "0,0"/>
+  <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
   <name>basicFloor</name>
 </object>
   <object Faceable = "false" Cover ="0" Impassible = "true" Surface = "true">
-    <sprite variations = "1" offset= "0,0"/>
+    <sprite name="Environment/water" variations = "1" offset= "0,0"/>
     <name>water</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite offset= "0,0"/>
+    <sprite name="Environment/capturePoint" offset= "0,0"/>
     <name>capturePoint</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="spawnPoint" offset= "0,0"/>
+    <sprite name="Environment/spawnPoint" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="spawnPoint"  offset= "0,0"/>
+    <sprite name="Environment/spawnPoint"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
   <object Cover = "3" Edge = "true">
-  <sprite offset= "0,0"/>
+  <sprite  name="Environment/basicWall"  offset= "0,0"/>
   <name>basicWall</name>
 </object>
   <object Cover = "2" Edge = "true">
-    <sprite  offset= "0,0"/>
+    <sprite  name="Environment/basicHalfWall" offset= "0,0"/>
     <name>basicHalfWall</name>
   </object>
   <object Cover = "1" Edge = "true">
-    <sprite  offset= "0,0"/>
+    <sprite name="Environment/basicHalfWallLight" offset= "0,0"/>
     <name>basicHalfWallLight</name>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" offset= "0,0"/>
     <name>Gunner</name>
-    <controllable moveRange = "6" moves="2" turns="2" attack="5" supression="2" health="13" weaponRange ="15">
-      <action name="HeadShot" type="7"/>
+    <controllable moveRange = "6" moves="2" attack="6" supression="2" health="13" weaponRange ="17">
+      <action name="Headshot" type="7"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "4" moves="3" turns="3" supression="1" attack="6" health="8" weaponRange ="6">
+    <controllable moveRange = "5" moves="3" supression="1" attack="8" health="8" weaponRange ="6" sightrange="18">
       <action name="Sprint" type="6"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
-    <sprite name="Scout"  offset= "0,0"/>
+    <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "3" moves="2" actions="2" supression="3" turns="1" attack="5" awareness="4" health="16" weaponRange ="10">
+    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="4" health="16" weaponRange ="11">
       <action name="Suppress" type="8"/>
     </controllable>
   </object>

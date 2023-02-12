@@ -22,10 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\MonoGameCross-PlatformDesktopApplication\map.mapdata">
-        <Link>map.mapdata</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -100,6 +96,18 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldTile.cs">
         <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Maps\Ground Zero.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Not One Step Back.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Custom\gggg.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

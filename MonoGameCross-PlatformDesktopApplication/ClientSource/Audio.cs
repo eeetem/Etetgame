@@ -27,6 +27,8 @@ public static class Audio
 		soundEffects.Add("rifle",content.Load<SoundEffect>("audio/rifle"));
 		soundEffects.Add("MG",content.Load<SoundEffect>("audio/mg"));
 		soundEffects.Add("shotgun",content.Load<SoundEffect>("audio/shotgun"));
+		soundEffects.Add("turn",content.Load<SoundEffect>("audio/turn"));
+		soundEffects.Add("capture",content.Load<SoundEffect>("audio/capture"));
 
 
 		for (int i = 1; i < 10; i++)
@@ -34,6 +36,11 @@ public static class Audio
 			soundEffects.Add("footstep"+i,content.Load<SoundEffect>("audio/footsteps/Footstep "+i));
 		}
 
+	}
+
+	public static void PlaySound(string name)
+	{
+		PlaySound(name,Camera.GetPos());
 	}
 
 	public static void PlaySound(string name, Vector2Int location)
@@ -65,7 +72,7 @@ public static class Audio
 
 		
 		SoundEffectInstance instance = soundEffects[sfxID].CreateInstance();
-		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 1.2f;
+		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 2f;
 		AudioEmitter emitter = new AudioEmitter();
 		emitter.Position = new Vector3((Vector2)location/80f, 0);
 		instance.Play();

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MultiplayerXeno.Pathfinding;
+using Salaros.Configuration;
 
 
 namespace MultiplayerXeno
@@ -18,9 +19,6 @@ namespace MultiplayerXeno
 
 		public Game1()
 		{
-			
-		
-			
 			instance = this;
 			_graphics = new GraphicsDeviceManager(this);
 			_graphics.HardwareModeSwitch = false;
@@ -28,22 +26,21 @@ namespace MultiplayerXeno
 			_graphics.ApplyChanges();
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
+			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 			
 			Window.AllowUserResizing = true;
 			Window.ClientSizeChanged += (s, a) =>
 			{
 				_graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
 				_graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+				
 			//	GraphicsDevice.Viewport = new Viewport(0,0,Window.ClientBounds.Width, Window.ClientBounds.Height);
 				_graphics.ApplyChanges();
-
-			};
-
-			Window.ClientSizeChanged += (s, a) =>
-			{
+				GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 				Camera.Init(GraphicsDevice,Window);
 				UI.SetUI(null);
 			};
+
 	
 		}
 
@@ -67,25 +64,31 @@ namespace MultiplayerXeno
 			PathFinding.GenerateNodes();
 			base.Initialize();
 			UI.SetUI(UI.MainMenu);
+			DiscordManager.Init();
 			
 
 		}
 
 		public RenderTarget2D renderTarget;
+		public static ConfigParser config;
 		protected override void LoadContent()
 		{
 			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			GraphicsDevice.SetRenderTarget(renderTarget);
+			GraphicsDevice.SetRenderTarget(null);
+			TextureManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
 			Audio.Init(Content);
-			TextureManager.Init(Content);
+		
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 			
 			SpriteFont = Content.Load<SpriteFont>("font");
 
 			PrefabManager.MakePrefabs();
 			WorldEditSystem.GenerateUI();
-			
-			
+			config = new ConfigParser("config.txt");
+
+
 
 
 
@@ -105,6 +108,7 @@ namespace MultiplayerXeno
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
 			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
+			DiscordManager.Update();
 			
 			base.Update(gameTime);
 		}
@@ -112,9 +116,9 @@ namespace MultiplayerXeno
 		
 		protected override void Draw(GameTime gameTime)
 		{
-			
 			GraphicsDevice.SetRenderTarget(renderTarget);
 			GraphicsDevice.SetRenderTarget(null);
+
 			GraphicsDevice.Clear(Color.Gray);
 			
 			RenderSystem.Draw();
