@@ -55,7 +55,7 @@ public class Fire : Attack
 		
 			ObjectSpawner.ShotGun(actor.worldObject.TileLocation.Position,target);	
 		}
-		else if (actor.Type.MaxActionPoints == 2)
+		else if (actor.Type.MaxFirePoints == 2)
 		{
 			ObjectSpawner.MG(actor.worldObject.TileLocation.Position, target);
 		}

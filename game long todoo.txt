@@ -1,4 +1,5 @@
 
+
 less agressive damage dropoff
 only see current unit turn preview
 glow the damage an attack will do

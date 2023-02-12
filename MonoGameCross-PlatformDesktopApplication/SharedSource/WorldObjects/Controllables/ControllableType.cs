@@ -21,7 +21,7 @@ namespace MultiplayerXeno
 		public int OverWatchSize = 2;
 		
 		public int MaxMovePoints = 2;
-		public int MaxActionPoints = 2;
+		public int MaxFirePoints = 2;
 		
 
 		public int WeaponDmg = 4;

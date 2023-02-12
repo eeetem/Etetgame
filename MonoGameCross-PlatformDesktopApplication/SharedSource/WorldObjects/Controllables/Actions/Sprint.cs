@@ -35,7 +35,7 @@ public class Sprint : Action
 		actor.determination = 0;
 		actor.canTurn = true;
 		actor.MovePoints = actor.Type.MaxMovePoints;
-		actor.FirePoints = actor.Type.MaxActionPoints;
+		actor.FirePoints = actor.Type.MaxFirePoints;
 	}
 #if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)

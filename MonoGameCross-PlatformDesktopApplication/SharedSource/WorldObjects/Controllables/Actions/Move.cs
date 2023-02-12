@@ -52,6 +52,7 @@ public class Move : Action
 		}
 
 		actor.MovePoints -= moveUse;
+		actor.canTurn = true;
 		actor.MoveAnimation(result.Path);
 
 	}

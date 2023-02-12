@@ -74,7 +74,7 @@ namespace MultiplayerXeno
 
 			previewMoves[0] = new List<Vector2Int>();
 			previewMoves[1] = new List<Vector2Int>();
-			hoverHudRenderTarget = new RenderTarget2D(graphicsdevice,1024,512,false,SurfaceFormat.Color,DepthFormat.Depth24,0,RenderTargetUsage.DiscardContents);
+			hoverHudRenderTarget = new RenderTarget2D(graphicsdevice,1200,512,false,SurfaceFormat.Color,DepthFormat.Depth24,0,RenderTargetUsage.DiscardContents);
 		}
 
 
@@ -1556,7 +1556,7 @@ Grid.Widgets.Add(chatPanel);
 
 				}
 				List<Texture2D> indicators3 = new List<Texture2D>();
-				for (int i = 1; i <=  unit.Type.MaxActionPoints; i++)
+				for (int i = 1; i <=  unit.Type.MaxFirePoints; i++)
 				{
 				
 					if (unit.FirePoints < i)
@@ -1732,29 +1732,84 @@ Grid.Widgets.Add(chatPanel);
 		{
 		
 			Debug.Assert(controllable != null, nameof(controllable) + " != null");
+			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
 			graphicsDevice.Clear(Color.White*0);
 			float opacity = 0.25f;
-			if(SelectedControllable == controllable||Utility.WorldPostoGrid(Camera.GetMouseWorldPos()) == (Vector2)controllable.worldObject.TileLocation.Position)
+
+			
+			Console.WriteLine(MousePos);
+			if(SelectedControllable == controllable||MousePos == (Vector2)controllable.worldObject.TileLocation.Position)
 				opacity = 1;
 			batch.Begin(sortMode: SpriteSortMode.Deferred);
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
-		
+			
+			for (int i = 0; i < controllable.Type.MaxFirePoints; i++)
+			{
+				var indicator = TextureManager.GetTexture("UI/HoverHud/bullet");
+				if (i>= controllable.FirePoints)
+				{
+					indicator= TextureManager.GetTexture("UI/HoverHud/nobullet");
+				}
+
+				batch.Draw(indicator,new Vector2(950,0)+new Vector2((50)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			}
+			
+			
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/detbase"), new Vector2(0,50), null,Color.White);
+
+			
+			float detHeigth = 415f / controllable.Type.Maxdetermination;
+			float detYscale = detHeigth/106;
 			for (int i = 0; i < controllable.Type.Maxdetermination; i++)
 			{
-				var indicator = healthIndicator[1];
+				var indicator = TextureManager.GetTexture("UI/HoverHud/deton");
 				if (controllable.Type.Maxdetermination  - i  == controllable.determination+1 && !controllable.paniced)
 				{
-					indicator= healthIndicator[2];
+					indicator=TextureManager.GetTexture("UI/HoverHud/dethalf");
 				}
 				else if (controllable.Type.Maxdetermination - i > controllable.determination)
 				{
-					indicator= healthIndicator[0];
+					indicator=TextureManager.GetTexture("UI/HoverHud/detoff");
 				}
 
-				batch.Draw(indicator,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position+new Vector2(-1.5f,-0.8f))+new Vector2(45*i,0),Color.Green);	
+				batch.Draw(indicator,new Vector2(0,67)+new Vector2(0,detHeigth*i),null,Color.White,0,Vector2.Zero,new Vector2(1,detYscale),SpriteEffects.None,0);	
+
+			}
+			
+			
+			
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
+		
+
+			var turnIndicator = TextureManager.GetTexture("UI/HoverHud/turnon");
+			if(!controllable.canTurn)
+				turnIndicator = TextureManager.GetTexture("UI/HoverHud/turnoff");
+			batch.Draw(turnIndicator,new Vector2(80,310),Color.White);
+			var panicIndicator = TextureManager.GetTexture("UI/HoverHud/panicon");
+			if(!controllable.paniced)
+				panicIndicator = TextureManager.GetTexture("UI/HoverHud/panicoff");
+			batch.Draw(panicIndicator,new Vector2(80,112),Color.White);
+
+
+			var u = 0;
+			if (controllable.Type.MaxMovePoints == 2)
+			{
+				u = 80;
+			}
+
+			for (int i = 0; i < controllable.Type.MaxMovePoints; i++)
+			{
+				var indicator = TextureManager.GetTexture("UI/HoverHud/actionon");
+				if (i>= controllable.MovePoints)
+				{
+					indicator= TextureManager.GetTexture("UI/HoverHud/actionoff");
+				}
+
+				batch.Draw(indicator,new Vector2(200,80)+new Vector2((u+210)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);	
 				
 			}
+			
+			
 
 			float healthWidth = 768f / controllable.Type.MaxHealth;
 			float healthXScale = healthWidth/96;
@@ -1959,7 +2014,18 @@ Grid.Widgets.Add(chatPanel);
 			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			spriteBatch.End();
-			
+
+
+			int targetIndex = Controllables.IndexOf(SelectedControllable);
+			if (targetIndex != -1)
+			{
+				for (int i = targetIndex; i < Controllables.Count - 1; i++)
+				{
+					Controllables[i] = Controllables[i + 1];
+					Controllables[i + 1] = SelectedControllable;
+				}
+			}
+
 			foreach (var obj in Controllables)
 			{
 				if (obj.worldObject.IsVisible())

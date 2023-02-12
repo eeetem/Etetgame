@@ -36,7 +36,7 @@ namespace MultiplayerXeno
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
 					controllableType.Maxdetermination = int.Parse(contollableObj.Attributes?["determination"]?.InnerText ?? "2");
 					controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
-					controllableType.MaxActionPoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
+					controllableType.MaxFirePoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
 					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
 					controllableType.SupressionRange = int.Parse(contollableObj.Attributes?["supression"]?.InnerText ?? "1");
 					controllableType.OverWatchSize = int.Parse(contollableObj.Attributes?["overwatch"]?.InnerText ?? "2");

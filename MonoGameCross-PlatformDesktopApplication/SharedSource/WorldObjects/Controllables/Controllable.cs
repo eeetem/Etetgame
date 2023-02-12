@@ -178,7 +178,7 @@ namespace MultiplayerXeno
 		{
 			MovePoints = Type.MaxMovePoints;
 			canTurn = true;
-			FirePoints = Type.MaxActionPoints;
+			FirePoints = Type.MaxFirePoints;
 			if (determination < 0)
 			{
 				determination = 0;
