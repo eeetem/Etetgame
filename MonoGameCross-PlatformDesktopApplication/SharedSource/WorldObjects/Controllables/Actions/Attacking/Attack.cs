@@ -164,7 +164,6 @@ public abstract class Attack : Action
 						
 			
 			spriteBatch.DrawLine(point1.X,point1.Y,point2.X,point2.Y,c,25);
-			spriteBatch.DrawString(Game1.SpriteFont,"Damage: "+dmg,  point1,c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			dmg = (int)Math.Ceiling(dmg/2f);
 			k++;
 			point1 = point2;

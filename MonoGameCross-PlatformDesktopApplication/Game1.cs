@@ -26,22 +26,21 @@ namespace MultiplayerXeno
 			_graphics.ApplyChanges();
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
+			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 			
 			Window.AllowUserResizing = true;
 			Window.ClientSizeChanged += (s, a) =>
 			{
 				_graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
 				_graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+				
 			//	GraphicsDevice.Viewport = new Viewport(0,0,Window.ClientBounds.Width, Window.ClientBounds.Height);
 				_graphics.ApplyChanges();
-
-			};
-
-			Window.ClientSizeChanged += (s, a) =>
-			{
+				GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 				Camera.Init(GraphicsDevice,Window);
 				UI.SetUI(null);
 			};
+
 	
 		}
 
@@ -75,6 +74,8 @@ namespace MultiplayerXeno
 		protected override void LoadContent()
 		{
 			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			GraphicsDevice.SetRenderTarget(renderTarget);
+			GraphicsDevice.SetRenderTarget(null);
 			TextureManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
 			Audio.Init(Content);
@@ -115,9 +116,9 @@ namespace MultiplayerXeno
 		
 		protected override void Draw(GameTime gameTime)
 		{
-			
 			GraphicsDevice.SetRenderTarget(renderTarget);
 			GraphicsDevice.SetRenderTarget(null);
+
 			GraphicsDevice.Clear(Color.Gray);
 			
 			RenderSystem.Draw();
