@@ -15,10 +15,7 @@ public class OverWatch : Action
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int position)
 	{
 	
-		if (actor.TurnPoints <= 0)
-		{
-			return new Tuple<bool, string>(false, "Not enough turn points");
-		}
+
 		if (actor.MovePoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
@@ -34,7 +31,6 @@ public class OverWatch : Action
 
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
-		actor.TurnPoints=0;
 		actor.FirePoints=0;
 		actor.MovePoints=0;
 		var positions = GetOverWatchPositions(actor, target);

@@ -61,7 +61,7 @@ namespace CommonData
 		public bool Team1;
 		public int ActionPoints;
 		public int MovePoints;
-		public int TurnPoints;
+		public bool? canTurn;
 		public int Health;
 		public int Determination;
 		public bool Crouching;
@@ -73,19 +73,19 @@ namespace CommonData
 			Team1 = team1;
 			ActionPoints = -100;
 			MovePoints = -100;
-			TurnPoints = -100;
+			canTurn = null;
 			Health = -100;
 			Determination = -100;
 			Crouching = false;
 			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, int turnPoints, int health, int determination, bool crouching,bool panic)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int health, int determination, bool crouching,bool panic)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
 			MovePoints = movePoints;
-			TurnPoints = turnPoints;
+			this.canTurn = canTurn;
 			Health = health;
 			Determination = determination;
 			Crouching =	crouching;

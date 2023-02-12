@@ -33,7 +33,7 @@ public class Sprint : Action
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		actor.determination = 0;
-		actor.TurnPoints = actor.Type.MaxTurnPoints;
+		actor.canTurn = true;
 		actor.MovePoints = actor.Type.MaxMovePoints;
 		actor.FirePoints = actor.Type.MaxActionPoints;
 	}

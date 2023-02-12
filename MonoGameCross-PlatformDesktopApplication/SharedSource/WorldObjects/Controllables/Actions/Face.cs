@@ -28,9 +28,9 @@ public class Face : Action
 			return new Tuple<bool, string>(false, "Can't face while moving");
 		}
 
-		if (actor.TurnPoints <= 0)
+		if (!actor.canTurn)
 		{
-			return new Tuple<bool, string>(false, "Not enough turn points");
+			return new Tuple<bool, string>(false, "Can't turn");
 		}
 	
 
@@ -40,7 +40,7 @@ public class Face : Action
 	protected override void Execute(Controllable actor,Vector2Int target)
 	{
 		var targetDir = Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
-		actor.TurnPoints--;
+		actor.canTurn = false;
 		actor.worldObject.Face(targetDir);
 	}
 #if CLIENT
