@@ -154,6 +154,27 @@ namespace CommonData
 			
 	}
 
+	public struct PreviewData
+	{
+		public int totalDmg;
+		public int finalDmg;
+		public int coverBlock;
+		public int distanceBlock;
+		public int determinationBlock;
+		public int detDmg;
+
+		public PreviewData(int totalDmg, int detDmg)
+		{
+			this.totalDmg = totalDmg;
+			this.finalDmg = 0;
+			this.coverBlock = 0;
+			this.distanceBlock = 0;
+			this.determinationBlock = 0;
+			this.detDmg = detDmg;
+		}
+
+	}
+
 	[Serializable]
 	public class Vector2Int//should be a struct but networking library is cringe once again
 	{

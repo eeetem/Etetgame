@@ -143,7 +143,7 @@ namespace MultiplayerXeno
 			{
 				if (i != 0)
 				{
-					dmg=(int)Math.Ceiling(dmg/2f);
+					dmg=(int)Math.Ceiling(dmg/1.8f);
 				}
 
 				dropOffPoints[i] = result.StartPoint + (Vector2.Normalize(result.EndPoint - result.StartPoint)* dropoffRange *(i+1));

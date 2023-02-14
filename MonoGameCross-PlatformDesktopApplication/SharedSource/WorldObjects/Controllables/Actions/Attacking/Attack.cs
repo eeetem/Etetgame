@@ -104,6 +104,10 @@ public abstract class Attack : Action
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
+			foreach (var controllable in UI.Controllables)
+			{
+				controllable.PreviewData = new PreviewData(0, 0);
+			}
 		}
 
 		if (previewShot == null)
@@ -111,20 +115,25 @@ public abstract class Attack : Action
 			return;
 		}
 
-		
+
 
 		foreach (var tile in previewShot.SupressedTiles())
 		{
 
-				if (tile.Surface == null) continue;
+			if (tile.Surface == null) continue;
 
-				Texture2D sprite = tile.Surface.GetTexture();
+			Texture2D sprite = tile.Surface.GetTexture();
 
-				spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue*0.45f);
-			
+			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue * 0.45f);
+
+			if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
+			{
+				tile.ObjectAtLocation.ControllableComponent.PreviewData = new PreviewData(0, previewShot.supressionStrenght);
+			}
+
 		}
-		
-					
+
+
 		var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
 		var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
 
@@ -137,7 +146,7 @@ public abstract class Attack : Action
 			if (dropOff == previewShot.dropOffPoints.Last())
 			{
 				point2 = Utility.GridToWorldPos(previewShot.result.CollisionPointLong);
-							
+
 			}
 			else
 			{
@@ -161,19 +170,19 @@ public abstract class Attack : Action
 					break;
 
 			}
-						
-			
-			spriteBatch.DrawLine(point1.X,point1.Y,point2.X,point2.Y,c,25);
-			dmg = (int)Math.Ceiling(dmg/2f);
+
+
+			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 25);
+			dmg = (int) Math.Ceiling(dmg / 1.8f);
 			k++;
 			point1 = point2;
-					
-							
-						
+
+
+
 		}
-					
-				
-		spriteBatch.DrawLine(startPoint.X,startPoint.Y,endPoint.X,endPoint.Y,Color.White,5);
+
+
+		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 5);
 		int coverModifier = 0;
 		WorldObject? hitobj = null;
 		if (previewShot.result.hitObjID != -1)
@@ -181,7 +190,7 @@ public abstract class Attack : Action
 			hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
 		}
 
-		 
+
 		if (previewShot.covercast != null && previewShot.covercast.hit)
 		{
 			Color c = Color.Green;
@@ -191,7 +200,7 @@ public abstract class Attack : Action
 			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 			{
 				if (cover != Cover.Full)
-				{ 
+				{
 					cover++;
 				}
 			}
@@ -218,11 +227,12 @@ public abstract class Attack : Action
 					hint = "Full Cover: -10 DMG";
 					break;
 				default:
-							
+
 					break;
 
 			}
-			spriteBatch.DrawString(Game1.SpriteFont,hint, coverPoint+new Vector2(2f,2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+
+			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
 			var coverobjtransform = coverobj.Type.Transform;
 			Texture2D yellowsprite = coverobj.GetTexture();
@@ -234,33 +244,34 @@ public abstract class Attack : Action
 			//spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.EndPoint), 40, 10, Color.Pink, 25f);
 
 		}
-				
-					
-						
+
+
+
 		if (hitobj != null)
 		{
 			var transform = hitobj.Type.Transform;
 			Texture2D redSprite = hitobj.GetTexture();
-						
+
 
 			spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPointLong), 15, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			if (hitobj.ControllableComponent != null)
 			{
+				hitobj.ControllableComponent.PreviewData.totalDmg = previewShot.originalDmg;
+				hitobj.ControllableComponent.PreviewData.distanceBlock = previewShot.originalDmg - previewShot.dmg;
+				hitobj.ControllableComponent.PreviewData.finalDmg = previewShot.dmg - coverModifier;
+				hitobj.ControllableComponent.PreviewData.coverBlock = coverModifier;
 				if (hitobj.ControllableComponent.determination > 0)
 				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + ((previewShot.dmg - coverModifier) - previewShot.determinationResistanceCoefficient) + ("  (-"+previewShot.determinationResistanceCoefficient+" due to determination)"), Utility.GridToWorldPos(previewShot.result.CollisionPointLong + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-				}
-				else
-				{
-					spriteBatch.DrawString(Game1.SpriteFont, "Final Damage: " + (previewShot.dmg - coverModifier), Utility.GridToWorldPos(previewShot.result.CollisionPointLong + new Vector2(-0.5f, -0.5f)), Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+					hitobj.ControllableComponent.PreviewData.finalDmg -= previewShot.determinationResistanceCoefficient;
+					hitobj.ControllableComponent.PreviewData.determinationBlock = previewShot.determinationResistanceCoefficient;
 				}
 			}
 		}
+
+
 	}
 #endif
-
-
 }
 

@@ -25,6 +25,12 @@ public abstract class Action
 		if (type == null)
 		{
 			ActiveAction = null;
+			#if CLIENT
+			foreach (var controllable in UI.Controllables)
+			{
+				controllable.PreviewData = new PreviewData(0,0);
+			}
+			#endif
 			return;
 		}
 
