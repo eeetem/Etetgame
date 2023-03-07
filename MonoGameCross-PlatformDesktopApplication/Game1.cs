@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using HeartSignal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
 using MultiplayerXeno.Pathfinding;
+using MultiplayerXeno.UILayouts;
 using Salaros.Configuration;
 
 
@@ -27,21 +26,11 @@ namespace MultiplayerXeno
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
-			
-			Window.AllowUserResizing = true;
-			Window.ClientSizeChanged += (s, a) =>
-			{
-				_graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-				_graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-				
-			//	GraphicsDevice.Viewport = new Viewport(0,0,Window.ClientBounds.Width, Window.ClientBounds.Height);
-				_graphics.ApplyChanges();
-				GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
-				Camera.Init(GraphicsDevice,Window);
-				UI.SetUI(null);
-			};
 
-	
+			
+			Window.AllowUserResizing = false;
+
+
 		}
 
 		public float GetWindowWidth()
@@ -62,47 +51,59 @@ namespace MultiplayerXeno
 			PopUpText.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();
+			UiLayout.Init();
 			base.Initialize();
-			UI.SetUI(UI.MainMenu);
-			DiscordManager.Init();
+			UI.SetUI(new MainMenuLayout());
 			
+
+			DiscordManager.Init();
+			UpdateGameSettings();
 
 		}
 
-		public RenderTarget2D renderTarget;
+		public static RenderTarget2D GlobalRenderTarget;
 		public static ConfigParser config;
 		protected override void LoadContent()
 		{
-			this.renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
-			GraphicsDevice.SetRenderTarget(renderTarget);
+			
+			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 			GraphicsDevice.SetRenderTarget(null);
-			TextureManager.Init(Content);
+			ResourceManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
 			Audio.Init(Content);
 		
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
-			
+			PostPorcessing.Init(Content, GraphicsDevice);
 			SpriteFont = Content.Load<SpriteFont>("font");
-
 			PrefabManager.MakePrefabs();
 			WorldEditSystem.GenerateUI();
 			config = new ConfigParser("config.txt");
 
+			_graphics.ApplyChanges();
+			
+			Audio.PlayMenu();
+		}
 
-
-
-
-			// TODO: use this.Content to load your game content here
+		public void UpdateGameSettings()
+		{
+			_graphics.PreferredBackBufferWidth = int.Parse(config.GetValue("settings", "Resolution", "1920x1080").Split("x")[0]);
+			_graphics.PreferredBackBufferHeight = int.Parse(config.GetValue("settings", "Resolution", "1920x1080").Split("x")[1]);
+			_graphics.ApplyChanges();
+			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
+			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+			Camera.Init(GraphicsDevice,Window);
+			Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.5"));
+			Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.5"));
+			PostPorcessing.RemakeRenderTarget();
+			UI.SetUI(null);
 		}
 
 		protected override void Update(GameTime gameTime)
 		{
-			
-
 
 			
 			Camera.Update(gameTime);
-			//MouseManager.Update(gameTime);
 			WorldEditSystem.Update(gameTime);
 			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
@@ -116,8 +117,7 @@ namespace MultiplayerXeno
 		
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.SetRenderTarget(renderTarget);
-			GraphicsDevice.SetRenderTarget(null);
+			GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 
 			GraphicsDevice.Clear(Color.Gray);
 			
@@ -125,6 +125,8 @@ namespace MultiplayerXeno
 			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system!	Long live Forg!
 			PopUpText.Draw();
 
+			PostPorcessing.Apply(gameTime.ElapsedGameTime.Milliseconds);
+			GraphicsDevice.SetRenderTarget(null);
 			base.Draw(gameTime);
 		}
 

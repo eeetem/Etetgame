@@ -480,9 +480,7 @@ namespace MultiplayerXeno
 
 		public  WorldTile GetTileAtGrid(Vector2Int pos)
 		{
-
 			return _gridData[pos.X, pos.Y];
-	
 		}
 
 		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, bool lineOfSight = false)

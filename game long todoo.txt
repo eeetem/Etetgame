@@ -1,8 +1,10 @@
 
 
+discord link
+how to play
 less agressive damage dropoff
 only see current unit turn preview
-glow the damage an attack will do
+version number
 point blank supression
 player disconnecting makes a new host
 nicer lobby browser
@@ -12,7 +14,6 @@ cursor focus
 point blank supression
 fix discord time? timezone issue?
 upnp
-version number
 officer that stops units panicing
 unit placement
 smoke greandes

@@ -69,8 +69,8 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Sprint.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Sprint.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Attacking\SecondWind.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Controllable.cs">
         <Link>SharedSource\WorldObjects\Controllables\Controllable.cs</Link>

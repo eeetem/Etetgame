@@ -7,14 +7,14 @@ namespace MultiplayerXeno
 	{
 		public static Client? Player1;
 		public static Client? Player2;
-		public static List<Client> Spectators = new List<Client>();
+		public static List<Client> Spectators = new();
 
 
 
-		public static readonly List<WorldObject> T1SpawnPoints = new List<WorldObject>();
-		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
-		public static readonly List<int> T1Units = new List<int>();
-		public static readonly List<int> T2Units = new List<int>();
+		public static readonly List<WorldObject> T1SpawnPoints = new();
+		public static readonly List<WorldObject> T2SpawnPoints = new();
+		public static readonly List<int> T1Units = new();
+		public static readonly List<int> T2Units = new();
 
 		public static void StartSetup()
 		{

@@ -4,6 +4,7 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.Content;
 
 
@@ -14,10 +15,26 @@ public static class Audio
 	private static Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
 	private static List<SoundEffectInstance> activeSounds = new List<SoundEffectInstance>();
 	public static readonly object syncobj = new object();
+	private static ContentManager content;
+	public static float MusicVolume = 0.5f;
+	public static float SoundVolume = 0.5f;
+	
+	public static void PlayMenu()
+	{
+		MediaPlayer.Volume = MusicVolume;
+		MediaPlayer.Play(content.Load<Song>("audio/music/menu"));
+		MediaPlayer.IsRepeating = true;
+	}
+	public static void PlayCombat()
+	{
+
+		MediaPlayer.Play(content.Load<Song>("audio/music/tension"));
+		MediaPlayer.IsRepeating = true;
+	}
 
 	public static void Init(ContentManager content)
 	{
-		
+		Audio.content = content;
 		soundEffects.Add("death1",content.Load<SoundEffect>("audio/damage/death"));
 		soundEffects.Add("death2",content.Load<SoundEffect>("audio/damage/death2"));
 		soundEffects.Add("death3",content.Load<SoundEffect>("audio/damage/death3"));
@@ -73,6 +90,7 @@ public static class Audio
 		
 		SoundEffectInstance instance = soundEffects[sfxID].CreateInstance();
 		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 2f;
+		instance.Volume = SoundVolume;
 		AudioEmitter emitter = new AudioEmitter();
 		emitter.Position = new Vector3((Vector2)location/80f, 0);
 		instance.Play();
@@ -82,6 +100,9 @@ public static class Audio
 			activeSounds.Add(instance);
 		}
 	}
+	
+	
+	
 
 	public static void Update(float gametime)
 	{

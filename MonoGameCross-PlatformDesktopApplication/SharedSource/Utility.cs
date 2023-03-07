@@ -38,7 +38,11 @@ namespace MultiplayerXeno
 
             throw new Exception("impossible direction");
         }
-        
+        public static float Lerp(float firstFloat, float secondFloat, float by)
+        {
+            by = Math.Clamp(by, 0, 1);
+            return firstFloat * (1 - by) + secondFloat * by;
+        }
         
         public static int SIZE = 180;
 

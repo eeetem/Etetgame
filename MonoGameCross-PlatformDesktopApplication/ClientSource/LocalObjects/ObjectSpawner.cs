@@ -19,7 +19,7 @@ public static class ObjectSpawner
 			Vector2 dir = Vector2.Normalize(to - from);
 			dir += new Vector2( Random.Shared.Next(-10,10)/100f,Random.Shared.Next(-10,10)/100f);
 			Audio.PlaySound("rifle", from);
-			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
+			var obj = new LocalObject(ResourceManager.GetTexture("bullet"), from,dir*3, dist*300);
 			Thread.Sleep(150);
 		}
 
@@ -37,7 +37,7 @@ public static class ObjectSpawner
 			Vector2 dir = Vector2.Normalize(to - from);
 			dir += new Vector2( Random.Shared.Next(-20,20)/100f,Random.Shared.Next(-20,20)/100f);
 			Audio.PlaySound("MG", from);
-			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
+			var obj = new LocalObject(ResourceManager.GetTexture("bullet"), from,dir*3, dist*300);
 			Thread.Sleep(50);
 		}
 
@@ -55,7 +55,7 @@ public static class ObjectSpawner
 			Vector2 dir = Vector2.Normalize(to - from);
 			dir += new Vector2( Random.Shared.Next(-50,50)/100f,Random.Shared.Next(-50,50)/100f);
 			Audio.PlaySound("MG", from);
-			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
+			var obj = new LocalObject(ResourceManager.GetTexture("bullet"), from,dir*3, dist*300);
 			Thread.Sleep(35);
 		}
 
@@ -69,7 +69,7 @@ public static class ObjectSpawner
 		
 			Vector2 dir = Vector2.Normalize(to - from);
 			Audio.PlaySound("rifle", from);
-			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from, dir * 3, dist * 300);
+			var obj = new LocalObject(ResourceManager.GetTexture("bullet"), from, dir * 3, dist * 300);
 	}
 
 		public static void ShotGun(Vector2Int from, Vector2Int to)
@@ -83,7 +83,7 @@ public static class ObjectSpawner
 		{
 			Vector2 dir = Vector2.Normalize(to - from);
 			dir += new Vector2( Random.Shared.Next(-50,50)/100f,Random.Shared.Next(-50,50)/100f);
-			var obj = new LocalObject(TextureManager.GetTexture("bullet"), from,dir*3, dist*300);
+			var obj = new LocalObject(ResourceManager.GetTexture("bullet"), from,dir*3, dist*300);
 		}
 
 

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
-using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
-using CommonData;
-using Microsoft.Xna.Framework;
+﻿using System.Runtime.Serialization.Formatters.Binary;
 using CommonData;
 using Network;
 using Network.Converter;
@@ -42,7 +35,7 @@ namespace MultiplayerXeno
 				SendChatMessage(name+" left the game");
 				Thread.Sleep(1000);
 				SendPreGameInfo();
-
+				Thread.Sleep(10000);
 				if (serverConnectionContainer.Count == 0)
 				{
 					Environment.Exit(0);
@@ -230,13 +223,17 @@ namespace MultiplayerXeno
 		public static void SendPreGameInfo()
 		{
 			var data = new PreGameDataPacket();
-			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "Empty Slot";
-			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "Empty Slot";
+			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "None";
+			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "None";
 			if (GameManager.Player2 != null && !GameManager.Player2.Connection.IsAlive)
 			{
 				data.Player2Name = "Reserved: " + data.Player2Name;
 			}
 			data.Spectators = new List<string>();
+			foreach (var spectator in GameManager.Spectators)
+			{
+				data.Spectators.Add(spectator.Name);
+			}
 			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
 			data.CustomMapList = Directory.GetFiles("./Maps/Custom", "*.mapdata").ToList();
 			data.SelectedMap = selectedMap;

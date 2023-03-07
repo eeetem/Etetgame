@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
 
-public class Sprint : Action
+public class SecondWind : Action
 {
-	public Sprint() :base(ActionType.Sprint)
+	public SecondWind() :base(ActionType.Sprint)
 	{
 		Description = "Regain all of your action points. Cost: 2 determination";
 	}
@@ -17,7 +17,7 @@ public class Sprint : Action
 		
 		if (actor.overWatch)
 		{
-			return new Tuple<bool, string>(false, "You cannot sprint while overwatching");
+			return new Tuple<bool, string>(false, "You cannot user second wind while overwatching");
 		}
 		if (actor.determination != actor.Type.Maxdetermination)
 		{

@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 using CommonData;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.Pathfinding;
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
 using Action = MultiplayerXeno.Action;
 #nullable enable
 
@@ -82,7 +85,7 @@ namespace MultiplayerXeno
 			if (Crouching)
 			{
 
-					range -= 2;
+				range -= 2;
 				
 			}
 
@@ -218,7 +221,7 @@ namespace MultiplayerXeno
 				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
 #else
 				Console.WriteLine("tried to do action but failed: "+result.Item2);
-				#endif
+#endif
 				
 				return;
 			}
@@ -245,7 +248,7 @@ namespace MultiplayerXeno
 
 		
 #if CLIENT
-	UI.SetUI(UI.UnitUi);
+			UI.SetUI(new UnitGameLayout());
 			if (worldObject.IsVisible())
 			{
 				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
@@ -354,7 +357,7 @@ namespace MultiplayerXeno
 						moving = false;
 						_thisMoving = false;
 #if CLIENT
-						UI.SetUI(UI.UnitUi);
+						UI.SetUI(new UnitGameLayout());
 #endif
 					
 					}

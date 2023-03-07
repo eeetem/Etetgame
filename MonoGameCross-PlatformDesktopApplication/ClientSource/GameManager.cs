@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonData;
-using Microsoft.Xna.Framework;
-using Myra.Graphics2D.Brushes;
+using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno
 {
@@ -14,12 +14,15 @@ namespace MultiplayerXeno
 		public static bool spectating = false;
 		public static List<Controllable> _myUnits = new List<Controllable>();
 		private static PreGameDataPacket _preGameData;
+		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
+		public static Dictionary<string,string> CustomMapList = new Dictionary<string, string>();
 		public static PreGameDataPacket PreGameData
 		{
 			get => _preGameData;
 			set
 			{
 				_preGameData = value;
+				GenerateMapList();
 				UI.SetUI(null);
 			}
 		}
@@ -64,22 +67,36 @@ namespace MultiplayerXeno
 				switch (GameState)
 				{
 					case GameState.Lobby:
-						UI.SetUI(UI.PreGameLobby);
+						Audio.PlayMenu();
+						UI.SetUI(new PreGameLobbyLayout());
 						break;
 					case GameState.Setup:
-						if (spectating)
-						{
-							break;
-						}
+						if (spectating) break;
 
-						UI.SetUI(UI.SetupUI);
+						UI.SetUI(new GameSetupLayout());
 						break;
 					case GameState.Playing:
 						StartGame();
+						Audio.PlayCombat();
 						break;
 				}
 			
 
+		}
+
+		private static void GenerateMapList()
+		{
+			MapList.Clear();
+			foreach (var mapPath in GameManager.PreGameData.MapList)
+			{
+				MapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
+			}
+			CustomMapList.Clear();
+			foreach (var mapPath in GameManager.PreGameData.CustomMapList)
+			{
+				CustomMapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
+			}
+			
 		}
 
 		public static void StartGame()
@@ -88,7 +105,7 @@ namespace MultiplayerXeno
 			intated = true;
 			CountMyUnits();
 			WorldManager.Instance.MakeFovDirty();
-			UI.SetUI(UI.GameUi);
+			UI.SetUI(new GameLayout());
 		}
 
 		public static void CountMyUnits()

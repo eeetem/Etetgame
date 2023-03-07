@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonData;
-using MultiplayerXeno;
 
 namespace MultiplayerXeno.Pathfinding
 {

@@ -1,3 +1,2 @@
 ﻿[config]
-Name = guest
 MasterServerIP = 46.7.175.47:1630

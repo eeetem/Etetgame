@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
 using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Media;
-using Network.Packets;
+
+#if  CLIENT
+using MultiplayerXeno.UILayouts;//probably seperate this into a clientsidegamemanager
+#endif
 
 namespace MultiplayerXeno
 {
@@ -95,7 +94,7 @@ Audio.PlaySound("capture");
 				score--;
 			}
 #if CLIENT
-			UI.SetScore(score);
+			GameLayout.SetScore(score);
 			Audio.PlaySound("turn");
 #endif
 			
@@ -112,7 +111,7 @@ Audio.PlaySound("capture");
 			Console.WriteLine("turn: "+IsPlayer1Turn);
 			Networking.DoAction(new GameActionPacket(-1,null,ActionType.EndTurn));//defaults to end turn
 			#else
-			UI.SetMyTurn(IsMyTurn());
+			GameLayout.SetMyTurn(IsMyTurn());
 			#endif
 		}
 

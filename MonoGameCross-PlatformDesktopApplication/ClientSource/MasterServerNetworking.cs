@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CommonData;
+using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -37,7 +38,7 @@ public class MasterServerNetworking
 			{
 				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
 				{
-					UI.SetUI(UI.MainMenu);
+					UI.SetUI(new MainMenuLayout());
 					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
 				}
 			};
@@ -62,14 +63,14 @@ public class MasterServerNetworking
 				}
 
 				Lobbies.Add(data);
-				UI.SetUI(UI.LobbyBrowser);
+				UI.SetUI(new LobbyBrowserLayout());
 			});
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
 				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
 				{
-					UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+					UiLayout.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
 				}
 				
 			});

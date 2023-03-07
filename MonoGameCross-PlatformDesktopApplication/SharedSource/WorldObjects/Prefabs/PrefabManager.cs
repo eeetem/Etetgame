@@ -119,7 +119,7 @@ namespace MultiplayerXeno
 					type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
 					if (type.Controllable != null)
 					{
-						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(spritename + "Crouch"),3,3);
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(ResourceManager.GetTexture(spritename + "Crouch"),3,3);
 					}
 
 					
@@ -129,7 +129,7 @@ namespace MultiplayerXeno
 					type.GenerateSpriteSheet(name,spriteVariations);
 					if (type.Controllable != null)
 					{
-						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(name + "Crouch"),3,3);
+						type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(ResourceManager.GetTexture(name + "Crouch"),3,3);
 					}
 				}
 

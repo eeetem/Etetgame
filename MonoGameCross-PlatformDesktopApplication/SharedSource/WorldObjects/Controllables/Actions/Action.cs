@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
 using CommonData;
 using Microsoft.Xna.Framework.Graphics;
+
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+
+#endif
 
 namespace MultiplayerXeno;
 
 public abstract class Action
 {
 
-	public static readonly Dictionary<ActionType, Action> Actions = new Dictionary<ActionType, Action>();
+	public static readonly Dictionary<ActionType, Action> Actions = new();
 	public readonly ActionType ActionType;
 	public static Action? ActiveAction { get; private set; }
 	public string Description { get; protected set; } = "";
@@ -25,12 +28,12 @@ public abstract class Action
 		if (type == null)
 		{
 			ActiveAction = null;
-			#if CLIENT
+#if CLIENT
 			foreach (var controllable in UI.Controllables)
 			{
 				controllable.PreviewData = new PreviewData(0,0);
 			}
-			#endif
+#endif
 			return;
 		}
 
@@ -54,7 +57,7 @@ public abstract class Action
 		new Crouch();
 		new Fire();
 		new OverWatch();
-		new Sprint();
+		new SecondWind();
 		new Headshot();
 		new Supress();
 
@@ -75,8 +78,8 @@ public abstract class Action
 		
 #if CLIENT
 		WorldManager.Instance.MakeFovDirty();	
-		Action.SetActiveAction(null);
-		UI.SetUI(UI.UnitUi);
+		SetActiveAction(null);
+		UI.SetUI(new UnitGameLayout());
 #endif
 		
 	}
@@ -98,11 +101,11 @@ public abstract class Action
 		if(!result.Item1)
 		{
 #if CLIENT
-				UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform: "+result.Item2);
+			UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform: "+result.Item2);
 #else
 				Console.WriteLine("Client sent an impossible action: "+result.Item2);
 #endif
-				return;
+			return;
 		}
 		Perform(actor, target);
 #if SERVER

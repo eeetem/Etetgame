@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using CommonData;
 using Microsoft.Xna.Framework;
+using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -69,7 +70,7 @@ namespace MultiplayerXeno
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
-				UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+				UiLayout.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
 			});
 
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
@@ -98,11 +99,11 @@ namespace MultiplayerXeno
 			GameManager.intated = false;
 			if (MasterServerNetworking.serverConnection != null && MasterServerNetworking.serverConnection.IsAlive)
 			{
-				UI.SetUI(UI.LobbyBrowser);
+				UI.SetUI(new LobbyBrowserLayout());
 			}
 			else
 			{
-				UI.SetUI(UI.MainMenu);
+				UI.SetUI(new MainMenuLayout());
 			}
 		}
 

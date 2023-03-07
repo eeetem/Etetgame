@@ -1,0 +1,77 @@
+﻿using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
+using MultiplayerXeno;
+using Myra.Graphics2D.TextureAtlases;
+using Myra.Graphics2D.UI;
+using Network;
+
+namespace MultiplayerXeno.UILayouts;
+
+public class ConnectionLayout : UiLayout
+{
+	public override Widget Generate(Desktop desktop)
+	{
+		var grid = new Grid
+		{
+			RowSpacing = 0,
+			ColumnSpacing = 0,
+			Background = new TextureRegion(ResourceManager.GetTexture("UI/background")),
+		};
+		grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,300));
+		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+        
+		var textBox = new TextBox()
+		{
+			GridColumn = 1,
+			GridRow = 1,
+			Text = "46.7.175.47:52233",
+			HorizontalAlignment = HorizontalAlignment.Stretch
+		};
+		grid.Widgets.Add(textBox);
+		var textBox2 = new TextBox()
+		{
+			GridColumn = 1,
+			GridRow = 2,
+			Text = "name",
+			HorizontalAlignment = HorizontalAlignment.Stretch
+		};
+		grid.Widgets.Add(textBox2);
+        
+		var button = new SoundButton
+		{
+			GridColumn = 2,
+			GridRow = 1,
+			HorizontalAlignment = HorizontalAlignment.Right,
+			Text = "Connect"
+		};
+		var exit = new SoundButton
+		{
+			GridColumn = 2,
+			GridRow = 2,
+			HorizontalAlignment = HorizontalAlignment.Right,
+			Text = "Main Menu"
+		};
+		exit.Click += (s, a) => { UI.SetUI(new MainMenuLayout()); };
+		grid.Widgets.Add(exit);
+		button.Click += (s, a) =>
+		{
+			ConnectionResult result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
+			if (result == ConnectionResult.Connected)
+			{
+				UI.ShowMessage("Connection Notice", "Connected to server!");
+        
+			}
+			else
+			{
+				UI.ShowMessage("Connection Notice", "Failed to connect: " + result);
+        
+			}
+        
+		};
+        
+		grid.Widgets.Add(button);
+
+
+		return grid;
+	}
+}

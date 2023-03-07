@@ -1,12 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using CommonData;
-using FontStashSharp.Rasterizers.StbTrueTypeSharp;
 using MonoGame.Extended;
+using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno
 {
@@ -43,7 +40,7 @@ namespace MultiplayerXeno
 		public static void GenerateUI()
 		{
 			if(!enabled) return;
-			UI.SetUI(UI.EditorMenu);
+			UI.SetUI(new EditorUiLayout());
 			UI.LeftClick += (s) =>
 			{
 				leftMouseDown = true;
