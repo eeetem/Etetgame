@@ -25,6 +25,7 @@ public class UnitGameLayout : UiLayout
 	{
 		var root = new GameLayout().Generate(desktop);
 		if (UI.SelectedControllable != null && !UI.SelectedControllable.IsMyTeam()) return root;
+		if (UI.SelectedControllable == null) return root;
 			
 
 
@@ -65,7 +66,7 @@ public class UnitGameLayout : UiLayout
 			GridRow = 1,
 			Width = (int)(80*globalScale.X),
 			Height = (int)(80*globalScale.Y),
-			Image = new TextureRegion(ResourceManager.GetTexture("UI/Fire")),
+			Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
 			//	Scale = new Vector2(1.5f)
 		};
 		fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
@@ -77,7 +78,7 @@ public class UnitGameLayout : UiLayout
 			GridRow = 1,
 			Width = (int)(80*globalScale.X),
 			Height = (int)(80*globalScale.Y),
-			Image = new TextureRegion(ResourceManager.GetTexture("UI/Overwatch"))
+			Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
 		};
 		watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
 		watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move, 1 turn. Unit Cannot act anymore in this turn");
@@ -88,7 +89,7 @@ public class UnitGameLayout : UiLayout
 			GridRow = 1,
 			Width = (int)(80*globalScale.X),
 			Height = (int)(80*globalScale.Y),
-			Image = new TextureRegion(ResourceManager.GetTexture("UI/Crouch"))
+			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 		};
 		crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
 		crouch.Click += (o, a) =>
@@ -100,6 +101,7 @@ public class UnitGameLayout : UiLayout
 		};
 		buttonContainer.Widgets.Add(crouch);
 		int column = 3;
+		
 		foreach (var act in UI.SelectedControllable.Type.extraActions)
 		{
 			var actBtn = new ImageButton
@@ -108,7 +110,7 @@ public class UnitGameLayout : UiLayout
 				GridRow = 1,
 				Width = (int)(80*globalScale.X),
 				Height = (int)(80*globalScale.Y),
-				Image = new TextureRegion(ResourceManager.GetTexture("UI/" + act.Item1))
+				Image = new TextureRegion(TextureManager.GetTexture("UI/" + act.Item1))
 			};
 			actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
 			actBtn.MouseEntered += (o, a) => SetPreviewDesc(Action.Actions[act.Item2].Description);

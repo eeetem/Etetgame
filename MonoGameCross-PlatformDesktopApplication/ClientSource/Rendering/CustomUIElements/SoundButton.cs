@@ -1,5 +1,4 @@
 ﻿using MultiplayerXeno;
-using Myra.Assets;
 using Myra.Graphics2D.UI;
 
 namespace MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
@@ -8,13 +7,13 @@ public class SoundButton : TextButton
 {
 	public override void OnMouseEntered()
 	{
-		ResourceManager.GetSound("UI/select").Play();
+		Audio.PlaySound("UI/select",null,0.5f);
 		base.OnMouseEntered();
 	}
 
 	public override void OnTouchDown()
 	{
-		ResourceManager.GetSound("UI/press").Play();
+		Audio.PlaySound("UI/press",null,0.5f);
 		base.OnTouchDown();
 	}
 }

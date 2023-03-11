@@ -6,11 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
 
-public static class ResourceManager
+public static class TextureManager
 {
 			
 	public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
-	public static Dictionary<string, SoundEffect> SFX = new Dictionary<string, SoundEffect>();
+
 	private static ContentManager Content;
 
 	public static void Init(ContentManager contentManager)
@@ -42,15 +42,5 @@ public static class ResourceManager
 
 		return Textures[name];
 	}
-	public static SoundEffect GetSound(string name)
-	{
-		if (SFX.ContainsKey(name))
-		{
-			return SFX[name];
-		}
 
-		SFX.Add(name,Content.Load<SoundEffect>("audio/"+name));
-		
-		return SFX[name];
-	}
 }

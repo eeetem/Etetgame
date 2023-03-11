@@ -14,7 +14,7 @@ public class MainMenuLayout : UiLayout
 	{
 			var panel = new Panel()
     			{
-				Background = new TextureRegion(ResourceManager.GetTexture("UI/background")),
+				Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
 			};
 			
 			

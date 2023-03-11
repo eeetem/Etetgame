@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
@@ -14,8 +15,10 @@ public class SettingsLayout : UiLayout
 	{
 		var grid = new Grid()
 			{
-				Background = new TextureRegion(ResourceManager.GetTexture("UI/background")),
+				Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
 				Padding =new Thickness(35),
+				GridColumnSpan = 10,
+				GridRowSpan = 10
 			};
 			grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -29,6 +32,7 @@ public class SettingsLayout : UiLayout
 				GridRow = 0,
 				GridColumn = 0,
 				Text = "Resolution",
+				Margin = new Thickness(5)
 			};
 				grid.Widgets.Add(reslabel);
 			var resoultion = new ComboBox()
@@ -59,6 +63,7 @@ public class SettingsLayout : UiLayout
 				GridRow = 0,
 				GridColumn = 1,
 				Text = "Sound Volume",
+				Margin = new Thickness(5)
 			};
 			grid.Widgets.Add(sfxlabel);
 			var musiclabel = new Label()
@@ -66,17 +71,24 @@ public class SettingsLayout : UiLayout
 				GridRow = 2,
 				GridColumn =1,
 				Text = "Music Volume",
+				Margin = new Thickness(5)
 			};
 			grid.Widgets.Add(musiclabel);
 			var sfxVolume = new HorizontalSlider()
 			{
 				GridRow = 1,
 				GridColumn = 1,
+				Maximum = 1,
+				Minimum = 0,
+				Value = float.Parse(Game1.config.GetValue("settings", "sfxVol", "0.5"))
 			};
 			var musicVolume = new HorizontalSlider()
 			{
-				GridRow = 4,
+				GridRow = 3,
 				GridColumn = 1,
+				Maximum = 1,
+				Minimum = 0,
+				Value = float.Parse(Game1.config.GetValue("settings", "musicVol", "0.5"))
 			};
 			grid.Widgets.Add(sfxVolume);
 			grid.Widgets.Add(musicVolume);
@@ -92,7 +104,7 @@ public class SettingsLayout : UiLayout
 				UI.SetUI(new MainMenuLayout());
 			};
 			grid.Widgets.Add(cancel);
-			var ok = new TextButton()
+			var ok = new SoundButton()
 			{
 				Text = "OK",	
 				GridColumn = 6,
@@ -103,6 +115,8 @@ public class SettingsLayout : UiLayout
 			ok.Click+= (sender, args) =>
 			{
 				Game1.config.SetValue("settings", "Resolution", resoultion.SelectedItem.Text);
+				Game1.config.SetValue("settings", "musicVol", musicVolume.Value);
+				Game1.config.SetValue("settings", "sfxVol", sfxVolume.Value);
 				Game1.instance.UpdateGameSettings();
 				
 				UI.SetUI(new MainMenuLayout());

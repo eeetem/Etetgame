@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using CommonData;
 using FontStashSharp;
-using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,10 +11,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MultiplayerXeno.UILayouts;
 using Myra;
-using Myra.Graphics2D.Brushes;
-using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Myra.Graphics2D.UI.Styles;
 
 namespace MultiplayerXeno
 {
@@ -42,27 +38,7 @@ namespace MultiplayerXeno
 			MyraEnvironment.Game = Game1.instance;
 	//		MyraEnvironment.DrawWidgetsFrames = true;
 		//	MyraEnvironment.DrawTextGlyphsFrames = true;
-
-			Stylesheet.Current.ButtonStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.TextBoxStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.ButtonStyle.LabelStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.TextBoxStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.LabelStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.LabelStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.ComboBoxStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.ComboBoxStyle.LabelStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.ComboBoxStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
-			Stylesheet.Current.ComboBoxStyle.ListBoxStyle.ListItemStyle.LabelStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.ComboBoxStyle.ListBoxStyle.ListItemStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
-			Stylesheet.Current.ListBoxStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.ListBoxStyle.ListItemStyle.LabelStyle.TextColor = new Color(31,81,255,240);
-			Stylesheet.Current.ListBoxStyle.ListItemStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
-			Stylesheet.Current.ScrollViewerStyle.Background =  new SolidBrush(Color.Black);
-			Stylesheet.Current.ScrollViewerStyle.VerticalScrollKnob = new ColoredRegion(new TextureRegion(ResourceManager.GetTexture("")),new Color(31,81,255,240));
-			Stylesheet.Current.ScrollViewerStyle.VerticalScrollBackground = new ColoredRegion(new TextureRegion(ResourceManager.GetTexture("")), Color.Black);
-			Stylesheet.Current.WindowStyle.Background = new SolidBrush(Color.Black);
-			Stylesheet.Current.WindowStyle.TitleStyle.TextColor = new Color(31,81,255,240);
-
+		
 
 
 			Desktop = new Desktop();
@@ -72,16 +48,7 @@ namespace MultiplayerXeno
 
 			Texture2D coverIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/coverIndicator");
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
-
-
-
-			Texture2D healthIndicatorSpriteSheet = content.Load<Texture2D>("textures/UI/healthbar");
-			Utility.SplitTexture(healthIndicatorSpriteSheet, healthIndicatorSpriteSheet.Width / 3, healthIndicatorSpriteSheet.Height);
-
-			Texture2D vissionIndicatorSpriteSheet = ResourceManager.GetTexture("UI/VissionIndicator");
-			Utility.SplitTexture(vissionIndicatorSpriteSheet, vissionIndicatorSpriteSheet.Width / 2, vissionIndicatorSpriteSheet.Height);
-			
-			targetingCUrsor = ResourceManager.GetTexture("UI/targetingCursor");
+			targetingCUrsor = TextureManager.GetTexture("UI/targetingCursor");
 			
 			LeftClick += LeftClickAtPosition;
 			RightClick += RightClickAtPosition;
@@ -301,17 +268,17 @@ namespace MultiplayerXeno
 			int i;
 			for (i = 0; i < controllable.Type.MaxFirePoints; i++)
 			{
-				var indicator = ResourceManager.GetTexture("UI/HoverHud/bullet");
+				var indicator = TextureManager.GetTexture("UI/HoverHud/bullet");
 				if (i>= controllable.FirePoints)
 				{
-					indicator= ResourceManager.GetTexture("UI/HoverHud/nobullet");
+					indicator= TextureManager.GetTexture("UI/HoverHud/nobullet");
 				}
 
 				batch.Draw(indicator,new Vector2(950,0)+new Vector2((50)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			}
 			
 			
-			batch.Draw(ResourceManager.GetTexture("UI/HoverHud/detbase"), new Vector2(0,50), null,Color.White);
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/detbase"), new Vector2(0,50), null,Color.White);
 
 			
 			float detHeigth = 415f / controllable.Type.Maxdetermination;
@@ -319,14 +286,14 @@ namespace MultiplayerXeno
 			int detDMG = controllable.PreviewData.detDmg;
 			for (i = 0; i < controllable.Type.Maxdetermination; i++)
 			{
-				var indicator = ResourceManager.GetTexture("UI/HoverHud/deton");
+				var indicator = TextureManager.GetTexture("UI/HoverHud/deton");
 				if (controllable.Type.Maxdetermination  - i  == controllable.determination+1 && !controllable.paniced)
 				{
-					indicator=ResourceManager.GetTexture("UI/HoverHud/dethalf");
+					indicator=TextureManager.GetTexture("UI/HoverHud/dethalf");
 				}
 				else if (controllable.Type.Maxdetermination - i > controllable.determination)
 				{
-					indicator=ResourceManager.GetTexture("UI/HoverHud/detoff");
+					indicator=TextureManager.GetTexture("UI/HoverHud/detoff");
 				}else if (detDMG>0)
 				{
 					Console.WriteLine(animopacity);
@@ -341,16 +308,16 @@ namespace MultiplayerXeno
 			
 			
 			
-			batch.Draw(ResourceManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
 		
 
-			var turnIndicator = ResourceManager.GetTexture("UI/HoverHud/turnon");
+			var turnIndicator = TextureManager.GetTexture("UI/HoverHud/turnon");
 			if(!controllable.canTurn)
-				turnIndicator = ResourceManager.GetTexture("UI/HoverHud/turnoff");
+				turnIndicator = TextureManager.GetTexture("UI/HoverHud/turnoff");
 			batch.Draw(turnIndicator,new Vector2(80,310),Color.White);
-			var panicIndicator = ResourceManager.GetTexture("UI/HoverHud/panicon");
+			var panicIndicator = TextureManager.GetTexture("UI/HoverHud/panicon");
 			if(!controllable.paniced)
-				panicIndicator = ResourceManager.GetTexture("UI/HoverHud/panicoff");
+				panicIndicator = TextureManager.GetTexture("UI/HoverHud/panicoff");
 			batch.Draw(panicIndicator,new Vector2(80,112),Color.White);
 
 
@@ -362,10 +329,10 @@ namespace MultiplayerXeno
 
 			for (i = 0; i < controllable.Type.MaxMovePoints; i++)
 			{
-				var indicator = ResourceManager.GetTexture("UI/HoverHud/actionon");
+				var indicator = TextureManager.GetTexture("UI/HoverHud/actionon");
 				if (i>= controllable.MovePoints)
 				{
-					indicator= ResourceManager.GetTexture("UI/HoverHud/actionoff");
+					indicator= TextureManager.GetTexture("UI/HoverHud/actionoff");
 				}
 
 				batch.Draw(indicator,new Vector2(200,80)+new Vector2((u+210)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);	
@@ -380,16 +347,16 @@ namespace MultiplayerXeno
 			i = 0;
 			for (int y = 0; y < controllable.Type.MaxHealth; y++)
 			{
-				var indicator = ResourceManager.GetTexture("UI/HoverHud/health");
+				var indicator = TextureManager.GetTexture("UI/HoverHud/health");
 				if (y>= controllable.Health)
 				{
-					indicator= ResourceManager.GetTexture("UI/HoverHud/nohealth");
+					indicator= TextureManager.GetTexture("UI/HoverHud/nohealth");
 				}
 				else if (controllable.PreviewData.finalDmg >= controllable.Health-y)
 				{
 					i = y;
 					batch.Draw(indicator,new Vector2(184,305)+new Vector2(healthWidth*y,0),null,Color.White*animopacity,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
-					batch.Draw(ResourceManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+					batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 					dmgDone++;
 					continue;
 				}
@@ -399,26 +366,26 @@ namespace MultiplayerXeno
 			i++;
 			for (int j = dmgDone; j < controllable.PreviewData.finalDmg; j++)
 			{
-				batch.Draw(ResourceManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
 
 			for (int j = 0; j < controllable.PreviewData.coverBlock; j++)
 			{
 				//if(j>controllable.PreviewData.totalDmg) break;
-				batch.Draw(ResourceManager.GetTexture("UI/HoverHud/dmgcov"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgcov"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
 			for (int j = 0; j < controllable.PreviewData.distanceBlock; j++)
 			{
 			//	if(j>controllable.PreviewData.totalDmg) break;
-				batch.Draw(ResourceManager.GetTexture("UI/HoverHud/dmgrange"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgrange"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
 			for (int j = 0; j < controllable.PreviewData.determinationBlock; j++)
 			{
 			//	if(j>controllable.PreviewData.totalDmg) break;
-				batch.Draw(ResourceManager.GetTexture("UI/HoverHud/dmgdet"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdet"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
 		
@@ -532,7 +499,7 @@ namespace MultiplayerXeno
 
 			if (targeting)
 			{
-				spriteBatch.Draw(ResourceManager.GetTexture("UI/targetingCursor"), Mousepos, Color.Red);
+				spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Mousepos, Color.Red);
 			}
 
 

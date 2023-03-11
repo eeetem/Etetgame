@@ -14,7 +14,7 @@ public class LobbyBrowserLayout : UiLayout
 	public override Widget Generate(Desktop desktop)
 	{
 			var Grid = new Grid();
-			Grid.Background = new TextureRegion(ResourceManager.GetTexture("UI/background"));
+			Grid.Background = new TextureRegion(TextureManager.GetTexture("UI/background"));
 			Grid.ColumnsProportions.Add(Proportion.Auto);
 			Grid.ColumnsProportions.Add(Proportion.Fill);
 			Grid.ColumnsProportions.Add(Proportion.Auto);

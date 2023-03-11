@@ -32,7 +32,7 @@ public class GameLayout : UiLayout
 	}
 	public override Widget Generate(Desktop desktop)
 	{
-		Texture2D indicatorSpriteSheet = ResourceManager.GetTexture("UI/indicators");
+		Texture2D indicatorSpriteSheet = TextureManager.GetTexture("UI/indicators");
 		var infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);//this is inneficient but it'll be gone once new unit bar gets made
 		var panel = new Panel
 			{
@@ -184,11 +184,11 @@ public class GameLayout : UiLayout
 					Top = 20,
 					VerticalAlignment = VerticalAlignment.Top,
 					HorizontalAlignment = HorizontalAlignment.Center,
-					Renderable = new TextureRegion(ResourceManager.GetTexture("UI/PortraitAlive"))
+					Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
 				};
 				if (unit.Health <= 0)
 				{
-					unitImage.Renderable = new TextureRegion(ResourceManager.GetTexture("UI/PortraitDead"));
+					unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
 					unitPanel.Top = -10;
 					unitPanel.Background = new SolidBrush(Color.DarkRed);
 				}unitPanel.Widgets.Add(unitImage);

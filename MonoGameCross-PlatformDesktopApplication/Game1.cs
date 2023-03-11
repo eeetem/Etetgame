@@ -51,9 +51,9 @@ namespace MultiplayerXeno
 			PopUpText.Init(GraphicsDevice);
 //
 			PathFinding.GenerateNodes();
-			UiLayout.Init();
+
 			base.Initialize();
-			UI.SetUI(new MainMenuLayout());
+
 			
 
 			DiscordManager.Init();
@@ -69,8 +69,10 @@ namespace MultiplayerXeno
 			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 			GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 			GraphicsDevice.SetRenderTarget(null);
-			ResourceManager.Init(Content);
+			TextureManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
+			UiLayout.Init();
+			UI.SetUI(new MainMenuLayout());
 			Audio.Init(Content);
 		
 			_spriteBatch = new SpriteBatch(GraphicsDevice);

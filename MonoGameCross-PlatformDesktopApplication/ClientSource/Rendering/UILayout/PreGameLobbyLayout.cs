@@ -78,15 +78,15 @@ public class PreGameLobbyLayout : UiLayout
 				Top = 0,
 				Width = (int) (200 * globalScale.X),
 				Height = (int) (100 * globalScale.Y),
-				Background = new TextureRegion(ResourceManager.GetTexture("UI/button")),
-				OverBackground = new TextureRegion(ResourceManager.GetTexture("UI/button")),
+				Background = new TextureRegion(TextureManager.GetTexture("UI/button")),
+				OverBackground = new TextureRegion(TextureManager.GetTexture("UI/button")),
 				//	Font =DefaultFont.GetFont(50)
 
 			};
 			if (!GameManager.IsPlayer1)
 			{
-				btn.Background = new ColoredRegion(new TextureRegion(ResourceManager.GetTexture("UI/button")), Color.DimGray);
-				btn.OverBackground = new ColoredRegion(new TextureRegion(ResourceManager.GetTexture("UI/button")), Color.DimGray);
+				btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
+				btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
 			}
 
 			btn.Click += (s, a) => { Networking.SendStartGame(); };
@@ -138,7 +138,7 @@ public class PreGameLobbyLayout : UiLayout
 						Left = -10,
 						Width = 50,
 						Height = 50,
-						Image = new ColoredRegion(new TextureRegion(ResourceManager.GetTexture("UI/kick")),Color.White),
+						Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/kick")),Color.White),
 					};
 					kick.Click += (s, a) =>
 					{

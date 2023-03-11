@@ -1,4 +1,5 @@
-﻿using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
+﻿using System;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -14,7 +15,7 @@ public class ConnectionLayout : UiLayout
 		{
 			RowSpacing = 0,
 			ColumnSpacing = 0,
-			Background = new TextureRegion(ResourceManager.GetTexture("UI/background")),
+			Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
 		};
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,300));
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -32,7 +33,7 @@ public class ConnectionLayout : UiLayout
 		{
 			GridColumn = 1,
 			GridRow = 2,
-			Text = "name",
+			Text =  Game1.config.GetValue("config","Name","Operative#"+Random.Shared.Next(1000)),
 			HorizontalAlignment = HorizontalAlignment.Stretch
 		};
 		grid.Widgets.Add(textBox2);

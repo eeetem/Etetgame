@@ -31,11 +31,11 @@ namespace MultiplayerXeno
 
 				if (!Faceable)
 				{
-					spriteSheet[i] = new[] {ResourceManager.GetTexture(spriteName)};
+					spriteSheet[i] = new[] {TextureManager.GetTexture(spriteName)};
 					continue;
 				}
 
-				spriteSheet[i] = Utility.MakeSpriteSheet(ResourceManager.GetTexture(spriteName), 3, 3);
+				spriteSheet[i] = Utility.MakeSpriteSheet(TextureManager.GetTexture(spriteName), 3, 3);
 			}
 		}
 		

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.Styles;
 
@@ -16,6 +17,29 @@ public abstract class UiLayout
 	{
 		DefaultFont = new FontSystem();
 		DefaultFont.AddFont(File.ReadAllBytes("Content/GradientVector.ttf"));
+		
+		Stylesheet.Current.ButtonStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.TextBoxStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.ButtonStyle.LabelStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.TextBoxStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.LabelStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.LabelStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.ComboBoxStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.ComboBoxStyle.LabelStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.ComboBoxStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
+		Stylesheet.Current.ComboBoxStyle.ListBoxStyle.ListItemStyle.LabelStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.ComboBoxStyle.ListBoxStyle.ListItemStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
+		Stylesheet.Current.ListBoxStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.ListBoxStyle.ListItemStyle.LabelStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.ListBoxStyle.ListItemStyle.LabelStyle.Background =  new SolidBrush(Color.Black);
+		Stylesheet.Current.ScrollViewerStyle.Background =  new SolidBrush(Color.Black);
+		Stylesheet.Current.ScrollViewerStyle.VerticalScrollKnob = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("")),new Color(31,81,255,240));
+		Stylesheet.Current.ScrollViewerStyle.VerticalScrollBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("")), Color.Black);
+		Stylesheet.Current.WindowStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.WindowStyle.TitleStyle.TextColor = new Color(31,81,255,240);
+		Stylesheet.Current.HorizontalSliderStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.HorizontalSliderStyle.KnobStyle.ImageStyle.PressedImage = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("")),new Color(31,81,255,240));
+
 	}
 
 	protected static FontSystem DefaultFont { get; set; }
