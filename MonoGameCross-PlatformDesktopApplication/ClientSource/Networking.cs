@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using System.Threading.Tasks;
 using CommonData;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.UILayouts;
@@ -105,6 +106,7 @@ namespace MultiplayerXeno
 			{
 				UI.SetUI(new MainMenuLayout());
 			}
+			GameManager.ResetGame();
 		}
 
 		public static void UploadMap(string path)
@@ -151,7 +153,6 @@ namespace MultiplayerXeno
 		private static void ReciveProjectilePacket(ProjectilePacket packet, Connection connection)
 		{
 			new Projectile(packet);
-			
 		}
 
 		public static void DoAction(GameActionPacket packet)

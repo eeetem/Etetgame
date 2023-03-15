@@ -19,11 +19,11 @@
 /processorParam:Quality=Best
 /build:audio/capture.wav
 
-#begin audio/damage/death.wav
+#begin audio/damage/death1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/death.wav
+/build:audio/damage/death1.wav
 
 #begin audio/damage/death2.wav
 /importer:WavImporter
@@ -37,11 +37,11 @@
 /processorParam:Quality=Best
 /build:audio/damage/death3.wav
 
-#begin audio/damage/grunt.wav
+#begin audio/damage/grunt1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/grunt.wav
+/build:audio/damage/grunt1.wav
 
 #begin audio/damage/grunt2.wav
 /importer:WavImporter
@@ -51,7 +51,7 @@
 
 #begin audio/damage/wilhelm.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
 /build:audio/damage/wilhelm.ogg
 
@@ -500,6 +500,30 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/Crouch.png
 
+#begin textures/UI/Crouch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Crouch.png
+
+#begin textures/UI/discord.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/discord.png
+
 #begin textures/UI/Fire.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -511,6 +535,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/UI/Fire.png
+
+#begin textures/UI/Fire.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Fire.png
+
+#begin textures/UI/Headshot.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Headshot.png
 
 #begin textures/UI/Headshot.png
 /importer:TextureImporter
@@ -824,6 +872,18 @@
 /processorParam:TextureFormat=Color
 /build:textures/UI/Second Wind.png
 
+#begin textures/UI/Second Wind.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Second Wind.png
+
 #begin textures/UI/Suppress.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -835,6 +895,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/UI/Suppress.png
+
+#begin textures/UI/Suppress.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/Suppress.png
+
+#begin textures/UI/targetingCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:textures/UI/targetingCursor.png
 
 #begin textures/UI/targetingCursor.png
 /importer:TextureImporter

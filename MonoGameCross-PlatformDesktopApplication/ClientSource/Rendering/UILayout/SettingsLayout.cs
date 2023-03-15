@@ -11,7 +11,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class SettingsLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		var grid = new Grid()
 			{
@@ -101,7 +101,7 @@ public class SettingsLayout : UiLayout
 			};
 			cancel.Click+= (sender, args) =>
 			{
-				UI.SetUI(new MainMenuLayout());
+				UI.SetUI(lastLayout);
 			};
 			grid.Widgets.Add(cancel);
 			var ok = new SoundButton()
@@ -117,9 +117,10 @@ public class SettingsLayout : UiLayout
 				Game1.config.SetValue("settings", "Resolution", resoultion.SelectedItem.Text);
 				Game1.config.SetValue("settings", "musicVol", musicVolume.Value);
 				Game1.config.SetValue("settings", "sfxVol", sfxVolume.Value);
+				Game1.config.Save();
 				Game1.instance.UpdateGameSettings();
 				
-				UI.SetUI(new MainMenuLayout());
+				UI.SetUI(lastLayout);
 			};
 			grid.Widgets.Add(ok);
 

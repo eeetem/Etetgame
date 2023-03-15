@@ -162,7 +162,7 @@ namespace MultiplayerXeno
 		private static void RegisterClient(RawData rawData, Connection connection)
 		{
 			Console.WriteLine("Begining Client Register");
-			string name = RawDataConverter.ToUTF8String(rawData);
+			string name = RawDataConverter.ToUTF8String(rawData).ToLower();
 			if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
 			{
 				Kick("Invalid name",connection);

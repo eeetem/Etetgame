@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+#if CLIENT
+using FontStashSharp;
+#endif
 namespace MultiplayerXeno;
 
 public class OverWatch : Action
@@ -34,10 +38,10 @@ public class OverWatch : Action
 		actor.FirePoints=0;
 		actor.MovePoints=0;
 		var positions = GetOverWatchPositions(actor, target);
-		foreach (var position in positions)
+		foreach (var shot in positions)
 		{
-			WorldManager.Instance.GetTileAtGrid(position).Watch(actor);
-			actor.overWatchedTiles.Add(position);
+			WorldManager.Instance.GetTileAtGrid(shot.result.EndPoint).Watch(actor);
+			actor.overWatchedTiles.Add(shot.result.EndPoint);
 		}
 
 		actor.overWatch = true;
@@ -45,9 +49,10 @@ public class OverWatch : Action
 
 	}
 
-	private HashSet<Vector2Int> GetOverWatchPositions(Controllable actor,Vector2Int target)
+	private HashSet<Projectile> GetOverWatchPositions(Controllable actor,Vector2Int target)
 	{
 		var tiles = WorldManager.Instance.GetTilesAround(target,actor.Type.OverWatchSize);
+		HashSet<Projectile> possibleShots = new HashSet<Projectile>();
 		HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
 		foreach (var endTile in tiles)
 		{
@@ -60,15 +65,17 @@ public class OverWatch : Action
 
 		}
 
-		foreach (var position in new List<Vector2Int>(positions))
+		foreach (var position in positions)
 		{
-			if (!actor.CanHit(position))
+			if (actor.CanHit(position))
 			{
-				positions.Remove(position);
+
+				var proj = ((Fire) Actions[ActionType.Attack]).MakeProjectile(actor, position);
+				possibleShots.Add(proj);
 			}
 		}
 
-		return positions;
+		return possibleShots;
 	}
 #if CLIENT
 	
@@ -77,15 +84,15 @@ public class OverWatch : Action
 	{
 		
 
-		foreach (var pos in GetOverWatchPositions(actor,target))
+		foreach (var shot in GetOverWatchPositions(actor,target))
 		{
 
-			var tile = WorldManager.Instance.GetTileAtGrid(pos);
+			var tile = WorldManager.Instance.GetTileAtGrid(shot.result.EndPoint);
 			if (tile.Surface == null) continue;
 			
 			Color c = Color.Yellow * 0.45f;
 			
-			if (actor.CanHit(pos,true))
+			if (actor.CanHit(shot.result.EndPoint,true))
 			{
 				c = Color.Green * 0.45f;
 			}
@@ -93,6 +100,7 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
+			spriteBatch.DrawString(Game1.SpriteFont,""+shot.dmg,   Utility.GridToWorldPos(tile.Position),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 		}
 
 	}

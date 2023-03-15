@@ -26,7 +26,7 @@ public abstract class Attack : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	protected Projectile MakeProjectile(Controllable actor,Vector2Int target)
+	public Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
 		//target = actor.worldObject.TileLocation.Position + new Vector2(-10,0);
 		bool lowShot =false;
@@ -173,6 +173,8 @@ public abstract class Attack : Action
 
 
 			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 25);
+			spriteBatch.DrawString(Game1.SpriteFont,""+dmg,   Utility.GridToWorldPos(dropOff),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+
 			dmg = (int) Math.Ceiling(dmg / 1.8f);
 			k++;
 			point1 = point2;

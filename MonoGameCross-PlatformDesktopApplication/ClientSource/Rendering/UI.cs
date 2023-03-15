@@ -9,9 +9,13 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno.UILayouts;
 using Myra;
+using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno
 {
@@ -21,18 +25,18 @@ namespace MultiplayerXeno
 		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
 		private static Texture2D[] coverIndicator = new Texture2D[8];
-		private static Texture2D[] infoIndicator = new Texture2D[6];
 		private static Texture2D targetingCUrsor;
 		
 		public static readonly List<Controllable> Controllables = new List<Controllable>();
 
-		public static FontSystem DefaultFont;
+		public static Texture2D[] infoIndicator; 
 		public static void Init(ContentManager content, GraphicsDevice graphicsdevice)
 		{
 			graphicsDevice = graphicsdevice;
 			spriteBatch = new SpriteBatch(graphicsDevice);
 			
-			
+			Texture2D indicatorSpriteSheet = TextureManager.GetTexture("UI/indicators");
+			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);//this is inneficient but it'll be gone once new unit bar gets made
 
 
 			MyraEnvironment.Game = Game1.instance;
@@ -62,21 +66,25 @@ namespace MultiplayerXeno
 		public delegate void UIGen();
 		
 
-		private static UiLayout currentUiLayout;
+		private static UiLayout CurrentUI;
 		private static Widget root;
-		public static void SetUI(UiLayout? uiMethod)
+		public static void SetUI(UiLayout? newUI)
 		{
 
 			UiLayout.SetScale(new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f));
-			if (uiMethod != null)
-				{
-					currentUiLayout = uiMethod;
-				}
-
-				
-				Console.WriteLine("Changing UI to: "+currentUiLayout);
-				root = currentUiLayout.Generate(Desktop);
 			
+		
+			if (newUI != null)
+			{
+				root = newUI.Generate(Desktop, CurrentUI);
+				CurrentUI = newUI;
+			}
+			else
+			{
+				root = CurrentUI.Generate(Desktop, CurrentUI);
+			}
+
+			Console.WriteLine("Changing UI to: "+CurrentUI);
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
@@ -405,17 +413,61 @@ namespace MultiplayerXeno
 		private static KeyboardState lastState;
 		private static Dictionary<Vector2Int, Visibility> EnemyVisiblityCache = new Dictionary<Vector2Int, Visibility>();
 		private static Controllable enemySelected;
+
+		private static Panel menu;
 		public static void Update(float deltatime)
 		{
+			if(Desktop.FocusedKeyboardWidget != null) return;
 			var keyboardState = Keyboard.GetState();
 			if (keyboardState.IsKeyDown(Keys.L) && lastState.IsKeyUp(Keys.L))
 			{
 				SetUI(null);
 			}
-			
-			if(WorldEditSystem.enabled) return;
-			if(Desktop.FocusedKeyboardWidget != null) return;
-			if(GameManager.MyUnits.Count == 0) return;
+
+			if (keyboardState.IsKeyDown(Keys.Escape) && lastState.IsKeyUp(Keys.Escape))
+			{
+				if (CurrentUI is UnitGameLayout || CurrentUI is GameLayout || CurrentUI is EditorUiLayout)
+				{
+					if (menu != null && Desktop != null)
+					{
+						Desktop.Widgets.Remove(menu);
+						menu = null;
+
+					}
+					else
+					{
+
+						menu = new Panel();
+						menu.HorizontalAlignment = HorizontalAlignment.Center;
+						menu.VerticalAlignment = VerticalAlignment.Center;
+						menu.Background = new SolidBrush(Color.Black * 0.5f);
+						menu.BorderThickness = new Thickness(1);
+						var stack = new VerticalStackPanel();
+						menu.Widgets.Add(stack);
+						var btn1 = new SoundButton();
+						btn1.Text = "Resume";
+						btn1.Click += (sender, args) => { menu.RemoveFromDesktop(); };
+						stack.Widgets.Add(btn1);
+
+						var btn2 = new SoundButton();
+						btn2.Text = "Settings";
+						btn2.Click += (sender, args) => { SetUI(new SettingsLayout()); };
+						stack.Widgets.Add(btn2);
+
+						var btn3 = new SoundButton();
+						btn3.Text = "Quit";
+						btn3.Click += (sender, args) => { Networking.Disconnect(); };
+						stack.Widgets.Add(btn3);
+
+						Desktop.Widgets.Add(menu);
+
+					}
+				}
+			}
+
+			if (!WorldEditSystem.enabled && GameManager.MyUnits.Count != 0)
+			{
+
 			
 			if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
 			{
@@ -455,10 +507,11 @@ namespace MultiplayerXeno
 				} while (SelectedControllable.Health <= 0);
 
 			}
-
+			}
+		
 	
-
 			lastState = keyboardState;
+			
 		}
 
 		private static bool raycastDebug;

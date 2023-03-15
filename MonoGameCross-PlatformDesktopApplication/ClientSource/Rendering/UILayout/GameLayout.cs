@@ -30,10 +30,10 @@ public class GameLayout : UiLayout
 	{
 		scoreIndicator.Text = "score: " + score;
 	}
-	public override Widget Generate(Desktop desktop)
+
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		Texture2D indicatorSpriteSheet = TextureManager.GetTexture("UI/indicators");
-		var infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);//this is inneficient but it'll be gone once new unit bar gets made
+		
 		var panel = new Panel
 			{
 				
@@ -79,23 +79,6 @@ public class GameLayout : UiLayout
 				panel.Widgets.Add(swapTeam);
 			}
 
-			var quit = new TextButton
-			{
-				Top= (int)(200f*globalScale.Y),
-				Left = (int)(-10f*globalScale.X),
-				Width = (int)(80 * globalScale.X),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top,
-				Text = "QUIT",
-				//Scale = globalScale
-			};
-			quit.Click += (o, a) =>
-			{
-				Networking.Disconnect();
-				
-			};
-
-			panel.Widgets.Add(quit);
 
 			turnIndicator = new Panel()
 			{
@@ -198,11 +181,11 @@ public class GameLayout : UiLayout
 				{
 					if (unit.MovePoints < i)
 					{
-						indicators1.Add(infoIndicator[0]);
+						indicators1.Add(UI.infoIndicator[0]);
 					}
 					else
 					{
-						indicators1.Add(infoIndicator[1]);
+						indicators1.Add(UI.infoIndicator[1]);
 					}
 
 				}
@@ -212,11 +195,11 @@ public class GameLayout : UiLayout
 				
 					if (unit.FirePoints < i)
 					{
-						indicators3.Add(infoIndicator[4]);
+						indicators3.Add(UI.infoIndicator[4]);
 					}
 					else
 					{
-						indicators3.Add(infoIndicator[5]);
+						indicators3.Add(UI.infoIndicator[5]);
 					}
 
 				}

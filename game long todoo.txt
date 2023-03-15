@@ -1,11 +1,16 @@
 
 
 discord link
+reset the map when ending game
 how to play
+chatwiping on move
+crouch/stand turn point
+disable effects in editor
+bigger coordinates
+pregame lobby music flicker
 less agressive damage dropoff
 only see current unit turn preview
 version number
-point blank supression
 player disconnecting makes a new host
 nicer lobby browser
 crouch shot toggle

@@ -161,9 +161,7 @@ namespace MultiplayerXeno
 		{
 			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
 			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
-
-
-		
+			
 				
 			if (proj.result.hit)
 			{

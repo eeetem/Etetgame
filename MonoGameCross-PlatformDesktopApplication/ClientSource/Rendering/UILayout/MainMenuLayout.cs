@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Network;
@@ -10,7 +12,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class MainMenuLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 			var panel = new Panel()
     			{
@@ -153,6 +155,20 @@ public class MainMenuLayout : UiLayout
 
 			};
 
+
+			var discord = new ImageButton();
+			discord.Image = new TextureRegion(TextureManager.GetTexture("UI/discord"));
+			discord.Background = new SolidBrush(Color.Transparent);
+			discord.OverBackground = new SolidBrush(Color.Transparent);
+			discord.VerticalAlignment = VerticalAlignment.Top;
+			discord.Width = 100;
+			discord.Height = 100;
+			discord.HorizontalAlignment = HorizontalAlignment.Right;
+			discord.Click += (s, a) =>
+			{
+				Process.Start("explorer", "https://discord.gg/TrmAJbMaQ3");
+			};
+			panel.Widgets.Add(discord);
 
 			menustack.Widgets.Add(button4);
 

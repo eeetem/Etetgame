@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CommonData;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 #if CLIENT
@@ -84,6 +85,9 @@ public abstract class Action
 		
 	}
 
+	
+
+	
 	protected abstract void Execute(Controllable actor, Vector2Int target);
 #if CLIENT
 	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);

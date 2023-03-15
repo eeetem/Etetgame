@@ -96,8 +96,8 @@ namespace HeartSignal
 			
 			AddTween("clmagnitude", 30, 3, false);
 			AddTween("bloomAmount", 2, 5, false);
-			AddTween("warpX", 0.01f, 5, false);
-			AddTween("warpY", 0.01f, 5, false);
+			AddTween("warpX", 0.02f, 5, false);
+			AddTween("warpY", 0.02f, 5, false);
 			AddTween("clmagnitude", 3, 1f, false);
 			Console.Write("added tweens");
 

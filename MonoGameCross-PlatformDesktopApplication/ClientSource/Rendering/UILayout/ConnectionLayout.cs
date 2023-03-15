@@ -9,7 +9,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class ConnectionLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		var grid = new Grid
 		{

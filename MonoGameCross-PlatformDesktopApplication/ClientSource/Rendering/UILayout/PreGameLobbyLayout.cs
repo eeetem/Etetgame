@@ -14,7 +14,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class PreGameLobbyLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		
 			var grid1 = new Grid()
@@ -124,7 +124,7 @@ public class PreGameLobbyLayout : UiLayout
 
 			var label = new Label()
 			{
-						Text = "Oponent:",
+						Text = "Opponent:",
 						VerticalAlignment = VerticalAlignment.Center,
 						HorizontalAlignment = HorizontalAlignment.Center,
 					//	Height = (int)(80*globalScale.Y),
@@ -236,7 +236,7 @@ public class PreGameLobbyLayout : UiLayout
 
 				var input = new TextBox()
 				{
-					Width = 200,
+					Width = (int)(180*globalScale.X),
 					Height = 40,
 					Top = 0,
 					Left = 0,

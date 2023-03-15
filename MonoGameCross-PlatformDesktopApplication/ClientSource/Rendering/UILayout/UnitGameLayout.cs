@@ -21,9 +21,9 @@ public class UnitGameLayout : UiLayout
 
 
 
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		var root = new GameLayout().Generate(desktop);
+		var root = new GameLayout().Generate(desktop,lastLayout);
 		if (UI.SelectedControllable != null && !UI.SelectedControllable.IsMyTeam()) return root;
 		if (UI.SelectedControllable == null) return root;
 			

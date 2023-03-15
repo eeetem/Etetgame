@@ -191,7 +191,7 @@ namespace MultiplayerXeno
 				if (covercast != null)
 				{
 					var hitobj = WorldManager.Instance.GetObject(result.hitObjID);
-					Cover cover = WorldManager.Instance.GetObject(covercast.hitObjID).GetCover();
+					Cover cover = WorldManager.Instance.GetObject(covercast.hitObjID)!.GetCover();
 						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 						{
 							if (cover != Cover.Full)
@@ -220,7 +220,8 @@ namespace MultiplayerXeno
 
 				
 				
-				WorldManager.Instance.GetObject(result.hitObjID).TakeDamage(this);
+				WorldManager.Instance.GetObject(result.hitObjID)?.TakeDamage(this);
+			
 			}
 			else
 			{
@@ -228,17 +229,15 @@ namespace MultiplayerXeno
 				//nothing is hit
 			}
 
-			List<WorldTile> tiles = SupressedTiles();
 			Console.WriteLine("starting to supress");
+			List<WorldTile> tiles = SupressedTiles();
 			Console.WriteLine("checking " + tiles.Count + " tiles");
 			foreach (var tile in tiles)
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
 					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
-					#if SERVER
 					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
-					#endif
 					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)
 					{
 						tile.ObjectAtLocation.ControllableComponent.Panic();

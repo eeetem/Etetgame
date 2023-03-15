@@ -62,8 +62,10 @@ namespace MultiplayerXeno
 			
 			score = data.Score;
 			GameState = data.GameState;
-		
-			
+
+			try
+			{
+
 				switch (GameState)
 				{
 					case GameState.Lobby:
@@ -77,10 +79,12 @@ namespace MultiplayerXeno
 						break;
 					case GameState.Playing:
 						StartGame();
-						Audio.PlayCombat();
 						break;
 				}
-			
+			}
+			catch(Exception e){
+				Console.WriteLine(e);
+			}
 
 		}
 
@@ -103,6 +107,7 @@ namespace MultiplayerXeno
 		{
 			if(intated)return;
 			intated = true;
+			Audio.PlayCombat();
 			CountMyUnits();
 			WorldManager.Instance.MakeFovDirty();
 			UI.SetUI(new GameLayout());
@@ -130,6 +135,15 @@ namespace MultiplayerXeno
 			UI.SelectControllable(null);
 			Action.SetActiveAction(null);
 
+		}
+
+		public static void ResetGame()
+		{
+			intated = false;
+			WorldManager.Instance.WipeGrid();
+			MyUnits.Clear();
+			UI.Controllables.Clear();
+			WorldEditSystem.enabled = false;
 		}
 
 

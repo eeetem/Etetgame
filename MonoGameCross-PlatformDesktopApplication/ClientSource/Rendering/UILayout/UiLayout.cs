@@ -17,9 +17,11 @@ public abstract class UiLayout
 	{
 		DefaultFont = new FontSystem();
 		DefaultFont.AddFont(File.ReadAllBytes("Content/GradientVector.ttf"));
-		
+
 		Stylesheet.Current.ButtonStyle.Background = new SolidBrush(Color.Black);
 		Stylesheet.Current.TextBoxStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.TextBoxStyle.BorderThickness = new Thickness(1);
+		Stylesheet.Current.TextBoxStyle.Border = new SolidBrush(new Color(31, 81, 255, 240));
 		Stylesheet.Current.ButtonStyle.LabelStyle.TextColor = new Color(31,81,255,240);
 		Stylesheet.Current.TextBoxStyle.TextColor = new Color(31,81,255,240);
 		Stylesheet.Current.LabelStyle.TextColor = new Color(31,81,255,240);
@@ -56,7 +58,7 @@ public abstract class UiLayout
 	}
 	protected static float FontSize = 35;
 	protected static Vector2 globalScale = new Vector2(1, 1);
-	public abstract Widget Generate(Desktop desktop);
+	public abstract Widget Generate(Desktop desktop, UiLayout? lastLayout);
 	
 	
 	//probably shouldnt be here but idk where to put it

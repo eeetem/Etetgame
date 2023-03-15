@@ -9,24 +9,18 @@ namespace MultiplayerXeno.UILayouts;
 
 public class EditorUiLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		
-			var grid = new Grid
-			{
-				RowSpacing = 0,
-				ColumnSpacing = 0
-			};
 
-			int ypos = 0;
+			var panel = new Panel();
+
+			var stack = new VerticalStackPanel();
+			stack.HorizontalAlignment = HorizontalAlignment.Left;
+			panel.Widgets.Add(stack);
 			foreach (var prefabDictElement in PrefabManager.Prefabs)
 			{
-				
-				
 				var button = new TextButton
 				{
-					GridColumn = 0,
-					GridRow = ypos,
 					Text = prefabDictElement.Key
 				};
 
@@ -34,65 +28,65 @@ public class EditorUiLayout : UiLayout
 				{ 
 					WorldEditSystem.ActivePrefab = prefabDictElement.Key;
 				};
-				grid.Widgets.Add(button);
+				stack.Widgets.Add(button);
 				
 				
-			
-				ypos += 1;
-			
-			}
-			var save = new TextButton
-			{
-				GridColumn = 5,
-				GridRow = 0,
-				Text = "save"
-			};
 
+			}
+
+			var save = new TextButton();
+			save.Text = "save";
+			save.HorizontalAlignment = HorizontalAlignment.Right;
+			save.VerticalAlignment = VerticalAlignment.Top;
 			save.Click += (s, a) =>
 			{ 			
 				var panel = new Panel();
+				var stack = new VerticalStackPanel();
+				panel.Widgets.Add(stack);
+				stack.Spacing = 25;
 				var label = new Label()
 				{
 					Text = "Enter Map Name",
 					Top = 0,
 				};
-				panel.Widgets.Add(label);
+				stack.Widgets.Add(label);
 				
 				var mapname = new TextBox()
 				{
 					Top = 25,
 				};
 				mapname.Text = WorldManager.Instance.CurrentMap.Name;
-				panel.Widgets.Add(mapname);
+				stack.Widgets.Add(mapname);
 				label = new Label()
 				{
 					Text = "Author Name",
 					Top = 50
 				};
-				panel.Widgets.Add(label);
+				stack.Widgets.Add(label);
 				var authorname = new TextBox()
 				{
 					Top = 75,
 					Text = WorldManager.Instance.CurrentMap.Author,
 				};
-				panel.Widgets.Add(authorname);
+				stack.Widgets.Add(authorname);
 				label = new Label()
 				{
 					Text = "Unit Count",
 					Top = 100,
 				};
-				panel.Widgets.Add(label);
+				stack.Widgets.Add(label);
 				var unitCount = new TextBox()
 				{
 					Top = 125,
 					Text = WorldManager.Instance.CurrentMap.unitCount.ToString(),
 				};
-				panel.Widgets.Add(unitCount);
+				stack.Widgets.Add(unitCount);
 				
 				
 				
 				var dialog = Dialog.CreateMessageBox("Save Map", panel);
-				dialog.Height = 250;
+				dialog.Width = (int)(450f*globalScale.X);
+				dialog.Height = (int) (500f * globalScale.Y);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
 					
@@ -114,13 +108,12 @@ public class EditorUiLayout : UiLayout
 				dialog.ShowModal(desktop);
 				
 			};
-			
-			var load = new TextButton
-			{
-				GridColumn = 5,
-				GridRow = 1,
-				Text = "load"
-			};
+
+			var load = new TextButton();
+			load.Text = "load";
+			load.HorizontalAlignment = HorizontalAlignment.Right;
+			load.VerticalAlignment = VerticalAlignment.Top;
+			load.Left = (int)(-100*globalScale.X);
 
 			load.Click += (s, a) =>
 			{ 
@@ -134,6 +127,7 @@ public class EditorUiLayout : UiLayout
 				panel.Widgets.Add(label);
 				
 				var selection = new ListBox();
+				selection.Top = (int)(30*globalScale.X);
 				panel.Widgets.Add(selection);
 				
 				foreach (var path in filePaths)
@@ -145,8 +139,8 @@ public class EditorUiLayout : UiLayout
 					selection.Items.Add(item);
 				}
 				var dialog = Dialog.CreateMessageBox("Load Map", panel);
-				dialog.Width = 100;
-				dialog.Height = (int) (1000f * globalScale.Y);
+				dialog.Width = (int)(450f*globalScale.X);
+				dialog.Height = (int) (500f * globalScale.Y);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
 					WorldManager.Instance.LoadMap("./Maps/"+selection.SelectedItem.Text+".mapdata");
@@ -154,31 +148,39 @@ public class EditorUiLayout : UiLayout
 				dialog.ShowModal(desktop);
 				
 			};
-			grid.Widgets.Add(save);
-			grid.Widgets.Add(load);
-			
-			var point = new TextButton
+			panel.Widgets.Add(save);
+			panel.Widgets.Add(load);
+
+			var optionstack = new HorizontalStackPanel();
+			optionstack.HorizontalAlignment = HorizontalAlignment.Center;
+			optionstack.VerticalAlignment = VerticalAlignment.Bottom;
+			optionstack.Spacing = 10;
+			panel.Widgets.Add(optionstack);
+			var rotateq = new TextButton
 			{
-				GridColumn = 1,
-				GridRow = ypos,
-				Text = "Point(1)"
+				Text = "<- Rotate(Q)"
 			};
+			rotateq.Click += (s, a) =>
+			{
+				WorldEditSystem.ActiveDir--;
+			};
+			optionstack.Widgets.Add(rotateq);
+			var point = new TextButton();
+			point.Text = "Point(1)";
 			point.Click += (s, a) =>
 			{
 				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Point;
 			};
-			grid.Widgets.Add(point);
+			optionstack.Widgets.Add(point);
 			var selection = new TextButton
 			{
-				GridColumn = 2,
-				GridRow = ypos,
 				Text = "Selection(2)"
 			};
 			selection.Click += (s, a) =>
 			{
 				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Selection;
 			};
-			grid.Widgets.Add(selection);
+			optionstack.Widgets.Add(selection);
 			/*var line = new TextButton
 			{
 				GridColumn = 3,
@@ -190,34 +192,19 @@ public class EditorUiLayout : UiLayout
 				WorldEditSystem.ActiveBrush = WorldEditSystem.Brush.Line;
 			};
 			grid.Widgets.Add(line);*/
-			
-			
-			var rotateq = new TextButton
-			{
-				GridColumn = 2,
-				GridRow = ypos-1,
-				Text = "<- Rotate(Q)"
-			};
-			rotateq.Click += (s, a) =>
-			{
-				WorldEditSystem.ActiveDir--;
-			};
-			grid.Widgets.Add(rotateq);
-			
+
 			var rotatee = new TextButton
 			{
-				GridColumn = 3,
-				GridRow = ypos-1,
 				Text = "Rotate(E) -->"
 			};
 			rotatee.Click += (s, a) =>
 			{
 				WorldEditSystem.ActiveDir++;
 			};
-			grid.Widgets.Add(rotatee);
+			optionstack.Widgets.Add(rotatee);
 
 
 
-			return grid;
+			return panel;
 	}
 }

@@ -11,7 +11,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class LobbyBrowserLayout : UiLayout
 {
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 			var Grid = new Grid();
 			Grid.Background = new TextureRegion(TextureManager.GetTexture("UI/background"));

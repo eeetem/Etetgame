@@ -11,7 +11,7 @@ public class GameSetupLayout : UiLayout
 	private static int scoutCount = 0;
 	private static int heavyCount = 0;
 
-	public override Widget Generate(Desktop desktop)
+	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		
 			var grid = new Grid
