@@ -120,7 +120,6 @@ Audio.PlaySound("capture");
 		public static void ParsePacket(GameActionPacket packet)
 		{
 
-
 			if (packet.Type == ActionType.EndTurn)
 			{
 				NextTurn();
@@ -134,6 +133,24 @@ Audio.PlaySound("capture");
 			}
 			Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
 			Action act = Action.Actions[packet.Type];//else get controllable specific actions
+			if (act.ActionType == ActionType.Attack)
+			{
+				string target = packet.args[0];
+				switch (target)
+				{
+					case "Auto":
+						Attack.targeting = Attack.targeting = TargetingType.Auto;
+						break;
+					case "High":
+						Attack.targeting = Attack.targeting = TargetingType.High;
+						break;
+					case "Low":
+						Attack.targeting = Attack.targeting = TargetingType.Low;
+						break; 
+					default:
+						throw new ArgumentException("Invalid target type");
+				}
+			}
 			act.PerformFromPacket(controllable, packet.Target);
 		
 		}

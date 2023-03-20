@@ -18,6 +18,7 @@ namespace MultiplayerXeno
 		public int supressionRange;
 		public int supressionStrenght;
 		public bool shooterLow;
+		public bool targetLow;
 		public Projectile(ProjectilePacket packet)
 		{
 			this.result = packet.result;
@@ -29,6 +30,7 @@ namespace MultiplayerXeno
 			this.supressionRange = packet.suppresionRange;
 			this.supressionStrenght = packet.supressionStrenght;
 			this.shooterLow = packet.shooterLow;
+			this.targetLow = packet.targetLow;
 			CalculateDetails();
 			Fire();
 		}
@@ -43,6 +45,7 @@ namespace MultiplayerXeno
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
 			this.shooterLow = shooterLow;
+			this.targetLow = targetLow;
 				
 		/*	if (Vector2.Distance(from, to) <= 1.5)
 			{
@@ -73,21 +76,23 @@ namespace MultiplayerXeno
 			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
 		}
 
-		if (!result.hit)
-		{
-			//if we didnt hit anything autohit object at the end tile
-			if (WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation != null)
-			{
+		if (!result.hit) {
+			var tile = WorldManager.Instance.GetTileAtGrid(to);
+			var obj = tile.ObjectAtLocation;
+			if (obj != null) {
 #if CLIENT
-				if (WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.IsVisible())
-				{
+				if (obj.IsVisible()) {
 #endif
-					result = new RayCastOutcome(from, to)
-					{
-						hit = true,
-						hitObjID = WorldManager.Instance.GetTileAtGrid(to).ObjectAtLocation.Id,
-						CollisionPointLong = to,
-					};
+					var controllable = obj.ControllableComponent;
+					if (controllable != null && controllable.Crouching && this.targetLow == false) {
+						// Do nothing if targetLow is false
+					} else {
+						result = new RayCastOutcome(from, to) {
+							hit = true,
+							hitObjID = obj.Id,
+							CollisionPointLong = to,
+						};
+					}
 #if CLIENT
 				}
 #endif

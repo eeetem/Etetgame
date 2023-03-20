@@ -1,4 +1,5 @@
-﻿using HeartSignal;
+﻿using CommonData;
+using HeartSignal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Pathfinding;
@@ -87,16 +88,21 @@ namespace MultiplayerXeno
 			Audio.PlayMenu();
 		}
 
+		public static Vector2Int resolution = new Vector2Int(1280, 720);
 		public void UpdateGameSettings()
 		{
+			//_graphics.HardwareModeSwitch = false;
 			_graphics.PreferredBackBufferWidth = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[0]);
+			resolution.X = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[0]);
 			_graphics.PreferredBackBufferHeight = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[1]);
+			resolution.Y = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[1]);
+			_graphics.IsFullScreen = bool.Parse(config.GetValue("settings", "fullscreen", "false"));
 			_graphics.ApplyChanges();
-			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
+			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, _graphics.PreferredBackBufferWidth,_graphics.PreferredBackBufferHeight, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
 			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 			Camera.Init(GraphicsDevice,Window);
-			Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.5"));
-			Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.5"));
+			Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.3"));
+			Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.6"));
 			PostPorcessing.RemakeRenderTarget();
 			UI.SetUI(null);
 		}

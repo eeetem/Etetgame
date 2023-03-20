@@ -92,7 +92,7 @@ public abstract class Action
 #if CLIENT
 	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
 #endif
-	public void ToPacket(Controllable actor,Vector2Int target)
+	public virtual void ToPacket(Controllable actor,Vector2Int target)
 	{
 		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
 		Networking.DoAction(packet);

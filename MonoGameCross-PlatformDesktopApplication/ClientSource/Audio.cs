@@ -35,7 +35,6 @@ public static class Audio
 	
 	public static void PlayMenu()
 	{
-		
 		MediaPlayer.Play(content.Load<Song>("audio/music/menu"));
 		MediaPlayer.IsRepeating = true;
 	}
@@ -90,8 +89,6 @@ public static class Audio
 			case "grunt":
 				sfxID = "damage/grunt"+Random.Shared.Next(1,2);//todo standartised audio system with variations
 				break;
-			
-			
 		}
 
 

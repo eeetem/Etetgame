@@ -45,7 +45,6 @@ namespace MultiplayerXeno
 			serverConnectionContainer.AllowUDPConnections = false;
 
 
-
 			selectedMap = "./Maps/Map1.mapdata";
 			WorldManager.Instance.LoadMap("./Maps/Ground Zero.mapdata");
 			serverConnectionContainer.Start();

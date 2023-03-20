@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MultiplayerXeno;
+using Action = MultiplayerXeno.Action;
 using Color = Microsoft.Xna.Framework.Color;
 
 
@@ -95,9 +97,9 @@ namespace HeartSignal
 		{
 			
 			AddTween("clmagnitude", 30, 3, false);
-			AddTween("bloomAmount", 2, 5, false);
-			AddTween("warpX", 0.02f, 5, false);
-			AddTween("warpY", 0.02f, 5, false);
+			AddTween("bloomAmount", 1.8f, 5, false);
+			AddTween("warpX", 0.01f, 5, false);
+			AddTween("warpY", 0.01f, 5, false);
 			AddTween("clmagnitude", 3, 1f, false);
 			Console.Write("added tweens");
 
@@ -135,9 +137,9 @@ namespace HeartSignal
 		{
 			
 				combinedRender?.Dispose();
-				combinedRender = new RenderTarget2D(graphicsDevice, graphicsDevice.Viewport.Width,graphicsDevice.Viewport.Height);
+				combinedRender = new RenderTarget2D(graphicsDevice, Game1.resolution.X,Game1.resolution.Y);
 				combinedRender2?.Dispose();
-				combinedRender2 = new RenderTarget2D(graphicsDevice, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
+				combinedRender2 = new RenderTarget2D(graphicsDevice,Game1.resolution.X,Game1.resolution.Y);
 			
 		}
 
@@ -214,7 +216,7 @@ namespace HeartSignal
 
 	
 			Texture2D cursorTexture2D  = cursorTextures[0];
-			if (UI.targeting)
+			if (Action.ActiveAction is {ActionType: ActionType.Attack})
 			{
 				cursorTexture2D  = cursorTextures[1];
 			}
@@ -265,7 +267,7 @@ namespace HeartSignal
 
 		
 		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone);
-		combinedSpriteBatch.Draw(combinedRender, combinedRender.Bounds, Color.White);
+		combinedSpriteBatch.Draw(combinedRender, combinedRender.GraphicsDevice.Viewport.Bounds, Color.White);
 		combinedSpriteBatch.End();
 			
 	

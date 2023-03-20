@@ -77,8 +77,9 @@ public class ProjectilePacket : Packet
 	public int suppresionRange { get;  set; }
 	public int supressionStrenght { get;  set; }
 	public bool shooterLow { get;  set; }
+	public bool targetLow { get;  set; }
 
-	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int determinationResistanceCoefficient,int suppresionRange,int supressionStrenght,bool shooterLow)
+	public ProjectilePacket(RayCastOutcome result, RayCastOutcome? covercast, int dmg, int dropoffRange, int determinationResistanceCoefficient,int suppresionRange,int supressionStrenght,bool shooterLow,bool targetLow)
 	{
 		this.result = result;
 		this.covercast = covercast;
@@ -88,6 +89,7 @@ public class ProjectilePacket : Packet
 		this.suppresionRange = suppresionRange;
 		this.supressionStrenght = supressionStrenght;
 		this.shooterLow = shooterLow;
+		this.targetLow = targetLow;
 
 	}
 

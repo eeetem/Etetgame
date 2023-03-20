@@ -14,6 +14,7 @@ public abstract class Attack : Action
 	{
 		
 	}
+	public static TargetingType targeting = TargetingType.Auto;
 
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
 	{
@@ -33,24 +34,40 @@ public abstract class Attack : Action
 
 
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
-		if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+		if (targeting == TargetingType.Auto)
+		{
+			if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+			{
+				lowShot = true;
+#if CLIENT
+				if (!tile.ObjectAtLocation.IsVisible())
+				{
+					lowShot = false;
+				}
+#endif
+			}
+		}else if(targeting == TargetingType.Low)
 		{
 			lowShot = true;
-#if CLIENT
-			if (!tile.ObjectAtLocation.IsVisible())
-			{
-				lowShot = false;
-			}
-#endif
 		}
-			
-
+		else if(targeting == TargetingType.High)
+		{
+			lowShot = false;
+		}
+		
 		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
 		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),GetDamage(actor),actor.Type.WeaponRange,lowShot,actor.Crouching,GetdeterminationResistanceEffect(actor),GetSupressionRange(actor),GetSupressionStrenght(actor));
 
 		
 
 		return projectile;
+	}
+
+	public override void ToPacket(Controllable actor, Vector2Int target)
+	{
+		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
+		packet.args.Add(targeting.ToString());
+		Networking.DoAction(packet);
 	}
 
 	protected override void Execute(Controllable actor, Vector2Int target)
@@ -63,7 +80,7 @@ public abstract class Attack : Action
 #if SERVER
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght,p.shooterLow));
+			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght,p.shooterLow,p.targetLow));
 
 #endif
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
@@ -84,23 +101,25 @@ public abstract class Attack : Action
 	private static Projectile previewShot;
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
+	private TargetingType lastTargetingType = TargetingType.Auto;
 
 	public override void InitAction()
 	{
 		previewShot = null;
 		lastTarget = new Vector2Int(0,0);
+		targeting = TargetingType.Auto;
+		lastTargetingType = TargetingType.Auto;
 		base.InitAction();
 	}
 
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		UI.targeting = true;
 		if (actor.worldObject.TileLocation.Position == target)
 		{
 			return;
 		}
 
-		if (target != lastTarget)
+		if (target != lastTarget || targeting != lastTargetingType)
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
@@ -110,10 +129,37 @@ public abstract class Attack : Action
 			}
 		}
 
+		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(target+new Vector2(-1.5f,-0.5f)), Color.Red);
 		if (previewShot == null)
 		{
 			return;
 		}
+
+		string targetHeight = "";
+		switch (targeting)
+		{
+			case TargetingType.Auto:
+				targetHeight = "Auto(";
+				if (previewShot.targetLow || previewShot.shooterLow)
+				{
+					targetHeight += "Low)";
+				}
+				else
+				{
+					targetHeight+= "High)";
+				}
+
+				break;
+			case TargetingType.High:
+				targetHeight = "High";
+				break;
+			case TargetingType.Low:
+				targetHeight = "Low";
+				break;
+		}
+
+				
+		spriteBatch.DrawString(Game1.SpriteFont,"X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
 
 
 
@@ -178,9 +224,6 @@ public abstract class Attack : Action
 			dmg = (int) Math.Ceiling(dmg / 1.8f);
 			k++;
 			point1 = point2;
-
-
-
 		}
 
 
@@ -276,4 +319,3 @@ public abstract class Attack : Action
 	}
 #endif
 }
-

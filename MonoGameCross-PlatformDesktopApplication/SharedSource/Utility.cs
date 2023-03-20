@@ -261,7 +261,6 @@ namespace MultiplayerXeno
         public static Direction GetDirectionToSideWithPoint(Vector2Int tile, Vector2 point)
         {
             Vector2 dir = point - (Vector2)(tile);
-            Console.WriteLine(dir);
             if (dir.X == dir.Y || dir.X == 1-dir.Y || 1-dir.X == dir.Y)
             {
                 return Vec2ToDir(dir);

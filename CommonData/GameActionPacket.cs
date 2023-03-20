@@ -9,12 +9,15 @@ namespace CommonData
 		public int ID { get; set; }
 		
 		public Vector2Int Target { get; set; }
+		
+		public List<string> args { get; set;}
 
 		public GameActionPacket(int id, Vector2Int target, ActionType type)
 		{
 			ID = id;
 			Target = target;
 			Type = type;
+			args = new List<string>();
 		}
 
 	}

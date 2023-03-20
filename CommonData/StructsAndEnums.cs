@@ -22,19 +22,13 @@ namespace CommonData
 		}
 	}
 
-	public struct ActionResult
+	public enum TargetingType
 	{
-		public int TurnPointsUsed;
-		public int ActionPointsUsed;
-		public int MovePointsUsed;
-
-		public ActionResult()
-		{
-			TurnPointsUsed = 0;
-			ActionPointsUsed = 0;
-			MovePointsUsed = 0;
-		}
+		Auto,
+		High,
+		Low
 	}
+
 
 	[Serializable]
 	public partial struct WorldObjectData

@@ -585,8 +585,16 @@ namespace MultiplayerXeno
 
 					if (GameManager.GameState != GameState.Playing && !WorldEditSystem.enabled)
 					{
-
-						Camera.SetPos(WO.Item2.Position);
+						if(obj.ControllableComponent != null){
+							if (obj.ControllableComponent.IsMyTeam())
+							{
+								Camera.SetPos(WO.Item2.Position);
+							}
+						}
+						else
+						{
+							Camera.SetPos(WO.Item2.Position);
+						}
 					}
 #endif
 					

@@ -1,8 +1,12 @@
 ﻿using System;
 using CommonData;
 using FontStashSharp.RichText;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
+using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Network;
@@ -22,38 +26,115 @@ public class LobbyBrowserLayout : UiLayout
 			{
 				GridColumn = 0,
 				GridRow = 0,
+				Width = (int)(100*globalScale.X),
 			};
 			Grid.Widgets.Add(chatPanel);
-			AttachSideChatBox(chatPanel);
+			var chatViewer = new ScrollViewer();
+			chatViewer.VerticalAlignment = VerticalAlignment.Bottom;
+			chatViewer.Top = -40;
+			AddChatBoxToViewer(chatViewer);
+			chatPanel.Widgets.Add(chatViewer);
+			var input = new TextBox()
+			{
+				Width = (int)(100*globalScale.X),
+				Height = 40,
+				Top = 0,
+				Left = 0,
+				Text = "",
+				HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Bottom,
+				Font = DefaultFont.GetFont(20),
+				Border = new SolidBrush(new Color(31,81,255,240)),
+				BorderThickness = new Thickness(2)
+
+			};
+			input.KeyDown += (o, a) =>
+			{
+				if (a.Data == Keys.Enter)
+				{
+					if (input.Text != "")
+					{
+						if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+						{
+							Networking.ChatMSG(input.Text);
+						}
+						else
+						{
+							MasterServerNetworking.ChatMSG(input.Text);
+						}
+
+
+						input.Text = "";
+					}
+				}
+			};
+				
+			var inputbtn = new TextButton()
+			{
+				Width = 50,
+				Height = 25,
+				Top = 0,
+				Left = 0,
+				Text = "Send",
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Bottom,
+				Font = DefaultFont.GetFont(15)
+			};
+			inputbtn.Click += (o, a) =>
+			{
+				if (input.Text != "")
+				{
+					if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+					{
+						Networking.ChatMSG(input.Text);
+					}
+					else
+					{
+						MasterServerNetworking.ChatMSG(input.Text);
+					}
+
+					input.Text = "";
+				}
+			};
+			chatPanel.Widgets.Add(input);
+			chatPanel.Widgets.Add(inputbtn);
+
+			var midPanel = new Panel()
+			{
+				GridColumn = 1,
+				GridRow = 0,
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+				VerticalAlignment = VerticalAlignment.Stretch,
+			};
+			Grid.Widgets.Add(midPanel);
 			var lobbyViewer = new ScrollViewer()
 			{
-					Width = (int)(500f*globalScale.X),
-					Height = (int)(1000f*globalScale.Y),
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Top,
-					GridColumn = 1,
-					GridRow = 0,
-			
+				HorizontalAlignment = HorizontalAlignment.Stretch,
+					VerticalAlignment = VerticalAlignment.Stretch,
+
 			};
-			Grid.Widgets.Add(lobbyViewer);
+			midPanel.Widgets.Add(lobbyViewer);
 
 			var lobbies = new Grid()
 			{
-				VerticalAlignment = VerticalAlignment.Center,
-					HorizontalAlignment = HorizontalAlignment.Left,
+				VerticalAlignment = VerticalAlignment.Stretch,
+					HorizontalAlignment = HorizontalAlignment.Stretch,
 					ColumnSpacing = 10,
+					ShowGridLines = true,
+					GridLinesColor = new Color(255,255,255,100), 
+				//	GridRowSpan = 20
+					//Padding = new Thickness(10),
+					//Margin = new Thickness(10),
+					
 
 			};
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(80*globalScale.X)));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(60*globalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+			lobbies.DefaultRowProportion = new Proportion(ProportionType.Auto);
+
 
 
 			lobbies.Widgets.Add(new Label()
@@ -62,7 +143,8 @@ public class LobbyBrowserLayout : UiLayout
 				GridRow = 0,
 				GridColumn = 1,
 				TextAlign = TextHorizontalAlignment.Left,
-				HorizontalAlignment = HorizontalAlignment.Left
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Font = DefaultFont.GetFont(FontSize*0.65f)
 			});
 			lobbies.Widgets.Add(new Label()
 			{
@@ -70,7 +152,8 @@ public class LobbyBrowserLayout : UiLayout
 				GridRow = 0,
 				GridColumn = 2,
 				TextAlign = TextHorizontalAlignment.Left,
-				HorizontalAlignment = HorizontalAlignment.Left
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Font = DefaultFont.GetFont(FontSize*0.65f)
 			});
 			lobbies.Widgets.Add(new Label()
 			{
@@ -78,75 +161,29 @@ public class LobbyBrowserLayout : UiLayout
 				GridRow = 0,
 				GridColumn = 3,
 				TextAlign = TextHorizontalAlignment.Left,
-				HorizontalAlignment = HorizontalAlignment.Left
-			});
-			lobbies.Widgets.Add(new Label()
-			{
-				Text = "Spectators",
-				GridRow = 0,
-				GridColumn = 4,
-				TextAlign = TextHorizontalAlignment.Left,
-				HorizontalAlignment = HorizontalAlignment.Left
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Font = DefaultFont.GetFont(FontSize*0.65f)
 			});
 			lobbies.Widgets.Add(new Label()
 			{
 				Text = "State",
 				GridRow = 0,
-				GridColumn = 5,
+				GridColumn = 4,
 				TextAlign = TextHorizontalAlignment.Left,
-				HorizontalAlignment = HorizontalAlignment.Left
+				HorizontalAlignment = HorizontalAlignment.Left,
+				Font = DefaultFont.GetFont(FontSize*0.65f)
 			});
 			
 			
 			int row = 1;
 			foreach (var lobby in MasterServerNetworking.Lobbies)
 			{
-				lobbies.Widgets.Add(new Label()
-				{
-					Text = lobby.Name,
-					GridRow = row,
-					GridColumn = 1,
-					TextAlign = TextHorizontalAlignment.Left,
-					HorizontalAlignment = HorizontalAlignment.Left
-				});
-				lobbies.Widgets.Add(new Label()
-				{
-					Text = lobby.MapName,
-					GridRow = row,
-					GridColumn = 2,
-					TextAlign = TextHorizontalAlignment.Left,
-					HorizontalAlignment = HorizontalAlignment.Left
-				});
-				lobbies.Widgets.Add(new Label()
-				{
-					Text = lobby.PlayerCount+"/2",
-					GridRow = row,
-					GridColumn = 3,
-					TextAlign = TextHorizontalAlignment.Left,
-					HorizontalAlignment = HorizontalAlignment.Left
-				});
-				lobbies.Widgets.Add(new Label()
-				{
-					Text = lobby.Spectators.ToString(),
-					GridRow = row,
-					GridColumn = 4,
-					TextAlign = TextHorizontalAlignment.Left,
-					HorizontalAlignment = HorizontalAlignment.Left
-				});
-				lobbies.Widgets.Add(new Label()
-				{
-					Text = lobby.GameState,
-					GridRow = row,
-					GridColumn = 5,
-					TextAlign = TextHorizontalAlignment.Left,
-					HorizontalAlignment = HorizontalAlignment.Left
-				});
-				
+								
 				var lobbybtn = new TextButton()
 				{
 					Text = "Join",
-					HorizontalAlignment = HorizontalAlignment.Center,
 					GridRow = row,
+					Font = DefaultFont.GetFont(FontSize*0.6f),
 					GridColumn =0,
 					
 				};
@@ -170,17 +207,61 @@ public class LobbyBrowserLayout : UiLayout
 					}
 				};
 				lobbies.Widgets.Add(lobbybtn);
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.Name,
+					GridRow = row,
+					GridColumn = 1,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					Font = DefaultFont.GetFont(FontSize*0.4f),
+					Margin = new Thickness(0,5,0,5)
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.MapName,
+					GridRow = row,
+					GridColumn = 2,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					Font = DefaultFont.GetFont(FontSize*0.4f),
+					Margin = new Thickness(0,5,0,5)
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.PlayerCount+"/2",
+					GridRow = row,
+					GridColumn = 3,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					Font = DefaultFont.GetFont(FontSize*0.5f),
+					Margin = new Thickness(0,5,0,5)
+				});
+				lobbies.Widgets.Add(new Label()
+				{
+					Text = lobby.GameState,
+					GridRow = row,
+					GridColumn = 4,
+					TextAlign = TextHorizontalAlignment.Left,
+					HorizontalAlignment = HorizontalAlignment.Left,
+					Font = DefaultFont.GetFont(FontSize*0.5f),
+					Margin = new Thickness(0,5,0,5)
+				});
+
 				row++;
 			}
 			lobbyViewer.Content = lobbies;
 
+			var btnstack = new HorizontalStackPanel();
+			btnstack.VerticalAlignment = VerticalAlignment.Bottom;
+			btnstack.HorizontalAlignment = HorizontalAlignment.Center;
+			btnstack.Spacing = 20;
+			midPanel.Widgets.Add(btnstack);
 			var btn = new TextButton()
 			{
 				Text = "Create Lobby",
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
-				GridColumn = 1,
-				GridRow = 1,
 			};
 			btn.Click += (sender, args) =>
 			{
@@ -214,50 +295,37 @@ public class LobbyBrowserLayout : UiLayout
 				dialog.ShowModal(desktop);
 			};
 		
-			Grid.Widgets.Add(btn);
+			btnstack.Widgets.Add(btn);
 			
 			var btn2 = new SoundButton()
 			{
 				Text = "Refresh",
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center,
-				GridColumn = 1,
-				GridRow = 1,
-				Top = 50,
 			};
 			btn2.Click += (sender, args) =>
 			{
 				MasterServerNetworking.RefreshServers();
 			};
-			Grid.Widgets.Add(btn2);
-			
-			var btn3 = new SoundButton()
-			{
-				Text = "Main Menu",
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				GridColumn = 1,
-				GridRow = 1,
-				Top = 80,
-			};
-			btn3.Click += (sender, args) =>
-			{
-				MasterServerNetworking.Disconnect();
-				UI.SetUI(new MainMenuLayout());
-			};
-			Grid.Widgets.Add(btn3);
+			btnstack.Widgets.Add(btn2);
 
+
+			var rightpanel = new Panel()
+			{
+				GridColumn = 2,
+				GridRow = 0,
+			};
+			Grid.Widgets.Add(rightpanel);
 			var players = new VerticalStackPanel()
 			{
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Left,
-				GridColumn = 2,
-				GridRow = 0,
 			};
 			var playerlbl2 = new Label()
 			{
 				Text = "Players Online",
 				HorizontalAlignment = HorizontalAlignment.Center,
+				Font = DefaultFont.GetFont(FontSize/1.5f)
 		
 			};
 			players.Widgets.Add(playerlbl2);	
@@ -267,11 +335,12 @@ public class LobbyBrowserLayout : UiLayout
 				{
 					Text = player,
 					HorizontalAlignment = HorizontalAlignment.Center,
+					Font = DefaultFont.GetFont(FontSize/1.5f)
 					
 				};
 				players.Widgets.Add(playerlbl);			
 			}
-			Grid.Widgets.Add(players);
+			rightpanel.Widgets.Add(players);
 			lobbyViewer.Content = lobbies;
 
 			return Grid;

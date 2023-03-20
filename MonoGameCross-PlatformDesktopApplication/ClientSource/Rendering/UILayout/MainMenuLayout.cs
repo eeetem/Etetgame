@@ -28,6 +28,7 @@ public class MainMenuLayout : UiLayout
 				VerticalAlignment = VerticalAlignment.Bottom,
 				Top = (int)(200*globalScale.Y),
 				Height = (int)(300*globalScale.Y),
+				Width = (int)(500*globalScale.X),
 				Spacing = 25,
 				
 			};
@@ -38,6 +39,7 @@ public class MainMenuLayout : UiLayout
 				HorizontalAlignment = HorizontalAlignment.Stretch,
 				VerticalAlignment = VerticalAlignment.Bottom,
 				Height = (int)(300*globalScale.Y),
+				Top = (int)(15*globalScale.Y)
 			};
 			menustack.Widgets.Add(stack);
 			
@@ -170,6 +172,14 @@ public class MainMenuLayout : UiLayout
 			};
 			panel.Widgets.Add(discord);
 
+
+			var version = new Label();
+			version.Text = "Alpha 1";
+			version.VerticalAlignment = VerticalAlignment.Top;
+			version.HorizontalAlignment = HorizontalAlignment.Left;
+			version.Background = new SolidBrush(Color.Transparent);
+			panel.Widgets.Add(version);
+			
 			menustack.Widgets.Add(button4);
 
 		

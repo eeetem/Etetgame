@@ -34,6 +34,10 @@ namespace MultiplayerXeno
 		{
 			return Cam.Center;
 		}
+		public static float GetZoom()
+		{
+			return Cam.Zoom;
+		}
 
 		//function that checks if a specfic position is visible
 		public static bool IsOnScreen(Vector2Int vec)
@@ -56,16 +60,12 @@ namespace MultiplayerXeno
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
 			MoveTarget = vec-(Vector2Int)Cam.Origin;
 			forceMoving = true;
-
-
 		}
 
 
 		private static Vector2 lastMousePos;
 		private static Vector2 GetMovementDirection()
 		{
-
-			
 			var state = Keyboard.GetState();
 			var mouseState = Mouse.GetState();
 			if (mouseState.MiddleButton == ButtonState.Pressed)

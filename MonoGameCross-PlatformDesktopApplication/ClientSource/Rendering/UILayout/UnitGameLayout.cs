@@ -26,13 +26,13 @@ public class UnitGameLayout : UiLayout
 		var root = new GameLayout().Generate(desktop,lastLayout);
 		if (UI.SelectedControllable != null && !UI.SelectedControllable.IsMyTeam()) return root;
 		if (UI.SelectedControllable == null) return root;
-			
+		UI.ReMakeMovePreview();
 
 
 		var localroot = (Panel) root;
 		descBox = new Label()
 		{
-			Top = (int)(-80 * globalScale.Y),
+			Top = (int)(-70 * globalScale.Y),
 			MaxWidth = (int) (600 * globalScale.X),
 			MinHeight = 40,
 			MaxHeight = 100,
@@ -64,8 +64,8 @@ public class UnitGameLayout : UiLayout
 		{
 			GridColumn = 0,
 			GridRow = 1,
-			Width = (int)(80*globalScale.X),
-			Height = (int)(80*globalScale.Y),
+			Width = (int)(60*globalScale.X),
+			Height = (int)(70*globalScale.Y),
 			Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
 			//	Scale = new Vector2(1.5f)
 		};
@@ -76,19 +76,19 @@ public class UnitGameLayout : UiLayout
 		{
 			GridColumn = 1,
 			GridRow = 1,
-			Width = (int)(80*globalScale.X),
-			Height = (int)(80*globalScale.Y),
+			Width = (int)(60*globalScale.X),
+			Height = (int)(70*globalScale.Y),
 			Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
 		};
 		watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
-		watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move, 1 turn. Unit Cannot act anymore in this turn");
+		watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move. Unit Cannot act anymore in this turn");
 		buttonContainer.Widgets.Add(watch);
 		var crouch = new ImageButton
 		{
 			GridColumn = 2,
 			GridRow = 1,
-			Width = (int)(80*globalScale.X),
-			Height = (int)(80*globalScale.Y),
+			Width = (int)(60*globalScale.X),
+			Height = (int)(70*globalScale.Y),
 			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 		};
 		crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
@@ -108,8 +108,8 @@ public class UnitGameLayout : UiLayout
 			{
 				GridColumn = column,
 				GridRow = 1,
-				Width = (int)(80*globalScale.X),
-				Height = (int)(80*globalScale.Y),
+				Width = (int)(60*globalScale.X),
+				Height = (int)(70*globalScale.Y),
 				Image = new TextureRegion(TextureManager.GetTexture("UI/" + act.Item1))
 			};
 			actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);

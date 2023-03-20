@@ -35,7 +35,7 @@ public class PreGameLobbyLayout : UiLayout
 				Top = 0,
 				Left = 0,
 				Background = new SolidBrush(Color.Black),
-				Width = (int) (300 * globalScale.X),
+				Width = (int) (140 * globalScale.X),
 				Height = (int) (800 * globalScale.Y),
 				Margin = new Thickness(0),
 				Padding = new Thickness(0)
@@ -48,7 +48,7 @@ public class PreGameLobbyLayout : UiLayout
 				Top = 0,
 				Left = 0,
 				Background = new SolidBrush(Color.Black),
-				Width = (int) (200 * globalScale.X),
+				Width = (int) (120 * globalScale.X),
 				Height = (int) (1000 * globalScale.Y),
 				Border = new SolidBrush(new Color(31,81,255,240)),
 				BorderThickness = new Thickness(2)
@@ -205,27 +205,6 @@ public class PreGameLobbyLayout : UiLayout
 				}
 		
 				rightStack.Widgets.Add(spectatorViewer);
-				linebreak = new Label()
-				{
-					Text = "______________",
-					HorizontalAlignment = HorizontalAlignment.Center,
-					Width = (int)(400*globalScale.X),
-				};
-				rightStack.Widgets.Add(linebreak);
-				var quitbtn = new TextButton()
-				{
-					Text = "Quit",
-					HorizontalAlignment = HorizontalAlignment.Center,
-					VerticalAlignment = VerticalAlignment.Center,
-				};
-				quitbtn.Click += (s, a) =>
-				{
-					Networking.Disconnect();
-
-				};
-				rightStack.Widgets.Add(quitbtn);
-				
-				
 				var chatViewer = new ScrollViewer();
 				chatViewer.VerticalAlignment = VerticalAlignment.Bottom;
 				chatViewer.Top = -40;
@@ -236,7 +215,7 @@ public class PreGameLobbyLayout : UiLayout
 
 				var input = new TextBox()
 				{
-					Width = (int)(180*globalScale.X),
+					Width = (int)(145*globalScale.X),
 					Height = 40,
 					Top = 0,
 					Left = 0,
@@ -386,9 +365,9 @@ public class PreGameLobbyLayout : UiLayout
 				};
 				tab3.Click += (i, a) =>
 				{
-					grid1.Widgets.Remove(communitySelection);
-					grid1.Widgets.Remove(officialSelection);
-					grid1.Widgets.Add(communitySelection);
+					leftpanel.Widgets.Remove(communitySelection);
+					leftpanel.Widgets.Remove(officialSelection);
+					leftpanel.Widgets.Add(communitySelection);
 					var file = new Myra.Graphics2D.UI.File.FileDialog(FileDialogMode.OpenFile)
 					{
 						

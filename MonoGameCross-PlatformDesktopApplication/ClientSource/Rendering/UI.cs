@@ -40,9 +40,8 @@ namespace MultiplayerXeno
 
 
 			MyraEnvironment.Game = Game1.instance;
-	//		MyraEnvironment.DrawWidgetsFrames = true;
-		//	MyraEnvironment.DrawTextGlyphsFrames = true;
-		
+			//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+
 
 
 			Desktop = new Desktop();
@@ -71,7 +70,7 @@ namespace MultiplayerXeno
 		public static void SetUI(UiLayout? newUI)
 		{
 
-			UiLayout.SetScale(new Vector2((Game1.instance.Window.ClientBounds.Width / 1000f) * 1f, (Game1.instance.Window.ClientBounds.Width / 1000f) * 1f));
+			UiLayout.SetScale(new Vector2((Game1.resolution.X / 500f) * 1f, (Game1.resolution.Y / 500f) * 1f));
 			
 		
 			if (newUI != null)
@@ -98,6 +97,7 @@ namespace MultiplayerXeno
 
 		public static void MouseDown(object? sender, EventArgs e)
 		{
+			if (!Game1.instance.IsActive) return;
 			if (Desktop.IsMouseOverGUI)
 			{
 				return; //let myra do it's thing
@@ -152,76 +152,80 @@ namespace MultiplayerXeno
 
 			SelectedControllable = controllable;
 			if(controllable==null) return;
-			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+			ReMakeMovePreview();
 			SetUI( new UnitGameLayout());
 			Camera.SetPos(controllable.worldObject.TileLocation.Position);
 			
 		}
+		public static void ReMakeMovePreview()
+		{
+			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+		}
 		
 	
-	private static void LeftClickAtPosition(Vector2Int position)
-	{
-		ClickAtPosition(position,false);
-	}
-	private static void RightClickAtPosition(Vector2Int position)
-	{
-		ClickAtPosition(position,true);
-	}
-
-	private static void ClickAtPosition(Vector2Int position,bool righclick)
-	{
-		if(!GameManager.IsMyTurn()) return;
-		if(!WorldManager.IsPositionValid(position)) return;
-		var Tile = WorldManager.Instance.GetTileAtGrid(position);
-
-		WorldObject obj = Tile.ObjectAtLocation;
-		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
-			SelectControllable(obj.ControllableComponent);
-			return;
+		private static void LeftClickAtPosition(Vector2Int position)
+		{
+			ClickAtPosition(position,false);
 		}
+		private static void RightClickAtPosition(Vector2Int position)
+		{
+			ClickAtPosition(position,true);
+		}
+
+		private static void ClickAtPosition(Vector2Int position,bool righclick)
+		{
+			if(!GameManager.IsMyTurn()) return;
+			if(!WorldManager.IsPositionValid(position)) return;
+			var Tile = WorldManager.Instance.GetTileAtGrid(position);
+
+			WorldObject obj = Tile.ObjectAtLocation;
+			if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
+				SelectControllable(obj.ControllableComponent);
+				return;
+			}
 			
 		
-		if (!GameManager.IsMyTurn()) return;
+			if (!GameManager.IsMyTurn()) return;
 
 
 
-		if (righclick)
-		{
-			switch (Action.GetActiveActionType())
+			if (righclick)
 			{
+				switch (Action.GetActiveActionType())
+				{
 
-				case null:
-					Action.SetActiveAction(ActionType.Face);
-					break;
-				case ActionType.Face:
-					SelectedControllable?.DoAction(Action.ActiveAction,position);
-					break;
-				default:
-					Action.SetActiveAction(null);
-					break;
+					case null:
+						Action.SetActiveAction(ActionType.Face);
+						break;
+					case ActionType.Face:
+						SelectedControllable?.DoAction(Action.ActiveAction,position);
+						break;
+					default:
+						Action.SetActiveAction(null);
+						break;
 					
 
+				}
 			}
-		}
-		else
-		{
-			switch (Action.GetActiveActionType())
+			else
 			{
+				switch (Action.GetActiveActionType())
+				{
 			
-				case null:
-					if (SelectedControllable != null)
-					{
-						Action.SetActiveAction(ActionType.Move);
-					}
-					break;
-				default:
-					SelectedControllable?.DoAction(Action.ActiveAction,position);
-					break;
+					case null:
+						if (SelectedControllable != null)
+						{
+							Action.SetActiveAction(ActionType.Move);
+						}
+						break;
+					default:
+						SelectedControllable?.DoAction(Action.ActiveAction,position);
+						break;
 					
 
-			}
+				}
 			
-		}
+			}
 		
 		
 
@@ -304,7 +308,6 @@ namespace MultiplayerXeno
 					indicator=TextureManager.GetTexture("UI/HoverHud/detoff");
 				}else if (detDMG>0)
 				{
-					Console.WriteLine(animopacity);
 					batch.Draw(indicator,new Vector2(0,67)+new Vector2(0,detHeigth*i),null,Color.White*animopacity,0,Vector2.Zero,new Vector2(1,detYscale),SpriteEffects.None,0);
 					detDMG--;
 					continue;
@@ -386,13 +389,13 @@ namespace MultiplayerXeno
 			}
 			for (int j = 0; j < controllable.PreviewData.distanceBlock; j++)
 			{
-			//	if(j>controllable.PreviewData.totalDmg) break;
+				//	if(j>controllable.PreviewData.totalDmg) break;
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgrange"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
 			for (int j = 0; j < controllable.PreviewData.determinationBlock; j++)
 			{
-			//	if(j>controllable.PreviewData.totalDmg) break;
+				//	if(j>controllable.PreviewData.totalDmg) break;
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdet"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				i++;
 			}
@@ -402,7 +405,7 @@ namespace MultiplayerXeno
 			
 			
 			batch.End();
-		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
+			graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 			batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position)+new Vector2(-200,-250),null,Color.White*opacity,0,Vector2.Zero,0.45f,SpriteEffects.None,0);
 			batch.End();
@@ -417,16 +420,20 @@ namespace MultiplayerXeno
 		private static Panel menu;
 		public static void Update(float deltatime)
 		{
+			if (lastState.IsKeyDown(Keys.Tab))
+			{
+				Desktop.FocusedKeyboardWidget = null;//override myra focus switch functionality
+			}
+
 			if(Desktop.FocusedKeyboardWidget != null) return;
 			var keyboardState = Keyboard.GetState();
 			if (keyboardState.IsKeyDown(Keys.L) && lastState.IsKeyUp(Keys.L))
 			{
 				SetUI(null);
 			}
-
 			if (keyboardState.IsKeyDown(Keys.Escape) && lastState.IsKeyUp(Keys.Escape))
 			{
-				if (CurrentUI is UnitGameLayout || CurrentUI is GameLayout || CurrentUI is EditorUiLayout)
+				if (CurrentUI is UnitGameLayout || CurrentUI is GameLayout || CurrentUI is EditorUiLayout || CurrentUI is PreGameLobbyLayout || CurrentUI is LobbyBrowserLayout)
 				{
 					if (menu != null && Desktop != null)
 					{
@@ -456,7 +463,15 @@ namespace MultiplayerXeno
 
 						var btn3 = new SoundButton();
 						btn3.Text = "Quit";
-						btn3.Click += (sender, args) => { Networking.Disconnect(); };
+						if (CurrentUI is LobbyBrowserLayout)
+						{
+							btn3.Click += (sender, args) => { MasterServerNetworking.Disconnect(); };
+						}
+						else
+						{
+							btn3.Click += (sender, args) => { Networking.Disconnect(); };
+						}
+
 						stack.Widgets.Add(btn3);
 
 						Desktop.Widgets.Add(menu);
@@ -464,49 +479,63 @@ namespace MultiplayerXeno
 					}
 				}
 			}
-
 			if (!WorldEditSystem.enabled && GameManager.MyUnits.Count != 0)
 			{
-
-			
-			if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
-			{
+				if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
+				{
 				
-				int fails = 0;
-				do
-				{
-					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable) + 1;
-					if (index >= GameManager.MyUnits.Count)
+					int fails = 0;
+					do
 					{
-						index = 0;
-					}
+						var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable) + 1;
+						if (index >= GameManager.MyUnits.Count)
+						{
+							index = 0;
+						}
 
-					SelectControllable(GameManager.MyUnits[index]);
-					if(fails>GameManager.MyUnits.Count)
-						break;
-					fails++;
-				} while (SelectedControllable.Health <= 0);
+						SelectControllable(GameManager.MyUnits[index]);
+						if(fails>GameManager.MyUnits.Count)
+							break;
+						fails++;
+					} while (SelectedControllable.Health <= 0);
 
 
-			}
-			if (keyboardState.IsKeyDown(Keys.Q) && lastState.IsKeyUp(Keys.Q))
-			{
-				int fails = 0;
-				do
+				}
+				if (keyboardState.IsKeyDown(Keys.Q) && lastState.IsKeyUp(Keys.Q))
 				{
-					var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable)-1;
-					if (index < 0)
+					int fails = 0;
+					do
 					{
-						index = GameManager.MyUnits.Count-1;
-					}
+						var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable)-1;
+						if (index < 0)
+						{
+							index = GameManager.MyUnits.Count-1;
+						}
 			
-					SelectControllable(GameManager.MyUnits[index]);
-					if(fails>GameManager.MyUnits.Count)
-						break;
-					fails++;
-				} while (SelectedControllable.Health <= 0);
+						SelectControllable(GameManager.MyUnits[index]);
+						if(fails>GameManager.MyUnits.Count)
+							break;
+						fails++;
+					} while (SelectedControllable.Health <= 0);
 
+				}
 			}
+			if (keyboardState.IsKeyDown(Keys.Tab) && lastState.IsKeyUp(Keys.Tab))
+			{
+			
+				if (Attack.targeting == TargetingType.Auto)
+				{
+					Attack.targeting = TargetingType.High;
+				}
+				else if (Attack.targeting == TargetingType.High)
+				{
+					Attack.targeting = TargetingType.Low;
+				}
+				else if (Attack.targeting == TargetingType.Low)
+				{
+					Attack.targeting = TargetingType.Auto;
+				}
+
 			}
 		
 	
@@ -516,7 +545,7 @@ namespace MultiplayerXeno
 
 		private static bool raycastDebug;
 		private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
-		public static bool targeting = false;
+
 		public static void Render(float deltaTime)
 		{
 			
@@ -528,32 +557,27 @@ namespace MultiplayerXeno
 
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 			
-				for (int i = 0; i < 8; i++)
-				{
-					var indicator = coverIndicator[i];
-					Color c = Color.White;
-					switch ((Cover) WorldManager.Instance.GetTileAtGrid(TileCoordinate).GetCover((Direction) i))
-					{
-						case Cover.Full:
-							c = Color.Red;
-							break;
-						case Cover.High:
-							c = Color.Yellow;
-							break;
-						case Cover.Low:
-							c = Color.Green;
-							break;
-					}
-
-					//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
-					spriteBatch.Draw(indicator, Mousepos, c);
-				}
-				
-
-			if (targeting)
+			for (int i = 0; i < 8; i++)
 			{
-				spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Mousepos, Color.Red);
+				var indicator = coverIndicator[i];
+				Color c = Color.White;
+				switch ((Cover) WorldManager.Instance.GetTileAtGrid(TileCoordinate).GetCover((Direction) i))
+				{
+					case Cover.Full:
+						c = Color.Red;
+						break;
+					case Cover.High:
+						c = Color.Yellow;
+						break;
+					case Cover.Low:
+						c = Color.Green;
+						break;
+				}
+
+				//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
+				spriteBatch.Draw(indicator, Mousepos, c);
 			}
+			
 
 
 			var count = 0;
@@ -608,12 +632,14 @@ namespace MultiplayerXeno
 			spriteBatch.End();
 			
 			*/
-			targeting = false;
 			var tile = WorldManager.Instance.GetTileAtGrid(TileCoordinate);
 			if (SelectedControllable != null && Action.GetActiveActionType() != null)
 			{
 				Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,spriteBatch);
-			}/*else if (tile.ObjectAtLocation?.ControllableComponent != null && tile.ObjectAtLocation.IsVisible() && !tile.ObjectAtLocation.ControllableComponent.IsMyTeam())
+			}
+
+			
+			/*else if (tile.ObjectAtLocation?.ControllableComponent != null && tile.ObjectAtLocation.IsVisible() && !tile.ObjectAtLocation.ControllableComponent.IsMyTeam())
 			{
 				if (tile.ObjectAtLocation.ControllableComponent != enemySelected)
 				{
@@ -642,7 +668,9 @@ namespace MultiplayerXeno
 
 			WorldEditSystem.Draw(spriteBatch);
 			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
+			
+
 			spriteBatch.End();
 
 
@@ -680,9 +708,16 @@ namespace MultiplayerXeno
 			}
 
 			Desktop.Root = root;
-			UI.Desktop.Render();
-			
-			
+			if (Game1.instance.IsActive)
+			{
+				Desktop.Render();
+			}
+			else
+			{
+				Desktop.RenderVisual();
+			}
+
+
 		}
 
 		

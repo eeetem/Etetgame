@@ -61,9 +61,11 @@ public class MasterServerNetworking
 					AwaitingLobby = false;
 					Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
 				}
-
-				Lobbies.Add(data);
-				UI.SetUI(new LobbyBrowserLayout());
+				else
+				{
+					Lobbies.Add(data);
+					UI.SetUI(new LobbyBrowserLayout());
+				}
 			});
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
@@ -105,6 +107,7 @@ public class MasterServerNetworking
 
 		public static void Disconnect()
 		{
+			UI.SetUI(new MainMenuLayout());
 			serverConnection.Close(CloseReason.ClientClosed);
 		}
 }

@@ -27,7 +27,6 @@ namespace MultiplayerXeno
 			//1. Establish a connection to the server.
 			var ipAndPort = ipport.Split(":");
 			serverConnection = ConnectionFactory.CreateTcpConnection(ipAndPort[0], int.Parse(ipAndPort[1]), out connectionResult);
-			
 			///serverConnection.NoDelay
 			//2. Register what happens if we get a connection
 			if(connectionResult != ConnectionResult.Connected)
@@ -95,7 +94,11 @@ namespace MultiplayerXeno
 		}
 		public static void Disconnect()
 		{
-			serverConnection.Close(CloseReason.ClientClosed);
+			if (serverConnection != null)
+			{
+				serverConnection.Close(CloseReason.ClientClosed);
+			}
+
 			WorldManager.Instance.WipeGrid();
 			GameManager.intated = false;
 			if (MasterServerNetworking.serverConnection != null && MasterServerNetworking.serverConnection.IsAlive)

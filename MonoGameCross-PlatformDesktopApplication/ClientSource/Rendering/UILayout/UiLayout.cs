@@ -22,6 +22,9 @@ public abstract class UiLayout
 		Stylesheet.Current.TextBoxStyle.Background = new SolidBrush(Color.Black);
 		Stylesheet.Current.TextBoxStyle.BorderThickness = new Thickness(1);
 		Stylesheet.Current.TextBoxStyle.Border = new SolidBrush(new Color(31, 81, 255, 240));
+		Stylesheet.Current.CheckBoxStyle.Border = new SolidBrush(new Color(31, 81, 255, 240));
+		Stylesheet.Current.CheckBoxStyle.Background = new SolidBrush(Color.Black);
+		Stylesheet.Current.CheckBoxStyle.ImageStyle.PressedImage = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("")),new Color(31,81,255,240));
 		Stylesheet.Current.ButtonStyle.LabelStyle.TextColor = new Color(31,81,255,240);
 		Stylesheet.Current.TextBoxStyle.TextColor = new Color(31,81,255,240);
 		Stylesheet.Current.LabelStyle.TextColor = new Color(31,81,255,240);
@@ -48,7 +51,7 @@ public abstract class UiLayout
 	public static void SetScale(Vector2 scale)
 	{
 		globalScale = scale;
-		FontSize = globalScale.Y * 35;
+		FontSize = globalScale.Y * 30;
 		Stylesheet.Current.LabelStyle.Font = DefaultFont.GetFont(FontSize);
 		Stylesheet.Current.ButtonStyle.LabelStyle.Font = DefaultFont.GetFont(FontSize);
 		Stylesheet.Current.TextBoxStyle.Font = DefaultFont.GetFont(FontSize);
@@ -64,12 +67,13 @@ public abstract class UiLayout
 	//probably shouldnt be here but idk where to put it
 	private static VerticalStackPanel chatBox;
 	private static ScrollViewer chatBoxViewer;
+	private static TextBox chatInput;
 	protected static void AttachSideChatBox(Panel parent)
 	{
 		var viewer = new ScrollViewer()
 		{
 			Left = 0,
-			Width = (int)(200*globalScale.X),
+			Width = (int)(120*globalScale.X),
 			Height = 250,
 			Top = 0,
 			HorizontalAlignment = HorizontalAlignment.Left,
@@ -78,36 +82,37 @@ public abstract class UiLayout
 		};
     
 		AddChatBoxToViewer(viewer);
-    					
-		var input = new TextBox()
+		if (chatInput == null)
 		{
-			Width = (int)(200*globalScale.X),
-			Height = 20,
-			Top = 135,
-			Left = 0,
-			Text = "",
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Center,
-			Font = DefaultFont.GetFont(20),
-			Border = new SolidBrush(new Color(31,81,255,240)),
-			BorderThickness = new Thickness(2)
-		};
-		input.KeyDown += (o, a) =>
+			chatInput = new TextBox();
+		}
+		chatInput.Width = (int)(120*globalScale.X);
+		chatInput.Height = 20;
+		chatInput.Top = 135;
+		chatInput.Left = 0;
+		chatInput.Text = "";
+		chatInput.HorizontalAlignment = HorizontalAlignment.Left;
+		chatInput.VerticalAlignment = VerticalAlignment.Center;
+		chatInput.Font = DefaultFont.GetFont(20);
+		chatInput.Border = new SolidBrush(new Color(31,81,255,240));
+		chatInput.BorderThickness = new Thickness(2);
+	
+		chatInput.KeyDown += (o, a) =>
 		{
 			if (a.Data == Keys.Enter)
 			{ 
-				if (input.Text != "")
+				if (chatInput.Text != "")
 				{ if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
 					{
-						Networking.ChatMSG(input.Text);
+						Networking.ChatMSG(chatInput.Text);
 					}
 					else
 					{
-						MasterServerNetworking.ChatMSG(input.Text);
+						MasterServerNetworking.ChatMSG(chatInput.Text);
 					}
     
     
-					input.Text = "";
+					chatInput.Text = "";
 				}
 			}
 		};
@@ -116,7 +121,7 @@ public abstract class UiLayout
 			Width = 100,
 			Height = 30,
 			Top = 135,
-			Left = (int)(200*globalScale.X),
+			Left = (int)(120*globalScale.X),
 			Text = "Send",
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Center,
@@ -124,22 +129,22 @@ public abstract class UiLayout
 		};
 		inputbtn.Click += (o, a) =>
 		{
-			if (input.Text != "")
+			if (chatInput.Text != "")
 			{ 
 				if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
 				{
-					Networking.ChatMSG(input.Text);
+					Networking.ChatMSG(chatInput.Text);
 				}
 				else
 				{
-					MasterServerNetworking.ChatMSG(input.Text);
+					MasterServerNetworking.ChatMSG(chatInput.Text);
 				}
     
-				input.Text = "";
+				chatInput.Text = "";
 			}
 		};
 		parent.Widgets.Add(inputbtn);
-		parent.Widgets.Add(input);
+		parent.Widgets.Add(chatInput);
 		parent.Widgets.Add(chatBoxViewer);
     			
 	}
@@ -172,6 +177,7 @@ public abstract class UiLayout
 			chatBox.Widgets.Add(label);
 			chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
 		}
+		Audio.PlaySound("UI/chat");
 		
 	}
 

@@ -44,6 +44,10 @@ public class SettingsLayout : UiLayout
 		
 			string currentRes = Game1.config.GetValue("settings", "Resolution", "800x600");
 			foreach (DisplayMode mode in GraphicsAdapter.DefaultAdapter.SupportedDisplayModes) {
+				if (mode.AspectRatio < 1.6f)
+				{
+					continue;
+				}
 				resoultion.Items.Add(new ListItem(mode.Width + "x" + mode.Height));
 				if (mode.Width + "x" + mode.Height == currentRes)
 				{
@@ -92,6 +96,25 @@ public class SettingsLayout : UiLayout
 			};
 			grid.Widgets.Add(sfxVolume);
 			grid.Widgets.Add(musicVolume);
+			
+			var fulscrnlbl = new Label()
+			{
+				GridRow = 2,
+				GridColumn =0,
+				Text = "Fullscreen",
+				Margin = new Thickness(5)
+			};
+			grid.Widgets.Add(fulscrnlbl);
+			var fulscren = new CheckBox()
+			{
+				Top = (int)(50*globalScale.Y),
+				Left = (int)(50*globalScale.X),
+				Scale = globalScale*2f,
+				GridRow = 2,
+				GridColumn = 0,
+				IsChecked = bool.Parse(Game1.config.GetValue("settings", "fullscreen", "false"))
+			};
+			grid.Widgets.Add(fulscren);
 			var cancel = new SoundButton()
 			{
 				Text = "Cancel",
@@ -117,6 +140,7 @@ public class SettingsLayout : UiLayout
 				Game1.config.SetValue("settings", "Resolution", resoultion.SelectedItem.Text);
 				Game1.config.SetValue("settings", "musicVol", musicVolume.Value);
 				Game1.config.SetValue("settings", "sfxVol", sfxVolume.Value);
+				Game1.config.SetValue("settings", "fullscreen", fulscren.IsChecked.ToString());
 				Game1.config.Save();
 				Game1.instance.UpdateGameSettings();
 				
