@@ -295,14 +295,16 @@ float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, fl
   float2 pos=Warp(tex.xy*(texture_size.xy/video_size.xy))*(video_size.xy/texture_size.xy);
   float3 outColor = Tri(pos, texture_size);
 
-
   outColor.rgb+=Bloom(pos, texture_size)*bloomAmount;
 
 
   if(shadowMask)
     outColor.rgb*=Mask(floor(tex.xy*(texture_size.xy/video_size.xy)*output_size.xy)+float2(0.5,0.5));
 
-  return float4(ToSrgb(outColor.rgb),1.0);
+  float alpha=1.0;
+  if (outColor.r < 0.01 && outColor.g < 0.01 && outColor.b < 0.01) alpha=0.0;
+  
+  return float4(ToSrgb(outColor.rgb),alpha);
 }
 
 float4 main_fragment(VertexShaderOutput VOUT) : COLOR0

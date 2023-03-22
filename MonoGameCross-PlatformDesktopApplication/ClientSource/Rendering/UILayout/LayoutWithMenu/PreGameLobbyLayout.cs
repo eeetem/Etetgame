@@ -3,6 +3,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MultiplayerXeno;
+using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -12,11 +13,10 @@ using Network.Converter;
 
 namespace MultiplayerXeno.UILayouts;
 
-public class PreGameLobbyLayout : UiLayout
+public class PreGameLobbyLayout : MenuLayout
 {
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		
 			var grid1 = new Grid()
 			{
 

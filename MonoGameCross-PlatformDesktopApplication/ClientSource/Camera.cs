@@ -147,8 +147,8 @@ namespace MultiplayerXeno
 			velocity *= gameTime.GetElapsedSeconds()*45;
 
 
-			AudioListener.Position =  new Vector3(Cam.Center/80f,0);
-			AudioListener.Velocity = new Vector3(velocity/80f,10);
+			AudioListener.Position =  new Vector3(Cam.Center/150f,0);
+			AudioListener.Velocity = new Vector3(velocity/150f,10);
 
 		}
 	}

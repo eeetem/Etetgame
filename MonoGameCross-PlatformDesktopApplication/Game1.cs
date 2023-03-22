@@ -80,7 +80,6 @@ namespace MultiplayerXeno
 			PostPorcessing.Init(Content, GraphicsDevice);
 			SpriteFont = Content.Load<SpriteFont>("font");
 			PrefabManager.MakePrefabs();
-			WorldEditSystem.GenerateUI();
 			config = new ConfigParser("config.txt");
 
 			_graphics.ApplyChanges();
@@ -101,8 +100,8 @@ namespace MultiplayerXeno
 			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, _graphics.PreferredBackBufferWidth,_graphics.PreferredBackBufferHeight, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
 			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 			Camera.Init(GraphicsDevice,Window);
-			Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.3"));
-			Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.6"));
+			Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.2"));
+			Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.7"));
 			PostPorcessing.RemakeRenderTarget();
 			UI.SetUI(null);
 		}
@@ -110,9 +109,8 @@ namespace MultiplayerXeno
 		protected override void Update(GameTime gameTime)
 		{
 
-			
+
 			Camera.Update(gameTime);
-			WorldEditSystem.Update(gameTime);
 			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
 			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);

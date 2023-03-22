@@ -1,16 +1,17 @@
 
-fix blur
-missing sfx
-move to spectators button
+
+turn timer/game options
+deployment screen
+shot preview
+destruction
 how to play
+move to spectators button
 disable effects in editor
 pregame lobby music flicker(rework music)
-crouch shot toggle
 unit placement
 list of visible enemies
-officer that stops units panicing
-smoke greandes
-turn timer
-bomb defuse gamemode
+officer that stops units panicing?
+smoke greande
+bomb defuse gamemode?
 random map generation
 

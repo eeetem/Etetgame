@@ -136,22 +136,22 @@ namespace MultiplayerXeno
 			});
 			
 			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
-			connection.RegisterStaticPacketHandler<UnitStartDataPacket>(ReciveUnitStartData);
+			connection.RegisterStaticPacketHandler<SquadCompPacket>(ReciveSquadComp);
 			Console.WriteLine("Registered handlers");
 
 		}
 
-		private static void ReciveUnitStartData(UnitStartDataPacket packet, Connection connection)
+		private static void ReciveSquadComp(SquadCompPacket packet, Connection connection)
 		{
 			if (GameManager.Player1?.Connection == connection)
 			{
-				GameManager.Player1.SetStartData(packet);
+				GameManager.Player1.SetSquadComp(packet);
 			}else if (GameManager.Player2?.Connection == connection)
 			{
-				GameManager.Player2.SetStartData(packet);
+				GameManager.Player2.SetSquadComp(packet);
 			}
 
-			if (GameManager.Player1?.StartData != null && GameManager.Player2?.StartData != null)
+			if (GameManager.Player1?.SquadComp != null && GameManager.Player2?.SquadComp != null)
 			{
 				GameManager.StartGame();
 			}

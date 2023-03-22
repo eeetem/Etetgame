@@ -1,8 +1,11 @@
 ﻿using System.IO;
+using CommonData;
 using FontStashSharp;
 using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -62,8 +65,43 @@ public abstract class UiLayout
 	protected static float FontSize = 35;
 	protected static Vector2 globalScale = new Vector2(1, 1);
 	public abstract Widget Generate(Desktop desktop, UiLayout? lastLayout);
-	
-	
+
+
+	public virtual void MouseDown(Vector2Int position, bool righclick)
+	{
+		if(!WorldManager.IsPositionValid(position)) return;
+
+	}
+	public virtual void MouseUp(Vector2Int position, bool righclick)
+	{
+
+	}
+
+
+	protected static KeyboardState lastKeyboardState;
+	protected static KeyboardState currentKeyboardState;
+	public virtual void Update(float deltatime)
+	{
+		lastKeyboardState = currentKeyboardState;
+		currentKeyboardState = Keyboard.GetState();
+		
+#if DEBUG
+		if (currentKeyboardState.IsKeyDown(Keys.L) && lastKeyboardState.IsKeyUp(Keys.L))
+		{
+			UI.SetUI(null);
+		}
+#endif
+		
+		
+		
+	}
+	public virtual void Render(SpriteBatch batch, float deltatime)
+	{
+		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
+
+	}
+
 	//probably shouldnt be here but idk where to put it
 	private static VerticalStackPanel chatBox;
 	private static ScrollViewer chatBoxViewer;

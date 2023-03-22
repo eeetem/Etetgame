@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
+using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -13,10 +14,11 @@ using Network;
 
 namespace MultiplayerXeno.UILayouts;
 
-public class LobbyBrowserLayout : UiLayout
+public class LobbyBrowserLayout : MenuLayout
 {
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+		
 			var Grid = new Grid();
 			Grid.Background = new TextureRegion(TextureManager.GetTexture("UI/background"));
 			Grid.ColumnsProportions.Add(Proportion.Auto);
@@ -344,5 +346,11 @@ public class LobbyBrowserLayout : UiLayout
 			lobbyViewer.Content = lobbies;
 
 			return Grid;
+	}
+
+	protected override void HandleMenuQuit()
+	{
+		base.HandleMenuQuit();
+		MasterServerNetworking.Disconnect();
 	}
 }

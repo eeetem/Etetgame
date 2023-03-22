@@ -8,7 +8,7 @@ namespace MultiplayerXeno
 	{
 		public Connection Connection;
 		public string Name;
-		public UnitStartDataPacket? StartData { get; private set; }
+		public SquadCompPacket? SquadComp { get; private set; }
 
 		public Client(string name,Connection con)
 		{
@@ -16,9 +16,10 @@ namespace MultiplayerXeno
 			Connection = con;
 		}
 
-		public void SetStartData(UnitStartDataPacket packet)
+		public void SetSquadComp(SquadCompPacket packet)
 		{
-			StartData = packet;
+			//todo verify
+			SquadComp = packet;
 		}
 
 

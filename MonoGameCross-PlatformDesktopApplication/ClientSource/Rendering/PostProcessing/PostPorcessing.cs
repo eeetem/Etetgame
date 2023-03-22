@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.PostProcessing;
 using MultiplayerXeno;
 using Action = MultiplayerXeno.Action;
 using Color = Microsoft.Xna.Framework.Color;
@@ -19,50 +21,66 @@ namespace HeartSignal
 	{
 		private static ContentManager content;
 		private static GraphicsDevice graphicsDevice;
+		
+		public static CrtLIghtNormalShader[] CrtLightShaderPresets;
+		public static CrtLIghtNormalShader Crtdissapation;
 
-		public static void Init(ContentManager c,GraphicsDevice g)
+		public static void Init(ContentManager c, GraphicsDevice g)
 		{
 			content = c;
 			graphicsDevice = g;
 
 
 			crtEffect = content.Load<Effect>("shaders/CRT");
+			UIcrtEffect = content.Load<Effect>("shaders/CRT2lol");
 			connectionEffect = content.Load<Effect>("shaders/lc");
 			colorEffect = content.Load<Effect>("shaders/colorshader");
 			distortEffect = content.Load<Effect>("shaders/distort");
 			Game1.instance.IsMouseVisible = false;
 			int countx;
 			int county;
-			cursorTextures = Utility.SplitTexture(content.Load<Texture2D>("textures/mouse"),40,40, out countx, out county);
+			cursorTextures = Utility.SplitTexture(content.Load<Texture2D>("textures/mouse"), 40, 40, out countx, out county);
 
-			
+
 			combinedSpriteBatch = new SpriteBatch(g);
 			emptyTexture = new Texture2D(g, 1, 1);
+			CrtLightShaderPresets = new CrtLIghtNormalShader[50];
+		for (int i = 0; i < 50; i++)
+			{
+				CrtLightShaderPresets[i] = new CrtLIghtNormalShader();
+			}
+			Crtdissapation = new CrtLIghtNormalShader();
+			Crtdissapation.dissapation = true;
 			
+
+				
+				
+				
+				
 			//default effect parameters
 
 			EffectParams["hardScan"] = 0f;
 			EffectParams["hardPix"] = 0f;
 			EffectParams["warpX"] = 10;
 			EffectParams["warpY"] = 10;
-			EffectParams["maskDark"] = 0.1f;
-			EffectParams["maskLight"] = 0.1f;
-			EffectParams["scaleInLinearGamma"] = 0.04f;
-			EffectParams["shadowMask"] = 0.1f;
+			EffectParams["maskDark"] = 0.5f;
+			EffectParams["maskLight"] = 1.5f;
+			EffectParams["scaleInLinearGamma"] = 1f;
+			EffectParams["shadowMask"] = 0f;
 			EffectParams["brightboost"] = 1f;
-			EffectParams["hardBloomScan"] = -0.5f;
-			EffectParams["hardBloomPix"] = -1.0f;
+			EffectParams["hardBloomScan"] = -1.5f;
+			EffectParams["hardBloomPix"] = -2.0f;
 			EffectParams["bloomAmount"] = 100f;
-			EffectParams["shape"] = 0.1f;
+			EffectParams["shape"] = 10;
 
-			EffectParams["noise"] = 0.01f;
+			EffectParams["noise"] = 2f;
 
 			
 			
 			//loose conection
 			EffectParams["clmagnitude"] = 2000;
-			EffectParams["clalpha"] = 0.1f;
-			EffectParams["clspeed"] = 10;
+			EffectParams["clalpha"] = 1;
+			EffectParams["clspeed"] = 1000;
 			EffectParams["overlayalpha"] = 0f;
 			
 			
@@ -80,11 +98,11 @@ namespace HeartSignal
 			
 			
 			//distort
-			EffectParams["dxspeed"] = 0;
+			EffectParams["dxspeed"] = 10;
 			EffectParams["dxamplitude"] = 0f;
 			EffectParams["dxfrequency"] = 0f;
 			
-			EffectParams["dyspeed"] = 0;
+			EffectParams["dyspeed"] = 10;
 			EffectParams["dyamplitude"] =0f;
 			EffectParams["dyfrequency"] = 0f;
 
@@ -96,11 +114,19 @@ namespace HeartSignal
 		private static void StartingTweens()
 		{
 			
-			AddTween("clmagnitude", 30, 3, false);
-			AddTween("bloomAmount", 1.8f, 5, false);
+			AddTween("clmagnitude", 50, 3, false);
+			AddTween("bloomAmount", 0.15f, 5, false);
 			AddTween("warpX", 0.01f, 5, false);
 			AddTween("warpY", 0.01f, 5, false);
-			AddTween("clmagnitude", 3, 1f, false);
+			AddTween("clspeed", 7f, 2f, false);
+			AddTween("clalpha", 0.07f, 1f, false);
+			AddTween("shape", 0.1f, 5f, false);
+			AddTween("noise", 0.3f, 3f, false);
+			
+			AddTween("noise", 0.005f, 2f, false);
+			Console.Write("noise done");
+			AddTween("clmagnitude", 4f, 0.5f, false);
+			
 			Console.Write("added tweens");
 
 		}
@@ -111,10 +137,11 @@ namespace HeartSignal
 
 		private static SpriteBatch combinedSpriteBatch;
 
-		private static Effect crtEffect;
-		private static Effect connectionEffect;
-		private static Effect colorEffect;
-		private static Effect distortEffect;
+		public static Effect crtEffect;
+		public static Effect UIcrtEffect;
+		public static Effect connectionEffect;
+		public static Effect colorEffect;
+		public static Effect distortEffect;
 
 		private static readonly Dictionary<string, float> EffectParams = new Dictionary<string, float>();
 
@@ -145,6 +172,26 @@ namespace HeartSignal
 
 
 
+		public static void ShuffleUICRTeffect(int seed, bool canFlicker = false,bool disapate = false)
+		{
+			if (disapate)
+			{
+				Crtdissapation.Apply(UIcrtEffect);
+				return;
+			}
+
+			seed %= CrtLightShaderPresets.Length;
+			if (!canFlicker && seed == flickerIndex)
+			{
+				seed = (seed + 1) % CrtLightShaderPresets.Length;
+			}
+
+			CrtLightShaderPresets[seed].Apply(UIcrtEffect);
+		}
+
+
+		private static float timeToFlicker = 10000;
+		private static int flickerIndex = 0;
 		public static void Apply(float deltaTime)
 		{
 		
@@ -152,7 +199,39 @@ namespace HeartSignal
 			clcounter += (float)deltaTime/1000 * EffectParams["clspeed"];
 			dxcounter += (float)deltaTime/1000 * EffectParams["dxspeed"];
 			dycounter += (float)deltaTime/1000 * EffectParams["dyspeed"];
+			timeToFlicker -= deltaTime;
+			if (timeToFlicker < 0)
+			{
+				timeToFlicker = 1000;
+				if (Random.Shared.NextSingle() > 0.4f)
+				{
+					flickerIndex = Random.Shared.Next(0, CrtLightShaderPresets.Length-1);
+				}
+				else
+				{
+					flickerIndex = -1;
+				}
+			}
+
+			for (int i = 0; i < CrtLightShaderPresets.Length; i++)
+			{
+				if (i == flickerIndex)
+				{
+					CrtLightShaderPresets[i].Update(deltaTime*50);
+					CrtLightShaderPresets[i].flicker = true;
+				}
+				else
+				{
+					CrtLightShaderPresets[i].Update(deltaTime);
+					CrtLightShaderPresets[i].flicker = false;
+				}
+				
+			}
+			Crtdissapation.Update(deltaTime*4f);
+
+
 			
+
 			if (combinedRender == null || combinedRender2 == null)//shitcode
 			{ 
 				RemakeRenderTarget(); 
@@ -177,12 +256,15 @@ namespace HeartSignal
 			crtEffect.Parameters["hardBloomPix"]?.SetValue(EffectParams["hardBloomPix"] + GetNoise() * 0.01f);
 			crtEffect.Parameters["bloomAmount"]?.SetValue(EffectParams["bloomAmount"] + GetNoise() * 0.05f);
 			crtEffect.Parameters["shape"]?.SetValue(EffectParams["shape"] + GetNoise() * 0.05f);
+		
 			crtEffect.Parameters["textureSize"]
 				.SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
 			crtEffect.Parameters["videoSize"]
 				.SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
 			crtEffect.Parameters["outputSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width,
 				graphicsDevice.Viewport.Height));
+			
+
 				
 			
 			
@@ -201,17 +283,17 @@ namespace HeartSignal
 				connectionEffect.Parameters["overlay"].SetValue(emptyTexture);
 			}
 
-			colorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"],EffectParams["maxG"],EffectParams["maxB"],1));
-			colorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"],EffectParams["minG"],EffectParams["minB"],1));
-			colorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"],EffectParams["tintG"],EffectParams["tintB"],1));
+			colorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.1f,EffectParams["maxG"]+ GetNoise() *0.1f,EffectParams["maxB"]+ GetNoise() *0.1f,1));
+			colorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.1f,EffectParams["minG"]+ GetNoise() *0.1f,EffectParams["minB"]+ GetNoise() * 0.1f,1));
+			colorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 0.1f ,EffectParams["tintG"]+ GetNoise() *0.1f,EffectParams["tintB"]+ GetNoise() * 0.1f,1));
 			
 
 			distortEffect.Parameters["xfps"].SetValue(dxcounter);
 			distortEffect.Parameters["yfps"].SetValue(dycounter);
-			distortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]);
-			distortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]);
-			distortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]);
-			distortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]);
+			distortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]+ GetNoise() * 0.1f);
+			distortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]+ GetNoise() * 0.1f);
+			distortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]+ GetNoise() * 0.1f);
+			distortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]+ GetNoise() * 0.1f);
 			
 
 	
@@ -240,12 +322,12 @@ namespace HeartSignal
 
 
 	combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender2);
-	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,distortEffect);
+	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,colorEffect);
 	combinedSpriteBatch.Draw(combinedRender, combinedRender.Bounds, Color.White);
 	combinedSpriteBatch.End();
 	
 	combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender);
-	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,colorEffect);
+	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,distortEffect);
 	combinedSpriteBatch.Draw(combinedRender2, combinedRender2.Bounds, Color.White);
 	combinedSpriteBatch.End();
 		

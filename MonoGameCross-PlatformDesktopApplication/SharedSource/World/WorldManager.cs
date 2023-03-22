@@ -583,7 +583,7 @@ namespace MultiplayerXeno
 #if CLIENT
 					MakeFovDirty();
 
-					if (GameManager.GameState != GameState.Playing && !WorldEditSystem.enabled)
+					if (GameManager.GameState != GameState.Playing)
 					{
 						if(obj.ControllableComponent != null){
 							if (obj.ControllableComponent.IsMyTeam())

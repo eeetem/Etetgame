@@ -1,13 +1,14 @@
 ﻿using CommonData;
 using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
+using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
 namespace MultiplayerXeno.UILayouts;
 
-public class UnitGameLayout : UiLayout
+public class UnitGameLayout : GameLayout
 {
 	private static Label descBox;
 	public static string PreviewDesc { get; set; }
@@ -23,7 +24,7 @@ public class UnitGameLayout : UiLayout
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		var root = new GameLayout().Generate(desktop,lastLayout);
+		var root = base.Generate(desktop, lastLayout);
 		if (UI.SelectedControllable != null && !UI.SelectedControllable.IsMyTeam()) return root;
 		if (UI.SelectedControllable == null) return root;
 		UI.ReMakeMovePreview();

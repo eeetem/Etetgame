@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using CommonData;
 using FontStashSharp;
+using HeartSignal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -37,12 +38,9 @@ namespace MultiplayerXeno
 			
 			Texture2D indicatorSpriteSheet = TextureManager.GetTexture("UI/indicators");
 			infoIndicator = Utility.SplitTexture(indicatorSpriteSheet, indicatorSpriteSheet.Width / 6, indicatorSpriteSheet.Height);//this is inneficient but it'll be gone once new unit bar gets made
-
-
 			MyraEnvironment.Game = Game1.instance;
 			//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
-
-
+	
 
 			Desktop = new Desktop();
 			Desktop.TouchDown += MouseDown;
@@ -53,13 +51,11 @@ namespace MultiplayerXeno
 			coverIndicator = Utility.SplitTexture(coverIndicatorSpriteSheet, coverIndicatorSpriteSheet.Width / 3, coverIndicatorSpriteSheet.Width / 3);
 			targetingCUrsor = TextureManager.GetTexture("UI/targetingCursor");
 			
-			LeftClick += LeftClickAtPosition;
-			RightClick += RightClickAtPosition;
-
 			previewMoves[0] = new List<Vector2Int>();
 			previewMoves[1] = new List<Vector2Int>();
-			hoverHudRenderTarget = new RenderTarget2D(graphicsdevice,2000,512,false,SurfaceFormat.Color,DepthFormat.Depth24,0,RenderTargetUsage.DiscardContents);
+			hoverHudRenderTarget = new RenderTarget2D(graphicsdevice,144,60);
 		}
+
 
 
 		public delegate void UIGen();
@@ -107,12 +103,13 @@ namespace MultiplayerXeno
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (mouseState.LeftButton == ButtonState.Pressed)
 			{
-				LeftClick?.Invoke(gridClick);
+				CurrentUI.MouseDown(gridClick, false);
+				
 			}
 
 			if (mouseState.RightButton == ButtonState.Pressed)
 			{
-				RightClick?.Invoke(gridClick);
+				CurrentUI.MouseDown(gridClick, true); 
 			}
 
 			lastMouseState = mouseState;
@@ -129,12 +126,13 @@ namespace MultiplayerXeno
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
 			{
-				LeftClickUp?.Invoke(gridClick);
+				 CurrentUI.MouseUp(gridClick, false);
+
 			}
 
 			if (lastMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
 			{
-				RightClickUp?.Invoke(gridClick);
+				CurrentUI.MouseUp(gridClick, true);
 			}
 
 		}
@@ -163,74 +161,8 @@ namespace MultiplayerXeno
 		}
 		
 	
-		private static void LeftClickAtPosition(Vector2Int position)
-		{
-			ClickAtPosition(position,false);
-		}
-		private static void RightClickAtPosition(Vector2Int position)
-		{
-			ClickAtPosition(position,true);
-		}
-
-		private static void ClickAtPosition(Vector2Int position,bool righclick)
-		{
-			if(!GameManager.IsMyTurn()) return;
-			if(!WorldManager.IsPositionValid(position)) return;
-			var Tile = WorldManager.Instance.GetTileAtGrid(position);
-
-			WorldObject obj = Tile.ObjectAtLocation;
-			if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
-				SelectControllable(obj.ControllableComponent);
-				return;
-			}
-			
-		
-			if (!GameManager.IsMyTurn()) return;
 
 
-
-			if (righclick)
-			{
-				switch (Action.GetActiveActionType())
-				{
-
-					case null:
-						Action.SetActiveAction(ActionType.Face);
-						break;
-					case ActionType.Face:
-						SelectedControllable?.DoAction(Action.ActiveAction,position);
-						break;
-					default:
-						Action.SetActiveAction(null);
-						break;
-					
-
-				}
-			}
-			else
-			{
-				switch (Action.GetActiveActionType())
-				{
-			
-					case null:
-						if (SelectedControllable != null)
-						{
-							Action.SetActiveAction(ActionType.Move);
-						}
-						break;
-					default:
-						SelectedControllable?.DoAction(Action.ActiveAction,position);
-						break;
-					
-
-				}
-			
-			}
-		
-		
-
-
-		}
 	
 		public static Dialog OptionMessage(string title, string content, string option1text, EventHandler option1,string option2text, EventHandler option2)
 		{
@@ -258,7 +190,6 @@ namespace MultiplayerXeno
 			{
 				counter= 0;
 			}
-
 			float animopacity = counter;
 			if (counter > 1)
 			{
@@ -270,12 +201,17 @@ namespace MultiplayerXeno
 			graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
 			graphicsDevice.Clear(Color.White*0);
 			float opacity = 0.25f;
+			bool highlighted = false;
+
+			if (SelectedControllable == controllable || MousePos == (Vector2) controllable.worldObject.TileLocation.Position)
+			{
+				opacity = 1;
+				highlighted = true;
+			}
 
 			
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 			
-			if(SelectedControllable == controllable||MousePos == (Vector2)controllable.worldObject.TileLocation.Position)
-				opacity = 1;
-			batch.Begin(sortMode: SpriteSortMode.Deferred);
 
 			int i;
 			for (i = 0; i < controllable.Type.MaxFirePoints; i++)
@@ -293,11 +229,12 @@ namespace MultiplayerXeno
 			batch.Draw(TextureManager.GetTexture("UI/HoverHud/detbase"), new Vector2(0,50), null,Color.White);
 
 			
-			float detHeigth = 415f / controllable.Type.Maxdetermination;
+				float detHeigth = 415f / controllable.Type.Maxdetermination;
 			float detYscale = detHeigth/106;
 			int detDMG = controllable.PreviewData.detDmg;
 			for (i = 0; i < controllable.Type.Maxdetermination; i++)
 			{
+				
 				var indicator = TextureManager.GetTexture("UI/HoverHud/deton");
 				if (controllable.Type.Maxdetermination  - i  == controllable.determination+1 && !controllable.paniced)
 				{
@@ -312,12 +249,21 @@ namespace MultiplayerXeno
 					detDMG--;
 					continue;
 				}
-				
+				if(indicator == TextureManager.GetTexture("UI/HoverHud/deton"))
+				{
+					//graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
+					//batch.Begin(sortMode: SpriteSortMode.Immediate,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.colorEffect);
+
+				}
+				else
+				{
+				//	graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
+				//	/batch.Begin(sortMode: SpriteSortMode.Deferred);
+				}
 				batch.Draw(indicator, new Vector2(0, 67) + new Vector2(0, detHeigth * i), null, Color.White, 0, Vector2.Zero, new Vector2(1, detYscale), SpriteEffects.None, 0);
-				
+				//batch.End();
 			}
-			
-			
+			//batch.Begin(sortMode: SpriteSortMode.Deferred);
 			
 			batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
 		
@@ -335,45 +281,79 @@ namespace MultiplayerXeno
 			var u = 0;
 			if (controllable.Type.MaxMovePoints == 2)
 			{
-				u = 80;
+				u = 10;
 			}
 
+			batch.End();
 			for (i = 0; i < controllable.Type.MaxMovePoints; i++)
 			{
-				var indicator = TextureManager.GetTexture("UI/HoverHud/actionon");
+
+				Texture2D indicator;
 				if (i>= controllable.MovePoints)
 				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					indicator= TextureManager.GetTexture("UI/HoverHud/actionoff");
 				}
+				else
+				{
+					PostPorcessing.ShuffleUICRTeffect(i + controllable.worldObject.Id+10,highlighted);
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					indicator = TextureManager.GetTexture("UI/HoverHud/actionon");
 
-				batch.Draw(indicator,new Vector2(200,80)+new Vector2((u+210)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);	
-				
+				}
+
+
+				batch.Draw(indicator,new Vector2(35,10)+new Vector2((u+35)*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);	
+				batch.End();
 			}
-			
-			
 
-			float healthWidth = 768f / controllable.Type.MaxHealth;
-			float healthXScale = healthWidth/96;
+			float healthWidth = 109f / controllable.Type.MaxHealth;
+			float healthXScale = healthWidth/(TextureManager.GetTexture("UI/HoverHud/health").Width);
 			int dmgDone = 0; 
 			i = 0;
 			for (int y = 0; y < controllable.Type.MaxHealth; y++)
 			{
-				var indicator = TextureManager.GetTexture("UI/HoverHud/health");
+				bool health = true;
+				
 				if (y>= controllable.Health)
 				{
-					indicator= TextureManager.GetTexture("UI/HoverHud/nohealth");
+					health = false;
 				}
 				else if (controllable.PreviewData.finalDmg >= controllable.Health-y)
 				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),new Vector2(28,42)+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+					batch.End();
 					i = y;
-					batch.Draw(indicator,new Vector2(184,305)+new Vector2(healthWidth*y,0),null,Color.White*animopacity,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
-					batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id,highlighted,true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					batch.Draw(TextureManager.GetTexture("UI/HoverHud/health"),new Vector2(28,42)+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+					//batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+					batch.End();
 					dmgDone++;
 					continue;
+
 				}
+				Texture2D indicator;
+				if (health)
+				{
+					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id,highlighted);
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					indicator = TextureManager.GetTexture("UI/HoverHud/health");
+				}
+				else
+				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					indicator= TextureManager.GetTexture("UI/HoverHud/nohealth");
+				}
+
 				
-				batch.Draw(indicator,new Vector2(184,305)+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				
+				batch.Draw(indicator,new Vector2(28,42)+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
+				batch.End();
 			}
+			batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+
 			i++;
 			for (int j = dmgDone; j < controllable.PreviewData.finalDmg; j++)
 			{
@@ -406,141 +386,16 @@ namespace MultiplayerXeno
 			
 			batch.End();
 			graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
-			batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
-			batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position)+new Vector2(-200,-250),null,Color.White*opacity,0,Vector2.Zero,0.45f,SpriteEffects.None,0);
+			batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+			batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position)+new Vector2(-200,-200),null,Color.White*opacity,0,Vector2.Zero,2.5f,SpriteEffects.None,0);
 			batch.End();
 
 
 		}
 
-		private static KeyboardState lastState;
-		private static Dictionary<Vector2Int, Visibility> EnemyVisiblityCache = new Dictionary<Vector2Int, Visibility>();
-		private static Controllable enemySelected;
-
-		private static Panel menu;
 		public static void Update(float deltatime)
 		{
-			if (lastState.IsKeyDown(Keys.Tab))
-			{
-				Desktop.FocusedKeyboardWidget = null;//override myra focus switch functionality
-			}
-
-			if(Desktop.FocusedKeyboardWidget != null) return;
-			var keyboardState = Keyboard.GetState();
-			if (keyboardState.IsKeyDown(Keys.L) && lastState.IsKeyUp(Keys.L))
-			{
-				SetUI(null);
-			}
-			if (keyboardState.IsKeyDown(Keys.Escape) && lastState.IsKeyUp(Keys.Escape))
-			{
-				if (CurrentUI is UnitGameLayout || CurrentUI is GameLayout || CurrentUI is EditorUiLayout || CurrentUI is PreGameLobbyLayout || CurrentUI is LobbyBrowserLayout)
-				{
-					if (menu != null && Desktop != null)
-					{
-						Desktop.Widgets.Remove(menu);
-						menu = null;
-
-					}
-					else
-					{
-
-						menu = new Panel();
-						menu.HorizontalAlignment = HorizontalAlignment.Center;
-						menu.VerticalAlignment = VerticalAlignment.Center;
-						menu.Background = new SolidBrush(Color.Black * 0.5f);
-						menu.BorderThickness = new Thickness(1);
-						var stack = new VerticalStackPanel();
-						menu.Widgets.Add(stack);
-						var btn1 = new SoundButton();
-						btn1.Text = "Resume";
-						btn1.Click += (sender, args) => { menu.RemoveFromDesktop(); };
-						stack.Widgets.Add(btn1);
-
-						var btn2 = new SoundButton();
-						btn2.Text = "Settings";
-						btn2.Click += (sender, args) => { SetUI(new SettingsLayout()); };
-						stack.Widgets.Add(btn2);
-
-						var btn3 = new SoundButton();
-						btn3.Text = "Quit";
-						if (CurrentUI is LobbyBrowserLayout)
-						{
-							btn3.Click += (sender, args) => { MasterServerNetworking.Disconnect(); };
-						}
-						else
-						{
-							btn3.Click += (sender, args) => { Networking.Disconnect(); };
-						}
-
-						stack.Widgets.Add(btn3);
-
-						Desktop.Widgets.Add(menu);
-
-					}
-				}
-			}
-			if (!WorldEditSystem.enabled && GameManager.MyUnits.Count != 0)
-			{
-				if (keyboardState.IsKeyDown(Keys.E) && lastState.IsKeyUp(Keys.E))
-				{
-				
-					int fails = 0;
-					do
-					{
-						var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable) + 1;
-						if (index >= GameManager.MyUnits.Count)
-						{
-							index = 0;
-						}
-
-						SelectControllable(GameManager.MyUnits[index]);
-						if(fails>GameManager.MyUnits.Count)
-							break;
-						fails++;
-					} while (SelectedControllable.Health <= 0);
-
-
-				}
-				if (keyboardState.IsKeyDown(Keys.Q) && lastState.IsKeyUp(Keys.Q))
-				{
-					int fails = 0;
-					do
-					{
-						var index = GameManager.MyUnits.FindIndex(i => i == SelectedControllable)-1;
-						if (index < 0)
-						{
-							index = GameManager.MyUnits.Count-1;
-						}
-			
-						SelectControllable(GameManager.MyUnits[index]);
-						if(fails>GameManager.MyUnits.Count)
-							break;
-						fails++;
-					} while (SelectedControllable.Health <= 0);
-
-				}
-			}
-			if (keyboardState.IsKeyDown(Keys.Tab) && lastState.IsKeyUp(Keys.Tab))
-			{
-			
-				if (Attack.targeting == TargetingType.Auto)
-				{
-					Attack.targeting = TargetingType.High;
-				}
-				else if (Attack.targeting == TargetingType.High)
-				{
-					Attack.targeting = TargetingType.Low;
-				}
-				else if (Attack.targeting == TargetingType.Low)
-				{
-					Attack.targeting = TargetingType.Auto;
-				}
-
-			}
-		
-	
-			lastState = keyboardState;
-			
+			CurrentUI.Update(deltatime);
 		}
 
 		private static bool raycastDebug;
@@ -555,7 +410,7 @@ namespace MultiplayerXeno
 			var Mousepos = Utility.GridToWorldPos((Vector2)TileCoordinate+new Vector2(-1.5f,-0.5f));
 
 
-			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 			
 			for (int i = 0; i < 8; i++)
 			{
@@ -666,10 +521,7 @@ namespace MultiplayerXeno
 				}
 			}*/
 
-			WorldEditSystem.Draw(spriteBatch);
-			var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-			spriteBatch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
-			
+			CurrentUI.Render(spriteBatch,deltaTime);
 
 			spriteBatch.End();
 

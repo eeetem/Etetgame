@@ -117,8 +117,7 @@ public class MainMenuLayout : UiLayout
 
 			button2.Click += (s, a) =>
 			{
-				WorldEditSystem.Init();
-				WorldEditSystem.GenerateUI();
+				UI.SetUI(new EditorUiLayout());
 
 			};
 

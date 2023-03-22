@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MultiplayerXeno;
+using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
 namespace MultiplayerXeno.UILayouts;
 
-public class GameLayout : UiLayout
+public class GameLayout : MenuLayout
 {
 	private static Panel turnIndicator;
 	private static Label scoreIndicator;
@@ -33,7 +36,7 @@ public class GameLayout : UiLayout
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		
+
 		var panel = new Panel
 			{
 				
@@ -241,5 +244,126 @@ public class GameLayout : UiLayout
 			}
 			
 			return panel;
+	}
+
+	public override void Update(float deltatime)
+	{
+		base.Update(deltatime);
+		
+		if (lastKeyboardState.IsKeyDown(Keys.Tab))
+		{
+			UI.Desktop.FocusedKeyboardWidget = null;//override myra focus switch functionality
+		}
+		if(UI.Desktop.FocusedKeyboardWidget != null) return;
+		if (GameManager.MyUnits.Count != 0)
+		{
+			if (currentKeyboardState.IsKeyDown(Keys.E) && lastKeyboardState.IsKeyUp(Keys.E))
+			{
+				
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == UI.SelectedControllable) + 1;
+					if (index >= GameManager.MyUnits.Count)
+					{
+						index = 0;
+					}
+
+					UI.SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (UI.SelectedControllable.Health <= 0);
+
+
+			}
+			if (currentKeyboardState.IsKeyDown(Keys.Q) && lastKeyboardState.IsKeyUp(Keys.Q))
+			{
+				int fails = 0;
+				do
+				{
+					var index = GameManager.MyUnits.FindIndex(i => i == UI.SelectedControllable)-1;
+					if (index < 0)
+					{
+						index = GameManager.MyUnits.Count-1;
+					}
+			
+					UI.SelectControllable(GameManager.MyUnits[index]);
+					if(fails>GameManager.MyUnits.Count)
+						break;
+					fails++;
+				} while (UI.SelectedControllable.Health <= 0);
+
+			}
+		}
+		if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
+		{
+			
+			if (Attack.targeting == TargetingType.Auto)
+			{
+				Attack.targeting = TargetingType.High;
+			}
+			else if (Attack.targeting == TargetingType.High)
+			{
+				Attack.targeting = TargetingType.Low;
+			}
+			else if (Attack.targeting == TargetingType.Low)
+			{
+				Attack.targeting = TargetingType.Auto;
+			}
+
+		}
+	}
+
+	public override void MouseDown(Vector2Int position, bool righclick)
+	{
+		base.MouseDown(position, righclick);
+		
+		var Tile = WorldManager.Instance.GetTileAtGrid(position);
+
+		WorldObject obj = Tile.ObjectAtLocation;
+		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
+			UI.SelectControllable(obj.ControllableComponent);
+			return;
+		}
+		if (!GameManager.IsMyTurn()) return;
+		if (righclick)
+		{
+			switch (Action.GetActiveActionType())
+			{
+
+				case null:
+					Action.SetActiveAction(ActionType.Face);
+					break;
+				case ActionType.Face:
+					UI.SelectedControllable?.DoAction(Action.ActiveAction,position);
+					break;
+				default:
+					Action.SetActiveAction(null);
+					break;
+					
+
+			}
+		}
+		else
+		{
+			switch (Action.GetActiveActionType())
+			{
+
+				case null:
+					if (UI.SelectedControllable != null)
+					{
+						Action.SetActiveAction(ActionType.Move);
+					}
+
+					break;
+				default:
+					UI.SelectedControllable?.DoAction(Action.ActiveAction, position);
+					break;
+
+
+			}
+
+		}
 	}
 }

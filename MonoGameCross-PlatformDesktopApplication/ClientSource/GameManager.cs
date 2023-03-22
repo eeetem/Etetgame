@@ -143,7 +143,6 @@ namespace MultiplayerXeno
 			WorldManager.Instance.WipeGrid();
 			MyUnits.Clear();
 			UI.Controllables.Clear();
-			WorldEditSystem.enabled = false;
 		}
 
 

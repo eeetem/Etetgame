@@ -30,15 +30,14 @@ namespace MultiplayerXeno
 					GameManager.CapturePoints.Add(objOfType);
 					break;
 				case "spawnPointT1":
-#if SERVER
+
 					GameManager.T1SpawnPoints.Add(objOfType);
-#endif
-				
+		
 					break;
 				case "spawnPointT2":
-#if SERVER
+
 					GameManager.T2SpawnPoints.Add(objOfType);
-#endif
+
 					break;
 			}
 		}

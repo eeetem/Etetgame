@@ -22,6 +22,8 @@ namespace MultiplayerXeno
 		}
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
+		public static readonly List<WorldObject> T1SpawnPoints = new();
+		public static readonly List<WorldObject> T2SpawnPoints = new();
 		private static int score = 0;
 		public static void Forget(WorldObject wo)
 		{

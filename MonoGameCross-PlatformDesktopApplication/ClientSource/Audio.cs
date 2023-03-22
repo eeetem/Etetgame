@@ -98,7 +98,7 @@ public static class Audio
 			instance.Pitch += (float) ((Random.Shared.NextDouble() - 0.5f) / 2f) * pitchVariationScale;
 			instance.Volume = SoundVolume;
 			AudioEmitter emitter = new AudioEmitter();
-			emitter.Position = new Vector3((Vector2) location / 80f, 0);
+			emitter.Position = new Vector3((Vector2) location / 150f, 0);
 			instance.Play();
 			instance.Apply3D(Camera.AudioListener, emitter);
 			lock (syncobj)

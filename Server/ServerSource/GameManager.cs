@@ -11,8 +11,7 @@ namespace MultiplayerXeno
 
 
 
-		public static readonly List<WorldObject> T1SpawnPoints = new();
-		public static readonly List<WorldObject> T2SpawnPoints = new();
+
 		public static readonly List<int> T1Units = new();
 		public static readonly List<int> T2Units = new();
 
@@ -47,11 +46,11 @@ namespace MultiplayerXeno
 			{
 				int id = WorldManager.Instance.GetNextId();
 				T1Units.Add(id);
-				if (i < Player1.StartData.Soldiers)
+				if (i < Player1.SquadComp.Soldiers)
 				{
 					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
 				}
-				else if (i < Player1.StartData.Soldiers+ Player1.StartData.Heavies)
+				else if (i < Player1.SquadComp.Soldiers+ Player1.SquadComp.Heavies)
 				{
 					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
 				}
@@ -69,11 +68,11 @@ namespace MultiplayerXeno
 			{
 				int id = WorldManager.Instance.GetNextId();
 				T2Units.Add(id);
-				if (i < Player2.StartData.Soldiers)
+				if (i < Player2.SquadComp.Soldiers)
 				{
 					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
 				}
-				else if (i < Player2.StartData.Soldiers+ Player2.StartData.Heavies)
+				else if (i < Player2.SquadComp.Soldiers+ Player2.SquadComp.Heavies)
 				{
 					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
 				}

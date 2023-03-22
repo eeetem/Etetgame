@@ -157,18 +157,6 @@
 /processorParam:Quality=Best
 /build:audio/UI/press.wav
 
-#begin audio/UI/press.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/UI/press.wav
-
-#begin audio/UI/select.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:audio/UI/select.wav
-
 #begin audio/UI/select.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -188,17 +176,47 @@
 /processorParam:DebugMode=Auto
 /build:shaders/colorshader.fx
 
+#begin shaders/colorshader.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/colorshader.fx
+
 #begin shaders/CRT.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/CRT.fx
 
+#begin shaders/CRT.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/CRT.fx
+
+#begin shaders/CRT2lol.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/CRT2lol.fx
+
 #begin shaders/distort.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:shaders/distort.fx
+
+#begin shaders/distort.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/distort.fx
+
+#begin shaders/lc.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:shaders/lc.fx
 
 #begin shaders/lc.fx
 /importer:EffectImporter
