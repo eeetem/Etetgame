@@ -10,6 +10,7 @@ disable effects in editor
 pregame lobby music flicker(rework music)
 unit placement
 list of visible enemies
+placeable cover?
 officer that stops units panicing?
 smoke greande
 bomb defuse gamemode?

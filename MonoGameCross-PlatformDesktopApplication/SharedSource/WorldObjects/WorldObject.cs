@@ -24,11 +24,6 @@ namespace MultiplayerXeno
 			this.Type = type;
 
 
-			
-
-
-			
-			
 			TileLocation = tileLocation;
 			Type.SpecialBehaviour(this);
 #if CLIENT

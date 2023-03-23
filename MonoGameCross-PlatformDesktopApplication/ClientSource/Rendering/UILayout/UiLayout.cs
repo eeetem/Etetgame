@@ -219,6 +219,4 @@ public abstract class UiLayout
 		
 	}
 
-
-	
 }

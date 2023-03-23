@@ -31,12 +31,12 @@ namespace MultiplayerXeno
 					break;
 				case "spawnPointT1":
 
-					GameManager.T1SpawnPoints.Add(objOfType);
+					GameManager.T1SpawnPoints.Add(objOfType.TileLocation.Position);
 		
 					break;
 				case "spawnPointT2":
 
-					GameManager.T2SpawnPoints.Add(objOfType);
+					GameManager.T2SpawnPoints.Add(objOfType.TileLocation.Position);
 
 					break;
 			}

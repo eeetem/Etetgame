@@ -118,7 +118,7 @@ public static class RenderSystem
 	{
 //draws "top" ones first
 
-		public override int Compare(IDrawable x, IDrawable y)
+		public override int Compare(IDrawable? x, IDrawable? y)
 		{
 
 
@@ -130,7 +130,7 @@ public static class RenderSystem
 	{
 //draws "top" ones first
 
-		public override int Compare(WorldTile x, WorldTile y)
+		public override int Compare(WorldTile? x, WorldTile? y)
 		{
 
 			int xpos = x.Position.X + x.Position.Y;

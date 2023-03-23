@@ -83,12 +83,6 @@ namespace MultiplayerXeno
 		}
 
 		public delegate void MouseClick(Vector2Int gridPos);
-
-		public static event MouseClick RightClick;
-		public static event MouseClick LeftClick;
-		public static event MouseClick RightClickUp;
-		public static event MouseClick LeftClickUp;
-
 		private static MouseState lastMouseState;
 
 		public static void MouseDown(object? sender, EventArgs e)

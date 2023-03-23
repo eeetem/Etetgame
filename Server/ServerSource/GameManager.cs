@@ -42,47 +42,33 @@ namespace MultiplayerXeno
 			ControllableData cdata = new ControllableData(true);
 			
 			int i = 0;
-			foreach (var spawn in T1SpawnPoints)
+			foreach (var spawn in Player1.SquadComp.Composition)
 			{
-				int id = WorldManager.Instance.GetNextId();
-				T1Units.Add(id);
-				if (i < Player1.SquadComp.Soldiers)
+				if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
+				if (T1SpawnPoints.Contains(spawn.Position))
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
+					int id = WorldManager.Instance.GetNextId();
+						WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, controllableData: cdata);
+						T1Units.Add(id);
+						i++;
+					
 				}
-				else if (i < Player1.SquadComp.Soldiers+ Player1.SquadComp.Heavies)
-				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else
-				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				
-				i++;
 			}
 
 			cdata = new ControllableData(false);
 			i = 0;
-			foreach (var spawn in T2SpawnPoints)
+			foreach (var spawn in Player2.SquadComp.Composition)
 			{
-				int id = WorldManager.Instance.GetNextId();
-				T2Units.Add(id);
-				if (i < Player2.SquadComp.Soldiers)
+				if(i>=WorldManager.Instance.CurrentMap.unitCount) break;
+				if (T2SpawnPoints.Contains(spawn.Position))
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else if (i < Player2.SquadComp.Soldiers+ Player2.SquadComp.Heavies)
-				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else
-				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
+						int id = WorldManager.Instance.GetNextId();
+						WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position,Direction.North, id, controllableData: cdata);
+						T2Units.Add(id);
+						i++;
+					
 				}
 
-
-				i++;
 			}
 
 			if (Random.Shared.Next(100) > 50)

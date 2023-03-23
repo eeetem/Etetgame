@@ -22,16 +22,13 @@ namespace MultiplayerXeno
 		}
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
-		public static readonly List<WorldObject> T1SpawnPoints = new();
-		public static readonly List<WorldObject> T2SpawnPoints = new();
+		public static readonly List<Vector2Int> T1SpawnPoints = new();
+		public static readonly List<Vector2Int> T2SpawnPoints = new();
 		private static int score = 0;
 		public static void Forget(WorldObject wo)
 		{
-#if SERVER
-			T1SpawnPoints.Remove(wo);
-			T2SpawnPoints.Remove(wo);
-#endif
-			
+			T1SpawnPoints.Remove(wo.TileLocation.Position);
+			T2SpawnPoints.Remove(wo.TileLocation.Position);
 			CapturePoints.Remove(wo);
 		}
 

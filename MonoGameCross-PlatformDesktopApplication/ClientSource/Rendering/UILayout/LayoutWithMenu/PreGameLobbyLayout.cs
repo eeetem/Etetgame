@@ -17,6 +17,7 @@ public class PreGameLobbyLayout : MenuLayout
 {
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+		
 			var grid1 = new Grid()
 			{
 

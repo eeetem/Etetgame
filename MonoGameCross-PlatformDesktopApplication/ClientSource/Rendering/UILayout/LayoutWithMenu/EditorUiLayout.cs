@@ -319,111 +319,113 @@ public class EditorUiLayout : MenuLayout
 		}
 	}
 
-
 	public override void Update(float deltatime)
 	{
-		base.Update(deltatime);
-		if (currentKeyboardState.IsKeyDown(Keys.E) && lastKeyboardState.IsKeyUp(Keys.E))
-		{
-			ActiveDir += 1;
-		} else if (currentKeyboardState.IsKeyDown(Keys.Q)&& lastKeyboardState.IsKeyUp(Keys.Q))
-		{
-			ActiveDir -= 1;
-		}
-		if(currentKeyboardState.IsKeyDown(Keys.D1))
-		{
-			ActiveBrush = Brush.Point;
-		}
-		if(currentKeyboardState.IsKeyDown(Keys.D2))
-		{
-			ActiveBrush = Brush.Selection;
-		}
-		if(currentKeyboardState.IsKeyDown(Keys.D3))
-		{
-			ActiveBrush = Brush.Line;
-		}
-
-		ActiveDir = Utility.NormaliseDir(ActiveDir);
-
-		lastKeyboardState = currentKeyboardState;
-
-		Vector2Int mousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-		switch (ActiveBrush)
-		{
-			case Brush.Point:
-				if (leftMouseDown && IsValidPlacement(mousePos))
-				{
-					WorldManager.Instance.MakeWorldObject(ActivePrefab,mousePos,ActiveDir);
-				}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
-				{
-					DeletePrefab(mousePos);
-
-				}
-
-				break;
-			case  Brush.Selection:
-				if (IsMouseDown && !lastMouseDown)
-				{
-					startPoint = mousePos;
-					break;
-				}
-
-				currentPoint = mousePos;
-				if (startPoint.X > currentPoint.X)
-				{
-					topLeftSelection.X = currentPoint.X;
-					bottomRightSelection.X = startPoint.X;
-
-				}
-				else
-				{
-					topLeftSelection.X = startPoint.X;
-					bottomRightSelection.X = currentPoint.X;
-				}
-				if (startPoint.Y > currentPoint.Y)
-				{
-					topLeftSelection.Y = currentPoint.Y;
-					bottomRightSelection.Y = startPoint.Y;
-
-				}
-				else
-				{
-					topLeftSelection.Y = startPoint.Y;
-					bottomRightSelection.Y = currentPoint.Y;
-				}
-				if (lastRghtMouseDown && !rightMouseDown)
-				{
-				
-						
-					for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
-					{
-						for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
-						{
-							DeletePrefab(new Vector2Int(x,y));
-								
-						}
-					}
-				}else if (lastLeftMouseDown && !leftMouseDown)
-				{
-					for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
-					{
-						for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
-						{
-							if(IsValidPlacement(new Vector2Int(x,y)))
-							{
-								WorldManager.Instance.MakeWorldObject(ActivePrefab,new Vector2Int(x,y),ActiveDir);	
-							}
-								
-								
-						}
-					}
-				}
-
-
-				break;
-		}
 		
-	}
+			if (currentKeyboardState.IsKeyDown(Keys.E) && lastKeyboardState.IsKeyUp(Keys.E))
+			{
+				ActiveDir += 1;
+			} else if (currentKeyboardState.IsKeyDown(Keys.Q)&& lastKeyboardState.IsKeyUp(Keys.Q))
+			{
+				ActiveDir -= 1;
+			}
+			if(currentKeyboardState.IsKeyDown(Keys.D1))
+			{
+				ActiveBrush = Brush.Point;
+			}
+			if(currentKeyboardState.IsKeyDown(Keys.D2))
+			{
+				ActiveBrush = Brush.Selection;
+			}
+			if(currentKeyboardState.IsKeyDown(Keys.D3))
+			{
+				ActiveBrush = Brush.Line;
+			}
+
+			ActiveDir = Utility.NormaliseDir(ActiveDir);
+
+
+			Vector2Int mousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			switch (ActiveBrush)
+			{
+				case Brush.Point:
+					if (leftMouseDown && IsValidPlacement(mousePos))
+					{
+						WorldManager.Instance.MakeWorldObject(ActivePrefab,mousePos,ActiveDir);
+					}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
+					{
+						DeletePrefab(mousePos);
+
+					}
+
+					break;
+				case Brush.Selection:
+					if (IsMouseDown && !lastMouseDown)
+					{
+						startPoint = mousePos;
+						break;
+					}
+
+					currentPoint = mousePos;
+					if (startPoint.X > currentPoint.X)
+					{
+						topLeftSelection.X = currentPoint.X;
+						bottomRightSelection.X = startPoint.X;
+
+					}
+					else
+					{
+						topLeftSelection.X = startPoint.X;
+						bottomRightSelection.X = currentPoint.X;
+					}
+					if (startPoint.Y > currentPoint.Y)
+					{
+						topLeftSelection.Y = currentPoint.Y;
+						bottomRightSelection.Y = startPoint.Y;
+
+					}
+					else
+					{
+						topLeftSelection.Y = startPoint.Y;
+						bottomRightSelection.Y = currentPoint.Y;
+					}
+					if (lastRghtMouseDown && !rightMouseDown)
+					{
+
+
+						for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
+						{
+							for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
+							{
+								DeletePrefab(new Vector2Int(x,y));
+
+							}
+						}
+					}else if (lastLeftMouseDown && !leftMouseDown)
+					{
+						for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
+						{
+							for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
+							{
+								if(IsValidPlacement(new Vector2Int(x,y)))
+								{
+									WorldManager.Instance.MakeWorldObject(ActivePrefab,new Vector2Int(x,y),ActiveDir);	
+								}
+
+
+							}
+						}
+					}
+
+
+					break;
+			}
+			//Console.WriteLine(MouseDown+" "+lastMouseDown);
+			lastLeftMouseDown = leftMouseDown;
+			lastMouseDown = IsMouseDown;
+			lastRghtMouseDown = rightMouseDown;
+			lastMousePos = mousePos;
+		}
 		private static void DeletePrefab(Vector2Int Pos)
 		{
 			if (!WorldManager.IsPositionValid(Pos))

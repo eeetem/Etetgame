@@ -18,7 +18,6 @@ namespace MultiplayerXeno
 
 		public void SetSquadComp(SquadCompPacket packet)
 		{
-			//todo verify
 			SquadComp = packet;
 		}
 

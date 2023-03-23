@@ -583,16 +583,10 @@ namespace MultiplayerXeno
 #if CLIENT
 					MakeFovDirty();
 
-					if (GameManager.GameState != GameState.Playing)
+					if (GameManager.GameState == GameState.Lobby)
 					{
-						if(obj.ControllableComponent != null){
-							if (obj.ControllableComponent.IsMyTeam())
-							{
-								Camera.SetPos(WO.Item2.Position);
-							}
-						}
-						else
-						{
+						if(obj.ControllableComponent == null){
+	
 							Camera.SetPos(WO.Item2.Position);
 						}
 					}
