@@ -8,7 +8,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.PostProcessing;
 using MultiplayerXeno;
 using Action = MultiplayerXeno.Action;
@@ -78,7 +77,7 @@ namespace HeartSignal
 			
 			
 			//loose conection
-			EffectParams["clmagnitude"] = 2000;
+			EffectParams["clmagnitude"] = 100;
 			EffectParams["clalpha"] = 1;
 			EffectParams["clspeed"] = 1000;
 			EffectParams["overlayalpha"] = 0f;
@@ -98,13 +97,13 @@ namespace HeartSignal
 			
 			
 			//distort
-			EffectParams["dxspeed"] = 10;
-			EffectParams["dxamplitude"] = 0f;
-			EffectParams["dxfrequency"] = 0f;
+			EffectParams["dxspeed"] = 50;
+			EffectParams["dxamplitude"] = 80f;
+			EffectParams["dxfrequency"] = 80f;
 			
-			EffectParams["dyspeed"] = 10;
-			EffectParams["dyamplitude"] =0f;
-			EffectParams["dyfrequency"] = 0f;
+			EffectParams["dyspeed"] = 50;
+			EffectParams["dyamplitude"] = 80f;
+			EffectParams["dyfrequency"] = 80f;
 
 			
 	
@@ -113,6 +112,13 @@ namespace HeartSignal
 
 		private static void StartingTweens()
 		{
+		
+			AddTween("dxspeed", 5, 1, false);
+			AddTween("dyspeed", 5, 1, false);
+			AddTween("dxfrequency", 5, 7f, false);
+			AddTween("dyfrequency", 5, 7f, false);
+			AddTween("dyamplitude", 5, 7f, false);
+			AddTween("dxamplitude", 5, 7f, false);
 			
 			AddTween("clmagnitude", 50, 3, false);
 			AddTween("bloomAmount", 0.15f, 5, false);
@@ -123,9 +129,17 @@ namespace HeartSignal
 			AddTween("shape", 0.1f, 5f, false);
 			AddTween("noise", 0.3f, 3f, false);
 			
-			AddTween("noise", 0.005f, 2f, false);
+			AddTween("dxfrequency", 0, 10, false);
+			AddTween("dyfrequency", 0, 10f, false);
+			AddTween("dyamplitude", 0, 10, false);
+			AddTween("dxamplitude", 0, 10f, false);
+
+
+			AddTween("noise", 0.005f, 2.2f, false);
 			Console.Write("noise done");
 			AddTween("clmagnitude", 4f, 0.5f, false);
+			
+
 			
 			Console.Write("added tweens");
 
@@ -172,11 +186,11 @@ namespace HeartSignal
 
 
 
-		public static void ShuffleUICRTeffect(int seed, bool canFlicker = false,bool disapate = false)
+		public static void ShuffleUICRTeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
 		{
 			if (disapate)
 			{
-				Crtdissapation.Apply(UIcrtEffect);
+				Crtdissapation.Apply(UIcrtEffect,textureVector2);
 				return;
 			}
 
@@ -186,7 +200,7 @@ namespace HeartSignal
 				seed = (seed + 1) % CrtLightShaderPresets.Length;
 			}
 
-			CrtLightShaderPresets[seed].Apply(UIcrtEffect);
+			CrtLightShaderPresets[seed].Apply(UIcrtEffect,textureVector2);
 		}
 
 
@@ -338,7 +352,7 @@ namespace HeartSignal
 		
 	
 	combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender);
-	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,crtEffect);
+	combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,null);
 	combinedSpriteBatch.Draw(combinedRender2, combinedRender2.Bounds, Color.White);
 	combinedSpriteBatch.End();
 		

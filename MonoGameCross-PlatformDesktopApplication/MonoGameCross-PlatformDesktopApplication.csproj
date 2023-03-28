@@ -66,4 +66,7 @@
         <Link>Maps</Link>
       </Folder>
     </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="ClientSource\Rendering\UILayout\LayoutWithMenu\UnitGameLayout.cs" />
+    </ItemGroup>
 </Project>

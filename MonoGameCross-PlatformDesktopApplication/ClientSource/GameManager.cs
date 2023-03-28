@@ -27,18 +27,6 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public static List<Controllable> MyUnits
-		{
-			get {
-				if (_myUnits.Count == 0)
-				{
-					CountMyUnits();
-				}
-
-				return _myUnits;
-			}
-			set { _myUnits = value; }
-		} 
 
 
 		public static bool IsMyTurn()
@@ -108,23 +96,10 @@ namespace MultiplayerXeno
 			if(intated)return;
 			intated = true;
 			Audio.PlayCombat();
-			CountMyUnits();
 			WorldManager.Instance.MakeFovDirty();
 			UI.SetUI(new GameLayout());
 		}
 
-		public static void CountMyUnits()
-		{
-			_myUnits.Clear();
-			foreach (var obj in UI.Controllables)
-			{
-				if (obj.IsPlayerOneTeam == IsPlayer1)
-				{
-					_myUnits.Add(obj);
-				}
-			}
-
-		}
 
 		public static void EndTurn()
 		{
@@ -132,7 +107,6 @@ namespace MultiplayerXeno
 
 			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
 			Networking.serverConnection.Send(packet);
-			UI.SelectControllable(null);
 			Action.SetActiveAction(null);
 
 		}
@@ -141,8 +115,6 @@ namespace MultiplayerXeno
 		{
 			intated = false;
 			WorldManager.Instance.WipeGrid();
-			MyUnits.Clear();
-			UI.Controllables.Clear();
 		}
 
 

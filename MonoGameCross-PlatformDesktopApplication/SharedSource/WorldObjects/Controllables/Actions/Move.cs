@@ -84,11 +84,7 @@ public class Move : Action
 			lastTarget = target;
 		}
 
-		if (lastTarget != target)
-		{
-			Action.SetActiveAction(null);
-			
-		}
+
 	
 		foreach (var path in previewPath)
 		{

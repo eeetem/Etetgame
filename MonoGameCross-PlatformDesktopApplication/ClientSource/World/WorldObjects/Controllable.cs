@@ -3,25 +3,24 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.Pathfinding;
 
-namespace MultiplayerXeno
+namespace MultiplayerXeno;
+
+public partial class Controllable
 {
-	public partial class Controllable
+	public PreviewData PreviewData;
+	public bool IsMyTeam()
 	{
-		public PreviewData PreviewData;
-		public bool IsMyTeam()
-		{
-			return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
-		}
-		public void Spoted()
-		{
-			foreach (var tile in overWatchedTiles)
-			{
-				//todo fix this
-				WorldManager.Instance.GetTileAtGrid(tile).CalcWatchLevel();
-			}
-			
-		}
-
-
+		return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
 	}
+	public void Spoted()
+	{
+		foreach (var tile in overWatchedTiles)
+		{
+			WorldManager.Instance.GetTileAtGrid(tile).CalcWatchLevel();
+		}
+			
+	}
+
+
+
 }

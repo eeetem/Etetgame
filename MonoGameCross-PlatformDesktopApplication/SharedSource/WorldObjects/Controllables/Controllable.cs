@@ -246,7 +246,6 @@ namespace MultiplayerXeno
 
 		
 #if CLIENT
-			UI.SetUI(new UnitGameLayout());
 			if (worldObject.IsVisible())
 			{
 				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
@@ -333,6 +332,9 @@ namespace MultiplayerXeno
 		}
 		public void Update(float gameTime)
 		{
+			#if CLIENT
+			PreviewData = new PreviewData();//probably very bad memory wise
+			#endif 
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
@@ -354,10 +356,7 @@ namespace MultiplayerXeno
 					{
 						moving = false;
 						_thisMoving = false;
-#if CLIENT
-						UI.SetUI(new UnitGameLayout());
-#endif
-					
+
 					}
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();

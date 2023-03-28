@@ -16,8 +16,10 @@ namespace MultiplayerXeno.UILayouts;
 
 public abstract class UiLayout
 {
-	public static void Init()
+	protected static GraphicsDevice graphicsDevice;
+	public static void Init(GraphicsDevice g)
 	{
+		graphicsDevice = g;
 		DefaultFont = new FontSystem();
 		DefaultFont.AddFont(File.ReadAllBytes("Content/GradientVector.ttf"));
 

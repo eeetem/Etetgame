@@ -418,24 +418,11 @@ namespace MultiplayerXeno.Pathfinding
 		public double DistanceTo(Node other) => Math.Sqrt(Vector2Int.SqrDistance(Position, other.Position));
 	}
 
-	/// <summary>
-        ///     The states the nodes can have.
-        /// </summary>
+
         public enum NodeState
         {
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Unconsidered = 0,
-
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Open = 1,
-
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Closed = 2,
         }
 }

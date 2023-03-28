@@ -9,7 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using MultiplayerXeno.Pathfinding;
-
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
 namespace MultiplayerXeno
 {
 	public  partial class WorldManager
@@ -466,7 +468,7 @@ namespace MultiplayerXeno
 #if  CLIENT
 			if (Obj.ControllableComponent != null)
 			{
-				UI.Controllables.Remove(Obj.ControllableComponent);
+				GameLayout.UnRegisterContollable(Obj.ControllableComponent);
 			}
 #endif
 			
@@ -687,7 +689,7 @@ namespace MultiplayerXeno
 				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
 #if CLIENT
-				UI.Controllables.Add(component);
+				GameLayout.RegisterContollable(component);
 #endif
 				
 			}

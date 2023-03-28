@@ -123,10 +123,6 @@ public abstract class Attack : Action
 		{
 			previewShot = MakeProjectile(actor, target);
 			lastTarget = target;
-			foreach (var controllable in UI.Controllables)
-			{
-				controllable.PreviewData = new PreviewData(0, 0);
-			}
 		}
 
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(target+new Vector2(-1.5f,-0.5f)), Color.Red);
@@ -303,15 +299,18 @@ public abstract class Attack : Action
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			if (hitobj.ControllableComponent != null)
 			{
-				hitobj.ControllableComponent.PreviewData.totalDmg = previewShot.originalDmg;
-				hitobj.ControllableComponent.PreviewData.distanceBlock = previewShot.originalDmg - previewShot.dmg;
-				hitobj.ControllableComponent.PreviewData.finalDmg = previewShot.dmg - coverModifier;
-				hitobj.ControllableComponent.PreviewData.coverBlock = coverModifier;
+				var data = hitobj.ControllableComponent.PreviewData;
+				data.totalDmg = previewShot.originalDmg;
+				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
+				data.finalDmg = previewShot.dmg - coverModifier;
+				data.coverBlock = coverModifier;
 				if (hitobj.ControllableComponent.determination > 0)
 				{
-					hitobj.ControllableComponent.PreviewData.finalDmg -= previewShot.determinationResistanceCoefficient;
-					hitobj.ControllableComponent.PreviewData.determinationBlock = previewShot.determinationResistanceCoefficient;
+					data.finalDmg -= previewShot.determinationResistanceCoefficient;
+					data.determinationBlock = previewShot.determinationResistanceCoefficient;
 				}
+
+				hitobj.ControllableComponent.PreviewData = data;
 			}
 		}
 

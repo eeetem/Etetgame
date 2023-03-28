@@ -72,7 +72,7 @@ namespace MultiplayerXeno
 			GraphicsDevice.SetRenderTarget(null);
 			TextureManager.Init(Content);
 			UI.Init(Content,GraphicsDevice);
-			UiLayout.Init();
+			UiLayout.Init(GraphicsDevice);
 			UI.SetUI(new MainMenuLayout());
 			Audio.Init(Content);
 		

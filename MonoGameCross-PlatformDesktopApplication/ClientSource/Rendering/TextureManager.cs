@@ -10,6 +10,7 @@ public static class TextureManager
 {
 			
 	public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
+	public static Dictionary<string, Texture2D[]> Sheets = new Dictionary<string, Texture2D[]>();
 
 	private static ContentManager Content;
 
@@ -41,6 +42,22 @@ public static class TextureManager
 
 
 		return Textures[name];
+	}
+	public static Texture2D[] GetSpriteSheet(string name, int x, int y)
+	{
+		string hash = name + x + y;
+		if (Sheets.ContainsKey(hash))
+		{
+			return Sheets[hash];
+		}
+
+		var texutre = Content.Load<Texture2D>("textures/" + name);
+		var sheet = Utility.MakeSpriteSheet(texutre, x, y);
+		Sheets.Add(hash, sheet);
+		
+		
+
+		return Sheets[hash];
 	}
 
 }

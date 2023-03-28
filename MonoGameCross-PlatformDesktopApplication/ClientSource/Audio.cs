@@ -87,7 +87,7 @@ public static class Audio
 
 				break;
 			case "grunt":
-				sfxID = "damage/grunt"+Random.Shared.Next(1,2);//todo standartised audio system with variations
+				sfxID = "damage/grunt" + Random.Shared.Next(1, 2);
 				break;
 		}
 

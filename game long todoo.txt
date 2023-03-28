@@ -1,7 +1,6 @@
 
 
 turn timer/game options
-deployment screen
 shot preview
 destruction
 how to play

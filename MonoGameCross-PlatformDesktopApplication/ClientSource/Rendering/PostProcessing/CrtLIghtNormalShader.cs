@@ -10,17 +10,12 @@ public class CrtLIghtNormalShader : ShaderPreset
 	{
 		EffectParams["hardScan"] = 0f;
 		EffectParams["hardPix"] = 0f;
-		EffectParams["warpX"] = 0.5f;
-		EffectParams["warpY"] = 0.5f;
-		EffectParams["maskDark"] = 0.5f;
+		EffectParams["warpX"] = 0.1f;
+		EffectParams["warpY"] = 0.1f;
+		EffectParams["maskDark"] = 1f;
 		EffectParams["maskLight"] = 1.5f;
-		EffectParams["scaleInLinearGamma"] = 1f;
+		EffectParams["scaleInLinearGamma"] = 0f;
 		EffectParams["shadowMask"] = 0f;
-		EffectParams["brightboost"] = 1f;
-		EffectParams["hardBloomScan"] = -1.5f;
-		EffectParams["hardBloomPix"] = -2.0f;
-		EffectParams["bloomAmount"] = 100f;
-		EffectParams["shape"] = 0.1f;
 	}
 
 	private float counter = 0;
@@ -62,7 +57,7 @@ public class CrtLIghtNormalShader : ShaderPreset
 		}
 
 		uiAnim += min;
-		EffectParams["brightboost"] = (0.2f+(uiAnim/2f));
+		EffectParams["brightboost"] = (0.05f+(uiAnim/3f));
 		EffectParams["hardBloomScan"] = (-1f*uiAnim);
 		EffectParams["hardBloomPix"]= (-2f*uiAnim);
 		EffectParams["bloomAmount"] = (0.1f*uiAnim);
@@ -79,11 +74,13 @@ public class CrtLIghtNormalShader : ShaderPreset
 
 	}
 
-	public override void Apply(Effect effect)
+	public override void Apply(Effect effect,Vector2 size)
 	{
-		base.Apply(effect);
-		effect.Parameters["textureSize"].SetValue(new Vector2(27, 25));
-		effect.Parameters["videoSize"].SetValue(new Vector2(27, 25));
-		effect.Parameters["outputSize"].SetValue(new Vector2(27, 25));
+		
+		base.Apply(effect,size);
+
+		effect.Parameters["textureSize"].SetValue(size*3);
+		effect.Parameters["videoSize"].SetValue(size*3);
+		effect.Parameters["outputSize"].SetValue(size*3);
 	}
 }
