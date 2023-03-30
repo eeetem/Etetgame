@@ -9,20 +9,18 @@ namespace MultiplayerXeno;
 
 public static class RenderSystem
 {
-	private static SpriteBatch spriteBatch;
 	private static GraphicsDevice graphicsDevice;
 	public static void Init(GraphicsDevice graphicsdevice)
 	{
 
 		graphicsDevice = graphicsdevice;
-		spriteBatch = new SpriteBatch(graphicsDevice);
 	}
 
 
 
 
 
-	public static void Draw()
+	public static void Draw(SpriteBatch spriteBatch)
 	{
 
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();

@@ -10,7 +10,7 @@ namespace MultiplayerXeno;
 
 public abstract class Attack : Action
 {
-	public Attack(ActionType actionType) : base(actionType)
+	public Attack(ActionType? actionType) : base(actionType)
 	{
 		
 	}
@@ -70,7 +70,8 @@ public abstract class Attack : Action
 		Networking.DoAction(packet);
 	}
 
-	protected override void Execute(Controllable actor, Vector2Int target)
+	protected Projectile shotJustFired;
+	public override void Execute(Controllable actor, Vector2Int target)
 	{
 		actor.ClearOverWatch();
 			
@@ -81,7 +82,7 @@ public abstract class Attack : Action
 			Projectile p = MakeProjectile(actor, target);
 			p.Fire();
 			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght,p.shooterLow,p.targetLow));
-
+			shotJustFired = p;
 #endif
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 
@@ -98,7 +99,7 @@ public abstract class Attack : Action
 
 #if CLIENT
 
-	private static Projectile previewShot;
+	protected Projectile? previewShot;
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 	private TargetingType lastTargetingType = TargetingType.Auto;
@@ -170,7 +171,7 @@ public abstract class Attack : Action
 
 			if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 			{
-				tile.ObjectAtLocation.ControllableComponent.PreviewData = new PreviewData(0, previewShot.supressionStrenght);
+				tile.ObjectAtLocation.ControllableComponent.PreviewData.detDmg += previewShot.supressionStrenght;
 			}
 
 		}
@@ -302,7 +303,7 @@ public abstract class Attack : Action
 				var data = hitobj.ControllableComponent.PreviewData;
 				data.totalDmg = previewShot.originalDmg;
 				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
-				data.finalDmg = previewShot.dmg - coverModifier;
+				data.finalDmg += previewShot.dmg - coverModifier;
 				data.coverBlock = coverModifier;
 				if (hitobj.ControllableComponent.determination > 0)
 				{

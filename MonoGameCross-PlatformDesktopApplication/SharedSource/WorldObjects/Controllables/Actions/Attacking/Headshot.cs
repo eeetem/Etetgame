@@ -37,7 +37,7 @@ public class Headshot : Attack
 		return new Tuple<bool, string>(true, "");
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
 		actor.FirePoints--;

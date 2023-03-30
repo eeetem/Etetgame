@@ -1,34 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using CommonData;
-using FontStashSharp;
-using HeartSignal;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno.UILayouts;
 using Myra;
-using Myra.Graphics2D;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno
 {
 	public static class UI
 	{
 		public static Desktop Desktop { get; private set; }
-		private static SpriteBatch spriteBatch;
 		private static GraphicsDevice graphicsDevice;
-		public static void Init(ContentManager content, GraphicsDevice graphicsdevice)
+		public static void Init(GraphicsDevice graphicsdevice)
 		{
 			graphicsDevice = graphicsdevice;
-			spriteBatch = new SpriteBatch(graphicsDevice);
 			MyraEnvironment.Game = Game1.instance;
 			//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
@@ -144,7 +131,7 @@ namespace MultiplayerXeno
 			CurrentUI.Update(deltatime);
 		}
 
-		public static void Render(float deltaTime)
+		public static void Render(float deltaTime, SpriteBatch spriteBatch)
 		{
 		
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);

@@ -44,13 +44,17 @@ public class Supress : Attack
 		return new Tuple<bool, string>(true, "");
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
 		actor.FirePoints-=2;
 		actor.determination=0;
 		actor.MovePoints--;
 	
+		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(2, 0));
+		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(-2, 0));
+		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(0, -2));
+		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(0, 2));
 		
 #if CLIENT
 		Camera.SetPos(target);
@@ -61,6 +65,7 @@ public class Supress : Attack
 	
 	}
 
+
 	protected override int GetDamage(Controllable actor)
 	{
 		return 5;
@@ -68,11 +73,11 @@ public class Supress : Attack
 
 	protected override int GetSupressionRange(Controllable actor)
 	{
-		return 4;
+		return 3;
 	}
 	protected override int GetSupressionStrenght(Controllable actor)
 	{
-		return 5;
+		return 1;
 	}
 
 	protected override int GetdeterminationResistanceEffect(Controllable actor)
@@ -80,5 +85,17 @@ public class Supress : Attack
 		return 1;
 	}
 
+	static ProxyAttack proxyAttack = new ProxyAttack();
+#if CLIENT
+	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	{
+		base.Preview(actor,target,spriteBatch);
+		proxyAttack.Preview(actor, previewShot.result.CollisionPointLong + new Vector2Int(2, 0), spriteBatch);
+		proxyAttack.Preview(actor, previewShot.result.CollisionPointLong + new Vector2Int(-2, 0), spriteBatch);
+		proxyAttack.Preview(actor, previewShot.result.CollisionPointLong + new Vector2Int(0, -2), spriteBatch);
+		proxyAttack.Preview(actor, previewShot.result.CollisionPointLong + new Vector2Int(0, 2), spriteBatch);
+	}
+
+#endif
 }
 

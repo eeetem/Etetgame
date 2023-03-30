@@ -71,7 +71,7 @@ namespace MultiplayerXeno
 			GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 			GraphicsDevice.SetRenderTarget(null);
 			TextureManager.Init(Content);
-			UI.Init(Content,GraphicsDevice);
+			UI.Init(GraphicsDevice);
 			UiLayout.Init(GraphicsDevice);
 			UI.SetUI(new MainMenuLayout());
 			Audio.Init(Content);
@@ -127,9 +127,9 @@ namespace MultiplayerXeno
 
 			GraphicsDevice.Clear(Color.Gray);
 			
-			RenderSystem.Draw();
-			UI.Render(gameTime.ElapsedGameTime.Milliseconds);//potentially move this into the render system!	Long live Forg!
-			PopUpText.Draw();
+			RenderSystem.Draw(spriteBatch);
+			UI.Render(gameTime.ElapsedGameTime.Milliseconds,spriteBatch);//potentially move this into the render system!	Long live Forg!
+			PopUpText.Draw(spriteBatch);
 
 			PostPorcessing.Apply(gameTime.ElapsedGameTime.Milliseconds);
 			GraphicsDevice.SetRenderTarget(null);

@@ -18,10 +18,11 @@ public abstract class Action
 	public readonly ActionType ActionType;
 	public static Action? ActiveAction { get; private set; }
 	public string Description { get; protected set; } = "";
-	public Action(ActionType type)
+	public Action(ActionType? type)
 	{
-		ActionType = type;
-		Actions.Add(type, this);
+		if(type==null) return;
+		ActionType = (ActionType)type;
+		Actions.Add((ActionType)type, this);
 	}
 
 	public static void SetActiveAction(ActionType? type)
@@ -82,7 +83,7 @@ public abstract class Action
 	
 
 	
-	protected abstract void Execute(Controllable actor, Vector2Int target);
+	public abstract void Execute(Controllable actor, Vector2Int target);
 #if CLIENT
 	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
 #endif

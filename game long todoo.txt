@@ -1,10 +1,12 @@
 
-
+rework heavy suppress
 turn timer/game options
-shot preview
+specialist class
+frag grenade
+smoke grenade
+flash grenade
 destruction
 how to play
-move to spectators button
 disable effects in editor
 pregame lobby music flicker(rework music)
 unit placement

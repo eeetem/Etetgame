@@ -33,7 +33,7 @@ public class OverWatch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		actor.FirePoints=0;
 		actor.MovePoints=0;

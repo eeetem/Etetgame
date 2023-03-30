@@ -20,6 +20,7 @@ public abstract class UiLayout
 	public static void Init(GraphicsDevice g)
 	{
 		graphicsDevice = g;
+		graphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;//shitcode
 		DefaultFont = new FontSystem();
 		DefaultFont.AddFont(File.ReadAllBytes("Content/GradientVector.ttf"));
 

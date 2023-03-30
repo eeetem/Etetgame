@@ -54,6 +54,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Attacking\Headshot.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Attacking\Headshot.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Attacking\ProxyAttack.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Attacking\ProxyAttack.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Attacking\Supress.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Attacking\Supress.cs</Link>
       </Compile>

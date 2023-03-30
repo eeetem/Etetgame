@@ -30,7 +30,7 @@ public class SecondWind : Action
 	
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		actor.determination = 0;
 		actor.canTurn = true;

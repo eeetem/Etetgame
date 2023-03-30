@@ -29,13 +29,11 @@ public class PopUpText
 		}
 	}
 	
-	private static SpriteBatch spriteBatch;
+
 	private static GraphicsDevice graphicsDevice;
 	public static void Init(GraphicsDevice graphicsdevice)
 	{
-
 		graphicsDevice = graphicsdevice;
-		spriteBatch = new SpriteBatch(graphicsDevice);
 	}
 
 
@@ -61,7 +59,7 @@ public class PopUpText
 		}
 	}
 
-	public static void Draw()
+	public static void Draw(SpriteBatch spriteBatch)
 	{
 		lock (syncobj)
 		{

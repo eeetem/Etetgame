@@ -42,7 +42,7 @@ public class Move : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	protected override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);
 		int moveUse = 1;

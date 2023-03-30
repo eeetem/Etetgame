@@ -23,6 +23,7 @@ namespace HeartSignal
 		
 		public static CrtLIghtNormalShader[] CrtLightShaderPresets;
 		public static CrtLIghtNormalShader Crtdissapation;
+		public static CrtScreenShaderPreset CrtScreenPreset;
 
 		public static void Init(ContentManager c, GraphicsDevice g)
 		{
@@ -49,6 +50,7 @@ namespace HeartSignal
 				CrtLightShaderPresets[i] = new CrtLIghtNormalShader();
 			}
 			Crtdissapation = new CrtLIghtNormalShader();
+			CrtScreenPreset = new CrtScreenShaderPreset();
 			Crtdissapation.dissapation = true;
 			
 
@@ -127,7 +129,7 @@ namespace HeartSignal
 			AddTween("clspeed", 7f, 2f, false);
 			AddTween("clalpha", 0.07f, 1f, false);
 			AddTween("shape", 0.1f, 5f, false);
-			AddTween("noise", 0.3f, 3f, false);
+			AddTween("noise", 0.1f, 3f, false);
 			
 			AddTween("dxfrequency", 0, 10, false);
 			AddTween("dyfrequency", 0, 10f, false);
@@ -135,7 +137,7 @@ namespace HeartSignal
 			AddTween("dxamplitude", 0, 10f, false);
 
 
-			AddTween("noise", 0.005f, 2.2f, false);
+			AddTween("noise", 0.005f, 3f, false);
 			Console.Write("noise done");
 			AddTween("clmagnitude", 4f, 0.5f, false);
 			
@@ -184,7 +186,10 @@ namespace HeartSignal
 			
 		}
 
-
+		public static void ApplyScreenUICrt(Vector2 textureVector2)
+		{
+			CrtScreenPreset.Apply(UIcrtEffect,textureVector2);
+		}
 
 		public static void ShuffleUICRTeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
 		{
@@ -242,6 +247,7 @@ namespace HeartSignal
 				
 			}
 			Crtdissapation.Update(deltaTime*4f);
+			CrtScreenPreset.Update(deltaTime);
 
 
 			
@@ -259,17 +265,17 @@ namespace HeartSignal
 
 			crtEffect.Parameters["hardScan"]?.SetValue(EffectParams["hardScan"] + GetNoise());
 			crtEffect.Parameters["hardPix"]?.SetValue(EffectParams["hardPix"] + GetNoise());
-			crtEffect.Parameters["warpX"]?.SetValue(EffectParams["warpX"] + GetNoise() * 0.001f);
-			crtEffect.Parameters["warpY"]?.SetValue(EffectParams["warpY"] + GetNoise() * 0.001f);
+			crtEffect.Parameters["warpX"]?.SetValue(0.05f);
+			crtEffect.Parameters["warpY"]?.SetValue(0.05f);
 			crtEffect.Parameters["maskDark"]?.SetValue(EffectParams["maskDark"] + GetNoise() * 0.1f);
 			crtEffect.Parameters["maskLight"]?.SetValue(EffectParams["maskLight"] + GetNoise() * 0.1f);
-			crtEffect.Parameters["scaleInLinearGamma"]?.SetValue(EffectParams["scaleInLinearGamma"]);
+			crtEffect.Parameters["scaleInLinearGamma"]?.SetValue(2);
 			crtEffect.Parameters["shadowMask"]?.SetValue(EffectParams["shadowMask"] + GetNoise() * 1f);
 			crtEffect.Parameters["brightboost"]?.SetValue(EffectParams["brightboost"] + GetNoise() * 0.05f);
 			crtEffect.Parameters["hardBloomScan"]?.SetValue(EffectParams["hardBloomScan"] + GetNoise() * 0.01f);
 			crtEffect.Parameters["hardBloomPix"]?.SetValue(EffectParams["hardBloomPix"] + GetNoise() * 0.01f);
-			crtEffect.Parameters["bloomAmount"]?.SetValue(EffectParams["bloomAmount"] + GetNoise() * 0.05f);
-			crtEffect.Parameters["shape"]?.SetValue(EffectParams["shape"] + GetNoise() * 0.05f);
+			crtEffect.Parameters["bloomAmount"]?.SetValue(5);
+			crtEffect.Parameters["shape"]?.SetValue(0f);
 		
 			crtEffect.Parameters["textureSize"]
 				.SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
