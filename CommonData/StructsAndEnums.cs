@@ -125,6 +125,7 @@ namespace CommonData
 		Setup=1,
 		Playing=2,
 		Over=3,
+		Editor = 4,
 	}
 
 	public enum Cover

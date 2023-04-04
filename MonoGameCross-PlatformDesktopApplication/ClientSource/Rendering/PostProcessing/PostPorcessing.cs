@@ -117,10 +117,10 @@ namespace HeartSignal
 		
 			AddTween("dxspeed", 5, 1, false);
 			AddTween("dyspeed", 5, 1, false);
-			AddTween("dxfrequency", 5, 7f, false);
-			AddTween("dyfrequency", 5, 7f, false);
-			AddTween("dyamplitude", 5, 7f, false);
-			AddTween("dxamplitude", 5, 7f, false);
+			AddTween("dxfrequency", 0, 7f, false);
+			AddTween("dyfrequency", 0, 7f, false);
+			AddTween("dyamplitude", 0, 7f, false);
+			AddTween("dxamplitude", 0, 7f, false);
 			
 			AddTween("clmagnitude", 50, 3, false);
 			AddTween("bloomAmount", 0.15f, 5, false);
@@ -130,11 +130,7 @@ namespace HeartSignal
 			AddTween("clalpha", 0.07f, 1f, false);
 			AddTween("shape", 0.1f, 5f, false);
 			AddTween("noise", 0.1f, 3f, false);
-			
-			AddTween("dxfrequency", 0, 10, false);
-			AddTween("dyfrequency", 0, 10f, false);
-			AddTween("dyamplitude", 0, 10, false);
-			AddTween("dxamplitude", 0, 10f, false);
+
 
 
 			AddTween("noise", 0.005f, 3f, false);

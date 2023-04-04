@@ -66,7 +66,12 @@ namespace MultiplayerXeno
 			{
 				UI.ShowMessage("Server Notice",RawDataConverter.ToUnicodeString(i));
 			});
+			serverConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
+			{
+				Console.WriteLine("LobbyData Recived");
+				GameManager.PreGameData = i;
 
+			});
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
@@ -81,6 +86,7 @@ namespace MultiplayerXeno
 				GameManager.PreGameData = i;
 
 			});
+	
 			Console.WriteLine("Registered Handlers");
 			Thread.Sleep(500);//give server  a second to register the packet handler
 			Console.WriteLine("Registering Player");
@@ -175,6 +181,7 @@ namespace MultiplayerXeno
 		public static void SendPreGameUpdate()
 		{
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("mapSelect",GameManager.PreGameData.SelectedMap));
+			serverConnection.Send(GameManager.PreGameData);
 		}
 
 		public static void SendStartGame()

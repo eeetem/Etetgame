@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
 using CommonData;
+using Microsoft.Xna.Framework;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -126,6 +127,15 @@ namespace MultiplayerXeno
 	
 				SendPreGameInfo();
 			});
+			
+			connection.RegisterStaticPacketHandler<PreGameDataPacket>((data, con) =>
+			{
+				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
+					return;
+				GameManager.PreGameData.TurnTime = data.TurnTime;
+				SendPreGameInfo();
+			});
+			
 			connection.RegisterStaticPacketHandler<MapDataPacket>((data, con) =>
 			{
 				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
@@ -208,6 +218,7 @@ namespace MultiplayerXeno
 				SendChatMessage(name+" joined the spectators");
 			}
 
+			
 			GameManager.SendData();
 			SendPreGameInfo();
 			SendMapData(connection);
@@ -236,14 +247,19 @@ namespace MultiplayerXeno
 			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
 			data.CustomMapList = Directory.GetFiles("./Maps/Custom", "*.mapdata").ToList();
 			data.SelectedMap = selectedMap;
+			data.TurnTime = GameManager.PreGameData.TurnTime;
 			if (GameManager.Player1 != null)
 				GameManager.Player1.Connection.Send(data);
 			if (GameManager.Player2 != null)
 				GameManager.Player2.Connection.Send(data);
+			
 			foreach (var spectator in GameManager.Spectators)
 			{
 				spectator.Connection.Send(data);
+				
 			}
+
+			GameManager.PreGameData = data;
 			Program.InformMasterServer();
 		}
 

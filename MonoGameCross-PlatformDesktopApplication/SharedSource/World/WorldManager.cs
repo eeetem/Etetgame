@@ -80,7 +80,7 @@ namespace MultiplayerXeno
 
 		public static bool IsPositionValid(Vector2Int pos)
 		{
-			return (pos.X > 0 && pos.X < 100 && pos.Y > 0 && pos.Y < 100);
+			return (pos.X >= 0 && pos.X < 100 && pos.Y >= 0 && pos.Y < 100);
 		}
 
 		public void ResetControllables(bool teamOneTurn)
@@ -735,7 +735,13 @@ namespace MultiplayerXeno
 
 			CurrentMap.Data = prefabData;
 			string json = CurrentMap.Serialise();
-			File.Delete(path);
+			if (File.Exists(path))
+			{
+				File.Delete(path);
+			}
+			if(path.Contains("/")){
+				Directory.CreateDirectory(path.Remove(path.LastIndexOf("/")));
+			}
 			using (FileStream stream = File.Open(path, FileMode.Create))
 			{
 				using (StreamWriter writer = new StreamWriter(stream))
@@ -747,27 +753,19 @@ namespace MultiplayerXeno
 
 		private static bool Loading = false;
 
-		public void LoadMapLegacy(string path)
-		{
-			var data = File.ReadAllBytes(path);
-			WipeGrid();
-			using (Stream dataStream = new MemoryStream(data))
-			{
-				BinaryFormatter bformatter = new BinaryFormatter();
-				List<WorldTileData> prefabData = bformatter.Deserialize(dataStream) as List<WorldTileData>;
-				WipeGrid();
-
-				if (prefabData != null)
-					foreach (var worldTileData in prefabData)
-					{
-						LoadWorldTile(worldTileData);
-					}
-			}
-		}
-
 		public bool LoadMap(string path)
 		{
-			return LoadMap(MapData.Deserialse(File.ReadAllText(path)));
+			if (File.Exists(path))
+			{
+				MapData mapData = MapData.Deserialse(File.ReadAllText(path));
+				return LoadMap(mapData);
+			}
+			else
+			{
+				return false;
+			}
+
+			
 		}
 
 		public bool LoadMap(MapData mapData)

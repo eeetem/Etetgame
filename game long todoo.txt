@@ -1,11 +1,12 @@
 
-rework heavy suppress
+
 turn timer/game options
 specialist class
 frag grenade
 smoke grenade
 flash grenade
 destruction
+preview seeing - lvl editor
 how to play
 disable effects in editor
 pregame lobby music flicker(rework music)

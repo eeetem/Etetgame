@@ -16,9 +16,19 @@ namespace MultiplayerXeno
 		public static bool IsPlayer1Turn = true;
 
 		public static GameState GameState;
+		public static float TimeTillNextTurn = 0;
 		public static void Update(float delta)
 		{
-
+			if (PreGameData.TurnTime != 0)
+			{
+				TimeTillNextTurn -= delta;
+#if SERVER
+				if (TimeTillNextTurn < 0)
+				{
+					NextTurn();
+				}
+#endif
+			}
 		}
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
@@ -109,9 +119,12 @@ Audio.PlaySound("capture");
 #if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
 			Networking.DoAction(new GameActionPacket(-1,null,ActionType.EndTurn));//defaults to end turn
-			#else
+#else
 			GameLayout.SetMyTurn(IsMyTurn());
-			#endif
+#endif
+
+
+			TimeTillNextTurn = PreGameData.TurnTime*1000;
 		}
 
 	

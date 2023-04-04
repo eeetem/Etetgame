@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using CommonData;
+using Microsoft.Xna.Framework;
+
 namespace MultiplayerXeno
 {
 	public static partial class GameManager
@@ -8,7 +10,7 @@ namespace MultiplayerXeno
 		public static Client? Player1;
 		public static Client? Player2;
 		public static List<Client> Spectators = new();
-
+		public static PreGameDataPacket PreGameData = new();
 
 
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
@@ -15,6 +16,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class PreGameLobbyLayout : MenuLayout
 {
+	private Panel gameOptionsMenu;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		
@@ -109,6 +111,55 @@ public class PreGameLobbyLayout : MenuLayout
 
 			};
 			rightStack.Widgets.Add(options);
+			options.Click+= (s, a) =>
+			{
+				if (UI.Desktop.Widgets.Contains(gameOptionsMenu)) return;
+				gameOptionsMenu = new Panel();
+				gameOptionsMenu.HorizontalAlignment = HorizontalAlignment.Center;
+				gameOptionsMenu.VerticalAlignment = VerticalAlignment.Center;
+				gameOptionsMenu.Background = new SolidBrush(Color.Black);
+				gameOptionsMenu.BorderThickness = new Thickness(1);
+				var stack = new VerticalStackPanel();
+				gameOptionsMenu.Widgets.Add(stack);
+				stack.Spacing = 25;
+				var label = new Label()
+				{
+					Text = "Seconds Per Turn(0 for infinite):",
+					Top = 10,
+				};
+				stack.Widgets.Add(label);
+				var time = new TextBox()
+				{
+					Top = 25,
+				};
+				time.Text = "" + GameManager.PreGameData.TurnTime;
+				stack.Widgets.Add(time);
+				var btn = new SoundButton()
+				{
+					Text = "Apply",
+					Top = 25,
+					HorizontalAlignment = HorizontalAlignment.Center, 
+				};
+				if (!GameManager.IsPlayer1)
+				{
+					btn.Text = "Close";
+				}
+
+				btn.Click += (s, a) =>
+				{
+					if (int.TryParse(time.Text, out var timeLimit))
+					{
+						GameManager.PreGameData.TurnTime = timeLimit;
+						Networking.SendPreGameUpdate();
+					}
+					
+					UI.Desktop.Widgets.Remove(gameOptionsMenu);
+					gameOptionsMenu = null;
+				};
+				stack.Widgets.Add(btn);
+
+				 UI.Desktop.Widgets.Add(gameOptionsMenu);
+			};
 			linebreak = new Label()
 			{
 				Text = "______________",

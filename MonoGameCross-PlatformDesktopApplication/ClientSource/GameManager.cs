@@ -13,7 +13,7 @@ namespace MultiplayerXeno
 		public static bool intated = false;
 		public static bool spectating = false;
 		public static List<Controllable> _myUnits = new List<Controllable>();
-		private static PreGameDataPacket _preGameData;
+		private static PreGameDataPacket _preGameData = new();
 		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
 		public static Dictionary<string,string> CustomMapList = new Dictionary<string, string>();
 		public static PreGameDataPacket PreGameData

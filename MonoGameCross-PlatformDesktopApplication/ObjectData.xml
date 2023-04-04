@@ -14,11 +14,11 @@
     <name>capturePoint</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="Environment/spawnPoint" offset= "0,0"/>
+    <sprite name="Environment/spawnPoint1" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
   <object Faceable = "false" Cover ="0" Surface = "true">
-    <sprite name="Environment/spawnPoint"  offset= "0,0"/>
+    <sprite name="Environment/spawnPoint2"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
   <object Cover = "3" Edge = "true">

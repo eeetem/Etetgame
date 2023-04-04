@@ -45,7 +45,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 
 
 				WorldManager.Instance.Update(MSperTick);
-		
+				GameManager.Update(MSperTick);
 
 				stopWatch.Stop();
 
