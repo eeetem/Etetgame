@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CommonData;
 using Microsoft.Xna.Framework;
@@ -70,7 +69,7 @@ public abstract class Attack : Action
 		Networking.DoAction(packet);
 	}
 
-	protected Projectile shotJustFired;
+	protected Projectile? shotJustFired;
 	public override void Execute(Controllable actor, Vector2Int target)
 	{
 		actor.ClearOverWatch();
@@ -305,7 +304,7 @@ public abstract class Attack : Action
 				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
 				data.finalDmg += previewShot.dmg - coverModifier;
 				data.coverBlock = coverModifier;
-				if (hitobj.ControllableComponent.determination > 0)
+				if (hitobj.ControllableComponent.Determination > 0)
 				{
 					data.finalDmg -= previewShot.determinationResistanceCoefficient;
 					data.determinationBlock = previewShot.determinationResistanceCoefficient;
@@ -316,6 +315,10 @@ public abstract class Attack : Action
 		}
 
 
+	}
+	public override void Animate(Controllable actor, Vector2Int target)
+	{
+		return;
 	}
 #endif
 }

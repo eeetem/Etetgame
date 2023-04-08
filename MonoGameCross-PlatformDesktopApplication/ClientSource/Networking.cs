@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using System.Threading.Tasks;
 using CommonData;
-using Microsoft.Xna.Framework;
 using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;

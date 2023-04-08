@@ -19,7 +19,7 @@ public class SecondWind : Action
 		{
 			return new Tuple<bool, string>(false, "You cannot user second wind while overwatching");
 		}
-		if (actor.determination != actor.Type.Maxdetermination)
+		if (actor.Determination != actor.Type.Maxdetermination)
 		{
 			return new Tuple<bool, string>(false, "Not enough determination");
 		
@@ -32,16 +32,20 @@ public class SecondWind : Action
 
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
-		actor.determination = 0;
+		actor.Suppress(actor.Determination, true);
 		actor.canTurn = true;
 		actor.MovePoints = actor.Type.MaxMovePoints;
-		actor.FirePoints = actor.Type.MaxFirePoints;
+		actor.ActionPoints = actor.Type.MaxFirePoints;
 	}
 #if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		actor.DoAction(this,target);
 		SetActiveAction(null);
+	}
+	public override void Animate(Controllable actor, Vector2Int target)
+	{
+		return;
 	}
 #endif
 

@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Xml;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 using CommonData;
+using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno
 {
 	public static partial class PrefabManager
 	{
-			public static Dictionary<string, WorldObjectType> Prefabs = new Dictionary<string, WorldObjectType>();
+			public static Dictionary<string, WorldObjectType> WorldObjectPrefabs = new Dictionary<string, WorldObjectType>();
+			public static Dictionary<string?, UsableItem> UseItems = new Dictionary<string?, UsableItem>();
 
 
 		public static void MakePrefabs()
@@ -35,6 +35,7 @@ namespace MultiplayerXeno
 					controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 					controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
 					controllableType.Maxdetermination = int.Parse(contollableObj.Attributes?["determination"]?.InnerText ?? "2");
+					controllableType.InventorySize = int.Parse(contollableObj.Attributes?["inventory"]?.InnerText ?? "1");
 					controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
 					controllableType.MaxFirePoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
 					controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
@@ -111,7 +112,7 @@ namespace MultiplayerXeno
 
 			
 				
-				Prefabs.Add(name,type);
+				WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
 				if (spritename != null)
@@ -138,7 +139,48 @@ namespace MultiplayerXeno
 
 
 			}
-			
+
+			foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
+			{
+
+				
+				string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+
+				UsableItem? itm = null;
+
+				XmlNode? grenade = xmlObj.GetElementsByTagName("grenade")[0];
+				if (grenade != null)
+				{
+					
+					int throwRange = int.Parse(grenade.Attributes?["throwRange"]?.InnerText ?? "5");
+					int range = int.Parse(grenade.Attributes?["range"]?.InnerText ?? "5");
+					int detDmg = int.Parse(grenade.Attributes?["detDmg"]?.InnerText ?? "0");
+					int dmg = int.Parse(grenade.Attributes?["dmg"]?.InnerText ?? "0");
+					int smoke = int.Parse(grenade.Attributes?["smoke"]?.InnerText ?? "0");
+					itm = new Grenade(name,throwRange,range,detDmg,dmg,smoke);
+
+
+				}
+
+				if (itm == null)
+				{
+					throw new Exception("coulnt parse item");
+				}
+#if CLIENT
+				var extraction = xmlObj.GetElementsByTagName("effect");
+				foreach (var elem in extraction)
+				{
+					var node = (XmlNode) elem;
+					
+					itm.effects.Add(new Tuple<string, string, string>(node.Attributes["name"].InnerText,node.Attributes["target"].InnerText,node.Attributes["speed"].InnerText));
+				}
+
+				var sfx = ((XmlNode)xmlObj.GetElementsByTagName("sfx")[0]).Attributes?["name"]?.InnerText;
+				itm.sfx = sfx;
+#endif		
+				UseItems.Add(name,itm);
+				
+			}
 		}
 	
 	}

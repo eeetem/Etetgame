@@ -36,7 +36,7 @@ public class EditorUiLayout : MenuLayout
 		var stack = new VerticalStackPanel();
 		stack.HorizontalAlignment = HorizontalAlignment.Left;
 		panel.Widgets.Add(stack);
-		foreach (var prefabDictElement in PrefabManager.Prefabs)
+		foreach (var prefabDictElement in PrefabManager.WorldObjectPrefabs)
 		{
 			var button = new TextButton
 			{
@@ -236,10 +236,10 @@ public class EditorUiLayout : MenuLayout
 
 	private static bool IsMouseDown => rightMouseDown || leftMouseDown;
 
-	public override void MouseDown(Vector2Int position, bool righclick)
+	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
-		base.MouseDown(position, righclick);
-		if (righclick)
+		base.MouseDown(position, rightclick);
+		if (rightclick)
 		{
 			rightMouseDown = true;
 		}
@@ -288,7 +288,7 @@ public class EditorUiLayout : MenuLayout
 
 		var tile = WorldManager.Instance.GetTileAtGrid(pos);
 		WorldTile tile2;
-		WorldObjectType type = PrefabManager.Prefabs[ActivePrefab];
+		WorldObjectType type = PrefabManager.WorldObjectPrefabs[ActivePrefab];
 		if (type.Surface)
 		{
 			return (tile.Surface == null);
@@ -521,9 +521,9 @@ public class EditorUiLayout : MenuLayout
 		}
 
 		Texture2D previewSprite;
-		if (PrefabManager.Prefabs[ActivePrefab].Faceable)
+		if (PrefabManager.WorldObjectPrefabs[ActivePrefab].Faceable)
 		{
-			previewSprite= PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][(int) ActiveDir];
+			previewSprite= PrefabManager.WorldObjectPrefabs[ActivePrefab].spriteSheet[0][(int) ActiveDir];
 			if ((int)ActiveDir == 2)
 			{
 				MousePos += new Vector2(1, 0);
@@ -533,7 +533,7 @@ public class EditorUiLayout : MenuLayout
 			}
 		}else
 		{
-			previewSprite = PrefabManager.Prefabs[ActivePrefab].spriteSheet[0][0];
+			previewSprite = PrefabManager.WorldObjectPrefabs[ActivePrefab].spriteSheet[0][0];
 		}
 
 

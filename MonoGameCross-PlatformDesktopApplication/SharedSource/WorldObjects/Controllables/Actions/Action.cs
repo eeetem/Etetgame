@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using CommonData;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 #if CLIENT
@@ -56,6 +55,7 @@ public abstract class Action
 		new SecondWind();
 		new Headshot();
 		new Supress();
+		new UseItem();
 
 	}
 
@@ -69,15 +69,20 @@ public abstract class Action
 
 	public void Perform(Controllable actor, Vector2Int target)
 	{
-		
-		Execute(actor,target);
-		
+		try
+		{
+			Execute(actor, target);
+
 #if CLIENT
+		Animate(actor,target);
 		WorldManager.Instance.MakeFovDirty();	
 		SetActiveAction(null);
 		UI.SetUI(new GameLayout());
 #endif
-		
+		}catch(Exception e)
+		{
+			Console.WriteLine(e);
+		}
 	}
 
 	
@@ -86,6 +91,7 @@ public abstract class Action
 	public abstract void Execute(Controllable actor, Vector2Int target);
 #if CLIENT
 	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
+	public abstract void Animate(Controllable actor, Vector2Int target);
 #endif
 	public virtual void ToPacket(Controllable actor,Vector2Int target)
 	{

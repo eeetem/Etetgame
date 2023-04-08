@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using CommonData;
+﻿using CommonData;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace MultiplayerXeno
@@ -9,6 +7,9 @@ namespace MultiplayerXeno
 	{
 
 		public Visibility Visible;
+		
+		
+		public TileEffect? TileEffect;
 
 		public bool IsVisible(Visibility minimum = Visibility.Partial)
 		{
@@ -72,4 +73,6 @@ namespace MultiplayerXeno
 			}
 		}
 	}
+
+
 }

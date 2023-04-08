@@ -5,14 +5,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
-using MonoGame.Extended.Content;
 
 
 namespace MultiplayerXeno;
 
 public static class Audio
 {
-	private static List<SoundEffectInstance> activeSounds = new List<SoundEffectInstance>();
+	private static List<Tuple<SoundEffectInstance, AudioEmitter>> activeSounds = new List<Tuple<SoundEffectInstance, AudioEmitter>>();
 	public static readonly object syncobj = new object();
 	private static ContentManager content;
 	
@@ -103,7 +102,7 @@ public static class Audio
 			instance.Apply3D(Camera.AudioListener, emitter);
 			lock (syncobj)
 			{
-				activeSounds.Add(instance);
+				activeSounds.Add(new Tuple<SoundEffectInstance, AudioEmitter>(instance,emitter));
 			}
 		}
 		catch (Exception e)
@@ -119,9 +118,14 @@ public static class Audio
 	{
 		lock (syncobj)
 		{
-			foreach (var sound in activeSounds)
+			foreach (var sound in  new List<Tuple<SoundEffectInstance, AudioEmitter>>(activeSounds))
 			{
-				//sound.Apply3D(s);
+				sound.Item1.Apply3D(Camera.AudioListener, sound.Item2);
+				if (sound.Item1.State == SoundState.Stopped)
+				{
+					activeSounds.Remove(sound);
+				}
+
 			}
 		}
 	}

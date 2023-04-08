@@ -21,12 +21,12 @@ public class Supress : Attack
 			return parentReply;
 		}
 
-		if (actor.determination != actor.Type.Maxdetermination)
+		if (actor.Determination != actor.Type.Maxdetermination)
 		{
 			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
 
-		if (actor.FirePoints <= 1)
+		if (actor.ActionPoints <= 1)
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
@@ -47,8 +47,8 @@ public class Supress : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.FirePoints-=2;
-		actor.determination=0;
+		actor.ActionPoints-=2;
+		actor.Suppress(actor.Determination, true);
 		actor.MovePoints--;
 	
 		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(2, 0));

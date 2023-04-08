@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using CommonData;
-using Microsoft.Xna.Framework;
-using MultiplayerXeno.Pathfinding;
+﻿using CommonData;
 
 namespace MultiplayerXeno;
 

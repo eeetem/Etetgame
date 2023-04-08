@@ -1,6 +1,4 @@
-﻿using CommonData;
-
-namespace MultiplayerXeno;
+﻿namespace MultiplayerXeno;
 
 public class ProxyAttack : Attack
 {

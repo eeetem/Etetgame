@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using CommonData;
+﻿using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 
 
 namespace MultiplayerXeno
@@ -19,9 +17,9 @@ namespace MultiplayerXeno
 			return DrawTransform;
 		}
 
-		public Vector2Int GetWorldPos()
+		public Vector2Int GetGridPos()
 		{
-			return this.TileLocation.Position;
+			return TileLocation.Position;
 		}
 
 		private void GenerateDrawOrder()

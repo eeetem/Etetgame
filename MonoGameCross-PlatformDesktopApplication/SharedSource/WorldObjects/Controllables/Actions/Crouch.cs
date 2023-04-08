@@ -35,6 +35,11 @@ public class Crouch : Action
 	{
 		throw new System.NotImplementedException();
 	}
+
+	public override void Animate(Controllable actor, Vector2Int target)
+	{
+		return;
+	}
 #endif
 }
 

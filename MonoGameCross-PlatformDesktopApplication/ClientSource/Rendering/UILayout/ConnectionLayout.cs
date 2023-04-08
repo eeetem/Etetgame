@@ -1,6 +1,5 @@
 ﻿using System;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
-using MultiplayerXeno;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Network;

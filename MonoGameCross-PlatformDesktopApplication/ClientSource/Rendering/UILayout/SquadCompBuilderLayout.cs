@@ -4,8 +4,10 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MultiplayerXeno;
+using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -36,7 +38,7 @@ public class GameSetupLayout : UiLayout
 			
 			
 		//one button for each unit type
-		string[] units = {"Gunner", "Heavy", "Scout"};
+		string[] units = {"Marksman", "Heavy", "Scout"};
 
 		foreach (var unit in units)
 		{
@@ -88,11 +90,14 @@ public class GameSetupLayout : UiLayout
 	{
 		_currentlyPlacing = new SquadMember();
 		_currentlyPlacing.Prefab = unit;
+		_currentlyPlacing.Inventory = new List<string?>();
+
 	}
 
-	public override void MouseDown(Vector2Int position, bool righclick)
+	private Panel? itemMenu;
+	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
-		base.MouseDown(position, righclick);
+		base.MouseDown(position, rightclick);
 		SquadMember memberAtLocation = null;
 		foreach (var member in _composition)
 		{
@@ -106,7 +111,30 @@ public class GameSetupLayout : UiLayout
 		{
 			_currentlyPlacing.Position = position;
 			_composition.Add(_currentlyPlacing);
+			var placed = _currentlyPlacing;
 			_currentlyPlacing = null;
+			itemMenu = new Panel();
+			itemMenu.HorizontalAlignment = HorizontalAlignment.Center;
+			itemMenu.VerticalAlignment = VerticalAlignment.Center;
+			itemMenu.Background = new SolidBrush(Color.Black * 0.5f);
+			itemMenu.BorderThickness = new Thickness(1);
+			var stack = new VerticalStackPanel();
+			itemMenu.Widgets.Add(stack);
+			foreach (var itm in PrefabManager.UseItems)
+			{
+				var btn = new TextButton();
+				btn.Text = itm.Key;
+				btn.Click += (s, a) =>
+				{
+					placed.Inventory.Add(itm.Key);
+					UI.Desktop.Widgets.Remove(itemMenu);
+				};
+				stack.Widgets.Add(btn);
+
+			}
+
+			if (UI.Desktop != null) UI.Desktop.Widgets.Add(itemMenu);
+			
 		}
 		else if(memberAtLocation!=null)
 		{
@@ -136,14 +164,18 @@ public class GameSetupLayout : UiLayout
 	
 		if (_currentlyPlacing != null)
 		{
-			var previewSprite = PrefabManager.Prefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.WorldObjectPrefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
 		}
 
 		foreach (var member in _composition)
 		{
-			var previewSprite = PrefabManager.Prefabs[member.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.WorldObjectPrefabs[member.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
+			if (member.Inventory.Count > 0)
+			{
+				batch.DrawString(Game1.SpriteFont, member.Inventory[0], Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)), Color.White);
+			}
 		}
 		foreach (var point in mySpawnPoints)
 		{

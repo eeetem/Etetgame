@@ -75,11 +75,20 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Attacking\SecondWind.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\UseItem.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\UseItem.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Controllable.cs">
         <Link>SharedSource\WorldObjects\Controllables\Controllable.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\ControllableType.cs">
         <Link>SharedSource\WorldObjects\Controllables\ControllableType.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\Grenade.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Grenade.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\UsableItem.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\UsableItem\UsableItem.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>

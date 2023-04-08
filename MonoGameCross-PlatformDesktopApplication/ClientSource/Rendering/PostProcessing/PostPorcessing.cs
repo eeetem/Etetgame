@@ -14,7 +14,7 @@ using Action = MultiplayerXeno.Action;
 using Color = Microsoft.Xna.Framework.Color;
 
 
-namespace HeartSignal
+namespace MultiplayerXeno
 {
 	public static class PostPorcessing
 	{
@@ -74,7 +74,7 @@ namespace HeartSignal
 			EffectParams["bloomAmount"] = 100f;
 			EffectParams["shape"] = 10;
 
-			EffectParams["noise"] = 2f;
+			EffectParams["noise"] = 0.5f;
 
 			
 			
@@ -134,7 +134,6 @@ namespace HeartSignal
 
 
 			AddTween("noise", 0.005f, 3f, false);
-			Console.Write("noise done");
 			AddTween("clmagnitude", 4f, 0.5f, false);
 			
 
@@ -299,9 +298,9 @@ namespace HeartSignal
 				connectionEffect.Parameters["overlay"].SetValue(emptyTexture);
 			}
 
-			colorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.1f,EffectParams["maxG"]+ GetNoise() *0.1f,EffectParams["maxB"]+ GetNoise() *0.1f,1));
-			colorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.1f,EffectParams["minG"]+ GetNoise() *0.1f,EffectParams["minB"]+ GetNoise() * 0.1f,1));
-			colorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 0.1f ,EffectParams["tintG"]+ GetNoise() *0.1f,EffectParams["tintB"]+ GetNoise() * 0.1f,1));
+			colorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.5f,EffectParams["maxG"]+ GetNoise() *0.5f,EffectParams["maxB"]+ GetNoise() *0.5f,1));
+			colorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.5f,EffectParams["minG"]+ GetNoise() *0.5f,EffectParams["minB"]+ GetNoise() * 0.5f,1));
+			colorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 1f ,EffectParams["tintG"]+ GetNoise() *1f,EffectParams["tintB"]+ GetNoise() * 1f,1));
 			
 
 			distortEffect.Parameters["xfps"].SetValue(dxcounter);
@@ -381,6 +380,24 @@ namespace HeartSignal
 		
 		
 		private static readonly object syncObj = new object();
+		public static void AddTweenReturnTask(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f)
+		{
+			Task.Factory.StartNew(() =>
+			{
+				var startValue = EffectParams[parameter];
+				AddTween(parameter, target, speed, wipeQueue);
+				Thread.Sleep(100);
+				AddTween(parameter, startValue, returnSpeed, false);
+			});
+		}
+		
+		public static void AddTweenTask(string parameter,float target, float speed, bool wipeQueue = false)
+		{
+			Task.Factory.StartNew(() =>
+			{
+				AddTween(parameter, target, speed, wipeQueue);
+			});
+		}
 		public static void AddTween(string parameter,float target, float speed, bool wipeQueue = false)
 		{
 

@@ -4,7 +4,6 @@ using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
-using MultiplayerXeno;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;

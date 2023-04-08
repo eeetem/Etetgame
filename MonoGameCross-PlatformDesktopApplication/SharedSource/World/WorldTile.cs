@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using CommonData;
-using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno
 {
@@ -19,6 +18,19 @@ namespace MultiplayerXeno
 		private List<Controllable> Watchers = new List<Controllable>();
 		private List<Controllable> UnWatchQueue = new List<Controllable>();
 		private int HighestWatchLevel = 0;
+
+		public int Smoked = 0;
+
+
+		public void ApplySmoke(int severity)
+		{
+			Smoked += severity;
+#if CLIENT
+			TileEffect = new Smoke(this);
+			WorldManager.Instance.MakeFovDirty();
+#endif
+		}
+
 		public void Watch(Controllable watcher)
 		{
 			lock (syncobj)
@@ -430,5 +442,16 @@ namespace MultiplayerXeno
 			Console.WriteLine("TILE DELETED!: "+this.Position);
 		}
 
+		public void NextTurn()
+		{
+			Smoked--;
+#if CLIENT
+			if (Smoked < 0)
+			{
+				TileEffect = null;
+				WorldManager.Instance.MakeFovDirty();
+			}
+#endif
+		}
 	}
 }

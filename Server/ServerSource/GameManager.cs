@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using CommonData;
-using Microsoft.Xna.Framework;
+﻿using CommonData;
 
 namespace MultiplayerXeno
 {
@@ -50,9 +47,10 @@ namespace MultiplayerXeno
 				if (T1SpawnPoints.Contains(spawn.Position))
 				{
 					int id = WorldManager.Instance.GetNextId();
-						WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, controllableData: cdata);
-						T1Units.Add(id);
-						i++;
+					cdata.Inventory = spawn.Inventory;
+					WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, controllableData: cdata);
+					T1Units.Add(id);
+					i++;
 					
 				}
 			}
@@ -64,10 +62,11 @@ namespace MultiplayerXeno
 				if(i>=WorldManager.Instance.CurrentMap.unitCount) break;
 				if (T2SpawnPoints.Contains(spawn.Position))
 				{
-						int id = WorldManager.Instance.GetNextId();
-						WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position,Direction.North, id, controllableData: cdata);
-						T2Units.Add(id);
-						i++;
+					int id = WorldManager.Instance.GetNextId();
+					cdata.Inventory = spawn.Inventory;
+					WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position,Direction.North, id, controllableData: cdata);
+					T2Units.Add(id);
+					i++;
 					
 				}
 

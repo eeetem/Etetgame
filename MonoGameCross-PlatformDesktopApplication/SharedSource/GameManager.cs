@@ -62,7 +62,7 @@ namespace MultiplayerXeno
 		public static void NextTurn()
 		{
 			IsPlayer1Turn = !IsPlayer1Turn;
-			WorldManager.Instance.ResetControllables(IsPlayer1Turn);
+			WorldManager.Instance.NextTurn(IsPlayer1Turn);
 			bool team1Present = false;
 			bool team2Present = false;
 			Vector2Int capPoint = Vector2.Zero;
@@ -109,6 +109,9 @@ Audio.PlaySound("capture");
 			
 			if(score > 6)EndGame(true);
 			if(score < -6)EndGame(false);
+
+
+	
 			
 
 

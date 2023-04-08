@@ -4,8 +4,6 @@ using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
-using MultiplayerXeno;
 
 namespace MultiplayerXeno
 {

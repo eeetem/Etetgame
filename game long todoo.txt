@@ -1,20 +1,18 @@
 
 
-turn timer/game options
 specialist class
 frag grenade
 smoke grenade
 flash grenade
 destruction
-preview seeing - lvl editor
+preview seeing tool
 how to play
-disable effects in editor
-pregame lobby music flicker(rework music)
-unit placement
 list of visible enemies
+animate actions
+pregame lobby music flicker(rework music)
 placeable cover?
 officer that stops units panicing?
-smoke greande
+sound overhaul(record all sounds)
 bomb defuse gamemode?
 random map generation
 

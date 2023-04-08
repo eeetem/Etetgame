@@ -1,6 +1,5 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
 using CommonData;
-using Microsoft.Xna.Framework;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -31,6 +30,14 @@ namespace MultiplayerXeno
 				{
 					return;
 				}
+				conn.KeepAlive = false;
+				if (GameManager.Player1?.Connection == conn)
+				{
+					GameManager.Player1.Connection = null;
+				}else if (GameManager.Player2?.Connection == conn)
+				{
+					GameManager.Player2.Connection = null;
+				}
 
 				
 				SendChatMessage(name+" left the game");
@@ -60,6 +67,14 @@ namespace MultiplayerXeno
 			if (connection.IsAlive)
 			{
 				connection.SendRawData(RawDataConverter.FromUnicodeString("notify", reason));
+			}
+			connection.KeepAlive = false;
+			if (GameManager.Player1?.Connection == connection)
+			{
+				GameManager.Player1.Connection = null;
+			}else if (GameManager.Player2?.Connection == connection)
+			{
+				GameManager.Player2.Connection = null;
 			}
 
 			Thread.Sleep(1000);
@@ -168,7 +183,7 @@ namespace MultiplayerXeno
 		}
 
 
-		private static void RegisterClient(RawData rawData, Connection connection)
+		private static void RegisterClient(RawData rawData, Connection? connection)
 		{
 			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData).ToLower();
@@ -186,7 +201,7 @@ namespace MultiplayerXeno
 			}
 			else if (GameManager.Player1.Name == name)
 			{
-				if (GameManager.Player1.Connection.IsAlive)
+				if (GameManager.Player1.Connection != null && GameManager.Player1.Connection.IsAlive)
 				{
 					Kick("Player with same name is already in the game",connection);
 					return;
@@ -204,7 +219,7 @@ namespace MultiplayerXeno
 			}
 			else if (GameManager.Player2.Name == name)
 			{
-				if (GameManager.Player2.Connection.IsAlive)
+				if (GameManager.Player2.Connection != null && GameManager.Player2.Connection.IsAlive)
 				{
 					Kick("Player with same name is already in the game",connection);
 					return;
@@ -235,7 +250,7 @@ namespace MultiplayerXeno
 			var data = new PreGameDataPacket();
 			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "None";
 			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "None";
-			if (GameManager.Player2 != null && !GameManager.Player2.Connection.IsAlive)
+			if (GameManager.Player2 != null &&( GameManager.Player2.Connection ==null || !GameManager.Player2.Connection.IsAlive))
 			{
 				data.Player2Name = "Reserved: " + data.Player2Name;
 			}
@@ -249,13 +264,13 @@ namespace MultiplayerXeno
 			data.SelectedMap = selectedMap;
 			data.TurnTime = GameManager.PreGameData.TurnTime;
 			if (GameManager.Player1 != null)
-				GameManager.Player1.Connection.Send(data);
+				GameManager.Player1.Connection?.Send(data);
 			if (GameManager.Player2 != null)
-				GameManager.Player2.Connection.Send(data);
+				GameManager.Player2.Connection?.Send(data);
 			
 			foreach (var spectator in GameManager.Spectators)
 			{
-				spectator.Connection.Send(data);
+				spectator.Connection?.Send(data);
 				
 			}
 
@@ -288,7 +303,7 @@ namespace MultiplayerXeno
 	
 		
 
-		public static void SendMapData(Connection connection)
+		public static void SendMapData(Connection? connection)
 		{
 			WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
 			var packet = new MapDataPacket(WorldManager.Instance.CurrentMap);
@@ -358,11 +373,11 @@ namespace MultiplayerXeno
 
 		public static void SendChatMessage(string text)
 		{
-			GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
-			GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
+			GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
+			GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			foreach (var spectator in GameManager.Spectators)
 			{
-				spectator.Connection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
+				spectator.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			}
 		}
 

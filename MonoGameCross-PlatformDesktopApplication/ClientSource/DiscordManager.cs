@@ -1,6 +1,5 @@
 ﻿using System;
 using NetDiscordRpc;
-using NetDiscordRpc.Core.Logger;
 using NetDiscordRpc.RPC;
 
 namespace MultiplayerXeno;

@@ -4,12 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using CommonData;
 using FontStashSharp.RichText;
-using HeartSignal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MultiplayerXeno;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -302,7 +300,19 @@ public class GameLayout : MenuLayout
 			
 		};
 		buttonContainer.Widgets.Add(crouch);
-		column = 3;
+		var item = new ImageButton
+		{
+			GridColumn = 3,
+			GridRow = 1,
+			Width = (int)(60*globalScale.X),
+			Height = (int)(70*globalScale.Y),
+			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
+		};
+		item.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
+		item.MouseEntered += (o, a) => SetPreviewDesc("WITEMn");
+
+		buttonContainer.Widgets.Add(item);
+		column = 4;
 		
 		foreach (var act in SelectedControllable.Type.extraActions)
 		{
@@ -544,12 +554,17 @@ public class GameLayout : MenuLayout
 
 		if (LastMouseTileCoordinate != MouseTileCoordinate)
 		{
-		//	Action.SetActiveAction(null);
+			if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Attack)
+			{
+				Action.SetActiveAction(null);
+			}
+
 
 			if (Action.ActiveAction == null && (freeFire||(tile.ObjectAtLocation?.ControllableComponent != null && !tile.ObjectAtLocation.ControllableComponent.IsMyTeam())))
 			{
 				Action.SetActiveAction(ActionType.Attack);
 			}
+		
 		}
 
 
@@ -629,9 +644,9 @@ public class GameLayout : MenuLayout
 		}
 	}
 
-	public override void MouseDown(Vector2Int position, bool righclick)
+	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
-		base.MouseDown(position, righclick);
+		base.MouseDown(position, rightclick);
 		
 		var Tile = WorldManager.Instance.GetTileAtGrid(position);
 
@@ -641,8 +656,7 @@ public class GameLayout : MenuLayout
 			return;
 		}
 
-		if (!GameManager.IsMyTurn()) return;
-		if (righclick)
+		if (rightclick)
 		{
 			switch (Action.GetActiveActionType())
 			{
@@ -783,7 +797,7 @@ public class GameLayout : MenuLayout
 			{
 				indicator = lights[0];
 			}
-			else if (y == controllable.determination)
+			else if (y == controllable.Determination)
 			{
 				indicator = lights[2];
 				if (controllable.PreviewData.detDmg >0)
@@ -791,7 +805,7 @@ public class GameLayout : MenuLayout
 					dissapate = true;
 				}
 			}
-			else if (y >= controllable.determination)
+			else if (y >= controllable.Determination)
 			{
 				indicator = lights[3];
 				litup = false;
@@ -799,7 +813,7 @@ public class GameLayout : MenuLayout
 			else
 			{
 				indicator = lights[1];
-				if (controllable.PreviewData.detDmg >= controllable.determination-y)
+				if (controllable.PreviewData.detDmg >= controllable.Determination-y)
 				{
 					dissapate = true;
 				}

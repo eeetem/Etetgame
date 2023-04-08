@@ -1,9 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Threading;
-using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
 using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno // Note: actual namespace depends on the project name.

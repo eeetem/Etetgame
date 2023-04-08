@@ -35,7 +35,7 @@
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" offset= "0,0"/>
-    <name>Gunner</name>
+    <name>Marksman</name>
     <controllable moveRange = "6" moves="2" attack="6" supression="2" health="13" weaponRange ="17">
       <action name="Headshot" type="7"/>
     </controllable>
@@ -54,4 +54,33 @@
       <action name="Suppress" type="8"/>
     </controllable>
   </object>
+
+  <item>
+    <name>Frag</name>
+    <grenade throwRange="6" range="3" detDmg="1" dmg="6"/>
+    <effect name="tintR" target="5" speed="50"/>
+    <effect name="tintG" target="5" speed="50"/>
+    <effect name="clmagnitude" target="100" speed="50"/>
+    <effect name="noise" target="2" speed="50"/>
+    <sfx name="grenade"/>
+  </item>
+  <item>
+    <name>Flash</name>
+    <grenade throwRange="6" range="3" detDmg="100" dmg="0"/>
+    <effect name="tintR" target="20" speed="50"/>
+    <effect name="tintG" target="20" speed="50"/>
+    <effect name="tintG" target="20" speed="50"/>
+    <effect name="clmagnitude" target="50" speed="50"/>
+    <effect name="noise" target="1" speed="50"/>
+    <sfx name="bang"/>
+  </item>
+
+  <item>
+    <name>Smoke</name>
+    <grenade throwRange="6" range="3" detDmg="0" dmg="0" smoke="6"/>
+    <effect name="clmagnitude" target="100" speed="40"/>
+    <effect name="noise" target="0.5" speed="50"/>
+    <sfx name="smoke"/>
+  </item>
+  
 </root>

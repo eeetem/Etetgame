@@ -1,14 +1,8 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
-using System;
+﻿using System;
 using CommonData;
 using Microsoft.Xna.Framework;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
-using MultiplayerXeno.Pathfinding;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -83,7 +77,7 @@ namespace MultiplayerXeno
 			return (pos.X >= 0 && pos.X < 100 && pos.Y >= 0 && pos.Y < 100);
 		}
 
-		public void ResetControllables(bool teamOneTurn)
+		public void NextTurn(bool teamOneTurn)
 		{
 			foreach (var obj in WorldObjects.Values)
 			{
@@ -99,6 +93,11 @@ namespace MultiplayerXeno
 				{
 					obj.ControllableComponent.EndTurn();
 				}
+			}
+
+			foreach (var tile in _gridData)
+			{
+				tile.NextTurn();
 			}
 		}
 
@@ -120,28 +119,28 @@ namespace MultiplayerXeno
 			
 
 			WorldTile tile = GetTileAtGrid(data.position);
-				tile.Wipe();
-				if (data.Surface != null)
-				{
-					MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
-				}
+			tile.Wipe();
+			if (data.Surface != null)
+			{
+				MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
+			}
 
-				if (data.NorthEdge != null)
-				{
-					MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
-				}
+			if (data.NorthEdge != null)
+			{
+				MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
+			}
 
-				if (data.ObjectAtLocation != null)
-				{
-					MakeWorldObjectFromData((WorldObjectData) data.ObjectAtLocation, tile);
-				}
+			if (data.ObjectAtLocation != null)
+			{
+				MakeWorldObjectFromData((WorldObjectData) data.ObjectAtLocation, tile);
+			}
 
-				if (data.WestEdge != null)
-				{
-					MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
-				}
+			if (data.WestEdge != null)
+			{
+				MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
+			}
 
-				return tile;
+			return tile;
 		
 		}
 		
@@ -191,13 +190,13 @@ namespace MultiplayerXeno
 			RayCastOutcome[] PartalCasts;
 			if (crouched)
 			{
-				FullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+				FullCasts = MultiCornerCast(From, to, Cover.High, true,false);//full vsson does not go past high cover and no partial sigh
 				PartalCasts = Array.Empty<RayCastOutcome>();
 			}
 			else
 			{
-				FullCasts = MultiCornerCast(From, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
-				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true);//partial visson over high cover
+				FullCasts = MultiCornerCast(From, to, Cover.High, true,false,Cover.Full);//full vission does not go past high cover
+				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true,false);//partial visson over high cover
 							
 			}
 
@@ -206,7 +205,9 @@ namespace MultiplayerXeno
 				if (!cast.hit)
 				{
 					return Visibility.Full;
-				}else if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && GetObject(cast.hitObjID).GetCover() != Cover.Full)
+				}
+				//i think this is for seeing over cover while crouched, dont quote me on that tho
+				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.hitObjID != -1 && GetObject(cast.hitObjID).GetCover() != Cover.Full)
 				{
 					return Visibility.Partial;
 				}
@@ -222,7 +223,7 @@ namespace MultiplayerXeno
 			return Visibility.None;
 		}
 
-		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,Cover? minHitCoverSameTile = null)
+		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,bool ignoreSmoke = true, Cover? minHitCoverSameTile = null)
 		{
 
 			RayCastOutcome[] result = new RayCastOutcome[4];
@@ -230,31 +231,31 @@ namespace MultiplayerXeno
 			Vector2 endpos = endcell;
 			int index = 0;
 			
-				for (int j = 0; j < 4; j++)
-				{
+			for (int j = 0; j < 4; j++)
+			{
 				
-					switch (j)
-					{
-						case 0:
-							endpos = endcell;
-							break;
-						case 1:
-							endpos = endcell + new Vector2(0f, 0.99f);
-							break;
-						case 2:
-							endpos = endcell + new Vector2(0.99f, 0f);
-							break;
-						case 3:
-							endpos = endcell + new Vector2(0.99f, 0.99f);
-							break;
+				switch (j)
+				{
+					case 0:
+						endpos = endcell;
+						break;
+					case 1:
+						endpos = endcell + new Vector2(0f, 0.99f);
+						break;
+					case 2:
+						endpos = endcell + new Vector2(0.99f, 0f);
+						break;
+					case 3:
+						endpos = endcell + new Vector2(0.99f, 0.99f);
+						break;
 					
-					}
-					
-					Vector2 Dir = Vector2.Normalize(startcell - endcell);
-					result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover, ignoreControllables,minHitCoverSameTile);
-					index++;
-
 				}
+					
+				Vector2 Dir = Vector2.Normalize(startcell - endcell);
+				result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover, ignoreControllables,ignoreSmoke,minHitCoverSameTile);
+				index++;
+
+			}
 				
 			
 
@@ -272,7 +273,7 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,Cover? minHtCoverSameTile = null)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreSmoke = true, Cover? minHtCoverSameTile = null)
 		{
 			if (minHtCoverSameTile == null)
 			{
@@ -338,7 +339,7 @@ namespace MultiplayerXeno
 			}
 
 			float totalLenght = 0.05f;
-
+			int smokeLayers = 0;
 			while (true)
 			{
 				lastCheckingSquare = new Vector2Int(checkingSquare.X,checkingSquare.Y);
@@ -378,9 +379,22 @@ namespace MultiplayerXeno
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 					
-					 WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables,lastCheckingSquare == startcell);
+					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables,lastCheckingSquare == startcell);
 
 					
+					if(tile.Smoked>0 && !ignoreSmoke)
+					{
+						smokeLayers++;
+					} 
+					if (smokeLayers >= 2)
+					{
+						result.CollisionPointLong = collisionPointlong;
+						result.CollisionPointShort = collisionPointshort;
+						result.VectorToCenter = collisionVector;
+						result.hit = true;
+						return result;
+					}
+
 					if (hitobj.Id != -1 )
 					{
 						Cover c = hitobj.GetCover();
@@ -485,7 +499,7 @@ namespace MultiplayerXeno
 			return _gridData[pos.X, pos.Y];
 		}
 
-		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, bool lineOfSight = false)
+		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, Cover? lineOfSight = null)
 		{
 			int x = pos.X;
 			int y = pos.Y;
@@ -506,11 +520,11 @@ namespace MultiplayerXeno
 				}
 			}
 
-			if (lineOfSight)
+			if (lineOfSight != null)
 			{
 				foreach (var tile in new List<WorldTile>(tiles))
 				{
-					if(CenterToCenterRaycast(pos,tile.Position,Cover.High,true).hit)
+					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, true).hit)
 					{
 						tiles.Remove(tile);
 					}
@@ -564,7 +578,7 @@ namespace MultiplayerXeno
 					}
 #endif
 					DestroyWorldObject(obj);
-				//	Console.WriteLine("deleting: "+obj);
+					//	Console.WriteLine("deleting: "+obj);
 				}
 				objsToDel.Clear();
 
@@ -642,7 +656,7 @@ namespace MultiplayerXeno
 			}
 				
 			
-			WorldObjectType type = PrefabManager.Prefabs[data.Prefab];
+			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, data.Id, tile);
 			WO.fliped = data.fliped;
 			WO.Face(data.Facing,false);
@@ -787,7 +801,7 @@ namespace MultiplayerXeno
 				
 				
 
-				#if SERVER
+#if SERVER
 				Thread.Sleep(2000);
 				if (GameManager.Player1?.Connection != null) Networking.SendMapData(GameManager.Player1.Connection);
 				if (GameManager.Player2?.Connection != null)  Networking.SendMapData(GameManager.Player2.Connection);
@@ -796,8 +810,8 @@ namespace MultiplayerXeno
 				Networking.SendMapData(spec.Connection);
 			}
 			
-				#endif
-				return true;
+#endif
+			return true;
 		}
 	}
 }

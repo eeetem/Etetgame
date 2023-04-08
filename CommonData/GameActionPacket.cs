@@ -1,5 +1,4 @@
-﻿using System;
-using Network.Packets;
+﻿using Network.Packets;
 
 namespace CommonData
 {
@@ -33,6 +32,7 @@ namespace CommonData
 		Sprint = 6,
 		HeadShot = 7,
 		Suppress = 8,
+		UseItem = 9,
 	}
 
 

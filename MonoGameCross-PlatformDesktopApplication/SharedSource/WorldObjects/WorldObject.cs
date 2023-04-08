@@ -1,8 +1,6 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
 using CommonData;
-using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 
@@ -124,16 +122,19 @@ namespace MultiplayerXeno
 
 			return Visibility.Partial;
 		}
-		public void TakeDamage(Projectile proj)
+
+		public void TakeDamage(int dmg, int detResist)
 		{
+			
 			Console.WriteLine(this + " got hit " + TileLocation.Position);
-			if (proj.dmg <= 0)
-			{return;
+			if (dmg < 0)
+			{
+				return;
 			}
 
 			if (ControllableComponent != null)
 			{//let controlable handle it
-				ControllableComponent.TakeDamage(proj);
+				ControllableComponent.TakeDamage(dmg, detResist);
 				
 			}
 			else
@@ -145,7 +146,11 @@ namespace MultiplayerXeno
 
 			
 			}
+		}
 
+		public void TakeDamage(Projectile proj)
+		{
+			TakeDamage(proj.dmg,proj.determinationResistanceCoefficient);
 		}
 
 		public void Update(float gametime)

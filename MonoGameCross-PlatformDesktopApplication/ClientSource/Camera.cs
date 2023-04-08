@@ -1,5 +1,4 @@
-﻿using System;
-using CommonData;
+﻿using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;

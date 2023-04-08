@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using CommonData;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno;
 
@@ -15,11 +12,7 @@ public static class RenderSystem
 
 		graphicsDevice = graphicsdevice;
 	}
-
-
-
-
-
+	
 	public static void Draw(SpriteBatch spriteBatch)
 	{
 
@@ -47,6 +40,10 @@ public static class RenderSystem
 			if (tile.ObjectAtLocation != null)
 			{
 				objs.Add(tile.ObjectAtLocation);
+			}
+			if (tile.TileEffect != null)
+			{
+				objs.Add(tile.TileEffect);
 			}
 			//tileObjs.Sort(new DrawLayerSort());
 

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
-using MultiplayerXeno;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;

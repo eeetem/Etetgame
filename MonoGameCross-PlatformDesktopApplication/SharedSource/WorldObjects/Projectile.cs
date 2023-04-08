@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework;
-using Network;
 
 namespace MultiplayerXeno
 {
@@ -65,11 +64,11 @@ namespace MultiplayerXeno
 			{*/
 		if (shooterLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.High);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, true,Cover.High);
 		}
 		else if (targetLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, Cover.Full);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, true,Cover.Full);
 		}
 		else
 		{
@@ -183,7 +182,7 @@ namespace MultiplayerXeno
 					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
 				}
 			}
-			var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,true);
+			var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,Cover.High);
 			return tiles;
 		}
 
@@ -241,12 +240,8 @@ namespace MultiplayerXeno
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.determination -= supressionStrenght;
-					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.determination);
-					if (tile.ObjectAtLocation.ControllableComponent.determination <= 0)
-					{
-						tile.ObjectAtLocation.ControllableComponent.Panic();
-					}
+					tile.ObjectAtLocation.ControllableComponent.Suppress(supressionStrenght, true);
+					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.Determination);
 				}
 			}
 			

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using CommonData;
 using Microsoft.Xna.Framework;
+using MultiplayerXeno.Items;
 using MultiplayerXeno.Pathfinding;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
-using Action = MultiplayerXeno.Action;
+
 #nullable enable
 
 
@@ -20,8 +18,13 @@ namespace MultiplayerXeno
 		public WorldObject worldObject { get; private set; }
 		public ControllableType Type { get; private set; }
 
+		public UsableItem? SelectedItem { get; private set; }
+		
+		public UsableItem[] inventory = Array.Empty<UsableItem>();
+
 		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
 		{
+			
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
@@ -33,13 +36,14 @@ namespace MultiplayerXeno
 			{
 				Health = data.Health;
 			}
+
 			if (data.Determination == -100)
 			{
-				determination = type.Maxdetermination;
+				Determination = type.Maxdetermination;
 			}
 			else
 			{
-				determination = data.Determination;
+				Determination = data.Determination;
 			}
 
 			this.Crouching = data.Crouching;
@@ -49,33 +53,47 @@ namespace MultiplayerXeno
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
 #endif
-			
+
 			if (data.MovePoints != -100)
 			{
 				this.MovePoints = data.MovePoints;
 			}
+
 			if (data.ActionPoints != -100)
 			{
-				this.FirePoints = data.ActionPoints;
+				this.ActionPoints = data.ActionPoints;
 			}
+
 			if (data.canTurn != null)
 			{
-				this.canTurn = (bool)data.canTurn;
+				this.canTurn = (bool) data.canTurn;
 			}
+
+			inventory = new UsableItem[type.InventorySize];
+			for (int i = 0; i < type.InventorySize; i++)
+			{
+				if (data.Inventory.Count > i && data.Inventory[i] != null)
+				{
+					inventory[i] = PrefabManager.UseItems[data.Inventory[i]];
+				}
+			}
+			SelectedItem = inventory[0];
+			
 
 			if (data.JustSpawned)
 			{
 				StartTurn();
 			}
 		}
-		public int MovePoints { get;  set; } = 0;
+
+		public int MovePoints { get; set; } = 0;
 		public bool canTurn { get; set; } = false;
-		public int FirePoints { get;  set; } = 0;
+		public int ActionPoints { get; set; } = 0;
 
 		public int Health = 0;
-		public int determination = 0;
+		public int Determination { get; private set; } = 0;
 
-		public bool Crouching { get;  set; } = false;
+		public bool Crouching { get; set; } = false;
 
 
 
@@ -86,33 +104,48 @@ namespace MultiplayerXeno
 			{
 
 				range -= 2;
-				
+
 			}
 
 			return range;
 		}
 
 		public List<Vector2Int>[] GetPossibleMoveLocations()
-		{ 
+		{
 			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints];
 			for (int i = 0; i < MovePoints; i++)
 			{
-				possibleMoves[i] = PathFinding.GetAllPaths(this.worldObject.TileLocation.Position, GetMoveRange()*(i+1));
+				possibleMoves[i] = PathFinding.GetAllPaths(this.worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
 			}
 
 			return possibleMoves;
 		}
 
-		public bool IsPlayerOneTeam { get; private set;}
+		public bool IsPlayerOneTeam { get; private set; }
 
-		public void TakeDamage(Projectile projectile)
+		public void Suppress(int detDmg,bool nopanic = false)
 		{
-			var dmg = projectile.dmg;
+			if (detDmg <= 0)
+			{
+				return;
+			}
+
+			Determination -= detDmg;
+			if (Determination <= 0 && !nopanic)
+			{
+				Panic();
+			}
+		}
+
+
+
+		public void TakeDamage(int dmg, int detResis)
+		{
 			Console.WriteLine(this +"(health:"+this.Health+") hit for "+dmg);
-			if (determination > 0)
+			if (Determination > 0)
 			{
 				Console.WriteLine("blocked by determination");
-				dmg = projectile.dmg - projectile.determinationResistanceCoefficient;
+				dmg = dmg - detResis;
 
 			}
 
@@ -179,15 +212,15 @@ namespace MultiplayerXeno
 		{
 			MovePoints = Type.MaxMovePoints;
 			canTurn = true;
-			FirePoints = Type.MaxFirePoints;
-			if (determination < 0)
+			ActionPoints = Type.MaxFirePoints;
+			if (Determination < 0)
 			{
-				determination = 0;
+				Determination = 0;
 			}
 
-			if (determination < Type.Maxdetermination)
+			if (Determination < Type.Maxdetermination)
 			{
-				determination++;
+				Determination++;
 			}
 			if(paniced)
 			{
@@ -200,7 +233,7 @@ namespace MultiplayerXeno
 			
 
 				paniced = false;
-				determination--;
+				Determination--;
 				MovePoints--;
 				canTurn = false;
 			}
@@ -211,6 +244,7 @@ namespace MultiplayerXeno
 		{
 #if CLIENT
 			if (!IsMyTeam()) return;
+			if (!GameManager.IsMyTurn()) return;
 #endif
 			var result = a.CanPerform(this, target);
 			if (!result.Item1)
@@ -254,6 +288,8 @@ namespace MultiplayerXeno
 			ClearOverWatch();
 			
 		}
+		
+		
 
 		public bool overWatch { get; set; } = false;
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
@@ -373,7 +409,19 @@ namespace MultiplayerXeno
 
 		public ControllableData GetData()
 		{
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Health,determination,Crouching,paniced);
+			List<string?> inv = new List<string?>();
+			foreach (var i in inventory)
+			{
+				if (i != null)
+				{
+					inv.Add(i.name);
+				}
+				else
+				{
+					inv.Add(null);
+				}
+			}
+			var data = new ControllableData(this.IsPlayerOneTeam,ActionPoints,MovePoints,canTurn,Health,Determination,Crouching,paniced,inv);
 			data.JustSpawned = false;
 			return data;
 		}

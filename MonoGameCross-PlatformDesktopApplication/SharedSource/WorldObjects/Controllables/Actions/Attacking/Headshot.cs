@@ -1,6 +1,5 @@
 ﻿using System;
 using CommonData;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
 
@@ -21,11 +20,11 @@ public class Headshot : Attack
 		}
 
 	
-		if (actor.determination != actor.Type.Maxdetermination)
+		if (actor.Determination != actor.Type.Maxdetermination)
 		{
 			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
-		if (actor.FirePoints <= 0)
+		if (actor.ActionPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points!");
 		}
@@ -40,8 +39,8 @@ public class Headshot : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.FirePoints--;
-		actor.determination=0;
+		actor.ActionPoints--;
+		actor.Suppress(actor.Determination, true);
 		actor.MovePoints--;
 	
 		

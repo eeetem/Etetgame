@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 namespace CommonData
 {
@@ -61,6 +60,7 @@ namespace CommonData
 		public bool Crouching;
 		public bool Panic;
 		public bool JustSpawned;
+		public List<string?> Inventory { get; set; }
 		
 		public ControllableData(bool team1)
 		{
@@ -73,8 +73,9 @@ namespace CommonData
 			Crouching = false;
 			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
+			Inventory = new List<string?>();
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int health, int determination, bool crouching,bool panic)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int health, int determination, bool crouching,bool panic,List<string?> inv)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -85,8 +86,11 @@ namespace CommonData
 			Crouching =	crouching;
 			JustSpawned = true;
 			Panic = panic;
+			Inventory = inv;
 
 		}
+
+	
 	}
 	[Serializable]
 	public class RayCastOutcome//fuck the network library holy moly

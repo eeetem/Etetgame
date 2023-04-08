@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CommonData;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno
 {
@@ -29,6 +28,8 @@ namespace MultiplayerXeno
 		
 		public int MaxHealth = 10;
 		public int Maxdetermination = 2;
+
+		public int InventorySize = 1;
 
 
 		public Texture2D[] CrouchSpriteSheet;

@@ -1,5 +1,4 @@
 ﻿using CommonData;
-using HeartSignal;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Pathfinding;
@@ -109,7 +108,7 @@ namespace MultiplayerXeno
 		protected override void Update(GameTime gameTime)
 		{
 
-
+			Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 			Camera.Update(gameTime);
 			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);

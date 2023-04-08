@@ -7,7 +7,6 @@ using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;
 using Network.Enums;
-using Network.Extensions;
 
 namespace MultiplayerXeno;
 

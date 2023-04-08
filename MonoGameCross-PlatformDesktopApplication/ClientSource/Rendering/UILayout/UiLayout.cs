@@ -5,7 +5,6 @@ using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -70,7 +69,7 @@ public abstract class UiLayout
 	public abstract Widget Generate(Desktop desktop, UiLayout? lastLayout);
 
 
-	public virtual void MouseDown(Vector2Int position, bool righclick)
+	public virtual void MouseDown(Vector2Int position, bool rightclick)
 	{
 		if(!WorldManager.IsPositionValid(position)) return;
 

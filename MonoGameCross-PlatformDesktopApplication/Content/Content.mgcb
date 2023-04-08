@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/bang.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/bang.wav
+
 #begin audio/capture.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -109,6 +115,12 @@
 /processorParam:Quality=Best
 /build:audio/footsteps/Footstep 9.ogg
 
+#begin audio/grenade.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/grenade.wav
+
 #begin audio/mg.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -138,6 +150,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:audio/shotgun.wav
+
+#begin audio/smoke.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/smoke.wav
 
 #begin audio/turn.wav
 /importer:WavImporter
@@ -236,18 +254,6 @@
 /processorParam:TextureFormat=Color
 /build:textures/Environment/1 Floor - Tiled 256x128.png
 
-#begin textures/Environment/1 Floor - Tiled 256x128.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/1 Floor - Tiled 256x128.png
-
 #begin textures/Environment/128x192 Brick Walls - Flat 1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -259,30 +265,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/Environment/128x192 Brick Walls - Flat 1.png
-
-#begin textures/Environment/128x192 Brick Walls - Flat 1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/128x192 Brick Walls - Flat 1.png
-
-#begin textures/Environment/basicFloor.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicFloor.png
 
 #begin textures/Environment/basicFloor.png
 /importer:TextureImporter
@@ -308,18 +290,6 @@
 /processorParam:TextureFormat=Color
 /build:textures/Environment/basicFloor1.png
 
-#begin textures/Environment/basicFloor1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicFloor1.png
-
 #begin textures/Environment/basicHalfWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -331,30 +301,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/Environment/basicHalfWall.png
-
-#begin textures/Environment/basicHalfWall.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicHalfWall.png
-
-#begin textures/Environment/basicHalfWallLight.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicHalfWallLight.png
 
 #begin textures/Environment/basicHalfWallLight.png
 /importer:TextureImporter
@@ -380,30 +326,6 @@
 /processorParam:TextureFormat=Color
 /build:textures/Environment/basicWall.png
 
-#begin textures/Environment/basicWall.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicWall.png
-
-#begin textures/Environment/basicWall_backup.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/basicWall_backup.png
-
 #begin textures/Environment/basicWall_backup.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -428,7 +350,7 @@
 /processorParam:TextureFormat=Color
 /build:textures/Environment/capturePoint.png
 
-#begin textures/Environment/capturePoint.png
+#begin textures/Environment/smoke.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -438,7 +360,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/capturePoint.png
+/build:textures/Environment/smoke.png
 
 #begin textures/Environment/spawnPoint1.png
 /importer:TextureImporter
@@ -475,30 +397,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:textures/Environment/template.png
-
-#begin textures/Environment/template.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/template.png
-
-#begin textures/Environment/water.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/Environment/water.png
 
 #begin textures/Environment/water.png
 /importer:TextureImporter

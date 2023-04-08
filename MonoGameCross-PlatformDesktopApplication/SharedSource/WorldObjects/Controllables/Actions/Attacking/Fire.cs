@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using CommonData;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 
 namespace MultiplayerXeno;
 
@@ -29,7 +24,7 @@ public class Fire : Attack
 			return new Tuple<bool, string>(true, "");
 		}
 
-		if (actor.FirePoints <= 0)
+		if (actor.ActionPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
@@ -45,7 +40,7 @@ public class Fire : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-			actor.FirePoints--;
+			actor.ActionPoints--;
 			actor.MovePoints--;
 
 #if CLIENT

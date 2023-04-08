@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -24,7 +23,7 @@ public class OverWatch : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
-		if (actor.FirePoints <= 0)
+		if (actor.ActionPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
@@ -35,7 +34,7 @@ public class OverWatch : Action
 
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
-		actor.FirePoints=0;
+		actor.ActionPoints=0;
 		actor.MovePoints=0;
 		var positions = GetOverWatchPositions(actor, target);
 		foreach (var shot in positions)
@@ -103,6 +102,10 @@ public class OverWatch : Action
 			spriteBatch.DrawString(Game1.SpriteFont,""+shot.dmg,   Utility.GridToWorldPos(tile.Position),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 		}
 
+	}
+	public override void Animate(Controllable actor, Vector2Int target)
+	{
+		return;
 	}
 #endif
 }
