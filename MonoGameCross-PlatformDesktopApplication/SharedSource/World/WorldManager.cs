@@ -140,6 +140,7 @@ namespace MultiplayerXeno
 				MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
 			}
 
+			tile.ApplySmoke(data.smoked);
 			return tile;
 		
 		}

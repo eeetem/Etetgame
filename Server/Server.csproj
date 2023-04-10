@@ -120,6 +120,9 @@
       <None Update="Maps\Custom\gggg.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="Maps\Circus.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -24,7 +24,12 @@ namespace MultiplayerXeno
 
 		public void ApplySmoke(int severity)
 		{
-			Smoked += severity;
+			Smoked = severity;
+			if (Smoked <= 0)
+			{
+				Smoked = 0;
+				return;
+			}
 #if CLIENT
 			TileEffect = new Smoke(this);
 			WorldManager.Instance.MakeFovDirty();
@@ -175,6 +180,7 @@ namespace MultiplayerXeno
 			WorldManager.Instance.DeleteWorldObject(WestEdge);
 			WorldManager.Instance.DeleteWorldObject(ObjectAtLocation);
 			WorldManager.Instance.DeleteWorldObject(Surface);
+			Smoked = 0;
 
 		}
 
@@ -217,6 +223,7 @@ namespace MultiplayerXeno
 			{
 				data.ObjectAtLocation = ObjectAtLocation.GetData();
 			}
+			data.smoked = Smoked;
 
 			return data;
 		}
@@ -446,7 +453,7 @@ namespace MultiplayerXeno
 		{
 			Smoked--;
 #if CLIENT
-			if (Smoked < 0)
+			if (Smoked <= 0)
 			{
 				TileEffect = null;
 				WorldManager.Instance.MakeFovDirty();

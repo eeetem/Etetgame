@@ -11,7 +11,7 @@ using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno.UILayouts;
 
-public class GameSetupLayout : UiLayout
+public class SquadCompBuilderLayout : UiLayout
 {
 	private readonly List<SquadMember> _composition = new List<SquadMember>();
 	private Label freeslots;

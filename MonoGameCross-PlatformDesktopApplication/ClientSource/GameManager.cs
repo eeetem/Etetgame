@@ -61,9 +61,13 @@ namespace MultiplayerXeno
 						UI.SetUI(new PreGameLobbyLayout());
 						break;
 					case GameState.Setup:
-						if (spectating) break;
-
-						UI.SetUI(new GameSetupLayout());
+						if (spectating)
+						{
+							Audio.PlayMenu();
+							UI.SetUI(new PreGameLobbyLayout());
+							break;//todo specating
+						}
+						UI.SetUI(new SquadCompBuilderLayout());
 						break;
 					case GameState.Playing:
 						StartGame();

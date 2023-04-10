@@ -68,8 +68,10 @@ public abstract class Attack : Action
 		packet.args.Add(targeting.ToString());
 		Networking.DoAction(packet);
 	}
-
+#if SERVER
 	protected Projectile? shotJustFired;
+#endif
+	
 	public override void Execute(Controllable actor, Vector2Int target)
 	{
 		actor.ClearOverWatch();

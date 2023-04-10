@@ -1,9 +1,13 @@
 
-
+up determination to 3
+keep abilities at 2
+breach and clear for scout
+change enemy color
+smoke duration
+diagonal cross map fix
+map loading anim
+heavy mobile mode
 specialist class
-frag grenade
-smoke grenade
-flash grenade
 destruction
 preview seeing tool
 how to play

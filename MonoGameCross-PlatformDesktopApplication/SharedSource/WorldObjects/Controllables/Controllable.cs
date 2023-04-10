@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommonData;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.Items;
@@ -19,8 +20,23 @@ namespace MultiplayerXeno
 		public ControllableType Type { get; private set; }
 
 		public UsableItem? SelectedItem { get; private set; }
-		
-		public UsableItem[] inventory = Array.Empty<UsableItem>();
+
+		public List<UsableItem> inventory = new List<UsableItem>();
+
+		public void RemoveItem(UsableItem item)
+		{
+			inventory.Remove(item);
+			if (SelectedItem == item)
+			{
+				if(inventory.Count>0){
+					SelectedItem = inventory[0];
+				}
+				else
+				{
+					SelectedItem = null;
+				}
+			}
+		}
 
 		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
 		{
@@ -69,16 +85,19 @@ namespace MultiplayerXeno
 				this.canTurn = (bool) data.canTurn;
 			}
 
-			inventory = new UsableItem[type.InventorySize];
+			inventory = new List<UsableItem>();
 			for (int i = 0; i < type.InventorySize; i++)
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != null)
 				{
-					inventory[i] = PrefabManager.UseItems[data.Inventory[i]];
+					inventory.Add(PrefabManager.UseItems[data.Inventory[i]]);
 				}
 			}
-			SelectedItem = inventory[0];
-			
+
+			if (inventory.Count > 0)
+			{
+				SelectedItem = inventory[0];
+			}
 
 			if (data.JustSpawned)
 			{

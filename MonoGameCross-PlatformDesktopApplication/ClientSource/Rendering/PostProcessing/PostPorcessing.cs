@@ -133,8 +133,8 @@ namespace MultiplayerXeno
 
 
 
-			AddTween("noise", 0.005f, 3f, false);
-			AddTween("clmagnitude", 4f, 0.5f, false);
+			AddTween("noise", 0.002f, 3f, false);
+			AddTween("clmagnitude", 3f, 0.5f, false);
 			
 
 			

@@ -62,7 +62,7 @@ public class Face : Action
 		}
 		if (lastTarget != target)
 		{
-			Action.SetActiveAction(null);
+			SetActiveAction(null);
 			
 		}
 		

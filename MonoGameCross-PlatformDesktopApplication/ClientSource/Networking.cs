@@ -152,8 +152,13 @@ namespace MultiplayerXeno
 
 		private static void ReciveGameUpdate(GameDataPacket packet, Connection connection)
 		{
-			GameManager.SetData(packet);
-			
+			try
+			{
+				GameManager.SetData(packet);
+			}catch(Exception e)
+			{
+				Console.WriteLine("Game Update Error:"+e);
+			}
 		}
 
 		private static void ReciveProjectilePacket(ProjectilePacket packet, Connection connection)

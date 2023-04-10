@@ -240,7 +240,7 @@ namespace MultiplayerXeno
 			{
 				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.Suppress(supressionStrenght, true);
+					tile.ObjectAtLocation.ControllableComponent.Suppress(supressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.Determination);
 				}
 			}

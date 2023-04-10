@@ -35,12 +35,12 @@ public class UseItem : Action
 #if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		actor.SelectedItem.Preview(actor, target,spriteBatch);
+		actor.SelectedItem?.Preview(actor, target,spriteBatch);
 	}
 
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
-		actor.SelectedItem.Animate(actor,target);
+		actor.SelectedItem?.Animate(actor,target);
 	}
 #endif
 

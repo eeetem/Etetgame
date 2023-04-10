@@ -36,6 +36,7 @@ public class Grenade : UsableItem
 			ApplyOnTile(tile);
 		}
 
+		actor.RemoveItem(this);
 	}
 
 

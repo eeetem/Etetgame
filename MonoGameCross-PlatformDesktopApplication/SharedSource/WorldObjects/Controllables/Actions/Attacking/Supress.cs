@@ -50,12 +50,12 @@ public class Supress : Attack
 		actor.ActionPoints-=2;
 		actor.Suppress(actor.Determination, true);
 		actor.MovePoints--;
-	
+#if SERVER
 		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(2, 0));
 		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(-2, 0));
 		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(0, -2));
 		proxyAttack.Execute(actor, shotJustFired.result.CollisionPointLong + new Vector2Int(0, 2));
-		
+#endif
 #if CLIENT
 		Camera.SetPos(target);
 		ObjectSpawner.MG2(actor.worldObject.TileLocation.Position, target);

@@ -11,6 +11,7 @@ namespace CommonData
 		public WorldObjectData? ObjectAtLocation;
 		public WorldObjectData? Surface;
 		public Vector2Int position;
+		public int smoked;
 		public WorldTileData(Vector2Int position)
 		{
 			this.position = position;
@@ -18,6 +19,7 @@ namespace CommonData
 			WestEdge = null;
 			ObjectAtLocation = null;
 			Surface = null;
+			smoked = 0;
 		}
 	}
 

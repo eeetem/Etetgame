@@ -36,21 +36,21 @@
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" offset= "0,0"/>
     <name>Marksman</name>
-    <controllable moveRange = "6" moves="2" attack="6" supression="2" health="13" weaponRange ="17">
+    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3 health="13" weaponRange ="17">
       <action name="Headshot" type="7"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" supression="1" attack="8" health="8" weaponRange ="6" sightrange="18">
+    <controllable moveRange = "5" moves="3" supression="1" attack="8" health="8" determination="3" weaponRange ="6" sightrange="18">
       <action name="Second Wind" type="6"/>
     </controllable>
   </object>
   <object Faceable = "true" Cover ="3">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="4" health="16" weaponRange ="11">
+    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5" health="16" weaponRange ="11">
       <action name="Suppress" type="8"/>
     </controllable>
   </object>
@@ -69,7 +69,7 @@
     <grenade throwRange="6" range="3" detDmg="100" dmg="0"/>
     <effect name="tintR" target="20" speed="50"/>
     <effect name="tintG" target="20" speed="50"/>
-    <effect name="tintG" target="20" speed="50"/>
+    <effect name="tintB" target="20" speed="50"/>
     <effect name="clmagnitude" target="50" speed="50"/>
     <effect name="noise" target="1" speed="50"/>
     <sfx name="bang"/>

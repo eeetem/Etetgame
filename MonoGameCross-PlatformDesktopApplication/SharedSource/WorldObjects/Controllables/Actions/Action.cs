@@ -31,6 +31,7 @@ public abstract class Action
 			ActiveAction = null;
 			return;
 		}
+		
 
 		ActiveAction = Actions[(ActionType)type];
 		ActiveAction.InitAction();
@@ -71,11 +72,14 @@ public abstract class Action
 	{
 		try
 		{
-			Execute(actor, target);
+			
 
 #if CLIENT
-		Animate(actor,target);
-		WorldManager.Instance.MakeFovDirty();	
+			Animate(actor,target);
+#endif
+			Execute(actor, target);
+#if CLIENT
+			WorldManager.Instance.MakeFovDirty();	
 		SetActiveAction(null);
 		UI.SetUI(new GameLayout());
 #endif

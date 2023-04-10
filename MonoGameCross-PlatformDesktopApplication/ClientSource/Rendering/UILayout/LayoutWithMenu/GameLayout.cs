@@ -90,6 +90,7 @@ public class GameLayout : MenuLayout
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		Init();
+		ReMakeMovePreview();
 		var panel = new Panel ();
 		if (!GameManager.spectating)
 		{
@@ -308,8 +309,14 @@ public class GameLayout : MenuLayout
 			Height = (int)(70*globalScale.Y),
 			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
 		};
-		item.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
-		item.MouseEntered += (o, a) => SetPreviewDesc("WITEMn");
+		item.Click += (o, a) =>
+		{
+			if (SelectedControllable.SelectedItem != null)
+			{
+				Action.SetActiveAction(ActionType.UseItem);
+			}
+		};
+		item.MouseEntered += (o, a) => SetPreviewDesc("item: "+SelectedControllable.SelectedItem?.name);
 
 		buttonContainer.Widgets.Add(item);
 		column = 4;
@@ -503,11 +510,7 @@ public class GameLayout : MenuLayout
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		batch.Draw(cornerRenderTarget, new Vector2(Game1.resolution.X - cornerRenderTarget.Width*globalScale.Y*1.1f, Game1.resolution.Y - cornerRenderTarget.Height*globalScale.Y*1.1f), null, Color.White, 0, Vector2.Zero, globalScale.Y*1.1f ,SpriteEffects.None, 0);
 		batch.End();
-		
-		
-		
-		
-		
+
 		batch.Begin();
 		
 		
@@ -560,7 +563,7 @@ public class GameLayout : MenuLayout
 			}
 
 
-			if (Action.ActiveAction == null && (freeFire||(tile.ObjectAtLocation?.ControllableComponent != null && !tile.ObjectAtLocation.ControllableComponent.IsMyTeam())))
+			if (Action.ActiveAction == null && (freeFire||( tile.ObjectAtLocation?.ControllableComponent != null && tile.ObjectAtLocation.IsVisible() &&!tile.ObjectAtLocation.ControllableComponent.IsMyTeam())))
 			{
 				Action.SetActiveAction(ActionType.Attack);
 			}
@@ -648,10 +651,10 @@ public class GameLayout : MenuLayout
 	{
 		base.MouseDown(position, rightclick);
 		
-		var Tile = WorldManager.Instance.GetTileAtGrid(position);
+		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
 		WorldObject obj = Tile.ObjectAtLocation;
-		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && Action.GetActiveActionType() == null) { 
+		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==ActionType.Move)) { 
 			SelectControllable(obj.ControllableComponent);
 			return;
 		}
