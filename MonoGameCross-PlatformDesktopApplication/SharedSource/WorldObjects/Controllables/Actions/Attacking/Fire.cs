@@ -24,7 +24,7 @@ public class Fire : Attack
 			return new Tuple<bool, string>(true, "");
 		}
 
-		if (actor.ActionPoints <= 0)
+		if (actor.FirePoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
@@ -40,7 +40,7 @@ public class Fire : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-			actor.ActionPoints--;
+			actor.FirePoints--;
 			actor.MovePoints--;
 
 #if CLIENT

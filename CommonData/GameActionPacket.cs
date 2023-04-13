@@ -32,7 +32,9 @@ namespace CommonData
 		Sprint = 6,
 		HeadShot = 7,
 		Suppress = 8,
-		UseItem = 9,
+		Inspire = 9,
+		UseItem = 10,
+		
 	}
 
 

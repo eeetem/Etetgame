@@ -23,7 +23,7 @@ public class OverWatch : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
-		if (actor.ActionPoints <= 0)
+		if (actor.FirePoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
@@ -34,7 +34,7 @@ public class OverWatch : Action
 
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
-		actor.ActionPoints=0;
+		actor.FirePoints=0;
 		actor.MovePoints=0;
 		var positions = GetOverWatchPositions(actor, target);
 		foreach (var shot in positions)

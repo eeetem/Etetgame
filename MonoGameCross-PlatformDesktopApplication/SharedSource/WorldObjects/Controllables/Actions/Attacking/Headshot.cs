@@ -24,7 +24,7 @@ public class Headshot : Attack
 		{
 			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
-		if (actor.ActionPoints <= 0)
+		if (actor.FirePoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points!");
 		}
@@ -39,7 +39,7 @@ public class Headshot : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.ActionPoints--;
+		actor.FirePoints--;
 		actor.Suppress(actor.Determination, true);
 		actor.MovePoints--;
 	

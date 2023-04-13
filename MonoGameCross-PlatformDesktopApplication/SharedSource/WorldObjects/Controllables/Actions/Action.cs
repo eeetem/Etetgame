@@ -57,6 +57,7 @@ public abstract class Action
 		new Headshot();
 		new Supress();
 		new UseItem();
+		new Inspire();
 
 	}
 

@@ -26,7 +26,7 @@ public class Supress : Attack
 			return new Tuple<bool, string>(false, "Not enough determination!");
 		}
 
-		if (actor.ActionPoints <= 1)
+		if (actor.FirePoints <= 1)
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
@@ -47,7 +47,7 @@ public class Supress : Attack
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
 		base.Execute(actor,target);
-		actor.ActionPoints-=2;
+		actor.FirePoints-=2;
 		actor.Suppress(actor.Determination, true);
 		actor.MovePoints--;
 #if SERVER

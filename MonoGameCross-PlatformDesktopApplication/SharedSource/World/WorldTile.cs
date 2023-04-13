@@ -181,6 +181,9 @@ namespace MultiplayerXeno
 			WorldManager.Instance.DeleteWorldObject(ObjectAtLocation);
 			WorldManager.Instance.DeleteWorldObject(Surface);
 			Smoked = 0;
+			#if CLIENT
+			TileEffect = null;
+			#endif
 
 		}
 

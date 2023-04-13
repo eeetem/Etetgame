@@ -35,7 +35,7 @@ public class SecondWind : Action
 		actor.Suppress(actor.Determination, true);
 		actor.canTurn = true;
 		actor.MovePoints = actor.Type.MaxMovePoints;
-		actor.ActionPoints = actor.Type.MaxFirePoints;
+		actor.FirePoints = actor.Type.MaxFirePoints;
 	}
 #if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)

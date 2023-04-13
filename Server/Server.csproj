@@ -66,6 +66,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Face.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Face.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Inspire.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\Inspire.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Move.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\Move.cs</Link>
       </Compile>

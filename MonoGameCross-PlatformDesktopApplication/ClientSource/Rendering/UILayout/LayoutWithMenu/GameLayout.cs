@@ -40,15 +40,6 @@ public class GameLayout : MenuLayout
 		scoreIndicator.Text = "score: " + score;
 	}
 
-	private static Label? descBox;
-	public static string? PreviewDesc { get; set; }
-	private static void SetPreviewDesc(string? desc)
-	{
-		PreviewDesc = desc;
-		if(descBox!= null){
-			descBox.Text = desc;
-		}
-	}
 	public static Controllable SelectedControllable { get; private set;}
 
 	public static void SelectControllable(Controllable controllable)
@@ -71,7 +62,8 @@ public class GameLayout : MenuLayout
 	}
 
 	private static RenderTarget2D? hoverHudRenderTarget;
-	private static RenderTarget2D? cornerRenderTarget;
+	private static RenderTarget2D? rightCornerRenderTarget;
+	private static RenderTarget2D? leftCornerRenderTarget;
 	private static RenderTarget2D? statScreenRenderTarget;
 	private static RenderTarget2D? dmgScreenRenderTarget;
 		
@@ -80,7 +72,8 @@ public class GameLayout : MenuLayout
 	public static void Init()
 	{
 		if (inited) return;
-		cornerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/frames").Width,TextureManager.GetTexture("UI/GameHud/frames").Height);
+		rightCornerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/frames").Width,TextureManager.GetTexture("UI/GameHud/frames").Height);
+		leftCornerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/base").Width,TextureManager.GetTexture("UI/GameHud/base").Height);
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/HoverHud/base").Width,TextureManager.GetTexture("UI/HoverHud/base").Height);
 		statScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/statScreen").Width,TextureManager.GetTexture("UI/GameHud/statScreen").Height);
 		dmgScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/dmgScreen").Width,TextureManager.GetTexture("UI/GameHud/dmgScreen").Height);
@@ -225,118 +218,55 @@ public class GameLayout : MenuLayout
 				unitPanel.Top = -10;
 				unitPanel.Background = new SolidBrush(Color.DarkRed);
 			}unitPanel.Widgets.Add(unitImage);
-			
-
-		
 
 			column++;
+
+
+			var watch = new ImageButton();
+
+			watch.HorizontalAlignment = HorizontalAlignment.Left;
+			watch.VerticalAlignment = VerticalAlignment.Bottom;
+			watch.Width = (int) (24 * globalScale.Y*2f);
+			watch.Height = (int) (29 * globalScale.Y*2f);
+			watch.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn"));
+			watch.ImageHeight = (int) (29 * globalScale.Y*2f);
+			watch.ImageWidth = (int) (24 * globalScale.Y*2f);
+			watch.Top = (int) (-10);
+			watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
+			watch.Left = (int)(TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
+			panel.Widgets.Add(watch);
+
+			var crouch = new ImageButton();
+			crouch.HorizontalAlignment = HorizontalAlignment.Left;
+			crouch.VerticalAlignment = VerticalAlignment.Bottom;
+			crouch.Width = (int) (24 * globalScale.Y*2f);
+			crouch.Height = (int) (29 * globalScale.Y*2f);
+			crouch.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchbtn"));
+			crouch.ImageHeight = (int) (29 * globalScale.Y*2f);
+			crouch.ImageWidth = (int) (24 * globalScale.Y*2f);
+			crouch.Top = (int) (-10 - watch.Height);
+			crouch.Left = (int)(TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
+			crouch.Click += (o, a) => SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], null);
+			panel.Widgets.Add(crouch);
+			
+			var itembtn = new ImageButton();
+			itembtn.HorizontalAlignment = HorizontalAlignment.Left;
+			itembtn.VerticalAlignment = VerticalAlignment.Bottom;
+			itembtn.Width = (int) (24 * globalScale.Y*2f);
+			itembtn.Height = (int) (29 * globalScale.Y*2f);
+			itembtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/invbtn"));
+			itembtn.ImageHeight = (int) (29 * globalScale.Y*2f);
+			itembtn.ImageWidth = (int) (24 * globalScale.Y*2f);
+			itembtn.Top = (int) (-10 - watch.Height);
+			itembtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + crouch.Width);
+			itembtn.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
+			itembtn.Background = new SolidBrush(Color.Transparent);
+			panel.Widgets.Add(itembtn);
+			
 		}
 		
-		descBox = new Label()
-		{
-			Top = (int)(-70 * globalScale.Y),
-			MaxWidth = (int) (600 * globalScale.X),
-			MinHeight = 40,
-			MaxHeight = 100,
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Bottom,
-			Background = new SolidBrush(Color.Black),
-			Text = PreviewDesc,
-			TextAlign = TextHorizontalAlignment.Center,
-			Wrap = true,
-			Font = DefaultFont.GetFont(FontSize/2)
-		};
-		panel.Widgets.Add(descBox);
-
-
-		var buttonContainer = new Grid()
-		{
-			GridColumn = 1,
-			GridRow = 3,
-			GridColumnSpan = 4,
-			GridRowSpan = 1,
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Bottom,
-			//ShowGridLines = true,
-		};
-		panel.Widgets.Add(buttonContainer);
-
-		buttonContainer.RowsProportions.Add(new Proportion(ProportionType.Pixels, 20));
-		var fire = new ImageButton()
-		{
-			GridColumn = 0,
-			GridRow = 1,
-			Width = (int)(60*globalScale.X),
-			Height = (int)(70*globalScale.Y),
-			Image = new TextureRegion(TextureManager.GetTexture("UI/Fire")),
-			//	Scale = new Vector2(1.5f)
-		};
-		fire.Click += (o, a) => Action.SetActiveAction(ActionType.Attack);
-		fire.MouseEntered += (o, a) => SetPreviewDesc("Shoot at a selected target. Anything in the blue area will get suppressed and lose determination. Cost: 1 action, 1 move");
-		buttonContainer.Widgets.Add(fire);
-		var watch = new ImageButton
-		{
-			GridColumn = 1,
-			GridRow = 1,
-			Width = (int)(60*globalScale.X),
-			Height = (int)(70*globalScale.Y),
-			Image = new TextureRegion(TextureManager.GetTexture("UI/Overwatch"))
-		};
-		watch.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
-		watch.MouseEntered += (o, a) => SetPreviewDesc("Watch Selected Area. First enemy to enter the area will be shot at automatically. Cost: 1 action, 1 move. Unit Cannot act anymore in this turn");
-		buttonContainer.Widgets.Add(watch);
-		var crouch = new ImageButton
-		{
-			GridColumn = 2,
-			GridRow = 1,
-			Width = (int)(60*globalScale.X),
-			Height = (int)(70*globalScale.Y),
-			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
-		};
-		crouch.MouseEntered += (o, a) => SetPreviewDesc("Crouching improves benefits of cover and allows hiding under tall cover however you can move less tiles. Cost: 1 move");
-		crouch.Click += (o, a) =>
-		{
-	
-			SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], null);
-			
-		};
-		buttonContainer.Widgets.Add(crouch);
-		var item = new ImageButton
-		{
-			GridColumn = 3,
-			GridRow = 1,
-			Width = (int)(60*globalScale.X),
-			Height = (int)(70*globalScale.Y),
-			Image = new TextureRegion(TextureManager.GetTexture("UI/Crouch"))
-		};
-		item.Click += (o, a) =>
-		{
-			if (SelectedControllable.SelectedItem != null)
-			{
-				Action.SetActiveAction(ActionType.UseItem);
-			}
-		};
-		item.MouseEntered += (o, a) => SetPreviewDesc("item: "+SelectedControllable.SelectedItem?.name);
-
-		buttonContainer.Widgets.Add(item);
-		column = 4;
 		
-		foreach (var act in SelectedControllable.Type.extraActions)
-		{
-			var actBtn = new ImageButton
-			{
-				GridColumn = column,
-				GridRow = 1,
-				Width = (int)(60*globalScale.X),
-				Height = (int)(70*globalScale.Y),
-				Image = new TextureRegion(TextureManager.GetTexture("UI/" + act.Item1))
-			};
-			actBtn.Click += (o, a) => Action.SetActiveAction(act.Item2);
-			actBtn.MouseEntered += (o, a) => SetPreviewDesc(Action.Actions[act.Item2].Description);
-			buttonContainer.Widgets.Add(actBtn);
-			column++;
-		}
-			
+		
 		return panel;
 	}
 
@@ -458,6 +388,9 @@ public class GameLayout : MenuLayout
 		}
 		var tile = WorldManager.Instance.GetTileAtGrid(TileCoordinate);
 		
+		
+		
+		//bottom right corner
 		graphicsDevice.SetRenderTarget(statScreenRenderTarget);
 		graphicsDevice.Clear(Color.Transparent);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
@@ -493,7 +426,7 @@ public class GameLayout : MenuLayout
 		}
 		batch.End();
 		
-		graphicsDevice.SetRenderTarget(cornerRenderTarget);
+		graphicsDevice.SetRenderTarget(rightCornerRenderTarget);
 		graphicsDevice.Clear(Color.Transparent);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/frames"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
@@ -506,9 +439,62 @@ public class GameLayout : MenuLayout
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
 		batch.Draw(dmgScreenRenderTarget,new Vector2(12,78),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
 		batch.End();
+		
+		
+		//bottom left corner
+		graphicsDevice.SetRenderTarget(leftCornerRenderTarget);
+		graphicsDevice.Clear(Color.Transparent);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/base"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
+		
+		float bulletWidth = TextureManager.GetTexture("UI/GameHud/bulletOn").Width;
+		float baseWidth = 81;
+		float bulletBarWidth = (bulletWidth*SelectedControllable.Type.MaxFirePoints);
+		float emtpySpace = baseWidth - bulletBarWidth;
+		Vector2 bulletPos = new Vector2(95+emtpySpace/2f,49);
+		for (int i = 0; i < SelectedControllable.Type.MaxFirePoints; i++)
+		{
+			Texture2D tex = TextureManager.GetTexture("UI/GameHud/bulletOn");
+			if(i >= SelectedControllable.FirePoints)
+				tex = TextureManager.GetTexture("UI/GameHud/bulletOff");
+			
+			batch.Draw(tex,bulletPos + i*new Vector2(40,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+		}
+		
+		
+		batch.End();
+
+		baseWidth = 84;
+		float arrowWidth = TextureManager.GetTexture("UI/GameHud/arrowOn").Width;
+		float arrowHeight = TextureManager.GetTexture("UI/GameHud/arrowOn").Height;
+		float moveBarWidth = (arrowWidth*SelectedControllable.Type.MaxMovePoints);
+		emtpySpace = baseWidth - moveBarWidth;
+		Vector2 arrowPos = new Vector2(98+(emtpySpace/2f),13);
+		for (int i = 0; i < SelectedControllable.Type.MaxMovePoints; i++)
+		{
+			Texture2D tex = TextureManager.GetTexture("UI/GameHud/arrowOn");
+			if(i >= SelectedControllable.MovePoints)
+				tex = TextureManager.GetTexture("UI/GameHud/arrowOff");
+			PostPorcessing.ShuffleUICRTeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
+			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			batch.End();
+		}
+
+
+		
+		
+		
+		
+		
+		
+		//final Draw
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		batch.Draw(cornerRenderTarget, new Vector2(Game1.resolution.X - cornerRenderTarget.Width*globalScale.Y*1.1f, Game1.resolution.Y - cornerRenderTarget.Height*globalScale.Y*1.1f), null, Color.White, 0, Vector2.Zero, globalScale.Y*1.1f ,SpriteEffects.None, 0);
+		batch.Draw(rightCornerRenderTarget, new Vector2(Game1.resolution.X - rightCornerRenderTarget.Width*globalScale.Y*1.1f, Game1.resolution.Y - rightCornerRenderTarget.Height*globalScale.Y*1.1f), null, Color.White, 0, Vector2.Zero, globalScale.Y*1.1f ,SpriteEffects.None, 0);
+		batch.End();
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		batch.Draw(leftCornerRenderTarget, new Vector2(0, Game1.resolution.Y - leftCornerRenderTarget.Height*globalScale.Y*2f), null, Color.White, 0, Vector2.Zero, globalScale.Y*2f ,SpriteEffects.None, 0);
 		batch.End();
 
 		batch.Begin();

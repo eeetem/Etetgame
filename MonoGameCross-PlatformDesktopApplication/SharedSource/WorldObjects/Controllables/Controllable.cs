@@ -77,7 +77,7 @@ namespace MultiplayerXeno
 
 			if (data.ActionPoints != -100)
 			{
-				this.ActionPoints = data.ActionPoints;
+				this.FirePoints = data.ActionPoints;
 			}
 
 			if (data.canTurn != null)
@@ -107,7 +107,7 @@ namespace MultiplayerXeno
 
 		public int MovePoints { get; set; } = 0;
 		public bool canTurn { get; set; } = false;
-		public int ActionPoints { get; set; } = 0;
+		public int FirePoints { get; set; } = 0;
 
 		public int Health = 0;
 		public int Determination { get; private set; } = 0;
@@ -231,7 +231,7 @@ namespace MultiplayerXeno
 		{
 			MovePoints = Type.MaxMovePoints;
 			canTurn = true;
-			ActionPoints = Type.MaxFirePoints;
+			FirePoints = Type.MaxFirePoints;
 			if (Determination < 0)
 			{
 				Determination = 0;
@@ -440,7 +440,7 @@ namespace MultiplayerXeno
 					inv.Add(null);
 				}
 			}
-			var data = new ControllableData(this.IsPlayerOneTeam,ActionPoints,MovePoints,canTurn,Health,Determination,Crouching,paniced,inv);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Health,Determination,Crouching,paniced,inv);
 			data.JustSpawned = false;
 			return data;
 		}

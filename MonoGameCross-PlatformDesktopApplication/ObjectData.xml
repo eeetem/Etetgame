@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-
-<object Faceable = "false" Cover ="0" Surface = "true">
-  <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
-  <name>basicFloor</name>
-</object>
+  <object Faceable = "false" Cover ="0" Surface = "true">
+    <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
+    <name>basicFloor</name>
+  </object>
   <object Faceable = "false" Cover ="0" Impassible = "true" Surface = "true">
     <sprite name="Environment/water" variations = "1" offset= "0,0"/>
     <name>water</name>
@@ -22,9 +21,9 @@
     <name>spawnPointT2</name>
   </object>
   <object Cover = "3" Edge = "true">
-  <sprite  name="Environment/basicWall"  offset= "0,0"/>
-  <name>basicWall</name>
-</object>
+    <sprite  name="Environment/basicWall"  offset= "0,0"/>
+    <name>basicWall</name>
+  </object>
   <object Cover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"/>
     <name>basicHalfWall</name>
@@ -36,7 +35,7 @@
   <object Faceable = "true" Cover ="3">
     <sprite  name="Human" offset= "0,0"/>
     <name>Marksman</name>
-    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3 health="13" weaponRange ="17">
+    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3" health="13" weaponRange ="18">
       <action name="Headshot" type="7"/>
     </controllable>
   </object>
@@ -50,8 +49,15 @@
   <object Faceable = "true" Cover ="3">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5" health="16" weaponRange ="11">
+    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5" health="16" weaponRange ="12">
       <action name="Suppress" type="8"/>
+    </controllable>
+  </object>
+  <object Faceable = "true" Cover ="3">
+    <sprite name="Heavy"  offset= "0,0"/>
+    <name>Officer</name>
+    <controllable moveRange = "5" moves="2" actions="2" supression="2" overwatch="2" attack="5" determination="5" health="16" weaponRange ="12">
+      <action name="Inspire" type="10"/>
     </controllable>
   </object>
 
