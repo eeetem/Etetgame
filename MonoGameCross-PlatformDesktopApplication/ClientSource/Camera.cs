@@ -1,4 +1,4 @@
-﻿using CommonData;
+﻿using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,6 +54,8 @@ namespace MultiplayerXeno
 		 static bool forceMoving = false;
 		public static void SetPos(Vector2Int vec)
 		{
+		
+
 			vec = Utility.GridToWorldPos(vec);
 			//vec.X -= Cam.BoundingRectangle.Width / 2;
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;

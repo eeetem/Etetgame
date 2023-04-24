@@ -1,5 +1,5 @@
 ﻿using System;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -30,6 +30,7 @@ public class UseItem : Action
 	{
 		actor.FirePoints--;
 		actor.SelectedItem.Execute(actor, target);
+		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 	}
 
 #if CLIENT

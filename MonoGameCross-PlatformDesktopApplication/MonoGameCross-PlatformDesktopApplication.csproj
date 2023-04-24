@@ -59,7 +59,7 @@
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\CommonData\CommonData.csproj" />
+      <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="..\Server\Maps">

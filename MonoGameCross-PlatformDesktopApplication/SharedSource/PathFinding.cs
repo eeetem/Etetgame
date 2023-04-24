@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 
 namespace MultiplayerXeno.Pathfinding
 {
@@ -362,12 +362,7 @@ namespace MultiplayerXeno.Pathfinding
 		public bool Traversable(Node from)
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(this.Position);
-			if (tile.ObjectAtLocation != null) return false;
-			if (tile.Surface != null && tile.Surface.Type.Impassible) return false;
-			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
-			if (obstacle > Cover.None) return false;
-
-			return true;
+			return tile.Traversible(from.Position);
 		}
 
 

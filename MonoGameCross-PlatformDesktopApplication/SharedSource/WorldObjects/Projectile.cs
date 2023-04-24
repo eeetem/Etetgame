@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno
@@ -64,20 +64,20 @@ namespace MultiplayerXeno
 			{*/
 		if (shooterLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, true,Cover.High);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
 		}
 		else if (targetLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false, true,Cover.Full);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
 		}
 		else
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.Full);
+			result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
 		}
 
 		if (!result.hit) {
 			var tile = WorldManager.Instance.GetTileAtGrid(to);
-			var obj = tile.ObjectAtLocation;
+			var obj = tile.ControllableAtLocation;
 			if (obj != null) {
 #if CLIENT
 				if (obj.IsVisible()) {
@@ -106,14 +106,14 @@ namespace MultiplayerXeno
 			RayCastOutcome cast;
 
 
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, true);
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, false);
 			if (cast.hit && result.hitObjID != cast.hitObjID)
 			{
 				covercast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, true);
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, false);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
@@ -204,22 +204,33 @@ namespace MultiplayerXeno
 							}
 						}
 
+						int coverBlock = 0;
 					switch (cover)
 					{
 						case Cover.Full:
-							dmg -= 10;
+							coverBlock = 20;
 							break;
 						case Cover.High:
-							dmg-=4;
+							coverBlock =4;
 							break;
 						case Cover.Low:
-							dmg-=2;
+							coverBlock =2;
 							break;
 						case Cover.None:
 							Console.Write("coverless object hit, this shouldnt happen");
 							//this shouldnt happen
 							break;
 					}
+					if(dmg>coverBlock)
+					{
+						dmg -= coverBlock;
+					}
+					else
+					{
+						coverBlock = dmg;
+						dmg = 0;
+					}
+					WorldManager.Instance.GetObject(covercast.hitObjID)?.TakeDamage(coverBlock,0);
 				}
 
 				
@@ -238,10 +249,10 @@ namespace MultiplayerXeno
 			Console.WriteLine("checking " + tiles.Count + " tiles");
 			foreach (var tile in tiles)
 			{
-				if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
+				if (tile.ControllableAtLocation != null)
 				{
-					tile.ObjectAtLocation.ControllableComponent.Suppress(supressionStrenght);
-					Console.WriteLine("supressed: determination="+tile.ObjectAtLocation.ControllableComponent.Determination);
+					tile.ControllableAtLocation.ControllableComponent.Suppress(supressionStrenght);
+					Console.WriteLine("supressed: determination="+tile.ControllableAtLocation.ControllableComponent.Determination);
 				}
 			}
 			

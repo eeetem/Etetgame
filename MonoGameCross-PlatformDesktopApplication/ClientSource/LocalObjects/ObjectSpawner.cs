@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno;

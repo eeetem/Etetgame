@@ -1,4 +1,4 @@
-﻿using CommonData;
+﻿using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -11,6 +11,7 @@ namespace MultiplayerXeno
 		private Transform2 DrawTransform;
 		private int spriteVariation = 0;
 		private float DrawOrder;
+		public PreviewData PreviewData;
 		public Transform2 GetDrawTransform()
 		{
 			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(this.TileLocation.Position);
@@ -24,10 +25,6 @@ namespace MultiplayerXeno
 
 		private void GenerateDrawOrder()
 		{
-			if (Type == null)
-			{
-				return;
-			}
 
 			DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
@@ -101,11 +98,15 @@ namespace MultiplayerXeno
 
 		}
 
-
-
 		public bool IsVisible()
 		{
+			if (TileLocation == null)
+			{
+				return true;
+			}
+
 			return GetMinimumVisibility() <= TileLocation.Visible;
+
 		}
 
 
@@ -114,8 +115,7 @@ namespace MultiplayerXeno
 		{
 			return Type.Edge && Utility.DoesEdgeBorderTile(this, Utility.WorldPostoGrid(Camera.GetMouseWorldPos()));
 		}
-
-
+		
 	}
 
 

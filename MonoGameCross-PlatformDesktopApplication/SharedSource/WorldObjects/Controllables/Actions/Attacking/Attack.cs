@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -35,11 +35,11 @@ public abstract class Attack : Action
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
 		if (targeting == TargetingType.Auto)
 		{
-			if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null && tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent.Crouching)
+			if (tile.ControllableAtLocation != null  && tile.ControllableAtLocation.ControllableComponent.Crouching)
 			{
 				lowShot = true;
 #if CLIENT
-				if (!tile.ObjectAtLocation.IsVisible())
+				if (!tile.ControllableAtLocation.IsVisible())
 				{
 					lowShot = false;
 				}
@@ -111,6 +111,7 @@ public abstract class Attack : Action
 		lastTarget = new Vector2Int(0,0);
 		targeting = TargetingType.Auto;
 		lastTargetingType = TargetingType.Auto;
+		
 		base.InitAction();
 	}
 
@@ -170,9 +171,9 @@ public abstract class Attack : Action
 
 			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue * 0.45f);
 
-			if (tile.ObjectAtLocation != null && tile.ObjectAtLocation.ControllableComponent != null)
+			if (tile.ControllableAtLocation != null)
 			{
-				tile.ObjectAtLocation.ControllableComponent.PreviewData.detDmg += previewShot.supressionStrenght;
+				tile.ControllableAtLocation.PreviewData.detDmg += previewShot.supressionStrenght;
 			}
 
 		}
@@ -299,21 +300,20 @@ public abstract class Attack : Action
 			spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPointLong), 15, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			if (hitobj.ControllableComponent != null)
-			{
-				var data = hitobj.ControllableComponent.PreviewData;
+
+				var data = hitobj.PreviewData;
 				data.totalDmg = previewShot.originalDmg;
 				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
 				data.finalDmg += previewShot.dmg - coverModifier;
 				data.coverBlock = coverModifier;
-				if (hitobj.ControllableComponent.Determination > 0)
+				if (hitobj.ControllableComponent != null && hitobj.ControllableComponent.Determination > 0)
 				{
 					data.finalDmg -= previewShot.determinationResistanceCoefficient;
 					data.determinationBlock = previewShot.determinationResistanceCoefficient;
 				}
 
-				hitobj.ControllableComponent.PreviewData = data;
-			}
+				hitobj.PreviewData = data;
+			
 		}
 
 

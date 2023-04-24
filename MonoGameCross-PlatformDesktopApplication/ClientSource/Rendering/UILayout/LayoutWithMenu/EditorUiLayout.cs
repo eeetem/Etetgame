@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -317,7 +317,7 @@ public class EditorUiLayout : MenuLayout
 		}
 		else
 		{
-			return (tile.ObjectAtLocation == null);
+			return (tile.ControllableAtLocation == null);
 		}
 	}
 
@@ -448,9 +448,9 @@ public class EditorUiLayout : MenuLayout
 
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(Pos);
 
-		if (tile.ObjectAtLocation != null)
+		if (tile.ControllableAtLocation != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.ObjectAtLocation);
+			WorldManager.Instance.DeleteWorldObject(tile.ControllableAtLocation);
 			return;
 		}
 		if (tile.NorthEdge != null)

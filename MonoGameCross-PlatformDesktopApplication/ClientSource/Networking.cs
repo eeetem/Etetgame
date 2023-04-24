@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using CommonData;
+using MultiplayerXeno;
 using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;

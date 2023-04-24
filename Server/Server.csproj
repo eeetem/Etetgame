@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CommonData\CommonData.csproj" />
+      <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -84,14 +84,17 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Controllable.cs">
         <Link>SharedSource\WorldObjects\Controllables\Controllable.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\ControllableType.cs">
-        <Link>SharedSource\WorldObjects\Controllables\ControllableType.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\Grenade.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Grenade.cs</Link>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\Throwable.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\UsableItem\Throwable.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\UsableItem.cs">
         <Link>SharedSource\WorldObjects\Controllables\Actions\UsableItem\UsableItem.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\UsableItem\UsageMethod.cs">
+        <Link>SharedSource\WorldObjects\Controllables\Actions\UsableItem\UsageMethod.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\ControllableType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\ControllableType.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
@@ -102,6 +105,9 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Projectile.cs">
         <Link>SharedSource\WorldObjects\Projectile.cs</Link>
       </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldEffect.cs">
+        <Link>SharedSource\WorldObjects\WorldEffect.cs</Link>
+      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
       </Compile>
@@ -111,6 +117,7 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldTile.cs">
         <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
+      <Compile Remove="SharedSource\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -126,6 +133,11 @@
       <None Update="Maps\Circus.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Remove="SharedSource\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="SharedSource\**" />
     </ItemGroup>
 
 </Project>

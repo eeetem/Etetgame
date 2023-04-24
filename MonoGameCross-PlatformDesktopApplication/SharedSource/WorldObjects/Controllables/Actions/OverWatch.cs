@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
@@ -56,7 +56,7 @@ public class OverWatch : Action
 		foreach (var endTile in tiles)
 		{
 			
-			RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(actor.worldObject.TileLocation.Position,endTile.Position,Cover.Full,true);
+			RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(actor.worldObject.TileLocation.Position,endTile.Position,Cover.Full);
 			foreach (var pos in outcome.Path)
 			{
 				positions.Add(pos);

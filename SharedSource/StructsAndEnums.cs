@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace CommonData
+namespace MultiplayerXeno
 {
 	
 	[Serializable]
@@ -8,20 +8,23 @@ namespace CommonData
 	{
 		public WorldObjectData? NorthEdge;
 		public WorldObjectData? WestEdge;
-		public WorldObjectData? ObjectAtLocation;
 		public WorldObjectData? Surface;
+		public WorldObjectData? ControllableAtLocation;
 		public Vector2Int position;
-		public int smoked;
+		public List<WorldObjectData> ObjectsAtLocation;
 		public WorldTileData(Vector2Int position)
 		{
 			this.position = position;
 			NorthEdge = null;
 			WestEdge = null;
-			ObjectAtLocation = null;
 			Surface = null;
-			smoked = 0;
+			ControllableAtLocation = null;
+			ObjectsAtLocation = new List<WorldObjectData>();
 		}
 	}
+
+
+	
 
 	public enum TargetingType
 	{
@@ -41,6 +44,8 @@ namespace CommonData
 		//health
 		public string Prefab;
 		public ControllableData? ControllableData;
+		public int Health;
+		public int Lifetime;
 		public WorldObjectData(string prefab)
 		{
 			this.Prefab = prefab;
@@ -48,6 +53,8 @@ namespace CommonData
 			Facing = Direction.North;
 			ControllableData = null;
 			fliped = false;
+			Health = -100;
+			Lifetime = -100;
 		}
 	}
 	[Serializable]
@@ -57,7 +64,6 @@ namespace CommonData
 		public int ActionPoints;
 		public int MovePoints;
 		public bool? canTurn;
-		public int Health;
 		public int Determination;
 		public bool Crouching;
 		public bool Panic;
@@ -70,20 +76,18 @@ namespace CommonData
 			ActionPoints = -100;
 			MovePoints = -100;
 			canTurn = null;
-			Health = -100;
 			Determination = -100;
 			Crouching = false;
 			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 			Inventory = new List<string?>();
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int health, int determination, bool crouching,bool panic,List<string?> inv)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
 			MovePoints = movePoints;
 			this.canTurn = canTurn;
-			Health = health;
 			Determination = determination;
 			Crouching =	crouching;
 			JustSpawned = true;
@@ -140,6 +144,7 @@ namespace CommonData
 		Low=1,//small fences and such, visible when crouch
 		High=2,//small walls and such, hidden when crouched
 		Full=3,//full impassible walls
+		Ignore=1000,//for raycasts
 	}
 	[Serializable]
 	public enum Direction

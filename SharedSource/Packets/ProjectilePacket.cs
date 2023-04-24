@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Network.Packets;
 
-namespace CommonData;
+namespace MultiplayerXeno;
 
 public class ProjectilePacket : Packet
 {

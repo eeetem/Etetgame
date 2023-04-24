@@ -4,18 +4,19 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>SharedSource</AssemblyName>
+        <RootNamespace>SharedSource</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
       <PackageReference Include="Network" Version="6.2.5.23" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="StructsAndEnums.cs">
-        <Link>SharedSource\StructsAndEnums\StructsAndEnums.cs</Link>
-      </Compile>
+      <Folder Include="Packets" />
     </ItemGroup>
 
 </Project>

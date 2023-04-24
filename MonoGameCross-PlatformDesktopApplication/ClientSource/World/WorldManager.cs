@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using CommonData;
+﻿using System;
+using System.Collections.Generic;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno
@@ -39,7 +40,7 @@ namespace MultiplayerXeno
 					tile.Visible = Visibility.None;
 				}
 
-
+				
 				foreach (var obj in WorldObjects.Values)
 				{
 
@@ -52,7 +53,7 @@ namespace MultiplayerXeno
 							if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
 							{
 								GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
-								GetTileAtGrid(visTuple.Key)?.ObjectAtLocation?.ControllableComponent.Spoted();
+								GetTileAtGrid(visTuple.Key)?.ControllableAtLocation?.ControllableComponent.Spoted();
 							}
 							
 							

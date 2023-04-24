@@ -1,4 +1,4 @@
-﻿using CommonData;
+﻿using MultiplayerXeno;
 
 namespace MultiplayerXeno
 {

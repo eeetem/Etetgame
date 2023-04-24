@@ -1,6 +1,6 @@
 ﻿#nullable enable
 using System;
-using CommonData;
+using MultiplayerXeno;
 using MonoGame.Extended;
 
 
@@ -10,9 +10,11 @@ namespace MultiplayerXeno
 	public partial class WorldObject
 	{
 
-		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
+		public int LifeTime = -100;
+		public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
 		{
-			this.Id = id;
+			this.Id = data.Id;
+		
 			if (type == null)
 			{
 				type = new WorldObjectType("nullType",null);
@@ -21,19 +23,34 @@ namespace MultiplayerXeno
 			}
 			this.Type = type;
 
+			TileLocation = tile;
+			
+			if (data.Health == 0 || data.Health == -100)
+			{
+				Health = type.MaxHealth;
+			}
+			else
+			{
+				Health = data.Health;
+			}
+			if (data.Lifetime == -100 || data.Lifetime == 0)//this will cause issues
+			{
+				LifeTime = type.lifetime;
+			}
+			else
+			{
+				LifeTime = data.Lifetime;
+			}
 
-			TileLocation = tileLocation;
+
+
 			Type.SpecialBehaviour(this);
 #if CLIENT
 			DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
 			this.spriteVariation = Random.Shared.Next(type.variations);
 		
 #endif
-			this.Id = id;
-			TileLocation = tileLocation;
-
-
-	
+			
 
 		}
 
@@ -59,16 +76,31 @@ namespace MultiplayerXeno
 
 		public readonly int Id;
 
+		public int Health;
+
 		public void Move(Vector2Int position)
 		{
 			if (Type.Edge || Type.Surface)
 			{
 				throw new Exception("attempted to  move and  edge or surface");
 			}
-			TileLocation.ObjectAtLocation = null;
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			TileLocation = newTile;
-			newTile.ObjectAtLocation = this;
+
+			if (ControllableComponent != null)
+			{
+				TileLocation.ControllableAtLocation = null;
+				var newTile = WorldManager.Instance.GetTileAtGrid(position);
+				TileLocation = newTile;
+				newTile.ControllableAtLocation = this;
+			}
+			else
+			{
+				TileLocation.RemoveObject(this);
+				var newTile = WorldManager.Instance.GetTileAtGrid(position);
+				TileLocation = newTile;
+				newTile.PlaceObject(this);
+			}
+
+
 			
 #if CLIENT
 			GenerateDrawOrder();
@@ -108,6 +140,43 @@ namespace MultiplayerXeno
 #endif
 			
 		}
+		
+		public void NextTurn()
+		{
+			if (LifeTime != -100)
+			{
+				LifeTime--;
+				if (LifeTime <= 0)
+				{
+					Destroy();
+					
+				}
+			}
+		}
+
+		public void TakeDamage(int dmg)
+		{
+			if (LifeTime != -100)
+			{
+				LifeTime -= dmg;
+				if (LifeTime <= 0)
+				{
+					Destroy();
+				}
+			}
+		}
+
+		bool destroyed = false;
+		public void Destroy()
+		{
+			if(destroyed)return;
+			destroyed = true;
+#if CLIENT
+			Type.desturctionEffect?.Animate(TileLocation.Position);
+#endif
+			Type.desturctionEffect?.Apply(TileLocation.Position);
+			WorldManager.Instance.DeleteWorldObject(this);
+		}
 		public Visibility GetMinimumVisibility()
 		{
 			if (Type.Surface || Type.Edge)
@@ -135,16 +204,14 @@ namespace MultiplayerXeno
 			if (ControllableComponent != null)
 			{//let controlable handle it
 				ControllableComponent.TakeDamage(dmg, detResist);
-				
 			}
 			else
 			{
-				//enviroment destruction
-				if (TileLocation.ObjectAtLocation == null) return;
-
-				var obj = TileLocation.ObjectAtLocation;
-
-			
+				Health-= dmg;
+				if (Health <= 0)
+				{
+					WorldManager.Instance.DeleteWorldObject(this);
+				}
 			}
 		}
 
@@ -155,7 +222,9 @@ namespace MultiplayerXeno
 
 		public void Update(float gametime)
 		{
-
+#if CLIENT
+			PreviewData = new PreviewData();//probably very bad memory wise
+#endif 
 			if (ControllableComponent != null)
 			{
 				ControllableComponent.Update(gametime);
@@ -167,19 +236,23 @@ namespace MultiplayerXeno
 		public Direction Facing { get; private set;}
 
 
-		public Cover GetCover()
+		public Cover GetCover(bool visibileCover = false)
 		{
 
+			Cover cover = Type.SolidCover;
+			if (visibileCover)
+			{
+				cover = Type.VisibilityCover;
+			}
+			
 			if (ControllableComponent != null && ControllableComponent.Crouching)
 			{
-				return Type.Cover - 1;
+				return cover - 1;
 			}
 
-			return Type.Cover;
-
-
-
+			return cover;
 		}
+
 
 
 		public WorldObjectData GetData()
@@ -188,6 +261,7 @@ namespace MultiplayerXeno
 			data.Facing = this.Facing;
 			data.Id = this.Id;
 			data.fliped = this.fliped;
+			data.Health = Health;
 
 			if (ControllableComponent != null)
 			{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno
@@ -13,15 +13,15 @@ namespace MultiplayerXeno
 		public static bool intated = false;
 		public static bool spectating = false;
 		public static List<Controllable> _myUnits = new List<Controllable>();
-		private static PreGameDataPacket _preGameData = new();
+		private static PreGameDataPacket preGameData = new();
 		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
 		public static Dictionary<string,string> CustomMapList = new Dictionary<string, string>();
 		public static PreGameDataPacket PreGameData
 		{
-			get => _preGameData;
+			get => preGameData;
 			set
 			{
-				_preGameData = value;
+				preGameData = value;
 				GenerateMapList();
 				UI.SetUI(null);
 			}
@@ -53,7 +53,6 @@ namespace MultiplayerXeno
 
 			try
 			{
-
 				switch (GameState)
 				{
 					case GameState.Lobby:

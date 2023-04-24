@@ -1,4 +1,4 @@
-﻿using CommonData;
+﻿using MultiplayerXeno;
 
 
 namespace MultiplayerXeno
@@ -7,6 +7,8 @@ namespace MultiplayerXeno
 	{
 
 		public readonly string TypeName;
+		public int MaxHealth;
+		public int lifetime = -100;
 		public WorldObjectType(string name,ControllableType? controllableType)
 		{
 			TypeName = name;
@@ -38,14 +40,17 @@ namespace MultiplayerXeno
 		}
 
 
-		public Cover Cover = Cover.None;
+		public Cover SolidCover = Cover.None;
+		public Cover VisibilityCover = Cover.None;
 
 		public readonly ControllableType? Controllable;
+		public WorldEffect desturctionEffect;
 
 		//should probably be an enum
 		public bool Faceable { get; set; }
 		public bool Edge { get; set; }
 		public bool Surface { get; set; }
 		public bool Impassible { get; set; }
+		public int VisibilityObstructFactor { get; set; }
 	}
 }

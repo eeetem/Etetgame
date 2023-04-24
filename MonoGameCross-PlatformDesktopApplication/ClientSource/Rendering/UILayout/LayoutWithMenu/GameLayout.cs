@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,7 +20,7 @@ public class GameLayout : MenuLayout
 	private static Panel turnIndicator;
 	private static Label scoreIndicator;
 
-	private static List<Vector2Int>[] previewMoves = new List<Vector2Int>[2];
+	private static List<Vector2Int>[] previewMoves = Array.Empty<List<Vector2Int>>();
 
 	
 	public static void SetMyTurn(bool myTurn)
@@ -40,7 +40,7 @@ public class GameLayout : MenuLayout
 		scoreIndicator.Text = "score: " + score;
 	}
 
-	public static Controllable SelectedControllable { get; private set;}
+	public static Controllable? SelectedControllable { get; private set;}
 
 	public static void SelectControllable(Controllable controllable)
 	{
@@ -58,7 +58,10 @@ public class GameLayout : MenuLayout
 	}
 	public static void ReMakeMovePreview()
 	{
-		previewMoves = SelectedControllable.GetPossibleMoveLocations();
+		if(SelectedControllable!=null){
+			previewMoves = SelectedControllable.GetPossibleMoveLocations();
+		}
+
 	}
 
 	private static RenderTarget2D? hoverHudRenderTarget;
@@ -188,7 +191,7 @@ public class GameLayout : MenuLayout
 
 			unitPanel.TouchDown += (sender, args) =>
 			{
-				if (unit.Health > 0)
+				if (unit.worldObject.Health > 0)
 				{
 					SelectControllable(unit);
 				}
@@ -212,7 +215,7 @@ public class GameLayout : MenuLayout
 				HorizontalAlignment = HorizontalAlignment.Center,
 				Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
 			};
-			if (unit.Health <= 0)
+			if (unit.worldObject.Health <= 0)
 			{
 				unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
 				unitPanel.Top = -10;
@@ -332,7 +335,6 @@ public class GameLayout : MenuLayout
 			//spriteBatch.DrawCircle(Mousepos, 5, 10, Color.Red, 200f);
 			batch.Draw(indicator, mousepos, c);
 		}
-			
 
 
 		var count = 0;
@@ -383,13 +385,41 @@ public class GameLayout : MenuLayout
 		{
 			if (controllable.worldObject.IsVisible())
 			{
-				DrawControllableHoverHud(batch, controllable, deltatime);
+				DrawHoverHud(batch, controllable.worldObject, deltatime);
 			}
 		}
 		var tile = WorldManager.Instance.GetTileAtGrid(TileCoordinate);
-		
-		
-		
+		if (drawExtra)
+		{
+			foreach (var obj in tile.ObjectsAtLocation)
+			{
+				if (obj.LifeTime > 0&& obj.IsVisible())
+				{
+					batch.Begin(transformMatrix: Camera.GetViewMatrix(),samplerState: SamplerState.AnisotropicClamp);
+					batch.DrawString(Game1.SpriteFont, ""+obj.LifeTime, Utility.GridToWorldPos(tile.Position + new Vector2(-0.4f,-0.4f)), Color.Red, 0, Vector2.Zero, 5f, SpriteEffects.None, 0);
+					batch.End();
+				}
+
+			}
+
+			foreach (var edge in tile.GetAllEdges())
+			{
+				DrawHoverHud(batch, edge, deltatime);
+			}
+		}
+		else
+		{
+			
+			foreach (var edge in tile.GetAllEdges())
+			{
+				if (!Equals(edge.PreviewData, new PreviewData()))
+				{
+					DrawHoverHud(batch, edge, deltatime);
+				}
+			}
+		}
+
+
 		//bottom right corner
 		graphicsDevice.SetRenderTarget(statScreenRenderTarget);
 		graphicsDevice.Clear(Color.Transparent);
@@ -401,29 +431,35 @@ public class GameLayout : MenuLayout
 		graphicsDevice.Clear(Color.Transparent);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/dmgScreen"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
-		
-		for (int i = 0; i < SelectedControllable.Type.WeaponDmg; i++)
+		if (tile.ControllableAtLocation != null && tile.ControllableAtLocation.PreviewData.totalDmg != 0)
 		{
-			Color c = Color.Green;
-			if (tile.ObjectAtLocation?.ControllableComponent?.PreviewData.finalDmg <= i)
+			for (int i = 0; i < SelectedControllable.Type.WeaponDmg; i++)
 			{
-				c = Color.Red;
+				Color c = Color.Green;
+				if (tile.ControllableAtLocation?.PreviewData.finalDmg <= i)
+				{
+					c = Color.Red;
+				}
+
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/pip"), new Vector2(80, 2) + i * new Vector2(-9, 0), null, c, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 			}
 
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),new Vector2(80,3) + i*new Vector2(-8,0),null,c,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			for (int i = 0; i < tile.ControllableAtLocation?.PreviewData.distanceBlock; i++)
+			{
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/pip"), new Vector2(66, 37) + i * new Vector2(-9, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+			}
+
+			for (int i = 0; i < tile.ControllableAtLocation?.PreviewData.detDmg; i++)
+			{
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/pip"), new Vector2(66, 52) + i * new Vector2(-9, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+			}
+
+			for (int i = 0; i < tile.ControllableAtLocation?.PreviewData.coverBlock; i++)
+			{
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/pip"), new Vector2(66, 22) + i * new Vector2(-9, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+			}
 		}
-		for (int i = 0; i < tile.ObjectAtLocation?.ControllableComponent?.PreviewData.distanceBlock; i++)
-		{
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),new Vector2(66,37) + i*new Vector2(-8,0),null,Color.Green,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-		}
-		for (int i = 0; i < tile.ObjectAtLocation?.ControllableComponent?.PreviewData.detDmg; i++)
-		{
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),new Vector2(66,52) + i*new Vector2(-8,0),null,Color.Green,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-		}
-		for (int i = 0; i < tile.ObjectAtLocation?.ControllableComponent?.PreviewData.coverBlock; i++)
-		{
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),new Vector2(66,22) + i*new Vector2(-8,0),null,Color.Green,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-		}
+
 		batch.End();
 		
 		graphicsDevice.SetRenderTarget(rightCornerRenderTarget);
@@ -469,16 +505,23 @@ public class GameLayout : MenuLayout
 		float arrowHeight = TextureManager.GetTexture("UI/GameHud/arrowOn").Height;
 		float moveBarWidth = (arrowWidth*SelectedControllable.Type.MaxMovePoints);
 		emtpySpace = baseWidth - moveBarWidth;
-		Vector2 arrowPos = new Vector2(98+(emtpySpace/2f),13);
+		Vector2 arrowPos = new Vector2(104+(emtpySpace/2f),13);
 		for (int i = 0; i < SelectedControllable.Type.MaxMovePoints; i++)
 		{
-			Texture2D tex = TextureManager.GetTexture("UI/GameHud/arrowOn");
-			if(i >= SelectedControllable.MovePoints)
-				tex = TextureManager.GetTexture("UI/GameHud/arrowOff");
-			PostPorcessing.ShuffleUICRTeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
-			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
-			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			
+		
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+			batch.Draw(TextureManager.GetTexture("UI/GameHud/arrowOff"),arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
+			if (i < SelectedControllable.MovePoints)
+			{
+				PostPorcessing.ShuffleUICRTeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/arrowOn"),arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+				batch.End();
+			}
+			
+		
 		}
 
 
@@ -525,9 +568,9 @@ public class GameLayout : MenuLayout
 
 		var tile = WorldManager.Instance.GetTileAtGrid(MouseTileCoordinate);
 		
-		if (tile.ObjectAtLocation?.ControllableComponent != null)
+		if (tile.ControllableAtLocation != null)
 		{
-			targetIndex = Controllables.IndexOf(tile.ObjectAtLocation.ControllableComponent);
+			targetIndex = Controllables.IndexOf(tile.ControllableAtLocation.ControllableComponent);
 			if (targetIndex != -1)
 			{
 				Controllable target = Controllables[targetIndex];
@@ -549,7 +592,7 @@ public class GameLayout : MenuLayout
 			}
 
 
-			if (Action.ActiveAction == null && (freeFire||( tile.ObjectAtLocation?.ControllableComponent != null && tile.ObjectAtLocation.IsVisible() &&!tile.ObjectAtLocation.ControllableComponent.IsMyTeam())))
+			if (Action.ActiveAction == null && (freeFire||( tile.ControllableAtLocation != null && tile.ControllableAtLocation.IsVisible() &&!tile.ControllableAtLocation.ControllableComponent.IsMyTeam())))
 			{
 				Action.SetActiveAction(ActionType.Attack);
 			}
@@ -560,6 +603,8 @@ public class GameLayout : MenuLayout
 		ProcessKeyboard();
 		LastMouseTileCoordinate = MouseTileCoordinate;
 	}
+
+	private bool drawExtra = false;
 	
 	public void ProcessKeyboard()
 	{
@@ -568,6 +613,13 @@ public class GameLayout : MenuLayout
 			UI.Desktop.FocusedKeyboardWidget = null;//override myra focus switch functionality
 		}
 		if(UI.Desktop.FocusedKeyboardWidget != null) return;
+
+		drawExtra = false;
+		if (currentKeyboardState.IsKeyDown(Keys.LeftAlt))
+		{
+			drawExtra = true;
+		}
+		
 		
 		freeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
 		if (MyUnits.Count != 0)
@@ -588,7 +640,7 @@ public class GameLayout : MenuLayout
 					if(fails>MyUnits.Count)
 						break;
 					fails++;
-				} while (SelectedControllable.Health <= 0);
+				} while (SelectedControllable.worldObject.Health <= 0);
 
 
 			}
@@ -607,7 +659,7 @@ public class GameLayout : MenuLayout
 					if(fails>MyUnits.Count)
 						break;
 					fails++;
-				} while (SelectedControllable.Health <= 0);
+				} while (SelectedControllable.worldObject.Health <= 0);
 
 			}
 		}if(freeFire){
@@ -639,7 +691,7 @@ public class GameLayout : MenuLayout
 		
 		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
-		WorldObject obj = Tile.ObjectAtLocation;
+		WorldObject obj = Tile.ControllableAtLocation;
 		if (obj!=null&&obj.ControllableComponent != null&& obj.GetMinimumVisibility() <= obj.TileLocation.Visible && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==ActionType.Move)) { 
 			SelectControllable(obj.ControllableComponent);
 			return;
@@ -684,7 +736,7 @@ public class GameLayout : MenuLayout
 
 	private static float counter = 0;
 
-	public static void DrawControllableHoverHud(SpriteBatch batch, Controllable controllable,float deltaTime)
+	public static void DrawHoverHud(SpriteBatch batch, WorldObject target,float deltaTime)
 	{
 		counter += deltaTime/3000f;
 		if (counter > 2)
@@ -696,55 +748,65 @@ public class GameLayout : MenuLayout
 		{
 			animopacity = 2- counter;
 		}
-
-		Debug.Assert(controllable != null, nameof(controllable) + " != null");
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
 		graphicsDevice.Clear(Color.White*0);
 		float opacity = 1f;
 		bool highlighted = false;
 
-		if (SelectedControllable == controllable || MousePos == (Vector2) controllable.worldObject.TileLocation.Position)
+		
+		if (Equals(SelectedControllable, target.ControllableComponent) || MousePos == (Vector2) target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
 		{
 			opacity = 1;
 			highlighted = true;
 		}
-
-			
+		
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-			
-		
 		batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), Vector2.One, null,Color.White);
-		
-
-
-
 		batch.End();
 		float healthWidth = TextureManager.GetTexture("UI/HoverHud/nohealth").Width;
 		float healthHeight = TextureManager.GetTexture("UI/HoverHud/nohealth").Height;
 		float baseWidth = TextureManager.GetTexture("UI/HoverHud/base").Width;
-		float healthBarWidth = (healthWidth*controllable.Type.MaxHealth);
+		float healthBarWidth = (healthWidth*target.Type.MaxHealth);
 		float emtpySpace = baseWidth - healthBarWidth;
 		Vector2 healthBarPos = new Vector2(emtpySpace/2f,22);
 		int dmgDone = 0; 
 		int i = 0;
-		for (int y = 0; y < controllable.Type.MaxHealth; y++)
+		var healthTexture = TextureManager.GetTexture("UI/HoverHud/health");
+		var nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealth");
+		Vector2 offset = new Vector2(0,0);
+		if (target.ControllableComponent == null)
+		{
+			healthTexture = TextureManager.GetTexture("UI/HoverHud/healthenv");
+			nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealthenv");
+			if (target.Type.Edge && MousePos == (Vector2)target.TileLocation.Position)
+			{
+				if (Equals(target.TileLocation.NorthEdge, target)){
+					offset = new Vector2(0, -1);
+				}
+				else if (Equals(target.TileLocation.WestEdge, target)){
+					offset = new Vector2(-1, 0);
+				}
+			}
+		}
+
+		for (int y = 0; y < target.Type.MaxHealth; y++)
 		{
 			bool health = true;
 				
-			if (y>= controllable.Health)
+			if (y>= target.Health)
 			{
 				health = false;
 			}
-			else if ( controllable.PreviewData.finalDmg >= controllable.Health-y)
+			else if ( target.PreviewData.finalDmg >= target.Health-y)
 			{
 				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/nohealth"),healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+				batch.Draw(nohealthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				batch.End();
 				i = y;
-				PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id,new Vector2(healthWidth,healthHeight),highlighted,true);
+				PostPorcessing.ShuffleUICRTeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted,true);
 				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/health"),healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+				batch.Draw(healthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				//batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				batch.End();
 				dmgDone++;
@@ -754,14 +816,14 @@ public class GameLayout : MenuLayout
 			Texture2D indicator;
 			if (health)
 			{
-				PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id,new Vector2(healthWidth,healthHeight),highlighted);
+				PostPorcessing.ShuffleUICRTeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted);
 				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
-				indicator = TextureManager.GetTexture("UI/HoverHud/health");
+				indicator = healthTexture;
 			}
 			else
 			{
 				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				indicator= TextureManager.GetTexture("UI/HoverHud/nohealth");
+				indicator= nohealthTexture;
 			}
 
 				
@@ -769,76 +831,77 @@ public class GameLayout : MenuLayout
 			batch.Draw(indicator,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
 		}
-		float detWidth = TextureManager.GetSpriteSheet("UI/HoverHud/detlights",4,1)[0].Width;
-		float detHeight = TextureManager.GetSpriteSheet("UI/HoverHud/detlights",4,1)[0].Height;
-		float detbarWidht = (detWidth*controllable.Type.Maxdetermination);
-		float detEmtpySpace = baseWidth - detbarWidht;
-		Vector2 DetPos = new Vector2(detEmtpySpace/2f,4);
-		i = 0;
-		var lights = TextureManager.GetSpriteSheet("UI/HoverHud/detlights",4,1);
-		for (int y = 0; y < controllable.Type.Maxdetermination; y++)
+
+		if (target.ControllableComponent != null)
 		{
+			Controllable controllable = target.ControllableComponent;
+			float detWidth = TextureManager.GetSpriteSheet("UI/HoverHud/detlights", 4, 1)[0].Width;
+			float detHeight = TextureManager.GetSpriteSheet("UI/HoverHud/detlights", 4, 1)[0].Height;
+			float detbarWidht = (detWidth * controllable.Type.Maxdetermination);
+			float detEmtpySpace = baseWidth - detbarWidht;
+			Vector2 DetPos = new Vector2(detEmtpySpace / 2f, 4);
+			i = 0;
+			var lights = TextureManager.GetSpriteSheet("UI/HoverHud/detlights", 4, 1);
+			for (int y = 0; y < controllable.Type.Maxdetermination; y++)
+			{
 
-			Texture2D indicator;
-			bool litup = true;
-			bool dissapate = false;
-			if (controllable.paniced)
-			{
-				indicator = lights[0];
-			}
-			else if (y == controllable.Determination)
-			{
-				indicator = lights[2];
-				if (controllable.PreviewData.detDmg >0)
+				Texture2D indicator;
+				bool litup = true;
+				bool dissapate = false;
+				if (controllable.paniced)
 				{
-					dissapate = true;
+					indicator = lights[0];
 				}
-			}
-			else if (y >= controllable.Determination)
-			{
-				indicator = lights[3];
-				litup = false;
-			}
-			else
-			{
-				indicator = lights[1];
-				if (controllable.PreviewData.detDmg >= controllable.Determination-y)
+				else if (y == controllable.Determination)
 				{
-					dissapate = true;
+					indicator = lights[2];
+					if (target.PreviewData.detDmg > 0)
+					{
+						dissapate = true;
+					}
 				}
-					
+				else if (y >= controllable.Determination)
+				{
+					indicator = lights[3];
+					litup = false;
+				}
+				else
+				{
+					indicator = lights[1];
+					if (target.PreviewData.detDmg >= controllable.Determination - y)
+					{
+						dissapate = true;
+					}
+
+				}
+
+				if (dissapate)
+				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					batch.Draw(lights[3], DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.End();
+					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted, true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.End();
+				}
+				else if (litup)
+				{
+					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.End();
+				}
+				else
+				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.End();
+				}
+
 			}
-
-			if (dissapate)
-			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				batch.Draw(lights[3],DetPos+new Vector2(detWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.End();
-				PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id+10,new Vector2(detWidth,detHeight),highlighted,true);
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
-				batch.Draw(indicator,DetPos+new Vector2(detWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.End();
-			}
-			else if (litup)
-			{
-				PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id+10,new Vector2(detWidth,detHeight),highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
-				batch.Draw(indicator,DetPos+new Vector2(detWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.End();
-			}
-			else
-			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				batch.Draw(indicator,DetPos+new Vector2(detWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.End();
-			}
-
-
-
-
-
-
 		}
+
 		batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 
 
@@ -847,9 +910,11 @@ public class GameLayout : MenuLayout
 		batch.End();
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)controllable.worldObject.TileLocation.Position)+new Vector2(-150,-150),null,Color.White*opacity,0,Vector2.Zero,2.5f,SpriteEffects.None,0);
+		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-150,-150),null,Color.White*opacity,0,Vector2.Zero,2.5f,SpriteEffects.None,0);
 		batch.End();
 
 
 	}
+
+
 }

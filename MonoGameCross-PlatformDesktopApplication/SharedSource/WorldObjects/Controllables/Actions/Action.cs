@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 
 #if CLIENT
@@ -63,7 +63,7 @@ public abstract class Action
 
 	public virtual void InitAction()
 	{
-		
+	
 	}
 
 	public abstract Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target);
@@ -73,7 +73,6 @@ public abstract class Action
 	{
 		try
 		{
-			
 
 #if CLIENT
 			Animate(actor,target);
@@ -100,6 +99,7 @@ public abstract class Action
 #endif
 	public virtual void ToPacket(Controllable actor,Vector2Int target)
 	{
+		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.worldObject.Id+"");
 		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
 		Networking.DoAction(packet);
 	}

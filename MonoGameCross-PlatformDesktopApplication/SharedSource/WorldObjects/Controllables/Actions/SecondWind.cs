@@ -1,5 +1,5 @@
 ﻿using System;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;

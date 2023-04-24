@@ -37,15 +37,16 @@ public static class RenderSystem
 				objs.Add(tile.WestEdge);
 			}
 
-			if (tile.ObjectAtLocation != null)
+			if (tile.ControllableAtLocation != null)
 			{
-				objs.Add(tile.ObjectAtLocation);
+				objs.Add(tile.ControllableAtLocation);
 			}
-			if (tile.TileEffect != null)
+
+			foreach (var item in tile.ObjectsAtLocation)
 			{
-				objs.Add(tile.TileEffect);
+				objs.Add(item);
 			}
-			//tileObjs.Sort(new DrawLayerSort());
+		
 
 		}
 

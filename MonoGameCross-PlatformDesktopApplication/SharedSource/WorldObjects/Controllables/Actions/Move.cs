@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -83,8 +83,13 @@ public class Move : Action
 			lastTarget = target;
 		}
 
+		if (lastTarget != target)
+		{
+			SetActiveAction(null);
+		}
 
-	
+
+
 		foreach (var path in previewPath)
 		{
 					

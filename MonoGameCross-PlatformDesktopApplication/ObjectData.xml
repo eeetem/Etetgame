@@ -1,59 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <object Faceable = "false" Cover ="0" Surface = "true">
+  <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
     <name>basicFloor</name>
   </object>
-  <object Faceable = "false" Cover ="0" Impassible = "true" Surface = "true">
+  <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
     <sprite name="Environment/water" variations = "1" offset= "0,0"/>
-    <name>water</name>
+    <name>water</name>pa
   </object>
-  <object Faceable = "false" Cover ="0" Surface = "true">
+  <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/capturePoint" offset= "0,0"/>
     <name>capturePoint</name>
   </object>
-  <object Faceable = "false" Cover ="0" Surface = "true">
+  <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/spawnPoint1" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
-  <object Faceable = "false" Cover ="0" Surface = "true">
+  <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/spawnPoint2"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
-  <object Cover = "3" Edge = "true">
+  <object SCover = "3" Edge = "true" Health="15">
     <sprite  name="Environment/basicWall"  offset= "0,0"/>
     <name>basicWall</name>
   </object>
-  <object Cover = "2" Edge = "true">
+  <object VCover = "0" SCover = "3" Edge = "true" Health="6">
+    <sprite  name="Environment/glassWall"  offset= "0,0"/>
+    <name>glassWall</name>
+  </object>
+  <object VCover="3" SCover = "0" Edge = "true" Health="6">
+    <sprite  name="Environment/strawWall"  offset= "0,0"/>
+    <name>strawWall</name>
+  </object>
+  <object VCover = "0" SCover = "3" Edge = "true" Health="1">
+    <sprite  name="Environment/paperMache"  offset= "0,0"/>
+    <name>paperMache</name>
+  </object>
+  <object SCover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"/>
     <name>basicHalfWall</name>
   </object>
-  <object Cover = "1" Edge = "true">
+  <object SCover = "1" Edge = "true">
     <sprite name="Environment/basicHalfWallLight" offset= "0,0"/>
     <name>basicHalfWallLight</name>
   </object>
-  <object Faceable = "true" Cover ="3">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
     <sprite  name="Human" offset= "0,0"/>
     <name>Marksman</name>
-    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3" health="13" weaponRange ="18">
+    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3"  weaponRange ="18">
       <action name="Headshot" type="7"/>
     </controllable>
   </object>
-  <object Faceable = "true" Cover ="3">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" supression="1" attack="8" health="8" determination="3" weaponRange ="6" sightrange="18">
+    <controllable moveRange = "5" moves="3" supression="1" attack="8"  determination="3" weaponRange ="6" sightrange="18">
       <action name="Second Wind" type="6"/>
     </controllable>
   </object>
-  <object Faceable = "true" Cover ="3">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="16">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5" health="16" weaponRange ="12">
+    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5"  weaponRange ="12">
       <action name="Suppress" type="8"/>
     </controllable>
   </object>
-  <object Faceable = "true" Cover ="3">
+  <object VCover = "0" Faceable = "true" SCover ="3">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Officer</name>
     <controllable moveRange = "5" moves="2" actions="2" supression="2" overwatch="2" attack="5" determination="5" health="16" weaponRange ="12">
@@ -61,32 +73,66 @@
     </controllable>
   </object>
 
+  <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
+    <sprite name="Environment/satchel"  offset= "0,0"/>
+    <name>Satchel</name>
+    <DestroyEffect range = "2">
+      <damage detDmg="1" dmg="15"/>
+      <vfx name="tintR" target="5" speed="50"/>
+      <vfx name="clmagnitude" target="100" speed="50"/>
+      <vfx name="noise" target="3" speed="60"/>
+      <sfx name="grenade"/>
+    </DestroyEffect>
+  </object>
+  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5">
+    <sprite name="Environment/Smoke"  offset= "0,0"/>
+    <name>Smoke</name>
+  </object>
+
   <item>
-    <name>Frag</name>
-    <grenade throwRange="6" range="3" detDmg="1" dmg="6"/>
-    <effect name="tintR" target="5" speed="50"/>
-    <effect name="tintG" target="5" speed="50"/>
-    <effect name="clmagnitude" target="100" speed="50"/>
-    <effect name="noise" target="2" speed="50"/>
-    <sfx name="grenade"/>
+    <name>Satchel Charge</name>
+    <throwable throwRange="4"/>
+    <effect range="1">
+      <place name="Satchel"/>
+    </effect>
   </item>
   <item>
+    <name>Frag</name>
+    <throwable throwRange="6"/>
+    <effect range="3">
+      <damage detDmg="1" dmg="6"/>
+      <vfx name="tintR" target="5" speed="50"/>
+      <vfx name="tintG" target="5" speed="50"/>
+      <vfx name="clmagnitude" target="100" speed="50"/>
+      <vfx name="noise" target="2" speed="50"/>
+      <sfx name="grenade"/>
+    </effect>
+   
+  </item>
+
+  <item>
     <name>Flash</name>
-    <grenade throwRange="6" range="3" detDmg="100" dmg="0"/>
-    <effect name="tintR" target="20" speed="50"/>
-    <effect name="tintG" target="20" speed="50"/>
-    <effect name="tintB" target="20" speed="50"/>
-    <effect name="clmagnitude" target="50" speed="50"/>
-    <effect name="noise" target="1" speed="50"/>
-    <sfx name="bang"/>
+    <throwable throwRange="6"/>
+    <effect  range="3">
+      <damage detDmg="100" dmg="0"/>
+      <vfx name="tintR" target="20" speed="50"/>
+      <vfx name="tintG" target="20" speed="50"/>
+      <vfx name="tintB" target="20" speed="50"/>
+      <vfx name="clmagnitude" target="50" speed="50"/>
+      <vfx name="noise" target="1" speed="50"/>
+      <sfx name="bang"/>
+    </effect>
   </item>
 
   <item>
     <name>Smoke</name>
-    <grenade throwRange="6" range="3" detDmg="0" dmg="0" smoke="6"/>
-    <effect name="clmagnitude" target="100" speed="40"/>
-    <effect name="noise" target="0.5" speed="50"/>
-    <sfx name="smoke"/>
+    <throwable throwRange="6"/>
+    <effect range="3">
+      <place name="Smoke"/>
+      <vfx name="clmagnitude" target="100" speed="40"/>
+      <vfx name="noise" target="0.5" speed="50"/>
+      <sfx name="smoke"/>
+    </effect>
   </item>
   
 </root>

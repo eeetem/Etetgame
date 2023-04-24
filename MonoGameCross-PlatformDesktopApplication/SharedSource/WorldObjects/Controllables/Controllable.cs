@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.Items;
 using MultiplayerXeno.Pathfinding;
@@ -44,14 +44,7 @@ namespace MultiplayerXeno
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
-			if (data.Health == -100)
-			{
-				Health = type.MaxHealth;
-			}
-			else
-			{
-				Health = data.Health;
-			}
+
 
 			if (data.Determination == -100)
 			{
@@ -108,8 +101,6 @@ namespace MultiplayerXeno
 		public int MovePoints { get; set; } = 0;
 		public bool canTurn { get; set; } = false;
 		public int FirePoints { get; set; } = 0;
-
-		public int Health = 0;
 		public int Determination { get; private set; } = 0;
 
 		public bool Crouching { get; set; } = false;
@@ -160,7 +151,7 @@ namespace MultiplayerXeno
 
 		public void TakeDamage(int dmg, int detResis)
 		{
-			Console.WriteLine(this +"(health:"+this.Health+") hit for "+dmg);
+			Console.WriteLine(this +"(health:"+worldObject.Health+") hit for "+dmg);
 			if (Determination > 0)
 			{
 				Console.WriteLine("blocked by determination");
@@ -175,11 +166,11 @@ namespace MultiplayerXeno
 			}
 
 
-			Health -= dmg;
+			worldObject.Health -= dmg;
 			
 			Console.WriteLine("unit hit for: "+dmg);
-			Console.WriteLine("outcome: health="+this.Health);
-			if (Health <= 0)
+			Console.WriteLine("outcome: health="+worldObject.Health);
+			if (worldObject.Health <= 0)
 			{
 				Console.WriteLine("dead");
 				ClearOverWatch();
@@ -316,7 +307,7 @@ namespace MultiplayerXeno
 		{
 			
 #if SERVER
-			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.ControllableComponent.IsPlayerOneTeam;
+			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.ControllableComponent.IsPlayerOneTeam;
 			//make this "can player see" fucntion
 			List<int> units;
 			if (this.IsPlayerOneTeam)
@@ -345,7 +336,7 @@ namespace MultiplayerXeno
 			}
 			
 			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
-			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ObjectAtLocation.GetMinimumVisibility())
+			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.GetMinimumVisibility())
 			{
 				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
@@ -387,9 +378,7 @@ namespace MultiplayerXeno
 		}
 		public void Update(float gameTime)
 		{
-			#if CLIENT
-			PreviewData = new PreviewData();//probably very bad memory wise
-			#endif 
+
 			if (_thisMoving)
 			{
 				_moveCounter += gameTime;
@@ -440,7 +429,7 @@ namespace MultiplayerXeno
 					inv.Add(null);
 				}
 			}
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Health,Determination,Crouching,paniced,inv);
+			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Determination,Crouching,paniced,inv);
 			data.JustSpawned = false;
 			return data;
 		}

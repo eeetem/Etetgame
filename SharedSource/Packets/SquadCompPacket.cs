@@ -1,6 +1,6 @@
 ﻿using Network.Packets;
-
-namespace CommonData;
+using Newtonsoft.Json;
+namespace MultiplayerXeno;
 
 public class SquadCompPacket : Packet
 {

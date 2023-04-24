@@ -1,4 +1,4 @@
-﻿namespace CommonData;
+﻿namespace MultiplayerXeno;
 
 public class SquadMember
 {

@@ -1,5 +1,5 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
-using CommonData;
+using MultiplayerXeno;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -286,11 +286,11 @@ namespace MultiplayerXeno
 			{
 				BinaryFormatter bf = new BinaryFormatter();
 				bf.Serialize(stream,worldTileData);
-				GameManager.Player1?.Connection.SendRawData("TileUpdate",stream.ToArray());
-				GameManager.Player2?.Connection.SendRawData("TileUpdate",stream.ToArray());
+				GameManager.Player1?.Connection?.SendRawData("TileUpdate",stream.ToArray());
+				GameManager.Player2?.Connection?.SendRawData("TileUpdate",stream.ToArray());
 				foreach (var spectator in GameManager.Spectators)
 				{
-					spectator.Connection.SendRawData("TileUpdate",stream.ToArray());
+					spectator.Connection?.SendRawData("TileUpdate",stream.ToArray());
 				}
 			}
 			

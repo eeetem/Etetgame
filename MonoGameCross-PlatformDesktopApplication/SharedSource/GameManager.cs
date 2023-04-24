@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 
 #if  CLIENT
@@ -12,7 +12,6 @@ namespace MultiplayerXeno
 {
 	public static partial class GameManager
 	{
-
 		public static bool IsPlayer1Turn = true;
 
 		public static GameState GameState;
@@ -68,7 +67,7 @@ namespace MultiplayerXeno
 			Vector2Int capPoint = Vector2.Zero;
 			foreach (var point in CapturePoints)
 			{
-				bool? team1 = point.TileLocation.ObjectAtLocation?.ControllableComponent?.IsPlayerOneTeam;
+				bool? team1 = point.TileLocation.ControllableAtLocation?.ControllableComponent?.IsPlayerOneTeam;
 				if (team1 == null) continue;
 
 				if ((bool) team1)
@@ -134,7 +133,7 @@ Audio.PlaySound("capture");
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
-
+			Console.WriteLine("recived action packet: "+packet.Type+" "+packet.ID+" "+packet.Target);
 			if (packet.Type == ActionType.EndTurn)
 			{
 				NextTurn();

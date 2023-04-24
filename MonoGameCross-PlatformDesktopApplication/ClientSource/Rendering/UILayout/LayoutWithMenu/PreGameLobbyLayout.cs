@@ -16,8 +16,10 @@ namespace MultiplayerXeno.UILayouts;
 public class PreGameLobbyLayout : MenuLayout
 {
 	private Panel gameOptionsMenu;
+	private bool swapingMap = false;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+		swapingMap = false;
 		
 			var grid1 = new Grid()
 			{
@@ -348,8 +350,17 @@ public class PreGameLobbyLayout : MenuLayout
 				
 				officialSelection.SelectedIndexChanged += (s, a) =>
 				{
-					GameManager.PreGameData.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
-					Networking.SendPreGameUpdate();
+					if (!swapingMap)
+					{
+						GameManager.PreGameData.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
+						Networking.SendPreGameUpdate();
+						var lbl = new Label();
+						lbl.Text = "Swaping Map";
+						lbl.HorizontalAlignment = HorizontalAlignment.Center;
+						lbl.VerticalAlignment = VerticalAlignment.Center;
+						leftpanel.Widgets.Add(lbl);
+						swapingMap = true;
+					}
 				};
 				var communitySelection = new ListBox()
 				{
@@ -369,8 +380,17 @@ public class PreGameLobbyLayout : MenuLayout
 				}
 				communitySelection.SelectedIndexChanged += (s, a) =>
 				{
-					GameManager.PreGameData.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
-					Networking.SendPreGameUpdate();
+					if (!swapingMap)
+					{
+						GameManager.PreGameData.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
+						Networking.SendPreGameUpdate();
+						var lbl = new Label();
+						lbl.Text = "Swaping Map";
+						lbl.HorizontalAlignment = HorizontalAlignment.Center;
+						lbl.VerticalAlignment = VerticalAlignment.Center;
+						leftpanel.Widgets.Add(lbl);
+						swapingMap = true;
+					}
 				};
 
 				var tab1 = new TextButton()

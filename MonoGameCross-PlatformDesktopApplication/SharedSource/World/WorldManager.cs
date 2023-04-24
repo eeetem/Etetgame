@@ -1,5 +1,5 @@
 ﻿using System;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
@@ -130,17 +130,26 @@ namespace MultiplayerXeno
 				MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
 			}
 
-			if (data.ObjectAtLocation != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.ObjectAtLocation, tile);
-			}
 
 			if (data.WestEdge != null)
 			{
 				MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
 			}
+			if (data.ControllableAtLocation != null)
+			{
+				
+				MakeWorldObjectFromData((WorldObjectData)data.ControllableAtLocation , tile);
+				
+			}
 
-			tile.ApplySmoke(data.smoked);
+			if (data.ObjectsAtLocation != null)
+			{
+				foreach (var itm in data.ObjectsAtLocation)
+				{
+					MakeWorldObjectFromData(itm, tile);
+				}
+			}
+
 			return tile;
 		
 		}
@@ -181,7 +190,7 @@ namespace MultiplayerXeno
 			return CanSee(controllable.worldObject.TileLocation.Position, to, controllable.GetSightRange(), controllable.Crouching);
 		}
 
-		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
+		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)//if truesight is false it will do a proper raycast otherwise you will only collide with already visible objects
 		{
 			if(Vector2.Distance(From, to) > sightRange)
 			{
@@ -191,13 +200,13 @@ namespace MultiplayerXeno
 			RayCastOutcome[] PartalCasts;
 			if (crouched)
 			{
-				FullCasts = MultiCornerCast(From, to, Cover.High, true,false);//full vsson does not go past high cover and no partial sigh
+				FullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
 				PartalCasts = Array.Empty<RayCastOutcome>();
 			}
 			else
 			{
-				FullCasts = MultiCornerCast(From, to, Cover.High, true,false,Cover.Full);//full vission does not go past high cover
-				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true,false);//partial visson over high cover
+				FullCasts = MultiCornerCast(From, to, Cover.High, true,Cover.Full);//full vission does not go past high cover
+				PartalCasts  = MultiCornerCast(From, to, Cover.Full, true);//partial visson over high cover
 							
 			}
 
@@ -208,7 +217,7 @@ namespace MultiplayerXeno
 					return Visibility.Full;
 				}
 				//i think this is for seeing over cover while crouched, dont quote me on that tho
-				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.hitObjID != -1 && GetObject(cast.hitObjID).GetCover() != Cover.Full)
+				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.hitObjID != -1 && GetObject(cast.hitObjID).GetCover(true) != Cover.Full)
 				{
 					return Visibility.Partial;
 				}
@@ -224,7 +233,7 @@ namespace MultiplayerXeno
 			return Visibility.None;
 		}
 
-		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false,bool ignoreSmoke = true, Cover? minHitCoverSameTile = null)
+		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover,bool visibilityCast = false,Cover? minHitCoverSameTile = null)
 		{
 
 			RayCastOutcome[] result = new RayCastOutcome[4];
@@ -253,7 +262,7 @@ namespace MultiplayerXeno
 				}
 					
 				Vector2 Dir = Vector2.Normalize(startcell - endcell);
-				result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover, ignoreControllables,ignoreSmoke,minHitCoverSameTile);
+				result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover,visibilityCast ,false,minHitCoverSameTile);
 				index++;
 
 			}
@@ -266,15 +275,15 @@ namespace MultiplayerXeno
 		}
 
 
-		public RayCastOutcome CenterToCenterRaycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool ignoreControllables = false)
+		public RayCastOutcome CenterToCenterRaycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool visibilityCast = false, bool ignoreControllables = false)
 		{
 			Vector2 startPos = (Vector2) startcell + new Vector2(0.5f, 0.5f);
 			Vector2 endPos = (Vector2) endcell + new Vector2(0.5f, 0.5f);
-			return Raycast(startPos, endPos, minHitCover, ignoreControllables);
+			return Raycast(startPos, endPos, minHitCover, visibilityCast,ignoreControllables);
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool ignoreControllables = false,bool ignoreSmoke = true, Cover? minHtCoverSameTile = null)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool visibilityCast = false,bool ignoreControllables = false,Cover? minHtCoverSameTile = null)
 		{
 			if (minHtCoverSameTile == null)
 			{
@@ -291,6 +300,7 @@ namespace MultiplayerXeno
 				result.hit = false;
 				return result;
 			}
+			
 			
 
 			Vector2Int checkingSquare = new Vector2Int(startcell.X, startcell.Y);
@@ -379,26 +389,34 @@ namespace MultiplayerXeno
 				if (IsPositionValid(lastCheckingSquare))
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
-					
-					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare-lastCheckingSquare), ignoreControllables,lastCheckingSquare == startcell);
 
-					
-					if(tile.Smoked>0 && !ignoreSmoke)
+					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,(lastCheckingSquare == startcell));
+
+					foreach (var obj in tile.ObjectsAtLocation)
 					{
-						smokeLayers++;
-					} 
-					if (smokeLayers >= 2)
+						smokeLayers+=obj.Type.VisibilityObstructFactor;
+					}
+
+					if (smokeLayers > 10)
 					{
 						result.CollisionPointLong = collisionPointlong;
 						result.CollisionPointShort = collisionPointshort;
 						result.VectorToCenter = collisionVector;
 						result.hit = true;
+						result.hitObjID = hitobj.Id;
+						//if this is true then we're hitting a controllable form behind
+						if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+						{
+							result.CollisionPointLong += -0.3f * dir;
+							result.CollisionPointShort += -0.3f * dir;
+						}
 						return result;
 					}
 
 					if (hitobj.Id != -1 )
 					{
-						Cover c = hitobj.GetCover();
+						
+						Cover c = hitobj.GetCover(visibilityCast);
 						if (Utility.IsClose(hitobj, startcell))
 						{
 							if (c >= minHtCoverSameTile)
@@ -409,7 +427,7 @@ namespace MultiplayerXeno
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
 								//if this is true then we're hitting a controllable form behind
-								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
 								{
 									result.CollisionPointLong += -0.3f * dir;
 									result.CollisionPointShort += -0.3f * dir;
@@ -428,7 +446,7 @@ namespace MultiplayerXeno
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
 								result.hitObjID = hitobj.Id;
-								if (GetTileAtGrid(lastCheckingSquare).ObjectAtLocation?.ControllableComponent != null)
+								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
 								{
 									result.CollisionPointLong += -0.3f * dir;
 									result.CollisionPointShort += -0.3f * dir;
@@ -460,6 +478,8 @@ namespace MultiplayerXeno
 		}
 		public void DeleteWorldObject(int id)
 		{
+			
+			
 			lock (syncobj)
 			{
 				objsToDel.Add(id);
@@ -477,7 +497,7 @@ namespace MultiplayerXeno
 			}
 
 			WorldObject Obj = WorldObjects[id];
-
+			
 			GameManager.Forget(Obj);
 
 #if  CLIENT
@@ -486,10 +506,7 @@ namespace MultiplayerXeno
 				GameLayout.UnRegisterContollable(Obj.ControllableComponent);
 			}
 #endif
-			
-
 			Obj.TileLocation.Remove(id);
-			//obj.dispose()
 			WorldObjects.Remove(id);
 			
 
@@ -525,7 +542,7 @@ namespace MultiplayerXeno
 			{
 				foreach (var tile in new List<WorldTile>(tiles))
 				{
-					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, true).hit)
+					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, false).hit)
 					{
 						tiles.Remove(tile);
 					}
@@ -658,7 +675,7 @@ namespace MultiplayerXeno
 				
 			
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
-			WorldObject WO = new WorldObject(type, data.Id, tile);
+			WorldObject WO = new WorldObject(type, tile, data);
 			WO.fliped = data.fliped;
 			WO.Face(data.Facing,false);
 			WorldTile newTile;
@@ -694,19 +711,18 @@ namespace MultiplayerXeno
 						throw new Exception("edge cannot be cornerfacing");
 				}
 			}
-			else
-			{
-				tile.ObjectAtLocation = WO;
-			}
-
-			if (type.Controllable != null && data.ControllableData != null)
+			else if(type.Controllable != null && data.ControllableData != null)
 			{
 				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
 #if CLIENT
 				GameLayout.RegisterContollable(component);
 #endif
-				
+				tile.ControllableAtLocation = WO;
+			}
+			else
+			{
+				tile.PlaceObject(WO);
 			}
 
 			WorldObjects.EnsureCapacity(WO.Id + 1);
@@ -720,29 +736,33 @@ namespace MultiplayerXeno
 		public void SaveCurrentMapTo(string path)
 		{
 			List<WorldTileData> prefabData = new List<WorldTileData>();
-			Vector2Int biggestPos = new Vector2Int(0, 0);//only save the big of the map that has stuff
+			Vector2Int biggestPos = new Vector2Int(0, 0);//only save the bit of the map that has stuff
+			Vector2Int smallestPos = new Vector2Int(100, 100);//only save the bit of the map that has stuff
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
-					if (_gridData[x, y].NorthEdge != null || _gridData[x, y].WestEdge!=null || _gridData[x, y].ObjectAtLocation != null)
+					if (_gridData[x, y].NorthEdge != null || _gridData[x, y].WestEdge!=null)
 					{
-						if (x > biggestPos.X)
-						{
+						if (x > biggestPos.X) {
 							biggestPos.X = x;
 						}
-						
-						if (y > biggestPos.Y)
-						{
+						if(x<smallestPos.X){
+							smallestPos.X = x;
+						}
+						if (y > biggestPos.Y) {
 							biggestPos.Y = y;
+						}
+						if(y<smallestPos.Y){
+							smallestPos.Y = y;
 						}
 					}
 				}
 			}
 			
-			for (int x = 0; x <= biggestPos.X; x++)
+			for (int x = smallestPos.X; x <= biggestPos.X; x++)
 			{
-				for (int y = 0; y <= biggestPos.Y; y++)
+				for (int y = smallestPos.Y; y <= biggestPos.Y; y++)
 				{
 					prefabData.Add(_gridData[x, y].GetData());
 				}

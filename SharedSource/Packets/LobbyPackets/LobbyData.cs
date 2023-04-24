@@ -1,6 +1,6 @@
 ﻿using Network.Packets;
 
-namespace CommonData;
+namespace MultiplayerXeno;
 	public class LobbyData: Packet
 	{
 		public string Name { get; set; }
