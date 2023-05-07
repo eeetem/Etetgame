@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework;
+using MultiplayerXeno.Items;
 
 #if  CLIENT
 using MultiplayerXeno.UILayouts;//probably seperate this into a clientsidegamemanager
@@ -47,11 +48,11 @@ namespace MultiplayerXeno
 			GameState = GameState.Over;
 			if (player1Win)
 			{
-				Networking.NotifyAll(Player1.Name + " Wins!");	
+				Networking.NotifyAll(Player1!.Name + " Wins!");	
 			}
 			else
 			{
-				Networking.NotifyAll(Player2.Name + " Wins!");	
+				Networking.NotifyAll(Player2!.Name + " Wins!");	
 			}
 
 
@@ -147,24 +148,48 @@ Audio.PlaySound("capture");
 			}
 			Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
 			Action act = Action.Actions[packet.Type];//else get controllable specific actions
-			if (act.ActionType == ActionType.Attack)
+			if (act.ActionType == ActionType.UseAbility)
+			{
+				int ability = int.Parse(packet.args[0]);
+				UseExtraAbility.abilityIndex = ability;
+				IExtraAction a = controllable.extraActions[ability];
+				if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable)!= null)
+				{
+					string target = packet.args[1];
+					switch (target)
+					{
+						case "Auto":
+							Shootable.targeting = Shootable.targeting = TargetingType.Auto;
+							break;
+						case "High":
+							Shootable.targeting = Shootable.targeting = TargetingType.High;
+							break;
+						case "Low":
+							Shootable.targeting = Shootable.targeting = TargetingType.Low;
+							break;
+						default:
+							throw new ArgumentException("Invalid target type");
+					}
+				}
+			}else if (act.ActionType == ActionType.Attack)
 			{
 				string target = packet.args[0];
 				switch (target)
 				{
 					case "Auto":
-						Attack.targeting = Attack.targeting = TargetingType.Auto;
+						Shootable.targeting = Shootable.targeting = TargetingType.Auto;
 						break;
 					case "High":
-						Attack.targeting = Attack.targeting = TargetingType.High;
+						Shootable.targeting = Shootable.targeting = TargetingType.High;
 						break;
 					case "Low":
-						Attack.targeting = Attack.targeting = TargetingType.Low;
-						break; 
+						Shootable.targeting = Shootable.targeting = TargetingType.Low;
+						break;
 					default:
 						throw new ArgumentException("Invalid target type");
 				}
 			}
+
 			act.PerformFromPacket(controllable, packet.Target);
 		
 		}

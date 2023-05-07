@@ -180,9 +180,9 @@ namespace MultiplayerXeno.Pathfinding
 		}
 		public struct PathFindResult
 		{
-			public  List<Vector2Int> Path;
+			public  List<Vector2Int>? Path;
 			public  double Cost;
-			public PathFindResult(List<Vector2Int> path, double cost)
+			public PathFindResult(List<Vector2Int>? path, double cost)
 			{
 				Path = path;
 				Cost = cost;
@@ -257,7 +257,7 @@ namespace MultiplayerXeno.Pathfinding
 				}
 			}
 		}
-		private static List<Vector2Int> GeneratePath(Node target)
+		private static List<Vector2Int>? GeneratePath(Node target)
 		{
 			var ret = new List<Vector2Int>();
 			var current = target;
@@ -361,7 +361,7 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
-			var tile = WorldManager.Instance.GetTileAtGrid(this.Position);
+			var tile = WorldManager.Instance.GetTileAtGrid(Position);
 			return tile.Traversible(from.Position);
 		}
 
@@ -386,7 +386,7 @@ namespace MultiplayerXeno.Pathfinding
 		/// <returns>A comparison between the costs.</returns>
 		public int CompareTo(Node? other) => TotalCost.CompareTo(other?.TotalCost ?? 0);
 
-		public bool Equals(Node? other) => CompareTo(other) == 0 && other?.Position == this.Position;
+		public bool Equals(Node? other) => CompareTo(other) == 0 && other?.Position == Position;
 
 		public static bool operator ==(Node? left, Node? right) => left?.Equals(right) != false;
 
@@ -394,7 +394,7 @@ namespace MultiplayerXeno.Pathfinding
 
 		public static bool operator <(Node left, Node right) => left.CompareTo(right) < 0;
 
-		public static bool operator !=(Node left, Node right) => !(left == right);
+		public static bool operator !=(Node? left, Node? right) => !(left == right);
 
 		public static bool operator <=(Node left, Node right) => left.CompareTo(right) <= 0;
 

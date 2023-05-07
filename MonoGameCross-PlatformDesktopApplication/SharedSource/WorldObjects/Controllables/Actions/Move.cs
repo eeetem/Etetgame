@@ -60,7 +60,7 @@ public class Move : Action
 
 #if CLIENT
 	
-	private static List<Vector2Int> previewPath = new List<Vector2Int>();
+	private static List<Vector2Int>? previewPath = new List<Vector2Int>();
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 

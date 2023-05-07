@@ -7,7 +7,7 @@ public partial class Controllable
 	
 	public bool IsMyTeam()
 	{
-		return GameManager.IsPlayer1 == this.IsPlayerOneTeam;
+		return GameManager.IsPlayer1 == IsPlayerOneTeam;
 	}
 	public void Spoted()
 	{

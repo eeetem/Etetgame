@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,49 +8,112 @@ namespace MultiplayerXeno;
 
 public class WorldEffect
 {
-	public int dmg = 0;
-	public int detDmg = 0;
-	public int range = 0;
-	public string? sfx = "";
-	public string? placeItemPrefab = null;
+	public int Dmg;
+	public int Det ;
+	public ValueChange Move ;
+	public ValueChange Act ;
+	public int Range = 0;
+	public string? Sfx = "";
+	public string? PlaceItemPrefab = null;
+	public readonly List<Tuple<string,int>> AddStatus = new List<Tuple<string, int>>();
+	public readonly List<string> RemoveStatus = new List<string>();
+
 	
-	public List<Tuple<string,string,string>> effects = new List<Tuple<string, string, string>>();
+	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
+	public bool Visible;
+	public ValueChange MoveRange ;
+	public bool Los;
+	public int ExRange;
+	public bool TargetFoe = false;
+	public bool TargetFriend =false;
+	public bool TargetSelf =false;
 
-	public void Apply(Vector2Int target)
+
+	private List<WorldTile> GetAffectedTiles(Vector2Int target,Controllable? user)
 	{
-
-		var hitt = WorldManager.Instance.GetTilesAround(target, range, Cover.Low);
-
-		foreach (var tile in hitt)
+			var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
+		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, Cover.Low);
+		var list = hitt.Except(excl).ToList();
+		if (Los)
 		{
-			ApplyOnTile(tile);
+			if (user != null)
+			{
+				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user, x.Position, true));
+			}
+			else
+			{
+				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(target, x.Position,99,false));
+			}
+			
+		}
+
+		return list;
+
+	}
+
+	public void Apply(Vector2Int target, Controllable? user = null)
+	{
+		foreach (var tile in GetAffectedTiles(target,user))
+		{
+			ApplyOnTile(tile,user);
 		}
 
 	}
-	protected void ApplyOnTile(WorldTile tile)
+	protected void ApplyOnTile(WorldTile tile,Controllable? user = null)
 	{
 		
-		tile.EastEdge?.TakeDamage(dmg,0);
-		tile.WestEdge?.TakeDamage(dmg,0);
-		tile.NorthEdge?.TakeDamage(dmg,0);
-		tile.SouthEdge?.TakeDamage(dmg,0);
-		tile.ControllableAtLocation?.TakeDamage(dmg,0);
-		tile.ControllableAtLocation?.ControllableComponent?.Suppress(detDmg);
+		tile.EastEdge?.TakeDamage(Dmg,0);
+		tile.WestEdge?.TakeDamage(Dmg,0);
+		tile.NorthEdge?.TakeDamage(Dmg,0);
+		tile.SouthEdge?.TakeDamage(Dmg,0);
 		foreach (var item in tile.ObjectsAtLocation)
 		{
-			item.TakeDamage(dmg);
+			item.TakeDamage(Dmg,0);
 		}
-		if (placeItemPrefab!=null)
+		if (PlaceItemPrefab!=null)
 		{
 #if SERVER
-			WorldManager.Instance.MakeWorldObject(placeItemPrefab, tile.Position);
+			WorldManager.Instance.MakeWorldObject(PlaceItemPrefab, tile.Position);
 #endif
 		}
+		
+		
+
+
+		if (tile.ControllableAtLocation != null)
+		{
+			Controllable ctr = tile.ControllableAtLocation.ControllableComponent;
+			if (user != null)
+			{
+				if(ctr.IsPlayerOneTeam == user.IsPlayerOneTeam && !TargetFriend) return;
+				if(ctr.IsPlayerOneTeam != user.IsPlayerOneTeam && !TargetFoe) return;
+				if(Equals(tile.ControllableAtLocation.ControllableComponent, user) && !TargetSelf) return;
+			
+			}
+			
+			tile.ControllableAtLocation.TakeDamage(Dmg, 0);
+			Act.Apply(ref ctr.ActionPoints);
+			Move.Apply(ref ctr.MovePoints);
+			ctr.Suppress(Det,true);
+			MoveRange.Apply(ref ctr.MoveRangeEffect);
+			foreach (var status in RemoveStatus)
+			{
+				tile.ControllableAtLocation.ControllableComponent?.RemoveStatus(status);
+			}
+			foreach (var status in AddStatus)
+			{
+				tile.ControllableAtLocation.ControllableComponent?.ApplyStatus(status.Item1,status.Item2);
+			}
+			
+		}
+
+
+
 	}
 #if CLIENT
 	
 
-	protected void PreviewOnTile(WorldTile tile, SpriteBatch spriteBatch, int previewRecursiveDepth=0)
+	protected void PreviewOnTile(WorldTile tile, SpriteBatch spriteBatch, Controllable? user, int previewRecursiveDepth=0)
 	{
 		if (tile.Surface == null)return;
 
@@ -95,15 +159,17 @@ public class WorldEffect
 
 		if (tile.ControllableAtLocation != null )
 		{
-			tile.ControllableAtLocation.PreviewData.detDmg += detDmg;
-			tile.ControllableAtLocation.PreviewData.finalDmg += dmg;
+			WorldObject Wo = tile.ControllableAtLocation;
+			Wo.PreviewData.detDmg += Det;
+			Wo.PreviewData.finalDmg += Dmg;
+			tile.ControllableAtLocation.PreviewData.finalDmg += Dmg;
 		}
 
-		if (placeItemPrefab != null)
+		if (PlaceItemPrefab != null)
 		{
-			var prefab = PrefabManager.WorldObjectPrefabs[placeItemPrefab];
+			var prefab = PrefabManager.WorldObjectPrefabs[PlaceItemPrefab];
 			if(prefab.desturctionEffect!=null){
-				prefab.desturctionEffect.Preview(tile.Position,spriteBatch,previewRecursiveDepth+1);
+				prefab.desturctionEffect.Preview(tile.Position,spriteBatch,user,previewRecursiveDepth+1);
 			}
 		}
 
@@ -111,33 +177,36 @@ public class WorldEffect
 	}
 	
 
-	public void Preview(Vector2Int target, SpriteBatch spriteBatch,int previewRecursiveDepth=0)
+	public void Preview(Vector2Int target, SpriteBatch spriteBatch, Controllable? user,int previewRecursiveDepth=0)
 	{
-		var hitt = WorldManager.Instance.GetTilesAround(target, range, Cover.Low);
-
-		foreach (var tile in hitt)
+		foreach (var tile in GetAffectedTiles(target,user))
 		{
-			PreviewOnTile(tile,spriteBatch,previewRecursiveDepth);
+			PreviewOnTile(tile,spriteBatch,user,previewRecursiveDepth);
 		}
 	}
 
 	public void Animate(Vector2Int target)
 	{
+		
 		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
 		{
-			Camera.SetPos(target + new Vector2Int(Random.Shared.Next(-5, 5), Random.Shared.Next(-5, 5)));
+			if (Visible)
+			{
+				Camera.SetPos(target + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
+			}
 		}
 		else
 		{
 			Camera.SetPos(target);
 		}
 
-		if (sfx != null)
+
+		if (Sfx != null)
 		{
-			Audio.PlaySound(sfx, target);
+			Audio.PlaySound(Sfx, target);
 		}
 		
-		foreach (var effect in effects)
+		foreach (var effect in Effects)
 		{
 			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2), float.Parse(effect.Item3), true, 10f);
 		}

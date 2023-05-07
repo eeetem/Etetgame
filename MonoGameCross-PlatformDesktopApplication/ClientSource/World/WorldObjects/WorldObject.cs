@@ -14,7 +14,7 @@ namespace MultiplayerXeno
 		public PreviewData PreviewData;
 		public Transform2 GetDrawTransform()
 		{
-			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(this.TileLocation.Position);
+			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(TileLocation.Position);
 			return DrawTransform;
 		}
 
@@ -95,17 +95,6 @@ namespace MultiplayerXeno
 
 			return color;
 
-
-		}
-
-		public bool IsVisible()
-		{
-			if (TileLocation == null)
-			{
-				return true;
-			}
-
-			return GetMinimumVisibility() <= TileLocation.Visible;
 
 		}
 

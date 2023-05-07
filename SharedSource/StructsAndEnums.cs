@@ -48,8 +48,8 @@ namespace MultiplayerXeno
 		public int Lifetime;
 		public WorldObjectData(string prefab)
 		{
-			this.Prefab = prefab;
-			this.Id = -1;
+			Prefab = prefab;
+			Id = -1;
 			Facing = Direction.North;
 			ControllableData = null;
 			fliped = false;
@@ -58,7 +58,7 @@ namespace MultiplayerXeno
 		}
 	}
 	[Serializable]
-	public partial struct ControllableData
+	public struct ControllableData
 	{
 		public bool Team1;
 		public int ActionPoints;
@@ -69,6 +69,7 @@ namespace MultiplayerXeno
 		public bool Panic;
 		public bool JustSpawned;
 		public List<string?> Inventory { get; set; }
+		public List<Tuple<string,int>> StatusEffects { get; set; }
 		
 		public ControllableData(bool team1)
 		{
@@ -81,8 +82,9 @@ namespace MultiplayerXeno
 			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
 			Inventory = new List<string?>();
+			StatusEffects = new List<Tuple<string, int>>();
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string,int>> sts)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -93,7 +95,7 @@ namespace MultiplayerXeno
 			JustSpawned = true;
 			Panic = panic;
 			Inventory = inv;
-
+			StatusEffects = sts;
 		}
 
 	
@@ -115,9 +117,9 @@ namespace MultiplayerXeno
 		{
 			CollisionPointLong = new Vector2(0, 0);
 			CollisionPointShort = new Vector2(0, 0);
-			this.hit = false;
+			hit = false;
 			EndPoint = end;
-			this.hitObjID = -1;
+			hitObjID = -1;
 			StartPoint = start;
 			Path = new List<Vector2Int>();
 	
@@ -172,10 +174,10 @@ namespace MultiplayerXeno
 		public PreviewData(int totalDmg, int detDmg)
 		{
 			this.totalDmg = totalDmg;
-			this.finalDmg = 0;
-			this.coverBlock = 0;
-			this.distanceBlock = 0;
-			this.determinationBlock = 0;
+			finalDmg = 0;
+			coverBlock = 0;
+			distanceBlock = 0;
+			determinationBlock = 0;
 			this.detDmg = detDmg;
 		}
 
@@ -238,7 +240,7 @@ namespace MultiplayerXeno
 		
 		public static Vector2Int operator-(Vector2Int a, Vector2Int b)
 			=> new Vector2Int(a.X-b.X, a.Y-b.Y);
-		public static bool operator ==(Vector2Int lhs, Vector2Int rhs) => (lhs?.X == rhs?.X)&&(lhs?.Y == rhs?.Y);
+		public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => (lhs?.X == rhs?.X)&&(lhs?.Y == rhs?.Y);
 
 		public static bool operator !=(Vector2Int lhs, Vector2Int rhs) => !(lhs == rhs);
 
@@ -252,7 +254,12 @@ namespace MultiplayerXeno
 			X = this.X;
 			Y = this.Y;
 		}
-		
-	
+
+
+		public static Vector2Int Parse(string innerText)
+		{
+			var split = innerText.Split(",");
+			return new Vector2Int(int.Parse(split[0]) ,int.Parse(split[1]));
+		}
 	}
 }

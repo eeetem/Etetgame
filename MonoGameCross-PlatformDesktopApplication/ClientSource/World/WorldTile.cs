@@ -12,7 +12,7 @@ namespace MultiplayerXeno
 
 		public bool IsVisible(Visibility minimum = Visibility.Partial)
 		{
-			if (this.Visible >= minimum)
+			if (Visible >= minimum)
 			{
 				return true;
 			}

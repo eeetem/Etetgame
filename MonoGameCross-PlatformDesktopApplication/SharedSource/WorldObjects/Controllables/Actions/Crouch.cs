@@ -1,7 +1,9 @@
 ﻿using System;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
-
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
 namespace MultiplayerXeno;
 
 public class Crouch : Action
@@ -28,16 +30,20 @@ public class Crouch : Action
 		actor.canTurn = true;
 		actor.Crouching = !actor.Crouching;
 		actor.worldObject.TileLocation.OverWatchTrigger();
+#if CLIENT
+		GameLayout.ReMakeMovePreview();
+#endif
 	}
 
 #if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		throw new System.NotImplementedException();
+		throw new NotImplementedException();
 	}
 
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
+		
 		return;
 	}
 #endif

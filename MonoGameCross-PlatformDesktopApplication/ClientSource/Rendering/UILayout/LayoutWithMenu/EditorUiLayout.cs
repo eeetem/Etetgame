@@ -497,9 +497,9 @@ public class EditorUiLayout : MenuLayout
 	}
 
 
-	public override void Render(SpriteBatch batch, float deltatime)
+	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
-
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y +" Mode: "+ActiveBrush,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
 		batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X, 100)), Color.White, 5);
@@ -539,5 +539,6 @@ public class EditorUiLayout : MenuLayout
 
 
 		batch.Draw(previewSprite, Utility.GridToWorldPos(MousePos+new Vector2(-1.5f,-0.5f)), Color.White*0.5f);
+		batch.End();
 	}
 }

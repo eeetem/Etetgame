@@ -19,11 +19,11 @@ namespace MultiplayerXeno
 		public WorldObject worldObject { get; private set; }
 		public ControllableType Type { get; private set; }
 
-		public UsableItem? SelectedItem { get; private set; }
+		public WorldAction? SelectedItem { get; private set; }
 
-		public List<UsableItem> inventory = new List<UsableItem>();
+		public List<WorldAction> inventory = new List<WorldAction>();
 
-		public void RemoveItem(UsableItem item)
+		public void RemoveItem(WorldAction item)
 		{
 			inventory.Remove(item);
 			if (SelectedItem == item)
@@ -37,13 +37,19 @@ namespace MultiplayerXeno
 				}
 			}
 		}
-
+		public List<IExtraAction> extraActions = new List<IExtraAction>();
 		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
 		{
 			
 			this.worldObject = worldObject;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
+	
+			
+			type.extraActions.ForEach(extraAction =>
+			{
+				extraActions.Add((IExtraAction) extraAction.Clone());
+			});
 
 
 			if (data.Determination == -100)
@@ -55,30 +61,32 @@ namespace MultiplayerXeno
 				Determination = data.Determination;
 			}
 
-			this.Crouching = data.Crouching;
-			this.paniced = data.Panic;
+			Crouching = data.Crouching;
+			paniced = data.Panic;
 
 
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
 #endif
 
+			MovePoints = new Value(0, type.MaxMovePoints);
 			if (data.MovePoints != -100)
 			{
-				this.MovePoints = data.MovePoints;
+				MovePoints.Current = data.MovePoints;
 			}
 
+			ActionPoints = new Value(0, type.MaxActionPoints);
 			if (data.ActionPoints != -100)
 			{
-				this.FirePoints = data.ActionPoints;
+				ActionPoints.Current = data.ActionPoints;
 			}
 
 			if (data.canTurn != null)
 			{
-				this.canTurn = (bool) data.canTurn;
+				canTurn = (bool) data.canTurn;
 			}
 
-			inventory = new List<UsableItem>();
+			inventory = new List<WorldAction>();
 			for (int i = 0; i < type.InventorySize; i++)
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != null)
@@ -92,40 +100,53 @@ namespace MultiplayerXeno
 				SelectedItem = inventory[0];
 			}
 
+			foreach (var effect in data.StatusEffects)
+			{
+				ApplyStatus(effect.Item1,effect.Item2);
+			}
 			if (data.JustSpawned)
 			{
 				StartTurn();
 			}
 		}
 
-		public int MovePoints { get; set; } = 0;
+
+
+
+
 		public bool canTurn { get; set; } = false;
-		public int FirePoints { get; set; } = 0;
-		public int Determination { get; private set; } = 0;
+		
+		
+		public Value MovePoints;
+		public Value ActionPoints;
+		public int Determination;
 
 		public bool Crouching { get; set; } = false;
 
 
-
+		public Value MoveRangeEffect = new Value(0, 0);
 		public int GetMoveRange()
 		{
 			int range = Type.MoveRange;
 			if (Crouching)
 			{
-
 				range -= 2;
-
 			}
 
-			return range;
+			int result= range + MoveRangeEffect.Current;
+			if(result<=0){
+				return 1;
+			}
+
+			return result;
 		}
 
 		public List<Vector2Int>[] GetPossibleMoveLocations()
 		{
-			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints];
+			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
 			for (int i = 0; i < MovePoints; i++)
 			{
-				possibleMoves[i] = PathFinding.GetAllPaths(this.worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+				possibleMoves[i] = PathFinding.GetAllPaths(worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
 			}
 
 			return possibleMoves;
@@ -133,19 +154,6 @@ namespace MultiplayerXeno
 
 		public bool IsPlayerOneTeam { get; private set; }
 
-		public void Suppress(int detDmg,bool nopanic = false)
-		{
-			if (detDmg <= 0)
-			{
-				return;
-			}
-
-			Determination -= detDmg;
-			if (Determination <= 0 && !nopanic)
-			{
-				Panic();
-			}
-		}
 
 
 
@@ -179,16 +187,16 @@ namespace MultiplayerXeno
 					moving = false;
 				}
 
-				WorldManager.Instance.DeleteWorldObject(this.worldObject);//dead
+				WorldManager.Instance.DeleteWorldObject(worldObject);//dead
 #if CLIENT
-				Audio.PlaySound("death",this.worldObject.TileLocation.Position);
+				Audio.PlaySound("death",worldObject.TileLocation.Position);
 #endif
 				
 			}
 			else
 			{
 #if CLIENT
-				Audio.PlaySound("grunt",this.worldObject.TileLocation.Position);
+				Audio.PlaySound("grunt",worldObject.TileLocation.Position);
 #endif
 			}
 
@@ -220,9 +228,10 @@ namespace MultiplayerXeno
 
 		public void StartTurn()
 		{
-			MovePoints = Type.MaxMovePoints;
+			MovePoints.Reset();
 			canTurn = true;
-			FirePoints = Type.MaxFirePoints;
+			ActionPoints.Reset();
+			MoveRangeEffect.Reset();
 			if (Determination < 0)
 			{
 				Determination = 0;
@@ -237,7 +246,7 @@ namespace MultiplayerXeno
 #if CLIENT
 				if (worldObject.IsVisible())
 				{
-					new PopUpText("Recovering From Panic", this.worldObject.TileLocation.Position);
+					new PopUpText("Recovering From Panic", worldObject.TileLocation.Position);
 				}	
 #endif
 			
@@ -248,6 +257,11 @@ namespace MultiplayerXeno
 				canTurn = false;
 			}
 			ClearOverWatch();
+			foreach (var effect in StatusEffects)
+			{
+				effect.Apply(this);
+				
+			}
 
 		}
 		public void DoAction(Action a,Vector2Int target)
@@ -260,7 +274,8 @@ namespace MultiplayerXeno
 			if (!result.Item1)
 			{
 #if CLIENT
-				new PopUpText(result.Item2, this.worldObject.TileLocation.Position);
+				new PopUpText(result.Item2, worldObject.TileLocation.Position);
+				new PopUpText(result.Item2, target);
 #else
 				Console.WriteLine("tried to do action but failed: "+result.Item2);
 #endif
@@ -270,8 +285,8 @@ namespace MultiplayerXeno
 #if CLIENT
 			a.ToPacket(this, target);
 #else
-			a.Perform(this, target);
 			a.ToPacket(this,target);
+			a.Perform(this, target);
 #endif
 			
 			
@@ -292,7 +307,7 @@ namespace MultiplayerXeno
 #if CLIENT
 			if (worldObject.IsVisible())
 			{
-				new PopUpText("Panic!", this.worldObject.TileLocation.Position);	
+				new PopUpText("Panic!", worldObject.TileLocation.Position);	
 			}
 #endif
 			ClearOverWatch();
@@ -358,13 +373,13 @@ namespace MultiplayerXeno
 
 
 
-		private List<Vector2Int> CurrentPath = new List<Vector2Int>();
+		private List<Vector2Int>? CurrentPath = new List<Vector2Int>();
 		private bool _thisMoving;
 		public static bool moving;
 		private float _moveCounter;
 
 
-		public void MoveAnimation(List<Vector2Int> path)
+		public void MoveAnimation(List<Vector2Int>? path)
 		{
 			moving = true;
 			_thisMoving = true;
@@ -373,8 +388,8 @@ namespace MultiplayerXeno
 		
 		public void EndTurn()
 		{
-			
-			
+			StatusEffects.RemoveAll(x => x.duration <= 0);
+
 		}
 		public void Update(float gameTime)
 		{
@@ -400,7 +415,9 @@ namespace MultiplayerXeno
 					{
 						moving = false;
 						_thisMoving = false;
-
+#if CLIENT
+						GameLayout.ReMakeMovePreview();
+#endif
 					}
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();
@@ -429,7 +446,13 @@ namespace MultiplayerXeno
 					inv.Add(null);
 				}
 			}
-			var data = new ControllableData(this.IsPlayerOneTeam,FirePoints,MovePoints,canTurn,Determination,Crouching,paniced,inv);
+
+			List<Tuple<string, int>> sts = new List<Tuple<string, int>>();
+			foreach (var st in StatusEffects)
+			{
+				sts.Add(new Tuple<string, int>(st.type.name,st.duration));
+			}
+			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts);
 			data.JustSpawned = false;
 			return data;
 		}
@@ -443,13 +466,42 @@ namespace MultiplayerXeno
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != this.GetType()) return false;
+			if (obj.GetType() != GetType()) return false;
 			return Equals((Controllable) obj);
 		}
 
 		public override int GetHashCode()
 		{
 			return worldObject.GetHashCode();
+		}
+
+		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
+		public void ApplyStatus(string effect, int duration)
+		{
+			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration);
+			StatusEffects.Add(statuseffect);
+			statuseffect.Apply(this);
+		}
+
+		public void RemoveStatus(string effectName)
+		{
+			StatusEffects.RemoveAll(x => x.type.name == effectName);
+		}
+
+		public void Suppress(int supression, bool noPanic = false)
+		{
+			if(supression==0) return;
+			
+			Determination-= supression;
+			if (Determination <= 0 && !noPanic)
+			{
+				Panic();
+			}
+
+			if (paniced && Determination > 0)
+			{
+				paniced = false;
+			}
 		}
 	}
 }

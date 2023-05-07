@@ -439,7 +439,7 @@ public class PreGameLobbyLayout : MenuLayout
 					leftpanel.Widgets.Remove(communitySelection);
 					leftpanel.Widgets.Remove(officialSelection);
 					leftpanel.Widgets.Add(communitySelection);
-					var file = new Myra.Graphics2D.UI.File.FileDialog(FileDialogMode.OpenFile)
+					var file = new FileDialog(FileDialogMode.OpenFile)
 					{
 						
 					};

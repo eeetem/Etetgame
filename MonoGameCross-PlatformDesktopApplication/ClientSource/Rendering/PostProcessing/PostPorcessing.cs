@@ -312,7 +312,7 @@ namespace MultiplayerXeno
 
 	
 			Texture2D cursorTexture2D  = cursorTextures[0];
-			if (Action.ActiveAction is {ActionType: ActionType.Attack})
+			if (Action.ActiveAction is {ActionType: ActionType.Attack} || Action.ActiveAction is {ActionType: ActionType.UseAbility})
 			{
 				cursorTexture2D  = cursorTextures[1];
 			}
@@ -474,7 +474,7 @@ namespace MultiplayerXeno
 				this.parameter = parameter;
 				this.speed = speed;
 				this.endValue = endValue;
-				this.startValue = start;
+				startValue = start;
 				
 			}
 

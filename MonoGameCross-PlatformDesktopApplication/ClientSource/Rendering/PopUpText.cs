@@ -27,14 +27,6 @@ public class PopUpText
 			Objects.Add(this);
 		}
 	}
-	
-
-	private static GraphicsDevice graphicsDevice;
-	public static void Init(GraphicsDevice graphicsdevice)
-	{
-		graphicsDevice = graphicsdevice;
-	}
-
 
 
 	public static void Update(float deltaTime)
@@ -69,8 +61,7 @@ public class PopUpText
 			{
 
 
-				spriteBatch.DrawString(Game1.SpriteFont, obj.text, obj.Transform.Position, Color.Black * ((1000-obj.aliveTime) / 1000), 0, Vector2.Zero, 3, new SpriteEffects(), 0);
-
+				spriteBatch.DrawText(obj.text, obj.Transform.Position, 2, 100, Color.Black * ((1000-obj.aliveTime) / 1000));
 
 
 			}

@@ -47,42 +47,164 @@
   <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
     <sprite  name="Human" offset= "0,0"/>
     <name>Marksman</name>
-    <controllable moveRange = "6" moves="2" attack="6" supression="2" determination="3"  weaponRange ="18">
-      <action name="Headshot" type="7"/>
+    <controllable moveRange = "6" moves="2" determination="3">
+      <defaultAttack>
+        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="rifle3"/>
+        </effect>
+      </defaultAttack>
+      <action name="Headshot" tip="15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage" det ="-2" mpoint="-1" apoint="-1">
+        <shootable dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
+        <effect>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.1" speed="100"/>
+          <sfx name="rfile"/>
+        </effect>
+      </action>
     </controllable>
   </object>
+  
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
     <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" supression="1" attack="8"  determination="3" weaponRange ="6" sightrange="18">
-      <action name="Second Wind" type="6"/>
+    <controllable moveRange = "5" moves="3" determination="3" sightrange="18">
+      
+      <defaultAttack>
+        <shootable dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="1" speed="100"/>
+          <sfx name="shotgun"/>
+        </effect>
+      </defaultAttack>
+
+      <action immideate="true" name="Breach n Clear" tip="Restores actions points and gives 6 movement points with short range. Great for covering lots of ground and maneuvering in close quarters" det ="-3" mpoint="6[set]" apoint="1[set]">
+        <effect visible ="false">
+          <applystatus status="BreachnClear" duration="1"/>
+        </effect>
+      </action>
+      
     </controllable>
   </object>
+  
   <object VCover = "0" Faceable = "true" SCover ="3" Health="16">
     <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
-    <controllable moveRange = "4" moves="2" actions="2" supression="3" overwatch="3" attack="6" determination="5"  weaponRange ="12">
-      <action name="Suppress" type="8"/>
+    <controllable moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
+      
+      <spawneffect>
+        <applystatus status="Holstered"/>
+      </spawneffect>
+      
+      <defaultAttack>
+        <shootable dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="mg"/>
+        </effect>
+      </defaultAttack>
+      
+      <action name="Suppress" tip="Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays" det ="-3" mpoint="-1" apoint="-2">
+        <shootable dmg ="6" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="2,0" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="-2,0" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="0,2" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="0,-2" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect visible ="true">
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.1" speed="100"/>
+          <sfx name="mg"/>
+        </effect>
+      </action>
+     
+      <toggleaction>
+        <toggleoff name="Holster" tip="Convert fire points to move points. Greatly improves mobility but leaves you vulnerable" det ="-1" mpoint="0" apoint="0">
+          <effect visible ="false">
+           <applystatus status="Holstered"/>
+          </effect>
+        </toggleoff>
+        <toggleon name="UnHolster" tip="Convert 2 move points to fire points. Use once in a good position to be able to attack" det ="-1" mpoint="-2" apoint="0">
+          <effect visible ="false">
+          <removestatus status="Holstered"/>
+          </effect>
+        </toggleon>
+      </toggleaction>
+      
     </controllable>
   </object>
-  <object VCover = "0" Faceable = "true" SCover ="3">
-    <sprite name="Heavy"  offset= "0,0"/>
+  
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
+    <sprite name="Officer"  offset= "0,0"/>
     <name>Officer</name>
-    <controllable moveRange = "5" moves="2" actions="2" supression="2" overwatch="2" attack="5" determination="5" health="16" weaponRange ="12">
-      <action name="Inspire" type="10"/>
+    <controllable moveRange = "6" moves="2" actions="2" determination="2" sightrange="20">
+
+      <defaultAttack>
+        <shootable dmg ="8" detRes="2" supression="1" supressionRange="1" dropOffRange="9"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="1" speed="100"/>
+          <sfx name="rifle"/>
+        </effect>
+      </defaultAttack>
+
+      <action immideate="true" name="Rally" tip="All nearby friendlies stop panicking and gain 2 determiation" det ="-2" mpoint="0" apoint="0">
+        <effect visible ="false" los="true" range = "6" exRange="1" target="friend">
+          <damage det="-2"/>
+        </effect>
+      </action>
+
+      <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="0" mpoint="-1" apoint="-1">
+        <vissioncast Range="18"/>//swap this to something more suitable later on
+        <effect range="1" visible ="false" target="friend">
+          <applystatus status="Boost" duration="1"/>
+        </effect>
+      </action>
+      
     </controllable>
   </object>
-
+  <!--   <object VCover = "0" Faceable = "true" SCover ="3">
+      <sprite name="Heavy"  offset= "0,0"/>
+      <name>Officer</name>
+      <controllable moveRange = "5" moves="2" actions="2" supression="2" overwatch="2" attack="5" determination="5" health="16" weaponRange ="12">
+        action name="Inspire" type="10"/
+      </controllable>
+    </object>-->
+ 
+  <statuseffect>
+    <name>Holstered</name>
+    <effect visible="false">
+     <values act ="-2" move="2"/>
+    </effect>
+  </statuseffect>
+  <statuseffect>
+    <name>BreachnClear</name>
+    <effect visible="false">
+      <values act ="0" move="0" moveRange="-3"/>
+    </effect>
+  </statuseffect>
+  <statuseffect>
+    <name>Boost</name>
+    <effect visible="false">
+      <damage det="-2"/>
+      <values act ="1[cap]" move="1[cap]" moveRange="0"/>
+    </effect>
+  </statuseffect>
+  
+  
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
-    <DestroyEffect range = "2">
-      <damage detDmg="1" dmg="15"/>
+    <destroyEffect range = "2" >
+      <damage det="1" dmg="15"/>
       <vfx name="tintR" target="5" speed="50"/>
       <vfx name="clmagnitude" target="100" speed="50"/>
       <vfx name="noise" target="3" speed="60"/>
       <sfx name="grenade"/>
-    </DestroyEffect>
+    </destroyEffect>
   </object>
   <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5">
     <sprite name="Environment/Smoke"  offset= "0,0"/>
@@ -100,21 +222,20 @@
     <name>Frag</name>
     <throwable throwRange="6"/>
     <effect range="3">
-      <damage detDmg="1" dmg="6"/>
+      <damage det="1" dmg="6"/>
       <vfx name="tintR" target="5" speed="50"/>
       <vfx name="tintG" target="5" speed="50"/>
       <vfx name="clmagnitude" target="100" speed="50"/>
       <vfx name="noise" target="2" speed="50"/>
       <sfx name="grenade"/>
     </effect>
-   
   </item>
 
   <item>
     <name>Flash</name>
     <throwable throwRange="6"/>
     <effect  range="3">
-      <damage detDmg="100" dmg="0"/>
+      <damage det="100" dmg="0"/>
       <vfx name="tintR" target="20" speed="50"/>
       <vfx name="tintG" target="20" speed="50"/>
       <vfx name="tintB" target="20" speed="50"/>
@@ -134,5 +255,5 @@
       <sfx name="smoke"/>
     </effect>
   </item>
-  
+
 </root>

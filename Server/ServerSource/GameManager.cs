@@ -1,4 +1,5 @@
-﻿using MultiplayerXeno;
+﻿using System.Diagnostics;
+using MultiplayerXeno;
 
 namespace MultiplayerXeno
 {
@@ -41,7 +42,8 @@ namespace MultiplayerXeno
 			ControllableData cdata = new ControllableData(true);
 			
 			int i = 0;
-			foreach (var spawn in Player1.SquadComp.Composition)
+
+			foreach (var spawn in Player1!.SquadComp!.Composition!)
 			{
 				if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 				if (T1SpawnPoints.Contains(spawn.Position))
@@ -57,7 +59,7 @@ namespace MultiplayerXeno
 
 			cdata = new ControllableData(false);
 			i = 0;
-			foreach (var spawn in Player2.SquadComp.Composition)
+			foreach (var spawn in Player2!.SquadComp!.Composition!)
 			{
 				if(i>=WorldManager.Instance.CurrentMap.unitCount) break;
 				if (T2SpawnPoints.Contains(spawn.Position))
@@ -94,7 +96,7 @@ namespace MultiplayerXeno
 			
 
 			//packet.
-			Player1?.Connection.Send(packet);
+			Player1?.Connection?.Send(packet);
 			
 			packet = new GameDataPacket
 			{
@@ -103,7 +105,7 @@ namespace MultiplayerXeno
 				Score = score,
 				GameState = GameState
 			};
-			Player2?.Connection.Send(packet);
+			Player2?.Connection?.Send(packet);
 			packet = new GameDataPacket
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
@@ -113,7 +115,7 @@ namespace MultiplayerXeno
 			};
 			foreach (var spectator in Spectators)
 			{
-				spectator?.Connection.Send(packet);
+				spectator?.Connection?.Send(packet);
 			}
 			Program.InformMasterServer();
 		}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.Items;
 
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -16,7 +17,7 @@ public abstract class Action
 	public static readonly Dictionary<ActionType, Action> Actions = new();
 	public readonly ActionType ActionType;
 	public static Action? ActiveAction { get; private set; }
-	public string Description { get; protected set; } = "";
+
 	public Action(ActionType? type)
 	{
 		if(type==null) return;
@@ -26,15 +27,23 @@ public abstract class Action
 
 	public static void SetActiveAction(ActionType? type)
 	{
+		
 		if (type == null)
 		{
 			ActiveAction = null;
+#if CLIENT
+			GameLayout.UpdateActionButtons();	
+#endif
 			return;
 		}
 		
 
 		ActiveAction = Actions[(ActionType)type];
 		ActiveAction.InitAction();
+#if CLIENT
+		GameLayout.UpdateActionButtons();	
+#endif
+
 	}
 	public static ActionType? GetActiveActionType()
 	{
@@ -48,16 +57,13 @@ public abstract class Action
 
 	public static void Init()
 	{
+		new Attack();
 		new Face();
 		new Move();
 		new Crouch();
-		new Fire();
 		new OverWatch();
-		new SecondWind();
-		new Headshot();
-		new Supress();
 		new UseItem();
-		new Inspire();
+		new UseExtraAbility();
 
 	}
 
@@ -105,8 +111,10 @@ public abstract class Action
 	}
 	public void PerformFromPacket(Controllable actor,Vector2Int target)
 	{
-
-
+#if CLIENT
+			Shootable.freeFire = true;
+#endif
+	
 		var result = CanPerform(actor, target);
 		if(!result.Item1)
 		{
@@ -122,5 +130,8 @@ public abstract class Action
 		ToPacket(actor,target);
 #endif
 	
+#if CLIENT
+		Shootable.freeFire = false;
+#endif
 	}
 }

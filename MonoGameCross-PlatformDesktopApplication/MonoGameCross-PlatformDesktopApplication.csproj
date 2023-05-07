@@ -32,11 +32,13 @@
         <None Update="Content\GradientVector.ttf">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
             <LogicalName>Icon.ico</LogicalName>
         </EmbeddedResource>
+        <EmbeddedResource Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.bmp">
@@ -68,5 +70,7 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="ClientSource\Rendering\UILayout\LayoutWithMenu\UnitGameLayout.cs" />
+      <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+      <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs" />
     </ItemGroup>
 </Project>

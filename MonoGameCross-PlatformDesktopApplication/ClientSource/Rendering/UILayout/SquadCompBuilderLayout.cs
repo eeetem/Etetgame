@@ -35,10 +35,16 @@ public class SquadCompBuilderLayout : UiLayout
 		unitStack.VerticalAlignment = VerticalAlignment.Bottom;
 		unitStack.Spacing = 25;
 		panel.Widgets.Add(unitStack);
-			
-			
+
+
+		List<string> units = new List<string>();
 		//one button for each unit type
-		string[] units = {"Marksman", "Heavy", "Scout"};
+		foreach (var obj in PrefabManager.WorldObjectPrefabs)
+		{
+			if(obj.Value.Controllable !=null){
+				units.Add(obj.Value.TypeName);
+			}
+		}
 
 		foreach (var unit in units)
 		{
@@ -158,10 +164,10 @@ public class SquadCompBuilderLayout : UiLayout
 
 	}
 
-	public override void Render(SpriteBatch batch, float deltatime)
+	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
-		base.Render(batch, deltatime);
-	
+		base.RenderBehindHud(batch, deltatime);
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		if (_currentlyPlacing != null)
 		{
 			var previewSprite = PrefabManager.WorldObjectPrefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
@@ -181,5 +187,6 @@ public class SquadCompBuilderLayout : UiLayout
 		{
 			batch.DrawCircle(Utility.GridToWorldPos((Vector2)point-new Vector2(-0.5f,-0.5f)),10,10,Color.Red,20f);
 		}
+		batch.End();
 	}
 }

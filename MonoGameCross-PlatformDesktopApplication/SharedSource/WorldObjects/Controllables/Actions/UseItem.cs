@@ -18,7 +18,7 @@ public class UseItem : Action
 			return new Tuple<bool, string>(false, "No Item Selected");
 		}
 
-		if (actor.FirePoints <= 0)
+		if (actor.ActionPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
@@ -28,8 +28,9 @@ public class UseItem : Action
 
 	public override void Execute(Controllable actor, Vector2Int target)
 	{
-		actor.FirePoints--;
-		actor.SelectedItem.Execute(actor, target);
+		actor.ActionPoints--;
+		actor.SelectedItem!.Execute(actor, target);
+		actor.RemoveItem(actor.SelectedItem);
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 	}
 

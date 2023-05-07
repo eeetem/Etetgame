@@ -82,12 +82,12 @@ namespace MultiplayerXeno
 		private static void GenerateMapList()
 		{
 			MapList.Clear();
-			foreach (var mapPath in GameManager.PreGameData.MapList)
+			foreach (var mapPath in PreGameData.MapList)
 			{
 				MapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
 			}
 			CustomMapList.Clear();
-			foreach (var mapPath in GameManager.PreGameData.CustomMapList)
+			foreach (var mapPath in PreGameData.CustomMapList)
 			{
 				CustomMapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
 			}

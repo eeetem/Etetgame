@@ -48,8 +48,7 @@ namespace MultiplayerXeno
 			WorldManager.Instance.Init();
 			Action.Init();
 			RenderSystem.Init(GraphicsDevice);
-			PopUpText.Init(GraphicsDevice);
-//
+
 			PathFinding.GenerateNodes();
 
 			base.Initialize();

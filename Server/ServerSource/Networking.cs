@@ -92,11 +92,11 @@ namespace MultiplayerXeno
 		{
 			if (player1)
 			{
-				GameManager.Player1?.Connection.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
+				GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
 			}
 			else
 			{
-				GameManager.Player2?.Connection.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
+				GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
 			}
 		}
 		
@@ -120,7 +120,7 @@ namespace MultiplayerXeno
 
 				if (GameManager.Player2 != null)
 				{
-					if (GameManager.Player2?.Connection != null) Kick("Kicked by host", GameManager.Player2?.Connection);
+					if (GameManager.Player2?.Connection != null) Kick("Kicked by host", GameManager.Player2.Connection);
 					GameManager.Player2 = null;
 				}
 
@@ -129,13 +129,13 @@ namespace MultiplayerXeno
 			});
 			connection.RegisterRawDataHandler("gameState", (packet, con) =>
 			{
-				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
+				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
 					return;
 				GameManager.StartSetup();
 			});
 			connection.RegisterRawDataHandler("mapSelect", (i, con) =>
 			{
-				if(con != GameManager.Player1.Connection  || GameManager.GameState != GameState.Lobby)
+				if(con != GameManager.Player1?.Connection  || GameManager.GameState != GameState.Lobby)
 					return;
 				selectedMap = RawDataConverter.ToUTF8String(i);
 				WorldManager.Instance.LoadMap(selectedMap);
@@ -145,7 +145,7 @@ namespace MultiplayerXeno
 			
 			connection.RegisterStaticPacketHandler<PreGameDataPacket>((data, con) =>
 			{
-				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
+				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
 					return;
 				GameManager.PreGameData.TurnTime = data.TurnTime;
 				SendPreGameInfo();
@@ -153,7 +153,7 @@ namespace MultiplayerXeno
 			
 			connection.RegisterStaticPacketHandler<MapDataPacket>((data, con) =>
 			{
-				if(con != GameManager.Player1.Connection || GameManager.GameState != GameState.Lobby)
+				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
 					return;
 				File.Delete("./Maps/Custom/"+data.MapData.Name+".mapdata");
 				File.WriteAllText("./Maps/Custom/"+data.MapData.Name+".mapdata", data.MapData.Serialise());

@@ -11,7 +11,7 @@ namespace MultiplayerXeno
 
 		public Client(string name,Connection? con)
 		{
-			this.Name = name;
+			Name = name;
 			Connection = con;
 		}
 

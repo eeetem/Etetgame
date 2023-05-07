@@ -26,7 +26,7 @@ public class LocalObject : IDrawable
 		this.sprite = sprite;//inefficient but fuck it
 		Transform.Position = position;
 		Transform.Scale = new Vector2(6, 6);
-		this.Velocity = velocity;
+		Velocity = velocity;
 		this.lifeTime = lifeTime;
 		lock (syncobj)
 		{

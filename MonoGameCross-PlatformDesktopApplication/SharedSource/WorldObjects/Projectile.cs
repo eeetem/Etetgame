@@ -20,16 +20,16 @@ namespace MultiplayerXeno
 		public bool targetLow;
 		public Projectile(ProjectilePacket packet)
 		{
-			this.result = packet.result;
-			this.covercast = packet.covercast;
-			this.dmg = packet.dmg;
-			this.originalDmg = packet.dmg;
-			this.dropoffRange = packet.dropoffRange;
-			this.determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
-			this.supressionRange = packet.suppresionRange;
-			this.supressionStrenght = packet.supressionStrenght;
-			this.shooterLow = packet.shooterLow;
-			this.targetLow = packet.targetLow;
+			result = packet.result;
+			covercast = packet.covercast;
+			dmg = packet.dmg;
+			originalDmg = packet.dmg;
+			dropoffRange = packet.dropoffRange;
+			determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
+			supressionRange = packet.suppresionRange;
+			supressionStrenght = packet.supressionStrenght;
+			shooterLow = packet.shooterLow;
+			targetLow = packet.targetLow;
 			CalculateDetails();
 			Fire();
 		}
@@ -38,30 +38,14 @@ namespace MultiplayerXeno
 		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
 			this.dmg = dmg;
-			this.originalDmg = dmg;
+			originalDmg = dmg;
 			this.dropoffRange = dropoffRange;
 			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
 			this.supressionRange = supressionRange;
 			this.supressionStrenght = supressionStrenght;
 			this.shooterLow = shooterLow;
 			this.targetLow = targetLow;
-				
-		/*	if (Vector2.Distance(from, to) <= 1.5)
-			{
-				result = WorldManager.Instance.Raycast(from , to, Cover.High,false,Cover.Full);
 
-				Vector2 dir = Vector2.Normalize(to - from);
-					to = result.CollisionPointLong + Vector2.Normalize(to - from);
-					RayCastOutcome cast;
-					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 2f, to, Cover.Full, true); //ignore cover pointblank
-					if (cast.hit && result.hitObjID != cast.hitObjID)
-					{
-						covercast = cast;
-					}
-				
-			}
-			else
-			{*/
 		if (shooterLow)
 		{
 			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
@@ -166,7 +150,7 @@ namespace MultiplayerXeno
 				
 
 					Cover passCover = Cover.High;
-					if (this.shooterLow)
+					if (shooterLow)
 					{
 						passCover = Cover.Low;
 					}
@@ -247,10 +231,12 @@ namespace MultiplayerXeno
 			Console.WriteLine("starting to supress");
 			List<WorldTile> tiles = SupressedTiles();
 			Console.WriteLine("checking " + tiles.Count + " tiles");
+
 			foreach (var tile in tiles)
 			{
 				if (tile.ControllableAtLocation != null)
 				{
+
 					tile.ControllableAtLocation.ControllableComponent.Suppress(supressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.ControllableAtLocation.ControllableComponent.Determination);
 				}

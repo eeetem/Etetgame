@@ -1,0 +1,11 @@
+
+
+bugs:
+shared toggle
+crouch update
+
+
+sfx list:
+-throw
+-footsteps
+-holster/unholster

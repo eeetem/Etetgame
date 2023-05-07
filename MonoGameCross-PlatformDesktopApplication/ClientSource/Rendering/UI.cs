@@ -61,6 +61,7 @@ namespace MultiplayerXeno
 			{
 				return; //let myra do it's thing
 			}
+			Console.WriteLine(Desktop.MouseInsideWidget);
 
 			var mouseState = Mouse.GetState();
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
@@ -80,7 +81,7 @@ namespace MultiplayerXeno
 
 		public static void MouseUp(object? sender, EventArgs e)
 		{
-			if (UI.Desktop.IsMouseOverGUI)
+			if (Desktop.IsMouseOverGUI)
 			{
 				return; //let myra do it's thing
 			}
@@ -106,7 +107,7 @@ namespace MultiplayerXeno
 
 
 	
-		public static Dialog OptionMessage(string title, string content, string option1text, EventHandler option1,string option2text, EventHandler option2)
+		public static Dialog OptionMessage(string title, string content, string option1text, EventHandler? option1,string option2text, EventHandler? option2)
 		{
 			var messageBox = Dialog.CreateMessageBox(title,content);
 			messageBox.ButtonCancel.Text = option1text;
@@ -134,9 +135,8 @@ namespace MultiplayerXeno
 		public static void Render(float deltaTime, SpriteBatch spriteBatch)
 		{
 		
-			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-			CurrentUI.Render(spriteBatch,deltaTime);
-			spriteBatch.End();
+
+			CurrentUI.RenderBehindHud(spriteBatch,deltaTime);
 
 			
 			Desktop.Root = root;
@@ -148,7 +148,10 @@ namespace MultiplayerXeno
 			{
 				Desktop.RenderVisual();
 			}
+			
+			CurrentUI.RenderFrontHud(spriteBatch,deltaTime);
 
+			
 
 		}
 

@@ -7,13 +7,13 @@ using MonoGame.Extended;
 
 namespace MultiplayerXeno
 {
-	public static class Utility
+	public  static partial class Utility
 	{ 
         
 
         public static Vector2Int DirToVec2(Direction dir)
         {
-            dir = Utility.NormaliseDir(dir);
+            dir = NormaliseDir(dir);
             switch (dir)
             {
                 case Direction.East:
@@ -201,7 +201,7 @@ namespace MultiplayerXeno
         public static Texture2D[] MakeSpriteSheet(Texture2D texture, int xsplits, int ysplits)
         {
            
-            Texture2D[] texture2Ds = Utility.SplitTexture(texture, texture.Width/xsplits, texture.Height/ysplits, out int _, out int _);
+            Texture2D[] texture2Ds = SplitTexture(texture, texture.Width/xsplits, texture.Height/ysplits, out int _, out int _);
 
             return texture2Ds;
         }

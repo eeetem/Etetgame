@@ -13,8 +13,8 @@ namespace MultiplayerXeno;
 		//spectators
 		public LobbyData(string name, int port)
 		{
-			this.Name = name;
-			this.Port = port;
+			Name = name;
+			Port = port;
 			HasPassword = false;
 			MapName = "Unknown";
 			PlayerCount = 0;

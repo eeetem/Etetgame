@@ -7,11 +7,11 @@ namespace MultiplayerXeno
 		public ActionType Type { get; set; }
 		public int ID { get; set; }
 		
-		public Vector2Int Target { get; set; }
+		public Vector2Int? Target { get; set; }
 		
 		public List<string> args { get; set;}
 
-		public GameActionPacket(int id, Vector2Int target, ActionType type)
+		public GameActionPacket(int id, Vector2Int? target, ActionType type)
 		{
 			ID = id;
 			Target = target;
@@ -29,11 +29,8 @@ namespace MultiplayerXeno
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
-		Sprint = 6,
-		HeadShot = 7,
-		Suppress = 8,
-		Inspire = 9,
-		UseItem = 10,
+		UseItem = 6,
+		UseAbility = 7,
 		
 	}
 

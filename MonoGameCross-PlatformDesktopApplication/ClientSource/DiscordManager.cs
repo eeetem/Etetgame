@@ -28,7 +28,7 @@ public static class DiscordManager
 		enabled = true;
 		client.SetPresence(new RichPresence()
 		{
-			Details = "https://discord.gg/TrmAJbMaQ3",
+			///Details = "https://discord.gg/TrmAJbMaQ3",
 			State = "In Menu",
 			Timestamps = new Timestamps()
 			{
@@ -41,6 +41,14 @@ public static class DiscordManager
 				LargeImageText = "if you read this you're gay",
 				SmallImageKey = "main",
 				SmallImageText = "gay aswell",
+			},
+			Buttons = new Button[1]
+			{
+				new Button()
+				{
+					Label = "Discord",
+					Url = "https://discord.gg/TrmAJbMaQ3"
+				}
 			}
 
 		}); 

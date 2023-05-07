@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.Items;
 #if CLIENT
 using FontStashSharp;
 #endif
@@ -23,7 +24,7 @@ public class OverWatch : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
-		if (actor.FirePoints <= 0)
+		if (actor.ActionPoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough fire points");
 		}
@@ -34,8 +35,8 @@ public class OverWatch : Action
 
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
-		actor.FirePoints=0;
-		actor.MovePoints=0;
+		actor.ActionPoints.Current=0;
+		actor.MovePoints.Current=0;
 		var positions = GetOverWatchPositions(actor, target);
 		foreach (var shot in positions)
 		{
@@ -68,9 +69,18 @@ public class OverWatch : Action
 		{
 			if (actor.CanHit(position))
 			{
+				foreach (var method in actor.Type.DefaultAttack.WorldAction.DeliveryMethods)
+				{
+					if (method is Shootable)
+					{
+						var proj = ((Shootable)method).MakeProjectile(actor, position);
+						possibleShots.Add(proj);
+						break;
+					}
 
-				var proj = ((Fire) Actions[ActionType.Attack]).MakeProjectile(actor, position);
-				possibleShots.Add(proj);
+				}
+
+				
 			}
 		}
 
@@ -82,7 +92,7 @@ public class OverWatch : Action
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-
+		//todo mod support, make this not only for shootables
 		foreach (var shot in GetOverWatchPositions(actor,target))
 		{
 

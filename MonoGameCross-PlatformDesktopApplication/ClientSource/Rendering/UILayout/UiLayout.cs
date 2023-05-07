@@ -71,7 +71,6 @@ public abstract class UiLayout
 
 	public virtual void MouseDown(Vector2Int position, bool rightclick)
 	{
-		if(!WorldManager.IsPositionValid(position)) return;
 
 	}
 	public virtual void MouseUp(Vector2Int position, bool righclick)
@@ -97,11 +96,17 @@ public abstract class UiLayout
 		
 		
 	}
-	public virtual void Render(SpriteBatch batch, float deltatime)
+	public virtual void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
+			
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
-
+		batch.End();
+	}
+	public virtual void RenderFrontHud(SpriteBatch batch, float deltatime)
+	{
+		
 	}
 
 	//probably shouldnt be here but idk where to put it
@@ -113,7 +118,7 @@ public abstract class UiLayout
 		var viewer = new ScrollViewer()
 		{
 			Left = 0,
-			Width = (int)(120*globalScale.X),
+			Width = (int)(100*globalScale.X),
 			Height = 250,
 			Top = 0,
 			HorizontalAlignment = HorizontalAlignment.Left,
@@ -126,7 +131,7 @@ public abstract class UiLayout
 		{
 			chatInput = new TextBox();
 		}
-		chatInput.Width = (int)(120*globalScale.X);
+		chatInput.Width = (int)(100*globalScale.X);
 		chatInput.Height = 20;
 		chatInput.Top = 135;
 		chatInput.Left = 0;
@@ -158,10 +163,10 @@ public abstract class UiLayout
 		};
 		var inputbtn = new TextButton()
 		{
-			Width = 100,
+			Width = 80,
 			Height = 30,
-			Top = 135,
-			Left = (int)(120*globalScale.X),
+			Top = 160,
+			Left = (int)(60*globalScale.X),
 			Text = "Send",
 			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Center,

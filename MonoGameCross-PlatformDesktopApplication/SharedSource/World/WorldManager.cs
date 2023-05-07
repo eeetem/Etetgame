@@ -50,7 +50,7 @@ namespace MultiplayerXeno
 		{
 			_allTiles.Clear();
 
-			foreach (var tile  in WorldManager.Instance._gridData)
+			foreach (var tile  in Instance._gridData)
 			{
 				_allTiles.Add(tile);
 			}
@@ -542,7 +542,7 @@ namespace MultiplayerXeno
 			{
 				foreach (var tile in new List<WorldTile>(tiles))
 				{
-					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, false).hit)
+					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, false,true).hit)
 					{
 						tiles.Remove(tile);
 					}
@@ -719,6 +719,11 @@ namespace MultiplayerXeno
 				GameLayout.RegisterContollable(component);
 #endif
 				tile.ControllableAtLocation = WO;
+
+				if (data.ControllableData.Value.JustSpawned)//bad spot for this but whatever for now
+				{
+					type.Controllable.SpawnEffect?.Apply(tile.Position);
+				}
 			}
 			else
 			{

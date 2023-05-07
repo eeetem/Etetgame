@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using MultiplayerXeno;
 using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno;
 
-public static partial class PrefabManager
+public static class PrefabManager
 {
 	public static Dictionary<string, WorldObjectType> WorldObjectPrefabs = new Dictionary<string, WorldObjectType>();
-	public static Dictionary<string, UsableItem> UseItems = new Dictionary<string, UsableItem>();
+	public static Dictionary<string, WorldAction> UseItems = new Dictionary<string, WorldAction>();
+	public static Dictionary<string, StatusEffectType> StatusEffects = new Dictionary<string, StatusEffectType>();
 
 
 	public static void MakePrefabs()
@@ -19,6 +19,19 @@ public static partial class PrefabManager
 		XmlDocument xmlDoc= new XmlDocument();
 		xmlDoc.Load("ObjectData.xml"); 
 
+		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("statuseffect"))
+		{
+
+			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+			var effectelement = xmlObj.GetElementsByTagName("effect")[0];
+			if (effectelement != null)
+			{
+				var itm = ParseEffect(effectelement);
+				var st = new StatusEffectType(name,itm);
+				StatusEffects.Add(name, st);
+			}
+
+		}
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
 		{
@@ -30,23 +43,53 @@ public static partial class PrefabManager
 			XmlNode contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
 			if (contollableObj != null)
 			{
+				
 				controllableType = new ControllableType(name);
 				controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
-				controllableType.WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
-				controllableType.MaxHealth = int.Parse(contollableObj.Attributes?["health"]?.InnerText ?? "10");
+				int WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 				controllableType.Maxdetermination = int.Parse(contollableObj.Attributes?["determination"]?.InnerText ?? "2");
 				controllableType.InventorySize = int.Parse(contollableObj.Attributes?["inventory"]?.InnerText ?? "1");
 				controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
-				controllableType.MaxFirePoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
-				controllableType.WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
-				controllableType.SupressionRange = int.Parse(contollableObj.Attributes?["supression"]?.InnerText ?? "1");
+				controllableType.MaxActionPoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
+				int WeaponDmg = int.Parse(contollableObj.Attributes?["attack"]?.InnerText ?? "4");
+				int SupressionRange = int.Parse(contollableObj.Attributes?["supression"]?.InnerText ?? "1");
 				controllableType.OverWatchSize = int.Parse(contollableObj.Attributes?["overwatch"]?.InnerText ?? "2");
 				controllableType.SightRange = int.Parse(contollableObj.Attributes?["sightrange"]?.InnerText ?? "16");
-				XmlNode extraction = ((XmlElement)contollableObj).GetElementsByTagName("action")[0];
-				if (extraction != null)
+				
+				
+				var defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
+				string actname = defaultact.Attributes?["name"]?.InnerText ?? "";
+				string tooltip = defaultact.Attributes?["tip"]?.InnerText ?? "";
+				int DeterminationChange = int.Parse(defaultact.Attributes?["det"]?.InnerText ?? "0");
+				ValueChange MovePointChange =     new ValueChange(defaultact.Attributes?["mpoint"]?.InnerText ?? "0");
+				ValueChange ActionPointChange =   new ValueChange(defaultact.Attributes?["apoint"]?.InnerText ?? "0"); 
+				WorldAction action =	PraseWorldAction((XmlElement) defaultact, actname);
+
+				controllableType.DefaultAttack = new ExtraAction(actname,tooltip,DeterminationChange,MovePointChange,ActionPointChange,action,false);
+				
+				var speff = ((XmlElement) contollableObj).GetElementsByTagName("spawneffect")[0];
+				if (speff != null)
 				{
-					var action = new Tuple<string, ActionType>(extraction.Attributes?["name"]?.InnerText,(ActionType)int.Parse(extraction.Attributes?["type"]?.InnerText));
-					controllableType.extraActions.Add(action);
+					controllableType.SpawnEffect = ParseEffect((XmlElement) speff);
+				}
+
+
+
+				var actions = ((XmlElement) contollableObj).GetElementsByTagName("action");
+				foreach (var act in actions)
+				{ 
+					controllableType.extraActions.Add(ParseControllableAction((XmlElement)act));
+				}
+				var toggleActions = ((XmlElement) contollableObj).GetElementsByTagName("toggleaction");
+				foreach (var act in toggleActions)
+				{
+				//	ExtraToggleAction toggle = new ExtraToggleAction();
+					XmlElement actobj = (XmlElement) act;
+					ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]);
+					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]);
+					 tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
+					ExtraToggleAction toggle = new ExtraToggleAction(on,off);
+					controllableType.extraActions.Add(toggle);
 				}
 
 			}
@@ -117,8 +160,8 @@ public static partial class PrefabManager
 			type.Surface = surface;
 			type.Impassible = impassible;
 			type.MaxHealth = MaxHealth;
-			if(xmlObj.GetElementsByTagName("DestroyEffect").Count > 0){
-				type.desturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("DestroyEffect")[0]);	
+			if(xmlObj.GetElementsByTagName("destroyEffect").Count > 0){
+				type.desturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]);	
 			} 
 			
 
@@ -129,8 +172,6 @@ public static partial class PrefabManager
 			int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
 #endif
 			
-				
-				
 				
 
 #if CLIENT
@@ -175,46 +216,130 @@ public static partial class PrefabManager
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
 		{
 
-				
 			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
-				
-			UsageMethod? usg = null;
-			WorldEffect? eff = new WorldEffect();
-
-			XmlNode? grenade = xmlObj.GetElementsByTagName("throwable")[0];
-			if (grenade != null)
-			{
-					
-				int throwRange = int.Parse(grenade.Attributes?["throwRange"]?.InnerText ?? "5");
-				usg = new Throwable(throwRange);
-					
-
-
-			}
-
-			if (usg == null)
-			{
-				throw new Exception("coulnt parse item: no usage method");
-			}
-			//make function
-			eff = ParseEffect(xmlObj.GetElementsByTagName("effect")[0]);
-			
-			UsableItem itm = new UsableItem(name,usg,eff);
+			var itm = PraseWorldAction(xmlObj,name);
+		
 			UseItems.Add(name,itm);
 				
 		}
+	}
+
+	private static ExtraAction ParseControllableAction(XmlElement actobj)
+	{
+		string actname;
+		string tooltip;
+		int DeterminationChange = int.Parse(actobj.Attributes?["det"]?.InnerText ?? "0");
+		ValueChange MovePointChange =     new ValueChange(actobj.Attributes?["mpoint"]?.InnerText ?? "0");
+		ValueChange ActionPointChange =   new ValueChange(actobj.Attributes?["apoint"]?.InnerText ?? "0"); 
+		WorldAction action;
+		
+		actname = actobj.Attributes?["name"]?.InnerText ?? "";
+		tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
+		action = PraseWorldAction(actobj, actname);
+		
+		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
+		ExtraAction a = new ExtraAction(actname, tooltip, DeterminationChange, MovePointChange, ActionPointChange, action,immideaateActivation);
+		return a;
+	}
+
+	private static WorldAction PraseWorldAction(XmlElement xmlObj,string name)
+	{
+
+		List<DeliveryMethod> usgs = new List<DeliveryMethod>();
+		WorldEffect? eff = new WorldEffect();
+		//loop through all child nodes of the element
+		foreach (var n in  xmlObj.ChildNodes)
+		{
+			XmlNode node = (XmlNode) n;
+			DeliveryMethod dvm = null;
+			if (node.Name == "throwable")
+			{	
+				
+				int throwRange = int.Parse(node.Attributes?["throwRange"]?.InnerText ?? "5");
+				dvm = new Throwable(throwRange);
+			}else if (node.Name == "vissioncast")
+			{	
+				
+				int throwRange = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
+				dvm = new VissionCast(throwRange);
+			}
+			else if (node.Name == "shootable")
+			{
+				int dmg = int.Parse(node.Attributes?["dmg"]?.InnerText ?? "0");
+				int detRes = int.Parse(node.Attributes?["detRes"]?.InnerText ?? "0");
+				int supression = int.Parse(node.Attributes?["supression"]?.InnerText ?? "0");
+				int supressionRange = int.Parse(node.Attributes?["supressionRange"]?.InnerText ?? "0");
+				int dropoff = int.Parse(node.Attributes?["dropOffRange"]?.InnerText ?? "10");
+				dvm = new Shootable(dmg,detRes,supression,supressionRange,dropoff);
+			}
+
+			if (dvm != null)
+			{
+				Vector2Int offset = Vector2Int.Parse(node.Attributes?["offset"]?.InnerText ?? "0,0");
+				dvm.offset = offset;
+				usgs.Add(dvm);
+			}
+		}
+		
+		if (usgs.Count == 0)
+		{
+			usgs.Add(new ImmideateDelivery());
+		}
+		//make function
+		var effectelement = xmlObj.GetElementsByTagName("effect")[0];
+		if (effectelement != null)
+		{
+			eff = ParseEffect(effectelement);
+		}
+		
+			
+		WorldAction itm = new WorldAction(name,usgs,eff);
+		return itm;
 	}
 
 	private static WorldEffect ParseEffect(XmlNode effect)
 	{
 		WorldEffect eff = new WorldEffect();
 				
-		eff.range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "3");
+		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "1");
+		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
+		eff.Visible = bool.Parse(effect.Attributes?["visible"]?.InnerText ?? "true");
+		eff.Los = bool.Parse(effect.Attributes?["los"]?.InnerText ?? "false");
+		string target = effect.Attributes?["target"]?.InnerText ?? "any";
+		string[] targets = target.Split(',');
+		foreach (var tar in targets)
+		{
+			switch (tar)
+			{
+				case "friend":
+					eff.TargetFriend = true;
+					break;
+				case "foe":
+					eff.TargetFoe = true;
+					break;		
+				case "self":
+					eff.TargetSelf = true;
+					break;	
+				case "any":
+					eff.TargetFriend = true;
+					eff.TargetSelf = true;
+					eff.TargetFoe = true;
+					break;
+				
+			}
+		}
 		XmlNode? dmgitm = ((XmlElement) effect).GetElementsByTagName("damage")[0];
 		if (dmgitm != null)
 		{
-			eff.dmg = int.Parse(dmgitm.Attributes?["dmg"]?.InnerText ?? "0");
-			eff.detDmg = int.Parse(dmgitm.Attributes?["detDmg"]?.InnerText ?? "0");
+			eff.Dmg =  int.Parse(dmgitm.Attributes?["dmg"]?.InnerText ?? "0");
+			eff.Det = int.Parse(dmgitm.Attributes?["det"]?.InnerText ?? "0");
+		}
+		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
+		if (valitm != null)
+		{
+			eff.Act =  new ValueChange(valitm.Attributes?["act"]?.InnerText ?? "0");
+			eff.Move = new ValueChange(valitm.Attributes?["move"]?.InnerText ?? "0");
+			eff.MoveRange = new ValueChange(valitm.Attributes?["moveRange"]?.InnerText ?? "0");
 		}
 		XmlNode? placeItem = ((XmlElement) effect).GetElementsByTagName("place")[0];
 		if(placeItem !=null)
@@ -222,8 +347,29 @@ public static partial class PrefabManager
 			string innerText = placeItem.Attributes?["name"]?.InnerText;
 			if (innerText != null)
 			{
-				eff.placeItemPrefab = innerText;
-						
+				eff.PlaceItemPrefab = innerText;
+			}
+		}
+
+		var statusapp = ((XmlElement) effect).GetElementsByTagName("applystatus");
+		foreach (var status in statusapp)
+		{
+			var s = (XmlElement) status;
+			string statname = s.Attributes?["status"]?.InnerText;
+			int duration = int.Parse(s.Attributes?["duration"]?.InnerText ?? "100000");
+			if (statname != null)
+			{
+				eff.AddStatus.Add(new Tuple<string, int>(statname,duration));
+			}
+		}
+		var statusrem = ((XmlElement) effect).GetElementsByTagName("removestatus");
+		foreach (var status in statusrem)
+		{
+			var s = (XmlElement) status;
+			string statname = s.Attributes?["status"]?.InnerText;
+			if (statname != null)
+			{
+				eff.RemoveStatus.Add(statname);
 			}
 		}
 #if CLIENT
@@ -232,14 +378,15 @@ public static partial class PrefabManager
 		{
 			var node = (XmlNode) elem;
 					
-			eff.effects.Add(new Tuple<string, string, string>(node.Attributes["name"].InnerText,node.Attributes["target"].InnerText,node.Attributes["speed"].InnerText));
+			eff.Effects.Add(new Tuple<string, string, string>(node.Attributes["name"].InnerText,node.Attributes["target"].InnerText,node.Attributes["speed"].InnerText));
 		}
 
 		var sfx = (((XmlElement)effect).GetElementsByTagName("sfx")[0])?.Attributes?["name"]?.InnerText;
-		eff.sfx = sfx;
+		eff.Sfx = sfx;
 #endif
 
 		return eff;
 	}
 
 }
+

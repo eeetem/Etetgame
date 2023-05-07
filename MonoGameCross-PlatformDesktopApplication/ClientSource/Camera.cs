@@ -11,8 +11,8 @@ namespace MultiplayerXeno
 	public static class Camera
 	{
 
-		private static OrthographicCamera Cam { get; set; }
-		public static AudioListener AudioListener{ get; private set; }
+		private static OrthographicCamera Cam { get; set; } = null!;
+		public static AudioListener AudioListener{ get; private set; } = null!;
 
 		private static Vector2 velocity = new Vector2();
 		private static float ZoomVelocity = 0;
@@ -128,6 +128,8 @@ namespace MultiplayerXeno
 			var state = Mouse.GetState();
 			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), Cam.GetInverseViewMatrix());
 		}
+
+
 		private static int lastScroll;
 		public static void Update(GameTime gameTime)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno
 {
@@ -16,30 +17,24 @@ namespace MultiplayerXeno
 		public readonly string Name;
 		public int MoveRange = 4;
 		public int SightRange = 16;
-		public int SupressionRange = 2;
 		public int OverWatchSize = 2;
 		
 		public int MaxMovePoints = 2;
-		public int MaxFirePoints = 2;
-		
+		public int MaxActionPoints = 2;
 
-		public int WeaponDmg = 4;
-		public int WeaponRange = 10;
-		
-		public int MaxHealth = 10;
 		public int Maxdetermination = 2;
 
 		public int InventorySize = 1;
 
 
 		public Texture2D[] CrouchSpriteSheet;
+		public ExtraAction DefaultAttack;
+		public List<IExtraAction> extraActions = new List<IExtraAction>();
+		public WorldEffect? SpawnEffect { get; set; }
 
-		public List<Tuple<string, ActionType>> extraActions = new List<Tuple<string, ActionType>>();
 		public Controllable Instantiate(WorldObject parent,ControllableData data)
 		{
-			
 			Controllable obj = new Controllable(data.Team1,parent,this,data);
-
 
 			return obj;
 		}

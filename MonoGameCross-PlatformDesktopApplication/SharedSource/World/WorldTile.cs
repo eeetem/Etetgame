@@ -12,7 +12,7 @@ namespace MultiplayerXeno
 
 		public WorldTile(Vector2Int position)
 		{
-			this.Position = position;
+			Position = position;
 		}
 		public static readonly object syncobj = new object();
 
@@ -204,7 +204,7 @@ namespace MultiplayerXeno
 			{
 				foreach (var watcher in Watchers)
 				{
-					watcher.OverWatchSpoted(this.Position);
+					watcher.OverWatchSpoted(Position);
 				}
 
 			}
@@ -514,7 +514,7 @@ namespace MultiplayerXeno
 			{
 				if (!ignoreContollables)
 				{
-					if (ControllableAtLocation != null && ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (ControllableAtLocation.Facing == dir || ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || _controllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
+					if (ControllableAtLocation != null && ControllableAtLocation.IsVisible() &&ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (ControllableAtLocation.Facing == dir || ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || _controllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
 					{
 
 						biggestCoverObj = ControllableAtLocation;
@@ -538,9 +538,9 @@ namespace MultiplayerXeno
 			if (tileInDir != null)
 			{
 
-				if (!ignoreContollables)
+				if (!ignoreContollables && tileInDir.ControllableAtLocation != null &&  tileInDir.ControllableAtLocation.IsVisible())
 				{
-					if (tileInDir.ControllableAtLocation != null && tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == dir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
+					if (tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == dir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
 					{
 
 						biggestCoverObj = tileInDir.ControllableAtLocation;
@@ -548,7 +548,7 @@ namespace MultiplayerXeno
 					}
 
 					Direction inverseDir = Utility.NormaliseDir(dir - 4);
-					if (tileInDir.ControllableAtLocation != null && tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == inverseDir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
+					if (tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == inverseDir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
 					{
 
 						biggestCoverObj = tileInDir.ControllableAtLocation;
@@ -575,7 +575,7 @@ namespace MultiplayerXeno
 
 		~WorldTile()
 		{
-			Console.WriteLine("TILE DELETED!: "+this.Position);
+			Console.WriteLine("TILE DELETED!: "+Position);
 		}
 
 		public void NextTurn()
