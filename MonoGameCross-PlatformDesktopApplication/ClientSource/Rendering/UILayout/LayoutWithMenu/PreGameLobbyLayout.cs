@@ -258,12 +258,7 @@ public class PreGameLobbyLayout : MenuLayout
 				}
 		
 				rightStack.Widgets.Add(spectatorViewer);
-				var chatViewer = new ScrollViewer();
-				chatViewer.VerticalAlignment = VerticalAlignment.Bottom;
-				chatViewer.Top = -40;
-				AddChatBoxToViewer(chatViewer);
-				middlePanel.Widgets.Add(chatViewer);
-				
+		
 			
 
 				var input = new TextBox()

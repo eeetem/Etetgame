@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -133,7 +134,9 @@ public class SquadCompBuilderLayout : UiLayout
 				btn.Click += (s, a) =>
 				{
 					placed.Inventory.Add(itm.Key);
-					UI.Desktop.Widgets.Remove(itemMenu);
+					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Controllable.InventorySize){
+						UI.Desktop.Widgets.Remove(itemMenu);
+					}
 				};
 				stack.Widgets.Add(btn);
 
@@ -180,7 +183,12 @@ public class SquadCompBuilderLayout : UiLayout
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
 			if (member.Inventory.Count > 0)
 			{
-				batch.DrawString(Game1.SpriteFont, member.Inventory[0], Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)), Color.White);
+				string text = "";
+				foreach (var item in member.Inventory)
+				{
+					text+= item + "\n";
+				}
+				batch.DrawText(text, Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)),1,50, Color.Yellow);
 			}
 		}
 		foreach (var point in mySpawnPoints)

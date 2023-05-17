@@ -74,14 +74,16 @@ namespace MultiplayerXeno
 
 			}
 
-			if (Random.Shared.Next(100) > 50)
-			{
-				NextTurn();
-			}
+
 
 		
 			Thread.Sleep(1000);//let the clients process spawns
 			SendData();
+			Thread.Sleep(1000);//let the clients process UI
+			if (Random.Shared.Next(100) > 50)
+			{
+				NextTurn();
+			}
 		}
 
 		public static void SendData()

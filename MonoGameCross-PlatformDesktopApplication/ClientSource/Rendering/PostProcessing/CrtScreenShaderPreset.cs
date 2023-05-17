@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.PostProcessing;
@@ -7,14 +8,14 @@ public class CrtScreenShaderPreset : ShaderPreset
 {
 	public CrtScreenShaderPreset()
 	{
-
+		EffectParams["shape"] = 0f;
 	}
 
 	private float counter = 0;
 
 	public override void Update(float deltatime)
 	{
-		counter += (deltatime / 3000f);
+		counter += (deltatime / 3000f)* (counter*2f+Random.Shared.NextSingle())/2f;
 
 
 		float range = 1;
@@ -33,10 +34,10 @@ public class CrtScreenShaderPreset : ShaderPreset
 
 		uiAnim += min;
 		
-		EffectParams["bloomAmount"] = (60+5f*uiAnim);
-		EffectParams["warpX"] = (0.04f*uiAnim);
-		EffectParams["warpY"] = (0.04f*uiAnim);
-		EffectParams["shape"] = (0.02f*uiAnim);
+		EffectParams["bloomAmount"] = (10+3f*uiAnim);
+		EffectParams["warpX"] = (0.01f*uiAnim);
+		EffectParams["warpY"] = (0.01f*uiAnim);
+
 		EffectParams["maskLight"] = (8f*uiAnim);
 		EffectParams["maskDark"] = (1f*uiAnim);
 
@@ -50,8 +51,6 @@ public class CrtScreenShaderPreset : ShaderPreset
 		
 		EffectParams["hardBloomScan"] = -5f;
 		EffectParams["hardBloomPix"] = -0f;
-		
-		EffectParams["scaleInLinearGamma"] = 2f;
 		EffectParams["shadowMask"] = 2f;
 		EffectParams["brightboost"] = (0.15f);
 		

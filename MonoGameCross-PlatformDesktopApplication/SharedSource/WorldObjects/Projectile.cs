@@ -161,7 +161,7 @@ namespace MultiplayerXeno
 		
 					}
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
 				}

@@ -162,7 +162,7 @@ public class WorldEffect
 			WorldObject Wo = tile.ControllableAtLocation;
 			Wo.PreviewData.detDmg += Det;
 			Wo.PreviewData.finalDmg += Dmg;
-			tile.ControllableAtLocation.PreviewData.finalDmg += Dmg;
+			//tile.ControllableAtLocation.PreviewData.finalDmg += Dmg;
 		}
 
 		if (PlaceItemPrefab != null)

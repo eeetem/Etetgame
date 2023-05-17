@@ -165,7 +165,7 @@ public class Shootable : DeliveryMethod
 		}
 
 				
-		spriteBatch.DrawString(Game1.SpriteFont,"X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
+		spriteBatch.DrawText("X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(), 2/(Camera.GetZoom()),Color.Wheat);
 
 
 
@@ -225,7 +225,7 @@ public class Shootable : DeliveryMethod
 
 
 			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 25);
-			spriteBatch.DrawString(Game1.SpriteFont,""+dmg,   Utility.GridToWorldPos(dropOff),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			spriteBatch.DrawText(""+dmg,   Utility.GridToWorldPos(dropOff),4,Color.White);
 
 			dmg = (int) Math.Ceiling(dmg / 1.8f);
 			k++;

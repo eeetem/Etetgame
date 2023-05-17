@@ -114,6 +114,7 @@ namespace MultiplayerXeno
 			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			DiscordManager.Update();
+			GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
 		}

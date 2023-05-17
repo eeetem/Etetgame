@@ -20,8 +20,8 @@ namespace MultiplayerXeno
 		private static ContentManager content;
 		private static GraphicsDevice graphicsDevice;
 		
-		public static CrtLIghtNormalShader[] CrtLightShaderPresets;
-		public static CrtLIghtNormalShader Crtdissapation;
+		public static UIElementShader[] CrtLightShaderPresets;
+		public static UIElementShader Crtdissapation;
 		public static CrtScreenShaderPreset CrtScreenPreset;
 
 		public static void Init(ContentManager c, GraphicsDevice g)
@@ -31,7 +31,7 @@ namespace MultiplayerXeno
 
 
 			crtEffect = content.Load<Effect>("shaders/CRT");
-			UIcrtEffect = content.Load<Effect>("shaders/CRT2lol");
+			UIGlowEffect = content.Load<Effect>("shaders/Glow");
 			connectionEffect = content.Load<Effect>("shaders/lc");
 			colorEffect = content.Load<Effect>("shaders/colorshader");
 			distortEffect = content.Load<Effect>("shaders/distort");
@@ -43,12 +43,12 @@ namespace MultiplayerXeno
 
 			combinedSpriteBatch = new SpriteBatch(g);
 			emptyTexture = new Texture2D(g, 1, 1);
-			CrtLightShaderPresets = new CrtLIghtNormalShader[50];
+			CrtLightShaderPresets = new UIElementShader[50];
 		for (int i = 0; i < 50; i++)
 			{
-				CrtLightShaderPresets[i] = new CrtLIghtNormalShader();
+				CrtLightShaderPresets[i] = new UIElementShader();
 			}
-			Crtdissapation = new CrtLIghtNormalShader();
+			Crtdissapation = new UIElementShader();
 			CrtScreenPreset = new CrtScreenShaderPreset();
 			Crtdissapation.dissapation = true;
 			
@@ -106,7 +106,8 @@ namespace MultiplayerXeno
 			EffectParams["dyamplitude"] = 80f;
 			EffectParams["dyfrequency"] = 80f;
 
-			
+			DefaultParams["noise"] = 0.002f;
+			DefaultParams["clmagnitude"] = 3f;
 	
 			Task.Factory.StartNew(StartingTweens);
 		}
@@ -148,12 +149,13 @@ namespace MultiplayerXeno
 		private static SpriteBatch combinedSpriteBatch;
 
 		public static Effect crtEffect;
-		public static Effect UIcrtEffect;
+		public static Effect UIGlowEffect;
 		public static Effect connectionEffect;
 		public static Effect colorEffect;
 		public static Effect distortEffect;
 
 		private static readonly Dictionary<string, float> EffectParams = new Dictionary<string, float>();
+		private static readonly Dictionary<string, float> DefaultParams = new Dictionary<string, float>();
 
 		private static float clcounter = 0;
 		private static float dxcounter = 0;
@@ -182,14 +184,14 @@ namespace MultiplayerXeno
 
 		public static void ApplyScreenUICrt(Vector2 textureVector2)
 		{
-			CrtScreenPreset.Apply(UIcrtEffect,textureVector2);
+			CrtScreenPreset.Apply(crtEffect,textureVector2);
 		}
 
-		public static void ShuffleUICRTeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
+		public static void ShuffleUIeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
 		{
 			if (disapate)
 			{
-				Crtdissapation.Apply(UIcrtEffect,textureVector2);
+				Crtdissapation.Apply(UIGlowEffect,textureVector2);
 				return;
 			}
 
@@ -199,7 +201,7 @@ namespace MultiplayerXeno
 				seed = (seed + 1) % CrtLightShaderPresets.Length;
 			}
 
-			CrtLightShaderPresets[seed].Apply(UIcrtEffect,textureVector2);
+			CrtLightShaderPresets[seed].Apply(UIGlowEffect,textureVector2);
 		}
 
 
@@ -384,6 +386,11 @@ namespace MultiplayerXeno
 			Task.Factory.StartNew(() =>
 			{
 				var startValue = EffectParams[parameter];
+				if (DefaultParams.ContainsKey(parameter))
+				{
+					startValue = DefaultParams[parameter];
+				}
+
 				AddTween(parameter, target, speed, wipeQueue);
 				Thread.Sleep(100);
 				AddTween(parameter, startValue, returnSpeed, false);

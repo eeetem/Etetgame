@@ -15,7 +15,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		static float MSperTick = 1000 / tickrate;
 		static Stopwatch stopWatch = new Stopwatch();
 		public static Dictionary<string, Connection> Players = new Dictionary<string, Connection>();
-		private static ServerConnectionContainer serverConnectionContainer;
+		private static ServerConnectionContainer? serverConnectionContainer;
 		
 		static void Main(string[] args)
 		{

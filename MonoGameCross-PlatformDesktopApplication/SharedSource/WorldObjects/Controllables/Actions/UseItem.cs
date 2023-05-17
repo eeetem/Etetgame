@@ -30,7 +30,7 @@ public class UseItem : Action
 	{
 		actor.ActionPoints--;
 		actor.SelectedItem!.Execute(actor, target);
-		actor.RemoveItem(actor.SelectedItem);
+		actor.RemoveItem(actor.SelectedItemIndex);
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 	}
 

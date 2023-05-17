@@ -1,9 +1,12 @@
-
+hour counter: rough estimate may7 (400) + 5
 
 bugs:
-shared toggle
-crouch update
+auto-target with supression does normal shot preview
 
+Scout:
+- Used 3 Movements point (to bottom corner)
+- Used 2 movements to tunnel, then crouched
+- uncrouch, 2 movements
 
 sfx list:
 -throw

@@ -49,7 +49,7 @@
     <name>Marksman</name>
     <controllable moveRange = "6" moves="2" determination="3">
       <defaultAttack>
-        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+        <shootable dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.5" speed="100"/>
@@ -140,10 +140,10 @@
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
     <sprite name="Officer"  offset= "0,0"/>
     <name>Officer</name>
-    <controllable moveRange = "6" moves="2" actions="2" determination="2" sightrange="20">
+    <controllable moveRange = "6" moves="2" actions="2" determination="3"  sightrange="20">
 
       <defaultAttack>
-        <shootable dmg ="8" detRes="2" supression="1" supressionRange="1" dropOffRange="9"/>
+        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
@@ -151,28 +151,46 @@
         </effect>
       </defaultAttack>
 
-      <action immideate="true" name="Rally" tip="All nearby friendlies stop panicking and gain 2 determiation" det ="-2" mpoint="0" apoint="0">
-        <effect visible ="false" los="true" range = "6" exRange="1" target="friend">
-          <damage det="-2"/>
+      <action immideate="true" name="Rally" tip="All nearby friendlies stop panicking and gain full determiation" det ="-2" mpoint="0" apoint="0">
+        <effect visible ="false" los="true" range = "7" exRange="1" target="friend">
+          <damage det="-100"/>
         </effect>
       </action>
 
       <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="0" mpoint="-1" apoint="-1">
-        <vissioncast Range="18"/>//swap this to something more suitable later on
+        <vissioncast Range="18"/>
         <effect range="1" visible ="false" target="friend">
           <applystatus status="Boost" duration="1"/>
         </effect>
       </action>
       
+      //battlefield execution
+      
     </controllable>
   </object>
-  <!--   <object VCover = "0" Faceable = "true" SCover ="3">
-      <sprite name="Heavy"  offset= "0,0"/>
-      <name>Officer</name>
-      <controllable moveRange = "5" moves="2" actions="2" supression="2" overwatch="2" attack="5" determination="5" health="16" weaponRange ="12">
-        action name="Inspire" type="10"/
-      </controllable>
-    </object>-->
+
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
+    <sprite name="Specialist"  offset= "0,0"/>
+    <name>Specialist</name>
+    <controllable moveRange = "4" inventory="5" moves="3" actions="1" determination="2">
+
+      <defaultAttack>
+        <shootable dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="9"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="1" speed="100"/>
+          <sfx name="rifle"/>
+        </effect>
+      </defaultAttack>
+<!--
+      <action immideate="true" name="Resupply" tip="Nearby friendlies get their last used item back" det ="-2" mpoint="-1" apoint="-1">
+        <effect visible ="false" los="true" range = "2" exRange="1" target="friend"><giveitem>
+        </effect>
+      </action>-->
+      
+
+    </controllable>
+  </object>
  
   <statuseffect>
     <name>Holstered</name>
@@ -214,7 +232,7 @@
   <item>
     <name>Satchel Charge</name>
     <throwable throwRange="4"/>
-    <effect range="1">
+    <effect visible ="false" range="1">
       <place name="Satchel"/>
     </effect>
   </item>

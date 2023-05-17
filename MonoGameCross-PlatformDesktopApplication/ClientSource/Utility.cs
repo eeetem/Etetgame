@@ -9,7 +9,17 @@ namespace MultiplayerXeno;
 
 public static partial class Utility
 {
-	
+
+	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
+	{
+		DrawText(spriteBatch,  text,  position, 1,100,  c);
+	}
+	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position,float scale, Color c)
+	{
+		DrawText(spriteBatch,  text,  position, scale,100,  c);
+	}
+
+
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, float scale, int width, Color c)
 	{
 		int row = 0;
@@ -19,24 +29,37 @@ public static partial class Utility
 		{
 			char car = text[index];
 			charsinRow++;
-			int nextSpaceCounter = 0;
-			int nextSpace = 0;
-			//look for next space
-			for (int i = index; i < text.Length; i++)
-			{
-				
-				nextSpaceCounter++;
-				if (text[i] == ' ')
-				{
-					nextSpace = nextSpaceCounter;
-					break;
-				}
-			}
-			if (charsinRow+nextSpace > width)
+
+			
+			if(car == '\n')
 			{
 				row++;
-				charsinRow = 0;
+				charsinRow = -1;
+				continue;
 			}
+
+			//if (car == ' ')
+			//{
+				int nextSpaceCounter = 0;
+				int nextSpace = 0;
+				//look for next space
+				for (int i = index; i < text.Length; i++)
+				{
+
+					nextSpaceCounter++;
+					if (text[i] == ' ' || text[i] == '\n')
+					{
+						nextSpace = nextSpaceCounter;
+						break;
+					}
+				}
+
+				if (charsinRow + nextSpace > width)
+				{
+					row++;
+					charsinRow = 0;
+				}
+		//	}
 
 			string texId;
 			switch (car)
@@ -61,8 +84,23 @@ public static partial class Utility
 				case '?':
 					texId= "questionmark";
 					break;
+				case ':':
+					texId= "colon";
+					break;
+				case ';':
+					texId= "semicolon";
+					break;
 				case'\'':
 					texId = "apostrophe";
+					break;
+				case'(':
+					texId = "leftParentheses";
+					break;
+				case')':
+					texId = "rightParentheses";
+					break;
+				case'#':
+					texId = "hash";
 					break;
 				default:
 					texId = ""+car;
@@ -70,7 +108,7 @@ public static partial class Utility
 			}
 
 			Texture2D t = TextureManager.GetTexture("UI/text/" + texId);
-			spriteBatch.Draw(t, position + new Vector2(8 * charsinRow, 11 * row) * scale, null, Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+			spriteBatch.Draw(t, position + new Vector2(8 * charsinRow, 11 * row) * scale, null, c, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 		}
 	}
 }

@@ -134,28 +134,51 @@ Audio.PlaySound("capture");
 
 		public static void ParsePacket(GameActionPacket packet)
 		{
-			Console.WriteLine("recived action packet: "+packet.Type+" "+packet.ID+" "+packet.Target);
-			if (packet.Type == ActionType.EndTurn)
+			try
 			{
-				NextTurn();
-				return;
-			}
-
-			if (WorldManager.Instance.GetObject(packet.ID) == null)
-			{
-				Console.WriteLine("Recived packet for a non existant object: "+packet.ID);
-				return;
-			}
-			Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
-			Action act = Action.Actions[packet.Type];//else get controllable specific actions
-			if (act.ActionType == ActionType.UseAbility)
-			{
-				int ability = int.Parse(packet.args[0]);
-				UseExtraAbility.abilityIndex = ability;
-				IExtraAction a = controllable.extraActions[ability];
-				if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable)!= null)
+				Console.WriteLine("recived action packet: " + packet.Type + " " + packet.ID + " " + packet.Target);
+				if (packet.Type == ActionType.EndTurn)
 				{
-					string target = packet.args[1];
+					NextTurn();
+					return;
+				}
+
+				if (WorldManager.Instance.GetObject(packet.ID) == null)
+				{
+					Console.WriteLine("Recived packet for a non existant object: " + packet.ID);
+					return;
+				}
+
+				Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
+				Action act = Action.Actions[packet.Type]; //else get controllable specific actions
+				if (act.ActionType == ActionType.UseAbility)
+				{
+					int ability = int.Parse(packet.args[0]);
+					UseExtraAbility.AbilityIndex = ability;
+					UseExtraAbility.abilityLock = true;
+					IExtraAction a = controllable.extraActions[ability];
+					if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable) != null)
+					{
+						string target = packet.args[1];
+						switch (target)
+						{
+							case "Auto":
+								Shootable.targeting = Shootable.targeting = TargetingType.Auto;
+								break;
+							case "High":
+								Shootable.targeting = Shootable.targeting = TargetingType.High;
+								break;
+							case "Low":
+								Shootable.targeting = Shootable.targeting = TargetingType.Low;
+								break;
+							default:
+								throw new ArgumentException("Invalid target type");
+						}
+					}
+				}
+				else if (act.ActionType == ActionType.Attack)
+				{
+					string target = packet.args[0];
 					switch (target)
 					{
 						case "Auto":
@@ -171,27 +194,13 @@ Audio.PlaySound("capture");
 							throw new ArgumentException("Invalid target type");
 					}
 				}
-			}else if (act.ActionType == ActionType.Attack)
-			{
-				string target = packet.args[0];
-				switch (target)
-				{
-					case "Auto":
-						Shootable.targeting = Shootable.targeting = TargetingType.Auto;
-						break;
-					case "High":
-						Shootable.targeting = Shootable.targeting = TargetingType.High;
-						break;
-					case "Low":
-						Shootable.targeting = Shootable.targeting = TargetingType.Low;
-						break;
-					default:
-						throw new ArgumentException("Invalid target type");
-				}
-			}
 
-			act.PerformFromPacket(controllable, packet.Target);
-		
+				act.PerformFromPacket(controllable, packet.Target);
+				UseExtraAbility.abilityLock = false;
+			}catch(Exception e)
+			{
+				Console.WriteLine("Error parsing packet: "+e);
+			}
 		}
 
 

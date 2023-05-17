@@ -30,11 +30,7 @@ public class LobbyBrowserLayout : MenuLayout
 				Width = (int)(100*globalScale.X),
 			};
 			Grid.Widgets.Add(chatPanel);
-			var chatViewer = new ScrollViewer();
-			chatViewer.VerticalAlignment = VerticalAlignment.Bottom;
-			chatViewer.Top = -40;
-			AddChatBoxToViewer(chatViewer);
-			chatPanel.Widgets.Add(chatViewer);
+		
 			var input = new TextBox()
 			{
 				Width = (int)(100*globalScale.X),

@@ -72,7 +72,7 @@ namespace MultiplayerXeno
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
-				UiLayout.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+				Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 			});
 
 			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
@@ -176,9 +176,6 @@ namespace MultiplayerXeno
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
-		
-
-
 
 		public static void SendPreGameUpdate()
 		{

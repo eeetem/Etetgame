@@ -98,6 +98,7 @@ namespace MultiplayerXeno
 		{
 			if(intated)return;
 			intated = true;
+			TimeTillNextTurn = PreGameData.TurnTime*1000;
 			Audio.PlayCombat();
 			WorldManager.Instance.MakeFovDirty();
 			UI.SetUI(new GameLayout());

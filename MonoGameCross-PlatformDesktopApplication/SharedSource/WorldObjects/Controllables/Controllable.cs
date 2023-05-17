@@ -19,22 +19,52 @@ namespace MultiplayerXeno
 		public WorldObject worldObject { get; private set; }
 		public ControllableType Type { get; private set; }
 
-		public WorldAction? SelectedItem { get; private set; }
+		public int SelectedItemIndex { get; set; } = -1;
 
-		public List<WorldAction> inventory = new List<WorldAction>();
-
-		public void RemoveItem(WorldAction item)
+		public WorldAction?[] inventory;
+		
+		public WorldAction? SelectedItem
 		{
-			inventory.Remove(item);
-			if (SelectedItem == item)
+			get
 			{
-				if(inventory.Count>0){
-					SelectedItem = inventory[0];
-				}
-				else
+				if(SelectedItemIndex == -1) return null;
+				return inventory[SelectedItemIndex];
+			}
+		}
+
+		public void SelectAnyItem()
+		{
+			for (int i = 0; i < inventory.Length; i++)
+			{
+				if (inventory[i] != null)
 				{
-					SelectedItem = null;
+					SelectedItemIndex = i;
+					return;
 				}
+			}
+		}
+
+		public void AddItem(WorldAction item)
+		{
+			for (int i = 0; i < inventory.Length; i++)
+			{
+				if (inventory[i] == null)
+				{
+					inventory[i] = item;
+					if (SelectedItemIndex == -1)
+					{
+						SelectedItemIndex = i;
+					}
+					return;
+				}
+			}
+		}
+		public void RemoveItem(int index)
+		{
+			inventory[index] = null;
+			if (SelectedItemIndex == index)
+			{
+				SelectedItemIndex = -1;
 			}
 		}
 		public List<IExtraAction> extraActions = new List<IExtraAction>();
@@ -53,8 +83,7 @@ namespace MultiplayerXeno
 
 
 			if (data.Determination == -100)
-			{
-				Determination = type.Maxdetermination;
+			{ Determination = type.Maxdetermination;
 			}
 			else
 			{
@@ -86,19 +115,16 @@ namespace MultiplayerXeno
 				canTurn = (bool) data.canTurn;
 			}
 
-			inventory = new List<WorldAction>();
+			inventory = new WorldAction[type.InventorySize];
 			for (int i = 0; i < type.InventorySize; i++)
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != null)
 				{
-					inventory.Add(PrefabManager.UseItems[data.Inventory[i]]);
+					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
 				}
 			}
 
-			if (inventory.Count > 0)
-			{
-				SelectedItem = inventory[0];
-			}
+			SelectAnyItem();
 
 			foreach (var effect in data.StatusEffects)
 			{
@@ -317,6 +343,8 @@ namespace MultiplayerXeno
 		
 
 		public bool overWatch { get; set; } = false;
+
+
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 		public void OverWatchSpoted(Vector2Int location)
 		{

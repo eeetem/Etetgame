@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MonoGame.Extended.BitmapFonts;
 using MultiplayerXeno.Items;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Thickness = Myra.Graphics2D.Thickness;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -20,6 +20,7 @@ public class GameLayout : MenuLayout
 {
 	private static Panel turnIndicator;
 	private static Label scoreIndicator;
+	private static ImageButton endBtn;
 
 	private static List<Vector2Int>[] previewMoves = Array.Empty<List<Vector2Int>>();
 
@@ -29,16 +30,21 @@ public class GameLayout : MenuLayout
 		if (myTurn)
 		{
 			turnIndicator.Background = new SolidBrush(Color.Green);
-
+			endBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/end button"));
 		}
 		else
 		{
 			turnIndicator.Background = new SolidBrush(Color.Red);
+			endBtn.Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/end button")), Color.Gray);
 		}
 	}
+
 	public static void SetScore(int score)
 	{
-		scoreIndicator.Text = "score: " + score;
+		if (scoreIndicator != null)
+		{
+			scoreIndicator.Text = "score: " + score;
+		}
 	}
 
 	public static Controllable? SelectedControllable { get; private set;}
@@ -70,6 +76,8 @@ public class GameLayout : MenuLayout
 	private static RenderTarget2D? leftCornerRenderTarget;
 	private static RenderTarget2D? statScreenRenderTarget;
 	private static RenderTarget2D? dmgScreenRenderTarget;
+	private static RenderTarget2D? chatRenderTarget;
+	private static Dictionary<Controllable, RenderTarget2D> unitBarRenderTargets;
 		
 	private static bool inited = false;
 
@@ -81,9 +89,155 @@ public class GameLayout : MenuLayout
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/HoverHud/base").Width,TextureManager.GetTexture("UI/HoverHud/base").Height);
 		statScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/RightScreen/statScreen").Width,TextureManager.GetTexture("UI/GameHud/statScreen").Height);
 		dmgScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/RightScreen/dmgScreen").Width,TextureManager.GetTexture("UI/GameHud/dmgScreen").Height);
+		chatRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/chatframe").Width,TextureManager.GetTexture("UI/GameHud/chatframe").Height);
+		unitBarRenderTargets = new Dictionary<Controllable, RenderTarget2D>();
 	}
 
 
+	public static void MakeUnitBarRenders(SpriteBatch batch)
+	{
+		if(_unitBar == null) return;
+		int column = 0;
+		foreach (var unit in MyUnits)
+		{
+			if (unit.worldObject.Health <= 0)
+			{
+				continue;
+			}
+			if (!unitBarRenderTargets.ContainsKey(unit))
+			{
+				unitBarRenderTargets.Add(unit, new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Width,TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Height));
+				
+			}
+			graphicsDevice.SetRenderTarget(unitBarRenderTargets[unit]);
+			graphicsDevice.Clear(Color.Transparent);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+			batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/Background"), Vector2.Zero, Color.White);
+			int i;
+			if (unit.ActionPoints > 0 || unit.MovePoints > 0)
+			{
+				batch.End();
+				PostPorcessing.ShuffleUIeffect(column+123,new Vector2(unitBarRenderTargets[unit].Width,unitBarRenderTargets[unit].Height));
+				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/"+unit.Type.Name), Vector2.Zero, Color.White);
+				batch.End();
+
+				int notchpos = 0;
+				for (i = 0; i <  unit.MovePoints; i++)
+				{
+					PostPorcessing.ShuffleUIeffect(column+123,new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Width,TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Height));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch"), new Vector2(4*notchpos,0), Color.White);
+					batch.End();
+					notchpos++;
+				}
+				for (i = 0; i <  unit.ActionPoints; i++)
+				{
+					PostPorcessing.ShuffleUIeffect(column+123,new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Width,TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Height));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch"), new Vector2(4*notchpos,0), Color.White);
+					batch.End();
+					notchpos++;
+				}
+
+			}
+			else
+			{
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
+				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/"+unit.Type.Name), Vector2.Zero, Color.White);
+				batch.End();
+			}
+			
+
+			
+
+			var healthTexture = TextureManager.GetTexture("UI/GameHud/UnitBar/red");
+			float healthWidth =  healthTexture.Width;
+			float healthHeight = healthTexture.Height;
+			int baseWidth = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Width;
+			float healthBarWidth = ((healthWidth+1)*unit.worldObject.Type.MaxHealth);
+			float emtpySpace = baseWidth - healthBarWidth;
+			Vector2 healthBarPos = new Vector2(emtpySpace/2f,22);
+
+
+			for (int y = 0; y < unit.worldObject.Type.MaxHealth; y++)
+			{
+				bool health = !(y >= unit.worldObject.Health);
+				if (health)
+				{
+					PostPorcessing.ShuffleUIeffect(y + unit.worldObject.Id, new Vector2(healthWidth, healthHeight), true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				}
+				else
+				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				}
+				batch.Draw(healthTexture,healthBarPos+new Vector2((healthWidth+1)*y,0),null,Color.White,0,Vector2.Zero,1,SpriteEffects.None,0);
+				batch.End();
+			}
+			
+			healthTexture = TextureManager.GetTexture("UI/GameHud/UnitBar/green");
+			healthWidth =  healthTexture.Width;
+			healthHeight = healthTexture.Height;
+			healthBarWidth = ((healthWidth+1)*unit.Type.Maxdetermination);
+			emtpySpace = baseWidth - healthBarWidth;
+			healthBarPos = new Vector2(emtpySpace/2f,25);
+	
+
+			for (int y = 0; y < unit.Type.Maxdetermination; y++)
+			{
+				bool health = !(y >= unit.Determination);
+				if (health)
+				{
+					PostPorcessing.ShuffleUIeffect(y + unit.worldObject.Id, new Vector2(healthWidth, healthHeight), true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				}
+				else
+				{
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				}
+				batch.Draw(healthTexture,healthBarPos+new Vector2((healthWidth+1)*y,0),null,Color.White,0,Vector2.Zero,1,SpriteEffects.None,0);
+				batch.End();
+			}
+
+			if(_unitBar.Widgets.Count > column){
+				ImageButton elem = (ImageButton)_unitBar.Widgets[column];
+				elem.GridColumn = column;
+				var w = (int)(unitBarRenderTargets[unit].Width * 1.1f * globalScale.X);
+				if (w % baseWidth > 0)
+				{
+					w+= baseWidth - (w % baseWidth);
+				}
+				var h = (int)(unitBarRenderTargets[unit].Height * 1.1f * globalScale.X);
+
+				elem.Width = w;
+				elem.ImageWidth = w;
+				elem.Height = h;
+				elem.ImageHeight = h;
+				elem.Background = new SolidBrush(Color.Transparent);
+				elem.FocusedBackground = new SolidBrush(Color.Transparent);
+				elem.OverBackground = new SolidBrush(Color.Transparent);
+				elem.PressedBackground = new SolidBrush(Color.Transparent);
+				elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit]);
+				elem.Image = new TextureRegion(unitBarRenderTargets[unit]);
+				if (unit.Equals(SelectedControllable)){
+					elem.Top = 10;
+				}
+				else
+				{
+					elem.Top = 0;
+				}
+			}
+			column++;
+		}
+		
+
+	}
+
+	private static Grid? _unitBar;
+	private static bool invOpen = false;
+	private static bool showChat = true;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		Init();
@@ -91,19 +245,23 @@ public class GameLayout : MenuLayout
 		var panel = new Panel ();
 		if (!GameManager.spectating)
 		{
-			var end = new TextButton
+			endBtn = new ImageButton()
 			{
-				Top = (int) (0f * globalScale.Y),
-				Left = (int) (-10f * globalScale.X),
-				Width = (int) (80 * globalScale.X),
+				Top = (int) (0 * globalScale.X),
+				Left = (int) (-11f * globalScale.X),
+				Width = (int) (TextureManager.GetTexture("UI/GameHud/end button").Width * globalScale.X*1.65f),
+				Height = (int) (TextureManager.GetTexture("UI/GameHud/end button").Height * globalScale.X*1.65f),
+				ImageWidth = (int) (TextureManager.GetTexture("UI/GameHud/end button").Width * globalScale.X*1.65f),
+				ImageHeight = (int) (TextureManager.GetTexture("UI/GameHud/end button").Height * globalScale.X*1.65f),
 				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Top,
-				Text = "End Turn",
-				Font = DefaultFont.GetFont(FontSize/2)
-				//Scale = globalScale
+				Background = new SolidBrush(Color.Transparent),
+				OverBackground = new SolidBrush(Color.Transparent),
+				PressedBackground = new SolidBrush(Color.Transparent),
+				Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/end button")),
 			};
-			end.Click += (o, a) => GameManager.EndTurn(); 
-			panel.Widgets.Add(end);
+			endBtn.Click += (o, a) => GameManager.EndTurn(); 
+			panel.Widgets.Add(endBtn);
 		}
 		else
 		{
@@ -127,12 +285,75 @@ public class GameLayout : MenuLayout
 			panel.Widgets.Add(swapTeam);
 		}
 
+		var chatbtn = new ImageButton();
+		chatbtn.HorizontalAlignment = HorizontalAlignment.Left;
+		chatbtn.VerticalAlignment = VerticalAlignment.Center;
+		chatbtn.Top = (int)(-140 * globalScale.Y);
+		chatbtn.ImageHeight = (int)(TextureManager.GetTexture("UI/GameHud/chatboxbtn1").Height*3f);	
+		chatbtn.ImageWidth = (int)(TextureManager.GetTexture("UI/GameHud/chatboxbtn1").Width*3f);	
+		chatbtn.Width = (int)(TextureManager.GetTexture("UI/GameHud/chatboxbtn1").Width*3f);	
+		chatbtn.Height = (int)(TextureManager.GetTexture("UI/GameHud/chatboxbtn1").Height*3f);	
+		chatbtn.Background = new SolidBrush(Color.Transparent);
+		chatbtn.PressedBackground = new SolidBrush(Color.Transparent);
+		chatbtn.OverBackground = new SolidBrush(Color.Transparent);
+	
+		if (showChat)
+		{
+			chatbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/chatboxbtn1"));
+			chatbtn.Left = (int)(150 * globalScale.Y);
+		}
+		else
+		{
+			chatbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/chatboxbtn2"));
+			chatbtn.Left = (int)(0 * globalScale.Y);
+		}
+		chatbtn.Click += (sender, args) =>
+		{
+			showChat = !showChat;
+			if (showChat)
+			{
+				chatbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/chatboxbtn1"));
+				chatbtn.Left = (int)(150 * globalScale.Y);
+			}
+			else
+			{
+				chatbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/chatboxbtn2"));
+				chatbtn.Left = (int)(0 * globalScale.Y);
+			}
+		};
+		panel.Widgets.Add(chatbtn);
+		
+		if (showChat)
+		{
+			var input = new TextBox();
+			input.HorizontalAlignment = HorizontalAlignment.Left;
+			input.Background = new SolidBrush(Color.Transparent);
+			input.Border = new SolidBrush(Color.Black);
+			input.BorderThickness = new Thickness(5);
+			input.Left = (int) (5f * globalScale.X);
+			input.Width = (int) (135 * globalScale.Y);
+			input.Top = (int) (70 * globalScale.Y);
+			input.Font = DefaultFont.GetFont(FontSize / 3f);
+			input.TextColor = Color.White;
+			input.VerticalAlignment = VerticalAlignment.Center;
+			input.KeyDown += (sender, args) =>
+			{
+				if (args.Data == Keys.Enter)
+				{
+					Chat.SendMessage(input.Text);
+					input.Text = "";
+				}
+
+			};
+			panel.Widgets.Add(input);
+		}
+
 
 		turnIndicator = new Panel()
 		{
-			Top= (int)(-1f*globalScale.Y),
-			Left =(int)(-150f*globalScale.X),
+			Top= (int)(51f*globalScale.X),
 			Height =50,
+			Left = (int)(-4f*globalScale.X),
 			Width = (int)(80 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Right,
 			VerticalAlignment = VerticalAlignment.Top,
@@ -143,11 +364,9 @@ public class GameLayout : MenuLayout
 		SetMyTurn(GameManager.IsMyTurn());
 		if (scoreIndicator == null)
 		{
-
-
 			scoreIndicator = new Label()
 			{
-				Top=0,
+				Top=60,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Left
 			};
@@ -156,9 +375,7 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(scoreIndicator);
 
-		AttachSideChatBox(panel);
-		
-		var UnitContainer = new Grid()
+		_unitBar = new Grid()
 		{
 			GridColumnSpan = 4,
 			GridRowSpan = 1,
@@ -167,65 +384,22 @@ public class GameLayout : MenuLayout
 			HorizontalAlignment = HorizontalAlignment.Center,
 			VerticalAlignment = VerticalAlignment.Top,
 			MaxWidth = (int)(700f*globalScale.X),
+			Top = (int)(14f*globalScale.X),
 			//ShowGridLines = true,
 		};
-		panel.Widgets.Add(UnitContainer);
-
-		var column = 0;
+		panel.Widgets.Add(_unitBar);
 
 		foreach (var unit in MyUnits)
 		{
+			var unitPanel = new ImageButton();
 
-			var unitPanel = new Panel()
+			Controllable u = unit;
+			unitPanel.Click += (sender, args) =>
 			{
-				Width = Math.Clamp((int) (100 * globalScale.X), 0, 110),
-				Height = Math.Clamp((int) (200 * globalScale.Y), 0, 210),
-				GridColumn = column,
-				Background = new SolidBrush(Color.Black),
-
+				SelectControllable(u);
 			};
-			if (unit.Equals(SelectedControllable))
-			{
-				unitPanel.Background = new SolidBrush(Color.DimGray);
-				unitPanel.Top = 25;
-			}
-
-			unitPanel.TouchDown += (sender, args) =>
-			{
-				if (unit.worldObject.Health > 0)
-				{
-					SelectControllable(unit);
-				}
-			};
-
-			UnitContainer.Widgets.Add(unitPanel);
-			var unitName = new Label()
-			{
-				Text = unit.Type.Name,
-				VerticalAlignment = VerticalAlignment.Top,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Font = DefaultFont.GetFont(FontSize/2)
-			};
-			unitPanel.Widgets.Add(unitName);
-			var unitImage = new Image()
-			{
-				Width = 80,
-				Height = 80,
-				Top = 20,
-				VerticalAlignment = VerticalAlignment.Top,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitAlive"))
-			};
-			if (unit.worldObject.Health <= 0)
-			{
-				unitImage.Renderable = new TextureRegion(TextureManager.GetTexture("UI/PortraitDead"));
-				unitPanel.Top = -10;
-				unitPanel.Background = new SolidBrush(Color.DarkRed);
-			}unitPanel.Widgets.Add(unitImage);
-
-			column++;
+			_unitBar.Widgets.Add(unitPanel);
 		}
-
 		
 			
 		overwatchBtn = new ImageButton();
@@ -233,19 +407,46 @@ public class GameLayout : MenuLayout
 		overwatchBtn.MouseEntered += (o, a) => Tooltip("Watches over an area and attacks the first enemy that enters it",0,-1,-1);
 		overwatchBtn.MouseLeft += (o, a) =>  HideTooltip();
 		panel.Widgets.Add(overwatchBtn);
-		courchBtn = new ImageButton();
-		courchBtn.Click += (o, a) => SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], null);
-		courchBtn.MouseEntered += (o, a) => Tooltip("Crouching improves benefits of cover and allows hiding under tall cover",0,0,-1);
-		courchBtn.MouseLeft += (o, a) => HideTooltip();
-		panel.Widgets.Add(courchBtn);
+		crouchbtn = new ImageButton();
+		crouchbtn.Click += (o, a) => SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], new Vector2Int(0,0));
+		crouchbtn.MouseEntered += (o, a) => Tooltip("Crouching improves benefits of cover and allows hiding under tall cover",0,0,-1);
+		crouchbtn.MouseLeft += (o, a) => HideTooltip();
+		panel.Widgets.Add(crouchbtn);
 		itemBtn = new ImageButton();
 		itemBtn.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
 		itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item",0,-1,0);
 		itemBtn.MouseLeft += (o, a) => HideTooltip();
 		panel.Widgets.Add(itemBtn);
 		
+		collpaseBtn = new ImageButton();
+		collpaseBtn.Click += (o, a) =>
+		{
+			invOpen = !invOpen; 
+			UpdateActionButtons();
+		};
+		panel.Widgets.Add(collpaseBtn);
+		
 		actionButtons.Clear();
+		invButtons.Clear();
 		int i = 0;
+
+		for (int j = 0; j < SelectedControllable.Type.InventorySize; j++)
+		{
+			int index = j;
+			var btn = new ImageButton();
+			invButtons.Add(btn);
+			btn.Click+= (o, a) =>
+			{
+				if (SelectedControllable.inventory[index] != null)
+				{
+					SelectedControllable.SelectedItemIndex = index;
+					UpdateActionButtons();
+				}
+			};
+			panel.Widgets.Add(btn);
+		}
+
+		i = 0;
 		foreach (var action in SelectedControllable.extraActions)
 		{
 			int index = i;
@@ -259,23 +460,23 @@ public class GameLayout : MenuLayout
 				{
 					if (Action.ActiveAction == null)
 					{
-						UseExtraAbility.abilityIndex = index;
+						UseExtraAbility.AbilityIndex = index;
 						Action.SetActiveAction(ActionType.UseAbility);
 					}
 				};
 				btn.MouseLeft += (o, a) =>
 				{
-					if (UseExtraAbility.abilityIndex == index)
+					if (UseExtraAbility.AbilityIndex == index)
 					{
 						Action.SetActiveAction(null);
-						UseExtraAbility.abilityIndex = -1;
+						UseExtraAbility.AbilityIndex = -1;
 					}
 				};
 				btn.Click += (o, a) =>
 				{
 					Console.WriteLine("click");
 					Action.SetActiveAction(ActionType.UseAbility);
-					UseExtraAbility.abilityIndex = index;
+					UseExtraAbility.AbilityIndex = index;
 					SelectedControllable.DoAction(Action.ActiveAction, SelectedControllable.worldObject.TileLocation.Position);
 				};
 			}
@@ -283,7 +484,7 @@ public class GameLayout : MenuLayout
 			{
 				btn.Click += (o, a) =>
 				{
-					UseExtraAbility.abilityIndex = index;
+					UseExtraAbility.AbilityIndex = index;
 					Action.SetActiveAction(ActionType.UseAbility);
 				};
 			}
@@ -319,111 +520,172 @@ public class GameLayout : MenuLayout
 	}
 
 	private static ImageButton overwatchBtn;
-	private static ImageButton courchBtn;
+	private static ImageButton crouchbtn;
 	private static ImageButton itemBtn;
+	private static ImageButton collpaseBtn;
 	private static List<ImageButton> actionButtons = new List<ImageButton>();
+	private static List<ImageButton> invButtons = new List<ImageButton>();
 
 	public static void UpdateActionButtons()
 	{
 
-			overwatchBtn.HorizontalAlignment = HorizontalAlignment.Left;
-			overwatchBtn.VerticalAlignment = VerticalAlignment.Bottom;
-			overwatchBtn.Width = (int) (24 * globalScale.Y * 2f);
-			overwatchBtn.Height = (int) (29 * globalScale.Y * 2f);
-			if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.OverWatch)
+		overwatchBtn.HorizontalAlignment = HorizontalAlignment.Left;
+		overwatchBtn.VerticalAlignment = VerticalAlignment.Bottom;
+		overwatchBtn.Width = (int) (24 * globalScale.Y * 2f);
+		overwatchBtn.Height = (int) (29 * globalScale.Y * 2f);
+		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.OverWatch)
+		{
+			overwatchBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
+			overwatchBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
+		}
+		else
+		{
+			overwatchBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn"));
+		}
+
+
+		overwatchBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+		overwatchBtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
+		overwatchBtn.Top = (int) (-10);
+		overwatchBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
+
+		crouchbtn.HorizontalAlignment = HorizontalAlignment.Left;
+		crouchbtn.VerticalAlignment = VerticalAlignment.Bottom;
+		crouchbtn.Width = (int) (24 * globalScale.Y * 2f);
+		crouchbtn.Height = (int) (29 * globalScale.Y * 2f);
+		if (SelectedControllable.Crouching)
+		{
+			crouchbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOn"));
+		}
+		else
+		{
+			crouchbtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOff"));
+		}
+
+		crouchbtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+		crouchbtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
+		crouchbtn.Top = (int) (-10 - overwatchBtn.Height);
+		crouchbtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
+
+		itemBtn.HorizontalAlignment = HorizontalAlignment.Left;
+		itemBtn.VerticalAlignment = VerticalAlignment.Bottom;
+		itemBtn.Width = (int) (24 * globalScale.Y * 2f);
+		itemBtn.Height = (int) (29 * globalScale.Y * 2f);
+		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseItem)
+		{
+			itemBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
+			itemBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
+			if (SelectedControllable.SelectedItem != null)
 			{
-				overwatchBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
-				overwatchBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
+				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedControllable.SelectedItem?.Icon), new Color(255, 140, 140));
 			}
-			else
+		}
+		else
+		{
+			itemBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
+			itemBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
+			if (SelectedControllable.SelectedItem != null)
 			{
-				overwatchBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn"));
+				itemBtn.Image = new TextureRegion(SelectedControllable.SelectedItem?.Icon);
+			}else
+			{
+				itemBtn.Image = null;
 			}
+		}
 
+		itemBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+		itemBtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
+		itemBtn.Top = (int) (-10 - overwatchBtn.Height);
+		itemBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + crouchbtn.Width);
 
-			overwatchBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
-			overwatchBtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
-			overwatchBtn.Top = (int) (-10);
-			overwatchBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
-
-			courchBtn.HorizontalAlignment = HorizontalAlignment.Left;
-			courchBtn.VerticalAlignment = VerticalAlignment.Bottom;
-			courchBtn.Width = (int) (24 * globalScale.Y * 2f);
-			courchBtn.Height = (int) (29 * globalScale.Y * 2f);
-			if (SelectedControllable.Crouching)
+		int i = 0;
+		if (invOpen)
+		{
+			for (int j = 0; j < SelectedControllable.Type.InventorySize; j++)
 			{
-				courchBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOn"));
-			}
-			else
-			{
-				courchBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOff"));
-			}
-
-			courchBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
-			courchBtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
-			courchBtn.Top = (int) (-10 - overwatchBtn.Height);
-			courchBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f);
-
-			itemBtn.HorizontalAlignment = HorizontalAlignment.Left;
-			itemBtn.VerticalAlignment = VerticalAlignment.Bottom;
-			itemBtn.Width = (int) (24 * globalScale.Y * 2f);
-			itemBtn.Height = (int) (29 * globalScale.Y * 2f);
-			if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseItem)
-			{
-				itemBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
-				itemBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
-				if (SelectedControllable.SelectedItem != null)
+				WorldAction? inv = SelectedControllable.inventory[j];
+				if (j == SelectedControllable.SelectedItemIndex)
 				{
-					itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedControllable.SelectedItem?.Icon), new Color(255, 140, 140));
+					var btn = invButtons[j];
+					btn.Visible = false;
+					continue;
 				}
-			}
-			else
-			{
-				itemBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
-				itemBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
-				if (SelectedControllable.SelectedItem != null)
+
+				var invbtn = invButtons[j];
+				invbtn.Visible = true;
+				invbtn.HorizontalAlignment = HorizontalAlignment.Left;
+				invbtn.VerticalAlignment = VerticalAlignment.Bottom;
+				invbtn.Width = (int) (24 * globalScale.Y * 2f);
+				invbtn.Height = (int) (29 * globalScale.Y * 2f);
+				invbtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+				invbtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
+				invbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/empty"));
+				if (inv != null)
 				{
-					itemBtn.Image = new TextureRegion(SelectedControllable.SelectedItem?.Icon);
-				}
-			}
-
-			itemBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
-			itemBtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
-			itemBtn.Top = (int) (-10 - overwatchBtn.Height);
-			itemBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + courchBtn.Width);
-
-			int i = 0;
-			foreach (var action in SelectedControllable.extraActions)
-			{
-
-
-				var index = i;
-				var actbtn = actionButtons[i];
-				actbtn.HorizontalAlignment = HorizontalAlignment.Left;
-				actbtn.VerticalAlignment = VerticalAlignment.Bottom;
-				actbtn.Width = (int) (24 * globalScale.Y * 2f);
-				actbtn.Height = (int) (29 * globalScale.Y * 2f);
-				if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseAbility && UseExtraAbility.abilityIndex == index)
-				{
-					actbtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
-					actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
-					actbtn.Image = new ColoredRegion(new TextureRegion(action.Icon), Color.Red);
+					invbtn.Image = new TextureRegion(inv.Icon);
 				}
 				else
 				{
-					actbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
-					actbtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
-					actbtn.Image = new TextureRegion(action.Icon);
+					invbtn.Image = null;
 				}
 
-				actbtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
-				actbtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
-				actbtn.Top = (-10);
-				actbtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + (courchBtn.Width * (i + 1)));
-				
-
+				invbtn.Top = (int) (-10 - overwatchBtn.Height);
+				invbtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + crouchbtn.Width + itemBtn.Width + (itemBtn.Width * i));
 				i++;
 			}
+		}
+		else
+		{
+			foreach (var btn in invButtons)
+			{
+				btn.Visible = false;
+			}
+		}
+
+		collpaseBtn.HorizontalAlignment = HorizontalAlignment.Left;
+		collpaseBtn.VerticalAlignment = VerticalAlignment.Bottom;
+		collpaseBtn.Width = (int) (7 * globalScale.Y * 2f);
+		collpaseBtn.Height = (int) (29 * globalScale.Y * 2f);
+		collpaseBtn.ImageWidth = (int) (7 * globalScale.Y * 2f);
+		collpaseBtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+		collpaseBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/invbtn"));
+		collpaseBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/invbtn"));
+		collpaseBtn.Top = (int) (-10 - overwatchBtn.Height);
+		collpaseBtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + crouchbtn.Width + itemBtn.Width + (itemBtn.Width * i));
+		
+
+		i = 0;
+		foreach (var action in SelectedControllable.extraActions)
+		{
+
+
+			var index = i;
+			var actbtn = actionButtons[i];
+			actbtn.HorizontalAlignment = HorizontalAlignment.Left;
+			actbtn.VerticalAlignment = VerticalAlignment.Bottom;
+			actbtn.Width = (int) (24 * globalScale.Y * 2f);
+			actbtn.Height = (int) (29 * globalScale.Y * 2f);
+			if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseAbility && UseExtraAbility.AbilityIndex == index)
+			{
+				actbtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
+				actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
+				actbtn.Image = new ColoredRegion(new TextureRegion(action.Icon), Color.Red);
+			}
+			else
+			{
+				actbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
+				actbtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
+				actbtn.Image = new TextureRegion(action.Icon);
+			}
+
+			actbtn.ImageHeight = (int) (29 * globalScale.Y * 2f);
+			actbtn.ImageWidth = (int) (24 * globalScale.Y * 2f);
+			actbtn.Top = (-10);
+			actbtn.Left = (int) (TextureManager.GetTexture("UI/GameHud/base").Width * globalScale.Y * 2f + (crouchbtn.Width * (i + 1)));
+				
+
+			i++;
+		}
 	}
 
 	private static readonly List<Controllable> Controllables = new List<Controllable>();
@@ -462,6 +724,8 @@ public class GameLayout : MenuLayout
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderBehindHud(batch, deltatime);
+		MakeUnitBarRenders(batch);
+		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		
 		var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
@@ -630,11 +894,11 @@ public class GameLayout : MenuLayout
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/frames"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
 		batch.End();
 		PostPorcessing.ApplyScreenUICrt(new Vector2(statScreenRenderTarget.Width,statScreenRenderTarget.Height));
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.crtEffect);
 		batch.Draw(statScreenRenderTarget,new Vector2(146,12),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
 		batch.End();
 		PostPorcessing.ApplyScreenUICrt(new Vector2(dmgScreenRenderTarget.Width,dmgScreenRenderTarget.Height));
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIcrtEffect);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.crtEffect);
 		batch.Draw(dmgScreenRenderTarget,new Vector2(12,78),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
 		batch.End();
 		
@@ -678,8 +942,8 @@ public class GameLayout : MenuLayout
 			{
 				tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn");
 			}
-			PostPorcessing.ShuffleUICRTeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
-			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIcrtEffect);
+			PostPorcessing.ShuffleUIeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIGlowEffect);
 			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
 		}
@@ -687,8 +951,8 @@ public class GameLayout : MenuLayout
 		for (int i = 0; i <  SelectedControllable.MovePoints - SelectedControllable.Type.MaxMovePoints; i++)
 		{
 			var tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOverflow");
-			PostPorcessing.ShuffleUICRTeffect(i+10 + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
-			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIcrtEffect);
+			PostPorcessing.ShuffleUIeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIGlowEffect);
 			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.Black,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
 		}
@@ -701,21 +965,51 @@ public class GameLayout : MenuLayout
 			batch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/infobox"), new Vector2(0,0), null, Color.White, 0, Vector2.Zero, 1 ,SpriteEffects.None, 0);
 			batch.End();
 		}
+		graphicsDevice.SetRenderTarget(chatRenderTarget);
+		graphicsDevice.Clear(Color.Transparent);
 
-
-
+		PostPorcessing.ApplyScreenUICrt(new Vector2(TextureManager.GetTexture("UI/GameHud/chatscreen").Width,TextureManager.GetTexture("UI/GameHud/chatscreen").Height));
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.crtEffect);
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/chatscreen"),new Vector2(0,0),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
+		batch.End();
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		string chatmsg = "";
+		foreach (var msg in Chat.Messages)
+		{
+			chatmsg +=msg+"\n";
+		}
+		batch.DrawText(chatmsg,new Vector2(22,25),1f,23,Color.LightGreen);
+		batch.End();
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/chatframe"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
+		batch.End();
 
 		//final Draw
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		
-		batch.Draw(rightCornerRenderTarget, new Vector2(Game1.resolution.X - rightCornerRenderTarget.Width*globalScale.Y*1.1f, Game1.resolution.Y - rightCornerRenderTarget.Height*globalScale.Y*1.1f), null, Color.White, 0, Vector2.Zero, globalScale.Y*1.1f ,SpriteEffects.None, 0);
+		batch.Draw(rightCornerRenderTarget, new Vector2(Game1.resolution.X - (rightCornerRenderTarget.Width)*globalScale.Y*0.9f, Game1.resolution.Y - rightCornerRenderTarget.Height*globalScale.Y*0.9f), null, Color.White, 0, Vector2.Zero, globalScale.Y*0.9f ,SpriteEffects.None, 0);
 
-		batch.Draw(leftCornerRenderTarget, new Vector2(0, Game1.resolution.Y - leftCornerRenderTarget.Height*globalScale.Y*2f), null, Color.White, 0, Vector2.Zero, globalScale.Y*2f ,SpriteEffects.None, 0);
+		batch.Draw(leftCornerRenderTarget, new Vector2(0, Game1.resolution.Y - (leftCornerRenderTarget.Height)*globalScale.Y*2f), null, Color.White, 0, Vector2.Zero, globalScale.Y*2f ,SpriteEffects.None, 0);
+		if (showChat)
+		{
+			batch.Draw(chatRenderTarget, new Vector2(0, 80 * globalScale.Y), null, Color.White, 0, Vector2.Zero, globalScale.Y * 0.7f, SpriteEffects.None, 0);
+		}
 
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/endframe1"), new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, globalScale.X*1.65f ,SpriteEffects.None, 0);
+
+		var totalLenght = TextureManager.GetTexture("UI/GameHud/endbar").Width-40;
+		var fraction = ( GameManager.TimeTillNextTurn / (GameManager.PreGameData.TurnTime * 1000));
+		var displayLenght = totalLenght - (totalLenght * fraction);
+	
+	
+		
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/endbar"), Vector2.Zero, null, Color.Gray, 0, Vector2.Zero,globalScale.X*1.65f ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/endbar"), Vector2.Zero, new Rectangle(0,0,(int)displayLenght,30), Color.White, 0, Vector2.Zero,globalScale.X*1.65f ,SpriteEffects.None, 0);
+		
 		if (toolTip)
 		{
-			batch.DrawText(toolTipText,new Vector2(190*globalScale.Y, Game1.resolution.Y - leftCornerRenderTarget.Height*globalScale.Y*2f+5),globalScale.Y*1.25f, 27,Color.White);
+			batch.DrawText(toolTipText,new Vector2(190*globalScale.Y, Game1.resolution.Y - leftCornerRenderTarget.Height*globalScale.Y*2f+5),globalScale.Y*1.25f, 25,Color.White);
 			int offset = 0;
 			Vector2 startpos = new Vector2(190*globalScale.Y, Game1.resolution.Y - (leftCornerRenderTarget.Height-42)*globalScale.Y*2f);
 			//Vector2 offset = new Vector2(20f*globalScale.Y,00);
@@ -781,6 +1075,7 @@ public class GameLayout : MenuLayout
 		}
 		
 
+
 		batch.End();
 
 		
@@ -791,6 +1086,26 @@ public class GameLayout : MenuLayout
 	public override void RenderFrontHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderFrontHud(batch, deltatime);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		batch.DrawText("Q",new Vector2(crouchbtn.Left+3*globalScale.Y,crouchbtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		batch.DrawText("E",new Vector2(itemBtn.Left+3*globalScale.Y,itemBtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		batch.DrawText("Z",new Vector2(overwatchBtn.Left+3*globalScale.Y,overwatchBtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		if (actionButtons.Count>0)
+		{
+			batch.DrawText("X",new Vector2(actionButtons[0].Left+3*globalScale.Y,actionButtons[0].Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		}
+		if (actionButtons.Count > 1)
+		{
+			batch.DrawText("C",new Vector2(actionButtons[1].Left+3*globalScale.Y,actionButtons[1].Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		}
+		if (actionButtons.Count > 2)
+		{
+			batch.DrawText("V",new Vector2(actionButtons[2].Left+3*globalScale.Y,actionButtons[2].Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		}
+
+		
+	
+		batch.End();
 
 	}
 
@@ -834,24 +1149,24 @@ public class GameLayout : MenuLayout
 	
 
 
-			if ((Shootable.freeFire||( tile.ControllableAtLocation != null && tile.ControllableAtLocation.IsVisible() &&!tile.ControllableAtLocation.ControllableComponent.IsMyTeam())))
-			{
-				//we should attack
-				if(Action.ActiveAction == null){
-					Action.SetActiveAction(ActionType.Attack);
-				}
-			
-			}else if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Attack)
-			{
-				
-				Action.SetActiveAction(null);
+		if ((Shootable.freeFire||( tile.ControllableAtLocation != null && tile.ControllableAtLocation.IsVisible() &&!tile.ControllableAtLocation.ControllableComponent.IsMyTeam())))
+		{
+			//we should attack
+			if(Action.ActiveAction == null){
+				Action.SetActiveAction(ActionType.Attack);
 			}
+			
+		}else if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Attack)
+		{
+				
+			Action.SetActiveAction(null);
+		}
 
 
 
 
 
-			ProcessKeyboard();
+		ProcessKeyboard();
 		LastMouseTileCoordinate = MouseTileCoordinate;
 	}
 
@@ -899,15 +1214,42 @@ public class GameLayout : MenuLayout
 		{
 			Shootable.targeting = TargetingType.Auto;
 		}
-		
+
+		if (JustPressed(Keys.Q))
+		{
+			crouchbtn.DoClick();
+		}else if (JustPressed(Keys.E))
+		{
+			itemBtn.DoClick();
+		}else if (JustPressed(Keys.Z))
+		{
+			overwatchBtn.DoClick();
+		}else if (JustPressed(Keys.X))
+		{
+			if (actionButtons.Count > 0)
+			{
+				actionButtons[0]?.DoClick();
+			}
+		}else if (JustPressed(Keys.C))
+		{
+			if (actionButtons.Count > 1)
+			{
+				actionButtons[1].DoClick();
+			}
+		}else if (JustPressed(Keys.V))
+			
+		{
+			if (actionButtons.Count > 2)
+			{
+				actionButtons[2]?.DoClick();
+			}
+		}
 	}
 
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		Console.WriteLine("mouseodnw");
 
-		
 		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
 		WorldObject obj = Tile.ControllableAtLocation;
@@ -1036,8 +1378,8 @@ public class GameLayout : MenuLayout
 				batch.Draw(nohealthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				batch.End();
 				i = y;
-				PostPorcessing.ShuffleUICRTeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted,true);
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+				PostPorcessing.ShuffleUIeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted,true);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 				batch.Draw(healthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				//batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				batch.End();
@@ -1048,8 +1390,8 @@ public class GameLayout : MenuLayout
 			Texture2D indicator;
 			if (health)
 			{
-				PostPorcessing.ShuffleUICRTeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+				PostPorcessing.ShuffleUIeffect(y + target.Id,new Vector2(healthWidth,healthHeight),highlighted);
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 				indicator = healthTexture;
 			}
 			else
@@ -1112,15 +1454,15 @@ public class GameLayout : MenuLayout
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					batch.Draw(lights[3], DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
-					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted, true);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					PostPorcessing.ShuffleUIeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted, true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
 				}
 				else if (litup)
 				{
-					PostPorcessing.ShuffleUICRTeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIcrtEffect);
+					PostPorcessing.ShuffleUIeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
 				}

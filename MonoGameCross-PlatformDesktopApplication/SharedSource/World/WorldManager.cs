@@ -64,7 +64,7 @@ namespace MultiplayerXeno
 			{
 				return WorldObjects[id];
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				Console.WriteLine("failed to access object with id:"+id);
 				return null;

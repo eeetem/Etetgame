@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Threading;
 using MultiplayerXeno;
 using MonoGame.Extended;
 
@@ -161,10 +162,15 @@ public partial class WorldObject
 	{
 		if(destroyed)return;
 		destroyed = true;
+		if(Type.desturctionEffect != null)
+		{
 #if CLIENT
-		Type.desturctionEffect?.Animate(TileLocation.Position);
+			Type.desturctionEffect?.Animate(TileLocation.Position);
 #endif
-		Type.desturctionEffect?.Apply(TileLocation.Position);
+			Type.desturctionEffect?.Apply(TileLocation.Position);
+			Thread.Sleep(300);
+		}
+
 		WorldManager.Instance.DeleteWorldObject(this);
 	}
 	public Visibility GetMinimumVisibility()
@@ -194,12 +200,13 @@ public partial class WorldObject
 				Destroy();
 			}
 		}
-		Console.WriteLine(this + " got hit " + TileLocation.Position);
+		
+
 		if (dmg < 0)
 		{
 			return;
 		}
-
+		Console.WriteLine(this + " got hit " + TileLocation.Position);
 		if (ControllableComponent != null)
 		{//let controlable handle it
 			ControllableComponent.TakeDamage(dmg, detResist);

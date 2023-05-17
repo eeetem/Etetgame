@@ -12,7 +12,7 @@ namespace MultiplayerXeno;
 
 public class MasterServerNetworking
 {
-		public static TcpConnection serverConnection;
+		public static TcpConnection? serverConnection;
 		private static string Ipport="";
 		private static string Name="";
 		
@@ -71,7 +71,7 @@ public class MasterServerNetworking
 			{
 				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
 				{
-					UiLayout.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+					Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 				}
 				
 			});

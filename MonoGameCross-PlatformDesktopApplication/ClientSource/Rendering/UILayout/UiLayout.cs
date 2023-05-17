@@ -101,7 +101,7 @@ public abstract class UiLayout
 			
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
+		batch.DrawText("X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/(Camera.GetZoom()),Color.Wheat);
 		batch.End();
 	}
 	public virtual void RenderFrontHud(SpriteBatch batch, float deltatime)
@@ -109,121 +109,9 @@ public abstract class UiLayout
 		
 	}
 
-	//probably shouldnt be here but idk where to put it
-	private static VerticalStackPanel chatBox;
-	private static ScrollViewer chatBoxViewer;
-	private static TextBox chatInput;
-	protected static void AttachSideChatBox(Panel parent)
+	protected static bool JustPressed(Keys k)
 	{
-		var viewer = new ScrollViewer()
-		{
-			Left = 0,
-			Width = (int)(100*globalScale.X),
-			Height = 250,
-			Top = 0,
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Center,
-			
-		};
-    
-		AddChatBoxToViewer(viewer);
-		if (chatInput == null)
-		{
-			chatInput = new TextBox();
-		}
-		chatInput.Width = (int)(100*globalScale.X);
-		chatInput.Height = 20;
-		chatInput.Top = 135;
-		chatInput.Left = 0;
-		chatInput.Text = "";
-		chatInput.HorizontalAlignment = HorizontalAlignment.Left;
-		chatInput.VerticalAlignment = VerticalAlignment.Center;
-		chatInput.Font = DefaultFont.GetFont(20);
-		chatInput.Border = new SolidBrush(new Color(31,81,255,240));
-		chatInput.BorderThickness = new Thickness(2);
-	
-		chatInput.KeyDown += (o, a) =>
-		{
-			if (a.Data == Keys.Enter)
-			{ 
-				if (chatInput.Text != "")
-				{ if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
-					{
-						Networking.ChatMSG(chatInput.Text);
-					}
-					else
-					{
-						MasterServerNetworking.ChatMSG(chatInput.Text);
-					}
-    
-    
-					chatInput.Text = "";
-				}
-			}
-		};
-		var inputbtn = new TextButton()
-		{
-			Width = 80,
-			Height = 30,
-			Top = 160,
-			Left = (int)(60*globalScale.X),
-			Text = "Send",
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Center,
-			Font = DefaultFont.GetFont(25)
-		};
-		inputbtn.Click += (o, a) =>
-		{
-			if (chatInput.Text != "")
-			{ 
-				if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
-				{
-					Networking.ChatMSG(chatInput.Text);
-				}
-				else
-				{
-					MasterServerNetworking.ChatMSG(chatInput.Text);
-				}
-    
-				chatInput.Text = "";
-			}
-		};
-		parent.Widgets.Add(inputbtn);
-		parent.Widgets.Add(chatInput);
-		parent.Widgets.Add(chatBoxViewer);
-    			
-	}
-	protected static void AddChatBoxToViewer(ScrollViewer viewer)
-	{
-		chatBoxViewer = viewer;
-		if (chatBox == null)
-		{
-			chatBox = new VerticalStackPanel()
-			{
-				VerticalAlignment = VerticalAlignment.Bottom,
-				HorizontalAlignment = HorizontalAlignment.Left,
-			};
-		}
-
-		viewer.Content = chatBox;
-		viewer.ScrollPosition = viewer.ScrollMaximum + new Point(0, 50);
-	}
-	public static void RecieveChatMessage(string msg)
-	{
-		var label = new Label
-		{
-			Text = msg,
-			Wrap = true,
-			TextAlign = TextHorizontalAlignment.Left,
-			Font = DefaultFont.GetFont(20)
-		};
-
-		if (chatBox != null) { 
-			chatBox.Widgets.Add(label);
-			chatBoxViewer.ScrollPosition = chatBoxViewer.ScrollMaximum + new Point(0,50);
-		}
-		Audio.PlaySound("UI/chat");
-		
+		return (lastKeyboardState.IsKeyUp(k) && currentKeyboardState.IsKeyDown(k));
 	}
 
 }

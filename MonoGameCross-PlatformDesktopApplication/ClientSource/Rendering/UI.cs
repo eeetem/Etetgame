@@ -11,7 +11,7 @@ namespace MultiplayerXeno
 {
 	public static class UI
 	{
-		public static Desktop Desktop { get; private set; }
+		public static Desktop Desktop { get; private set; } = null!;
 		private static GraphicsDevice graphicsDevice;
 		public static void Init(GraphicsDevice graphicsdevice)
 		{
@@ -59,6 +59,7 @@ namespace MultiplayerXeno
 			if (!Game1.instance.IsActive) return;
 			if (Desktop.IsMouseOverGUI)
 			{
+				Console.WriteLine("GUICLICK");
 				return; //let myra do it's thing
 			}
 			Console.WriteLine(Desktop.MouseInsideWidget);
