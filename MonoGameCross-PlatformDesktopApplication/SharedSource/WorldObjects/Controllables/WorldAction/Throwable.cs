@@ -55,7 +55,7 @@ public class Throwable : DeliveryMethod
 
 	public override void InitPreview()
 	{
-		LastReturned = new Vector2Int(0,0);
+		//LastReturned = new Vector2Int(0,0);
 	}
 
 	public override void AnimateChild(Controllable actor, Vector2Int target)

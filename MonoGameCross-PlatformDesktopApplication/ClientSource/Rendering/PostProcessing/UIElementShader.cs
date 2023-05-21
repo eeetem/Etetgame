@@ -25,7 +25,7 @@ public class UIElementShader : ShaderPreset
 		}
 
 		float range = 2.5f;
-		float min = 2f;
+		float min = 1.5f;
 		if (flicker)
 		{
 			range = 8;
@@ -50,8 +50,8 @@ public class UIElementShader : ShaderPreset
 		}
 
 		uiAnim += min;
-		EffectParams["blurAmmount"] = (0.02f*(uiAnim/4)+0.01f);
-		EffectParams["glowAmmount"] = (0.7f*uiAnim+0.1f);
+		EffectParams["blurAmmount"] = (0.04f*(uiAnim/4)+0.01f);
+		EffectParams["glowAmmount"] = (0.5f*uiAnim+0.1f);
 		if (dissapation)
 		{
 		//	EffectParams["shape"] = (55*uiAnim);

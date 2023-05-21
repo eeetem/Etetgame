@@ -25,7 +25,7 @@ public class UseExtraAbility : Action
 
 		}
 
-		public static bool abilityLock = true;
+		public static bool abilityLock = false;
 		private static int _abilityIndex = -1;
 
 		public static int AbilityIndex

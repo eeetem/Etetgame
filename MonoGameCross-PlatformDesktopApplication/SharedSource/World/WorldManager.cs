@@ -478,8 +478,6 @@ namespace MultiplayerXeno
 		}
 		public void DeleteWorldObject(int id)
 		{
-			
-			
 			lock (syncobj)
 			{
 				objsToDel.Add(id);

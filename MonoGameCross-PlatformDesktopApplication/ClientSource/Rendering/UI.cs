@@ -59,11 +59,8 @@ namespace MultiplayerXeno
 			if (!Game1.instance.IsActive) return;
 			if (Desktop.IsMouseOverGUI)
 			{
-				Console.WriteLine("GUICLICK");
 				return; //let myra do it's thing
 			}
-			Console.WriteLine(Desktop.MouseInsideWidget);
-
 			var mouseState = Mouse.GetState();
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (mouseState.LeftButton == ButtonState.Pressed)

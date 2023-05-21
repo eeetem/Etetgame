@@ -82,6 +82,7 @@ namespace MultiplayerXeno
 			}
 		}
 
+	
 		if (result.hit)
 		{
 
@@ -89,15 +90,14 @@ namespace MultiplayerXeno
 			to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
 			RayCastOutcome cast;
 
-
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, false);
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, false,true);
 			if (cast.hit && result.hitObjID != cast.hitObjID)
 			{
 				covercast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, false);
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, false,true);
 				if (cast.hit && result.hitObjID != cast.hitObjID)
 				{
 					covercast = cast;
@@ -236,7 +236,6 @@ namespace MultiplayerXeno
 			{
 				if (tile.ControllableAtLocation != null)
 				{
-
 					tile.ControllableAtLocation.ControllableComponent.Suppress(supressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.ControllableAtLocation.ControllableComponent.Determination);
 				}

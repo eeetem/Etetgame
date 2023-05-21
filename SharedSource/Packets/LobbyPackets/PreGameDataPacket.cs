@@ -10,6 +10,6 @@ public class PreGameDataPacket : Packet
 	public string Player2Name { get; set; }
 	public List<string> Spectators { get; set; } = new List<string>();
 	public string SelectedMap { get; set; }
-	public int TurnTime { get; set; } = 120;
+	public int TurnTime { get; set; } = 180;
 
 }

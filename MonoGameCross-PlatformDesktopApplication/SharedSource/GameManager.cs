@@ -17,9 +17,17 @@ namespace MultiplayerXeno
 
 		public static GameState GameState;
 		public static float TimeTillNextTurn = 0;
+		
+		private static bool endTurnNextFrame = false;
 		public static void Update(float delta)
 		{
-			if (PreGameData.TurnTime != 0)
+			if (endTurnNextFrame)
+			{
+				NextTurn();
+				return;
+			}
+
+			if (PreGameData.TurnTime != 0 && GameState == GameState.Playing)
 			{
 				TimeTillNextTurn -= delta;
 #if SERVER
@@ -29,6 +37,7 @@ namespace MultiplayerXeno
 				}
 #endif
 			}
+			
 		}
 
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
@@ -59,8 +68,9 @@ namespace MultiplayerXeno
 #endif
 		}
 
-		public static void NextTurn()
+		private static void NextTurn()
 		{
+			endTurnNextFrame = false;
 			IsPlayer1Turn = !IsPlayer1Turn;
 			WorldManager.Instance.NextTurn(IsPlayer1Turn);
 			bool team1Present = false;
@@ -122,10 +132,7 @@ Audio.PlaySound("capture");
 #if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
 			Networking.DoAction(new GameActionPacket(-1,null,ActionType.EndTurn));//defaults to end turn
-#else
-			GameLayout.SetMyTurn(IsMyTurn());
 #endif
-
 
 			TimeTillNextTurn = PreGameData.TurnTime*1000;
 		}
@@ -136,20 +143,20 @@ Audio.PlaySound("capture");
 		{
 			try
 			{
-				Console.WriteLine("recived action packet: " + packet.Type + " " + packet.ID + " " + packet.Target);
+				Console.WriteLine("recived action packet: " + packet.Type + " " + packet.UnitId + " " + packet.Target);
 				if (packet.Type == ActionType.EndTurn)
 				{
-					NextTurn();
+					endTurnNextFrame = true;
 					return;
 				}
 
-				if (WorldManager.Instance.GetObject(packet.ID) == null)
+				if (WorldManager.Instance.GetObject(packet.UnitId) == null)
 				{
-					Console.WriteLine("Recived packet for a non existant object: " + packet.ID);
+					Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
 					return;
 				}
 
-				Controllable controllable = WorldManager.Instance.GetObject(packet.ID).ControllableComponent;
+				Controllable controllable = WorldManager.Instance.GetObject(packet.UnitId).ControllableComponent;
 				Action act = Action.Actions[packet.Type]; //else get controllable specific actions
 				if (act.ActionType == ActionType.UseAbility)
 				{
@@ -175,6 +182,13 @@ Audio.PlaySound("capture");
 								throw new ArgumentException("Invalid target type");
 						}
 					}
+				}
+				else if (act.ActionType == ActionType.UseItem)
+				{
+					string index = packet.args[0];
+					int ind = int.Parse(index);
+					UseItem.ItemIndex = ind;
+					Console.WriteLine("item index: "+ind);
 				}
 				else if (act.ActionType == ActionType.Attack)
 				{

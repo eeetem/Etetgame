@@ -1,6 +1,7 @@
 ﻿using System;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno;
 
@@ -10,10 +11,11 @@ public class UseItem : Action
 	{
 	}
 
+	public static int ItemIndex = -1;
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
 	{
 
-		if (actor.SelectedItem == null)
+		if (ItemIndex == -1 || actor.Inventory.Length <= ItemIndex || actor.Inventory[ItemIndex] == null)
 		{
 			return new Tuple<bool, string>(false, "No Item Selected");
 		}
@@ -22,16 +24,27 @@ public class UseItem : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
-		return actor.SelectedItem.CanPerform(actor, target);
+		return actor.Inventory[ItemIndex]!.CanPerform(actor, target);
 
 	}
 
+	
 	public override void Execute(Controllable actor, Vector2Int target)
 	{
 		actor.ActionPoints--;
-		actor.SelectedItem!.Execute(actor, target);
-		actor.RemoveItem(actor.SelectedItemIndex);
+		actor.Inventory[ItemIndex]!.Execute(actor, target);
+		Console.WriteLine("Using Item "+actor.Inventory[ItemIndex]!.Name);
+		actor.RemoveItem(ItemIndex);
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
+	}
+
+	public override void ToPacket(Controllable actor, Vector2Int target)
+	{
+		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
+		packet.args.Add(ItemIndex.ToString());
+
+		
+		Networking.DoAction(packet);
 	}
 
 #if CLIENT
@@ -42,7 +55,7 @@ public class UseItem : Action
 
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
-		actor.SelectedItem?.Animate(actor,target);
+		actor.Inventory[ItemIndex]!.Animate(actor,target);
 	}
 #endif
 

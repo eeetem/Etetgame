@@ -68,6 +68,7 @@ namespace MultiplayerXeno
 		public bool Crouching;
 		public bool Panic;
 		public bool JustSpawned;
+		public bool overwatch;
 		public List<string?> Inventory { get; set; }
 		public List<Tuple<string,int>> StatusEffects { get; set; }
 		
@@ -81,10 +82,11 @@ namespace MultiplayerXeno
 			Crouching = false;
 			Panic = false;
 			JustSpawned = true;//it's always truea nd only set to false in getData
+			overwatch = false;
 			Inventory = new List<string?>();
 			StatusEffects = new List<Tuple<string, int>>();
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string,int>> sts)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string,int>> sts,bool overwatch)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -96,6 +98,7 @@ namespace MultiplayerXeno
 			Panic = panic;
 			Inventory = inv;
 			StatusEffects = sts;
+			this.overwatch = overwatch;
 		}
 
 	
@@ -191,7 +194,7 @@ namespace MultiplayerXeno
 			return X == other.X && Y == other.Y;
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return obj is Vector2Int other && Equals(other);
 		}

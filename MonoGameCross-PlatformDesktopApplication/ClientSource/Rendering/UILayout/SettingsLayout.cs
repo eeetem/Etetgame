@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D;
@@ -82,7 +83,7 @@ public class SettingsLayout : UiLayout
 				GridColumn = 1,
 				Maximum = 1,
 				Minimum = 0,
-				Value = float.Parse(Game1.config.GetValue("settings", "sfxVol", "0.5"))
+				Value = float.Parse(Game1.config.GetValue("settings", "sfxVol", "0.5"), CultureInfo.InvariantCulture)
 			};
 			var musicVolume = new HorizontalSlider()
 			{
@@ -90,7 +91,7 @@ public class SettingsLayout : UiLayout
 				GridColumn = 1,
 				Maximum = 1,
 				Minimum = 0,
-				Value = float.Parse(Game1.config.GetValue("settings", "musicVol", "0.5"))
+				Value = float.Parse(Game1.config.GetValue("settings", "musicVol", "0.5"), CultureInfo.InvariantCulture)
 			};
 			grid.Widgets.Add(sfxVolume);
 			grid.Widgets.Add(musicVolume);

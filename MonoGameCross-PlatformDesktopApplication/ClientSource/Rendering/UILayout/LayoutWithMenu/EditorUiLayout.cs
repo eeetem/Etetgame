@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework;
@@ -13,6 +14,8 @@ namespace MultiplayerXeno.UILayouts;
 public class EditorUiLayout : MenuLayout
 {
 
+
+	private Tuple<string, Vector2Int, Direction>[][] _buffer = new Tuple<string, Vector2Int, Direction>[100][];
 
 	public EditorUiLayout()
 	{

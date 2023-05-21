@@ -213,7 +213,7 @@ public partial class WorldObject
 		}
 		else
 		{
-			Health-= dmg;
+			Health-= (dmg-detResist);
 			if (Health <= 0)
 			{
 				WorldManager.Instance.DeleteWorldObject(this);

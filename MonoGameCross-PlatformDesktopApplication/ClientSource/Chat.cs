@@ -8,7 +8,7 @@ public static class Chat
 	public static void ReciveMessage(string message)
 	{
 		Messages.Add(message);
-		if (Messages.Count > 10)
+		if (Messages.Count > 20)
 		{
 			Messages.RemoveAt(0);
 		}

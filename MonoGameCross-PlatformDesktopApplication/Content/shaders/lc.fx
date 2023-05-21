@@ -118,7 +118,9 @@ float onOff(float a, float b, float c, float framecount)
 
 float2 jumpy(float2 uv, float framecount)
 {
+
 	float2 look = uv;
+	return look;
     	float window = 1./(1.+80.*(look.y-fmod(framecount/4.,1.))*(look.y-fmod(framecount/4.,1.)));
     	look.x += 0.02 * sin(look.y*10. + framecount)/20.*onOff(4.,4.,.3, framecount)*(0.5+cos(framecount*20.))*window;
     	float vShift = 0.4*onOff(2.,3.,.9, framecount)*(sin(framecount)*sin(framecount*20.));

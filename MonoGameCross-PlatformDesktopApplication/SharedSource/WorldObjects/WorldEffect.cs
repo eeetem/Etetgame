@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,7 +18,7 @@ public class WorldEffect
 	public string? PlaceItemPrefab = null;
 	public readonly List<Tuple<string,int>> AddStatus = new List<Tuple<string, int>>();
 	public readonly List<string> RemoveStatus = new List<string>();
-
+	public bool noPanic = false;
 	
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
 	public bool Visible;
@@ -27,6 +28,7 @@ public class WorldEffect
 	public bool TargetFoe = false;
 	public bool TargetFriend =false;
 	public bool TargetSelf =false;
+	public List<string> Ignores { get; set; }
 
 
 	private List<WorldTile> GetAffectedTiles(Vector2Int target,Controllable? user)
@@ -80,8 +82,9 @@ public class WorldEffect
 		
 
 
-		if (tile.ControllableAtLocation != null)
+		if (tile.ControllableAtLocation != null && !Ignores.Contains(tile.ControllableAtLocation.ControllableComponent.Type.Name))
 		{
+			
 			Controllable ctr = tile.ControllableAtLocation.ControllableComponent;
 			if (user != null)
 			{
@@ -94,7 +97,7 @@ public class WorldEffect
 			tile.ControllableAtLocation.TakeDamage(Dmg, 0);
 			Act.Apply(ref ctr.ActionPoints);
 			Move.Apply(ref ctr.MovePoints);
-			ctr.Suppress(Det,true);
+			ctr.Suppress(Det,noPanic);
 			MoveRange.Apply(ref ctr.MoveRangeEffect);
 			foreach (var status in RemoveStatus)
 			{
@@ -157,6 +160,23 @@ public class WorldEffect
 
 		spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.45f);
 
+		if (tile.WestEdge != null && tile.WestEdge.PreviewData.finalDmg < Dmg)
+		{
+			tile.WestEdge.PreviewData.finalDmg = Dmg;
+		}
+		if (tile.NorthEdge != null&& tile.NorthEdge.PreviewData.finalDmg < Dmg)
+		{
+			tile.NorthEdge.PreviewData.finalDmg = Dmg;
+		}
+		if (tile.EastEdge != null&& tile.EastEdge.PreviewData.finalDmg < Dmg)
+		{
+			tile.EastEdge.PreviewData.finalDmg = Dmg;
+		}
+		if (tile.SouthEdge != null&& tile.SouthEdge.PreviewData.finalDmg < Dmg)
+		{
+			tile.SouthEdge.PreviewData.finalDmg = Dmg;
+		}
+		
 		if (tile.ControllableAtLocation != null )
 		{
 			WorldObject Wo = tile.ControllableAtLocation;
@@ -208,7 +228,7 @@ public class WorldEffect
 		
 		foreach (var effect in Effects)
 		{
-			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2), float.Parse(effect.Item3), true, 10f);
+			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
 		}
 	}
 #endif

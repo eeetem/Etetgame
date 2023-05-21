@@ -68,7 +68,7 @@ float2 outputSize;
 
 //Uncomment to reduce instructions with simpler linearization
 //(fixes HD3000 Sandy Bridge IGP)
-//#define SIMPLE_LINEAR_GAMMA
+#define SIMPLE_LINEAR_GAMMA
 #define DO_BLOOM 1
 
 // ------------- //
@@ -133,7 +133,11 @@ float3 ToSrgb(float3 c)
 float3 Fetch(float2 pos, float2 off, float2 texture_size){
   pos=(floor(pos*texture_size.xy+off)+float2(0.5,0.5))/texture_size.xy;
 #ifdef SIMPLE_LINEAR_GAMMA
-  return ToLinear(brightboost * pow(tex2D(DecalSampler,pos.xy).rgb, 2.2));
+   float4 result = tex2D(DecalSampler,pos.xy);
+   if(result.a > 0){
+        result += 0.09;
+   }
+  return ToLinear(brightboost * pow(result, 2.2));
 #else
   return ToLinear(brightboost * tex2D(DecalSampler,pos.xy).rgb);
 #endif
@@ -294,7 +298,6 @@ float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, fl
 {
   float2 pos=Warp(tex.xy*(texture_size.xy/video_size.xy))*(video_size.xy/texture_size.xy);
   float3 outColor = Tri(pos, texture_size);
-  float3 inColor = Tri(pos, texture_size);
 
 
   outColor.rgb+=Bloom(pos, texture_size)*bloomAmount;
@@ -302,8 +305,8 @@ float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, fl
 
   if(shadowMask)
     outColor.rgb*=Mask(floor(tex.xy*(texture_size.xy/video_size.xy)*output_size.xy)+float2(0.5,0.5));
-  
-  float alpha = 1.0;
+
+  float alpha=1;
   if (outColor.r < 0.001 && outColor.g < 0.001 && outColor.b < 0.001) alpha=0.0;
   
   return float4(ToSrgb(outColor.rgb),alpha);

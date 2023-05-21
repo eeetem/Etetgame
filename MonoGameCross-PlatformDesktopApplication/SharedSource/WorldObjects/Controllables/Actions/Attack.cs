@@ -16,7 +16,10 @@ public class Attack : Action
 	
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
 	{
-		
+		if (actor.overWatch && actor.IsPlayerOneTeam != GameManager.IsPlayer1Turn)//only overwatch out of turn
+		{
+			return new Tuple<bool, string>(true, "");
+		}
 		if (target == actor.worldObject.TileLocation.Position)
 		{
 			return new Tuple<bool, string>(false, "You can't shoot yourself!");

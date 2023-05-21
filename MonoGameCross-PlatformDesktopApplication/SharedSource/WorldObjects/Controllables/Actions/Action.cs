@@ -87,7 +87,7 @@ public abstract class Action
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();	
 		SetActiveAction(null);
-		UI.SetUI(new GameLayout());
+		UI.SetUI(null);
 #endif
 		}catch(Exception e)
 		{

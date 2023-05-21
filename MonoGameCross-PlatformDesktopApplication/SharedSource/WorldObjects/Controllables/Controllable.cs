@@ -19,53 +19,39 @@ namespace MultiplayerXeno
 		public WorldObject worldObject { get; private set; }
 		public ControllableType Type { get; private set; }
 
-		public int SelectedItemIndex { get; set; } = -1;
-
-		public WorldAction?[] inventory;
 		
-		public WorldAction? SelectedItem
-		{
-			get
-			{
-				if(SelectedItemIndex == -1) return null;
-				return inventory[SelectedItemIndex];
-			}
-		}
 
-		public void SelectAnyItem()
-		{
-			for (int i = 0; i < inventory.Length; i++)
-			{
-				if (inventory[i] != null)
-				{
-					SelectedItemIndex = i;
-					return;
-				}
-			}
-		}
+		public readonly WorldAction?[] Inventory;
+		
+	
 
 		public void AddItem(WorldAction item)
 		{
-			for (int i = 0; i < inventory.Length; i++)
+			for (int i = 0; i < Inventory.Length; i++)
 			{
-				if (inventory[i] == null)
+				if (Inventory[i] == null)
 				{
-					inventory[i] = item;
+					Inventory[i] = item;
+#if CLIENT
 					if (SelectedItemIndex == -1)
 					{
 						SelectedItemIndex = i;
 					}
+#endif
+					
 					return;
 				}
 			}
 		}
 		public void RemoveItem(int index)
 		{
-			inventory[index] = null;
-			if (SelectedItemIndex == index)
+			Inventory[index] = null;
+#if CLIENT
+			if (SelectedItemIndex == index && IsMyTeam() && GameManager.IsMyTurn())
 			{
-				SelectedItemIndex = -1;
+				SelectAnyItem();
 			}
+#endif
 		}
 		public List<IExtraAction> extraActions = new List<IExtraAction>();
 		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
@@ -115,7 +101,7 @@ namespace MultiplayerXeno
 				canTurn = (bool) data.canTurn;
 			}
 
-			inventory = new WorldAction[type.InventorySize];
+			Inventory = new WorldAction[type.InventorySize];
 			for (int i = 0; i < type.InventorySize; i++)
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != null)
@@ -123,8 +109,10 @@ namespace MultiplayerXeno
 					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
 				}
 			}
-
+#if CLIENT
 			SelectAnyItem();
+#endif
+			
 
 			foreach (var effect in data.StatusEffects)
 			{
@@ -463,11 +451,11 @@ namespace MultiplayerXeno
 		public ControllableData GetData()
 		{
 			List<string?> inv = new List<string?>();
-			foreach (var i in inventory)
+			foreach (var i in Inventory)
 			{
 				if (i != null)
 				{
-					inv.Add(i.name);
+					inv.Add(i.Name);
 				}
 				else
 				{
@@ -480,7 +468,7 @@ namespace MultiplayerXeno
 			{
 				sts.Add(new Tuple<string, int>(st.type.name,st.duration));
 			}
-			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts);
+			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch);
 			data.JustSpawned = false;
 			return data;
 		}
@@ -530,6 +518,7 @@ namespace MultiplayerXeno
 			{
 				paniced = false;
 			}
+			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
 		}
 	}
 }

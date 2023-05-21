@@ -99,7 +99,12 @@ public class Shootable : DeliveryMethod
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 		if (p.result.hit)
 		{
-			return WorldManager.Instance.GetObject(p.result.hitObjID).TileLocation.Position;
+			var obj = WorldManager.Instance.GetObject(p.result.hitObjID);
+			if (obj == null)
+			{
+				return p.result.CollisionPointShort;
+			}
+			return obj.TileLocation.Position;
 		}
 	
 		return target;
@@ -115,14 +120,7 @@ public class Shootable : DeliveryMethod
 
 	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if (!freeFire)
-		{
-			var tile = WorldManager.Instance.GetTileAtGrid(target);
-			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
-			{
-				return null;
-			}
-		}
+		
 
 		if (actor.worldObject.TileLocation.Position == target)
 		{
@@ -291,8 +289,8 @@ public class Shootable : DeliveryMethod
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
-			//spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.StartPoint), 15, 10, Color.Green, 25f);
-			//spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.EndPoint), 40, 10, Color.Pink, 25f);
+			coverobj.PreviewData.finalDmg += coverModifier;
+			Console.WriteLine(coverobj.PreviewData.finalDmg);
 
 		}
 
@@ -313,7 +311,12 @@ public class Shootable : DeliveryMethod
 				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
 				data.finalDmg += previewShot.dmg - coverModifier;
 				data.coverBlock = coverModifier;
-				if (hitobj.ControllableComponent != null && hitobj.ControllableComponent.Determination > 0)
+				if (hitobj.ControllableComponent == null)
+				{
+					data.finalDmg -= previewShot.determinationResistanceCoefficient;
+					data.determinationBlock = previewShot.determinationResistanceCoefficient;
+				}
+				else if (hitobj.ControllableComponent.Determination > 0)
 				{
 					data.finalDmg -= previewShot.determinationResistanceCoefficient;
 					data.determinationBlock = previewShot.determinationResistanceCoefficient;

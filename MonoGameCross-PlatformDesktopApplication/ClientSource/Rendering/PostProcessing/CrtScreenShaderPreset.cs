@@ -8,7 +8,7 @@ public class CrtScreenShaderPreset : ShaderPreset
 {
 	public CrtScreenShaderPreset()
 	{
-		EffectParams["shape"] = 0f;
+		
 	}
 
 	private float counter = 0;
@@ -34,26 +34,25 @@ public class CrtScreenShaderPreset : ShaderPreset
 
 		uiAnim += min;
 		
-		EffectParams["bloomAmount"] = (10+3f*uiAnim);
-		EffectParams["warpX"] = (0.01f*uiAnim);
-		EffectParams["warpY"] = (0.01f*uiAnim);
-
-		EffectParams["maskLight"] = (8f*uiAnim);
-		EffectParams["maskDark"] = (1f*uiAnim);
+		EffectParams["bloomAmount"] = (40+50f*uiAnim);
+		EffectParams["warpX"] = (0.004f * uiAnim - 0.002f);
+		EffectParams["warpY"] = (0.004f*uiAnim-0.002f);
+		EffectParams["shape"] = (1f*uiAnim);
+		EffectParams["maskLight"] = (3f*uiAnim);
+		EffectParams["maskDark"] = (-1f*uiAnim);
 
 
 	}
 
 	public override void Apply(Effect effect,Vector2 size)
 	{
-		EffectParams["hardScan"] = -0;
-		EffectParams["hardPix"] = -0;
-		
+		EffectParams["hardScan"] = 1;
+		EffectParams["hardPix"] = 1;
 		EffectParams["hardBloomScan"] = -5f;
-		EffectParams["hardBloomPix"] = -0f;
+		EffectParams["hardBloomPix"] = -1f;
 		EffectParams["shadowMask"] = 2f;
-		EffectParams["brightboost"] = (0.15f);
-		
+		EffectParams["brightboost"] = (0.01f);
+
 		base.Apply(effect,size);
 
 		effect.Parameters["textureSize"].SetValue(size*3);

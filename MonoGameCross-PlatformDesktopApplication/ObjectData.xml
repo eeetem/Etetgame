@@ -37,7 +37,7 @@
     <name>paperMache</name>
   </object>
   <object SCover = "2" Edge = "true">
-    <sprite  name="Environment/basicHalfWall" offset= "0,0"/>
+    <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
     <name>basicHalfWall</name>
   </object>
   <object SCover = "1" Edge = "true">
@@ -109,11 +109,11 @@
       </defaultAttack>
       
       <action name="Suppress" tip="Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays" det ="-3" mpoint="-1" apoint="-2">
-        <shootable dmg ="6" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="2,0" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="-2,0" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="0,2" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="0,-2" dmg ="4" detRes="0" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shootable offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
         <effect visible ="true">
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.1" speed="100"/>
@@ -140,7 +140,7 @@
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
     <sprite name="Officer"  offset= "0,0"/>
     <name>Officer</name>
-    <controllable moveRange = "6" moves="2" actions="2" determination="3"  sightrange="20">
+    <controllable moveRange = "6" moves="2" actions="2" determination="2"  sightrange="20">
 
       <defaultAttack>
         <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
@@ -152,13 +152,13 @@
       </defaultAttack>
 
       <action immideate="true" name="Rally" tip="All nearby friendlies stop panicking and gain full determiation" det ="-2" mpoint="0" apoint="0">
-        <effect visible ="false" los="true" range = "7" exRange="1" target="friend">
+        <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
           <damage det="-100"/>
         </effect>
       </action>
 
-      <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="0" mpoint="-1" apoint="-1">
-        <vissioncast Range="18"/>
+      <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="-1" mpoint="-1" apoint="-1">
+        <vissioncast Range="22"/>
         <effect range="1" visible ="false" target="friend">
           <applystatus status="Boost" duration="1"/>
         </effect>
@@ -231,6 +231,7 @@
 
   <item>
     <name>Satchel Charge</name>
+    <tip>Blows up after 1 turn dealing huge damage. Best for destroying enviroment</tip>
     <throwable throwRange="4"/>
     <effect visible ="false" range="1">
       <place name="Satchel"/>
@@ -238,6 +239,7 @@
   </item>
   <item>
     <name>Frag</name>
+    <tip>Damages units in effect area</tip>
     <throwable throwRange="6"/>
     <effect range="3">
       <damage det="1" dmg="6"/>
@@ -251,8 +253,9 @@
 
   <item>
     <name>Flash</name>
+    <tip>Immideately panics units in effect radius</tip>
     <throwable throwRange="6"/>
-    <effect  range="3">
+    <effect range="3">
       <damage det="100" dmg="0"/>
       <vfx name="tintR" target="20" speed="50"/>
       <vfx name="tintG" target="20" speed="50"/>
@@ -265,6 +268,7 @@
 
   <item>
     <name>Smoke</name>
+    <tip>Blocks line of sight</tip>
     <throwable throwRange="6"/>
     <effect range="3">
       <place name="Smoke"/>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -63,7 +64,7 @@ public static class PrefabManager
 				int DeterminationChange = int.Parse(defaultact.Attributes?["det"]?.InnerText ?? "0");
 				ValueChange MovePointChange =     new ValueChange(defaultact.Attributes?["mpoint"]?.InnerText ?? "0");
 				ValueChange ActionPointChange =   new ValueChange(defaultact.Attributes?["apoint"]?.InnerText ?? "0"); 
-				WorldAction action =	PraseWorldAction((XmlElement) defaultact, actname);
+				WorldAction action =	PraseWorldAction((XmlElement) defaultact, actname,tooltip);
 
 				controllableType.DefaultAttack = new ExtraAction(actname,tooltip,DeterminationChange,MovePointChange,ActionPointChange,action,false);
 				
@@ -216,8 +217,9 @@ public static class PrefabManager
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
 		{
 
-			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
-			var itm = PraseWorldAction(xmlObj,name);
+			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText!;
+			string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
+			var itm = PraseWorldAction(xmlObj,name,tip);
 		
 			UseItems.Add(name,itm);
 				
@@ -235,14 +237,14 @@ public static class PrefabManager
 		
 		actname = actobj.Attributes?["name"]?.InnerText ?? "";
 		tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
-		action = PraseWorldAction(actobj, actname);
+		action = PraseWorldAction(actobj, actname,tooltip);
 		
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
 		ExtraAction a = new ExtraAction(actname, tooltip, DeterminationChange, MovePointChange, ActionPointChange, action,immideaateActivation);
 		return a;
 	}
 
-	private static WorldAction PraseWorldAction(XmlElement xmlObj,string name)
+	private static WorldAction PraseWorldAction(XmlElement xmlObj,string name, string tip)
 	{
 
 		List<DeliveryMethod> usgs = new List<DeliveryMethod>();
@@ -293,7 +295,7 @@ public static class PrefabManager
 		}
 		
 			
-		WorldAction itm = new WorldAction(name,usgs,eff);
+		WorldAction itm = new WorldAction(name,tip,usgs,eff);
 		return itm;
 	}
 
@@ -305,6 +307,8 @@ public static class PrefabManager
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
 		eff.Visible = bool.Parse(effect.Attributes?["visible"]?.InnerText ?? "true");
 		eff.Los = bool.Parse(effect.Attributes?["los"]?.InnerText ?? "false");
+		string ignores = effect.Attributes?["ignore"]?.InnerText ?? "";
+		eff.Ignores = ignores.Split(',').ToList();
 		string target = effect.Attributes?["target"]?.InnerText ?? "any";
 		string[] targets = target.Split(',');
 		foreach (var tar in targets)
