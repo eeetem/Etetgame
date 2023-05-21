@@ -397,6 +397,7 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(itemBtn);
 		
+		
 		collpaseBtn = new ImageButton();
 		collpaseBtn.Click += (o, a) =>
 		{
@@ -621,6 +622,15 @@ public class GameLayout : MenuLayout
 			}
 		}
 
+		if (SelectedControllable.Inventory.Length < 2)
+		{
+			collpaseBtn.Visible = false;
+		}
+		else
+		{
+			collpaseBtn.Visible = true;
+		}
+
 		collpaseBtn.HorizontalAlignment = HorizontalAlignment.Left;
 		collpaseBtn.VerticalAlignment = VerticalAlignment.Bottom;
 		collpaseBtn.Width = (int) (7 * globalScale.Y * 2f);
@@ -747,16 +757,16 @@ public class GameLayout : MenuLayout
 				switch (count)
 				{
 					case 0:
-						c = Color.Purple;
-						break;
-					case 1:
 						c = Color.Red;
 						break;
-					case 2:
+					case 1:
 						c = Color.Orange;
 						break;
-					case 3:
+					case 2:
 						c = Color.Yellow;
+						break;
+					case 3:
+						c = Color.GreenYellow;
 						break;
 					case 4:
 						c = Color.Green;
@@ -786,13 +796,7 @@ public class GameLayout : MenuLayout
 		
 		
 		batch.End();
-		foreach (var controllable in Controllables)
-		{
-			if (controllable.worldObject.IsVisible())
-			{
-				DrawHoverHud(batch, controllable.worldObject, deltatime);
-			}
-		}
+
 		var tile = WorldManager.Instance.GetTileAtGrid(TileCoordinate);
 		if (drawExtra)
 		{
@@ -801,7 +805,8 @@ public class GameLayout : MenuLayout
 				if (obj.LifeTime > 0&& obj.IsVisible())
 				{
 					batch.Begin(transformMatrix: Camera.GetViewMatrix(),samplerState: SamplerState.AnisotropicClamp);
-					batch.DrawText(""+obj.LifeTime, Utility.GridToWorldPos(tile.Position + new Vector2(-0.4f,-0.4f)),  5,5, Color.White);
+					batch.DrawText(""+obj.LifeTime, Utility.GridToWorldPos(tile.Position + new Vector2(0f,0f)),  5,5, Color.White);
+					obj.Type.DesturctionEffect?.Preview(obj.TileLocation.Position,batch,null);
 					batch.End();
 				}
 
@@ -812,7 +817,13 @@ public class GameLayout : MenuLayout
 				DrawHoverHud(batch, edge, deltatime);
 			}
 		}
-
+		foreach (var controllable in Controllables)
+		{
+			if (controllable.worldObject.IsVisible())
+			{
+				DrawHoverHud(batch, controllable.worldObject, deltatime);
+			}
+		}
 		var tiles = WorldManager.Instance.GetTilesAround(TileCoordinate, 10);
 		foreach (var t in tiles)
 		{
@@ -1568,7 +1579,7 @@ public class GameLayout : MenuLayout
 		batch.End();
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-150,-170),null,Color.White*opacity,0,Vector2.Zero,2f,SpriteEffects.None,0);
+		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-140,-180),null,Color.White*opacity,0,Vector2.Zero,2f,SpriteEffects.None,0);
 		batch.End();
 
 		

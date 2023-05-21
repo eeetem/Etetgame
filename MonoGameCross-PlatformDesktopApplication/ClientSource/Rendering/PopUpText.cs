@@ -11,6 +11,8 @@ public class PopUpText
 	private Transform2 Transform;
 	private float aliveTime;
 	private string text;
+	public float scale = 1;
+	public Color Color = Color.White;
 	
 	public static readonly object syncobj = new object();
 	
@@ -61,7 +63,7 @@ public class PopUpText
 			{
 
 
-				spriteBatch.DrawText(obj.text, obj.Transform.Position, 2, 100, Color.Black * ((1000-obj.aliveTime) / 1000));
+				spriteBatch.DrawText(obj.text, obj.Transform.Position, 5*obj.scale, 100, obj.Color * ((1000-obj.aliveTime) / 1000));
 
 
 			}

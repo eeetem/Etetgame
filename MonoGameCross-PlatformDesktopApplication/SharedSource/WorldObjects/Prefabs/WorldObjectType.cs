@@ -44,7 +44,7 @@ namespace MultiplayerXeno
 		public Cover VisibilityCover = Cover.None;
 
 		public readonly ControllableType? Controllable;
-		public WorldEffect desturctionEffect;
+		public WorldEffect? DesturctionEffect;
 
 		//should probably be an enum
 		public bool Faceable { get; set; }

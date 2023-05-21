@@ -1,16 +1,6 @@
 hour counter: rough estimate may7 (400) + 5
 
 bugs:
-ability preview caching
-satchel destricton preview
-smoke blocking shots(and grenade)
-clear panic indication (sfx + big text)
-hide inventory on no specialist
-dont fire on missing shots
-officer steals points over cap
-area of affect on satchel
-yellow determination
-left over explosion impact
 
 
 

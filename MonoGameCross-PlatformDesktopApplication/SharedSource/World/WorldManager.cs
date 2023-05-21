@@ -392,25 +392,29 @@ namespace MultiplayerXeno
 
 					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,(lastCheckingSquare == startcell));
 
-					foreach (var obj in tile.ObjectsAtLocation)
+					if (visibilityCast)
 					{
-						smokeLayers+=obj.Type.VisibilityObstructFactor;
-					}
-
-					if (smokeLayers > 10)
-					{
-						result.CollisionPointLong = collisionPointlong;
-						result.CollisionPointShort = collisionPointshort;
-						result.VectorToCenter = collisionVector;
-						result.hit = true;
-						result.hitObjID = hitobj.Id;
-						//if this is true then we're hitting a controllable form behind
-						if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+						foreach (var obj in tile.ObjectsAtLocation)
 						{
-							result.CollisionPointLong += -0.3f * dir;
-							result.CollisionPointShort += -0.3f * dir;
+							smokeLayers += obj.Type.VisibilityObstructFactor;
 						}
-						return result;
+
+						if (smokeLayers > 10)
+						{
+							result.CollisionPointLong = collisionPointlong;
+							result.CollisionPointShort = collisionPointshort;
+							result.VectorToCenter = collisionVector;
+							result.hit = true;
+							result.hitObjID = hitobj.Id;
+							//if this is true then we're hitting a controllable form behind
+							if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+							{
+								result.CollisionPointLong += -0.3f * dir;
+								result.CollisionPointShort += -0.3f * dir;
+							}
+
+							return result;
+						}
 					}
 
 					if (hitobj.Id != -1 )

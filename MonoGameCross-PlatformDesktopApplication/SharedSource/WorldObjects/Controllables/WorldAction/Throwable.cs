@@ -16,8 +16,8 @@ public class Throwable : DeliveryMethod
 		this.throwRange = throwRange;
 	}
 
-	private static Vector2Int LastReturned = new Vector2Int(0,0);
-	public override Vector2Int ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	private static Vector2Int? LastReturned = new Vector2Int(0,0);
+	public override Vector2Int? ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
 	{
 		if (Vector2.Distance(target, actor.worldObject.TileLocation.Position) > throwRange)
 		{
@@ -55,7 +55,7 @@ public class Throwable : DeliveryMethod
 
 	public override void InitPreview()
 	{
-		//LastReturned = new Vector2Int(0,0);
+		LastReturned = null;
 	}
 
 	public override void AnimateChild(Controllable actor, Vector2Int target)

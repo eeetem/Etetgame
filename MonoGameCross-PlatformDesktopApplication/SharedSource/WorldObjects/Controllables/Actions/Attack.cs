@@ -20,10 +20,6 @@ public class Attack : Action
 		{
 			return new Tuple<bool, string>(true, "");
 		}
-		if (target == actor.worldObject.TileLocation.Position)
-		{
-			return new Tuple<bool, string>(false, "You can't shoot yourself!");
-		}
 
 		if (actor.ActionPoints < 1)
 		{
@@ -35,7 +31,9 @@ public class Attack : Action
 			return new Tuple<bool, string>(false, "Not Enough Move Points");
 		}
 
-		return new Tuple<bool, string>(true, "");
+		return actor.Type.DefaultAttack.CanPerform(actor, target);
+
+
 	}
 
 	public override void Execute(Controllable actor,Vector2Int target)

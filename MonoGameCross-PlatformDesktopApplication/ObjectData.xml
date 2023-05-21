@@ -222,8 +222,17 @@
       <vfx name="clmagnitude" target="100" speed="50"/>
       <vfx name="noise" target="3" speed="60"/>
       <sfx name="grenade"/>
+      <place name="Crater"/>
     </destroyEffect>
   </object>
+
+
+  <object VCover = "0" Faceable = "false" SCover ="0">
+    <sprite name="Environment/crater"  offset= "0,0"/>
+    <name>Crater</name>
+  </object>
+  
+  
   <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5">
     <sprite name="Environment/Smoke"  offset= "0,0"/>
     <name>Smoke</name>
@@ -248,6 +257,7 @@
       <vfx name="clmagnitude" target="100" speed="50"/>
       <vfx name="noise" target="2" speed="50"/>
       <sfx name="grenade"/>
+      <place name="Crater"/>
     </effect>
   </item>
 

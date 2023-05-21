@@ -162,7 +162,7 @@ public static class PrefabManager
 			type.Impassible = impassible;
 			type.MaxHealth = MaxHealth;
 			if(xmlObj.GetElementsByTagName("destroyEffect").Count > 0){
-				type.desturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]);	
+				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]);	
 			} 
 			
 

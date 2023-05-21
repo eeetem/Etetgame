@@ -321,7 +321,9 @@ namespace MultiplayerXeno
 #if CLIENT
 			if (worldObject.IsVisible())
 			{
-				new PopUpText("Panic!", worldObject.TileLocation.Position);	
+				var t = new PopUpText("Panic!", worldObject.TileLocation.Position);	
+				t.scale = 2;
+				t.Color = Color.Red;
 			}
 #endif
 			ClearOverWatch();

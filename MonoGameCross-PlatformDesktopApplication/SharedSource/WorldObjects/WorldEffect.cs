@@ -53,8 +53,10 @@ public class WorldEffect
 
 	}
 
+	List<WorldObject> ignoreList = new List<WorldObject>();
 	public void Apply(Vector2Int target, Controllable? user = null)
 	{
+		ignoreList = new List<WorldObject>();
 		foreach (var tile in GetAffectedTiles(target,user))
 		{
 			ApplyOnTile(tile,user);
@@ -63,11 +65,29 @@ public class WorldEffect
 	}
 	protected void ApplyOnTile(WorldTile tile,Controllable? user = null)
 	{
-		
-		tile.EastEdge?.TakeDamage(Dmg,0);
-		tile.WestEdge?.TakeDamage(Dmg,0);
-		tile.NorthEdge?.TakeDamage(Dmg,0);
-		tile.SouthEdge?.TakeDamage(Dmg,0);
+
+		if (tile.EastEdge != null && !ignoreList.Contains(tile.EastEdge))
+		{
+			tile.EastEdge?.TakeDamage(Dmg, 0);
+			ignoreList.Add(tile.EastEdge);
+		}
+		if (tile.WestEdge != null && !ignoreList.Contains(tile.WestEdge))
+		{
+			tile.WestEdge?.TakeDamage(Dmg, 0);
+			ignoreList.Add(tile.WestEdge);
+		}
+		if (tile.NorthEdge != null && !ignoreList.Contains(tile.NorthEdge))
+		{
+			tile.NorthEdge?.TakeDamage(Dmg, 0);
+			ignoreList.Add(tile.NorthEdge);
+		}
+		if (tile.SouthEdge != null && !ignoreList.Contains(tile.SouthEdge))
+		{
+			tile.SouthEdge?.TakeDamage(Dmg, 0);
+			ignoreList.Add(tile.SouthEdge);
+		}
+
+
 		foreach (var item in tile.ObjectsAtLocation)
 		{
 			item.TakeDamage(Dmg,0);
@@ -182,14 +202,14 @@ public class WorldEffect
 			WorldObject Wo = tile.ControllableAtLocation;
 			Wo.PreviewData.detDmg += Det;
 			Wo.PreviewData.finalDmg += Dmg;
-			//tile.ControllableAtLocation.PreviewData.finalDmg += Dmg;
+			Wo.PreviewData.totalDmg += Dmg;
 		}
 
 		if (PlaceItemPrefab != null)
 		{
 			var prefab = PrefabManager.WorldObjectPrefabs[PlaceItemPrefab];
-			if(prefab.desturctionEffect!=null){
-				prefab.desturctionEffect.Preview(tile.Position,spriteBatch,user,previewRecursiveDepth+1);
+			if(prefab.DesturctionEffect!=null){
+				prefab.DesturctionEffect.Preview(tile.Position,spriteBatch,user,previewRecursiveDepth+1);
 			}
 		}
 

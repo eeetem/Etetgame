@@ -47,11 +47,19 @@ public struct ValueChange
 			if (newValue > field.Max)
 			{
 				newValue = field.Max;
+				if (newValue < field.Current)//if we were over the cap dont pull us down
+				{
+					newValue=field.Current;
+				}
 			}
 
-			if (field < 0)
+			if (newValue < 0)
 			{
-				field.Current = 0;
+				newValue = 0;
+				if (field.Current < 0)//if we were over the cap dont pull us down
+				{
+					newValue=field.Current;
+				}
 			}
 		}
 

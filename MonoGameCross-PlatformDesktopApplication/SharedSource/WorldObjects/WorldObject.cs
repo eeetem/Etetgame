@@ -162,12 +162,12 @@ public partial class WorldObject
 	{
 		if(destroyed)return;
 		destroyed = true;
-		if(Type.desturctionEffect != null)
+		if(Type.DesturctionEffect != null)
 		{
 #if CLIENT
-			Type.desturctionEffect?.Animate(TileLocation.Position);
+			Type.DesturctionEffect?.Animate(TileLocation.Position);
 #endif
-			Type.desturctionEffect?.Apply(TileLocation.Position);
+			Type.DesturctionEffect?.Apply(TileLocation.Position);
 			Thread.Sleep(300);
 		}
 

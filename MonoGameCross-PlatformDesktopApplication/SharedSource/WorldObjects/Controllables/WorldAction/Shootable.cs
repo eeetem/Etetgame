@@ -31,6 +31,12 @@ public class Shootable : DeliveryMethod
 			return new Tuple<bool, string>(false, "You can't shoot yourself!");
 		}
 #if CLIENT
+		
+		if (target != lastTarget || targeting != lastTargetingType)
+		{
+			previewShot = MakeProjectile(actor, target);
+			lastTarget = target;
+		}
 
 		if (!freeFire)
 		{
@@ -39,11 +45,18 @@ public class Shootable : DeliveryMethod
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
+
+			if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID).TileLocation.Position != (Vector2Int)previewShot.result.EndPoint)
+			{
+				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
+			}
 		}		
 #endif
 	
 		return new Tuple<bool, string>(true, "");
 	}
+
+
 	public Projectile MakeProjectile(Controllable actor,Vector2Int target)
 	{
 		//target = actor.worldObject.TileLocation.Position + new Vector2(-10,0);
@@ -121,12 +134,11 @@ public class Shootable : DeliveryMethod
 	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-
 		if (actor.worldObject.TileLocation.Position == target)
 		{
 			return target;
 		}
-
+		
 		if (target != lastTarget || targeting != lastTargetingType)
 		{
 			previewShot = MakeProjectile(actor, target);
