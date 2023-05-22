@@ -743,50 +743,7 @@ public class GameLayout : MenuLayout
 		}
 
 
-		var count = 0;
-		foreach (var moves in previewMoves.Reverse())
-		{
-			foreach (var path in moves)
-			{
-
-
-				if (path.X < 0 || path.Y < 0) break;
-				var  pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-
-				Color c = Color.White;
-				switch (count)
-				{
-					case 0:
-						c = Color.Red;
-						break;
-					case 1:
-						c = Color.Orange;
-						break;
-					case 2:
-						c = Color.Yellow;
-						break;
-					case 3:
-						c = Color.GreenYellow;
-						break;
-					case 4:
-						c = Color.Green;
-						break;
-					case 5:
-						c = Color.LightGreen;
-						break;
-					default:
-						c = Color.White;
-						break;
-
-				}
-
-				batch.DrawRectangle(pos, new Size2(20, 20), c, 5);
-
-
-			}
-
-			count++;
-		}
+	
 
 		if (Action.GetActiveActionType() != null)
 		{
@@ -1126,7 +1083,53 @@ public class GameLayout : MenuLayout
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
-		
+		var count = 0;
+		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Move)
+		{
+
+			foreach (var moves in previewMoves.Reverse())
+			{
+				foreach (var path in moves)
+				{
+
+
+					if (path.X < 0 || path.Y < 0) break;
+					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+
+					Color c = Color.White;
+					switch (count)
+					{
+						case 0:
+							c = Color.Red;
+							break;
+						case 1:
+							c = Color.Orange;
+							break;
+						case 2:
+							c = Color.Yellow;
+							break;
+						case 3:
+							c = Color.GreenYellow;
+							break;
+						case 4:
+							c = Color.Green;
+							break;
+						case 5:
+							c = Color.LightGreen;
+							break;
+						default:
+							c = Color.White;
+							break;
+
+					}
+
+					WorldManager.Instance.GetTileAtGrid(path).Surface.OverRideColor = c;
+				}
+
+				count++;
+			}
+		}
+
 		//moves selected contorlable to the top
 		MouseTileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		MouseTileCoordinate = Vector2.Clamp(MouseTileCoordinate, Vector2.Zero, new Vector2(99, 99));

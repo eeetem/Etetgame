@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/basicFloor" variations = "2" offset= "0,0"/>
+    <sprite name="Environment/ground" variations = "5" offset= "0,0"/>
     <name>basicFloor</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
@@ -23,6 +23,13 @@
   <object SCover = "3" Edge = "true" Health="15">
     <sprite  name="Environment/basicWall"  offset= "0,0"/>
     <name>basicWall</name>
+    <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
+  </object>
+  <object SCover = "0" Edge = "true" Health="5">
+    <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
+    <name>basicWallDebris</name>
   </object>
   <object VCover = "0" SCover = "3" Edge = "true" Health="6">
     <sprite  name="Environment/glassWall"  offset= "0,0"/>

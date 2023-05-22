@@ -138,7 +138,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Maps\Ground Zero.mapdata">
+      <None Update="Maps\g.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="Maps\Not One Step Back.mapdata">
@@ -152,6 +152,9 @@
       </None>
       <None Remove="SharedSource\**" />
       <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+      <None Update="Maps\Ground Zero.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

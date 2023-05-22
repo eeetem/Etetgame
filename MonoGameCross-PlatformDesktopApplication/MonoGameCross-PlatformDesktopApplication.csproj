@@ -64,13 +64,22 @@
       <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="..\Server\Maps">
-        <Link>Maps</Link>
-      </Folder>
-    </ItemGroup>
-    <ItemGroup>
       <Compile Remove="ClientSource\Rendering\UILayout\LayoutWithMenu\UnitGameLayout.cs" />
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\Server\Maps\Circus.mapdata">
+        <Link>Maps\Circus.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Server\Maps\Ground Zero.mapdata">
+        <Link>Maps\Ground Zero.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Server\Maps\Not One Step Back.mapdata">
+        <Link>Maps\Not One Step Back.mapdata</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 </Project>

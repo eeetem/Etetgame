@@ -43,7 +43,7 @@ public class WorldAction
 		foreach (var method in DeliveryMethods)
 		{
 			target = method.ExectuteAndProcessLocation(actor, target);
-			Effect.Apply(target,actor);
+			Effect.Apply(target,actor.worldObject);
 			
 		}
 #if CLIENT
@@ -79,7 +79,7 @@ public class WorldAction
 		{
 			var result = method.Preview(actor, target, spriteBatch);
 			if(result == null) continue;
-			Effect.Preview(result, spriteBatch,actor);
+			Effect.Preview(result, spriteBatch,actor.worldObject);
 		}
 	
 	}

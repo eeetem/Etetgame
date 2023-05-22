@@ -31,16 +31,16 @@ public class WorldEffect
 	public List<string> Ignores { get; set; }
 
 
-	private List<WorldTile> GetAffectedTiles(Vector2Int target,Controllable? user)
+	private List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
 	{
 			var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
 		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, Cover.Low);
 		var list = hitt.Except(excl).ToList();
 		if (Los)
 		{
-			if (user != null)
+			if (user != null && user.ControllableComponent!=null)
 			{
-				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user, x.Position, true));
+				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user.ControllableComponent, x.Position, true));
 			}
 			else
 			{
@@ -54,7 +54,7 @@ public class WorldEffect
 	}
 
 	List<WorldObject> ignoreList = new List<WorldObject>();
-	public void Apply(Vector2Int target, Controllable? user = null)
+	public void Apply(Vector2Int target, WorldObject? user = null)
 	{
 		ignoreList = new List<WorldObject>();
 		foreach (var tile in GetAffectedTiles(target,user))
@@ -63,7 +63,7 @@ public class WorldEffect
 		}
 
 	}
-	protected void ApplyOnTile(WorldTile tile,Controllable? user = null)
+	protected void ApplyOnTile(WorldTile tile,WorldObject? user = null)
 	{
 
 		if (tile.EastEdge != null && !ignoreList.Contains(tile.EastEdge))
@@ -95,7 +95,7 @@ public class WorldEffect
 		if (PlaceItemPrefab!=null)
 		{
 #if SERVER
-			WorldManager.Instance.MakeWorldObject(PlaceItemPrefab, tile.Position);
+			WorldManager.Instance.MakeWorldObject(PlaceItemPrefab, tile.Position, user?.Facing ?? Direction.North);
 #endif
 		}
 		
@@ -106,10 +106,10 @@ public class WorldEffect
 		{
 			
 			Controllable ctr = tile.ControllableAtLocation.ControllableComponent;
-			if (user != null)
+			if (user != null && user.ControllableComponent!=null)
 			{
-				if(ctr.IsPlayerOneTeam == user.IsPlayerOneTeam && !TargetFriend) return;
-				if(ctr.IsPlayerOneTeam != user.IsPlayerOneTeam && !TargetFoe) return;
+				if(ctr.IsPlayerOneTeam == user.ControllableComponent.IsPlayerOneTeam && !TargetFriend) return;
+				if(ctr.IsPlayerOneTeam != user.ControllableComponent.IsPlayerOneTeam && !TargetFoe) return;
 				if(Equals(tile.ControllableAtLocation.ControllableComponent, user) && !TargetSelf) return;
 			
 			}
@@ -136,7 +136,7 @@ public class WorldEffect
 #if CLIENT
 	
 
-	protected void PreviewOnTile(WorldTile tile, SpriteBatch spriteBatch, Controllable? user, int previewRecursiveDepth=0)
+	protected void PreviewOnTile(WorldTile tile, SpriteBatch spriteBatch, WorldObject? user, int previewRecursiveDepth=0)
 	{
 		if (tile.Surface == null)return;
 
@@ -217,7 +217,7 @@ public class WorldEffect
 	}
 	
 
-	public void Preview(Vector2Int target, SpriteBatch spriteBatch, Controllable? user,int previewRecursiveDepth=0)
+	public void Preview(Vector2Int target, SpriteBatch spriteBatch, WorldObject? user,int previewRecursiveDepth=0)
 	{
 		foreach (var tile in GetAffectedTiles(target,user))
 		{

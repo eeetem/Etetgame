@@ -162,16 +162,18 @@ public partial class WorldObject
 	{
 		if(destroyed)return;
 		destroyed = true;
+		
+		WorldManager.Instance.DeleteWorldObject(this);
 		if(Type.DesturctionEffect != null)
 		{
 #if CLIENT
 			Type.DesturctionEffect?.Animate(TileLocation.Position);
 #endif
-			Type.DesturctionEffect?.Apply(TileLocation.Position);
+			Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			Thread.Sleep(300);
 		}
-
-		WorldManager.Instance.DeleteWorldObject(this);
+		
+	
 	}
 	public Visibility GetMinimumVisibility()
 	{
@@ -216,7 +218,7 @@ public partial class WorldObject
 			Health-= (dmg-detResist);
 			if (Health <= 0)
 			{
-				WorldManager.Instance.DeleteWorldObject(this);
+				Destroy();
 			}
 		}
 	}
@@ -229,6 +231,7 @@ public partial class WorldObject
 	public void Update(float gametime)
 	{
 #if CLIENT
+		OverRideColor = null;
 		PreviewData = new PreviewData();//probably very bad memory wise
 #endif 
 		if (ControllableComponent != null)

@@ -19,7 +19,7 @@ namespace MultiplayerXeno
 			for (int i = 0; i < variations; i++)
 			{
 				string spriteName = name;
-				if (i > 0)
+				if (this.variations>1)
 				{
 					spriteName = name + i;
 				}

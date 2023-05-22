@@ -580,7 +580,7 @@ namespace MultiplayerXeno
 
 		public void Update(float gameTime)
 		{
-			//Console.WriteLine(GridData[15,5].WestEdge);
+		
 			lock (syncobj)
 			{
 #if SERVER
@@ -732,6 +732,7 @@ namespace MultiplayerXeno
 				tile.PlaceObject(WO);
 			}
 
+			
 			WorldObjects.EnsureCapacity(WO.Id + 1);
 			WorldObjects[WO.Id] = WO;
 

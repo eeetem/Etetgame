@@ -169,6 +169,9 @@ public static class PrefabManager
 
 #if CLIENT
 			Vector2 Offset = new Vector2(-1.5f, -0.5f);
+		//	if(faceable){
+	//			Offset = 
+		//	}
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 			int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
 #endif

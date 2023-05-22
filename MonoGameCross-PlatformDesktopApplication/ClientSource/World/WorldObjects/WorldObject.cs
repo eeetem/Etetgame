@@ -12,6 +12,8 @@ namespace MultiplayerXeno
 		private int spriteVariation = 0;
 		private float DrawOrder;
 		public PreviewData PreviewData;
+		public Color? OverRideColor { get; set; }
+
 		public Transform2 GetDrawTransform()
 		{
 			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(TileLocation.Position);
@@ -85,7 +87,16 @@ namespace MultiplayerXeno
 				}
 				
 			}
-			
+
+			if (OverRideColor != null)
+			{
+				Color newcolor = OverRideColor.Value;
+			//	newcolor.R += color.R;
+			//	newcolor.G += color.G;
+			//	newcolor.B += color.B;
+			//	newcolor.A += color.A;
+				color = newcolor;
+			}
 
 
 			if (IsTransparentUnderMouse())

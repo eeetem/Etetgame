@@ -1,7 +1,7 @@
 hour counter: rough estimate may7 (400) + 5
 
 bugs:
-
+glow arrows over move
 
 
 sfx list:
