@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MultiplayerXeno;
@@ -15,11 +16,11 @@ public class EditorUiLayout : MenuLayout
 {
 
 
-	private Tuple<string, Vector2Int, Direction>[][] _buffer = new Tuple<string, Vector2Int, Direction>[100][];
+	private static List<WorldObjectData>[,] buffer;
 
 	public EditorUiLayout()
 	{
-		DiscordManager.client.UpdateState("In Level Editor");
+		DiscordManager.Client.UpdateState("In Level Editor");
 		WorldManager.Instance.CurrentMap = new MapData();
 		WorldManager.Instance.CurrentMap.Name = "Unnamed";
 		for (int x = 0; x < 100; x++)
@@ -33,6 +34,8 @@ public class EditorUiLayout : MenuLayout
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+	
+		WorldManager.Instance.MakeFovDirty(true);
 		GameManager.GameState = GameState.Editor;
 		var panel = new Panel();
 
@@ -268,8 +271,9 @@ public class EditorUiLayout : MenuLayout
 	public enum Brush 
 	{
 		Point,
-		Line,
-		Selection
+		Selection,
+		Copy,
+		Paste
 			
 	}
 	
@@ -282,7 +286,7 @@ public class EditorUiLayout : MenuLayout
 	private static Vector2Int currentPoint = new Vector2Int(0,0);
 	private static Vector2Int topLeftSelection = new Vector2Int(0,0);
 	private static Vector2Int bottomRightSelection = new Vector2Int(0,0);
-	private static bool IsValidPlacement(Vector2Int pos)
+	private static bool IsValidPlacement(Vector2Int pos, string prefab, Direction dir)
 	{
 		if (!WorldManager.IsPositionValid(pos))
 		{
@@ -291,44 +295,39 @@ public class EditorUiLayout : MenuLayout
 
 		var tile = WorldManager.Instance.GetTileAtGrid(pos);
 		WorldTile tile2;
-		WorldObjectType type = PrefabManager.WorldObjectPrefabs[ActivePrefab];
+		WorldObjectType type = PrefabManager.WorldObjectPrefabs[prefab];
 		if (type.Surface)
 		{
-			return (tile.Surface == null);
+			return tile.Surface == null;
 		}
-		else if (type.Edge)
+
+		if (type.Edge)
 		{
-			switch (ActiveDir)
+			switch (dir)
 			{
 				case Direction.North:
-					return (tile.NorthEdge == null);
-					break;
+					return tile.NorthEdge == null;
 				case Direction.West:
-					return (tile.WestEdge == null);
-					break;
+					return tile.WestEdge == null;
 				case Direction.East:
 					tile2 = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
-					return (tile2.WestEdge == null);
-					break;
+					return tile2.WestEdge == null;
 				case Direction.South:
 					tile2 = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
-					return (tile2.NorthEdge == null);
-					break;
+					return tile2.NorthEdge == null;
 				default:
 					return false;
 			}
 		}
-		else
-		{
-			return (tile.ControllableAtLocation == null);
-		}
+
+		return tile.ControllableAtLocation == null;
 	}
 
 	private float timeUntilNextSave = 30000;
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
-		
+//		WorldManager.Instance.MakeFovDirty(true);
 		timeUntilNextSave -= deltatime;
 		
 		if(timeUntilNextSave<= 0)
@@ -338,13 +337,148 @@ public class EditorUiLayout : MenuLayout
 			WorldManager.Instance.SaveCurrentMapTo("./Maps/autosaves/"+WorldManager.Instance.CurrentMap.Name+".mapdata");
 		}
 		
-		if (currentKeyboardState.IsKeyDown(Keys.E) && lastKeyboardState.IsKeyUp(Keys.E))
+		if (JustPressed(Keys.E))
 		{
-			ActiveDir += 1;
-		} else if (currentKeyboardState.IsKeyDown(Keys.Q)&& lastKeyboardState.IsKeyUp(Keys.Q))
+			if (ActiveBrush == Brush.Paste)
+			{
+				var inputWidth = buffer.GetLength(0);
+				var inputHeight = buffer.GetLength(1);
+
+				// We swap the sizes because rotating a 3x4 yields a 4x3.
+				var output =   new List<WorldObjectData>[inputHeight, inputWidth];
+
+				var maxHeight = inputHeight - 1;
+
+				for (int j = 0; j < output.GetLength(1); j++)
+				{
+					for (int i = 0; i < output.GetLength(0); i++)
+					{
+						output[i,j] = new List<WorldObjectData>();
+					}
+				}
+
+				for (int j = 0; j < output.GetLength(1); j++)
+				{
+					for (int i = 0; i < output.GetLength(0); i++)
+					{
+						foreach (var data in buffer[j, maxHeight - i])
+						{
+
+							var worldObjectData = data;
+							if (worldObjectData.Facing == Direction.North && worldObjectData.Fliped)
+							{
+								worldObjectData.Fliped = false;
+								worldObjectData.Facing = Direction.West;
+								if(i+1 <  output.GetLength(0))
+									output[i+1, j].Add(worldObjectData);
+									
+							}
+							else
+							{
+								worldObjectData.Facing += 2;
+								worldObjectData.Facing = Utility.ClampFacing(worldObjectData.Facing);
+								output[i, j].Add(worldObjectData);
+							}
+
+								
+							
+						}
+					}
+				}
+				buffer = output;
+			}
+			else
+			{
+				ActiveDir += 1;
+			}
+			
+		} else if (JustPressed(Keys.Q))
 		{
-			ActiveDir -= 1;
+			if(ActiveBrush == Brush.Paste)
+			{
+				var inputWidth = buffer.GetLength(0);
+				var inputHeight = buffer.GetLength(1);
+
+				// We swap the sizes because rotating a 3x4 yields a 4x3.
+				var output = new List<WorldObjectData>[inputHeight, inputWidth];
+
+				var maxWidth = inputWidth - 1;
+				for (int j = 0; j < output.GetLength(1); j++)
+				{
+					for (int i = 0; i < output.GetLength(0); i++)
+					{
+						output[i,j] = new List<WorldObjectData>();
+					}
+				}
+
+				for (int j = 0; j < output.GetLength(1); j++)
+				{
+					for (int i = 0; i < output.GetLength(0); i++)
+					{
+						foreach (var data in buffer[maxWidth - j, i])
+						{
+							
+							var worldObjectData = data;
+							worldObjectData.Facing-= 2;
+							worldObjectData.Facing = Utility.ClampFacing(worldObjectData.Facing);
+							output[i, j].Add(worldObjectData);
+							
+						}
+					}
+				}
+			
+				buffer = output;	
+			}
+			else
+			{
+				ActiveDir -= 1;
+			}
 		}
+
+		if (JustPressed(Keys.F))
+		{
+			var inputWidth = buffer.GetLength(0);
+			var inputHeight = buffer.GetLength(1);
+
+			// We swap the sizes because rotating a 3x4 yields a 4x3.
+			var output = new List<WorldObjectData>[inputWidth, inputHeight];
+
+			var maxWidth = inputWidth - 1;
+
+			for (int j = 0; j < output.GetLength(1); j++)
+			{
+				for (int i = 0; i < output.GetLength(0); i++)
+				{
+					output[i,j] = new List<WorldObjectData>();
+				}
+			}
+
+			for (int j = 0; j < output.GetLength(1); j++)
+			{
+				for (int i = 0; i < output.GetLength(0); i++)
+				{
+					foreach (var data in  buffer[maxWidth-i, j])
+					{
+
+							var worldObjectData = data;
+							if (worldObjectData.Facing == Direction.West || worldObjectData.Facing == Direction.East)
+							{
+								worldObjectData.Facing += 4;
+								worldObjectData.Fliped = !worldObjectData.Fliped;
+								worldObjectData.Facing = Utility.ClampFacing(worldObjectData.Facing);
+							}
+
+							output[i, j].Add( worldObjectData);
+						
+						
+					}
+				}
+			}
+			
+			buffer = output;	
+			
+		}
+
 		if(currentKeyboardState.IsKeyDown(Keys.D1))
 		{
 			ActiveBrush = Brush.Point;
@@ -353,20 +487,25 @@ public class EditorUiLayout : MenuLayout
 		{
 			ActiveBrush = Brush.Selection;
 		}
-		if(currentKeyboardState.IsKeyDown(Keys.D3))
+		if(JustPressed(Keys.C) && currentKeyboardState.IsKeyDown(Keys.LeftControl))
 		{
-			ActiveBrush = Brush.Line;
+			ActiveBrush = Brush.Copy;
 		}
-
+		else if(JustPressed(Keys.V) && currentKeyboardState.IsKeyDown(Keys.LeftControl))
+		{
+			ActiveBrush = Brush.Paste;
+		}
+		
 		ActiveDir = Utility.NormaliseDir(ActiveDir);
 
 
 		Vector2Int mousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		
+		
 		switch (ActiveBrush)
 		{
 			case Brush.Point:
-				if (leftMouseDown && IsValidPlacement(mousePos))
+				if (leftMouseDown && IsValidPlacement(mousePos,ActivePrefab,ActiveDir))
 				{
 					WorldManager.Instance.MakeWorldObject(ActivePrefab,mousePos,ActiveDir);
 				}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
@@ -376,6 +515,7 @@ public class EditorUiLayout : MenuLayout
 				}
 
 				break;
+			case Brush.Copy:
 			case Brush.Selection:
 				if (IsMouseDown && !lastMouseDown)
 				{
@@ -414,27 +554,95 @@ public class EditorUiLayout : MenuLayout
 					{
 						for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
 						{
-							DeletePrefab(new Vector2Int(x,y));
-
+							if (ActiveBrush == Brush.Selection)
+							{
+								DeletePrefab(new Vector2Int(x, y));
+							}
 						}
 					}
 				}else if (lastLeftMouseDown && !leftMouseDown)
 				{
+					if (ActiveBrush == Brush.Copy)
+					{
+						buffer = new List<WorldObjectData>[bottomRightSelection.X - topLeftSelection.X+1,bottomRightSelection.Y - topLeftSelection.Y+1];
+					}
+
 					for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
 					{
 						for (int y = topLeftSelection.Y; y <= bottomRightSelection.Y; y++)
 						{
-							if(IsValidPlacement(new Vector2Int(x,y)))
+							if (ActiveBrush == Brush.Selection)
 							{
-								WorldManager.Instance.MakeWorldObject(ActivePrefab,new Vector2Int(x,y),ActiveDir);	
+								if (IsValidPlacement(new Vector2Int(x, y),ActivePrefab,ActiveDir))
+								{
+									WorldManager.Instance.MakeWorldObject(ActivePrefab, new Vector2Int(x, y), ActiveDir);
+								}
+							}else if (ActiveBrush == Brush.Copy)
+							{
+								WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+								var data = tile.GetData();
+								buffer[x - topLeftSelection.X, y - topLeftSelection.Y] = new List<WorldObjectData>();
+								if (data.NorthEdge != null)
+								{
+									var worldObjectData = data.NorthEdge.Value;
+									worldObjectData.Id = -1;
+									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
+								}
+								
+								if (data.WestEdge != null)
+								{
+									var worldObjectData = data.WestEdge.Value;
+									worldObjectData.Id = -1;
+									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
+								}
+
+								if (data.Surface != null)
+								{
+									var worldObjectData = data.Surface.Value;
+									worldObjectData.Id = -1;
+									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
+								}
 							}
 
 
 						}
 					}
+					if(ActiveBrush == Brush.Copy)
+					{
+						ActiveBrush = Brush.Paste;
+					}
 				}
+				break;
+			case Brush.Paste:
+				if (leftMouseDown && !lastLeftMouseDown)
+				{
+					if (buffer != null)
+						for (int x = 0; x < buffer.GetLength(0); x++)
+						{
+							for (int y = 0; y < buffer.GetLength(1); y++)
+							{
+								if (!WorldManager.IsPositionValid(mousePos+new Vector2Int(x,y)))
+								{
+									continue;
+									
+								}
 
+								var tileData = buffer[x, y];
+								var pos = new Vector2Int(x,y) + mousePos;
+								WorldManager.Instance.GetTileAtGrid(pos).Wipe();
+								
+								foreach (var data in tileData)
+								{
+									WorldManager.Instance.MakeWorldObjectFromData(data,	WorldManager.Instance.GetTileAtGrid(pos));
+								}
 
+							}
+						}
+
+					ActiveBrush = Brush.Point;
+					leftMouseDown = false;
+				}
+	
 				break;
 		}
 		//Console.WriteLine(MouseDown+" "+lastMouseDown);
@@ -505,14 +713,15 @@ public class EditorUiLayout : MenuLayout
 	{
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-	//	Console.WriteLine(Camera.GetMouseWorldPos());
-		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y +" Mode: "+ActiveBrush,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/(Camera.GetZoom()), new SpriteEffects(), 0);
+		//	Console.WriteLine(Camera.GetMouseWorldPos());
+		batch.DrawString(Game1.SpriteFont,"X:"+MousePos.X+" Y:"+MousePos.Y +" Mode: "+ActiveBrush,  Camera.GetMouseWorldPos(),Color.Wheat, 0, Vector2.Zero, 2/Camera.GetZoom(), new SpriteEffects(), 0);
 		batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X, 100)), Color.White, 5);
 		batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X+1, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X+1, 100)), Color.White, 5);
 		batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y)), Color.White, 5);
 		batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y+1)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y+1)), Color.White, 5);
 		switch (ActiveBrush)
 		{
+			case Brush.Copy:
 			case Brush.Selection:
 				if (IsMouseDown)
 				{
@@ -521,29 +730,32 @@ public class EditorUiLayout : MenuLayout
 					batch.DrawLine(Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, bottomRightSelection.Y + 1)), Utility.GridToWorldPos(new Vector2(topLeftSelection.X, bottomRightSelection.Y + 1)), Color.Peru, 5);
 					batch.DrawLine(Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, bottomRightSelection.Y + 1)), Utility.GridToWorldPos(new Vector2(bottomRightSelection.X + 1, topLeftSelection.Y)), Color.Peru, 5);
 				}
-
+				break;
+			case Brush.Paste:
+				for (int x = 0; x < buffer.GetLength(0); x++)
+				{
+					for (int y = 0; y < buffer.GetLength(1); y++)
+					{
+						var tileData = buffer[x, y];
+						var pos = new Vector2Int(x, y) + MousePos;
+						foreach (var data in tileData)
+						{
+							batch.DrawPrefab(Utility.GridToWorldPos(pos), data.Prefab, data.Facing,data.Fliped);
+						}
+					}
+				}
+				
 				break;
 		}
 
-		Texture2D previewSprite;
-		if (PrefabManager.WorldObjectPrefabs[ActivePrefab].Faceable)
+		if (ActiveBrush == Brush.Selection || ActiveBrush == Brush.Point)
 		{
-			previewSprite= PrefabManager.WorldObjectPrefabs[ActivePrefab].spriteSheet[0][(int) ActiveDir];
-			if ((int)ActiveDir == 2)
-			{
-				MousePos += new Vector2(1, 0);
-			}else if ((int)ActiveDir == 4)
-			{
-				MousePos += new Vector2(0, 1);
-			}
-		}else
-		{
-			previewSprite = PrefabManager.WorldObjectPrefabs[ActivePrefab].spriteSheet[0][0];
+			batch.DrawPrefab(Utility.GridToWorldPos(MousePos),ActivePrefab,ActiveDir);
 		}
 
-
-
-		batch.Draw(previewSprite, Utility.GridToWorldPos(MousePos)+PrefabManager.WorldObjectPrefabs[ActivePrefab].Transform.Position, Color.White*0.5f);
 		batch.End();
+		
 	}
+
+
 }

@@ -23,7 +23,7 @@ public class WorldAction
 	#endif
 	public WorldAction(string name,  string description, List<DeliveryMethod> deliveryMethods, WorldEffect effect)
 	{
-		this.Name = name;
+		Name = name;
 		DeliveryMethods = deliveryMethods;
 		Effect = effect;
 		Description = description;
@@ -42,9 +42,11 @@ public class WorldAction
 		Console.WriteLine("Executing Action "+Name+" on "+target+" by "+actor.worldObject.Id);
 		foreach (var method in DeliveryMethods)
 		{
-			target = method.ExectuteAndProcessLocation(actor, target);
-			Effect.Apply(target,actor.worldObject);
-			
+			var t = method.ExectuteAndProcessLocation(actor, target);
+			if (t != null)
+			{
+				Effect.Apply(t, actor.worldObject);
+			}
 		}
 #if CLIENT
 		GameLayout.ReMakeMovePreview();

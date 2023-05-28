@@ -46,7 +46,7 @@ public class Shootable : DeliveryMethod
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
 
-			if (previewShot.result.hit && WorldManager.Instance.GetObject(previewShot.result.hitObjID).TileLocation.Position != (Vector2Int)previewShot.result.EndPoint)
+			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.hitObjID).TileLocation.Position != (Vector2Int)previewShot.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
@@ -86,7 +86,7 @@ public class Shootable : DeliveryMethod
 		}
 		
 		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
+		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
 
 		
 
@@ -105,17 +105,17 @@ public class Shootable : DeliveryMethod
 			Projectile p = MakeProjectile(actor, target);
 #if SERVER
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.result,p.covercast,p.originalDmg,p.dropoffRange,p.determinationResistanceCoefficient,p.supressionRange,p.supressionStrenght,p.shooterLow,p.targetLow));
+			Networking.DoAction(new ProjectilePacket(p.Result,p.Covercast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow));
 #endif			
 
 		
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
-		if (p.result.hit)
+		if (p.Result.hit)
 		{
-			var obj = WorldManager.Instance.GetObject(p.result.hitObjID);
+			var obj = WorldManager.Instance.GetObject(p.Result.hitObjID);
 			if (obj == null)
 			{
-				return p.result.CollisionPointShort;
+				return p.Result.CollisionPointShort;
 			}
 			return obj.TileLocation.Position;
 		}
@@ -156,7 +156,7 @@ public class Shootable : DeliveryMethod
 		{
 			case TargetingType.Auto:
 				targetHeight = "Auto(";
-				if (previewShot.targetLow || previewShot.shooterLow)
+				if (previewShot.TargetLow || previewShot.ShooterLow)
 				{
 					targetHeight += "Low)";
 				}
@@ -175,7 +175,7 @@ public class Shootable : DeliveryMethod
 		}
 
 				
-		spriteBatch.DrawText("X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(), 2/(Camera.GetZoom()),Color.Wheat);
+		spriteBatch.DrawText("X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(), 2/Camera.GetZoom(),Color.Wheat);
 
 
 
@@ -190,24 +190,24 @@ public class Shootable : DeliveryMethod
 
 			if (tile.ControllableAtLocation != null)
 			{
-				tile.ControllableAtLocation.PreviewData.detDmg += previewShot.supressionStrenght;
+				tile.ControllableAtLocation.PreviewData.detDmg += previewShot.SupressionStrenght;
 			}
 
 		}
 
 
-		var startPoint = Utility.GridToWorldPos(previewShot.result.StartPoint);
-		var endPoint = Utility.GridToWorldPos(previewShot.result.EndPoint);
+		var startPoint = Utility.GridToWorldPos(previewShot.Result.StartPoint);
+		var endPoint = Utility.GridToWorldPos(previewShot.Result.EndPoint);
 
 		Vector2 point1 = startPoint;
 		Vector2 point2;
 		int k = 0;
-		var dmg = previewShot.originalDmg;
-		foreach (var dropOff in previewShot.dropOffPoints)
+		var dmg = previewShot.OriginalDmg;
+		foreach (var dropOff in previewShot.DropOffPoints)
 		{
-			if (dropOff == previewShot.dropOffPoints.Last())
+			if (dropOff == previewShot.DropOffPoints.Last())
 			{
-				point2 = Utility.GridToWorldPos(previewShot.result.CollisionPointLong);
+				point2 = Utility.GridToWorldPos(previewShot.Result.CollisionPointLong);
 
 			}
 			else
@@ -246,18 +246,18 @@ public class Shootable : DeliveryMethod
 		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 5);
 		int coverModifier = 0;
 		WorldObject? hitobj = null;
-		if (previewShot.result.hitObjID != -1)
+		if (previewShot.Result.hitObjID != -1)
 		{
-			hitobj = WorldManager.Instance.GetObject(previewShot.result.hitObjID);
+			hitobj = WorldManager.Instance.GetObject(previewShot.Result.hitObjID);
 		}
 
 
-		if (previewShot.covercast != null && previewShot.covercast.hit)
+		if (previewShot.CoverCast != null && previewShot.CoverCast.hit)
 		{
 			Color c = Color.Green;
 			string hint = "";
-			var coverPoint = Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong);
-			Cover cover = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID).GetCover();
+			var coverPoint = Utility.GridToWorldPos(previewShot.CoverCast.CollisionPointLong);
+			Cover cover = WorldManager.Instance.GetObject(previewShot.CoverCast.hitObjID).GetCover();
 			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 			{
 				if (cover != Cover.Full)
@@ -294,13 +294,13 @@ public class Shootable : DeliveryMethod
 			}
 
 			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			var coverobj = WorldManager.Instance.GetObject(previewShot.covercast.hitObjID);
+			var coverobj = WorldManager.Instance.GetObject(previewShot.CoverCast.hitObjID);
 			var coverobjtransform = coverobj.Type.Transform;
 			Texture2D yellowsprite = coverobj.GetTexture();
 
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.covercast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.CoverCast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
 			coverobj.PreviewData.finalDmg += coverModifier;
 			Console.WriteLine(coverobj.PreviewData.finalDmg);
 
@@ -315,32 +315,32 @@ public class Shootable : DeliveryMethod
 
 
 			spriteBatch.Draw(redSprite, transform.Position + Utility.GridToWorldPos(hitobj.TileLocation.Position), Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.result.CollisionPointLong), 15, 10, Color.Red, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Result.CollisionPointLong), 15, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 
 				var data = hitobj.PreviewData;
-				data.totalDmg = previewShot.originalDmg;
-				data.distanceBlock = previewShot.originalDmg - previewShot.dmg;
-				data.finalDmg += previewShot.dmg - coverModifier;
+				data.totalDmg = previewShot.OriginalDmg;
+				data.distanceBlock = previewShot.OriginalDmg - previewShot.Dmg;
+				data.finalDmg += previewShot.Dmg - coverModifier;
 				data.coverBlock = coverModifier;
 				if (hitobj.ControllableComponent == null)
 				{
-					data.finalDmg -= previewShot.determinationResistanceCoefficient;
-					data.determinationBlock = previewShot.determinationResistanceCoefficient;
+					data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
+					data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
 				}
 				else if (hitobj.ControllableComponent.Determination > 0)
 				{
-					data.finalDmg -= previewShot.determinationResistanceCoefficient;
-					data.determinationBlock = previewShot.determinationResistanceCoefficient;
+					data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
+					data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
 				}
 
 				hitobj.PreviewData = data;
 		}
 		
 		
-		if (previewShot.result.hit)
+		if (previewShot.Result.hit)
 		{
-			return previewShot.result.CollisionPointLong;
+			return previewShot.Result.CollisionPointLong;
 		}
 	
 		return target;

@@ -15,8 +15,8 @@ namespace MultiplayerXeno
 		public static AudioListener AudioListener{ get; private set; } = null!;
 
 		private static Vector2 velocity = new Vector2();
-		private static float ZoomVelocity = 0;
-		private static float scale = 1;
+		private static float zoomVelocity = 0;
+
 
 		public static void Init(GraphicsDevice graphicsDevice, GameWindow window)
 		{
@@ -116,7 +116,17 @@ namespace MultiplayerXeno
 					forceMoving = false;
 				}
 
-				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
+				
+				//todo make the transition smooth rather than an if statement
+				
+
+				difference = difference / 500f;
+				
+				
+				var vec =  Vector2.Clamp(difference,new Vector2(-3,-3),new Vector2(3,3));
+		
+
+				return vec;
 			}
 			
 			
@@ -138,9 +148,9 @@ namespace MultiplayerXeno
 			var state = Mouse.GetState();
 			float diff = (float) (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
 			lastScroll = state.ScrollWheelValue;
-			ZoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
-			Cam.ZoomIn(ZoomVelocity);
-			ZoomVelocity *= gameTime.GetElapsedSeconds()*45;
+			zoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
+			Cam.ZoomIn(zoomVelocity);
+			zoomVelocity *= gameTime.GetElapsedSeconds()*45;
 
 			float movementSpeed = 400*(Cam.MaximumZoom/Cam.Zoom);
 			Vector2 move = GetMovementDirection();

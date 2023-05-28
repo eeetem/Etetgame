@@ -101,7 +101,7 @@ public abstract class UiLayout
 			
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-		batch.DrawText("X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/(Camera.GetZoom()),Color.Wheat);
+		batch.DrawText("X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/Camera.GetZoom(),Color.Wheat);
 		batch.End();
 	}
 	public virtual void RenderFrontHud(SpriteBatch batch, float deltatime)
@@ -111,7 +111,7 @@ public abstract class UiLayout
 
 	protected static bool JustPressed(Keys k)
 	{
-		return (lastKeyboardState.IsKeyUp(k) && currentKeyboardState.IsKeyDown(k));
+		return lastKeyboardState.IsKeyUp(k) && currentKeyboardState.IsKeyDown(k);
 	}
 
 }

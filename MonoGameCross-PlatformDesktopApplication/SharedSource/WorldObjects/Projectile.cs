@@ -7,29 +7,29 @@ namespace MultiplayerXeno
 {
 	public class Projectile
 	{
-		public RayCastOutcome result { get; private set; }
-		public RayCastOutcome? covercast { get; private set; }//tallest cover on the way
-		public int dmg;
-		public int originalDmg;
-		public int dropoffRange;
-		public Vector2[] dropOffPoints;
-		public int determinationResistanceCoefficient = 1;
-		public int supressionRange;
-		public int supressionStrenght;
-		public bool shooterLow;
-		public bool targetLow;
+		public RayCastOutcome Result { get; private set; }
+		public RayCastOutcome? CoverCast { get; private set; }//tallest cover on the way
+		public int Dmg;
+		public readonly int OriginalDmg;
+		public readonly int DropoffRange;
+		public Vector2[] DropOffPoints;
+		public readonly int DeterminationResistanceCoefficient = 1;
+		public readonly int SupressionRange;
+		public readonly int SupressionStrenght;
+		public bool ShooterLow;
+		public bool TargetLow;
 		public Projectile(ProjectilePacket packet)
 		{
-			result = packet.result;
-			covercast = packet.covercast;
-			dmg = packet.dmg;
-			originalDmg = packet.dmg;
-			dropoffRange = packet.dropoffRange;
-			determinationResistanceCoefficient = packet.determinationResistanceCoefficient;
-			supressionRange = packet.suppresionRange;
-			supressionStrenght = packet.supressionStrenght;
-			shooterLow = packet.shooterLow;
-			targetLow = packet.targetLow;
+			Result = packet.result;
+			CoverCast = packet.covercast;
+			Dmg = packet.dmg;
+			OriginalDmg = packet.dmg;
+			DropoffRange = packet.dropoffRange;
+			DeterminationResistanceCoefficient = packet.determinationResistanceCoefficient;
+			SupressionRange = packet.suppresionRange;
+			SupressionStrenght = packet.supressionStrenght;
+			ShooterLow = packet.shooterLow;
+			TargetLow = packet.targetLow;
 			CalculateDetails();
 			Fire();
 		}
@@ -37,29 +37,29 @@ namespace MultiplayerXeno
 	
 		public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
 		{
-			this.dmg = dmg;
-			originalDmg = dmg;
-			this.dropoffRange = dropoffRange;
-			this.determinationResistanceCoefficient = determinationResistanceCoefficient;
-			this.supressionRange = supressionRange;
-			this.supressionStrenght = supressionStrenght;
-			this.shooterLow = shooterLow;
-			this.targetLow = targetLow;
+			this.Dmg = dmg;
+			OriginalDmg = dmg;
+			this.DropoffRange = dropoffRange;
+			this.DeterminationResistanceCoefficient = determinationResistanceCoefficient;
+			this.SupressionRange = supressionRange;
+			this.SupressionStrenght = supressionStrenght;
+			this.ShooterLow = shooterLow;
+			this.TargetLow = targetLow;
 
 		if (shooterLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
+			Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
 		}
 		else if (targetLow)
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
+			Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
 		}
 		else
 		{
-			result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
+			Result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
 		}
 
-		if (!result.hit) {
+		if (!Result.hit) {
 			var tile = WorldManager.Instance.GetTileAtGrid(to);
 			var obj = tile.ControllableAtLocation;
 			if (obj != null) {
@@ -67,10 +67,10 @@ namespace MultiplayerXeno
 				if (obj.IsVisible()) {
 #endif
 					var controllable = obj.ControllableComponent;
-					if (controllable != null && controllable.Crouching && this.targetLow == false) {
+					if (controllable != null && controllable.Crouching && this.TargetLow == false) {
 						// Do nothing if targetLow is false
 					} else {
-						result = new RayCastOutcome(from, to) {
+						Result = new RayCastOutcome(from, to) {
 							hit = true,
 							hitObjID = obj.Id,
 							CollisionPointLong = to,
@@ -83,28 +83,28 @@ namespace MultiplayerXeno
 		}
 
 	
-		if (result.hit)
+		if (Result.hit)
 		{
 
 			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
+			to = Result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
 			RayCastOutcome cast;
 
 			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, false,true);
-			if (cast.hit && result.hitObjID != cast.hitObjID)
+			if (cast.hit && Result.hitObjID != cast.hitObjID)
 			{
-				covercast = cast;
+				CoverCast = cast;
 			}
 			else
 			{
 				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, false,true);
-				if (cast.hit && result.hitObjID != cast.hitObjID)
+				if (cast.hit && Result.hitObjID != cast.hitObjID)
 				{
-					covercast = cast;
+					CoverCast = cast;
 				}
 				else
 				{
-					covercast = null;
+					CoverCast = null;
 				}
 			}
 
@@ -118,55 +118,55 @@ namespace MultiplayerXeno
 
 		public void CalculateDetails()
 		{
-			float range = Math.Min( Vector2.Distance(result.StartPoint, result.CollisionPointLong), Vector2.Distance(result.StartPoint, result.EndPoint));
+			float range = Math.Min( Vector2.Distance(Result.StartPoint, Result.CollisionPointLong), Vector2.Distance(Result.StartPoint, Result.EndPoint));
 			int dropOffs = 0;
-			while (range > dropoffRange)
+			while (range > DropoffRange)
 			{
-				range -= dropoffRange;
+				range -= DropoffRange;
 				dropOffs++;
 			}
 			
-			dropOffPoints = new Vector2[dropOffs+1];
+			DropOffPoints = new Vector2[dropOffs+1];
 			for (int i = 0; i < dropOffs+1; i++)
 			{
 				if (i != 0)
 				{
-					dmg=(int)Math.Ceiling(dmg/1.8f);
+					Dmg=(int)Math.Ceiling(Dmg/1.8f);
 				}
 
-				dropOffPoints[i] = result.StartPoint + (Vector2.Normalize(result.EndPoint - result.StartPoint)* dropoffRange *(i+1));
+				DropOffPoints[i] = Result.StartPoint + Vector2.Normalize(Result.EndPoint - Result.StartPoint)* DropoffRange *(i+1);
 			}
 		}
 
 		public List<WorldTile> SupressedTiles()
 		{
-			var pos = new Vector2Int((int) result.CollisionPointLong.X, (int) result.CollisionPointLong.Y);
+			var pos = new Vector2Int((int) Result.CollisionPointLong.X, (int) Result.CollisionPointLong.Y);
 			var worldTile = WorldManager.Instance.GetTileAtGrid(pos);
-			if (result.CollisionPointLong != result.EndPoint)
+			if (Result.CollisionPointLong != Result.EndPoint)
 			{
 				try
 				{
-					var dir = Utility.GetDirectionToSideWithPoint(pos, result.CollisionPointLong);
+					var dir = Utility.GetDirectionToSideWithPoint(pos, Result.CollisionPointLong);
 				
 
 					Cover passCover = Cover.High;
-					if (shooterLow)
+					if (ShooterLow)
 					{
 						passCover = Cover.Low;
 					}
 
 					if (worldTile.GetCover(dir,true)>passCover)
 					{
-						pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
+						pos = new Vector2Int((int) Result.CollisionPointShort.X, (int) Result.CollisionPointShort.Y);
 		
 					}
 				}
 				catch (Exception)
 				{
-					pos = new Vector2Int((int) result.CollisionPointShort.X, (int) result.CollisionPointShort.Y);
+					pos = new Vector2Int((int) Result.CollisionPointShort.X, (int) Result.CollisionPointShort.Y);
 				}
 			}
-			var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,Cover.High);
+			var tiles = WorldManager.Instance.GetTilesAround(pos,SupressionRange,Cover.High);
 			return tiles;
 		}
 
@@ -174,12 +174,12 @@ namespace MultiplayerXeno
 		{
 			//play animation
 			
-			if (result.hit)
+			if (Result.hit)
 			{
-				if (covercast != null)
+				if (CoverCast != null)
 				{
-					var hitobj = WorldManager.Instance.GetObject(result.hitObjID);
-					Cover cover = WorldManager.Instance.GetObject(covercast.hitObjID)!.GetCover();
+					var hitobj = WorldManager.Instance.GetObject(Result.hitObjID);
+					Cover cover = WorldManager.Instance.GetObject(CoverCast.hitObjID)!.GetCover();
 						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 						{
 							if (cover != Cover.Full)
@@ -205,21 +205,21 @@ namespace MultiplayerXeno
 							//this shouldnt happen
 							break;
 					}
-					if(dmg>coverBlock)
+					if(Dmg>coverBlock)
 					{
-						dmg -= coverBlock;
+						Dmg -= coverBlock;
 					}
 					else
 					{
-						coverBlock = dmg;
-						dmg = 0;
+						coverBlock = Dmg;
+						Dmg = 0;
 					}
-					WorldManager.Instance.GetObject(covercast.hitObjID)?.TakeDamage(coverBlock,0);
+					WorldManager.Instance.GetObject(CoverCast.hitObjID)?.TakeDamage(coverBlock,0);
 				}
 
 				
 				
-				WorldManager.Instance.GetObject(result.hitObjID)?.TakeDamage(this);
+				WorldManager.Instance.GetObject(Result.hitObjID)?.TakeDamage(this);
 			
 			}
 			else
@@ -236,7 +236,7 @@ namespace MultiplayerXeno
 			{
 				if (tile.ControllableAtLocation != null)
 				{
-					tile.ControllableAtLocation.ControllableComponent.Suppress(supressionStrenght);
+					tile.ControllableAtLocation.ControllableComponent.Suppress(SupressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.ControllableAtLocation.ControllableComponent.Determination);
 				}
 			}

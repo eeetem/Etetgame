@@ -71,7 +71,7 @@ public class Move : Action
 		base.InitAction();
 	}
 
-	public override void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch)
+	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (lastTarget == new Vector2Int(0, 0))
 		{
@@ -80,6 +80,7 @@ public class Move : Action
 			{
 				previewPath = new List<Vector2Int>();
 			}
+
 			lastTarget = target;
 		}
 
@@ -92,15 +93,29 @@ public class Move : Action
 
 		foreach (var path in previewPath)
 		{
-					
-			if(path.X < 0 || path.Y < 0) break;
-			var pos = Utility.GridToWorldPos((Vector2)path + new Vector2(0.5f,0.5f));
-				
-			spriteBatch.DrawCircle(pos,20,10,Color.Green,20f);
-				
-				
+
+			if (path.X < 0 || path.Y < 0) break;
+			var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+
+			spriteBatch.DrawCircle(pos, 20, 10, Color.Green, 20f);
+
+
+		}
+
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);
+		int moveUse = 1;
+		while (result.Cost > actor.GetMoveRange() * moveUse)
+		{
+			moveUse++;
+		}
+		
+		for (int i = 0; i < moveUse; i++)
+		{
+			spriteBatch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn"),Utility.GridToWorldPos((Vector2)target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 2.5f,SpriteEffects.None,0f);
+		
 		}
 	}
+
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
 		return;

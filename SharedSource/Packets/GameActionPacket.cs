@@ -31,6 +31,7 @@ namespace MultiplayerXeno
 		OverWatch = 5,
 		UseItem = 6,
 		UseAbility = 7,
+		SelectItem = 8,
 		
 	}
 

@@ -19,7 +19,7 @@ public class SquadCompBuilderLayout : UiLayout
 	private List<Vector2Int> mySpawnPoints = new List<Vector2Int>();
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-
+		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
 		
 		mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
@@ -38,7 +38,7 @@ public class SquadCompBuilderLayout : UiLayout
 		panel.Widgets.Add(unitStack);
 
 
-		List<string> units = new List<string>();
+		List<string?> units = new List<string?>();
 		//one button for each unit type
 		foreach (var obj in PrefabManager.WorldObjectPrefabs)
 		{
@@ -78,7 +78,7 @@ public class SquadCompBuilderLayout : UiLayout
 		{
 			SquadCompPacket packet = new SquadCompPacket();
 			packet.Composition = _composition;
-			Networking.serverConnection.Send(packet);
+			Networking.ServerConnection.Send(packet);
 			var lbl = new Label();
 			lbl.Text = "Waiting for other players";
 			lbl.HorizontalAlignment = HorizontalAlignment.Center;
@@ -93,7 +93,7 @@ public class SquadCompBuilderLayout : UiLayout
 
 	
 	SquadMember? _currentlyPlacing;
-	private void StartPlacing(string unit)
+	private void StartPlacing(string? unit)
 	{
 		_currentlyPlacing = new SquadMember();
 		_currentlyPlacing.Prefab = unit;

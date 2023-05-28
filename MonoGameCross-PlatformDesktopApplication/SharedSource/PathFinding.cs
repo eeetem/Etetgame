@@ -14,10 +14,10 @@ namespace MultiplayerXeno.Pathfinding
 			foreach (var idkstfu in nodes)
 			{
 				var node = idkstfu.Element;
-				Node Cached = NodeCache[node.Position.X, node.Position.Y];
-				Cached.CurrentCost = node.CurrentCost;
+				Node cached = NodeCache[node.Position.X, node.Position.Y];
+				cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
-				Cached.EstimatedCost = node.EstimatedCost;
+				cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
@@ -28,10 +28,10 @@ namespace MultiplayerXeno.Pathfinding
 		{
 			foreach (var node in nodes)
 			{
-				Node Cached = NodeCache[node.Position.X, node.Position.Y];
-				Cached.CurrentCost = node.CurrentCost;
+				Node cached = NodeCache[node.Position.X, node.Position.Y];
+				cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
-				Cached.EstimatedCost = node.EstimatedCost;
+				cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
@@ -257,7 +257,7 @@ namespace MultiplayerXeno.Pathfinding
 				}
 			}
 		}
-		private static List<Vector2Int>? GeneratePath(Node target)
+		private static List<Vector2Int> GeneratePath(Node target)
 		{
 			var ret = new List<Vector2Int>();
 			var current = target;

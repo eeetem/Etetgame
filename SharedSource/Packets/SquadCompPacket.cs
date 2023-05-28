@@ -5,7 +5,7 @@ namespace MultiplayerXeno;
 public class SquadCompPacket : Packet
 {
 	public List<SquadMember>? Composition {get; set;} = new List<SquadMember>();
-	public string CompositionJson {get; set;}
+	public string CompositionJson {get; set;} = null!;
 
 
 	public override void BeforeSend()

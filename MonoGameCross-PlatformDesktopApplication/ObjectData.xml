@@ -27,6 +27,13 @@
       <place name="basicWallDebris"/>
     </destroyEffect>
   </object>
+  <object SCover = "3" Edge = "true" Health="1000">
+    <sprite  name="Environment/borderWall"  offset= "0,0"/>
+    <name>borderWall</name>
+    <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
+  </object>
   <object SCover = "0" Edge = "true" Health="5">
     <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
     <name>basicWallDebris</name>
@@ -48,7 +55,7 @@
     <name>basicHalfWall</name>
   </object>
   <object SCover = "1" Edge = "true">
-    <sprite name="Environment/basicHalfWallLight" offset= "0,0"/>
+    <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
     <name>basicHalfWallLight</name>
   </object>
   <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
@@ -129,12 +136,12 @@
       </action>
      
       <toggleaction>
-        <toggleoff name="Holster" tip="Convert fire points to move points. Greatly improves mobility but leaves you vulnerable" det ="-1" mpoint="0" apoint="0">
+        <toggleoff name="Holster" tip="Switch to mobility mode. Starts every turn with 4 move points" det ="-1" mpoint="0" apoint="0">
           <effect visible ="false">
            <applystatus status="Holstered"/>
           </effect>
         </toggleoff>
-        <toggleon name="UnHolster" tip="Convert 2 move points to fire points. Use once in a good position to be able to attack" det ="-1" mpoint="-2" apoint="0">
+        <toggleon name="UnHolster" tip="Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack" det ="-1" mpoint="-2" apoint="0">
           <effect visible ="false">
           <removestatus status="Holstered"/>
           </effect>
@@ -165,7 +172,7 @@
       </action>
 
       <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="-1" mpoint="-1" apoint="-1">
-        <vissioncast Range="22"/>
+        <vissionCast range="22"/>
         <effect range="1" visible ="false" target="friend">
           <applystatus status="Boost" duration="1"/>
         </effect>
@@ -176,10 +183,10 @@
     </controllable>
   </object>
 
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="10">
     <sprite name="Specialist"  offset= "0,0"/>
     <name>Specialist</name>
-    <controllable moveRange = "4" inventory="5" moves="3" actions="1" determination="2">
+    <controllable moveRange = "4" inventory="5" supressionRange="2" moves="3" actions="1" determination="2">
 
       <defaultAttack>
         <shootable dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="9"/>
@@ -189,11 +196,19 @@
           <sfx name="rifle"/>
         </effect>
       </defaultAttack>
-<!--
-      <action immideate="true" name="Resupply" tip="Nearby friendlies get their last used item back" det ="-2" mpoint="-1" apoint="-1">
-        <effect visible ="false" los="true" range = "2" exRange="1" target="friend"><giveitem>
+
+      <action name="Resupply" tip="Give a targeted unit their last used item back" det ="-1" mpoint="-1" apoint="-1">
+        <throwable throwRange="3"/>
+        <effect range="1" visible ="false" target="friend">
+          <giveItem item="{target.LastItem.Name}"/>
         </effect>
-      </action>-->
+      </action>
+      <action name="Resupply" tip="Give a targeted unit item currently equipped by this unit" det ="-1" mpoint="-1" apoint="-1">
+        <throwable throwRange="3"/>
+        <effect range="1" visible ="false" target="friend">
+          <giveItem item="{this.SelectedItem.Name}"/>
+        </effect>
+      </action>
       
 
     </controllable>
@@ -202,7 +217,7 @@
   <statuseffect>
     <name>Holstered</name>
     <effect visible="false">
-     <values act ="-2" move="2"/>
+     <values act ="[set]0" move="2"/>
     </effect>
   </statuseffect>
   <statuseffect>
@@ -286,7 +301,7 @@
   <item>
     <name>Smoke</name>
     <tip>Blocks line of sight</tip>
-    <throwable throwRange="6"/>
+    <throwable throwRange="7"/>
     <effect range="3">
       <place name="Smoke"/>
       <vfx name="clmagnitude" target="100" speed="40"/>

@@ -18,7 +18,7 @@ namespace MultiplayerXeno
 
 		private List<Controllable> Watchers = new List<Controllable>();
 		private List<Controllable> UnWatchQueue = new List<Controllable>();
-		private int HighestWatchLevel = 0;
+		private int HighestWatchLevel;
 		
 		public void Watch(Controllable watcher)
 		{
@@ -46,7 +46,9 @@ namespace MultiplayerXeno
 		{
 			lock (syncobj)
 			{
+#pragma warning disable CS0219
 				bool recalcflag = false;
+#pragma warning restore CS0219
 				foreach (var Watcher in UnWatchQueue)
 				{
 					recalcflag = true;

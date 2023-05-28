@@ -1,13 +1,19 @@
 hour counter: rough estimate may7 (400) + 5
 
 bugs:
-glow arrows over move
+indestructible wall(do when map)
+copy paste
 
 
 sfx list:
 -throw
 -footsteps
--holster/unholster
--officer boost
 -panic
+-aim
+-gunshots
 -reload/heavy swap sfx
+-abilities:
+--headshot
+--resupply
+--holster/unholster
+--officer boost

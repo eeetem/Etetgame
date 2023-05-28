@@ -35,7 +35,7 @@ public class MasterServerNetworking
 			
 			serverConnection.ConnectionClosed += (a, s) =>
 			{
-				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
+				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
 					UI.SetUI(new MainMenuLayout());
 					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
@@ -69,7 +69,7 @@ public class MasterServerNetworking
 			
 			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
-				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
+				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
 					Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 				}
@@ -85,10 +85,10 @@ public class MasterServerNetworking
 		public static List<LobbyData> Lobbies = new List<LobbyData>();
 		public static List<string> Players = new List<string>();
 
-		private static bool AwaitingLobby = false;
+		private static bool AwaitingLobby;
 		public static void CreateLobby(LobbyStartPacket packet)
 		{
-			serverConnection.Send(packet);
+			serverConnection?.Send(packet);
 			AwaitingLobby = true;
 
 		}
@@ -96,17 +96,17 @@ public class MasterServerNetworking
 		public static void RefreshServers()
 		{
 			Lobbies.Clear();
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("RequestLobbies",""));
+			serverConnection?.SendRawData(RawDataConverter.FromUTF8String("RequestLobbies",""));
 		}
 		public static void ChatMSG(string content)
 		{
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
+			serverConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
 
 		public static void Disconnect()
 		{
 			UI.SetUI(new MainMenuLayout());
-			serverConnection.Close(CloseReason.ClientClosed);
+			serverConnection?.Close(CloseReason.ClientClosed);
 		}
 }

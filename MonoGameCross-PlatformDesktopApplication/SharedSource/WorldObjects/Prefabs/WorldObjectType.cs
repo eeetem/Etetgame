@@ -6,10 +6,10 @@ namespace MultiplayerXeno
 	public partial class WorldObjectType
 	{
 
-		public readonly string TypeName;
+		public readonly string? TypeName;
 		public int MaxHealth;
 		public int lifetime = -100;
-		public WorldObjectType(string name,ControllableType? controllableType)
+		public WorldObjectType(string? name,ControllableType? controllableType)
 		{
 			TypeName = name;
 			if (controllableType != null)

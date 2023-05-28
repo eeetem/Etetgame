@@ -14,7 +14,7 @@ namespace MultiplayerXeno
 
 		public readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
 	
-		private int NextId = 0;
+		private int NextId;
 
 		private static WorldManager instance;
 		public static WorldManager Instance
@@ -74,7 +74,7 @@ namespace MultiplayerXeno
 
 		public static bool IsPositionValid(Vector2Int pos)
 		{
-			return (pos.X >= 0 && pos.X < 100 && pos.Y >= 0 && pos.Y < 100);
+			return pos.X >= 0 && pos.X < 100 && pos.Y >= 0 && pos.Y < 100;
 		}
 
 		public void NextTurn(bool teamOneTurn)
@@ -155,7 +155,7 @@ namespace MultiplayerXeno
 		}
 		
 
-		public void MakeWorldObject(string prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
+		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
 		{
 			WorldObjectData data = new WorldObjectData(prefabName);
 			data.Id = id;
@@ -165,7 +165,7 @@ namespace MultiplayerXeno
 			return;
 		}
 
-		private void MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
+		public void MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
 		{
 			lock (syncobj)
 			{
@@ -324,7 +324,7 @@ namespace MultiplayerXeno
 			else
 			{
 				step.X = 1;
-				lenght.X = ((startcell.X + 1) - startPos.X) * scalingFactor.X;
+				lenght.X = (startcell.X + 1 - startPos.X) * scalingFactor.X;
 			}
 
 			if (dir.Y < 0)
@@ -335,7 +335,7 @@ namespace MultiplayerXeno
 			else
 			{
 				step.Y = 1;
-				lenght.Y = ((startcell.Y+1) - startPos.Y) * scalingFactor.Y;
+				lenght.Y = (startcell.Y+1 - startPos.Y) * scalingFactor.Y;
 			}
 			
 			
@@ -371,8 +371,8 @@ namespace MultiplayerXeno
 	
 				WorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
-				Vector2 collisionPointlong = ((totalLenght+0.05f) * dir) + (startPos);
-				Vector2 collisionPointshort = ((totalLenght-0.1f) * dir) + (startPos);
+				Vector2 collisionPointlong = (totalLenght+0.05f) * dir + startPos;
+				Vector2 collisionPointshort = (totalLenght-0.1f) * dir + startPos;
 				if (IsPositionValid(checkingSquare))
 				{
 					tile = GetTileAtGrid(checkingSquare);
@@ -390,7 +390,7 @@ namespace MultiplayerXeno
 				{
 					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
 
-					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,(lastCheckingSquare == startcell));
+					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,lastCheckingSquare == startcell);
 
 					if (visibilityCast)
 					{
@@ -589,7 +589,10 @@ namespace MultiplayerXeno
 				foreach (var obj in objsToDel)
 				{
 #if CLIENT
-					MakeFovDirty();
+					if (GameManager.GameState == GameState.Playing)
+					{
+						MakeFovDirty();
+					}
 #endif
 #if SERVER
 					if (WorldObjects.ContainsKey(obj))
@@ -617,7 +620,10 @@ namespace MultiplayerXeno
 				{
 					var obj = CreateWorldObj(WO);
 #if CLIENT
-					MakeFovDirty();
+					if (GameManager.GameState == GameState.Playing)
+					{
+						MakeFovDirty();
+					}
 
 					if (GameManager.GameState == GameState.Lobby)
 					{
@@ -678,7 +684,7 @@ namespace MultiplayerXeno
 			
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, tile, data);
-			WO.fliped = data.fliped;
+			WO.fliped = data.Fliped;
 			WO.Face(data.Facing,false);
 			WorldTile newTile;
 			if (WO.Type.Surface)
@@ -691,21 +697,23 @@ namespace MultiplayerXeno
 				{
 					case Direction.North:
 						tile.NorthEdge = WO;
+						//WO.fliped = data.fliped;
 						break;
 					case Direction.West:
 						tile.WestEdge = WO;
+						//WO.fliped = data.fliped;
 						break;
 					case Direction.East:
 						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						newTile.WestEdge = WO;
-						WO.Face(Direction.West);
+						WO.Face(Direction.West, false);
 						WO.fliped = true;
 						WO.TileLocation = newTile;
 						break;
 					case Direction.South:
 						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						newTile.NorthEdge = WO;
-						WO.Face(Direction.North);
+						WO.Face(Direction.North,false);
 						WO.fliped = true;
 						WO.TileLocation = newTile;
 						break;
@@ -794,7 +802,7 @@ namespace MultiplayerXeno
 			}
 		}
 
-		private static bool Loading = false;
+		private static bool Loading;
 
 		public bool LoadMap(string path)
 		{

@@ -37,11 +37,11 @@ public static class PrefabManager
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
 		{
 
-			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
 			
 
 			ControllableType? controllableType = null;
-			XmlNode contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
+			XmlNode? contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
 			if (contollableObj != null)
 			{
 				
@@ -79,7 +79,7 @@ public static class PrefabManager
 				var actions = ((XmlElement) contollableObj).GetElementsByTagName("action");
 				foreach (var act in actions)
 				{ 
-					controllableType.extraActions.Add(ParseControllableAction((XmlElement)act));
+					controllableType.ExtraActions.Add(ParseControllableAction((XmlElement)act));
 				}
 				var toggleActions = ((XmlElement) contollableObj).GetElementsByTagName("toggleaction");
 				foreach (var act in toggleActions)
@@ -90,7 +90,7 @@ public static class PrefabManager
 					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]);
 					 tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
 					ExtraToggleAction toggle = new ExtraToggleAction(on,off);
-					controllableType.extraActions.Add(toggle);
+					controllableType.ExtraActions.Add(toggle);
 				}
 
 			}
@@ -108,7 +108,7 @@ public static class PrefabManager
 			Cover scover = Cover.None;
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
 			{
-				faceable = bool.Parse(xmlObj?.Attributes?["Faceable"].InnerText);
+				faceable = bool.Parse(xmlObj?.Attributes?["Faceable"].InnerText ?? "false");
 			}
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Edge"] != null)
 			{
@@ -262,7 +262,7 @@ public static class PrefabManager
 				
 				int throwRange = int.Parse(node.Attributes?["throwRange"]?.InnerText ?? "5");
 				dvm = new Throwable(throwRange);
-			}else if (node.Name == "vissioncast")
+			}else if (node.Name == "vissionCast")
 			{	
 				
 				int throwRange = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
@@ -351,10 +351,19 @@ public static class PrefabManager
 		XmlNode? placeItem = ((XmlElement) effect).GetElementsByTagName("place")[0];
 		if(placeItem !=null)
 		{
-			string innerText = placeItem.Attributes?["name"]?.InnerText;
+			string? innerText = placeItem.Attributes?["name"]?.InnerText;
 			if (innerText != null)
 			{
 				eff.PlaceItemPrefab = innerText;
+			}
+		}
+		XmlNode? giveItem = ((XmlElement) effect).GetElementsByTagName("giveItem")[0];
+		if(giveItem !=null)
+		{
+			string? innerText = giveItem.Attributes?["item"]?.InnerText;
+			if (innerText != null)
+			{
+				eff.GiveItem = new VariableValue(innerText);
 			}
 		}
 
@@ -362,18 +371,18 @@ public static class PrefabManager
 		foreach (var status in statusapp)
 		{
 			var s = (XmlElement) status;
-			string statname = s.Attributes?["status"]?.InnerText;
+			string? statname = s.Attributes?["status"]?.InnerText;
 			int duration = int.Parse(s.Attributes?["duration"]?.InnerText ?? "100000");
 			if (statname != null)
 			{
-				eff.AddStatus.Add(new Tuple<string, int>(statname,duration));
+				eff.AddStatus.Add(new Tuple<string?, int>(statname,duration));
 			}
 		}
 		var statusrem = ((XmlElement) effect).GetElementsByTagName("removestatus");
 		foreach (var status in statusrem)
 		{
 			var s = (XmlElement) status;
-			string statname = s.Attributes?["status"]?.InnerText;
+			string? statname = s.Attributes?["status"]?.InnerText;
 			if (statname != null)
 			{
 				eff.RemoveStatus.Add(statname);
@@ -385,10 +394,10 @@ public static class PrefabManager
 		{
 			var node = (XmlNode) elem;
 					
-			eff.Effects.Add(new Tuple<string, string, string>(node.Attributes["name"].InnerText,node.Attributes["target"].InnerText,node.Attributes["speed"].InnerText));
+			eff.Effects.Add(new Tuple<string, string, string>(node.Attributes?["name"]?.InnerText,node.Attributes?["target"]?.InnerText,node.Attributes?["speed"]?.InnerText));
 		}
 
-		var sfx = (((XmlElement)effect).GetElementsByTagName("sfx")[0])?.Attributes?["name"]?.InnerText;
+		var sfx = ((XmlElement)effect).GetElementsByTagName("sfx")[0]?.Attributes?["name"]?.InnerText;
 		eff.Sfx = sfx;
 #endif
 

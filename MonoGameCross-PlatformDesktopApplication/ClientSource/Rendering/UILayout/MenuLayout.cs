@@ -9,14 +9,14 @@ namespace MultiplayerXeno.UILayouts.LayoutWithMenu;
 
 public abstract class MenuLayout : UiLayout
 {
-	private static Panel optionsMenu;
+	private static Panel? optionsMenu;
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
 		if (currentKeyboardState.IsKeyDown(Keys.Escape) && lastKeyboardState.IsKeyUp(Keys.Escape))
 		{
 		
-			if (optionsMenu != null && UI.Desktop != null)
+			if (optionsMenu != null)
 			{
 				UI.Desktop.Widgets.Remove(optionsMenu);
 				optionsMenu = null;

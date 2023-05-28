@@ -87,6 +87,7 @@ public class Face : Action
 	}
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
+	//	base.Animate(actor,target);
 		return;
 	}
 #endif

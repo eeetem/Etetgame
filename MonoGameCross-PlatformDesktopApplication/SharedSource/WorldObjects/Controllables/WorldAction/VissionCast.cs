@@ -16,8 +16,8 @@ public class VissionCast : DeliveryMethod
 		this.range = range;
 	}
 
-	private static Vector2Int LastReturned = new Vector2Int(0,0);
-	public override Vector2Int ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	private static Vector2Int? LastReturned;
+	public override Vector2Int? ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
 	{
 		if (Vector2.Distance(target, actor.worldObject.TileLocation.Position) > range)
 		{
@@ -40,6 +40,10 @@ public class VissionCast : DeliveryMethod
 		{
 			return new Tuple<bool, string>(false, "Too Far");
 		}
+		if (Visibility.None == WorldManager.Instance.CanSee(actor, target, true))
+		{
+			return new Tuple<bool, string>(true, "No Sight");
+		}
 		
 		return new Tuple<bool, string>(true, "");
 	}
@@ -60,7 +64,7 @@ public class VissionCast : DeliveryMethod
 
 	public override void InitPreview()
 	{
-		LastReturned = new Vector2Int(0,0);
+		LastReturned = null;
 	}
 
 	public override void AnimateChild(Controllable actor, Vector2Int target)

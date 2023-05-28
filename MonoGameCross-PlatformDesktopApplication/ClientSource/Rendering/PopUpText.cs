@@ -45,7 +45,7 @@ public class PopUpText
 				if (obj.aliveTime > 1000)
 				{
 					Objects.Remove(obj);
-					Console.WriteLine("deleted obj");
+					
 				}
 
 			}

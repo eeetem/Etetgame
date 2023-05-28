@@ -51,7 +51,7 @@ public class LobbyBrowserLayout : MenuLayout
 				{
 					if (input.Text != "")
 					{
-						if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+						if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
 						{
 							Networking.ChatMSG(input.Text);
 						}
@@ -81,7 +81,7 @@ public class LobbyBrowserLayout : MenuLayout
 			{
 				if (input.Text != "")
 				{
-					if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+					if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
 					{
 						Networking.ChatMSG(input.Text);
 					}
@@ -195,7 +195,7 @@ public class LobbyBrowserLayout : MenuLayout
 					{
 						UI.ShowMessage("Connection Notice", "Connected to server!");
 						UI.SetUI(new PreGameLobbyLayout());
-						DiscordManager.client.UpdateState("In Battle");
+						DiscordManager.Client.UpdateState("In Battle");
 					}
 					else
 					{

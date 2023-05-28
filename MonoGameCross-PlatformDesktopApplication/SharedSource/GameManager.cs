@@ -16,9 +16,10 @@ namespace MultiplayerXeno
 		public static bool IsPlayer1Turn = true;
 
 		public static GameState GameState;
-		public static float TimeTillNextTurn = 0;
+		public static float TimeTillNextTurn;
 		
-		private static bool endTurnNextFrame = false;
+		private static bool endTurnNextFrame;
+		private static bool playedWarning;
 		public static void Update(float delta)
 		{
 			if (endTurnNextFrame)
@@ -30,6 +31,14 @@ namespace MultiplayerXeno
 			if (PreGameData.TurnTime != 0 && GameState == GameState.Playing)
 			{
 				TimeTillNextTurn -= delta;
+#if CLIENT
+				if(TimeTillNextTurn/1000f < PreGameData.TurnTime*0.15f && !playedWarning && IsMyTurn())
+				{
+					playedWarning = true;
+					Audio.PlaySound("UI/alert");
+				}
+#endif
+				
 #if SERVER
 				if (TimeTillNextTurn < 0)
 				{
@@ -43,7 +52,7 @@ namespace MultiplayerXeno
 		public static List<WorldObject> CapturePoints = new List<WorldObject>();
 		public static readonly List<Vector2Int> T1SpawnPoints = new();
 		public static readonly List<Vector2Int> T2SpawnPoints = new();
-		private static int score = 0;
+		private static int score;
 		public static void Forget(WorldObject wo)
 		{
 			T1SpawnPoints.Remove(wo.TileLocation.Position);
@@ -70,6 +79,7 @@ namespace MultiplayerXeno
 
 		private static void NextTurn()
 		{
+			playedWarning = false;
 			endTurnNextFrame = false;
 			IsPlayer1Turn = !IsPlayer1Turn;
 			WorldManager.Instance.NextTurn(IsPlayer1Turn);
@@ -114,11 +124,11 @@ Audio.PlaySound("capture");
 			}
 #if CLIENT
 			GameLayout.SetScore(score);
-			Audio.PlaySound("turn");
+			Audio.PlaySound("UI/turn");
 #endif
 			
-			if(score > 6)EndGame(true);
-			if(score < -6)EndGame(false);
+			if(score > 8)EndGame(true);
+			if(score < -8)EndGame(false);
 
 
 	
@@ -156,7 +166,12 @@ Audio.PlaySound("capture");
 					return;
 				}
 
-				Controllable controllable = WorldManager.Instance.GetObject(packet.UnitId).ControllableComponent;
+				Controllable? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.ControllableComponent;
+				if(controllable == null)
+				{
+					Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);
+					return;
+				}
 				Action act = Action.Actions[packet.Type]; //else get controllable specific actions
 				if (act.ActionType == ActionType.UseAbility)
 				{
@@ -182,13 +197,6 @@ Audio.PlaySound("capture");
 								throw new ArgumentException("Invalid target type");
 						}
 					}
-				}
-				else if (act.ActionType == ActionType.UseItem)
-				{
-					string index = packet.args[0];
-					int ind = int.Parse(index);
-					UseItem.ItemIndex = ind;
-					Console.WriteLine("item index: "+ind);
 				}
 				else if (act.ActionType == ActionType.Attack)
 				{

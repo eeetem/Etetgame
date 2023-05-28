@@ -18,6 +18,37 @@ public static partial class Utility
 	{
 		DrawText(spriteBatch,  text,  position, scale,100,  c);
 	}
+	public static void DrawPrefab(this SpriteBatch spriteBatch, Vector2 Pos, string prefab, Direction dir, bool fliped = false)
+	{
+		Texture2D previewSprite;
+		Color c = Color.White;
+		if (PrefabManager.WorldObjectPrefabs[prefab].Faceable)
+		{
+			
+			if ((int) dir == 2)
+			{
+				Pos += GridToWorldPos(new Vector2(1, 0));
+			}
+			else if ((int) dir == 4)
+			{
+				Pos += GridToWorldPos(new Vector2(0, 1));
+			}
+
+			if (fliped)
+			{
+				dir+= 4;
+			}
+			dir = ClampFacing(dir);
+
+			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].spriteSheet[0][(int) dir];
+		}
+		else
+		{
+			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].spriteSheet[0][0];
+		}
+		spriteBatch.Draw(previewSprite, Pos + PrefabManager.WorldObjectPrefabs[prefab].Transform.Position, c * 0.5f);
+	}
+
 
 
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, float scale, int width, Color c)

@@ -13,7 +13,7 @@ public static class Audio
 {
 	private static List<Tuple<SoundEffectInstance, AudioEmitter>> activeSounds = new List<Tuple<SoundEffectInstance, AudioEmitter>>();
 	public static readonly object syncobj = new object();
-	private static ContentManager content;
+	private static ContentManager content = null!;
 	
 	private static float musicVolume = 0.5f;
 	public static float MusicVolume

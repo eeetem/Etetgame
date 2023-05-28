@@ -42,9 +42,11 @@ public class Throwable : DeliveryMethod
 		return new Tuple<bool, string>(true, "");
 	}
 #if CLIENT
-	public override Vector2Int PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		Vector2Int newTarget = ExectuteAndProcessLocation(actor, target);
+		Vector2Int? newTarget = ExectuteAndProcessLocation(actor, target);
+		if (newTarget == null) return newTarget;
+			
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(newTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
 		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)) , Utility.GridToWorldPos(newTarget+new Vector2(0.5f,0.5f)), Color.Red, 2);
 		

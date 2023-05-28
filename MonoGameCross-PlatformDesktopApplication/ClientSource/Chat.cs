@@ -18,7 +18,7 @@ public static class Chat
 	{
 		if (message != "")
 		{ 
-			if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+			if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
 			{
 				Networking.ChatMSG(message);
 			}

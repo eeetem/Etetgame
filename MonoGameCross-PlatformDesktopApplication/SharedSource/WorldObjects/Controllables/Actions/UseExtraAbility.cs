@@ -72,6 +72,7 @@ public class UseExtraAbility : Action
 
 		public override void Animate(Controllable actor, Vector2Int target)
 		{
+			base.Animate(actor,target);
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			action.Animate(actor,target);
 		}

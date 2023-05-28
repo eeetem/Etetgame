@@ -9,12 +9,12 @@ namespace MultiplayerXeno
 	public class ControllableType
 	{
 
-		public ControllableType(string name)
+		public ControllableType(string? name)
 		{
 			Name = name;
 		}
 
-		public readonly string Name;
+		public readonly string? Name;
 		public int MoveRange = 4;
 		public int SightRange = 16;
 		public int OverWatchSize = 2;
@@ -27,9 +27,9 @@ namespace MultiplayerXeno
 		public int InventorySize = 1;
 
 
-		public Texture2D[] CrouchSpriteSheet;
-		public ExtraAction DefaultAttack;
-		public List<IExtraAction> extraActions = new List<IExtraAction>();
+		public Texture2D[] CrouchSpriteSheet = null!;
+		public ExtraAction DefaultAttack = null!;
+		public readonly List<IExtraAction> ExtraActions = new List<IExtraAction>();
 		public WorldEffect? SpawnEffect { get; set; }
 
 		public Controllable Instantiate(WorldObject parent,ControllableData data)

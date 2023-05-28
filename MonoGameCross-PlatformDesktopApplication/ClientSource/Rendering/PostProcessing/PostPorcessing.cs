@@ -157,9 +157,9 @@ namespace MultiplayerXeno
 		private static readonly Dictionary<string, float> EffectParams = new Dictionary<string, float>();
 		private static readonly Dictionary<string, float> DefaultParams = new Dictionary<string, float>();
 
-		private static float clcounter = 0;
-		private static float dxcounter = 0;
-		private static float dycounter = 0;
+		private static float clcounter;
+		private static float dxcounter;
+		private static float dycounter;
 
 		private static RenderTarget2D combinedRender;
 		private static RenderTarget2D combinedRender2;
@@ -206,7 +206,7 @@ namespace MultiplayerXeno
 
 
 		private static float timeToFlicker = 10000;
-		private static int flickerIndex = 0;
+		private static int flickerIndex;
 		public static void Apply(float deltaTime)
 		{
 		
@@ -379,7 +379,6 @@ namespace MultiplayerXeno
 		private static List<EventWaitHandle> threadQueue = new List<EventWaitHandle>();
 		private static Dictionary<string, List<EventWaitHandle>> awaitingthreadQueue = new();
 		
-		
 		private static readonly object syncObj = new object();
 		public static void AddTweenReturnTask(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f)
 		{
@@ -485,7 +484,7 @@ namespace MultiplayerXeno
 				
 			}
 
-			public float counter = 0;
+			public float counter;
 			public string parameter;
 			public float startValue;
 			public float endValue;
@@ -495,7 +494,7 @@ namespace MultiplayerXeno
 			public void Lerp(float deltaTime)
 			{
 				
-				counter += ((float)deltaTime / 10000) * speed;
+				counter += (float)deltaTime / 10000 * speed;
 				EffectParams[parameter] = Utility.Lerp(startValue, endValue, counter);
 
 			}

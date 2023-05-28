@@ -13,7 +13,7 @@ namespace MultiplayerXeno
 {
 	public static class Networking
 	{
-		public static TcpConnection serverConnection;
+		public static TcpConnection? ServerConnection;
 		private static string Ipport="";
 		private static string Name="";
 		public static ConnectionResult Connect(string ipport,string name)
@@ -23,17 +23,17 @@ namespace MultiplayerXeno
 			ConnectionResult connectionResult = ConnectionResult.TCPConnectionNotAlive;
 			//1. Establish a connection to the server.
 			var ipAndPort = ipport.Split(":");
-			serverConnection = ConnectionFactory.CreateTcpConnection(ipAndPort[0], int.Parse(ipAndPort[1]), out connectionResult);
+			ServerConnection = ConnectionFactory.CreateTcpConnection(ipAndPort[0], int.Parse(ipAndPort[1]), out connectionResult);
 			///serverConnection.NoDelay
 			//2. Register what happens if we get a connection
 			if(connectionResult != ConnectionResult.Connected)
 			{
 				return connectionResult;
 			}
-			Console.WriteLine($"{serverConnection.ToString()} Connection established");
+			Console.WriteLine($"{ServerConnection.ToString()} Connection established");
 
 
-			serverConnection.ConnectionClosed += (a, s) =>
+			ServerConnection.ConnectionClosed += (a, s) =>
 			{
 				if (a == CloseReason.Timeout)
 				{
@@ -47,37 +47,37 @@ namespace MultiplayerXeno
 
 
 			};
-			serverConnection.TIMEOUT = 1000000000;
+			ServerConnection.TIMEOUT = 1000000000;
 		
 			
-			serverConnection.RegisterStaticPacketHandler<MapDataPacket>((data, b) =>
+			ServerConnection.RegisterStaticPacketHandler<MapDataPacket>((data, b) =>
 			{
 				var msg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
 				WorldManager.Instance.LoadMap(data.MapData);
 				msg.RemoveFromDesktop();
 			});
-			serverConnection.RegisterStaticPacketHandler<GameDataPacket>(ReciveGameUpdate);
+			ServerConnection.RegisterStaticPacketHandler<GameDataPacket>(ReciveGameUpdate);
 
-			serverConnection.RegisterRawDataHandler("TileUpdate",ReciveTileUpdate);
-			serverConnection.RegisterRawDataHandler("notify", (i, a) =>
+			ServerConnection.RegisterRawDataHandler("TileUpdate",ReciveTileUpdate);
+			ServerConnection.RegisterRawDataHandler("notify", (i, a) =>
 			{
 				UI.ShowMessage("Server Notice",RawDataConverter.ToUnicodeString(i));
 			});
-			serverConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
+			ServerConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
 			{
 				Console.WriteLine("LobbyData Recived");
 				GameManager.PreGameData = i;
 
 			});
 			
-			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
+			ServerConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
 				Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 			});
 
-			serverConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
-			serverConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
-			serverConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
+			ServerConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
+			ServerConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
+			ServerConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
 			{
 				Console.WriteLine("LobbyData Recived");
 				GameManager.PreGameData = i;
@@ -87,7 +87,7 @@ namespace MultiplayerXeno
 			Console.WriteLine("Registered Handlers");
 			Thread.Sleep(500);//give server  a second to register the packet handler
 			Console.WriteLine("Registering Player");
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
+			ServerConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
 		
 			
 
@@ -97,9 +97,9 @@ namespace MultiplayerXeno
 		}
 		public static void Disconnect()
 		{
-			if (serverConnection != null)
+			if (ServerConnection != null)
 			{
-				serverConnection.Close(CloseReason.ClientClosed);
+				ServerConnection.Close(CloseReason.ClientClosed);
 			}
 
 			WorldManager.Instance.WipeGrid();
@@ -119,7 +119,7 @@ namespace MultiplayerXeno
 		{
 			
 			var packet = new MapDataPacket(MapData.Deserialse(File.ReadAllText(path)));
-			serverConnection.Send(packet);
+			ServerConnection.Send(packet);
 		}
 
 		private static void Reconnect(object sender, EventArgs e)
@@ -168,24 +168,24 @@ namespace MultiplayerXeno
 
 		public static void DoAction(GameActionPacket packet)
 		{
-			serverConnection.Send(packet);
+			ServerConnection?.Send(packet);
 		}
 
 		public static void ChatMSG(string content)
 		{
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
+			ServerConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
 
 		public static void SendPreGameUpdate()
 		{
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("mapSelect",GameManager.PreGameData.SelectedMap));
-			serverConnection.Send(GameManager.PreGameData);
+			ServerConnection?.SendRawData(RawDataConverter.FromUTF8String("mapSelect",GameManager.PreGameData.SelectedMap));
+			ServerConnection?.Send(GameManager.PreGameData);
 		}
 
 		public static void SendStartGame()
 		{
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("gameState",""));
+			ServerConnection?.SendRawData(RawDataConverter.FromUTF8String("gameState",""));
 		}
 	}
 }

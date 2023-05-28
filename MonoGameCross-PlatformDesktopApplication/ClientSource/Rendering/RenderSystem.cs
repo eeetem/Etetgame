@@ -6,7 +6,7 @@ namespace MultiplayerXeno;
 
 public static class RenderSystem
 {
-	private static GraphicsDevice graphicsDevice;
+	private static GraphicsDevice graphicsDevice = null!;
 	public static void Init(GraphicsDevice graphicsdevice)
 	{
 
@@ -58,54 +58,54 @@ public static class RenderSystem
 		foreach (var obj in unsortedObjs)
 		{
 			
-				if(obj == null)continue;
-				var texture = obj.GetTexture();
-				var transform = obj.GetDrawTransform();
+			if(obj == null)continue;
+			var texture = obj.GetTexture();
+			var transform = obj.GetDrawTransform();
 
-				if (!obj.IsVisible())//hide tileobjects
-				{
-					continue;
-				}
+			if (!obj.IsVisible())//hide tileobjects
+			{
+				continue;
+			}
 			
-				spriteBatch.Draw(texture,transform.Position,obj.GetColor());
+			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 				
 				
-				//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
-				//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
+			//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			
-				//spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
+			//spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
 
 			
 		}
 		spriteBatch.End();
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
-			foreach (var obj in objs)
+		foreach (var obj in objs)
+		{
+			if(obj == null)continue;
+			var texture = obj.GetTexture();
+			var transform = obj.GetDrawTransform();
+
+			if (!obj.IsVisible())//hide tileobjects
 			{
-				if(obj == null)continue;
-				var texture = obj.GetTexture();
-				var transform = obj.GetDrawTransform();
-
-				if (!obj.IsVisible())//hide tileobjects
-				{
-					continue;
-				}
-
-				spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
-
+				continue;
 			}
-			spriteBatch.End();
+
+			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+
+		}
+		spriteBatch.End();
 		
-			/*
-			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
-			foreach (var obj in UnsortedObjs)
-			{
-				if(obj == null)continue;
-				var transform = obj.GetDrawTransform();
-				spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Wheat, 0, Vector2.Zero, 3, new SpriteEffects(), 0);
+		/*
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
+		foreach (var obj in UnsortedObjs)
+		{
+			if(obj == null)continue;
+			var transform = obj.GetDrawTransform();
+			spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Wheat, 0, Vector2.Zero, 3, new SpriteEffects(), 0);
 
-			}
-			spriteBatch.End();
+		}
+		spriteBatch.End();
 *///pathfinddebug
 		
 	}
@@ -116,23 +116,20 @@ public static class RenderSystem
 
 		public override int Compare(IDrawable? x, IDrawable? y)
 		{
-
-
-			return x.GetDrawOrder().CompareTo(y.GetDrawOrder());
-		}
-	}
+			float orderX = 0;
+			if (x != null)
+			{
+				orderX = x.GetDrawOrder();
+			}
+			float orderY =0;
+			if (y != null)
+			{
+				orderY  = y.GetDrawOrder();
+			}
 			
-	public class WorldTileDrawOrderCompare : Comparer<WorldTile>
-	{
-//draws "top" ones first
-
-		public override int Compare(WorldTile? x, WorldTile? y)
-		{
-
-			int xpos = x.Position.X + x.Position.Y;
-			int ypos = y.Position.X + y.Position.Y;
-			return xpos.CompareTo(ypos);
+			return orderX.CompareTo(orderY);
 		}
 	}
-
 }
+			
+

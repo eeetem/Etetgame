@@ -11,11 +11,11 @@ public class CrtScreenShaderPreset : ShaderPreset
 		
 	}
 
-	private float counter = 0;
+	private float counter;
 
 	public override void Update(float deltatime)
 	{
-		counter += (deltatime / 3000f)* (counter*2f+Random.Shared.NextSingle())/2f;
+		counter += deltatime / 3000f* (counter*2f+Random.Shared.NextSingle())/2f;
 
 
 		float range = 1;
@@ -34,12 +34,12 @@ public class CrtScreenShaderPreset : ShaderPreset
 
 		uiAnim += min;
 		
-		EffectParams["bloomAmount"] = (40+50f*uiAnim);
-		EffectParams["warpX"] = (0.004f * uiAnim - 0.002f);
-		EffectParams["warpY"] = (0.004f*uiAnim-0.002f);
-		EffectParams["shape"] = (1f*uiAnim);
-		EffectParams["maskLight"] = (3f*uiAnim);
-		EffectParams["maskDark"] = (-1f*uiAnim);
+		EffectParams["bloomAmount"] = 40+50f*uiAnim;
+		EffectParams["warpX"] = 0.004f * uiAnim - 0.002f;
+		EffectParams["warpY"] = 0.004f*uiAnim-0.002f;
+		EffectParams["shape"] = 1f*uiAnim;
+		EffectParams["maskLight"] = 3f*uiAnim;
+		EffectParams["maskDark"] = -1f*uiAnim;
 
 
 	}
@@ -51,7 +51,7 @@ public class CrtScreenShaderPreset : ShaderPreset
 		EffectParams["hardBloomScan"] = -5f;
 		EffectParams["hardBloomPix"] = -1f;
 		EffectParams["shadowMask"] = 2f;
-		EffectParams["brightboost"] = (0.01f);
+		EffectParams["brightboost"] = 0.01f;
 
 		base.Apply(effect,size);
 

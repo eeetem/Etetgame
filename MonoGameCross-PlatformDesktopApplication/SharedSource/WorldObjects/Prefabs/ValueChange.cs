@@ -1,4 +1,6 @@
-﻿namespace MultiplayerXeno;
+﻿using System;
+
+namespace MultiplayerXeno;
 
 public struct ValueChange
 {
@@ -67,9 +69,9 @@ public struct ValueChange
 		return newValue - field.Current;
 	}
 
-	public void Apply(ref Value field)
+	public readonly void Apply(ref Value field)
 	{
+		
 		field += GetChange(field);
-
 	}
 }

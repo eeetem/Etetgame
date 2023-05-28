@@ -6,7 +6,7 @@ namespace MultiplayerXeno;
 public class MapDataPacket : Packet
 {
 	public MapData MapData { get; set; }
-	public string MapDataJson { get; set; }
+	public string MapDataJson { get; set; } = null!;
 
 	public override void BeforeReceive()
 	{
@@ -37,7 +37,7 @@ public class MapData
 
 	public static MapData Deserialse(string json)
 	{
-		return Newtonsoft.Json.JsonConvert.DeserializeObject<MapData>(json);
+		return Newtonsoft.Json.JsonConvert.DeserializeObject<MapData>(json) ?? throw new InvalidOperationException();
 	}
 
 	public string Serialise()

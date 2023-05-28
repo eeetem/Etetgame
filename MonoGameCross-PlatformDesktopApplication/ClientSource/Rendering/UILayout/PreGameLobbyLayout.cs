@@ -16,11 +16,11 @@ namespace MultiplayerXeno.UILayouts;
 public class PreGameLobbyLayout : MenuLayout
 {
 	private Panel gameOptionsMenu;
-	private bool swapingMap = false;
+	private bool swapingMap;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		swapingMap = false;
-		
+		WorldManager.Instance.MakeFovDirty(true);
 			var grid1 = new Grid()
 			{
 
@@ -195,7 +195,7 @@ public class PreGameLobbyLayout : MenuLayout
 					};
 					kick.Click += (s, a) =>
 					{
-						Networking.serverConnection.SendRawData(RawDataConverter.FromBoolean("kick",true));
+						Networking.ServerConnection.SendRawData(RawDataConverter.FromBoolean("kick",true));
 					};
 					lablekick.Widgets.Add(kick);
 					lablekick.Widgets.Add(label);
@@ -281,7 +281,7 @@ public class PreGameLobbyLayout : MenuLayout
 					{
 						if (input.Text != "")
 						{
-							if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+							if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
 							{
 								Networking.ChatMSG(input.Text);
 							}
@@ -311,7 +311,7 @@ public class PreGameLobbyLayout : MenuLayout
 				{
 					if (input.Text != "")
 					{
-						if (Networking.serverConnection != null && Networking.serverConnection.IsAlive)
+						if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
 						{
 							Networking.ChatMSG(input.Text);
 						}

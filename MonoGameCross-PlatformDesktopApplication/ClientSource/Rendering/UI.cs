@@ -12,7 +12,7 @@ namespace MultiplayerXeno
 	public static class UI
 	{
 		public static Desktop Desktop { get; private set; } = null!;
-		private static GraphicsDevice graphicsDevice;
+		private static GraphicsDevice graphicsDevice = null!;
 		public static void Init(GraphicsDevice graphicsdevice)
 		{
 			graphicsDevice = graphicsdevice;
@@ -32,25 +32,25 @@ namespace MultiplayerXeno
 		public delegate void UIGen();
 		
 
-		private static UiLayout CurrentUI;
-		private static Widget root;
+		private static UiLayout currentUi = new MainMenuLayout();
+		private static Widget root = null!;
 		public static void SetUI(UiLayout? newUI)
 		{
 
-			UiLayout.SetScale(new Vector2((Game1.resolution.X / 500f) * 1f, (Game1.resolution.Y / 500f) * 1f));
+			UiLayout.SetScale(new Vector2(Game1.resolution.X / 500f * 1f, Game1.resolution.Y / 500f * 1f));
 			
 		
 			if (newUI != null)
 			{
-				root = newUI.Generate(Desktop, CurrentUI);
-				CurrentUI = newUI;
+				root = newUI.Generate(Desktop, currentUi);
+				currentUi = newUI;
 			}
 			else
 			{
-				root = CurrentUI.Generate(Desktop, CurrentUI);
+				root = currentUi.Generate(Desktop, currentUi);
 			}
 
-			Console.WriteLine("Changing UI to: "+CurrentUI);
+			Console.WriteLine("Changing UI to: "+currentUi);
 		}
 		private static MouseState lastMouseState;
 
@@ -65,13 +65,13 @@ namespace MultiplayerXeno
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (mouseState.LeftButton == ButtonState.Pressed)
 			{
-				CurrentUI.MouseDown(gridClick, false);
+				currentUi.MouseDown(gridClick, false);
 				
 			}
 
 			if (mouseState.RightButton == ButtonState.Pressed)
 			{
-				CurrentUI.MouseDown(gridClick, true); 
+				currentUi.MouseDown(gridClick, true); 
 			}
 
 			lastMouseState = mouseState;
@@ -88,13 +88,13 @@ namespace MultiplayerXeno
 			Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
 			{
-				 CurrentUI.MouseUp(gridClick, false);
+				 currentUi.MouseUp(gridClick, false);
 
 			}
 
 			if (lastMouseState.RightButton == ButtonState.Pressed && mouseState.RightButton == ButtonState.Released)
 			{
-				CurrentUI.MouseUp(gridClick, true);
+				currentUi.MouseUp(gridClick, true);
 			}
 
 		}
@@ -127,14 +127,14 @@ namespace MultiplayerXeno
 
 		public static void Update(float deltatime)
 		{
-			CurrentUI.Update(deltatime);
+			currentUi.Update(deltatime);
 		}
 
 		public static void Render(float deltaTime, SpriteBatch spriteBatch)
 		{
 		
 
-			CurrentUI.RenderBehindHud(spriteBatch,deltaTime);
+			currentUi.RenderBehindHud(spriteBatch,deltaTime);
 
 			
 			Desktop.Root = root;
@@ -147,7 +147,7 @@ namespace MultiplayerXeno
 				Desktop.RenderVisual();
 			}
 			
-			CurrentUI.RenderFrontHud(spriteBatch,deltaTime);
+			currentUi.RenderFrontHud(spriteBatch,deltaTime);
 
 			
 

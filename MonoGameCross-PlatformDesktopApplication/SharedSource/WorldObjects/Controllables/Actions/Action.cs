@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Items;
 
 #if CLIENT
+using System.Threading;
 using MultiplayerXeno.UILayouts;
 
 #endif
@@ -64,6 +65,7 @@ public abstract class Action
 		new OverWatch();
 		new UseItem();
 		new UseExtraAbility();
+		new SelectItem();
 
 	}
 
@@ -101,7 +103,22 @@ public abstract class Action
 	public abstract void Execute(Controllable actor, Vector2Int target);
 #if CLIENT
 	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
-	public abstract void Animate(Controllable actor, Vector2Int target);
+	public virtual void Animate(Controllable actor, Vector2Int target)
+	{
+	
+		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
+		{
+			if (ActionType == ActionType.Attack)//only fog of war attacks
+			{
+				Camera.SetPos(actor.worldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
+			}
+		}
+		else
+		{
+			Camera.SetPos(actor.worldObject.TileLocation.Position);
+		}
+		Thread.Sleep(800);
+	}
 #endif
 	public virtual void ToPacket(Controllable actor,Vector2Int target)
 	{

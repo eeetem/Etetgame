@@ -183,7 +183,7 @@ namespace MultiplayerXeno
 		}
 
 
-		private static void RegisterClient(RawData rawData, Connection? connection)
+		private static void RegisterClient(RawData rawData, Connection connection)
 		{
 			Console.WriteLine("Begining Client Register");
 			string name = RawDataConverter.ToUTF8String(rawData).ToLower();

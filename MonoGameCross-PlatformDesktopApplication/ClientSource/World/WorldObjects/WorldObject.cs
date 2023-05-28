@@ -1,4 +1,5 @@
-﻿using MultiplayerXeno;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -8,8 +9,8 @@ namespace MultiplayerXeno
 {
 	public partial class WorldObject : IDrawable
 	{
-		private Transform2 DrawTransform;
-		private int spriteVariation = 0;
+		private Transform2 DrawTransform = null!;
+		private int spriteVariation;
 		private float DrawOrder;
 		public PreviewData PreviewData;
 		public Color? OverRideColor { get; set; }
@@ -48,7 +49,7 @@ namespace MultiplayerXeno
 		{
 			Texture2D sprite;
 			int spriteIndex;
-			if (fliped)
+			if (fliped&& Type.Faceable)
 			{
 				spriteIndex = (int)Facing + 4;
 			}

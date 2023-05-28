@@ -4,7 +4,7 @@ namespace MultiplayerXeno
 {
 	
 	[Serializable]
-	public partial struct WorldTileData
+	public struct WorldTileData
 	{
 		public WorldObjectData? NorthEdge;
 		public WorldObjectData? WestEdge;
@@ -40,7 +40,7 @@ namespace MultiplayerXeno
 		public Direction Facing;
 		public int Id;
 
-		public bool fliped;
+		public bool Fliped;
 		//health
 		public string Prefab;
 		public ControllableData? ControllableData;
@@ -52,7 +52,7 @@ namespace MultiplayerXeno
 			Id = -1;
 			Facing = Direction.North;
 			ControllableData = null;
-			fliped = false;
+			Fliped = false;
 			Health = -100;
 			Lifetime = -100;
 		}
@@ -69,8 +69,9 @@ namespace MultiplayerXeno
 		public bool Panic;
 		public bool JustSpawned;
 		public bool overwatch;
+		public int selectIndex;
 		public List<string?> Inventory { get; set; }
-		public List<Tuple<string,int>> StatusEffects { get; set; }
+		public List<Tuple<string?, int>> StatusEffects { get; set; }
 		
 		public ControllableData(bool team1)
 		{
@@ -84,9 +85,10 @@ namespace MultiplayerXeno
 			JustSpawned = true;//it's always truea nd only set to false in getData
 			overwatch = false;
 			Inventory = new List<string?>();
-			StatusEffects = new List<Tuple<string, int>>();
+			StatusEffects = new List<Tuple<string?, int>>();
+			selectIndex = -1;
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string,int>> sts,bool overwatch)
+		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -99,6 +101,7 @@ namespace MultiplayerXeno
 			Inventory = inv;
 			StatusEffects = sts;
 			this.overwatch = overwatch;
+			this.selectIndex = selectIndex;
 		}
 
 	
@@ -201,7 +204,7 @@ namespace MultiplayerXeno
 
 		public double Magnitude()
 		{
-			return Math.Sqrt((X * X) + (Y * Y));
+			return Math.Sqrt(X * X + Y * Y);
 		}
 
 		public override int GetHashCode()
@@ -243,7 +246,7 @@ namespace MultiplayerXeno
 		
 		public static Vector2Int operator-(Vector2Int a, Vector2Int b)
 			=> new Vector2Int(a.X-b.X, a.Y-b.Y);
-		public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => (lhs?.X == rhs?.X)&&(lhs?.Y == rhs?.Y);
+		public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => lhs?.X == rhs?.X&&lhs?.Y == rhs?.Y;
 	
 		public static bool operator !=(Vector2Int? lhs, Vector2Int? rhs) => !(lhs == rhs);
 	

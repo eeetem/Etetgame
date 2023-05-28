@@ -3,6 +3,11 @@ using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Items;
 
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
+
+
 namespace MultiplayerXeno;
 
 public class UseItem : Action
@@ -10,12 +15,11 @@ public class UseItem : Action
 	public UseItem() : base(ActionType.UseItem)
 	{
 	}
-
-	public static int ItemIndex = -1;
+	
 	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
 	{
 
-		if (ItemIndex == -1 || actor.Inventory.Length <= ItemIndex || actor.Inventory[ItemIndex] == null)
+		if (actor.SelectedItem == null)
 		{
 			return new Tuple<bool, string>(false, "No Item Selected");
 		}
@@ -24,7 +28,7 @@ public class UseItem : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
-		return actor.Inventory[ItemIndex]!.CanPerform(actor, target);
+		return actor.SelectedItem.CanPerform(actor, target);
 
 	}
 
@@ -32,22 +36,21 @@ public class UseItem : Action
 	public override void Execute(Controllable actor, Vector2Int target)
 	{
 		actor.ActionPoints--;
-		actor.Inventory[ItemIndex]!.Execute(actor, target);
-		Console.WriteLine("Using Item "+actor.Inventory[ItemIndex]!.Name);
-		actor.RemoveItem(ItemIndex);
+		actor.SelectedItem?.Execute(actor, target);
+		Console.WriteLine("Using Item "+actor.SelectedItem?.Name);
+		actor.LastItem = actor.SelectedItem;
+		actor.RemoveItem(actor.SelectedItemIndex);
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 	}
-
-	public override void ToPacket(Controllable actor, Vector2Int target)
+	
+#if CLIENT
+	public override void InitAction()
 	{
-		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
-		packet.args.Add(ItemIndex.ToString());
-
-		
-		Networking.DoAction(packet);
+		//bad
+		GameLayout.SelectedControllable?.SelectedItem?.InitPreview();
+		base.InitAction();
 	}
 
-#if CLIENT
 	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		actor.SelectedItem?.Preview(actor, target,spriteBatch);
@@ -55,7 +58,8 @@ public class UseItem : Action
 
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
-		actor.Inventory[ItemIndex]!.Animate(actor,target);
+		base.Animate(actor,target);
+		actor.SelectedItem?.Animate(actor,target);
 	}
 #endif
 

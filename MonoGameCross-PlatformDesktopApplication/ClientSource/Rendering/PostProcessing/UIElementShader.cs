@@ -10,18 +10,18 @@ public class UIElementShader : ShaderPreset
 	{
 	}
 
-	private float counter = 0;
+	private float counter;
 	public bool flicker = false;
 	public bool dissapation = false;
 	public override void Update(float deltatime)
 	{
 		if (!dissapation)
 		{
-			counter += (deltatime/2000f) * (counter*3f+Random.Shared.NextSingle())/2f;
+			counter += deltatime/2000f * (counter*3f+Random.Shared.NextSingle())/2f;
 		}
 		else
 		{
-			counter += (deltatime/100f);
+			counter += deltatime/100f;
 		}
 
 		float range = 2.5f;
@@ -50,8 +50,8 @@ public class UIElementShader : ShaderPreset
 		}
 
 		uiAnim += min;
-		EffectParams["blurAmmount"] = (0.04f*(uiAnim/4)+0.01f);
-		EffectParams["glowAmmount"] = (0.5f*uiAnim+0.1f);
+		EffectParams["blurAmmount"] = 0.04f*(uiAnim/4)+0.01f;
+		EffectParams["glowAmmount"] = 0.5f*uiAnim+0.1f;
 		if (dissapation)
 		{
 		//	EffectParams["shape"] = (55*uiAnim);

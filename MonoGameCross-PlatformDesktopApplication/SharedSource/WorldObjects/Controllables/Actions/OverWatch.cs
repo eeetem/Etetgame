@@ -40,8 +40,8 @@ public class OverWatch : Action
 		var positions = GetOverWatchPositions(actor, target);
 		foreach (var shot in positions)
 		{
-			WorldManager.Instance.GetTileAtGrid(shot.result.EndPoint).Watch(actor);
-			actor.overWatchedTiles.Add(shot.result.EndPoint);
+			WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint).Watch(actor);
+			actor.overWatchedTiles.Add(shot.Result.EndPoint);
 		}
 
 		actor.overWatch = true;
@@ -96,12 +96,12 @@ public class OverWatch : Action
 		foreach (var shot in GetOverWatchPositions(actor,target))
 		{
 
-			var tile = WorldManager.Instance.GetTileAtGrid(shot.result.EndPoint);
+			var tile = WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint);
 			if (tile.Surface == null) continue;
 			
 			Color c = Color.Yellow * 0.45f;
 			
-			if (actor.CanHit(shot.result.EndPoint,true))
+			if (actor.CanHit(shot.Result.EndPoint,true))
 			{
 				c = Color.Green * 0.45f;
 			}
@@ -109,12 +109,13 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
-			spriteBatch.DrawString(Game1.SpriteFont,""+shot.dmg,   Utility.GridToWorldPos(tile.Position),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			spriteBatch.DrawString(Game1.SpriteFont,""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 		}
 
 	}
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
+		base.Animate(actor,target);
 		return;
 	}
 #endif

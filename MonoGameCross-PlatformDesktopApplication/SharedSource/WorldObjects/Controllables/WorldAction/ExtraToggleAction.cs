@@ -8,7 +8,7 @@ public class ExtraToggleAction : IExtraAction
 {
 	private readonly ExtraAction on;
 	private readonly ExtraAction off;
-	private bool isOn = false;
+	private bool isOn;
 
 
 	public string Tooltip

@@ -22,38 +22,6 @@ namespace MultiplayerXeno
 		
 
 		public readonly WorldAction?[] Inventory;
-		
-	
-
-		public void AddItem(WorldAction item)
-		{
-			for (int i = 0; i < Inventory.Length; i++)
-			{
-				if (Inventory[i] == null)
-				{
-					Inventory[i] = item;
-#if CLIENT
-					if (SelectedItemIndex == -1)
-					{
-						SelectedItemIndex = i;
-					}
-#endif
-					
-					return;
-				}
-			}
-		}
-		public void RemoveItem(int index)
-		{
-			Inventory[index] = null;
-#if CLIENT
-			if (SelectedItemIndex == index && IsMyTeam() && GameManager.IsMyTurn())
-			{
-				SelectAnyItem();
-			}
-#endif
-		}
-		public List<IExtraAction> extraActions = new List<IExtraAction>();
 		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
 		{
 			
@@ -62,7 +30,7 @@ namespace MultiplayerXeno
 			IsPlayerOneTeam = isPlayerOneTeam;
 	
 			
-			type.extraActions.ForEach(extraAction =>
+			type.ExtraActions.ForEach(extraAction =>
 			{
 				extraActions.Add((IExtraAction) extraAction.Clone());
 			});
@@ -83,6 +51,7 @@ namespace MultiplayerXeno
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
 #endif
+
 
 			MovePoints = new Value(0, type.MaxMovePoints);
 			if (data.MovePoints != -100)
@@ -106,13 +75,11 @@ namespace MultiplayerXeno
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != null)
 				{
-					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
+					AddItem(PrefabManager.UseItems[data.Inventory[i]!]);
 				}
 			}
-#if CLIENT
-			SelectAnyItem();
-#endif
-			
+			overWatch = data.overwatch;
+			SelectedItemIndex = data.selectIndex;
 
 			foreach (var effect in data.StatusEffects)
 			{
@@ -124,18 +91,54 @@ namespace MultiplayerXeno
 			}
 		}
 
+	
+		public void SelectAnyItem()
+		{
+			if(SelectedItem!= null) return;
+			for (int i = 0; i < Inventory.Length; i++)
+			{
+				if (Inventory[i] != null)
+				{
+					DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(i, 0));
+					return;
+				}
+			}
+			DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(-1, 0));
+		}
+
+		public void AddItem(WorldAction item)
+		{
+			for (int i = 0; i < Inventory.Length; i++)
+			{
+				if (Inventory[i] == null)
+				{
+					Inventory[i] = item;
+#if SERVER
+					if (SelectedItemIndex == -1)
+					{
+						DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(i, 0));
+					}
+#endif
+					
+					return;
+				}
+			}
+		}
+		public void RemoveItem(int index)
+		{
+			Inventory[index] = null;
+		}
+		public List<IExtraAction> extraActions = new List<IExtraAction>();
 
 
-
-
-		public bool canTurn { get; set; } = false;
+		public bool canTurn { get; set; }
 		
 		
 		public Value MovePoints;
 		public Value ActionPoints;
 		public int Determination;
 
-		public bool Crouching { get; set; } = false;
+		public bool Crouching { get; set; }
 
 
 		public Value MoveRangeEffect = new Value(0, 0);
@@ -225,12 +228,12 @@ namespace MultiplayerXeno
 		public bool CanHit(Vector2Int target, bool lowTarget = false)
 		{
 			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
-			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+(shotDir/new Vector2(2.5f,2.5f)),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
+			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
 			
 				
-			if (proj.result.hit)
+			if (proj.Result.hit)
 			{
-				var hitobj = WorldManager.Instance.GetObject(proj.result.hitObjID);
+				var hitobj = WorldManager.Instance.GetObject(proj.Result.hitObjID);
 				if (hitobj.Type.Edge || hitobj.TileLocation.Position != target)
 				{
 					return false;
@@ -276,6 +279,10 @@ namespace MultiplayerXeno
 				effect.Apply(this);
 				
 			}
+#if SERVER
+			SelectAnyItem();
+#endif
+			
 
 		}
 		public void DoAction(Action a,Vector2Int target)
@@ -306,16 +313,10 @@ namespace MultiplayerXeno
 			
 		}
 
-		public bool paniced { get; private set; }= false;
+		public bool paniced { get; private set; }
 		public void Panic()
 		{
-			Crouching = true;
-			paniced = true;
-			if (moving)
-			{
-				moving = false;
-				_thisMoving = false;
-			}
+
 
 		
 #if CLIENT
@@ -326,13 +327,21 @@ namespace MultiplayerXeno
 				t.Color = Color.Red;
 			}
 #endif
+			
+			Crouching = true;
+			paniced = true;
+			if (moving)
+			{
+				moving = false;
+				_thisMoving = false;
+			}
 			ClearOverWatch();
 			
 		}
 		
 		
 
-		public bool overWatch { get; set; } = false;
+		public bool overWatch { get; set; }
 
 
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
@@ -340,10 +349,10 @@ namespace MultiplayerXeno
 		{
 			
 #if SERVER
-			bool isFriendly = this.IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.ControllableComponent.IsPlayerOneTeam;
+			bool isFriendly = IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.ControllableComponent.IsPlayerOneTeam;
 			//make this "can player see" fucntion
 			List<int> units;
-			if (this.IsPlayerOneTeam)
+			if (IsPlayerOneTeam)
 			{
 				units = GameManager.T1Units;
 			}
@@ -368,10 +377,10 @@ namespace MultiplayerXeno
 			
 			}
 			
-			Console.WriteLine("overwatch spotted by "+this.worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
+			Console.WriteLine("overwatch spotted by "+worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
 			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.GetMinimumVisibility())
 			{
-				Console.WriteLine("overwatch fired by "+this.worldObject.TileLocation.Position);
+				Console.WriteLine("overwatch fired by "+worldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
 			}
 #endif
@@ -465,12 +474,12 @@ namespace MultiplayerXeno
 				}
 			}
 
-			List<Tuple<string, int>> sts = new List<Tuple<string, int>>();
+			List<Tuple<string?, int>> sts = new List<Tuple<string?, int>>();
 			foreach (var st in StatusEffects)
 			{
-				sts.Add(new Tuple<string, int>(st.type.name,st.duration));
+				sts.Add(new Tuple<string?, int>(st.type.name,st.duration));
 			}
-			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch);
+			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex);
 			data.JustSpawned = false;
 			return data;
 		}
@@ -494,7 +503,7 @@ namespace MultiplayerXeno
 		}
 
 		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
-		public void ApplyStatus(string effect, int duration)
+		public void ApplyStatus(string? effect, int duration)
 		{
 			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration);
 			StatusEffects.Add(statuseffect);
@@ -521,6 +530,55 @@ namespace MultiplayerXeno
 				paniced = false;
 			}
 			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
+		}
+		
+		public WorldAction? SelectedItem
+		{
+			get
+			{
+				if(SelectedItemIndex == -1) return null;
+				return Inventory[SelectedItemIndex];
+			}
+		}
+		private int _selectedItemIndex = -1;
+		public int SelectedItemIndex
+		{
+			get => _selectedItemIndex;
+			set
+			{
+				
+				Console.WriteLine("Selected Item: "+value);
+				_selectedItemIndex = value;
+			}
+		}
+
+		public WorldAction? LastItem;
+		
+
+		public string GetVar(string var,string? param = null)
+		{
+			var type = GetType();
+			var field = type.GetField(var);
+			object? value = null;
+			if (field == null)
+			{
+				var property = type.GetProperty(var);
+				value = property?.GetValue(this);
+			}
+			else
+			{
+				value = field?.GetValue(this);
+			}
+
+			if (param == null)
+			{
+				return value.ToString();
+			}
+
+			var innerField = value.GetType().GetField(param);
+			var innerValue = innerField.GetValue(value);
+			return innerValue.ToString();
+
 		}
 	}
 }

@@ -10,8 +10,8 @@ namespace MultiplayerXeno
 	{
 
 		public static bool IsPlayer1;
-		public static bool intated = false;
-		public static bool spectating = false;
+		public static bool intated;
+		public static bool spectating;
 		public static List<Controllable> _myUnits = new List<Controllable>();
 		private static PreGameDataPacket preGameData = new();
 		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
@@ -110,7 +110,7 @@ namespace MultiplayerXeno
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
 			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
-			Networking.serverConnection.Send(packet);
+			Networking.ServerConnection?.Send(packet);
 			Action.SetActiveAction(null);
 
 		}

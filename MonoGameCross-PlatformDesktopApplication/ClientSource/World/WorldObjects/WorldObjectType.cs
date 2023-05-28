@@ -12,13 +12,13 @@ namespace MultiplayerXeno
 		public int variations;
 		
 	
-		public void GenerateSpriteSheet(string name,int variations)
+		public void GenerateSpriteSheet(string? name,int variations)
 		{
 			this.variations = variations;
 			spriteSheet = new Texture2D[variations][];
 			for (int i = 0; i < variations; i++)
 			{
-				string spriteName = name;
+				string? spriteName = name;
 				if (this.variations>1)
 				{
 					spriteName = name + i;

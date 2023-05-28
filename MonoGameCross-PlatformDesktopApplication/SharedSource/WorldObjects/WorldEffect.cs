@@ -16,7 +16,7 @@ public class WorldEffect
 	public int Range = 0;
 	public string? Sfx = "";
 	public string? PlaceItemPrefab = null;
-	public readonly List<Tuple<string,int>> AddStatus = new List<Tuple<string, int>>();
+	public readonly List<Tuple<string?, int>> AddStatus = new List<Tuple<string?, int>>();
 	public readonly List<string> RemoveStatus = new List<string>();
 	public bool noPanic = false;
 	
@@ -28,7 +28,8 @@ public class WorldEffect
 	public bool TargetFoe = false;
 	public bool TargetFriend =false;
 	public bool TargetSelf =false;
-	public List<string> Ignores { get; set; }
+	public List<string> Ignores = new List<string>();
+	public VariableValue? GiveItem;
 
 
 	private List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
@@ -53,10 +54,10 @@ public class WorldEffect
 
 	}
 
-	List<WorldObject> ignoreList = new List<WorldObject>();
+	List<WorldObject> _ignoreList = new List<WorldObject>();
 	public void Apply(Vector2Int target, WorldObject? user = null)
 	{
-		ignoreList = new List<WorldObject>();
+		_ignoreList = new List<WorldObject>();
 		foreach (var tile in GetAffectedTiles(target,user))
 		{
 			ApplyOnTile(tile,user);
@@ -66,25 +67,25 @@ public class WorldEffect
 	protected void ApplyOnTile(WorldTile tile,WorldObject? user = null)
 	{
 
-		if (tile.EastEdge != null && !ignoreList.Contains(tile.EastEdge))
+		if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
 		{
 			tile.EastEdge?.TakeDamage(Dmg, 0);
-			ignoreList.Add(tile.EastEdge);
+			_ignoreList.Add(tile.EastEdge!);
 		}
-		if (tile.WestEdge != null && !ignoreList.Contains(tile.WestEdge))
+		if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 		{
 			tile.WestEdge?.TakeDamage(Dmg, 0);
-			ignoreList.Add(tile.WestEdge);
+			_ignoreList.Add(tile.WestEdge!);
 		}
-		if (tile.NorthEdge != null && !ignoreList.Contains(tile.NorthEdge))
+		if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
 		{
 			tile.NorthEdge?.TakeDamage(Dmg, 0);
-			ignoreList.Add(tile.NorthEdge);
+			_ignoreList.Add(tile.NorthEdge!);
 		}
-		if (tile.SouthEdge != null && !ignoreList.Contains(tile.SouthEdge))
+		if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
 		{
 			tile.SouthEdge?.TakeDamage(Dmg, 0);
-			ignoreList.Add(tile.SouthEdge);
+			_ignoreList.Add(tile.SouthEdge!);
 		}
 
 
@@ -126,6 +127,11 @@ public class WorldEffect
 			foreach (var status in AddStatus)
 			{
 				tile.ControllableAtLocation.ControllableComponent?.ApplyStatus(status.Item1,status.Item2);
+			}
+			
+			if(GiveItem!=null)
+			{
+				ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.ControllableComponent,ctr)]);
 			}
 			
 		}

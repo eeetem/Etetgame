@@ -55,7 +55,7 @@ public partial class WorldObject
 	}
 
 
-	private WorldTile _tileLocation;
+	private WorldTile _tileLocation = null!;
 	public WorldTile TileLocation
 	{
 		get => _tileLocation;
@@ -122,15 +122,7 @@ public partial class WorldObject
 			return;
 		}
 
-		while (dir < 0)
-		{
-			dir += 8;
-		}
-
-		while (dir > (Direction) 7)
-		{
-			dir -= 8;
-		}
+		dir = Utility.ClampFacing(dir);
 
 		Facing = dir;
 #if CLIENT
@@ -157,7 +149,7 @@ public partial class WorldObject
 
 
 
-	bool destroyed = false;
+	bool destroyed;
 	public void Destroy()
 	{
 		if(destroyed)return;
@@ -172,7 +164,7 @@ public partial class WorldObject
 			Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			Thread.Sleep(300);
 		}
-		
+		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
 	
 	}
 	public Visibility GetMinimumVisibility()
@@ -215,7 +207,7 @@ public partial class WorldObject
 		}
 		else
 		{
-			Health-= (dmg-detResist);
+			Health-= dmg-detResist;
 			if (Health <= 0)
 			{
 				Destroy();
@@ -225,7 +217,7 @@ public partial class WorldObject
 
 	public void TakeDamage(Projectile proj)
 	{
-		TakeDamage(proj.dmg,proj.determinationResistanceCoefficient);
+		TakeDamage(proj.Dmg,proj.DeterminationResistanceCoefficient);
 	}
 
 	public void Update(float gametime)
@@ -269,7 +261,7 @@ public partial class WorldObject
 		WorldObjectData data = new WorldObjectData(Type.TypeName);
 		data.Facing = Facing;
 		data.Id = Id;
-		data.fliped = fliped;
+		data.Fliped = fliped;
 		data.Health = Health;
 
 		if (ControllableComponent != null)

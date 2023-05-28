@@ -19,21 +19,29 @@ namespace MultiplayerXeno
 
 		public List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
 
-		private bool fovDirty = false;
-		public void MakeFovDirty()
+		private bool fovDirty;
+		private bool FullVis;
+		public void MakeFovDirty(bool fullvis = false)
 		{
 			fovDirty = true;
+			FullVis = fullvis;
 		}
 
 		
 		private void CalculateFov()
 		{
 			fovDirty = false;
-				if (!GameManager.intated)
-				{
-					return; //dont update fov untll atleast 1 server update has been recived
-				}
+	
 
+				
+				if (FullVis)
+				{
+					foreach (var tile in _gridData)
+					{
+						tile.Visible = Visibility.Full;
+					}
+					return;
+				}
 				RecentFOVRaycasts = new List<RayCastOutcome>();
 				foreach (var tile in _gridData)
 				{

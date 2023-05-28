@@ -65,6 +65,7 @@ public class Attack : Action
 	}
 	public override void Animate(Controllable actor, Vector2Int target)
 	{
+		base.Animate(actor, target);
 		actor.Type.DefaultAttack.Animate(actor,target);
 	}
 #endif
