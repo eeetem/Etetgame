@@ -463,8 +463,18 @@ public class EditorUiLayout : MenuLayout
 							var worldObjectData = data;
 							if (worldObjectData.Facing == Direction.West || worldObjectData.Facing == Direction.East)
 							{
+								if (worldObjectData.Fliped)
+								{
+									worldObjectData.Fliped = false;
+									if(i+1 <  output.GetLength(0))
+										output[i+1, j].Add(worldObjectData);
+									continue;
+								}
+							
 								worldObjectData.Facing += 4;
-								worldObjectData.Fliped = !worldObjectData.Fliped;
+								
+
+								//worldObjectData.Fliped = !worldObjectData.Fliped;
 								worldObjectData.Facing = Utility.ClampFacing(worldObjectData.Facing);
 							}
 

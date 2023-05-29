@@ -19,7 +19,7 @@ public class WorldAction
 	public readonly List<DeliveryMethod> DeliveryMethods = new List<DeliveryMethod>();
 	public readonly WorldEffect Effect;
 #if CLIENT
-	public readonly Texture2D Icon;
+	public readonly Texture2D? Icon;
 	#endif
 	public WorldAction(string name,  string description, List<DeliveryMethod> deliveryMethods, WorldEffect effect)
 	{
