@@ -16,7 +16,7 @@ public class OverWatch : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool, string> CanPerform(Controllable actor,ref  Vector2Int position)
 	{
 	
 

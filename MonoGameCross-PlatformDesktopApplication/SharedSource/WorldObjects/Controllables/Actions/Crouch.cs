@@ -13,9 +13,9 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Controllable actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Controllable actor, ref Vector2Int position)
 	{
-		if (actor.MovePoints <= 0 )
+		if (actor.MovePoints <= 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough move points!");
 		}
@@ -25,7 +25,7 @@ public class Crouch : Action
 
 	public override void Execute(Controllable actor,Vector2Int target)
 	{
-
+		
 		actor.MovePoints--;
 		actor.canTurn = true;
 		actor.Crouching = !actor.Crouching;

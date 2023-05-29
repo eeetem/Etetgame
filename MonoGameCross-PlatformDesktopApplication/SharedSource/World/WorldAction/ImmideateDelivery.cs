@@ -5,7 +5,7 @@ namespace MultiplayerXeno.Items;
 
 public class ImmideateDelivery : DeliveryMethod
 {
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
 		return new Tuple<bool, string>(true, "");
 		

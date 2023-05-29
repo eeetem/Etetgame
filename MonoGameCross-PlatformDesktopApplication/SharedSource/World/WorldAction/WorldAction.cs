@@ -58,16 +58,16 @@ public class WorldAction
 
 
 
-	public Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
-		return DeliveryMethods[0].CanPerform(actor, target);
+		return DeliveryMethods[0].CanPerform(actor,ref target);
 	}
 #if CLIENT
 	public void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (DeliveryMethods[0] is Shootable)
 		{
-			if (!Shootable.freeFire)
+			if (!Shootable.FreeFire)
 			{
 				var tile = WorldManager.Instance.GetTileAtGrid(target);
 				if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())

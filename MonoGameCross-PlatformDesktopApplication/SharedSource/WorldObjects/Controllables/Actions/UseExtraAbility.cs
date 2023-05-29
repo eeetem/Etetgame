@@ -12,7 +12,7 @@ public class UseExtraAbility : Action
 		{
 		}
 
-		public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+		public override Tuple<bool, string> CanPerform(Controllable actor,ref  Vector2Int target)
 		{
 
 			if (AbilityIndex == -1)
@@ -21,7 +21,7 @@ public class UseExtraAbility : Action
 			}
 			IExtraAction action = actor.extraActions[AbilityIndex];
 
-			return action.CanPerform(actor, target);
+			return action.CanPerform(actor, ref target);
 
 		}
 

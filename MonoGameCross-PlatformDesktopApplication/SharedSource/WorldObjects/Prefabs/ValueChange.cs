@@ -69,7 +69,7 @@ public struct ValueChange
 		return newValue - field.Current;
 	}
 
-	public readonly void Apply(ref Value field)
+	public void Apply(ref Value field)
 	{
 		
 		field += GetChange(field);

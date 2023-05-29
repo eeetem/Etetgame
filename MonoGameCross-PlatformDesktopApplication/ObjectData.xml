@@ -38,7 +38,7 @@
     <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
     <name>basicWallDebris</name>
   </object>
-  <object VCover = "0" SCover = "3" Edge = "true" Health="6">
+  <object VCover = "0" SCover = "3" Edge = "true" Health="3">
     <sprite  name="Environment/glassWall"  offset= "0,0"/>
     <name>glassWall</name>
   </object>

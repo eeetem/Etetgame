@@ -160,13 +160,19 @@ namespace MultiplayerXeno
 
 		public List<Vector2Int>[] GetPossibleMoveLocations()
 		{
-			List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
-			for (int i = 0; i < MovePoints; i++)
+			if (MovePoints > 0)
 			{
-				possibleMoves[i] = PathFinding.GetAllPaths(worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
+				for (int i = 0; i < MovePoints; i++)
+				{
+					possibleMoves[i] = PathFinding.GetAllPaths(worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+				}return possibleMoves;
 			}
 
-			return possibleMoves;
+			return new List<Vector2Int>[0];
+			
+
+			
 		}
 
 		public bool IsPlayerOneTeam { get; private set; }
@@ -233,8 +239,8 @@ namespace MultiplayerXeno
 				
 			if (proj.Result.hit)
 			{
-				var hitobj = WorldManager.Instance.GetObject(proj.Result.hitObjID);
-				if (hitobj.Type.Edge || hitobj.TileLocation.Position != target)
+				var hitobj = WorldManager.Instance.GetObject(proj.Result.HitObjId);
+				if (hitobj!.Type.Edge || hitobj.TileLocation.Position != target)
 				{
 					return false;
 				}
@@ -291,7 +297,7 @@ namespace MultiplayerXeno
 			if (!IsMyTeam()) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
-			var result = a.CanPerform(this, target);
+			var result = a.CanPerform(this, ref target);
 			if (!result.Item1)
 			{
 #if CLIENT

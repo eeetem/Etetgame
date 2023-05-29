@@ -12,12 +12,13 @@ namespace MultiplayerXeno
 		public int Dmg;
 		public readonly int OriginalDmg;
 		public readonly int DropoffRange;
-		public Vector2[] DropOffPoints;
+		public Vector2[] DropOffPoints = null!;
 		public readonly int DeterminationResistanceCoefficient = 1;
 		public readonly int SupressionRange;
 		public readonly int SupressionStrenght;
 		public bool ShooterLow;
 		public bool TargetLow;
+		public List<int> SupressionIgnores = new List<int>();
 		public Projectile(ProjectilePacket packet)
 		{
 			Result = packet.result;
@@ -30,6 +31,7 @@ namespace MultiplayerXeno
 			SupressionStrenght = packet.supressionStrenght;
 			ShooterLow = packet.shooterLow;
 			TargetLow = packet.targetLow;
+			SupressionIgnores = packet.SupressionIgnores;
 			CalculateDetails();
 			Fire();
 		}
@@ -72,7 +74,7 @@ namespace MultiplayerXeno
 					} else {
 						Result = new RayCastOutcome(from, to) {
 							hit = true,
-							hitObjID = obj.Id,
+							HitObjId = obj.Id,
 							CollisionPointLong = to,
 						};
 					}
@@ -91,14 +93,14 @@ namespace MultiplayerXeno
 			RayCastOutcome cast;
 
 			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, false,true);
-			if (cast.hit && Result.hitObjID != cast.hitObjID)
+			if (cast.hit && Result.HitObjId != cast.HitObjId)
 			{
 				CoverCast = cast;
 			}
 			else
 			{
 				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, false,true);
-				if (cast.hit && Result.hitObjID != cast.hitObjID)
+				if (cast.hit && Result.HitObjId != cast.HitObjId)
 				{
 					CoverCast = cast;
 				}
@@ -178,8 +180,8 @@ namespace MultiplayerXeno
 			{
 				if (CoverCast != null)
 				{
-					var hitobj = WorldManager.Instance.GetObject(Result.hitObjID);
-					Cover cover = WorldManager.Instance.GetObject(CoverCast.hitObjID)!.GetCover();
+					var hitobj = WorldManager.Instance.GetObject(Result.HitObjId);
+					Cover cover = WorldManager.Instance.GetObject(CoverCast.HitObjId)!.GetCover();
 						if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 						{
 							if (cover != Cover.Full)
@@ -214,12 +216,12 @@ namespace MultiplayerXeno
 						coverBlock = Dmg;
 						Dmg = 0;
 					}
-					WorldManager.Instance.GetObject(CoverCast.hitObjID)?.TakeDamage(coverBlock,0);
+					WorldManager.Instance.GetObject(CoverCast.HitObjId)?.TakeDamage(coverBlock,0);
 				}
 
 				
 				
-				WorldManager.Instance.GetObject(Result.hitObjID)?.TakeDamage(this);
+				WorldManager.Instance.GetObject(Result.HitObjId)?.TakeDamage(this);
 			
 			}
 			else
@@ -234,7 +236,7 @@ namespace MultiplayerXeno
 
 			foreach (var tile in tiles)
 			{
-				if (tile.ControllableAtLocation != null)
+				if (tile.ControllableAtLocation != null && !SupressionIgnores.Contains(tile.ControllableAtLocation.Id))
 				{
 					tile.ControllableAtLocation.ControllableComponent.Suppress(SupressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.ControllableAtLocation.ControllableComponent.Determination);

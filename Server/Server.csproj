@@ -76,33 +76,6 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\StatusEffectInstance.cs">
         <Link>SharedSource\WorldObjects\Controllables\StatusEffectInstance.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\DeliveryMethod.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\DeliveryMethod.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\ExtraAction.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\ExtraAction.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\ExtraToggleAction.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\ExtraToggleAction.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\IExtraAction.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\IExtraAction.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\ImmideateDelivery.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\ImmideateDelivery.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\Shootable.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\Shootable.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\Throwable.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\Throwable.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\VissionCast.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\VissionCast.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\WorldAction\WorldAction.cs">
-        <Link>SharedSource\WorldObjects\Controllables\WorldAction\WorldAction.cs</Link>
-      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\ControllableType.cs">
         <Link>SharedSource\WorldObjects\Prefabs\ControllableType.cs</Link>
       </Compile>
@@ -132,6 +105,33 @@
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\DeliveryMethod.cs">
+        <Link>SharedSource\World\WorldAction\DeliveryMethod.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\ExtraAction.cs">
+        <Link>SharedSource\World\WorldAction\ExtraAction.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\ExtraToggleAction.cs">
+        <Link>SharedSource\World\WorldAction\ExtraToggleAction.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\IExtraAction.cs">
+        <Link>SharedSource\World\WorldAction\IExtraAction.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\ImmideateDelivery.cs">
+        <Link>SharedSource\World\WorldAction\ImmideateDelivery.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\Shootable.cs">
+        <Link>SharedSource\World\WorldAction\Shootable.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\Throwable.cs">
+        <Link>SharedSource\World\WorldAction\Throwable.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\VissionCast.cs">
+        <Link>SharedSource\World\WorldAction\VissionCast.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldAction\WorldAction.cs">
+        <Link>SharedSource\World\WorldAction\WorldAction.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\World\WorldManager.cs">
         <Link>SharedSource\World\WorldManager.cs</Link>

@@ -14,7 +14,7 @@ public class Attack : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
 		if (actor.overWatch && actor.IsPlayerOneTeam != GameManager.IsPlayer1Turn)//only overwatch out of turn
 		{
@@ -31,7 +31,7 @@ public class Attack : Action
 			return new Tuple<bool, string>(false, "Not Enough Move Points");
 		}
 
-		return actor.Type.DefaultAttack.CanPerform(actor, target);
+		return actor.Type.DefaultAttack.CanPerform(actor,ref target);
 
 
 	}

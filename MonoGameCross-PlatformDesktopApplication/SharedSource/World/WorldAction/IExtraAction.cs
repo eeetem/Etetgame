@@ -6,7 +6,8 @@ namespace MultiplayerXeno.Items;
 
 public interface IExtraAction : ICloneable
 {
-	public Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target);
+	public Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target);
+	public Tuple<bool, string> HasEnoughPointsToPerform(Controllable actor);
 
 	List<string> MakePacketArgs();
 	void Execute(Controllable actor, Vector2Int target);

@@ -115,7 +115,7 @@ namespace MultiplayerXeno
 		public Vector2 EndPoint;
 		public Vector2 VectorToCenter;
 		public List<Vector2Int> Path;
-		public int hitObjID{ get; set; }
+		public int HitObjId{ get; set; }
 
 		public bool hit{ get; set; }
 
@@ -125,7 +125,7 @@ namespace MultiplayerXeno
 			CollisionPointShort = new Vector2(0, 0);
 			hit = false;
 			EndPoint = end;
-			hitObjID = -1;
+			HitObjId = -1;
 			StartPoint = start;
 			Path = new List<Vector2Int>();
 	

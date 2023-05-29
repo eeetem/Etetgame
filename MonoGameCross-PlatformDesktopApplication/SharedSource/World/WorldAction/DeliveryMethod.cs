@@ -6,7 +6,7 @@ namespace MultiplayerXeno.Items;
 public abstract class DeliveryMethod
 {
 	public Vector2Int offset = new Vector2Int(0,0);
-	public abstract Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target);
 
 	public Vector2Int? ExectuteAndProcessLocation(Controllable actor, Vector2Int target)
 	{

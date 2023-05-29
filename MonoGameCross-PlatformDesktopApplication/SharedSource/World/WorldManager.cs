@@ -217,7 +217,7 @@ namespace MultiplayerXeno
 					return Visibility.Full;
 				}
 				//i think this is for seeing over cover while crouched, dont quote me on that tho
-				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.hitObjID != -1 && GetObject(cast.hitObjID).GetCover(true) != Cover.Full)
+				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.HitObjId != -1 && GetObject(cast.HitObjId).GetCover(true) != Cover.Full)
 				{
 					return Visibility.Partial;
 				}
@@ -405,7 +405,7 @@ namespace MultiplayerXeno
 							result.CollisionPointShort = collisionPointshort;
 							result.VectorToCenter = collisionVector;
 							result.hit = true;
-							result.hitObjID = hitobj.Id;
+							result.HitObjId = hitobj.Id;
 							//if this is true then we're hitting a controllable form behind
 							if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
 							{
@@ -429,7 +429,7 @@ namespace MultiplayerXeno
 								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
-								result.hitObjID = hitobj.Id;
+								result.HitObjId = hitobj.Id;
 								//if this is true then we're hitting a controllable form behind
 								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
 								{
@@ -449,7 +449,7 @@ namespace MultiplayerXeno
 								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
-								result.hitObjID = hitobj.Id;
+								result.HitObjId = hitobj.Id;
 								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
 								{
 									result.CollisionPointLong += -0.3f * dir;

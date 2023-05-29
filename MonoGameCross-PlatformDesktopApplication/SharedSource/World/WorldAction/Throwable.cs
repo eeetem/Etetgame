@@ -24,18 +24,24 @@ public class Throwable : DeliveryMethod
 			return LastReturned;
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.worldObject.TileLocation.Position, target, Cover.Full);
-		LastReturned = outcome.CollisionPointShort;
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.worldObject.TileLocation.Position, target, Cover.Full,false,true);
+		LastReturned = outcome.EndPoint;
 		return outcome.CollisionPointShort;
 	}
 
 	
 
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
-		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) >= throwRange)
+		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) > throwRange)
 		{
+			if (LastReturned != null && Vector2.Distance(actor.worldObject.TileLocation.Position, LastReturned) <= throwRange)
+			{
+				target = LastReturned;
+				return new Tuple<bool, string>(true, "");
+			}
+
 			return new Tuple<bool, string>(false, "Too Far");
 		}
 		

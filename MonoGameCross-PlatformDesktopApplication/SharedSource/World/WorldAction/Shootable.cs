@@ -24,7 +24,7 @@ public class Shootable : DeliveryMethod
 		this.dropOffRange = dropOffRange;
 	}
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
 		if (target == actor.worldObject.TileLocation.Position)
 		{
@@ -32,13 +32,13 @@ public class Shootable : DeliveryMethod
 		}
 #if CLIENT
 		
-		if (target != lastTarget || targeting != lastTargetingType)
+		if (target != _lastTarget || targeting != lastTargetingType)
 		{
 			previewShot = MakeProjectile(actor, target);
-			lastTarget = target;
+			_lastTarget = target;
 		}
 
-		if (!freeFire)
+		if (!FreeFire)
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(target);
 			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
@@ -46,7 +46,7 @@ public class Shootable : DeliveryMethod
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
 
-			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.hitObjID).TileLocation.Position != (Vector2Int)previewShot.Result.EndPoint)
+			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId).TileLocation.Position != (Vector2Int)previewShot.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
@@ -87,7 +87,7 @@ public class Shootable : DeliveryMethod
 		
 		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
 		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
-
+		projectile.SupressionIgnores.Add(actor.worldObject.Id);
 		
 
 		return projectile;
@@ -103,16 +103,17 @@ public class Shootable : DeliveryMethod
 		//actual damage and projectile is handled elsewhere
 
 			Projectile p = MakeProjectile(actor, target);
+		
 #if SERVER
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.Result,p.Covercast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow));
+			Networking.DoAction(new ProjectilePacket(p.Result,p.CoverCast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow,p.SupressionIgnores));
 #endif			
 
 		
 		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
 		if (p.Result.hit)
 		{
-			var obj = WorldManager.Instance.GetObject(p.Result.hitObjID);
+			var obj = WorldManager.Instance.GetObject(p.Result.HitObjId);
 			if (obj == null)
 			{
 				return p.Result.CollisionPointShort;
@@ -127,9 +128,9 @@ public class Shootable : DeliveryMethod
 #if CLIENT
 	protected Projectile? previewShot;
 
-	private Vector2Int lastTarget = new Vector2Int(0,0);
+	private Vector2Int _lastTarget = new Vector2Int(0,0);
 	private TargetingType lastTargetingType = TargetingType.Auto;
-	public static bool freeFire = false;
+	public static bool FreeFire = false;
 
 	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
@@ -139,10 +140,10 @@ public class Shootable : DeliveryMethod
 			return target;
 		}
 		
-		if (target != lastTarget || targeting != lastTargetingType)
+		if (target != _lastTarget || targeting != lastTargetingType)
 		{
 			previewShot = MakeProjectile(actor, target);
-			lastTarget = target;
+			_lastTarget = target;
 		}
 
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(target+new Vector2(-1.5f,-0.5f)), Color.Red);
@@ -188,7 +189,7 @@ public class Shootable : DeliveryMethod
 
 			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue * 0.45f);
 
-			if (tile.ControllableAtLocation != null)
+			if (tile.ControllableAtLocation != null && !previewShot.SupressionIgnores.Contains(tile.ControllableAtLocation.Id))
 			{
 				tile.ControllableAtLocation.PreviewData.detDmg += previewShot.SupressionStrenght;
 			}
@@ -246,9 +247,9 @@ public class Shootable : DeliveryMethod
 		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 5);
 		int coverModifier = 0;
 		WorldObject? hitobj = null;
-		if (previewShot.Result.hitObjID != -1)
+		if (previewShot.Result.HitObjId != -1)
 		{
-			hitobj = WorldManager.Instance.GetObject(previewShot.Result.hitObjID);
+			hitobj = WorldManager.Instance.GetObject(previewShot.Result.HitObjId);
 		}
 
 
@@ -256,8 +257,10 @@ public class Shootable : DeliveryMethod
 		{
 			Color c = Color.Green;
 			string hint = "";
-			var coverPoint = Utility.GridToWorldPos(previewShot.CoverCast.CollisionPointLong);
-			Cover cover = WorldManager.Instance.GetObject(previewShot.CoverCast.hitObjID).GetCover();
+			//crash here?
+			var coverCast = previewShot.CoverCast;
+			var coverPoint = Utility.GridToWorldPos(coverCast.CollisionPointLong);
+			Cover cover = WorldManager.Instance.GetObject(coverCast.HitObjId).GetCover();
 			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 			{
 				if (cover != Cover.Full)
@@ -294,13 +297,13 @@ public class Shootable : DeliveryMethod
 			}
 
 			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			var coverobj = WorldManager.Instance.GetObject(previewShot.CoverCast.hitObjID);
+			var coverobj = WorldManager.Instance.GetObject(coverCast.HitObjId);
 			var coverobjtransform = coverobj.Type.Transform;
 			Texture2D yellowsprite = coverobj.GetTexture();
 
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.CoverCast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
 			coverobj.PreviewData.finalDmg += coverModifier;
 			Console.WriteLine(coverobj.PreviewData.finalDmg);
 
@@ -351,7 +354,7 @@ public class Shootable : DeliveryMethod
 	public override void InitPreview()
 	{
 		previewShot = null;
-		lastTarget = new Vector2Int(0,0);
+		_lastTarget = new Vector2Int(0,0);
 		//targeting = TargetingType.Auto;
 	}
 

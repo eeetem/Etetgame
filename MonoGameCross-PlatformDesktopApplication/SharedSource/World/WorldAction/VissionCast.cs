@@ -34,7 +34,7 @@ public class VissionCast : DeliveryMethod
 	
 
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
 		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) >= range)
 		{

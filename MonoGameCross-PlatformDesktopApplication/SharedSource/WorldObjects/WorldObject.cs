@@ -4,6 +4,10 @@ using System.Threading;
 using MultiplayerXeno;
 using MonoGame.Extended;
 
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+
+#endif
 
 
 namespace MultiplayerXeno;
@@ -164,6 +168,13 @@ public partial class WorldObject
 			Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			Thread.Sleep(300);
 		}
+#if CLIENT
+		if(ControllableComponent != null && GameLayout.SelectedControllable == ControllableComponent)
+		{
+			GameLayout.SelectControllable(null);
+		}
+#endif
+		
 		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
 	
 	}

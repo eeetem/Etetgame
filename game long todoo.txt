@@ -1,9 +1,12 @@
 hour counter: rough estimate may7 (400) + 5
 
 bugs:
-indestructible wall(do when map)
-copy paste
-
+no ghosting destruction -> no wall hack
+wrong offset on deployment?
+rebalance crouch?
+nade not getting used no ability use -> need more examples
+timer sync on reconnect -> later
+lag on unit switch????
 
 sfx list:
 -throw

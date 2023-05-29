@@ -61,8 +61,8 @@ public static partial class Utility
 			char car = text[index];
 			charsinRow++;
 
-			
-			if(car == '\n')
+
+			if (car == '\n')
 			{
 				row++;
 				charsinRow = -1;
@@ -71,26 +71,26 @@ public static partial class Utility
 
 			//if (car == ' ')
 			//{
-				int nextSpaceCounter = 0;
-				int nextSpace = 0;
-				//look for next space
-				for (int i = index; i < text.Length; i++)
-				{
+			int nextSpaceCounter = 0;
+			int nextSpace = 0;
+			//look for next space
+			for (int i = index; i < text.Length; i++)
+			{
 
-					nextSpaceCounter++;
-					if (text[i] == ' ' || text[i] == '\n')
-					{
-						nextSpace = nextSpaceCounter;
-						break;
-					}
-				}
-
-				if (charsinRow + nextSpace > width)
+				nextSpaceCounter++;
+				if (text[i] == ' ' || text[i] == '\n')
 				{
-					row++;
-					charsinRow = 0;
+					nextSpace = nextSpaceCounter;
+					break;
 				}
-		//	}
+			}
+
+			if (charsinRow + nextSpace > width)
+			{
+				row++;
+				charsinRow = 0;
+			}
+			//	}
 
 			string texId;
 			switch (car)
@@ -101,44 +101,51 @@ public static partial class Utility
 					texId = "period";
 					break;
 				case ',':
-					texId= "comma";
+					texId = "comma";
 					break;
 				case '+':
-					texId= "plus";
+					texId = "plus";
 					break;
 				case '-':
-					texId= "minus";
-					break;				
+					texId = "minus";
+					break;
 				case '!':
-					texId= "exclamationmark";
+					texId = "exclamationmark";
 					break;
 				case '?':
-					texId= "questionmark";
+					texId = "questionmark";
 					break;
 				case ':':
-					texId= "colon";
+					texId = "colon";
 					break;
 				case ';':
-					texId= "semicolon";
+					texId = "semicolon";
 					break;
-				case'\'':
+				case '\'':
 					texId = "apostrophe";
 					break;
-				case'(':
+				case '(':
 					texId = "leftParentheses";
 					break;
-				case')':
+				case ')':
 					texId = "rightParentheses";
 					break;
-				case'#':
+				case '#':
 					texId = "hash";
 					break;
 				default:
-					texId = ""+car;
+					texId = "" + car;
 					break;
 			}
 
-			Texture2D t = TextureManager.GetTexture("UI/text/" + texId);
+			Texture2D t;
+			try{
+
+				t= TextureManager.GetTexture("UI/text/" + texId);
+			}catch(Exception e){
+				t = TextureManager.GetTexture("UI/text/broken");
+			}
+
 			spriteBatch.Draw(t, position + new Vector2(8 * charsinRow, 11 * row) * scale, null, c, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 		}
 	}

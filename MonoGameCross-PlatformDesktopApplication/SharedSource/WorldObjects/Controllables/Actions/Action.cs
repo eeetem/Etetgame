@@ -74,7 +74,7 @@ public abstract class Action
 	
 	}
 
-	public abstract Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target);
 
 
 	public void Perform(Controllable actor, Vector2Int target)
@@ -129,10 +129,10 @@ public abstract class Action
 	public void PerformFromPacket(Controllable actor,Vector2Int target)
 	{
 #if CLIENT
-			Shootable.freeFire = true;
+			Shootable.FreeFire = true;
 #endif
 	
-		var result = CanPerform(actor, target);
+		var result = CanPerform(actor, ref target);
 		if(!result.Item1)
 		{
 #if CLIENT
@@ -148,7 +148,7 @@ public abstract class Action
 #endif
 	
 #if CLIENT
-		Shootable.freeFire = false;
+		Shootable.FreeFire = false;
 #endif
 	}
 }

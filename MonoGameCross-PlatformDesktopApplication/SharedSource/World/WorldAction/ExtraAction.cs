@@ -42,13 +42,24 @@ public class ExtraAction : IExtraAction
 #endif
 	}
 
-	public Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
 	{
-	
-			if (actor.Determination + DeterminationChange < 0)
-			{
-				return new Tuple<bool, string>(false, "Not enough determination");
-			}
+
+		var res = HasEnoughPointsToPerform(actor);
+		if (!res.Item1)
+		{
+			return res;
+		}
+
+		return WorldAction.CanPerform(actor, ref target);
+	}
+
+	public Tuple<bool, string> HasEnoughPointsToPerform(Controllable actor)
+	{
+		if (actor.Determination + DeterminationChange < 0)
+		{
+			return new Tuple<bool, string>(false, "Not enough determination");
+		}
 		
 
 		if (!MovePointChange.Set)
@@ -67,7 +78,7 @@ public class ExtraAction : IExtraAction
 			}
 		}
 
-		return WorldAction.CanPerform(actor, target);
+		return new Tuple<bool, string>(true, "");
 	}
 
 	public List<string> MakePacketArgs()

@@ -38,7 +38,7 @@ public class VariableValue
 		value = null;
 	}
 
-	public string GetValue(Controllable User,Controllable Other)
+	public string GetValue(Controllable user,Controllable other)
 	{
 		if (value != null)
 		{
@@ -47,10 +47,10 @@ public class VariableValue
 
 		if (_targetSelfNotOther)
 		{
-			return User.GetVar(var,varParam);
+			return user.GetVar(var!,varParam);
 		}
 		
-		return Other.GetVar(var,varParam);
+		return other.GetVar(var!,varParam);
 		
 		
 

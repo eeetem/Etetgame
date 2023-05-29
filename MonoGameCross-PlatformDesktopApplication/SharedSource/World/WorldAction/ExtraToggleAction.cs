@@ -29,13 +29,22 @@ public class ExtraToggleAction : IExtraAction
 	}
 
 
-	public Tuple<bool, string> CanPerform(Controllable actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Controllable actor,ref Vector2Int target)
 	{
 		if (isOn)
 		{
-			return off.CanPerform(actor, target);
+			return off.CanPerform(actor,ref target);
 		}
-		return on.CanPerform(actor, target);
+		return on.CanPerform(actor,ref target);
+	}
+
+	public Tuple<bool, string> HasEnoughPointsToPerform(Controllable actor)
+	{
+		if (isOn)
+		{
+			return off.HasEnoughPointsToPerform(actor);
+		}
+		return on.HasEnoughPointsToPerform(actor);
 	}
 
 	public List<string> MakePacketArgs()
