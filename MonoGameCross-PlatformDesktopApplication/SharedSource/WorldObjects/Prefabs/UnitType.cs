@@ -6,10 +6,10 @@ using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno
 {
-	public class ControllableType
+	public class UnitType
 	{
 
-		public ControllableType(string? name)
+		public UnitType(string? name)
 		{
 			Name = name;
 		}
@@ -32,9 +32,9 @@ namespace MultiplayerXeno
 		public readonly List<IExtraAction> ExtraActions = new List<IExtraAction>();
 		public WorldEffect? SpawnEffect { get; set; }
 
-		public Controllable Instantiate(WorldObject parent,ControllableData data)
+		public Unit Instantiate(WorldObject parent,UnitData data)
 		{
-			Controllable obj = new Controllable(data.Team1,parent,this,data);
+			Unit obj = new Unit(data.Team1,parent,this,data);
 
 			return obj;
 		}

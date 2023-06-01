@@ -17,7 +17,7 @@ public class VissionCast : DeliveryMethod
 	}
 
 	private static Vector2Int? LastReturned;
-	public override Vector2Int? ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
 		if (Vector2.Distance(target, actor.worldObject.TileLocation.Position) > range)
 		{
@@ -34,7 +34,7 @@ public class VissionCast : DeliveryMethod
 	
 
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) >= range)
 		{
@@ -48,7 +48,7 @@ public class VissionCast : DeliveryMethod
 		return new Tuple<bool, string>(true, "");
 	}
 #if CLIENT
-	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		Vector2Int? result = ExectuteAndProcessLocation(actor, target);
 		if (result != null)
@@ -67,7 +67,7 @@ public class VissionCast : DeliveryMethod
 		LastReturned = null;
 	}
 
-	public override void AnimateChild(Controllable actor, Vector2Int target)
+	public override void AnimateChild(Unit actor, Vector2Int target)
 	{
 
 	}

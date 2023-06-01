@@ -14,7 +14,7 @@ public class Attack : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		if (actor.overWatch && actor.IsPlayerOneTeam != GameManager.IsPlayer1Turn)//only overwatch out of turn
 		{
@@ -36,14 +36,14 @@ public class Attack : Action
 
 	}
 
-	public override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Unit actor,Vector2Int target)
 	{
 		actor.ActionPoints--;
 		actor.MovePoints--;
 		actor.Type.DefaultAttack.Execute(actor, target);
 	}
 
-	public override void ToPacket(Controllable actor, Vector2Int target)
+	public override void ToPacket(Unit actor, Vector2Int target)
 	{
 		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
 		
@@ -56,14 +56,14 @@ public class Attack : Action
 #if CLIENT
 	public override void InitAction()
 	{
-		GameLayout.SelectedControllable.Type.DefaultAttack.InitPreview();
+		GameLayout.SelectedUnit.Type.DefaultAttack.InitPreview();
 		base.InitAction();
 	}
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		actor.Type.DefaultAttack.Preview(actor, target,spriteBatch);
 	}
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 		base.Animate(actor, target);
 		actor.Type.DefaultAttack.Animate(actor,target);

@@ -9,7 +9,7 @@ namespace MultiplayerXeno
 		public readonly string? TypeName;
 		public int MaxHealth;
 		public int lifetime = -100;
-		public WorldObjectType(string? name,ControllableType? controllableType)
+		public WorldObjectType(string? name,UnitType? controllableType)
 		{
 			TypeName = name;
 			if (controllableType != null)
@@ -43,7 +43,7 @@ namespace MultiplayerXeno
 		public Cover SolidCover = Cover.None;
 		public Cover VisibilityCover = Cover.None;
 
-		public readonly ControllableType? Controllable;
+		public readonly UnitType? Controllable;
 		public WorldEffect? DesturctionEffect;
 
 		//should probably be an enum

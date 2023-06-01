@@ -14,7 +14,7 @@ public class Move : Action
 	{
 	}
 	
-	public override Tuple<bool,string> CanPerform(Controllable actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
 	{
 		
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, position);
@@ -33,7 +33,7 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
 
-		if (Controllable.moving)
+		if (Unit.moving)
 		{
 			return new Tuple<bool, string>(false, "Can't move multiple units at once");
 		}
@@ -41,7 +41,7 @@ public class Move : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Unit actor,Vector2Int target)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);
 		int moveUse = 1;
@@ -71,7 +71,7 @@ public class Move : Action
 		base.InitAction();
 	}
 
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (lastTarget == new Vector2Int(0, 0))
 		{
@@ -116,7 +116,7 @@ public class Move : Action
 		}
 	}
 
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 		return;
 	}

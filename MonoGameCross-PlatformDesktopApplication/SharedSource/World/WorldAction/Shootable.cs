@@ -24,7 +24,7 @@ public class Shootable : DeliveryMethod
 		this.dropOffRange = dropOffRange;
 	}
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		if (target == actor.worldObject.TileLocation.Position)
 		{
@@ -57,7 +57,7 @@ public class Shootable : DeliveryMethod
 	}
 
 
-	public Projectile MakeProjectile(Controllable actor,Vector2Int target)
+	public Projectile MakeProjectile(Unit actor,Vector2Int target)
 	{
 		//target = actor.worldObject.TileLocation.Position + new Vector2(-10,0);
 		bool lowShot =false;
@@ -93,7 +93,7 @@ public class Shootable : DeliveryMethod
 		return projectile;
 	}
 
-	public override Vector2Int ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	public override Vector2Int ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
 		actor.ClearOverWatch();
 
@@ -132,7 +132,7 @@ public class Shootable : DeliveryMethod
 	private TargetingType lastTargetingType = TargetingType.Auto;
 	public static bool FreeFire = false;
 
-	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		if (actor.worldObject.TileLocation.Position == target)
@@ -358,7 +358,7 @@ public class Shootable : DeliveryMethod
 		//targeting = TargetingType.Auto;
 	}
 
-	public override void AnimateChild(Controllable actor, Vector2Int target)
+	public override void AnimateChild(Unit actor, Vector2Int target)
 	{
 	
 	}

@@ -12,7 +12,7 @@ public class UseExtraAbility : Action
 		{
 		}
 
-		public override Tuple<bool, string> CanPerform(Controllable actor,ref  Vector2Int target)
+		public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
 		{
 
 			if (AbilityIndex == -1)
@@ -41,13 +41,13 @@ public class UseExtraAbility : Action
 			}
 		}
 
-		public override void Execute(Controllable actor, Vector2Int target)
+		public override void Execute(Unit actor, Vector2Int target)
 		{
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			action.Execute(actor, target);
 		}
 
-		public override void ToPacket(Controllable actor, Vector2Int target)
+		public override void ToPacket(Unit actor, Vector2Int target)
 		{
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
@@ -63,14 +63,14 @@ public class UseExtraAbility : Action
 
 #if CLIENT
 
-		public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
 			if(AbilityIndex == -1)return;
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}
 
-		public override void Animate(Controllable actor, Vector2Int target)
+		public override void Animate(Unit actor, Vector2Int target)
 		{
 			base.Animate(actor,target);
 			IExtraAction action = actor.extraActions[AbilityIndex];

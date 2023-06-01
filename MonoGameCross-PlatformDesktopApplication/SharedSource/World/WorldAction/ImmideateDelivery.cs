@@ -5,18 +5,18 @@ namespace MultiplayerXeno.Items;
 
 public class ImmideateDelivery : DeliveryMethod
 {
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		return new Tuple<bool, string>(true, "");
 		
 	}
 
-	public override Vector2Int ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	public override Vector2Int ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
 		return target;
 	}
 #if CLIENT
-	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		return target;
 	}
@@ -26,7 +26,7 @@ public class ImmideateDelivery : DeliveryMethod
 		return;
 	}
 
-	public override void AnimateChild(Controllable actor, Vector2Int target)
+	public override void AnimateChild(Unit actor, Vector2Int target)
 	{
 		return;
 	}

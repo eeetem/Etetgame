@@ -43,7 +43,7 @@ namespace MultiplayerXeno
 		public bool Fliped;
 		//health
 		public string Prefab;
-		public ControllableData? ControllableData;
+		public UnitData? ControllableData;
 		public int Health;
 		public int Lifetime;
 		public WorldObjectData(string prefab)
@@ -58,7 +58,7 @@ namespace MultiplayerXeno
 		}
 	}
 	[Serializable]
-	public struct ControllableData
+	public struct UnitData
 	{
 		public bool Team1;
 		public int ActionPoints;
@@ -73,7 +73,7 @@ namespace MultiplayerXeno
 		public List<string?> Inventory { get; set; }
 		public List<Tuple<string?, int>> StatusEffects { get; set; }
 		
-		public ControllableData(bool team1)
+		public UnitData(bool team1)
 		{
 			Team1 = team1;
 			ActionPoints = -100;
@@ -88,7 +88,7 @@ namespace MultiplayerXeno
 			StatusEffects = new List<Tuple<string?, int>>();
 			selectIndex = -1;
 		}
-		public ControllableData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex)
+		public UnitData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;

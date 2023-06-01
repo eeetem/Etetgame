@@ -37,7 +37,7 @@ public class WorldAction
 
 	
 
-	public void Execute(Controllable actor, Vector2Int target)
+	public void Execute(Unit actor, Vector2Int target)
 	{
 		Console.WriteLine("Executing Action "+Name+" on "+target+" by "+actor.worldObject.Id);
 		foreach (var method in DeliveryMethods)
@@ -58,12 +58,12 @@ public class WorldAction
 
 
 
-	public Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		return DeliveryMethods[0].CanPerform(actor,ref target);
 	}
 #if CLIENT
-	public void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (DeliveryMethods[0] is Shootable)
 		{
@@ -86,7 +86,7 @@ public class WorldAction
 	
 	}
 
-	public void Animate(Controllable actor, Vector2Int target)
+	public void Animate(Unit actor, Vector2Int target)
 	{
 		foreach (var method in DeliveryMethods)
 		{

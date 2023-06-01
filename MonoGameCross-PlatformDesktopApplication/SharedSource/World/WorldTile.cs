@@ -16,11 +16,11 @@ namespace MultiplayerXeno
 		}
 		public static readonly object syncobj = new object();
 
-		private List<Controllable> Watchers = new List<Controllable>();
-		private List<Controllable> UnWatchQueue = new List<Controllable>();
+		private List<Unit> Watchers = new List<Unit>();
+		private List<Unit> UnWatchQueue = new List<Unit>();
 		private int HighestWatchLevel;
 		
-		public void Watch(Controllable watcher)
+		public void Watch(Unit watcher)
 		{
 			lock (syncobj)
 			{
@@ -30,7 +30,7 @@ namespace MultiplayerXeno
 			CalcWatchLevel();
 #endif
 		}
-		public void UnWatch(Controllable watcher)
+		public void UnWatch(Unit watcher)
 		{
 			lock (syncobj)
 			{

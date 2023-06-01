@@ -34,9 +34,9 @@ public class GameLayout : MenuLayout
 		}
 	}
 
-	public static Controllable SelectedControllable { get; private set;} = null!;
+	public static Unit SelectedUnit { get; private set;} = null!;
 
-	public static void SelectControllable(Controllable? controllable)
+	public static void SelectControllable(Unit? controllable)
 	{
 		if (controllable == null)
 		{
@@ -48,14 +48,14 @@ public class GameLayout : MenuLayout
 			return;
 		}
 
-		SelectedControllable = controllable;
+		SelectedUnit = controllable;
 		ReMakeMovePreview();
 		UI.SetUI( new GameLayout());
 		Camera.SetPos(controllable.worldObject.TileLocation.Position);
 	}
 	public static void ReMakeMovePreview()
 	{
-		previewMoves = SelectedControllable.GetPossibleMoveLocations();
+		previewMoves = SelectedUnit.GetPossibleMoveLocations();
 
 	}
 
@@ -67,7 +67,7 @@ public class GameLayout : MenuLayout
 	private static RenderTarget2D? endBarRenderTarget;
 	private static RenderTarget2D? chatRenderTarget;
 	private static RenderTarget2D? chatScreenRenderTarget;
-	private static Dictionary<Controllable, RenderTarget2D>? unitBarRenderTargets;
+	private static Dictionary<Unit, RenderTarget2D>? unitBarRenderTargets;
 		
 	private static bool inited = false;
 
@@ -82,7 +82,7 @@ public class GameLayout : MenuLayout
 		chatRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/chatframe").Width,TextureManager.GetTexture("UI/GameHud/chatframe").Height);
 		chatScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/chatscreen").Width,TextureManager.GetTexture("UI/GameHud/chatscreen").Height);
 		endBarRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/endframe1").Width,TextureManager.GetTexture("UI/GameHud/endframe1").Height);
-		unitBarRenderTargets = new Dictionary<Controllable, RenderTarget2D>();
+		unitBarRenderTargets = new Dictionary<Unit, RenderTarget2D>();
 	}
 
 
@@ -215,7 +215,7 @@ public class GameLayout : MenuLayout
 				elem.PressedBackground = new SolidBrush(Color.Transparent);
 				elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit]);
 				elem.Image = new TextureRegion(unitBarRenderTargets[unit]);
-				if (unit.Equals(SelectedControllable)){
+				if (unit.Equals(SelectedUnit)){
 					elem.Top = 10;
 				}
 				else
@@ -367,7 +367,7 @@ public class GameLayout : MenuLayout
 		{
 			var unitPanel = new ImageButton();
 
-			Controllable u = unit;
+			Unit u = unit;
 			unitPanel.Click += (sender, args) =>
 			{
 				SelectControllable(u);
@@ -382,15 +382,15 @@ public class GameLayout : MenuLayout
 		overwatchBtn.MouseLeft += (o, a) =>  HideTooltip();
 		panel.Widgets.Add(overwatchBtn);
 		crouchbtn = new ImageButton();
-		crouchbtn.Click += (o, a) => SelectedControllable.DoAction(Action.Actions[ActionType.Crouch], new Vector2Int(0,0));
+		crouchbtn.Click += (o, a) => SelectedUnit.DoAction(Action.Actions[ActionType.Crouch], new Vector2Int(0,0));
 		crouchbtn.MouseEntered += (o, a) => Tooltip("Crouching improves benefits of cover and allows hiding under tall cover",0,0,0);
 		crouchbtn.MouseLeft += (o, a) => HideTooltip();
 		panel.Widgets.Add(crouchbtn);
 		itemBtn = new ImageButton();
 		itemBtn.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
-		if (SelectedControllable.SelectedItem != null)
+		if (SelectedUnit.SelectedItem != null)
 		{
-			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + SelectedControllable.SelectedItem.Name + " - " + SelectedControllable.SelectedItem.Description, 0, -1, 0);
+			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + SelectedUnit.SelectedItem.Name + " - " + SelectedUnit.SelectedItem.Description, 0, -1, 0);
 			itemBtn.MouseLeft += (o, a) => HideTooltip();
 		}
 		else
@@ -414,16 +414,16 @@ public class GameLayout : MenuLayout
 		InvButtons.Clear();
 		int i = 0;
 
-		for (int j = 0; j < SelectedControllable.Type.InventorySize; j++)
+		for (int j = 0; j < SelectedUnit.Type.InventorySize; j++)
 		{
 			int index = j;
 			var btn = new ImageButton();
 			InvButtons.Add(btn);
 			btn.Click+= (o, a) =>
 			{
-				if (SelectedControllable.Inventory[index] != null)
+				if (SelectedUnit.Inventory[index] != null)
 				{
-					SelectedControllable.DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(index, 0));
+					SelectedUnit.DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(index, 0));
 					UpdateActionButtons();
 				}
 			};
@@ -431,12 +431,12 @@ public class GameLayout : MenuLayout
 		}
 
 		i = 0;
-		foreach (var action in SelectedControllable.extraActions)
+		foreach (var action in SelectedUnit.extraActions)
 		{
 			int index = i;
 			var btn = new ImageButton();
 			ActionButtons.Add(btn);
-			btn.MouseEntered += (o, a) => Tooltip(action.Tooltip,action.GetConsiquences(SelectedControllable)[0],action.GetConsiquences(SelectedControllable)[1],action.GetConsiquences(SelectedControllable)[2]);
+			btn.MouseEntered += (o, a) => Tooltip(action.Tooltip,action.GetConsiquences(SelectedUnit)[0],action.GetConsiquences(SelectedUnit)[1],action.GetConsiquences(SelectedUnit)[2]);
 			btn.MouseLeft += (o, a) => HideTooltip();
 			if (action.ImmideateActivation)
 			{
@@ -461,7 +461,7 @@ public class GameLayout : MenuLayout
 					Console.WriteLine("click");
 					Action.SetActiveAction(ActionType.UseAbility);
 					UseExtraAbility.AbilityIndex = index;
-					SelectedControllable.DoAction(Action.ActiveAction, SelectedControllable.worldObject.TileLocation.Position);
+					SelectedUnit.DoAction(Action.ActiveAction, SelectedUnit.worldObject.TileLocation.Position);
 				};
 			}
 			else
@@ -522,7 +522,7 @@ public class GameLayout : MenuLayout
 			overwatchBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
 			overwatchBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn")), new Color(255, 140, 140));
 		}
-		else if (SelectedControllable.MovePoints>0 && SelectedControllable.ActionPoints>0)
+		else if (SelectedUnit.MovePoints>0 && SelectedUnit.ActionPoints>0)
 		{
 			overwatchBtn.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/overwatchbtn"));
 		}
@@ -544,12 +544,12 @@ public class GameLayout : MenuLayout
 		crouchbtn.Width = (int) (24 * globalScale.Y * 2f);
 		crouchbtn.Height = (int) (29 * globalScale.Y * 2f);
 		var img  = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOff"));
-		if (SelectedControllable.Crouching)
+		if (SelectedUnit.Crouching)
 		{
 			img = new TextureRegion(TextureManager.GetTexture("UI/GameHud/crouchOn"));
 		}
 
-		if (SelectedControllable.MovePoints > 0)
+		if (SelectedUnit.MovePoints > 0)
 		{
 			crouchbtn.Image = img;
 		}
@@ -571,16 +571,16 @@ public class GameLayout : MenuLayout
 		{
 			itemBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
 			itemBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
-			if (SelectedControllable.SelectedItem != null)
+			if (SelectedUnit.SelectedItem != null)
 			{
-				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedControllable.SelectedItem?.Icon), new Color(255, 140, 140));
+				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedUnit.SelectedItem?.Icon), new Color(255, 140, 140));
 			}
 		}
-		else if(SelectedControllable.SelectedItem != null && SelectedControllable.ActionPoints > 0)
+		else if(SelectedUnit.SelectedItem != null && SelectedUnit.ActionPoints > 0)
 		{
 			itemBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
 			itemBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
-			itemBtn.Image = new TextureRegion(SelectedControllable.SelectedItem?.Icon);
+			itemBtn.Image = new TextureRegion(SelectedUnit.SelectedItem?.Icon);
 
 				
 			
@@ -589,9 +589,9 @@ public class GameLayout : MenuLayout
 		{
 			itemBtn.Background =  new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")),Color.Gray);
 			itemBtn.OverBackground =  new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")),Color.Gray);
-			if (SelectedControllable.SelectedItem != null)
+			if (SelectedUnit.SelectedItem != null)
 			{
-				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedControllable.SelectedItem?.Icon),Color.Gray);
+				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedUnit.SelectedItem?.Icon),Color.Gray);
 			}else
 			{
 				itemBtn.Image = null;
@@ -606,10 +606,10 @@ public class GameLayout : MenuLayout
 		int i = 0;
 		if (invOpen)
 		{
-			for (int j = 0; j < SelectedControllable.Type.InventorySize; j++)
+			for (int j = 0; j < SelectedUnit.Type.InventorySize; j++)
 			{
-				WorldAction? inv = SelectedControllable.Inventory[j];
-				if (j == SelectedControllable.SelectedItemIndex)
+				WorldAction? inv = SelectedUnit.Inventory[j];
+				if (j == SelectedUnit.SelectedItemIndex)
 				{
 					var btn = InvButtons[j];
 					btn.Visible = false;
@@ -647,7 +647,7 @@ public class GameLayout : MenuLayout
 			}
 		}
 
-		if (SelectedControllable.Inventory.Length < 2)
+		if (SelectedUnit.Inventory.Length < 2)
 		{
 			collpaseBtn.Visible = false;
 		}
@@ -669,7 +669,7 @@ public class GameLayout : MenuLayout
 		
 
 		i = 0;
-		foreach (var action in SelectedControllable.extraActions)
+		foreach (var action in SelectedUnit.extraActions)
 		{
 
 
@@ -685,7 +685,7 @@ public class GameLayout : MenuLayout
 				actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/button")), new Color(255, 140, 140));
 				actbtn.Image = new ColoredRegion(new TextureRegion(action.Icon), Color.Red);
 			}
-			else if(SelectedControllable.extraActions[index].HasEnoughPointsToPerform(SelectedControllable).Item1)
+			else if(SelectedUnit.extraActions[index].HasEnoughPointsToPerform(SelectedUnit).Item1)
 			{
 				actbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
 				actbtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/button"));
@@ -708,12 +708,12 @@ public class GameLayout : MenuLayout
 		}
 	}
 
-	private static readonly List<Controllable> Controllables = new List<Controllable>();
-	private static List<Controllable> MyUnits = new List<Controllable>();
-	private static List<Controllable> EnemyUnits = new List<Controllable>();
+	private static readonly List<Unit> Controllables = new List<Unit>();
+	private static List<Unit> MyUnits = new List<Unit>();
+	private static List<Unit> EnemyUnits = new List<Unit>();
 
 	
-	public static void RegisterContollable(Controllable c)
+	public static void RegisterContollable(Unit c)
 	{
 		
 		Controllables.Add(c);
@@ -727,7 +727,7 @@ public class GameLayout : MenuLayout
 			EnemyUnits.Add(c);
 		}
 	}
-	public static void UnRegisterContollable(Controllable c)
+	public static void UnRegisterContollable(Unit c)
 	{
 		Controllables.Remove(c);
 		if (c.IsMyTeam())
@@ -779,7 +779,7 @@ public class GameLayout : MenuLayout
 		if (Action.GetActiveActionType() != null)
 		{
 			Debug.Assert(Action.ActiveAction != null, "Action.ActiveAction != null");
-			Action.ActiveAction.Preview(SelectedControllable, TileCoordinate,batch);
+			Action.ActiveAction.Preview(SelectedUnit, TileCoordinate,batch);
 		}
 		
 		
@@ -964,13 +964,13 @@ public class GameLayout : MenuLayout
 		
 		float bulletWidth = TextureManager.GetTexture("UI/GameHud/LeftPanel/bulletOn").Width;
 		float baseWidth = 81;
-		float bulletBarWidth = bulletWidth*SelectedControllable.Type.MaxActionPoints;
+		float bulletBarWidth = bulletWidth*SelectedUnit.Type.MaxActionPoints;
 		float emtpySpace = baseWidth - bulletBarWidth;
 		Vector2 bulletPos = new Vector2(5+emtpySpace/2f,106);
-		for (int i = 0; i < SelectedControllable.Type.MaxActionPoints; i++)
+		for (int i = 0; i < SelectedUnit.Type.MaxActionPoints; i++)
 		{
 			Texture2D tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/bulletOn");
-			if(i >= SelectedControllable.ActionPoints)
+			if(i >= SelectedUnit.ActionPoints)
 				tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/bulletOff");
 			
 			batch.Draw(tex,bulletPos + i*new Vector2(40,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
@@ -980,10 +980,10 @@ public class GameLayout : MenuLayout
 		batch.End();
 
 		Texture2D indi;
-		if (SelectedControllable.canTurn)
+		if (SelectedUnit.canTurn)
 		{
 			indi = TextureManager.GetTexture("UI/GameHud/LeftPanel/turnon");
-			PostPorcessing.ShuffleUIeffect( SelectedControllable.worldObject.Id,new Vector2(indi.Width,indi.Height),true);
+			PostPorcessing.ShuffleUIeffect( SelectedUnit.worldObject.Id,new Vector2(indi.Width,indi.Height),true);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp, effect:PostPorcessing.UIGlowEffect);
 		}
 		else
@@ -997,29 +997,29 @@ public class GameLayout : MenuLayout
 		baseWidth = 84;
 		float arrowWidth = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn").Width;
 		float arrowHeight = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn").Height;
-		float moveBarWidth = arrowWidth*SelectedControllable.Type.MaxMovePoints;
+		float moveBarWidth = arrowWidth*SelectedUnit.Type.MaxMovePoints;
 		emtpySpace = baseWidth - moveBarWidth;
 		Vector2 arrowPos = new Vector2(12+emtpySpace/2f,70);
-		for (int i = 0; i < SelectedControllable.Type.MaxMovePoints; i++)
+		for (int i = 0; i < SelectedUnit.Type.MaxMovePoints; i++)
 		{
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 			batch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowBackround"),arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
 			Texture2D tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOff");
-			if (i < SelectedControllable.MovePoints)
+			if (i < SelectedUnit.MovePoints)
 			{
 				tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn");
 			}
-			PostPorcessing.ShuffleUIeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+			PostPorcessing.ShuffleUIeffect(i + SelectedUnit.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIGlowEffect);
 			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
 		}
 
-		for (int i = 0; i <  SelectedControllable.MovePoints - SelectedControllable.Type.MaxMovePoints; i++)
+		for (int i = 0; i <  SelectedUnit.MovePoints - SelectedUnit.Type.MaxMovePoints; i++)
 		{
 			var tex = TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOverflow");
-			PostPorcessing.ShuffleUIeffect(i + SelectedControllable.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
+			PostPorcessing.ShuffleUIeffect(i + SelectedUnit.worldObject.Id,new Vector2(arrowWidth,arrowHeight),true);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.AnisotropicClamp,effect:PostPorcessing.UIGlowEffect);
 			batch.Draw(tex,arrowPos + i*new Vector2(25,0),null,Color.Black,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 			batch.End();
@@ -1184,13 +1184,13 @@ public class GameLayout : MenuLayout
 		//moves selected contorlable to the top
 		MouseTileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		MouseTileCoordinate = Vector2.Clamp(MouseTileCoordinate, Vector2.Zero, new Vector2(99, 99));
-		int targetIndex = Controllables.IndexOf(SelectedControllable);
+		int targetIndex = Controllables.IndexOf(SelectedUnit);
 		if (targetIndex != -1)
 		{
 			for (int i = targetIndex; i < Controllables.Count - 1; i++)
 			{
 				Controllables[i] = Controllables[i + 1];
-				Controllables[i + 1] = SelectedControllable;
+				Controllables[i + 1] = SelectedUnit;
 			}
 		}
 
@@ -1201,7 +1201,7 @@ public class GameLayout : MenuLayout
 			targetIndex = Controllables.IndexOf(tile.ControllableAtLocation.ControllableComponent);
 			if (targetIndex != -1)
 			{
-				Controllable target = Controllables[targetIndex];
+				Unit target = Controllables[targetIndex];
 				for (int i = targetIndex; i < Controllables.Count - 1; i++)
 				{
 						
@@ -1377,7 +1377,7 @@ public class GameLayout : MenuLayout
 					Action.SetActiveAction(ActionType.Face);
 					break;
 				case ActionType.Face:
-					SelectedControllable.DoAction(Action.ActiveAction,position);
+					SelectedUnit.DoAction(Action.ActiveAction,position);
 					break;
 				default:
 					Action.SetActiveAction(null);
@@ -1395,7 +1395,7 @@ public class GameLayout : MenuLayout
 					Action.SetActiveAction(ActionType.Move);
 					break;
 				default:
-					SelectedControllable.DoAction(Action.ActiveAction, position);
+					SelectedUnit.DoAction(Action.ActiveAction, position);
 					break;
 
 
@@ -1427,7 +1427,7 @@ public class GameLayout : MenuLayout
 		bool highlighted = false;
 
 		
-		if (Equals(SelectedControllable, target.ControllableComponent) || MousePos == (Vector2) target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
+		if (Equals(SelectedUnit, target.ControllableComponent) || MousePos == (Vector2) target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
 		{
 			opacity = 1;
 			highlighted = true;
@@ -1549,30 +1549,30 @@ public class GameLayout : MenuLayout
 
 		if (target.ControllableComponent != null)
 		{
-			Controllable controllable = target.ControllableComponent;
+			Unit unit = target.ControllableComponent;
 
 			i = 0;
 			var lights = TextureManager.GetSpriteSheet("UI/HoverHud/detlights", 4, 1);
 			
-			for (int y = 0; y < controllable.Type.Maxdetermination; y++)
+			for (int y = 0; y < unit.Type.Maxdetermination; y++)
 			{
 
 				Texture2D indicator;
 				bool litup = true;
 				bool dissapate = false;
 				bool pulse = false;
-				if (controllable.paniced)
+				if (unit.paniced)
 				{
 					indicator = lights[0];
 				}
-				else if (y == controllable.Determination)
+				else if (y == unit.Determination)
 				{
 					indicator = lights[2];
 					pulse = true;
 					litup = false;
 					
 				}
-				else if (y >= controllable.Determination)
+				else if (y >= unit.Determination)
 				{
 					indicator = lights[3];
 					litup = false;
@@ -1580,7 +1580,7 @@ public class GameLayout : MenuLayout
 				else
 				{
 					indicator = lights[1];
-					if (target.PreviewData.detDmg >= controllable.Determination - y)
+					if (target.PreviewData.detDmg >= unit.Determination - y)
 					{
 						dissapate = true;
 					}
@@ -1593,7 +1593,7 @@ public class GameLayout : MenuLayout
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					batch.Draw(lights[3], DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
-					PostPorcessing.ShuffleUIeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted, true);
+					PostPorcessing.ShuffleUIeffect(y + unit.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted, true);
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
@@ -1601,7 +1601,7 @@ public class GameLayout : MenuLayout
 				else if (litup)
 				{
 
-					PostPorcessing.ShuffleUIeffect(y + controllable.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted);
+					PostPorcessing.ShuffleUIeffect(y + unit.worldObject.Id + 10, new Vector2(detWidth, detHeight), highlighted);
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, new Color(0,0,0), 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();

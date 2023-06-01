@@ -77,7 +77,7 @@ public partial class WorldObject
 #endif
 		}
 	}
-	public Controllable? ControllableComponent { get;  set; }
+	public Unit? ControllableComponent { get;  set; }
 
 	public readonly int Id;
 
@@ -168,15 +168,27 @@ public partial class WorldObject
 			Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			Thread.Sleep(300);
 		}
+		
 #if CLIENT
-		if(ControllableComponent != null && GameLayout.SelectedControllable == ControllableComponent)
-		{
-			GameLayout.SelectControllable(null);
-		}
-#endif
+			if(Equals(GameLayout.SelectedUnit, ControllableComponent)){
+				GameLayout.SelectControllable(null);
+			}
 		
 		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
-	
+#else
+			if(GameManager.T1Units.Contains(Id)){
+				GameManager.T1Units.Remove(Id);
+			}
+			if(GameManager.T2Units.Contains(Id)){
+				GameManager.T2Units.Remove(Id);
+			}
+
+#endif
+		
+
+
+		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
+
 	}
 	public Visibility GetMinimumVisibility()
 	{
@@ -277,7 +289,7 @@ public partial class WorldObject
 
 		if (ControllableComponent != null)
 		{
-			ControllableData cdata = ControllableComponent.GetData();
+			UnitData cdata = ControllableComponent.GetData();
 			data.ControllableData = cdata;
 		}
 

@@ -13,7 +13,7 @@ public class Face : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Controllable actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
 	{
 		
 		
@@ -23,7 +23,7 @@ public class Face : Action
 			return new Tuple<bool, string>(false, "Already facing that direction");
 		}//dont let the action happen if the player is already facing that direction 
 
-		if (Controllable.moving)
+		if (Unit.moving)
 		{
 			return new Tuple<bool, string>(false, "Can't face while moving");
 		}
@@ -37,7 +37,7 @@ public class Face : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Unit actor,Vector2Int target)
 	{
 		var targetDir = Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
 		actor.canTurn = false;
@@ -52,7 +52,7 @@ public class Face : Action
 		lastTarget = new Vector2Int(0, 0);
 		base.InitAction();
 	}
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (lastTarget == new Vector2Int(0, 0))
 		{
@@ -85,7 +85,7 @@ public class Face : Action
 			
 		}
 	}
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 	//	base.Animate(actor,target);
 		return;

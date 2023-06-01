@@ -166,7 +166,7 @@ Audio.PlaySound("capture");
 					return;
 				}
 
-				Controllable? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.ControllableComponent;
+				Unit? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.ControllableComponent;
 				if(controllable == null)
 				{
 					Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);

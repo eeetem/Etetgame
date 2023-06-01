@@ -16,7 +16,7 @@ public class OverWatch : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Controllable actor,ref  Vector2Int position)
+	public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int position)
 	{
 	
 
@@ -33,7 +33,7 @@ public class OverWatch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Unit actor,Vector2Int target)
 	{
 		actor.ActionPoints.Current=0;
 		actor.MovePoints.Current=0;
@@ -49,7 +49,7 @@ public class OverWatch : Action
 
 	}
 
-	private HashSet<Projectile> GetOverWatchPositions(Controllable actor,Vector2Int target)
+	private HashSet<Projectile> GetOverWatchPositions(Unit actor,Vector2Int target)
 	{
 		var tiles = WorldManager.Instance.GetTilesAround(target,actor.Type.OverWatchSize);
 		HashSet<Projectile> possibleShots = new HashSet<Projectile>();
@@ -89,7 +89,7 @@ public class OverWatch : Action
 #if CLIENT
 	
 
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		//todo mod support, make this not only for shootables
@@ -113,7 +113,7 @@ public class OverWatch : Action
 		}
 
 	}
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 		base.Animate(actor,target);
 		return;

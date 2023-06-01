@@ -17,8 +17,13 @@ public class Throwable : DeliveryMethod
 	}
 
 	private static Vector2Int? LastReturned = new Vector2Int(0,0);
-	public override Vector2Int? ExectuteAndProcessLocationChild(Controllable actor, Vector2Int target)
+	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
+		if (target == actor.worldObject.TileLocation.Position)
+		{
+			return target;
+		}
+
 		if (Vector2.Distance(target, actor.worldObject.TileLocation.Position) > throwRange)
 		{
 			return LastReturned;
@@ -32,7 +37,7 @@ public class Throwable : DeliveryMethod
 	
 
 
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) > throwRange)
 		{
@@ -48,7 +53,7 @@ public class Throwable : DeliveryMethod
 		return new Tuple<bool, string>(true, "");
 	}
 #if CLIENT
-	public override Vector2Int? PreviewChild(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		Vector2Int? newTarget = ExectuteAndProcessLocation(actor, target);
 		if (newTarget == null) return newTarget;
@@ -66,7 +71,7 @@ public class Throwable : DeliveryMethod
 		LastReturned = null;
 	}
 
-	public override void AnimateChild(Controllable actor, Vector2Int target)
+	public override void AnimateChild(Unit actor, Vector2Int target)
 	{
 
 	}

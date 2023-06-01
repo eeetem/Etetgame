@@ -74,10 +74,10 @@ public abstract class Action
 	
 	}
 
-	public abstract Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
 
 
-	public void Perform(Controllable actor, Vector2Int target)
+	public void Perform(Unit actor, Vector2Int target)
 	{
 		try
 		{
@@ -100,10 +100,10 @@ public abstract class Action
 	
 
 	
-	public abstract void Execute(Controllable actor, Vector2Int target);
+	public abstract void Execute(Unit actor, Vector2Int target);
 #if CLIENT
-	public abstract void Preview(Controllable actor, Vector2Int target,SpriteBatch spriteBatch);
-	public virtual void Animate(Controllable actor, Vector2Int target)
+	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
+	public virtual void Animate(Unit actor, Vector2Int target)
 	{
 	
 		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
@@ -120,13 +120,13 @@ public abstract class Action
 		Thread.Sleep(800);
 	}
 #endif
-	public virtual void ToPacket(Controllable actor,Vector2Int target)
+	public virtual void ToPacket(Unit actor,Vector2Int target)
 	{
 		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.worldObject.Id+"");
 		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
 		Networking.DoAction(packet);
 	}
-	public void PerformFromPacket(Controllable actor,Vector2Int target)
+	public void PerformFromPacket(Unit actor,Vector2Int target)
 	{
 #if CLIENT
 			Shootable.FreeFire = true;

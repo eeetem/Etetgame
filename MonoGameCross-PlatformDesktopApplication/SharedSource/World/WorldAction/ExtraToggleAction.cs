@@ -29,7 +29,7 @@ public class ExtraToggleAction : IExtraAction
 	}
 
 
-	public Tuple<bool, string> CanPerform(Controllable actor,ref Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor,ref Vector2Int target)
 	{
 		if (isOn)
 		{
@@ -38,7 +38,7 @@ public class ExtraToggleAction : IExtraAction
 		return on.CanPerform(actor,ref target);
 	}
 
-	public Tuple<bool, string> HasEnoughPointsToPerform(Controllable actor)
+	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
 	{
 		if (isOn)
 		{
@@ -56,7 +56,7 @@ public class ExtraToggleAction : IExtraAction
 		return on.MakePacketArgs();
 	}
 
-	public void Execute(Controllable actor, Vector2Int target)
+	public void Execute(Unit actor, Vector2Int target)
 	{
 		if (isOn)
 		{
@@ -82,7 +82,7 @@ public class ExtraToggleAction : IExtraAction
 		}
 	}
 
-	public int[]  GetConsiquences(Controllable c)
+	public int[]  GetConsiquences(Unit c)
 	{
 		if (isOn)
 		{
@@ -94,7 +94,7 @@ public class ExtraToggleAction : IExtraAction
 
 	public bool ImmideateActivation { get=> true; }
 #if CLIENT
-	public void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (isOn)
 		{
@@ -106,7 +106,7 @@ public class ExtraToggleAction : IExtraAction
 		}
 	}
 
-	public void Animate(Controllable actor, Vector2Int target)
+	public void Animate(Unit actor, Vector2Int target)
 	{
 		if (isOn)
 		{

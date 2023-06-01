@@ -16,7 +16,7 @@ public class ExtraAction : IExtraAction
 	public readonly bool immideaateActivation;
 
 
-	public int[] GetConsiquences(Controllable c)
+	public int[] GetConsiquences(Unit c)
 	{
 		return new[] {DeterminationChange, ActionPointChange.GetChange(c.ActionPoints), MovePointChange.GetChange(c.MovePoints)};
 	}
@@ -42,7 +42,7 @@ public class ExtraAction : IExtraAction
 #endif
 	}
 
-	public Tuple<bool, string> CanPerform(Controllable actor, ref Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 
 		var res = HasEnoughPointsToPerform(actor);
@@ -54,7 +54,7 @@ public class ExtraAction : IExtraAction
 		return WorldAction.CanPerform(actor, ref target);
 	}
 
-	public Tuple<bool, string> HasEnoughPointsToPerform(Controllable actor)
+	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
 	{
 		if (actor.Determination + DeterminationChange < 0)
 		{
@@ -91,7 +91,7 @@ public class ExtraAction : IExtraAction
 		return new List<string>();
 	}
 
-	public void Execute(Controllable actor, Vector2Int target)
+	public void Execute(Unit actor, Vector2Int target)
 	{
 		if (immideaateActivation)
 		{
@@ -109,7 +109,7 @@ public class ExtraAction : IExtraAction
 	{
 		WorldAction.InitPreview();
 	}
-	public void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (immideaateActivation)
 		{
@@ -119,7 +119,7 @@ public class ExtraAction : IExtraAction
 		WorldAction.Preview(actor, target, spriteBatch);
 	}
 
-	public void Animate(Controllable actor, Vector2Int target)
+	public void Animate(Unit actor, Vector2Int target)
 	{
 		if (immideaateActivation)
 		{

@@ -11,7 +11,7 @@ public class StatusEffectType
 		effect = itm;
 	}
 
-	public void Apply(Controllable actor)
+	public void Apply(Unit actor)
 	{
 		effect.Apply(actor.worldObject.TileLocation.Position);
 	}

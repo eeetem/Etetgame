@@ -4,7 +4,7 @@ using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno;
 
-public partial class Controllable
+public partial class Unit
 {
 	
 	public bool IsMyTeam()

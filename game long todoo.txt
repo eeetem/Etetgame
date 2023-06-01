@@ -3,10 +3,20 @@ hour counter: rough estimate may7 (400) + 5
 bugs:
 no ghosting destruction -> no wall hack
 wrong offset on deployment?
-rebalance crouch?
 nade not getting used no ability use -> need more examples
 timer sync on reconnect -> later
 lag on unit switch????
+clicking ground with specialists ability
+
+alt inspection of unit stats
+
+
+action locking/rework:
+dont send actions untill recived confirm 
+
+UI Rework:
+text getting cut off
+crouch indicator
 
 sfx list:
 -throw

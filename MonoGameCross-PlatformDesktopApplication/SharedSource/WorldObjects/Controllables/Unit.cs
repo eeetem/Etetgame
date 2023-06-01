@@ -14,15 +14,15 @@ using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno
 {
-	public partial class Controllable
+	public partial class Unit
 	{
 		public WorldObject worldObject { get; private set; }
-		public ControllableType Type { get; private set; }
+		public UnitType Type { get; private set; }
 
 		
 
 		public readonly WorldAction?[] Inventory;
-		public Controllable(bool isPlayerOneTeam, WorldObject worldObject, ControllableType type, ControllableData data)
+		public Unit(bool isPlayerOneTeam, WorldObject worldObject, UnitType type, UnitData data)
 		{
 			
 			this.worldObject = worldObject;
@@ -465,7 +465,7 @@ namespace MultiplayerXeno
 
 		}
 
-		public ControllableData GetData()
+		public UnitData GetData()
 		{
 			List<string?> inv = new List<string?>();
 			foreach (var i in Inventory)
@@ -485,12 +485,12 @@ namespace MultiplayerXeno
 			{
 				sts.Add(new Tuple<string?, int>(st.type.name,st.duration));
 			}
-			var data = new ControllableData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex);
+			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex);
 			data.JustSpawned = false;
 			return data;
 		}
 
-		protected bool Equals(Controllable other)
+		protected bool Equals(Unit other)
 		{
 			return worldObject.Equals(other.worldObject);
 		}
@@ -500,7 +500,7 @@ namespace MultiplayerXeno
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
 			if (obj.GetType() != GetType()) return false;
-			return Equals((Controllable) obj);
+			return Equals((Unit) obj);
 		}
 
 		public override int GetHashCode()

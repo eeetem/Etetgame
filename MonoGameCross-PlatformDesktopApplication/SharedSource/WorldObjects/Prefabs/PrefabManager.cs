@@ -40,12 +40,12 @@ public static class PrefabManager
 			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
 			
 
-			ControllableType? controllableType = null;
+			UnitType? controllableType = null;
 			XmlNode? contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
 			if (contollableObj != null)
 			{
 				
-				controllableType = new ControllableType(name);
+				controllableType = new UnitType(name);
 				controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
 				int WeaponRange = int.Parse(contollableObj.Attributes?["weaponRange"]?.InnerText ?? "4");
 				controllableType.Maxdetermination = int.Parse(contollableObj.Attributes?["determination"]?.InnerText ?? "2");

@@ -13,7 +13,7 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Controllable actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
 	{
 		if (actor.MovePoints <= 0)
 		{
@@ -23,7 +23,7 @@ public class Crouch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public override void Execute(Controllable actor,Vector2Int target)
+	public override void Execute(Unit actor,Vector2Int target)
 	{
 		
 		actor.MovePoints--;
@@ -36,12 +36,12 @@ public class Crouch : Action
 	}
 
 #if CLIENT
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		throw new NotImplementedException();
 	}
 
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 		base.Animate(actor,target);
 		return;

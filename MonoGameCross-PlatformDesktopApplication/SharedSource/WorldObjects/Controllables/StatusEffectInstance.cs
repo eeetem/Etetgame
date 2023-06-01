@@ -10,9 +10,9 @@ public class StatusEffectInstance
 	public readonly StatusEffectType type;
 	public int duration;
 
-	public void Apply(Controllable controllable)
+	public void Apply(Unit unit)
 	{
-		type.Apply(controllable);
+		type.Apply(unit);
 		duration--;
 	}
 }

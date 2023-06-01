@@ -155,7 +155,7 @@ namespace MultiplayerXeno
 		}
 		
 
-		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, ControllableData? controllableData = null)
+		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, UnitData? controllableData = null)
 		{
 			WorldObjectData data = new WorldObjectData(prefabName);
 			data.Id = id;
@@ -181,13 +181,13 @@ namespace MultiplayerXeno
 
 		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
 
-		public Visibility CanSee(Controllable controllable, Vector2 to, bool ignoreRange = false)
+		public Visibility CanSee(Unit unit, Vector2 to, bool ignoreRange = false)
 		{
 			if (ignoreRange)
 			{
-				return CanSee(controllable.worldObject.TileLocation.Position, to, 200, controllable.Crouching);
+				return CanSee(unit.worldObject.TileLocation.Position, to, 200, unit.Crouching);
 			}
-			return CanSee(controllable.worldObject.TileLocation.Position, to, controllable.GetSightRange(), controllable.Crouching);
+			return CanSee(unit.worldObject.TileLocation.Position, to, unit.GetSightRange(), unit.Crouching);
 		}
 
 		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)//if truesight is false it will do a proper raycast otherwise you will only collide with already visible objects
@@ -723,7 +723,7 @@ namespace MultiplayerXeno
 			}
 			else if(type.Controllable != null && data.ControllableData != null)
 			{
-				Controllable component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
+				Unit component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
 #if CLIENT
 				GameLayout.RegisterContollable(component);

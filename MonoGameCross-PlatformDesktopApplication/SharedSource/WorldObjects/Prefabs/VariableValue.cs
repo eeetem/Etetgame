@@ -38,7 +38,7 @@ public class VariableValue
 		value = null;
 	}
 
-	public string GetValue(Controllable user,Controllable other)
+	public string GetValue(Unit user,Unit other)
 	{
 		if (value != null)
 		{

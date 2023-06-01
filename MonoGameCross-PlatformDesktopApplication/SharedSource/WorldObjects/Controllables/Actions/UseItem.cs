@@ -16,7 +16,7 @@ public class UseItem : Action
 	{
 	}
 	
-	public override Tuple<bool, string> CanPerform(Controllable actor, ref  Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, ref  Vector2Int target)
 	{
 
 		if (actor.SelectedItem == null)
@@ -33,7 +33,7 @@ public class UseItem : Action
 	}
 
 	
-	public override void Execute(Controllable actor, Vector2Int target)
+	public override void Execute(Unit actor, Vector2Int target)
 	{
 		actor.ActionPoints--;
 		actor.SelectedItem?.Execute(actor, target);
@@ -47,16 +47,16 @@ public class UseItem : Action
 	public override void InitAction()
 	{
 		//bad
-		GameLayout.SelectedControllable?.SelectedItem?.InitPreview();
+		GameLayout.SelectedUnit?.SelectedItem?.InitPreview();
 		base.InitAction();
 	}
 
-	public override void Preview(Controllable actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		actor.SelectedItem?.Preview(actor, target,spriteBatch);
 	}
 
-	public override void Animate(Controllable actor, Vector2Int target)
+	public override void Animate(Unit actor, Vector2Int target)
 	{
 		base.Animate(actor,target);
 		actor.SelectedItem?.Animate(actor,target);

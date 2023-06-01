@@ -106,7 +106,7 @@ public class WorldEffect
 		if (tile.ControllableAtLocation != null && !Ignores.Contains(tile.ControllableAtLocation.ControllableComponent.Type.Name))
 		{
 			
-			Controllable ctr = tile.ControllableAtLocation.ControllableComponent;
+			Unit ctr = tile.ControllableAtLocation.ControllableComponent;
 			if (user != null && user.ControllableComponent!=null)
 			{
 				if(ctr.IsPlayerOneTeam == user.ControllableComponent.IsPlayerOneTeam && !TargetFriend) return;

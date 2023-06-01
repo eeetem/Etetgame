@@ -39,7 +39,7 @@ namespace MultiplayerXeno
 			
 				
 			//not a fan of this, should probably be made a single function
-			ControllableData cdata = new ControllableData(true);
+			UnitData cdata = new UnitData(true);
 			
 			int i = 0;
 
@@ -57,7 +57,7 @@ namespace MultiplayerXeno
 				}
 			}
 
-			cdata = new ControllableData(false);
+			cdata = new UnitData(false);
 			i = 0;
 			foreach (var spawn in Player2!.SquadComp!.Composition!)
 			{
