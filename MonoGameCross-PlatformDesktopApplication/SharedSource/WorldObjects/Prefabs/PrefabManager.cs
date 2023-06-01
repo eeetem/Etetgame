@@ -59,14 +59,12 @@ public static class PrefabManager
 				
 				
 				var defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
-				string actname = defaultact.Attributes?["name"]?.InnerText ?? "";
-				string tooltip = defaultact.Attributes?["tip"]?.InnerText ?? "";
 				int DeterminationChange = int.Parse(defaultact.Attributes?["det"]?.InnerText ?? "0");
 				ValueChange MovePointChange =     new ValueChange(defaultact.Attributes?["mpoint"]?.InnerText ?? "0");
 				ValueChange ActionPointChange =   new ValueChange(defaultact.Attributes?["apoint"]?.InnerText ?? "0"); 
-				WorldAction action =	PraseWorldAction((XmlElement) defaultact, actname,tooltip);
+				WorldAction action =	PraseWorldAction((XmlElement) defaultact);
 
-				controllableType.DefaultAttack = new ExtraAction(actname,tooltip,DeterminationChange,MovePointChange,ActionPointChange,action,false);
+				controllableType.DefaultAttack = new ExtraAction(action.Name,action.Description,DeterminationChange,MovePointChange,ActionPointChange,action,false);
 				
 				var speff = ((XmlElement) contollableObj).GetElementsByTagName("spawneffect")[0];
 				if (speff != null)
@@ -84,11 +82,10 @@ public static class PrefabManager
 				var toggleActions = ((XmlElement) contollableObj).GetElementsByTagName("toggleaction");
 				foreach (var act in toggleActions)
 				{
-				//	ExtraToggleAction toggle = new ExtraToggleAction();
+					//	ExtraToggleAction toggle = new ExtraToggleAction();
 					XmlElement actobj = (XmlElement) act;
 					ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]);
 					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]);
-					 tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
 					ExtraToggleAction toggle = new ExtraToggleAction(on,off);
 					controllableType.ExtraActions.Add(toggle);
 				}
@@ -108,11 +105,11 @@ public static class PrefabManager
 			Cover scover = Cover.None;
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
 			{
-				faceable = bool.Parse(xmlObj?.Attributes?["Faceable"].InnerText ?? "false");
+				faceable = bool.Parse(xmlObj?.Attributes?["Faceable"]?.InnerText ?? "false");
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["Edge"] != null)
+			if (xmlObj.HasAttributes && xmlObj.Attributes?["Edge"] != null)
 			{
-				edge = bool.Parse(xmlObj?.Attributes?["Edge"].InnerText);
+				edge = bool.Parse(xmlObj?.Attributes?["Edge"]?.InnerText!);
 			}
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Surface"] != null)
 			{
@@ -169,9 +166,9 @@ public static class PrefabManager
 
 #if CLIENT
 			Vector2 Offset = new Vector2(-1.5f, -0.5f);
-		//	if(faceable){
-	//			Offset = 
-		//	}
+			//	if(faceable){
+			//			Offset = 
+			//	}
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 			int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
 #endif
@@ -220,11 +217,10 @@ public static class PrefabManager
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
 		{
 
-			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText!;
-			string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
-			var itm = PraseWorldAction(xmlObj,name,tip);
+	
+			var itm = PraseWorldAction(xmlObj);
 		
-			UseItems.Add(name,itm);
+			UseItems.Add(itm.Name,itm);
 				
 		}
 	}
@@ -238,20 +234,36 @@ public static class PrefabManager
 		ValueChange ActionPointChange =   new ValueChange(actobj.Attributes?["apoint"]?.InnerText ?? "0"); 
 		WorldAction action;
 		
-		actname = actobj.Attributes?["name"]?.InnerText ?? "";
-		tooltip = actobj.Attributes?["tip"]?.InnerText ?? "";
-		action = PraseWorldAction(actobj, actname,tooltip);
+		;
+		action = PraseWorldAction(actobj);
 		
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		ExtraAction a = new ExtraAction(actname, tooltip, DeterminationChange, MovePointChange, ActionPointChange, action,immideaateActivation);
+		ExtraAction a = new ExtraAction(action.Name, action.Description, DeterminationChange, MovePointChange, ActionPointChange, action,immideaateActivation);
 		return a;
 	}
 
-	private static WorldAction PraseWorldAction(XmlElement xmlObj,string name, string tip)
+	private static WorldAction PraseWorldAction(XmlElement xmlObj)
 	{
 
 		List<DeliveryMethod> usgs = new List<DeliveryMethod>();
 		WorldEffect? eff = new WorldEffect();
+		string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? "";
+		string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
+		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "None";
+		WorldAction.TargetAid tAid = WorldAction.TargetAid.None;
+		
+		switch (aid)
+		{
+			case "none":
+				tAid = WorldAction.TargetAid.None;
+				break;
+			case "unit":
+				tAid = WorldAction.TargetAid.Unit;
+				break;
+			case "enemy":
+				tAid = WorldAction.TargetAid.Enemy;
+				break;
+		}
 		//loop through all child nodes of the element
 		foreach (var n in  xmlObj.ChildNodes)
 		{
@@ -277,7 +289,7 @@ public static class PrefabManager
 				int dropoff = int.Parse(node.Attributes?["dropOffRange"]?.InnerText ?? "10");
 				dvm = new Shootable(dmg,detRes,supression,supressionRange,dropoff);
 			}
-
+	
 			if (dvm != null)
 			{
 				Vector2Int offset = Vector2Int.Parse(node.Attributes?["offset"]?.InnerText ?? "0,0");
@@ -299,6 +311,10 @@ public static class PrefabManager
 		
 			
 		WorldAction itm = new WorldAction(name,tip,usgs,eff);
+#if CLIENT
+		itm.targetAid = tAid;
+#endif
+	
 		return itm;
 	}
 
@@ -405,4 +421,3 @@ public static class PrefabManager
 	}
 
 }
-

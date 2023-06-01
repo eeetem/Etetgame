@@ -129,7 +129,7 @@ public abstract class Action
 	public void PerformFromPacket(Unit actor,Vector2Int target)
 	{
 #if CLIENT
-			Shootable.FreeFire = true;
+			WorldAction.FreeFire = true;
 #endif
 	
 		var result = CanPerform(actor, ref target);
@@ -148,7 +148,7 @@ public abstract class Action
 #endif
 	
 #if CLIENT
-		Shootable.FreeFire = false;
+		WorldAction.FreeFire = false;
 #endif
 	}
 }

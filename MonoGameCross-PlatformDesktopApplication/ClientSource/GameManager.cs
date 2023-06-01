@@ -109,7 +109,7 @@ namespace MultiplayerXeno
 		{
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
-			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
+			GameActionPacket packet = new GameActionPacket(-1,new Vector2Int(0,0),ActionType.EndTurn);
 			Networking.ServerConnection?.Send(packet);
 			Action.SetActiveAction(null);
 

@@ -38,19 +38,13 @@ public class Shootable : DeliveryMethod
 			_lastTarget = target;
 		}
 
-		if (!FreeFire)
+		if (!WorldAction.FreeFire)
 		{
-			var tile = WorldManager.Instance.GetTileAtGrid(target);
-			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
+			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId).TileLocation.Position != (Vector2Int) previewShot.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
-
-			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId).TileLocation.Position != (Vector2Int)previewShot.Result.EndPoint)
-			{
-				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
-			}
-		}		
+		}
 #endif
 	
 		return new Tuple<bool, string>(true, "");
@@ -130,7 +124,7 @@ public class Shootable : DeliveryMethod
 
 	private Vector2Int _lastTarget = new Vector2Int(0,0);
 	private TargetingType lastTargetingType = TargetingType.Auto;
-	public static bool FreeFire = false;
+
 
 	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{

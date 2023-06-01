@@ -63,6 +63,7 @@
     <name>Marksman</name>
     <controllable moveRange = "6" moves="2" determination="3">
       <defaultAttack>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -70,7 +71,10 @@
           <sfx name="rifle3"/>
         </effect>
       </defaultAttack>
-      <action name="Headshot" tip="15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage" det ="-2" mpoint="-1" apoint="-1">
+      <action det ="-2" mpoint="-1" apoint="-1">
+        <name>Headshot</name>
+        <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
         <effect>
           <vfx name="clmagnitude" target="5" speed="50"/>
@@ -87,6 +91,7 @@
     <controllable moveRange = "5" moves="3" determination="3" sightrange="18">
       
       <defaultAttack>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -95,7 +100,9 @@
         </effect>
       </defaultAttack>
 
-      <action immideate="true" name="Breach n Clear" tip="Restores actions points and gives 6 movement points with short range. Great for covering lots of ground and maneuvering in close quarters" det ="-3" mpoint="6[set]" apoint="1[set]">
+      <action immideate="true" det ="-3" mpoint="6[set]" apoint="1[set]">
+       <name>Breach n Clear</name>
+        <tip>Restores actions points and gives 6 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
         <effect visible ="false">
           <applystatus status="BreachnClear" duration="1"/>
         </effect>
@@ -114,6 +121,7 @@
       </spawneffect>
       
       <defaultAttack>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -122,7 +130,9 @@
         </effect>
       </defaultAttack>
       
-      <action name="Suppress" tip="Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays" det ="-3" mpoint="-1" apoint="-2">
+      <action det ="-3" mpoint="-1" apoint="-2">
+        <name>Suppress</name>
+        <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
         <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
         <shootable offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
         <shootable offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
@@ -136,12 +146,16 @@
       </action>
      
       <toggleaction>
-        <toggleoff name="Holster" tip="Switch to mobility mode. Starts every turn with 4 move points" det ="-1" mpoint="0" apoint="0">
+        <toggleoff  det ="-1" mpoint="0" apoint="0">
+          <name>Holster</name>
+          <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
           <effect visible ="false">
            <applystatus status="Holstered"/>
           </effect>
         </toggleoff>
-        <toggleon name="UnHolster" tip="Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack" det ="-1" mpoint="-2" apoint="0">
+        <toggleon name="" tip="" det ="-1" mpoint="-2" apoint="0">
+          <name>UnHolster</name>
+          <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
           <effect visible ="false">
           <removestatus status="Holstered"/>
           </effect>
@@ -157,6 +171,7 @@
     <controllable moveRange = "6" moves="2" actions="2" determination="2"  sightrange="20">
 
       <defaultAttack>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -165,13 +180,17 @@
         </effect>
       </defaultAttack>
 
-      <action immideate="true" name="Rally" tip="All nearby friendlies stop panicking and gain full determiation" det ="-2" mpoint="0" apoint="0">
+      <action immideate="true" det ="-2" mpoint="0" apoint="0">
+        <name>Rally</name>
+        <tip>All nearby friendlies stop panicking and gain full determiation</tip>
         <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
           <damage det="-100"/>
         </effect>
       </action>
 
-      <action name="Command" tip="Give a targeted unit 2 determination, 1 action point and 1 move point" det ="-1" mpoint="-1" apoint="-1">
+      <action det ="-1" mpoint="-1" apoint="-1">
+        <name>Command</name>
+        <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
         <vissionCast range="22"/>
         <effect range="1" visible ="false" target="friend">
           <applystatus status="Boost" duration="1"/>
@@ -189,6 +208,7 @@
     <controllable moveRange = "4" inventory="5" supressionRange="2" moves="3" actions="1" determination="2">
 
       <defaultAttack>
+        <targetAid>enemy</targetAid>
         <shootable dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="9"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -197,13 +217,19 @@
         </effect>
       </defaultAttack>
 
-      <action name="Resupply" tip="Give a targeted unit their last used item back" det ="-1" mpoint="-1" apoint="-1">
-        <throwable throwRange="3"/>
+      <action det ="-1" mpoint="-1" apoint="-1">
+        <name>Resupply</name>
+        <tip>Give a targeted unit their last used item back</tip>
+        <targetAid>unit</targetAid>
+        <throwable throwRange="3" targetAid="unit"/>
         <effect range="1" visible ="false" target="friend">
           <giveItem item="{target.LastItem.Name}"/>
         </effect>
       </action>
-      <action name="Resupply" tip="Give a targeted unit item currently equipped by this unit" det ="-1" mpoint="-1" apoint="-1">
+      <action  det ="-1" mpoint="-1" apoint="-1">
+        <name>Resupply</name>
+        <tip>Give a targeted unit item currently equipped by this unit</tip>
+        <targetAid>unit</targetAid>
         <throwable throwRange="3"/>
         <effect range="1" visible ="false" target="friend">
           <giveItem item="{this.SelectedItem.Name}"/>

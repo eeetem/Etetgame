@@ -9,7 +9,7 @@ namespace MultiplayerXeno
 {
 	public static class Networking
 	{
-		private static ServerConnectionContainer serverConnectionContainer;
+		private static ServerConnectionContainer? serverConnectionContainer;
 		public static void Start(int port)
 		{
 			//1. Start listen on a portw
@@ -303,7 +303,7 @@ namespace MultiplayerXeno
 	
 		
 
-		public static void SendMapData(Connection? connection)
+		public static void SendMapData(Connection connection)
 		{
 			WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
 			var packet = new MapDataPacket(WorldManager.Instance.CurrentMap);

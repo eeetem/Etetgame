@@ -6,7 +6,7 @@ wrong offset on deployment?
 nade not getting used no ability use -> need more examples
 timer sync on reconnect -> later
 lag on unit switch????
-clicking ground with specialists ability
+
 
 alt inspection of unit stats
 

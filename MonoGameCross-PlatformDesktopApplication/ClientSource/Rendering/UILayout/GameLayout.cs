@@ -1215,7 +1215,7 @@ public class GameLayout : MenuLayout
 	
 
 
-		if (Shootable.FreeFire||( tile.ControllableAtLocation != null && tile.ControllableAtLocation.IsVisible() &&!tile.ControllableAtLocation.ControllableComponent.IsMyTeam()))
+		if (WorldAction.FreeFire||( tile.ControllableAtLocation != null && tile.ControllableAtLocation.IsVisible() &&!tile.ControllableAtLocation.ControllableComponent.IsMyTeam()))
 		{
 			//we should attack
 			if(Action.ActiveAction == null){
@@ -1265,13 +1265,13 @@ public class GameLayout : MenuLayout
 		}
 		
 		
-		Shootable.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
+		WorldAction.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
 		if(Action.ActiveAction != null && currentKeyboardState.IsKeyUp(Keys.LeftControl) && lastKeyboardState.IsKeyDown(Keys.LeftControl) && Action.ActiveAction.ActionType == ActionType.Attack)
 		{
 			Action.SetActiveAction(null);
 		}
 
-		if(Shootable.FreeFire){
+		if(WorldAction.FreeFire){
 			if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
 			{
 				if (Shootable.targeting == TargetingType.Auto)

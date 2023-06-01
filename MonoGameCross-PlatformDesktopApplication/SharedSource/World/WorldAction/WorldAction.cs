@@ -20,7 +20,17 @@ public class WorldAction
 	public readonly WorldEffect Effect;
 #if CLIENT
 	public readonly Texture2D? Icon;
-	#endif
+	public TargetAid targetAid;
+#endif
+
+	public enum TargetAid
+	{
+		None,
+		Unit,
+		Enemy
+		
+	}
+	
 	public WorldAction(string name,  string description, List<DeliveryMethod> deliveryMethods, WorldEffect effect)
 	{
 		Name = name;
@@ -60,22 +70,37 @@ public class WorldAction
 
 	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
+#if CLIENT
+		if (!FreeFire && targetAid != TargetAid.None)
+		{
+			var tile = WorldManager.Instance.GetTileAtGrid(target);
+			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
+			{
+				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
+			}
+		}	
+#endif
 		return DeliveryMethods[0].CanPerform(actor,ref target);
 	}
 #if CLIENT
+	public static bool FreeFire = false;
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if (DeliveryMethods[0] is Shootable)
+	
+		if (!FreeFire && targetAid != TargetAid.None)
 		{
-			if (!Shootable.FreeFire)
+			var tile = WorldManager.Instance.GetTileAtGrid(target);
+			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible())
 			{
-				var tile = WorldManager.Instance.GetTileAtGrid(target);
-				if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
-				{
-					return;
-				}
+				return;
+			}
+
+			if (targetAid == TargetAid.Enemy && tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
+			{
+				return;
 			}
 		}
+		
 
 		foreach (var method in DeliveryMethods)
 		{

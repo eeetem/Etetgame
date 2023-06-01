@@ -7,11 +7,11 @@ namespace MultiplayerXeno
 		public ActionType Type { get; set; }
 		public int UnitId { get; set; }
 		
-		public Vector2Int? Target { get; set; }
+		public Vector2Int Target { get; set; }
 		
 		public List<string> args { get; set;}
 
-		public GameActionPacket(int unitId, Vector2Int? target, ActionType type)
+		public GameActionPacket(int unitId, Vector2Int target, ActionType type)
 		{
 			UnitId = unitId;
 			Target = target;
