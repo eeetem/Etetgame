@@ -90,16 +90,14 @@ public class Move : Action
 		}
 
 
-
-		foreach (var path in previewPath)
+		for (int index = 0; index < previewPath.Count-1; index++)
 		{
-
+			var path = previewPath[index];
 			if (path.X < 0 || path.Y < 0) break;
 			var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+			var nextpos = Utility.GridToWorldPos((Vector2)  previewPath[index+1] + new Vector2(0.5f, 0.5f));
 
-			spriteBatch.DrawCircle(pos, 20, 10, Color.Green, 20f);
-
-
+			spriteBatch.DrawLine(pos, nextpos, Color.Green, 8f);
 		}
 
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);

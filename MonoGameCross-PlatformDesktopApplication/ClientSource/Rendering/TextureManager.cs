@@ -8,8 +8,9 @@ namespace MultiplayerXeno;
 public static class TextureManager
 {
 			
-	public static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
-	public static Dictionary<string, Texture2D[]> Sheets = new Dictionary<string, Texture2D[]>();
+	private static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
+	private static List<string> MissingTextures = new List<string>();
+	private static Dictionary<string, Texture2D[]> Sheets = new Dictionary<string, Texture2D[]>();
 
 	private static ContentManager Content = null!;
 
@@ -17,6 +18,33 @@ public static class TextureManager
 	public static void Init(ContentManager contentManager)
 	{
 		Content = contentManager;
+	}
+
+	public static bool HasTexture(string name)
+	{
+		if (Textures.ContainsKey(name))
+		{
+			return true;
+		}
+		if(MissingTextures.Contains(name))
+		{
+			return false;
+		}
+
+
+		try
+		{
+			GetTexture(name);
+			return true;
+		}
+		catch (ContentLoadException)
+		{
+			MissingTextures.Add(name);
+			return false;
+		}
+
+		
+
 	}
 
 	public static Texture2D GetTexture(string name)

@@ -356,16 +356,19 @@ namespace MultiplayerXeno
 			string name;
 			if (GameManager.Player1?.Connection == connection)
 			{
-				name = GameManager.Player1.Name;
+				name = "[Red]"+GameManager.Player1.Name+"[-]";
 			}
 			else if (GameManager.Player2?.Connection == connection)
 			{
-				name = GameManager.Player2.Name;
+				name = "[Blue]"+GameManager.Player2.Name+"[-]";
 			}
 			else
 			{
 				return;
 			}
+			message = message.Replace("\n", "");
+			message = message.Replace("[", "");
+			message = message.Replace("]", "");
 
 			message = $"{name}: {message}";
 			SendChatMessage(message);
@@ -373,6 +376,7 @@ namespace MultiplayerXeno
 
 		public static void SendChatMessage(string text)
 		{
+			text = "[Yellow]" + text + "[-]";
 			GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			foreach (var spectator in GameManager.Spectators)

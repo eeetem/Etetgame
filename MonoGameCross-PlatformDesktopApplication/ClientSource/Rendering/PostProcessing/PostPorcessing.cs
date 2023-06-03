@@ -211,9 +211,9 @@ namespace MultiplayerXeno
 		{
 		
 
-			clcounter += (float)deltaTime/1000 * EffectParams["clspeed"];
-			dxcounter += (float)deltaTime/1000 * EffectParams["dxspeed"];
-			dycounter += (float)deltaTime/1000 * EffectParams["dyspeed"];
+			clcounter += deltaTime/1000 * EffectParams["clspeed"];
+			dxcounter += deltaTime/1000 * EffectParams["dxspeed"];
+			dycounter += deltaTime/1000 * EffectParams["dyspeed"];
 			timeToFlicker -= deltaTime;
 			if (timeToFlicker < 0)
 			{
@@ -494,7 +494,7 @@ namespace MultiplayerXeno
 			public void Lerp(float deltaTime)
 			{
 				
-				counter += (float)deltaTime / 10000 * speed;
+				counter += deltaTime / 10000 * speed;
 				EffectParams[parameter] = Utility.Lerp(startValue, endValue, counter);
 
 			}

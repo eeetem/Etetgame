@@ -21,9 +21,10 @@ namespace MultiplayerXeno
 			if(Player1==null || Player2==null)return;
 
 			GameState = GameState.Setup;
-			
-			Networking.SendMapData(Player1.Connection);
-			Networking.SendMapData(Player2.Connection);
+
+			if (Player1.Connection != null) Networking.SendMapData(Player1.Connection);
+			if (Player2.Connection != null) Networking.SendMapData(Player2.Connection);
+
 			SendData();
 		}
 	

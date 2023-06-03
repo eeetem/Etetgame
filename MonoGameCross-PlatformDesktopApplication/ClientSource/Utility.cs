@@ -55,12 +55,13 @@ public static partial class Utility
 	{
 		int row = 0;
 		int charsinRow = -1;
-		text = text.ToLower(CultureInfo.InvariantCulture);
+		Color originalColor = c;
+
 		for (int index = 0; index < text.Length; index++)
 		{
 			char car = text[index];
-			charsinRow++;
-
+			car = Char.ToLower(car);
+			
 
 			if (car == '\n')
 			{
@@ -69,33 +70,70 @@ public static partial class Utility
 				continue;
 			}
 
-			//if (car == ' ')
-			//{
-			int nextSpaceCounter = 0;
-			int nextSpace = 0;
-			//look for next space
-			for (int i = index; i < text.Length; i++)
+			if (car == '[')
 			{
-
-				nextSpaceCounter++;
-				if (text[i] == ' ' || text[i] == '\n')
+				//extrat color
+				string color = "";
+				for (int i = index + 1; i < text.Length; i++)
 				{
-					nextSpace = nextSpaceCounter;
-					break;
+					if (text[i] == ']')
+					{
+						index = i;
+						break;
+					}
+					color += text[i];
+					index = i+1;
 				}
+
+				if (color == "-")
+				{
+					c = originalColor;
+				}
+				else
+				{
+					var prop = typeof(Color).GetProperty(color);
+					if (prop != null)
+						c = (Color)(prop.GetValue(null, null) ?? Color.White);
+					
+				}
+				continue;
+
+
 			}
 
-			if (charsinRow + nextSpace > width)
+			if (car == ' ')
+			{
+				int nextSpaceCounter = 0;
+				int nextSpace = 0;
+				//look for next space
+				for (int i = index; i < text.Length; i++)
+				{
+
+					nextSpaceCounter++;
+					if (text[i] == ' ' || text[i] == '\n')
+					{
+						nextSpace = nextSpaceCounter;
+						break;
+					}
+				}
+
+				if (charsinRow + nextSpace > width)
+				{
+					row++;
+					charsinRow = 0;
+				}
+			}
+			if (charsinRow > width)
 			{
 				row++;
 				charsinRow = 0;
 			}
-			//	}
 
 			string texId;
 			switch (car)
 			{
 				case ' ':
+					charsinRow++;
 					continue;
 				case '.':
 					texId = "period";
@@ -139,14 +177,16 @@ public static partial class Utility
 			}
 
 			Texture2D t;
-			try{
-
+			if(TextureManager.HasTexture("UI/text/" + texId)){
 				t= TextureManager.GetTexture("UI/text/" + texId);
-			}catch(Exception e){
+			}else{
 				t = TextureManager.GetTexture("UI/text/broken");
+			
 			}
+		
 
 			spriteBatch.Draw(t, position + new Vector2(8 * charsinRow, 11 * row) * scale, null, c, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+			charsinRow++;
 		}
 	}
 }

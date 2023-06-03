@@ -146,7 +146,7 @@ namespace MultiplayerXeno
 			
 			
 			var state = Mouse.GetState();
-			float diff = (float) (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
+			float diff = (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
 			lastScroll = state.ScrollWheelValue;
 			zoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
 			Cam.ZoomIn(zoomVelocity);
