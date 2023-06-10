@@ -109,7 +109,7 @@ public class Move : Action
 		
 		for (int i = 0; i < moveUse; i++)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn"),Utility.GridToWorldPos((Vector2)target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 2.5f,SpriteEffects.None,0f);
+			//spriteBatch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn"),Utility.GridToWorldPos((Vector2)target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 2.5f,SpriteEffects.None,0f);
 		
 		}
 	}

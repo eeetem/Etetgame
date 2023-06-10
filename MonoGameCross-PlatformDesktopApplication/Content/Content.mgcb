@@ -13,224 +13,229 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin audio/bang.wav
+#begin CompressedContent/audio/bang.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/bang.wav
+/build:CompressedContent/audio/bang.wav
 
-#begin audio/capture.wav
+#begin CompressedContent/audio/capture.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/capture.wav
+/build:CompressedContent/audio/capture.wav
 
-#begin audio/damage/death1.wav
+#begin CompressedContent/audio/damage/death1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/death1.wav
+/build:CompressedContent/audio/damage/death1.wav
 
-#begin audio/damage/death2.wav
+#begin CompressedContent/audio/damage/death2.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/death2.wav
+/build:CompressedContent/audio/damage/death2.wav
 
-#begin audio/damage/death3.wav
+#begin CompressedContent/audio/damage/death3.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/death3.wav
+/build:CompressedContent/audio/damage/death3.wav
 
-#begin audio/damage/grunt1.wav
+#begin CompressedContent/audio/damage/grunt1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/grunt1.wav
+/build:CompressedContent/audio/damage/grunt1.wav
 
-#begin audio/damage/grunt2.wav
+#begin CompressedContent/audio/damage/grunt2.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/damage/grunt2.wav
+/build:CompressedContent/audio/damage/grunt2.wav
 
-#begin audio/damage/wilhelm.ogg
+#begin CompressedContent/audio/damage/wilhelm.ogg
 /importer:OggImporter
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/damage/wilhelm.ogg
+/build:CompressedContent/audio/damage/wilhelm.ogg
 
-#begin audio/footsteps/Footstep 1.ogg
+#begin CompressedContent/audio/footsteps/Footstep 1.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 1.ogg
+/build:CompressedContent/audio/footsteps/Footstep 1.ogg
 
-#begin audio/footsteps/Footstep 2.ogg
+#begin CompressedContent/audio/footsteps/Footstep 2.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 2.ogg
+/build:CompressedContent/audio/footsteps/Footstep 2.ogg
 
-#begin audio/footsteps/Footstep 3.ogg
+#begin CompressedContent/audio/footsteps/Footstep 3.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 3.ogg
+/build:CompressedContent/audio/footsteps/Footstep 3.ogg
 
-#begin audio/footsteps/Footstep 4.ogg
+#begin CompressedContent/audio/footsteps/Footstep 4.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 4.ogg
+/build:CompressedContent/audio/footsteps/Footstep 4.ogg
 
-#begin audio/footsteps/Footstep 5.ogg
+#begin CompressedContent/audio/footsteps/Footstep 5.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 5.ogg
+/build:CompressedContent/audio/footsteps/Footstep 5.ogg
 
-#begin audio/footsteps/Footstep 6.ogg
+#begin CompressedContent/audio/footsteps/Footstep 6.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 6.ogg
+/build:CompressedContent/audio/footsteps/Footstep 6.ogg
 
-#begin audio/footsteps/Footstep 7.ogg
+#begin CompressedContent/audio/footsteps/Footstep 7.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 7.ogg
+/build:CompressedContent/audio/footsteps/Footstep 7.ogg
 
-#begin audio/footsteps/Footstep 8.ogg
+#begin CompressedContent/audio/footsteps/Footstep 8.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 8.ogg
+/build:CompressedContent/audio/footsteps/Footstep 8.ogg
 
-#begin audio/footsteps/Footstep 9.ogg
+#begin CompressedContent/audio/footsteps/Footstep 9.ogg
 /importer:OggImporter
-/processor:SoundEffectProcessor
+/processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/footsteps/Footstep 9.ogg
+/build:CompressedContent/audio/footsteps/Footstep 9.ogg
 
-#begin audio/grenade.wav
+#begin CompressedContent/audio/grenade.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/grenade.wav
+/build:CompressedContent/audio/grenade.wav
 
-#begin audio/mg.wav
+#begin CompressedContent/audio/mg.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/mg.wav
+/build:CompressedContent/audio/mg.wav
 
-#begin audio/music/menu.mp3
+#begin CompressedContent/audio/mg-old1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/mg-old1.wav
+
+#begin CompressedContent/audio/music/menu.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/music/menu.mp3
+/build:CompressedContent/audio/music/menu.mp3
 
-#begin audio/music/tension.mp3
+#begin CompressedContent/audio/music/oldmusic.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
-/build:audio/music/tension.mp3
+/build:CompressedContent/audio/music/oldmusic.mp3
 
-#begin audio/rifle.wav
+#begin CompressedContent/audio/music/tension.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/tension.mp3
+
+#begin CompressedContent/audio/rifle.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/rifle.wav
+/build:CompressedContent/audio/rifle.wav
 
-#begin audio/rifle3.wav
+#begin CompressedContent/audio/rifle3.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/rifle3.wav
+/build:CompressedContent/audio/rifle3.wav
 
-#begin audio/shotgun.wav
+#begin CompressedContent/audio/shotgun.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/shotgun.wav
+/build:CompressedContent/audio/shotgun.wav
 
-#begin audio/smoke.wav
+#begin CompressedContent/audio/smoke.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/smoke.wav
+/build:CompressedContent/audio/smoke.wav
 
-#begin audio/UI/alert.wav
+#begin CompressedContent/audio/UI/alert.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/UI/alert.wav
+/build:CompressedContent/audio/UI/alert.wav
 
-#begin audio/UI/chat.wav
+#begin CompressedContent/audio/UI/chat.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/UI/chat.wav
+/build:CompressedContent/audio/UI/chat.wav
 
-#begin audio/UI/press.wav
+#begin CompressedContent/audio/UI/press.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/UI/press.wav
+/build:CompressedContent/audio/UI/press.wav
 
-#begin audio/UI/select.wav
+#begin CompressedContent/audio/UI/select.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/UI/select.wav
+/build:CompressedContent/audio/UI/select.wav
 
-#begin audio/UI/turn.wav
+#begin CompressedContent/audio/UI/turn.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:audio/UI/turn.wav
+/build:CompressedContent/audio/UI/turn.wav
 
-#begin font.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:font.spritefont
-
-#begin shaders/colorshader.fx
+#begin CompressedContent/shaders/colorshader.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:shaders/colorshader.fx
+/build:CompressedContent/shaders/colorshader.fx
 
-#begin shaders/CRT.fx
+#begin CompressedContent/shaders/CRT.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:shaders/CRT.fx
+/build:CompressedContent/shaders/CRT.fx
 
-#begin shaders/distort.fx
+#begin CompressedContent/shaders/distort.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:shaders/distort.fx
+/build:CompressedContent/shaders/distort.fx
 
-#begin shaders/Glow.fx
+#begin CompressedContent/shaders/Glow.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:shaders/Glow.fx
+/build:CompressedContent/shaders/Glow.fx
 
-#begin shaders/lc.fx
+#begin CompressedContent/shaders/lc.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:shaders/lc.fx
+/build:CompressedContent/shaders/lc.fx
 
-#begin textures/backuphuman.png
+#begin CompressedContent/textures/backuphuman.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -240,9 +245,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/backuphuman.png
+/build:CompressedContent/textures/backuphuman.png
 
-#begin textures/bullet.png
+#begin CompressedContent/textures/bullet.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -252,9 +257,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/bullet.png
+/build:CompressedContent/textures/bullet.png
 
-#begin textures/Environment/basicHalfWall.png
+#begin CompressedContent/textures/Environment/basicHalfWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -264,9 +269,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/basicHalfWall.png
+/build:CompressedContent/textures/Environment/basicHalfWall.png
 
-#begin textures/Environment/basicHalfWallLight.png
+#begin CompressedContent/textures/Environment/basicHalfWallLight.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -276,9 +281,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/basicHalfWallLight.png
+/build:CompressedContent/textures/Environment/basicHalfWallLight.png
 
-#begin textures/Environment/basicWall.png
+#begin CompressedContent/textures/Environment/basicWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -288,9 +293,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/basicWall.png
+/build:CompressedContent/textures/Environment/basicWall.png
 
-#begin textures/Environment/borderWall.png
+#begin CompressedContent/textures/Environment/borderWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -300,9 +305,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/borderWall.png
+/build:CompressedContent/textures/Environment/borderWall.png
 
-#begin textures/Environment/capturePoint.png
+#begin CompressedContent/textures/Environment/capturePoint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -312,9 +317,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/capturePoint.png
+/build:CompressedContent/textures/Environment/capturePoint.png
 
-#begin textures/Environment/crater.png
+#begin CompressedContent/textures/Environment/crater.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -324,9 +329,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/crater.png
+/build:CompressedContent/textures/Environment/crater.png
 
-#begin textures/Environment/destroyedWall.png
+#begin CompressedContent/textures/Environment/destroyedWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -336,9 +341,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/destroyedWall.png
+/build:CompressedContent/textures/Environment/destroyedWall.png
 
-#begin textures/Environment/glassWall.png
+#begin CompressedContent/textures/Environment/glassWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -348,9 +353,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/glassWall.png
+/build:CompressedContent/textures/Environment/glassWall.png
 
-#begin textures/Environment/ground0.png
+#begin CompressedContent/textures/Environment/ground0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -360,9 +365,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/ground0.png
+/build:CompressedContent/textures/Environment/ground0.png
 
-#begin textures/Environment/ground1.png
+#begin CompressedContent/textures/Environment/ground1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -372,9 +377,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/ground1.png
+/build:CompressedContent/textures/Environment/ground1.png
 
-#begin textures/Environment/ground2.png
+#begin CompressedContent/textures/Environment/ground2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -384,9 +389,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/ground2.png
+/build:CompressedContent/textures/Environment/ground2.png
 
-#begin textures/Environment/ground3.png
+#begin CompressedContent/textures/Environment/ground3.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -396,9 +401,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/ground3.png
+/build:CompressedContent/textures/Environment/ground3.png
 
-#begin textures/Environment/ground4.png
+#begin CompressedContent/textures/Environment/ground4.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -408,9 +413,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/ground4.png
+/build:CompressedContent/textures/Environment/ground4.png
 
-#begin textures/Environment/paperMache.png
+#begin CompressedContent/textures/Environment/paperMache.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -420,9 +425,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/paperMache.png
+/build:CompressedContent/textures/Environment/paperMache.png
 
-#begin textures/Environment/satchel.png
+#begin CompressedContent/textures/Environment/satchel.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -432,9 +437,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/satchel.png
+/build:CompressedContent/textures/Environment/satchel.png
 
-#begin textures/Environment/smoke.png
+#begin CompressedContent/textures/Environment/smoke.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -444,9 +449,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/smoke.png
+/build:CompressedContent/textures/Environment/smoke.png
 
-#begin textures/Environment/spawnPoint1.png
+#begin CompressedContent/textures/Environment/spawnPoint1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -456,9 +461,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/spawnPoint1.png
+/build:CompressedContent/textures/Environment/spawnPoint1.png
 
-#begin textures/Environment/spawnPoint2.png
+#begin CompressedContent/textures/Environment/spawnPoint2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -468,9 +473,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/spawnPoint2.png
+/build:CompressedContent/textures/Environment/spawnPoint2.png
 
-#begin textures/Environment/strawWall.png
+#begin CompressedContent/textures/Environment/strawWall.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -480,9 +485,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/strawWall.png
+/build:CompressedContent/textures/Environment/strawWall.png
 
-#begin textures/Environment/template.png
+#begin CompressedContent/textures/Environment/template.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -492,9 +497,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/template.png
+/build:CompressedContent/textures/Environment/template.png
 
-#begin textures/Environment/water.png
+#begin CompressedContent/textures/Environment/water.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -504,9 +509,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Environment/water.png
+/build:CompressedContent/textures/Environment/water.png
 
-#begin textures/Heavy.png
+#begin CompressedContent/textures/Heavy.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -516,9 +521,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Heavy.png
+/build:CompressedContent/textures/Heavy.png
 
-#begin textures/HeavyCrouch.png
+#begin CompressedContent/textures/HeavyCrouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -528,9 +533,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/HeavyCrouch.png
+/build:CompressedContent/textures/HeavyCrouch.png
 
-#begin textures/Human.png
+#begin CompressedContent/textures/Human.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -540,9 +545,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Human.png
+/build:CompressedContent/textures/Human.png
 
-#begin textures/HumanCrouch.png
+#begin CompressedContent/textures/HumanCrouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -552,9 +557,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/HumanCrouch.png
+/build:CompressedContent/textures/HumanCrouch.png
 
-#begin textures/mouse.png
+#begin CompressedContent/textures/mouse.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -564,9 +569,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/mouse.png
+/build:CompressedContent/textures/mouse.png
 
-#begin textures/Officer.png
+#begin CompressedContent/textures/Officer.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -576,9 +581,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Officer.png
+/build:CompressedContent/textures/Officer.png
 
-#begin textures/OfficerCrouch.png
+#begin CompressedContent/textures/OfficerCrouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -588,9 +593,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/OfficerCrouch.png
+/build:CompressedContent/textures/OfficerCrouch.png
 
-#begin textures/Scout.png
+#begin CompressedContent/textures/Scout.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -600,9 +605,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Scout.png
+/build:CompressedContent/textures/Scout.png
 
-#begin textures/ScoutCrouch.png
+#begin CompressedContent/textures/ScoutCrouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -612,9 +617,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/ScoutCrouch.png
+/build:CompressedContent/textures/ScoutCrouch.png
 
-#begin textures/Specialist.png
+#begin CompressedContent/textures/Specialist.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -624,9 +629,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/Specialist.png
+/build:CompressedContent/textures/Specialist.png
 
-#begin textures/SpecialistCrouch.png
+#begin CompressedContent/textures/SpecialistCrouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -636,9 +641,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/SpecialistCrouch.png
+/build:CompressedContent/textures/SpecialistCrouch.png
 
-#begin textures/UI/background.png
+#begin CompressedContent/textures/UI/background.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -648,9 +653,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/background.png
+/build:CompressedContent/textures/UI/background.png
 
-#begin textures/UI/button.png
+#begin CompressedContent/textures/UI/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -660,9 +665,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/button.png
+/build:CompressedContent/textures/UI/button.png
 
-#begin textures/UI/button2.png
+#begin CompressedContent/textures/UI/button2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -672,9 +677,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/button2.png
+/build:CompressedContent/textures/UI/button2.png
 
-#begin textures/UI/coverIndicator.png
+#begin CompressedContent/textures/UI/coverIndicator.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -684,9 +689,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/coverIndicator.png
+/build:CompressedContent/textures/UI/coverIndicator.png
 
-#begin textures/UI/discord.png
+#begin CompressedContent/textures/UI/discord.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -696,9 +701,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/discord.png
+/build:CompressedContent/textures/UI/discord.png
 
-#begin textures/UI/Fire.png
+#begin CompressedContent/textures/UI/Fire.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -708,9 +713,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/Fire.png
+/build:CompressedContent/textures/UI/Fire.png
 
-#begin textures/UI/GameHud/breachNclear.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -720,9 +725,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/breachNclear.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/button.png
 
-#begin textures/UI/GameHud/button.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/crouchOff.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -732,9 +737,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/button.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/crouchOff.png
 
-#begin textures/UI/GameHud/chatboxbtn1.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/crouchOn.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -744,9 +749,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/chatboxbtn1.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/crouchOn.png
 
-#begin textures/UI/GameHud/chatboxbtn2.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/empty.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -756,9 +761,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/chatboxbtn2.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/empty.png
 
-#begin textures/UI/GameHud/chatframe.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/Infobox.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -768,9 +773,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/chatframe.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/Infobox.png
 
-#begin textures/UI/GameHud/chatscreen.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/invbtn.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -780,9 +785,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/chatscreen.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/invbtn.png
 
-#begin textures/UI/GameHud/Command.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/mainbuttonbox.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -792,9 +797,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Command.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/mainbuttonbox.png
 
-#begin textures/UI/GameHud/crouchOff.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/overwatchbtn.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -804,9 +809,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/crouchOff.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/overwatchbtn.png
 
-#begin textures/UI/GameHud/crouchOn.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/screen.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -816,9 +821,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/crouchOn.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/screen.png
 
-#begin textures/UI/GameHud/empty.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/background.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -828,9 +833,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/empty.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/background.png
 
-#begin textures/UI/GameHud/end button.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/end button.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -840,9 +845,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/end button.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/end button.png
 
-#begin textures/UI/GameHud/endbar.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/enemyTurn.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -852,9 +857,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/endbar.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/enemyTurn.png
 
-#begin textures/UI/GameHud/endframe1.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/fireNotch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -864,9 +869,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/endframe1.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/fireNotch.png
 
-#begin textures/UI/GameHud/Flash.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/green.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -876,9 +881,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Flash.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/green.png
 
-#begin textures/UI/GameHud/Frag.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Heavy.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -888,9 +893,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Frag.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Heavy.png
 
-#begin textures/UI/GameHud/headshot.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Marksman.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -900,9 +905,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/headshot.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Marksman.png
 
-#begin textures/UI/GameHud/Holster.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/moveNotch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -912,9 +917,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Holster.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/moveNotch.png
 
-#begin textures/UI/GameHud/invbtn.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Officer.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -924,9 +929,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/invbtn.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Officer.png
 
-#begin textures/UI/GameHud/LeftPanel/arrowBackround.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/red.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -936,9 +941,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/arrowBackround.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/red.png
 
-#begin textures/UI/GameHud/LeftPanel/arrowOff.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Scout.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -948,9 +953,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/arrowOff.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Scout.png
 
-#begin textures/UI/GameHud/LeftPanel/arrowOn.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/screen.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -960,9 +965,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/arrowOn.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/screen.png
 
-#begin textures/UI/GameHud/LeftPanel/arrowOverflow.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Specialist.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -972,9 +977,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/arrowOverflow.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Specialist.png
 
-#begin textures/UI/GameHud/LeftPanel/base.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Timer.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -984,9 +989,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/base.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Timer.png
 
-#begin textures/UI/GameHud/LeftPanel/bulletOff.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -996,9 +1001,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/bulletOff.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
 
-#begin textures/UI/GameHud/LeftPanel/bulletOn.png
+#begin CompressedContent/textures/UI/GameHud/UnitBar/yourTurn.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1008,9 +1013,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/bulletOn.png
+/build:CompressedContent/textures/UI/GameHud/UnitBar/yourTurn.png
 
-#begin textures/UI/GameHud/LeftPanel/infobox.png
+#begin CompressedContent/textures/UI/HoverHud/actionpoint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1020,9 +1025,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/infobox.png
+/build:CompressedContent/textures/UI/HoverHud/actionpoint.png
 
-#begin textures/UI/GameHud/LeftPanel/turnoff.png
+#begin CompressedContent/textures/UI/HoverHud/base.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1032,9 +1037,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/turnoff.png
+/build:CompressedContent/textures/UI/HoverHud/base.png
 
-#begin textures/UI/GameHud/LeftPanel/turnon.png
+#begin CompressedContent/textures/UI/HoverHud/baseCompact.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1044,9 +1049,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/LeftPanel/turnon.png
+/build:CompressedContent/textures/UI/HoverHud/baseCompact.png
 
-#begin textures/UI/GameHud/overwatch.png
+#begin CompressedContent/textures/UI/HoverHud/detBlank.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1056,9 +1061,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/overwatch.png
+/build:CompressedContent/textures/UI/HoverHud/detBlank.png
 
-#begin textures/UI/GameHud/overwatchbtn.png
+#begin CompressedContent/textures/UI/HoverHud/detGreen.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1068,9 +1073,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/overwatchbtn.png
+/build:CompressedContent/textures/UI/HoverHud/detGreen.png
 
-#begin textures/UI/GameHud/pip.png
+#begin CompressedContent/textures/UI/HoverHud/detYellow.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1080,9 +1085,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/pip.png
+/build:CompressedContent/textures/UI/HoverHud/detYellow.png
 
-#begin textures/UI/GameHud/Rally.png
+#begin CompressedContent/textures/UI/HoverHud/health.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1092,9 +1097,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Rally.png
+/build:CompressedContent/textures/UI/HoverHud/health.png
 
-#begin textures/UI/GameHud/Resupply.png
+#begin CompressedContent/textures/UI/HoverHud/healthenv.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1104,9 +1109,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Resupply.png
+/build:CompressedContent/textures/UI/HoverHud/healthenv.png
 
-#begin textures/UI/GameHud/RightScreen/dmgScreen.png
+#begin CompressedContent/textures/UI/HoverHud/movepoint.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1116,9 +1121,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/RightScreen/dmgScreen.png
+/build:CompressedContent/textures/UI/HoverHud/movepoint.png
 
-#begin textures/UI/GameHud/RightScreen/frames.png
+#begin CompressedContent/textures/UI/HoverHud/nohealth.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1128,9 +1133,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/RightScreen/frames.png
+/build:CompressedContent/textures/UI/HoverHud/nohealth.png
 
-#begin textures/UI/GameHud/RightScreen/statScreen.png
+#begin CompressedContent/textures/UI/HoverHud/nohealthenv.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1140,9 +1145,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/RightScreen/statScreen.png
+/build:CompressedContent/textures/UI/HoverHud/nohealthenv.png
 
-#begin textures/UI/GameHud/Satchel Charge.png
+#begin CompressedContent/textures/UI/HoverHud/panic.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1152,9 +1157,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Satchel Charge.png
+/build:CompressedContent/textures/UI/HoverHud/panic.png
 
-#begin textures/UI/GameHud/Smoke.png
+#begin CompressedContent/textures/UI/kick.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1164,9 +1169,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Smoke.png
+/build:CompressedContent/textures/UI/kick.png
 
-#begin textures/UI/GameHud/Supress.png
+#begin CompressedContent/textures/UI/targetingCursor.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1176,9 +1181,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/Supress.png
+/build:CompressedContent/textures/UI/targetingCursor.png
 
-#begin textures/UI/GameHud/UnHolster.png
+#begin CompressedContent/textures/UI/text/0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1188,9 +1193,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnHolster.png
+/build:CompressedContent/textures/UI/text/0.png
 
-#begin textures/UI/GameHud/UnitBar/background.png
+#begin CompressedContent/textures/UI/text/1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1200,9 +1205,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/background.png
+/build:CompressedContent/textures/UI/text/1.png
 
-#begin textures/UI/GameHud/UnitBar/fireNotch.png
+#begin CompressedContent/textures/UI/text/2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1212,9 +1217,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/fireNotch.png
+/build:CompressedContent/textures/UI/text/2.png
 
-#begin textures/UI/GameHud/UnitBar/green.png
+#begin CompressedContent/textures/UI/text/3.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1224,9 +1229,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/green.png
+/build:CompressedContent/textures/UI/text/3.png
 
-#begin textures/UI/GameHud/UnitBar/Heavy.png
+#begin CompressedContent/textures/UI/text/4.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1236,9 +1241,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/Heavy.png
+/build:CompressedContent/textures/UI/text/4.png
 
-#begin textures/UI/GameHud/UnitBar/Marksman.png
+#begin CompressedContent/textures/UI/text/5.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1248,9 +1253,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/Marksman.png
+/build:CompressedContent/textures/UI/text/5.png
 
-#begin textures/UI/GameHud/UnitBar/moveNotch.png
+#begin CompressedContent/textures/UI/text/6.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1260,9 +1265,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/moveNotch.png
+/build:CompressedContent/textures/UI/text/6.png
 
-#begin textures/UI/GameHud/UnitBar/Officer.png
+#begin CompressedContent/textures/UI/text/7.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1272,9 +1277,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/Officer.png
+/build:CompressedContent/textures/UI/text/7.png
 
-#begin textures/UI/GameHud/UnitBar/red.png
+#begin CompressedContent/textures/UI/text/8.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1284,9 +1289,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/red.png
+/build:CompressedContent/textures/UI/text/8.png
 
-#begin textures/UI/GameHud/UnitBar/Scout.png
+#begin CompressedContent/textures/UI/text/9.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1296,9 +1301,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/Scout.png
+/build:CompressedContent/textures/UI/text/9.png
 
-#begin textures/UI/GameHud/UnitBar/screen.png
+#begin CompressedContent/textures/UI/text/a.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1308,9 +1313,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/screen.png
+/build:CompressedContent/textures/UI/text/a.png
 
-#begin textures/UI/GameHud/UnitBar/Specialist.png
+#begin CompressedContent/textures/UI/text/ampersand .png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1320,9 +1325,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/GameHud/UnitBar/Specialist.png
+/build:CompressedContent/textures/UI/text/ampersand .png
 
-#begin textures/UI/HoverHud/base.png
+#begin CompressedContent/textures/UI/text/apostrophe.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1332,9 +1337,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/base.png
+/build:CompressedContent/textures/UI/text/apostrophe.png
 
-#begin textures/UI/HoverHud/baseCompact.png
+#begin CompressedContent/textures/UI/text/asterisk.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1344,9 +1349,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/baseCompact.png
+/build:CompressedContent/textures/UI/text/asterisk.png
 
-#begin textures/UI/HoverHud/detlights.png
+#begin CompressedContent/textures/UI/text/b.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1356,9 +1361,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/detlights.png
+/build:CompressedContent/textures/UI/text/b.png
 
-#begin textures/UI/HoverHud/health.png
+#begin CompressedContent/textures/UI/text/broken.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1368,9 +1373,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/health.png
+/build:CompressedContent/textures/UI/text/broken.png
 
-#begin textures/UI/HoverHud/healthenv.png
+#begin CompressedContent/textures/UI/text/c.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1380,9 +1385,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/healthenv.png
+/build:CompressedContent/textures/UI/text/c.png
 
-#begin textures/UI/HoverHud/nobullet.png
+#begin CompressedContent/textures/UI/text/colon.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1392,9 +1397,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/nobullet.png
+/build:CompressedContent/textures/UI/text/colon.png
 
-#begin textures/UI/HoverHud/nohealth.png
+#begin CompressedContent/textures/UI/text/comma.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1404,9 +1409,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/nohealth.png
+/build:CompressedContent/textures/UI/text/comma.png
 
-#begin textures/UI/HoverHud/nohealthenv.png
+#begin CompressedContent/textures/UI/text/d.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1416,9 +1421,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/HoverHud/nohealthenv.png
+/build:CompressedContent/textures/UI/text/d.png
 
-#begin textures/UI/kick.png
+#begin CompressedContent/textures/UI/text/dash.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1428,9 +1433,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/kick.png
+/build:CompressedContent/textures/UI/text/dash.png
 
-#begin textures/UI/StatusEffects/Boost.png
+#begin CompressedContent/textures/UI/text/dollar.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1440,9 +1445,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/StatusEffects/Boost.png
+/build:CompressedContent/textures/UI/text/dollar.png
 
-#begin textures/UI/StatusEffects/Breachnclear.png
+#begin CompressedContent/textures/UI/text/e.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1452,9 +1457,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/StatusEffects/Breachnclear.png
+/build:CompressedContent/textures/UI/text/e.png
 
-#begin textures/UI/StatusEffects/Holstered.png
+#begin CompressedContent/textures/UI/text/equal.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1464,9 +1469,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/StatusEffects/Holstered.png
+/build:CompressedContent/textures/UI/text/equal.png
 
-#begin textures/UI/targetingCursor.png
+#begin CompressedContent/textures/UI/text/exclamationmark.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1476,9 +1481,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/targetingCursor.png
+/build:CompressedContent/textures/UI/text/exclamationmark.png
 
-#begin textures/UI/text/0.png
+#begin CompressedContent/textures/UI/text/f.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1488,9 +1493,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/0.png
+/build:CompressedContent/textures/UI/text/f.png
 
-#begin textures/UI/text/0.png
+#begin CompressedContent/textures/UI/text/g.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1500,9 +1505,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/0.png
+/build:CompressedContent/textures/UI/text/g.png
 
-#begin textures/UI/text/1.png
+#begin CompressedContent/textures/UI/text/h.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1512,9 +1517,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/1.png
+/build:CompressedContent/textures/UI/text/h.png
 
-#begin textures/UI/text/1.png
+#begin CompressedContent/textures/UI/text/hash.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1524,9 +1529,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/1.png
+/build:CompressedContent/textures/UI/text/hash.png
 
-#begin textures/UI/text/2.png
+#begin CompressedContent/textures/UI/text/i.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1536,9 +1541,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/2.png
+/build:CompressedContent/textures/UI/text/i.png
 
-#begin textures/UI/text/2.png
+#begin CompressedContent/textures/UI/text/j.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1548,9 +1553,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/2.png
+/build:CompressedContent/textures/UI/text/j.png
 
-#begin textures/UI/text/3.png
+#begin CompressedContent/textures/UI/text/k.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1560,9 +1565,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/3.png
+/build:CompressedContent/textures/UI/text/k.png
 
-#begin textures/UI/text/3.png
+#begin CompressedContent/textures/UI/text/l.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1572,9 +1577,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/3.png
+/build:CompressedContent/textures/UI/text/l.png
 
-#begin textures/UI/text/4.png
+#begin CompressedContent/textures/UI/text/leftParentheses.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1584,9 +1589,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/4.png
+/build:CompressedContent/textures/UI/text/leftParentheses.png
 
-#begin textures/UI/text/4.png
+#begin CompressedContent/textures/UI/text/m.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1596,9 +1601,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/4.png
+/build:CompressedContent/textures/UI/text/m.png
 
-#begin textures/UI/text/5.png
+#begin CompressedContent/textures/UI/text/minus.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1608,9 +1613,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/5.png
+/build:CompressedContent/textures/UI/text/minus.png
 
-#begin textures/UI/text/5.png
+#begin CompressedContent/textures/UI/text/n.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1620,9 +1625,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/5.png
+/build:CompressedContent/textures/UI/text/n.png
 
-#begin textures/UI/text/6.png
+#begin CompressedContent/textures/UI/text/o.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1632,9 +1637,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/6.png
+/build:CompressedContent/textures/UI/text/o.png
 
-#begin textures/UI/text/6.png
+#begin CompressedContent/textures/UI/text/p.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1644,9 +1649,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/6.png
+/build:CompressedContent/textures/UI/text/p.png
 
-#begin textures/UI/text/7.png
+#begin CompressedContent/textures/UI/text/par.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1656,9 +1661,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/7.png
+/build:CompressedContent/textures/UI/text/par.png
 
-#begin textures/UI/text/7.png
+#begin CompressedContent/textures/UI/text/percentage.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1668,9 +1673,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/7.png
+/build:CompressedContent/textures/UI/text/percentage.png
 
-#begin textures/UI/text/8.png
+#begin CompressedContent/textures/UI/text/period.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1680,9 +1685,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/8.png
+/build:CompressedContent/textures/UI/text/period.png
 
-#begin textures/UI/text/8.png
+#begin CompressedContent/textures/UI/text/plus.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1692,9 +1697,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/8.png
+/build:CompressedContent/textures/UI/text/plus.png
 
-#begin textures/UI/text/9.png
+#begin CompressedContent/textures/UI/text/q.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1704,9 +1709,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/9.png
+/build:CompressedContent/textures/UI/text/q.png
 
-#begin textures/UI/text/9.png
+#begin CompressedContent/textures/UI/text/questionmark.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1716,9 +1721,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/9.png
+/build:CompressedContent/textures/UI/text/questionmark.png
 
-#begin textures/UI/text/a.png
+#begin CompressedContent/textures/UI/text/quote.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1728,9 +1733,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/a.png
+/build:CompressedContent/textures/UI/text/quote.png
 
-#begin textures/UI/text/a.png
+#begin CompressedContent/textures/UI/text/r.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1740,9 +1745,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/a.png
+/build:CompressedContent/textures/UI/text/r.png
 
-#begin textures/UI/text/ampersand .png
+#begin CompressedContent/textures/UI/text/rightParentheses.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1752,9 +1757,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/ampersand .png
+/build:CompressedContent/textures/UI/text/rightParentheses.png
 
-#begin textures/UI/text/ampersand .png
+#begin CompressedContent/textures/UI/text/s.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1764,9 +1769,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/ampersand .png
+/build:CompressedContent/textures/UI/text/s.png
 
-#begin textures/UI/text/apostrophe.png
+#begin CompressedContent/textures/UI/text/semicolon.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1776,9 +1781,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/apostrophe.png
+/build:CompressedContent/textures/UI/text/semicolon.png
 
-#begin textures/UI/text/apostrophe.png
+#begin CompressedContent/textures/UI/text/t.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1788,9 +1793,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/apostrophe.png
+/build:CompressedContent/textures/UI/text/t.png
 
-#begin textures/UI/text/asterisk.png
+#begin CompressedContent/textures/UI/text/u.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1800,9 +1805,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/asterisk.png
+/build:CompressedContent/textures/UI/text/u.png
 
-#begin textures/UI/text/asterisk.png
+#begin CompressedContent/textures/UI/text/v.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1812,9 +1817,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/asterisk.png
+/build:CompressedContent/textures/UI/text/v.png
 
-#begin textures/UI/text/b.png
+#begin CompressedContent/textures/UI/text/w.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1824,9 +1829,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/b.png
+/build:CompressedContent/textures/UI/text/w.png
 
-#begin textures/UI/text/b.png
+#begin CompressedContent/textures/UI/text/x.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1836,9 +1841,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/b.png
+/build:CompressedContent/textures/UI/text/x.png
 
-#begin textures/UI/text/broken.png
+#begin CompressedContent/textures/UI/text/y.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1848,9 +1853,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/broken.png
+/build:CompressedContent/textures/UI/text/y.png
 
-#begin textures/UI/text/c.png
+#begin CompressedContent/textures/UI/text/z.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1860,977 +1865,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:textures/UI/text/c.png
-
-#begin textures/UI/text/c.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/c.png
-
-#begin textures/UI/text/colon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/colon.png
-
-#begin textures/UI/text/colon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/colon.png
-
-#begin textures/UI/text/comma.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/comma.png
-
-#begin textures/UI/text/comma.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/comma.png
-
-#begin textures/UI/text/d.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/d.png
-
-#begin textures/UI/text/d.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/d.png
-
-#begin textures/UI/text/dash.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/dash.png
-
-#begin textures/UI/text/dash.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/dash.png
-
-#begin textures/UI/text/dollar.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/dollar.png
-
-#begin textures/UI/text/dollar.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/dollar.png
-
-#begin textures/UI/text/e.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/e.png
-
-#begin textures/UI/text/e.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/e.png
-
-#begin textures/UI/text/equal.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/equal.png
-
-#begin textures/UI/text/equal.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/equal.png
-
-#begin textures/UI/text/exclamationmark.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/exclamationmark.png
-
-#begin textures/UI/text/exclamationmark.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/exclamationmark.png
-
-#begin textures/UI/text/f.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/f.png
-
-#begin textures/UI/text/f.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/f.png
-
-#begin textures/UI/text/g.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/g.png
-
-#begin textures/UI/text/g.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/g.png
-
-#begin textures/UI/text/h.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/h.png
-
-#begin textures/UI/text/h.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/h.png
-
-#begin textures/UI/text/hash.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/hash.png
-
-#begin textures/UI/text/hash.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/hash.png
-
-#begin textures/UI/text/i.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/i.png
-
-#begin textures/UI/text/i.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/i.png
-
-#begin textures/UI/text/j.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/j.png
-
-#begin textures/UI/text/j.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/j.png
-
-#begin textures/UI/text/k.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/k.png
-
-#begin textures/UI/text/k.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/k.png
-
-#begin textures/UI/text/l.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/l.png
-
-#begin textures/UI/text/l.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/l.png
-
-#begin textures/UI/text/leftParentheses.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/leftParentheses.png
-
-#begin textures/UI/text/leftParentheses.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/leftParentheses.png
-
-#begin textures/UI/text/m.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/m.png
-
-#begin textures/UI/text/m.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/m.png
-
-#begin textures/UI/text/minus.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/minus.png
-
-#begin textures/UI/text/minus.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/minus.png
-
-#begin textures/UI/text/n.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/n.png
-
-#begin textures/UI/text/n.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/n.png
-
-#begin textures/UI/text/o.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/o.png
-
-#begin textures/UI/text/o.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/o.png
-
-#begin textures/UI/text/p.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/p.png
-
-#begin textures/UI/text/p.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/p.png
-
-#begin textures/UI/text/par.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/par.png
-
-#begin textures/UI/text/par.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/par.png
-
-#begin textures/UI/text/percentage.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/percentage.png
-
-#begin textures/UI/text/percentage.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/percentage.png
-
-#begin textures/UI/text/period.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/period.png
-
-#begin textures/UI/text/period.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/period.png
-
-#begin textures/UI/text/plus.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/plus.png
-
-#begin textures/UI/text/plus.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/plus.png
-
-#begin textures/UI/text/q.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/q.png
-
-#begin textures/UI/text/q.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/q.png
-
-#begin textures/UI/text/questionmark.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/questionmark.png
-
-#begin textures/UI/text/questionmark.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/questionmark.png
-
-#begin textures/UI/text/quote.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/quote.png
-
-#begin textures/UI/text/quote.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/quote.png
-
-#begin textures/UI/text/r.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/r.png
-
-#begin textures/UI/text/r.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/r.png
-
-#begin textures/UI/text/rightParentheses.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/rightParentheses.png
-
-#begin textures/UI/text/rightParentheses.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/rightParentheses.png
-
-#begin textures/UI/text/s.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/s.png
-
-#begin textures/UI/text/s.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/s.png
-
-#begin textures/UI/text/semicolon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/semicolon.png
-
-#begin textures/UI/text/semicolon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/semicolon.png
-
-#begin textures/UI/text/t.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/t.png
-
-#begin textures/UI/text/t.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/t.png
-
-#begin textures/UI/text/u.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/u.png
-
-#begin textures/UI/text/u.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/u.png
-
-#begin textures/UI/text/v.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/v.png
-
-#begin textures/UI/text/v.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/v.png
-
-#begin textures/UI/text/w.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/w.png
-
-#begin textures/UI/text/w.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/w.png
-
-#begin textures/UI/text/x.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/x.png
-
-#begin textures/UI/text/x.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/x.png
-
-#begin textures/UI/text/y.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/y.png
-
-#begin textures/UI/text/y.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/y.png
-
-#begin textures/UI/text/z.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/z.png
-
-#begin textures/UI/text/z.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:textures/UI/text/z.png
+/build:CompressedContent/textures/UI/text/z.png
 

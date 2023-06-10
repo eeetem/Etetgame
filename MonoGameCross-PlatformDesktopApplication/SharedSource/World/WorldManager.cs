@@ -25,12 +25,8 @@ namespace MultiplayerXeno
 				{
 					instance = new WorldManager();
 				}
-
 				return instance;
-
 			}
-			
-			
 		}
 
 		private WorldManager()
@@ -505,7 +501,7 @@ namespace MultiplayerXeno
 #if  CLIENT
 			if (Obj.ControllableComponent != null)
 			{
-				GameLayout.UnRegisterContollable(Obj.ControllableComponent);
+				GameLayout.UnRegisterUnit(Obj.ControllableComponent);
 			}
 #endif
 			Obj.TileLocation.Remove(id);
@@ -726,7 +722,7 @@ namespace MultiplayerXeno
 				Unit component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
 				WO.ControllableComponent = component;
 #if CLIENT
-				GameLayout.RegisterContollable(component);
+				GameLayout.RegisterUnit(component);
 #endif
 				tile.ControllableAtLocation = WO;
 

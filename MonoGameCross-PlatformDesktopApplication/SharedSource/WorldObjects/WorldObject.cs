@@ -171,7 +171,7 @@ public partial class WorldObject
 		
 #if CLIENT
 			if(Equals(GameLayout.SelectedUnit, ControllableComponent)){
-				GameLayout.SelectControllable(null);
+				GameLayout.SelectUnit(null);
 			}
 		
 		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);

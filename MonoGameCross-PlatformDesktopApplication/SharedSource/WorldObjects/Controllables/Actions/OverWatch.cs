@@ -109,7 +109,7 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
-			spriteBatch.DrawString(Game1.SpriteFont,""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),Color.White, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
+			spriteBatch.DrawText(""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
 		}
 
 	}

@@ -1,4 +1,6 @@
-﻿using MultiplayerXeno;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Pathfinding;
@@ -12,7 +14,6 @@ namespace MultiplayerXeno
 	{
 		public GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
-		public static SpriteFont SpriteFont;
 
 		public static Game1 instance;
 
@@ -27,7 +28,6 @@ namespace MultiplayerXeno
 			IsMouseVisible = true;
 			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 
-			
 			Window.AllowUserResizing = false;
 
 
@@ -58,6 +58,8 @@ namespace MultiplayerXeno
 			DiscordManager.Init();
 			UpdateGameSettings();
 
+
+
 		}
 
 		public static RenderTarget2D GlobalRenderTarget;
@@ -76,7 +78,6 @@ namespace MultiplayerXeno
 		
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 			PostPorcessing.Init(Content, GraphicsDevice);
-			SpriteFont = Content.Load<SpriteFont>("font");
 			PrefabManager.MakePrefabs();
 			ConfigParserSettings st = new ConfigParserSettings();
 			st.Culture = System.Globalization.CultureInfo.InvariantCulture;
@@ -85,6 +86,8 @@ namespace MultiplayerXeno
 			_graphics.ApplyChanges();
 			
 			Audio.PlayMenu();
+			
+	
 		}
 
 		public static Vector2Int resolution = new Vector2Int(1280, 720);

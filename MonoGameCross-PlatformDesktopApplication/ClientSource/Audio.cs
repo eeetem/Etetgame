@@ -34,13 +34,13 @@ public static class Audio
 	
 	public static void PlayMenu()
 	{
-		MediaPlayer.Play(content.Load<Song>("audio/music/menu"));
+		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/menu"));
 		MediaPlayer.IsRepeating = true;
 	}
 	public static void PlayCombat()
 	{
 
-		MediaPlayer.Play(content.Load<Song>("audio/music/tension"));
+		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/tension"));
 		MediaPlayer.IsRepeating = true;
 	}
 
@@ -51,7 +51,7 @@ public static class Audio
 			return SFX[name];
 		}
 
-		SFX.Add(name,content.Load<SoundEffect>("audio/"+name));
+		SFX.Add(name,content.Load<SoundEffect>("CompressedContent/audio/"+name));
 		
 		return SFX[name];
 	}

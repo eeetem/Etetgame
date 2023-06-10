@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -184,5 +187,54 @@ public class MainMenuLayout : UiLayout
 			return panel;
 
 
+	}
+
+
+	private int switchTicker = -1;
+	public override void Update(float deltatime)
+	{
+		if (JustPressed(Keys.OemTilde))
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				var cdata = new UnitData(false);
+				int r = Random.Shared.Next(5);
+				string unit;
+				switch (r)
+				{
+					case 0:
+						unit = "Scout";
+						break;
+					case 1:
+						unit = "Marksman";
+						break;
+					case 2:
+						unit = "Heavy";
+						break;
+					case 3:
+						unit = "Officer";
+						break;
+					case 4:
+						unit = "Specialist";
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,0),Direction.North,-1,cdata);
+			}
+			
+			switchTicker = 0;
+		}
+		if(switchTicker >= 0)
+		{
+			switchTicker++;
+			if (switchTicker > 10)
+			{
+				switchTicker = -1;
+				UI.SetUI(new GameLayout());
+			}
+		}
+
+		base.Update(deltatime);
 	}
 }

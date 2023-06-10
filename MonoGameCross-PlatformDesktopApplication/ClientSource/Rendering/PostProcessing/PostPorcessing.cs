@@ -30,15 +30,15 @@ namespace MultiplayerXeno
 			graphicsDevice = g;
 
 
-			crtEffect = content.Load<Effect>("shaders/CRT");
-			UIGlowEffect = content.Load<Effect>("shaders/Glow");
-			connectionEffect = content.Load<Effect>("shaders/lc");
-			colorEffect = content.Load<Effect>("shaders/colorshader");
-			distortEffect = content.Load<Effect>("shaders/distort");
+			crtEffect = content.Load<Effect>("CompressedContent/shaders/CRT");
+			UIGlowEffect = content.Load<Effect>("CompressedContent/shaders/Glow");
+			connectionEffect = content.Load<Effect>("CompressedContent/shaders/lc");
+			colorEffect = content.Load<Effect>("CompressedContent/shaders/colorshader");
+			distortEffect = content.Load<Effect>("CompressedContent/shaders/distort");
 			Game1.instance.IsMouseVisible = false;
 			int countx;
 			int county;
-			cursorTextures = Utility.SplitTexture(content.Load<Texture2D>("textures/mouse"), 40, 40, out countx, out county);
+			cursorTextures = Utility.SplitTexture(content.Load<Texture2D>("CompressedContent/textures/mouse"), 40, 40, out countx, out county);
 
 
 			combinedSpriteBatch = new SpriteBatch(g);

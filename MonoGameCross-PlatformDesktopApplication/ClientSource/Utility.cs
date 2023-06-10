@@ -106,9 +106,8 @@ public static partial class Utility
 				int nextSpaceCounter = 0;
 				int nextSpace = 0;
 				//look for next space
-				for (int i = index; i < text.Length; i++)
+				for (int i = index+1; i < text.Length; i++)
 				{
-
 					nextSpaceCounter++;
 					if (text[i] == ' ' || text[i] == '\n')
 					{
@@ -120,13 +119,14 @@ public static partial class Utility
 				if (charsinRow + nextSpace > width)
 				{
 					row++;
-					charsinRow = 0;
+					charsinRow = -1;
+					continue;
 				}
 			}
 			if (charsinRow > width)
 			{
 				row++;
-				charsinRow = 0;
+				charsinRow = -1;
 			}
 
 			string texId;

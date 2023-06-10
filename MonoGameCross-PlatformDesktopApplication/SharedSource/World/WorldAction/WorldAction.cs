@@ -40,7 +40,7 @@ public class WorldAction
 #if CLIENT
 		if (name != "")
 		{
-			Icon = TextureManager.GetTexture("UI/GameHud/" + name);
+			Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
 		}
 #endif
 	}
