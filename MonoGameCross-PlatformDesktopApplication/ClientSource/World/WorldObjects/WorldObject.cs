@@ -95,7 +95,7 @@ namespace MultiplayerXeno
 			//	newcolor.R += color.R;
 			//	newcolor.G += color.G;
 			//	newcolor.B += color.B;
-			//	newcolor.A += color.A;
+		//		newcolor.A += color.A;
 				color = newcolor;
 			}
 

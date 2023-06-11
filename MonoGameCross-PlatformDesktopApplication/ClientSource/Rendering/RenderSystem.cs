@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
+using MonoGame.Extended.Shapes;
+using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno;
 
@@ -78,6 +82,56 @@ public static class RenderSystem
 			
 		}
 		spriteBatch.End();
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
+		int count = 0;
+		if (Action.ActiveAction == null || Action.ActiveAction.ActionType == ActionType.Move)
+		{
+
+			foreach (var moves in GameLayout.previewMoves.Reverse())
+			{
+				foreach (var path in moves)
+				{
+
+
+					if (path.X < 0 || path.Y < 0) break;
+					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+
+					Color c = Color.White;
+					switch (count)
+					{
+						case 0:
+							c = Color.Red;
+							break;
+						case 1:
+							c = Color.Orange;
+							break;
+						case 2:
+							c = Color.Yellow;
+							break;
+						case 3:
+							c = Color.GreenYellow;
+							break;
+						case 4:
+							c = Color.Green;
+							break;
+						case 5:
+							c = Color.LightGreen;
+							break;
+						default:
+							c = Color.White;
+							break;
+
+					}
+					spriteBatch.DrawPolygon(pos,new Polygon(new List<Vector2> {Utility.GridToWorldPos(new(-0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,0.5f)),Utility.GridToWorldPos(new(-0.5f,0.5f))}),c,5f,0);
+				
+				}
+
+				count++;
+			}
+		}
+		spriteBatch.End();
+		
+		
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
 		foreach (var obj in objs)

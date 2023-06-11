@@ -71,9 +71,19 @@ namespace MultiplayerXeno
 			if (ControllableAtLocation != null) return false;
 			if (Surface != null && Surface.Type.Impassible) return false;
 			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
-			if (obstacle > Cover.None) return false;//todo vaulting
+			if (obstacle > Cover.High) return false;
 			return true;
 
+		}
+		public double TraverseCostFrom(Vector2Int from)
+		{
+			var dist = Utility.Distance(from,this.Position);
+			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(this.Position.X - from.X, this.Position.Y - from.Y)));
+			if (obstacle == Cover.None) return dist;
+			if(obstacle == Cover.Low) return dist + 1;
+			if(obstacle == Cover.High) return dist + 1;
+
+			throw new Exception("not traversible tile requested cost");
 		}
 
 		private WorldObject? _northEdge;
@@ -300,13 +310,9 @@ namespace MultiplayerXeno
 
 		public Cover GetCover(Direction dir, bool ignoreControllables = false)
 		{
-			WorldObject? obj = GetCoverObj(dir);
-		
+			GetCoverObj(dir);
+
 			return GetCoverObj(dir,ignoreControllables).GetCover();
-			
-
-
-
 		}
 		public List<WorldObject> GetAllEdges()
 		{

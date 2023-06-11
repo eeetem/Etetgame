@@ -11,6 +11,10 @@ public  static partial class Utility
 { 
         
 
+    public static double Distance(Vector2Int from, Vector2Int to)
+    {
+        return Math.Sqrt(Vector2Int.SqrDistance(from, to));
+    }
     public static Vector2Int DirToVec2(Direction dir)
     {
         dir = NormaliseDir(dir);

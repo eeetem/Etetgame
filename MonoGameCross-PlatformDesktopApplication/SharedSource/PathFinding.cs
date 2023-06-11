@@ -91,7 +91,7 @@ namespace MultiplayerXeno.Pathfinding
 					if (node.Traversable(from))
 					{
 						// Calculate the Cost
-						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
+						node.CurrentCost = from.CurrentCost + from.TraversalCost(node);
 						node.State = NodeState.Open;
 						// Enqueue
 						open.Enqueue(node, node.TotalCost);
@@ -147,7 +147,7 @@ namespace MultiplayerXeno.Pathfinding
 						{
 							connected.Parent = current;
 							connected.CurrentCost =
-								current.CurrentCost + current.DistanceTo(connected) * connected.TraversalCostMultiplier;
+								current.CurrentCost + current.TraversalCost(connected);
 							connected.State = NodeState.Open;
 
 							open.Enqueue(connected, connected.CurrentCost);
@@ -158,7 +158,7 @@ namespace MultiplayerXeno.Pathfinding
 						else if (current != connected)
 						{
 							// Updating the cost of the node if the current way is cheaper than the previous
-							var newCCost = current.CurrentCost + current.DistanceTo(connected);
+							var newCCost = current.CurrentCost + Utility.Distance(current.Position,connected.Position);
 							if (newCCost < connected.CurrentCost)
 							{
 								connected.Parent = current;
@@ -214,8 +214,8 @@ namespace MultiplayerXeno.Pathfinding
 					if (node.Traversable(from))
 					{
 						// Calculate the Costs
-						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
-						node.EstimatedCost = from.CurrentCost + node.DistanceTo(to);
+						node.CurrentCost = from.CurrentCost + from.TraversalCost(node);
+						node.EstimatedCost = from.CurrentCost + Utility.Distance(node.Position,to.Position);
 						node.State = NodeState.Open;
 						// Enqueue
 						open.Enqueue(node, node.TotalCost);
@@ -293,14 +293,14 @@ namespace MultiplayerXeno.Pathfinding
 				{
 					connected.Parent = current;
 					connected.CurrentCost =
-						current.CurrentCost + current.DistanceTo(connected) * connected.TraversalCostMultiplier;
-					connected.EstimatedCost = connected.CurrentCost + connected.DistanceTo(to);
+						current.CurrentCost + current.TraversalCost(connected);
+					connected.EstimatedCost = connected.CurrentCost + Utility.Distance(connected.Position,to.Position);
 					connected.State = NodeState.Open;
 					queue.Enqueue(connected,connected.TotalCost);
 				}
 				else if (current != connected)
 				{
-					var newCCost = current.CurrentCost + current.DistanceTo(connected);
+					var newCCost = current.CurrentCost + Utility.Distance(current.Position,connected.Position);
 					if (newCCost < connected.CurrentCost)
 					{
 						connected.Parent = current;
@@ -339,11 +339,6 @@ namespace MultiplayerXeno.Pathfinding
 		///     Gets or sets the Distance between this node and the target node.
 		/// </summary>
 		public double EstimatedCost { get; set; }
-
-		/// <summary>
-		///     Gets a value indicating whether how costly it is to traverse over this node.
-		/// </summary>
-		public double TraversalCostMultiplier { get; } = 1;
 
 		/// <summary>
 		///     Gets or sets a value indicating whether to go from the start node to this node.
@@ -410,7 +405,15 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		/// <param name="other">The other node.</param>
 		/// <returns>Distance between this and other.</returns>
-		public double DistanceTo(Node other) => Math.Sqrt(Vector2Int.SqrDistance(Position, other.Position));
+
+		public double TraversalCost(Node to)
+		{
+
+			var target = WorldManager.Instance.GetTileAtGrid(to.Position);
+			return target.TraverseCostFrom(Position);
+
+
+		}
 	}
 
 

@@ -206,7 +206,7 @@ public class MainMenuLayout : UiLayout
 						unit = "Scout";
 						break;
 					case 1:
-						unit = "Marksman";
+						unit = "Grunt";
 						break;
 					case 2:
 						unit = "Heavy";

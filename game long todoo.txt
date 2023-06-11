@@ -2,12 +2,14 @@ hour counter: rough estimate may7 (400) + 5
 
 bugs:
 no ghosting destruction -> no wall hack
-wrong offset on deployment?
 nade not getting used no ability use -> need more examples
 timer sync on reconnect -> later
-lag on unit switch????
-lag on greande targe;
+lag on greande target;
 
+
+invalid target specialist -> reconnect
+
+deync error on heavies -> status effect sync?
 
 alt inspection of unit stats
 
@@ -32,3 +34,8 @@ sfx list:
 --resupply
 --holster/unholster
 --officer boost
+
+
+@everyone here's what you can blame for lack of holdout updates. A game i've been working for on for about ~1 year at this point. A hardcore turnbased tactics game akin to xenonauts/xcom however with full focus and attention on multiplayer. I'm currently in need of a few playtesters so if it sounds intresting feel free to join. This is a very early alpha build and everything you see in the screenshot is either a placeholder or WIP and subject to change
+https://discord.gg/TrmAJbMaQ3
+https://cdn.discordapp.com/attachments/1049679590278307873/1116384749439701144/image.png

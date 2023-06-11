@@ -43,39 +43,6 @@
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\Utility.cs">
         <Link>SharedSource\Utility.cs</Link>
       </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Action.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Action.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Attack.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Attack.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Crouch.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Crouch.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Face.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Face.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\Move.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\Move.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\OverWatch.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\SelectItem.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\SelectItem.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\UseExtraAbility.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\UseExtraAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Actions\UseItem.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Actions\UseItem.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\StatusEffectInstance.cs">
-        <Link>SharedSource\WorldObjects\Controllables\StatusEffectInstance.cs</Link>
-      </Compile>
-      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Controllables\Unit.cs">
-        <Link>SharedSource\WorldObjects\Controllables\Unit.cs</Link>
-      </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
       </Compile>
@@ -99,6 +66,39 @@
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Projectile.cs">
         <Link>SharedSource\WorldObjects\Projectile.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\Action.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\Attack.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Attack.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\Face.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Face.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\Move.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\OverWatch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\OverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\SelectItem.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\SelectItem.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Actions\UseItem.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseItem.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\StatusEffectInstance.cs">
+        <Link>SharedSource\WorldObjects\Units\StatusEffectInstance.cs</Link>
+      </Compile>
+      <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\Units\Unit.cs">
+        <Link>SharedSource\WorldObjects\Units\Unit.cs</Link>
       </Compile>
       <Compile Include="..\MonoGameCross-PlatformDesktopApplication\SharedSource\WorldObjects\WorldEffect.cs">
         <Link>SharedSource\WorldObjects\WorldEffect.cs</Link>

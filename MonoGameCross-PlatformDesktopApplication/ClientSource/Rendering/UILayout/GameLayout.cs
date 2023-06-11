@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.Shapes;
 using MultiplayerXeno.Items;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
@@ -21,7 +22,7 @@ public class GameLayout : MenuLayout
 	public static Label? ScoreIndicator;
 	private static ImageButton? endBtn;
 
-	private static List<Vector2Int>[] previewMoves = Array.Empty<List<Vector2Int>>();
+	public static List<Vector2Int>[] previewMoves = Array.Empty<List<Vector2Int>>();
 
 	
 
@@ -62,8 +63,8 @@ public class GameLayout : MenuLayout
 	private static RenderTarget2D? hoverHudRenderTarget;
 	//private static RenderTarget2D? rightCornerRenderTarget;
 	//private static RenderTarget2D? leftCornerRenderTarget;
-	//private static RenderTarget2D? statScreenRenderTarget;
 	private static RenderTarget2D? dmgScreenRenderTarget;
+	private static RenderTarget2D? infoScreenRenderTarget;
 	private static RenderTarget2D? timerRenderTarget;
 	//private static RenderTarget2D? chatRenderTarget;
 	//private static RenderTarget2D? chatScreenRenderTarget;
@@ -79,6 +80,7 @@ public class GameLayout : MenuLayout
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/HoverHud/base").Width,TextureManager.GetTexture("UI/HoverHud/base").Height);
 		//statScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/RightScreen/statScreen").Width,TextureManager.GetTexture("UI/GameHud/statScreen").Height);
 		dmgScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Width,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Height);
+		infoScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Width,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Height);
 		//chatRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/chatframe").Width,TextureManager.GetTexture("UI/GameHud/chatframe").Height);
 		//	chatScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/chatscreen").Width,TextureManager.GetTexture("UI/GameHud/chatscreen").Height);
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("UI/GameHud/UnitBar/unitframe").Height);
@@ -148,7 +150,7 @@ public class GameLayout : MenuLayout
 			float healthWidth = healthTexture.Width;
 			float healthHeight = healthTexture.Height;
 			int baseWidth = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Width;
-			int baseHeight = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Height;
+			_ = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Height;
 			float healthBarWidth = (healthWidth + 1) * unit.worldObject.Type.MaxHealth;
 			float emtpySpace = baseWidth - healthBarWidth;
 			Vector2 healthBarPos = new Vector2(emtpySpace / 2f, 22);
@@ -523,8 +525,8 @@ public class GameLayout : MenuLayout
 	private static ImageButton crouchbtn = null!;
 	private static ImageButton itemBtn = null!;
 	private static ImageButton collpaseBtn = null!;
-	private static readonly List<ImageButton> ActionButtons = new List<ImageButton>();
-	private static readonly List<ImageButton> InvButtons = new List<ImageButton>();
+	private static readonly List<ImageButton> ActionButtons = new();
+	private static readonly List<ImageButton> InvButtons = new();
 
 	public static void UpdateActionButtons()
 	{
@@ -735,9 +737,9 @@ public class GameLayout : MenuLayout
 		}
 	}
 
-	private static readonly List<Unit> Controllables = new List<Unit>();
-	private static List<Unit> MyUnits = new List<Unit>();
-	private static List<Unit> EnemyUnits = new List<Unit>();
+	private static readonly List<Unit> Controllables = new();
+	public static List<Unit> MyUnits = new();
+	private static List<Unit> EnemyUnits = new();
 
 	
 	public static void RegisterUnit(Unit c)
@@ -767,13 +769,16 @@ public class GameLayout : MenuLayout
 		}
 		
 	}
-	
+
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderBehindHud(batch, deltatime);
 		MakeUnitBarRenders(batch);
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+		
+		
+		
 		
 		var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
@@ -901,23 +906,30 @@ public class GameLayout : MenuLayout
 		}
 
 		batch.End();
-		/*
-		damage screen
-		graphicsDevice.SetRenderTarget(rightCornerRenderTarget);
-		graphicsDevice.Clear(Color.Transparent);
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		batch.Draw(TextureManager.GetTexture("UI/GameHud/frames"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
-		batch.End();
-		PostPorcessing.ApplyScreenUICrt(new Vector2(statScreenRenderTarget.Width,statScreenRenderTarget.Height));
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.crtEffect);
-		batch.Draw(statScreenRenderTarget,new Vector2(146,12),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
-		batch.End();
-		PostPorcessing.ApplyScreenUICrt(new Vector2(dmgScreenRenderTarget.Width,dmgScreenRenderTarget.Height));
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.crtEffect);
-		batch.Draw(dmgScreenRenderTarget,new Vector2(12,78),null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
-		batch.End();
 		
-		*/
+		graphicsDevice.SetRenderTarget(infoScreenRenderTarget);
+		graphicsDevice.Clear(Color.Transparent);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+		batch.Draw(TextureManager.GetTexture("UI/GameHud/BottomBar/screen"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
+		
+		Vector2Int pointPos = new Vector2Int(5, 60);
+		int o = 20;
+		int g = 0;
+		for (int j = 0; j < SelectedUnit.MovePoints; j++)
+		{	
+			
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),pointPos+new Vector2(o*g,0),null, Color.White,0,Vector2.Zero,3.2f,SpriteEffects.None,0);
+			g++;
+		}
+
+		g++;
+			
+		for (int j = 0; j < SelectedUnit.ActionPoints; j++)
+		{
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*g,0),null, Color.White,0,Vector2.Zero,3.2f,SpriteEffects.None,0);
+			g++;
+		}
+		batch.End();
 		
 		graphicsDevice.SetRenderTarget(timerRenderTarget);
 	
@@ -964,7 +976,7 @@ public class GameLayout : MenuLayout
 	
 		if (drawPreviewDmg)
 		{	batch.End();
-			PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), true);
+			PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostPorcessing.UIGlowEffect);
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 			batch.End();
@@ -974,8 +986,12 @@ public class GameLayout : MenuLayout
 		{
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		}
-
-	
+		batch.End();
+		PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostPorcessing.UIGlowEffect);
+		batch.Draw(infoScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) - bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
+		batch.End();
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		//centered
 		batch.Draw(bar, new Vector2((Game1.resolution.X - bar.Width*globalScale.X)/2f, Game1.resolution.Y - bar.Height*globalScale.X), null, Color.White, 0, Vector2.Zero, globalScale.X ,SpriteEffects.None, 0);
 		string chatmsg = "";
@@ -996,7 +1012,7 @@ public class GameLayout : MenuLayout
 
 		
 	}
-	private static Vector2 tooltipPos = new Vector2(0,0);
+	private static Vector2 tooltipPos = new(0,0);
 
 	public override void RenderFrontHud(SpriteBatch batch, float deltatime)
 	{
@@ -1101,66 +1117,65 @@ public class GameLayout : MenuLayout
 		{			
 			batch.DrawText(toolTipText,tooltipPos + new Vector2(5,2.5f)*globalScale.X, globalScale.X*0.6f,31,Color.White);
 			int offset = 0;
-			Vector2 startpos = new Vector2(0, Game1.resolution.Y - globalScale.Y*2f);
-			//Vector2 offset = new Vector2(20f*globalScale.Y,00);
+			Vector2 startpos = tooltipPos+ new Vector2(12,55f)*globalScale.X;
 			int movesToDraw = 0;
 			if (moveChange > 0)
 			{
-				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y *2f, 24, Color.White);
+				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X, 24, Color.White);
 				movesToDraw = moveChange;
-				offset+= 10;
+				offset+= 1;
 
 			}else if (moveChange < 0)
 			{
-				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y * 2f, 24, Color.White);
+				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X , 24, Color.White);
 				movesToDraw = -moveChange;
-				offset+= 10;
+				offset+= 1;
 			}
 
 			for (int i = 0; i < movesToDraw; i++)
 			{
-				//	batch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/arrowOn"),startpos + new Vector2(1,0)*offset*globalScale.Y,null,Color.White,0,Vector2.Zero,globalScale.Y,SpriteEffects.None,0);
-				offset+= 25;
+					batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),startpos + new Vector2(1,0)*offset*globalScale.X,null,Color.White,0,Vector2.Zero,globalScale.X,SpriteEffects.None,0);
+				offset+= 6;
 			}
 			offset+=10;
 			int actsToDraw = 0;
 			if (actChange > 0)
 			{
-				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y *2f, 24, Color.White);
+				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X, 24, Color.White);
 				actsToDraw = actChange;
-				offset+= 15;
+				offset+= 1;
 
 			}else if (actChange < 0)
 			{
-				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y * 2f, 24, Color.White);
+				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X , 24, Color.White);
 				actsToDraw = -actChange;
-				offset+= 15;
+				offset+= 1;
 			}
 			
 			for (int i = 0; i < actsToDraw; i++)
 			{
-				//batch.Draw(TextureManager.GetTexture("UI/GameHud/LeftPanel/bulletON"),startpos + new Vector2(1,0)*offset*globalScale.Y + new Vector2(0,18),null,Color.White,0,Vector2.Zero,globalScale.Y,SpriteEffects.None,0);
-				offset+= 50;
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),startpos + new Vector2(1,0)*offset*globalScale.X,null,Color.White,0,Vector2.Zero,globalScale.X,SpriteEffects.None,0);
+				offset+= 7;
 			}
-			
+			offset+=10;
 			int detsToDraw = 0;
 			if (detChange > 0)
 			{
-				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y *2f, 24, Color.White);
+				batch.DrawText("+", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X, 24, Color.White);
 				detsToDraw = detChange;
-				offset+= 12;
+				offset+= 1;
 
 			}else if (detChange < 0)
 			{
-				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.Y, globalScale.Y * 2f, 24, Color.White);
+				batch.DrawText("-", startpos + new Vector2(1,0)*offset*globalScale.X, globalScale.X , 24, Color.White);
 				detsToDraw = -detChange;
-				offset+= 12;
+				offset+= 1;
 			}
 			
 			for (int i = 0; i < detsToDraw; i++)
 			{
-				//batch.Draw(TextureManager.GetSpriteSheet("UI/HoverHud/detlights", 4, 1)[1],startpos + new Vector2(1,0)*offset*globalScale.Y+ new Vector2(0,12),null,Color.White,0,Vector2.Zero,globalScale.Y*1.5f,SpriteEffects.None,0);
-				offset+= 25;
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detGreen"),startpos + new Vector2(1,0)*offset*globalScale.X+ new Vector2(0,12),null,Color.White,0,Vector2.Zero,globalScale.X,SpriteEffects.None,0);
+				offset+= 15;
 			}
 		}
 		
@@ -1171,57 +1186,13 @@ public class GameLayout : MenuLayout
 
 	}
 
-	private Vector2Int MouseTileCoordinate = new Vector2Int(0, 0);
-	private Vector2Int LastMouseTileCoordinate = new Vector2Int(0, 0);
+	private Vector2Int MouseTileCoordinate = new(0, 0);
+	private Vector2Int LastMouseTileCoordinate = new(0, 0);
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
 		var count = 0;
-		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Move)
-		{
-
-			foreach (var moves in previewMoves.Reverse())
-			{
-				foreach (var path in moves)
-				{
-
-
-					if (path.X < 0 || path.Y < 0) break;
-					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-
-					Color c = Color.White;
-					switch (count)
-					{
-						case 0:
-							c = Color.Red;
-							break;
-						case 1:
-							c = Color.Orange;
-							break;
-						case 2:
-							c = Color.Yellow;
-							break;
-						case 3:
-							c = Color.GreenYellow;
-							break;
-						case 4:
-							c = Color.Green;
-							break;
-						case 5:
-							c = Color.LightGreen;
-							break;
-						default:
-							c = Color.White;
-							break;
-
-					}
-
-					WorldManager.Instance.GetTileAtGrid(path).Surface.OverRideColor = c;
-				}
-
-				count++;
-			}
-		}
+	
 
 		//moves selected contorlable to the top
 		MouseTileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
@@ -1604,12 +1575,7 @@ public class GameLayout : MenuLayout
 
 			i = 0;
 
-			if (unit.paniced)
-			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,30), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-				batch.End();
-			}
+
 
 			for (int y = 0; y < unit.Type.Maxdetermination; y++)
 			{
@@ -1618,7 +1584,7 @@ public class GameLayout : MenuLayout
 				bool dissapate = false;
 				bool pulse = false;
 
-				if (y == unit.Determination)
+				if (y == unit.Determination && !unit.paniced)
 				{
 					indicator = TextureManager.GetTexture("UI/HoverHud/detYellow");
 					pulse = true;
@@ -1674,6 +1640,12 @@ public class GameLayout : MenuLayout
 					batch.End();
 				}
 
+			}
+			if (unit.paniced)
+			{
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,17), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
 			}
 
 			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 51);

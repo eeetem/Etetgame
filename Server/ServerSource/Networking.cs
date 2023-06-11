@@ -108,7 +108,7 @@ namespace MultiplayerXeno
 		/// <param name="connection">The connection we got. (TCP or UDP)</param>
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
-			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
+			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
 			connection.TIMEOUT = 10000;
 

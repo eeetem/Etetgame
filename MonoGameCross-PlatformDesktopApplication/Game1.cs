@@ -120,6 +120,7 @@ namespace MultiplayerXeno
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			DiscordManager.Update();
 			GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
+			Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
 		}

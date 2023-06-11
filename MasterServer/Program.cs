@@ -56,7 +56,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
-			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
+			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
 			connection.TIMEOUT = 1000;
 			//need some sort of ddos protection

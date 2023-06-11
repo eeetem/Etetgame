@@ -429,10 +429,10 @@ namespace MultiplayerXeno
 
 			if (_thisMoving)
 			{
-				_moveCounter += gameTime;
-				if (_moveCounter > 250)
+				_moveCounter -= gameTime;
+				if (_moveCounter < 0)
 				{
-					_moveCounter = 0;
+					
 					try
 					{
 						worldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - worldObject.TileLocation.Position));
@@ -452,6 +452,10 @@ namespace MultiplayerXeno
 						GameLayout.ReMakeMovePreview();
 #endif
 					}
+					else
+					{
+						_moveCounter = (float)WorldManager.Instance.GetTileAtGrid(CurrentPath[0]).TraverseCostFrom(worldObject.TileLocation.Position)*250f;
+					}
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();
 					if (worldObject.IsVisible())
@@ -459,7 +463,7 @@ namespace MultiplayerXeno
 						Audio.PlaySound("footstep", Utility.GridToWorldPos(worldObject.TileLocation.Position));
 					}
 #endif
-				
+					
 				}
 			}
 

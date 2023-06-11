@@ -60,8 +60,8 @@ public class Shootable : DeliveryMethod
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
 		if (targeting == TargetingType.Auto)
 		{
-		if (tile.ControllableAtLocation != null  && tile.ControllableAtLocation.ControllableComponent.Crouching) 
-		{
+			if (tile.ControllableAtLocation != null  && tile.ControllableAtLocation.ControllableComponent.Crouching) 
+			{
 				lowShot = true;
 #if CLIENT
 				if (!tile.ControllableAtLocation.IsVisible())
@@ -69,7 +69,7 @@ public class Shootable : DeliveryMethod
 					lowShot = false;
 				}
 #endif
-		}
+			}
 		}else if(targeting == TargetingType.Low)
 		{
 			lowShot = true;
@@ -96,7 +96,7 @@ public class Shootable : DeliveryMethod
 		//fire packet just makes the unit "shoot"
 		//actual damage and projectile is handled elsewhere
 
-			Projectile p = MakeProjectile(actor, target);
+		Projectile p = MakeProjectile(actor, target);
 		
 #if SERVER
 			p.Fire();
@@ -246,15 +246,16 @@ public class Shootable : DeliveryMethod
 			hitobj = WorldManager.Instance.GetObject(previewShot.Result.HitObjId);
 		}
 
-
+		WorldObject? coverObj = null;
 		if (previewShot.CoverCast != null && previewShot.CoverCast.hit)
 		{
-			Color c = Color.Green;
-			string hint = "";
+			coverObj = WorldManager.Instance.GetObject(previewShot.CoverCast.HitObjId);
+		}
+		if(coverObj!= null){
 			//crash here?
 			var coverCast = previewShot.CoverCast;
-			var coverPoint = Utility.GridToWorldPos(coverCast.CollisionPointLong);
-			Cover cover = WorldManager.Instance.GetObject(coverCast.HitObjId).GetCover();
+
+			Cover cover = coverObj.GetCover();
 			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
 			{
 				if (cover != Cover.Full)
@@ -266,40 +267,28 @@ public class Shootable : DeliveryMethod
 			switch (cover)
 			{
 				case Cover.None:
-					c = Color.Green;
 					Console.WriteLine("How: Cover object has no cover");
 					break;
 				case Cover.Low:
-					c = Color.Gray;
 					coverModifier = 2;
-					hint = "Cover: -2 DMG";
 					break;
 				case Cover.High:
-					c = Color.Black;
 					coverModifier = 4;
-					hint = "Cover: -4 DMG";
 					break;
 				case Cover.Full:
-					c = Color.Black;
 					coverModifier = 10;
-					hint = "Full Cover: -10 DMG";
 					break;
-				default:
-
-					break;
-
 			}
 
 			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			var coverobj = WorldManager.Instance.GetObject(coverCast.HitObjId);
-			var coverobjtransform = coverobj.Type.Transform;
-			Texture2D yellowsprite = coverobj.GetTexture();
+			var coverobjtransform = coverObj.Type.Transform;
+			Texture2D yellowsprite = coverObj.GetTexture();
 
-			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverobj.TileLocation.Position), Color.Yellow);
+			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 15, 10, Color.Yellow, 25f);
-			coverobj.PreviewData.finalDmg += coverModifier;
-			Console.WriteLine(coverobj.PreviewData.finalDmg);
+			coverObj.PreviewData.finalDmg += coverModifier;
+			Console.WriteLine(coverObj.PreviewData.finalDmg);
 
 		}
 
@@ -315,23 +304,23 @@ public class Shootable : DeliveryMethod
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Result.CollisionPointLong), 15, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 
-				var data = hitobj.PreviewData;
-				data.totalDmg = previewShot.OriginalDmg;
-				data.distanceBlock = previewShot.OriginalDmg - previewShot.Dmg;
-				data.finalDmg += previewShot.Dmg - coverModifier;
-				data.coverBlock = coverModifier;
-				if (hitobj.ControllableComponent == null)
-				{
-					data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
-					data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
-				}
-				else if (hitobj.ControllableComponent.Determination > 0)
-				{
-					data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
-					data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
-				}
+			var data = hitobj.PreviewData;
+			data.totalDmg = previewShot.OriginalDmg;
+			data.distanceBlock = previewShot.OriginalDmg - previewShot.Dmg;
+			data.finalDmg += previewShot.Dmg - coverModifier;
+			data.coverBlock = coverModifier;
+			if (hitobj.ControllableComponent == null)
+			{
+				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
+				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
+			}
+			else if (hitobj.ControllableComponent.Determination > 0)
+			{
+				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
+				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
+			}
 
-				hitobj.PreviewData = data;
+			hitobj.PreviewData = data;
 		}
 		
 		

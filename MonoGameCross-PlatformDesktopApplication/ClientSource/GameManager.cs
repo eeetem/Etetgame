@@ -12,7 +12,6 @@ namespace MultiplayerXeno
 		public static bool IsPlayer1;
 		public static bool intated;
 		public static bool spectating;
-		public static List<Unit> _myUnits = new List<Unit>();
 		private static PreGameDataPacket preGameData = new();
 		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
 		public static Dictionary<string,string> CustomMapList = new Dictionary<string, string>();
@@ -109,10 +108,25 @@ namespace MultiplayerXeno
 		{
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
+			foreach (var unit in GameLayout.MyUnits)
+			{
+				if (unit.MovePoints > 0)
+				{
+					UI.OptionMessage("Are you sure?", "You have units with unspent move points", "no", (a,b)=> {  }, "yes", (a, b) =>
+					{
+						GameActionPacket packet = new GameActionPacket(-1,new Vector2Int(0,0),ActionType.EndTurn);
+						Networking.ServerConnection?.Send(packet);
+						Action.SetActiveAction(null);
+
+					});
+					return;
+				}
+			}
+
 			GameActionPacket packet = new GameActionPacket(-1,new Vector2Int(0,0),ActionType.EndTurn);
 			Networking.ServerConnection?.Send(packet);
 			Action.SetActiveAction(null);
-
+	
 		}
 
 		public static void ResetGame()
