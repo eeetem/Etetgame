@@ -157,6 +157,9 @@
       <Compile Remove="ClientSource\Rendering\UILayout\LayoutWithMenu\UnitGameLayout.cs" />
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs" />
+      <Compile Update="ClientSource\Networking.cs">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Compile>
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\Server\Maps\Circus.mapdata">
