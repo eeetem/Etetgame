@@ -45,7 +45,7 @@ public class OverWatch : Action
 		}
 
 		actor.overWatch = true;
-		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position, target));
+		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position, target));
 
 	}
 
@@ -57,7 +57,7 @@ public class OverWatch : Action
 		foreach (var endTile in tiles)
 		{
 			
-			RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(actor.worldObject.TileLocation.Position,endTile.Position,Cover.Full);
+			RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
 			foreach (var pos in outcome.Path)
 			{
 				positions.Add(pos);

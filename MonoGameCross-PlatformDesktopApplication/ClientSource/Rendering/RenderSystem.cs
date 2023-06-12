@@ -41,9 +41,9 @@ public static class RenderSystem
 				objs.Add(tile.WestEdge);
 			}
 
-			if (tile.ControllableAtLocation != null)
+			if (tile.UnitAtLocation != null)
 			{
-				objs.Add(tile.ControllableAtLocation);
+				objs.Add(tile.UnitAtLocation.WorldObject);
 			}
 
 			foreach (var item in tile.ObjectsAtLocation)

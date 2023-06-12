@@ -29,7 +29,7 @@ public class Crouch : Action
 		actor.MovePoints--;
 		actor.canTurn = true;
 		actor.Crouching = !actor.Crouching;
-		actor.worldObject.TileLocation.OverWatchTrigger();
+		actor.WorldObject.TileLocation.OverWatchTrigger();
 #if CLIENT
 		GameLayout.ReMakeMovePreview();
 #endif

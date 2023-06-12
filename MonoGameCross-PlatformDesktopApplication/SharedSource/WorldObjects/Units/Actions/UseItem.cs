@@ -40,7 +40,7 @@ public class UseItem : Action
 		Console.WriteLine("Using Item "+actor.SelectedItem?.Name);
 		actor.LastItem = actor.SelectedItem;
 		actor.RemoveItem(actor.SelectedItemIndex);
-		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
+		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
 	}
 	
 #if CLIENT

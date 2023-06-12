@@ -19,7 +19,7 @@ public class VissionCast : DeliveryMethod
 	private static Vector2Int? LastReturned;
 	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
-		if (Vector2.Distance(target, actor.worldObject.TileLocation.Position) > range)
+		if (Vector2.Distance(target, actor.WorldObject.TileLocation.Position) > range)
 		{
 			return LastReturned;
 		}
@@ -36,7 +36,7 @@ public class VissionCast : DeliveryMethod
 
 	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
-		if (Vector2.Distance(actor.worldObject.TileLocation.Position, target) >= range)
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target) >= range)
 		{
 			return new Tuple<bool, string>(false, "Too Far");
 		}
@@ -55,7 +55,7 @@ public class VissionCast : DeliveryMethod
 		{
 			Vector2Int newTarget = result;
 			spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Utility.GridToWorldPos(newTarget + new Vector2(-1.5f, -0.5f)), Color.Red);
-			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.worldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(newTarget + new Vector2(0.5f, 0.5f)), Color.Red, 2);
+			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(newTarget + new Vector2(0.5f, 0.5f)), Color.Red, 2);
 		}
 
 

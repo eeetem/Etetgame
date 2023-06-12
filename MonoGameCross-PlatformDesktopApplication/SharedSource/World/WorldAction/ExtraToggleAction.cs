@@ -98,11 +98,11 @@ public class ExtraToggleAction : IExtraAction
 	{
 		if (isOn)
 		{
-			off.Preview(actor,actor.worldObject.TileLocation.Position,spriteBatch);
+			off.Preview(actor,actor.WorldObject.TileLocation.Position,spriteBatch);
 		}
 		else
 		{
-			on.Preview(actor, actor.worldObject.TileLocation.Position, spriteBatch);
+			on.Preview(actor, actor.WorldObject.TileLocation.Position, spriteBatch);
 		}
 	}
 
@@ -110,11 +110,11 @@ public class ExtraToggleAction : IExtraAction
 	{
 		if (isOn)
 		{
-			on.Animate(actor,actor.worldObject.TileLocation.Position);
+			on.Animate(actor,actor.WorldObject.TileLocation.Position);
 		}
 		else
 		{
-			off.Animate(actor,actor.worldObject.TileLocation.Position);
+			off.Animate(actor,actor.WorldObject.TileLocation.Position);
 		}
 
 		

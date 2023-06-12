@@ -23,6 +23,13 @@ public class SelectItem : Action
 		actor.SelectedItemIndex = target.X;
 	}
 #if CLIENT
+
+	public override void PerformClientSide(Unit actor, Vector2Int target)
+	{
+		actor.SelectedItemIndex = target.X;
+		base.PerformClientSide(actor,target);
+	}
+
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		return;

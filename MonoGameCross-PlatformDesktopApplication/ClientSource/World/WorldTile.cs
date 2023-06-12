@@ -57,7 +57,7 @@ namespace MultiplayerXeno
 			HighestWatchLevel = 0;
 			foreach (var watcher in Watchers)
 			{
-				if (!watcher.worldObject.IsVisible())
+				if (!watcher.WorldObject.IsVisible())
 				{
 					return;
 				}

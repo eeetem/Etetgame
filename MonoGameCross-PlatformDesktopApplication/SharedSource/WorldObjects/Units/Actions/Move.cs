@@ -17,7 +17,7 @@ public class Move : Action
 	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
 	{
 		
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, position);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, position);
 		if (result.Cost == 0)
 		{
 			return new Tuple<bool, string>(false, "No path found");
@@ -43,7 +43,7 @@ public class Move : Action
 
 	public override void Execute(Unit actor,Vector2Int target)
 	{
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 		int moveUse = 1;
 		while (result.Cost > actor.GetMoveRange()*moveUse)
 		{
@@ -75,7 +75,7 @@ public class Move : Action
 	{
 		if (lastTarget == new Vector2Int(0, 0))
 		{
-			previewPath = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target).Path;
+			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target).Path;
 			if (previewPath == null)
 			{
 				previewPath = new List<Vector2Int>();
@@ -108,7 +108,7 @@ public class Move : Action
 			spriteBatch.DrawLine(pos, nextpos, c, 8f);
 		}
 
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.worldObject.TileLocation.Position, target);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 		int moveUse = 1;
 		while (result.Cost > actor.GetMoveRange() * moveUse)
 		{

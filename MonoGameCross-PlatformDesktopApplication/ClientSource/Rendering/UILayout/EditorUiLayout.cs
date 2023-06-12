@@ -320,7 +320,7 @@ public class EditorUiLayout : MenuLayout
 			}
 		}
 
-		return tile.ControllableAtLocation == null;
+		return tile.UnitAtLocation == null;
 	}
 
 	private float timeUntilNextSave = 30000;
@@ -595,21 +595,21 @@ public class EditorUiLayout : MenuLayout
 								if (data.NorthEdge != null)
 								{
 									var worldObjectData = data.NorthEdge.Value;
-									worldObjectData.Id = -1;
+									worldObjectData.ID = -1;
 									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
 								}
 								
 								if (data.WestEdge != null)
 								{
 									var worldObjectData = data.WestEdge.Value;
-									worldObjectData.Id = -1;
+									worldObjectData.ID = -1;
 									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
 								}
 
 								if (data.Surface != null)
 								{
 									var worldObjectData = data.Surface.Value;
-									worldObjectData.Id = -1;
+									worldObjectData.ID = -1;
 									buffer[x - topLeftSelection.X, y - topLeftSelection.Y].Add(worldObjectData);
 								}
 							}
@@ -670,9 +670,9 @@ public class EditorUiLayout : MenuLayout
 
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(Pos);
 
-		if (tile.ControllableAtLocation != null)
+		if (tile.UnitAtLocation != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.ControllableAtLocation);
+			WorldManager.Instance.DeleteWorldObject(tile.UnitAtLocation.WorldObject);
 			return;
 		}
 		if (tile.NorthEdge != null)

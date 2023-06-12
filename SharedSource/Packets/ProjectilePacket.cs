@@ -91,7 +91,7 @@ public class ProjectilePacket : Packet
 		this.supressionStrenght = supressionStrenght;
 		this.shooterLow = shooterLow;
 		this.targetLow = targetLow;
-		this.SupressionIgnores = supressionIgnores;
+		SupressionIgnores = supressionIgnores;
 
 	}
 

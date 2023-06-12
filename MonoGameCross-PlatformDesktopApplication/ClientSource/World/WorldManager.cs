@@ -52,16 +52,16 @@ namespace MultiplayerXeno
 				foreach (var obj in WorldObjects.Values)
 				{
 
-					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
+					if (obj.UnitComponent is not null && obj.UnitComponent.IsMyTeam())
 					{
-						foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.ControllableComponent.GetSightRange(),obj.ControllableComponent.Crouching))
+						foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.UnitComponent.GetSightRange(),obj.UnitComponent.Crouching))
 						{
 							
 					
 							if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
 							{
 								GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
-								GetTileAtGrid(visTuple.Key)?.ControllableAtLocation?.ControllableComponent.Spoted();
+								GetTileAtGrid(visTuple.Key)?.UnitAtLocation?.Spoted();
 							}
 							
 							

@@ -68,7 +68,7 @@ namespace MultiplayerXeno
 		public bool Traversible(Vector2Int from)
 		{
 			if (Surface == null) return false;
-			if (ControllableAtLocation != null) return false;
+			if (UnitAtLocation != null) return false;
 			if (Surface != null && Surface.Type.Impassible) return false;
 			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
 			if (obstacle > Cover.High) return false;
@@ -77,8 +77,8 @@ namespace MultiplayerXeno
 		}
 		public double TraverseCostFrom(Vector2Int from)
 		{
-			var dist = Utility.Distance(from,this.Position);
-			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(this.Position.X - from.X, this.Position.Y - from.Y)));
+			var dist = Utility.Distance(from,Position);
+			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
 			if (obstacle == Cover.None) return dist;
 			if(obstacle == Cover.Low) return dist + 1;
 			if(obstacle == Cover.High) return dist + 1;
@@ -180,28 +180,24 @@ namespace MultiplayerXeno
 			ObjectsAtLocation.Remove(obj);
 		}
 
-		private WorldObject? _controllableAtLocation;
-		public WorldObject? ControllableAtLocation
+		private Unit? _unitAtLocation;
+		public Unit? UnitAtLocation
 		{
-			get => _controllableAtLocation;
+			get => _unitAtLocation;
 			set
 			{
 				 
 				if (value == null)
 				{
-					_controllableAtLocation = null;
+					_unitAtLocation = null;
 					return;
 				}
-				if (value.Type.Edge || value.Type.Surface)
-					throw new Exception("attempted to set a surface or edge to the main location");
-				if(value.ControllableComponent == null)
-					throw new Exception("attempted to set a non controllable to the controllable location");
-				if (_controllableAtLocation != null)
+				if (_unitAtLocation != null)
 				{
-					throw new Exception("attempted to place an object over an existing one");
+					throw new Exception("attempted to place a Unit over an existing one");
 				}
 
-				_controllableAtLocation = value;
+				_unitAtLocation = value;
 				OverWatchTrigger();
 			}
 		}
@@ -236,16 +232,16 @@ namespace MultiplayerXeno
 				{
 					throw new Exception("attempted to place an object over an existing one");
 				}
-
 				_surface = value;
 			}
 		}
 		
 		public void Wipe()
 		{
+
 			WorldManager.Instance.DeleteWorldObject(NorthEdge);
 			WorldManager.Instance.DeleteWorldObject(WestEdge);
-			WorldManager.Instance.DeleteWorldObject(ControllableAtLocation);
+			WorldManager.Instance.DeleteWorldObject(UnitAtLocation?.WorldObject);
 			WorldManager.Instance.DeleteWorldObject(Surface);
 			foreach (var obj in ObjectsAtLocation)
 			{
@@ -257,26 +253,27 @@ namespace MultiplayerXeno
 
 		public void Remove(int id)
 		{
-			if (NorthEdge != null && NorthEdge.Id == id)
+			if (NorthEdge != null && NorthEdge.ID == id)
 			{
 				NorthEdge = null;
 			}
-			if (WestEdge != null && WestEdge.Id == id)
+			if (WestEdge != null && WestEdge.ID == id)
 			{
 				WestEdge = null;
 			}
-			if (ControllableAtLocation != null && ControllableAtLocation.Id == id)
+			if (UnitAtLocation != null && UnitAtLocation.WorldObject.ID == id)
 			{
-				ControllableAtLocation = null;
+				UnitAtLocation = null;
 			}
-			if (Surface != null && Surface.Id == id)
+			if (Surface != null && Surface.ID == id)
 			{
+				Console.WriteLine("deleted surface at " + Position);
 				Surface = null;
 			}
 
 			foreach (var obj in ObjectsAtLocation)
 			{
-				if (obj.Id == id)
+				if (obj.ID == id)
 				{
 					ObjectsAtLocation.Remove(obj);
 					break;
@@ -299,9 +296,9 @@ namespace MultiplayerXeno
 			{
 				data.WestEdge = WestEdge.GetData();
 			}
-			if (ControllableAtLocation != null)
+			if (UnitAtLocation != null)
 			{
-				data.ControllableAtLocation = ControllableAtLocation.GetData();
+				data.UnitAtLocation = UnitAtLocation.WorldObject.GetData();
 			}
 			data.ObjectsAtLocation = ObjectsAtLocation.Select(x => x.GetData()).ToList();
 
@@ -352,7 +349,7 @@ namespace MultiplayerXeno
 		public WorldObject GetCoverObj(Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true)
 		{
 			var data = new WorldObjectData();
-			data.Id = -1;
+			data.ID = -1;
 			WorldObject biggestCoverObj = new WorldObject(null,null,data);
 			dir = Utility.NormaliseDir(dir);
 			//Cover biggestCover = Cover.None;
@@ -522,10 +519,10 @@ namespace MultiplayerXeno
 			{
 				if (!ignoreContollables)
 				{
-					if (ControllableAtLocation != null && ControllableAtLocation.IsVisible() &&ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (ControllableAtLocation.Facing == dir || ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || _controllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
+					if (UnitAtLocation != null && UnitAtLocation.WorldObject.IsVisible() && UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (UnitAtLocation.WorldObject.Facing == dir || UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
 					{
 
-						biggestCoverObj = ControllableAtLocation;
+						biggestCoverObj = UnitAtLocation.WorldObject;
 
 					}
 				}
@@ -546,20 +543,20 @@ namespace MultiplayerXeno
 			if (tileInDir != null)
 			{
 
-				if (!ignoreContollables && tileInDir.ControllableAtLocation != null &&  tileInDir.ControllableAtLocation.IsVisible())
+				if (!ignoreContollables && tileInDir.UnitAtLocation != null &&  tileInDir.UnitAtLocation.WorldObject.IsVisible())
 				{
-					if (tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == dir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(dir - 1)))
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == dir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
 					{
 
-						biggestCoverObj = tileInDir.ControllableAtLocation;
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
 
 					}
 
 					Direction inverseDir = Utility.NormaliseDir(dir - 4);
-					if (tileInDir.ControllableAtLocation.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.ControllableAtLocation.Facing == inverseDir || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.ControllableAtLocation.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == inverseDir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
 					{
 
-						biggestCoverObj = tileInDir.ControllableAtLocation;
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
 
 					}
 				}
@@ -594,7 +591,7 @@ namespace MultiplayerXeno
 			}
 			WestEdge?.NextTurn();
 			NorthEdge?.NextTurn();
-			ControllableAtLocation?.NextTurn();
+			UnitAtLocation?.WorldObject.NextTurn();
 			Surface?.NextTurn();
 		}
 	}

@@ -88,7 +88,7 @@ namespace MultiplayerXeno
 			Vector2Int capPoint = Vector2.Zero;
 			foreach (var point in CapturePoints)
 			{
-				bool? team1 = point.TileLocation.ControllableAtLocation?.ControllableComponent?.IsPlayerOneTeam;
+				bool? team1 = point.TileLocation.UnitAtLocation?.IsPlayerOneTeam;
 				if (team1 == null) continue;
 
 				if ((bool) team1)
@@ -166,7 +166,7 @@ Audio.PlaySound("capture");
 					return;
 				}
 
-				Unit? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.ControllableComponent;
+				Unit? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.UnitComponent;
 				if(controllable == null)
 				{
 					Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);

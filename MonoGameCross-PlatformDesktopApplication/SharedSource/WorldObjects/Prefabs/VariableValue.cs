@@ -40,6 +40,7 @@ public class VariableValue
 
 	public string GetValue(Unit user,Unit other)
 	{
+	
 		if (value != null)
 		{
 			return value;
@@ -47,6 +48,7 @@ public class VariableValue
 
 		if (_targetSelfNotOther)
 		{
+			
 			return user.GetVar(var!,varParam);
 		}
 		

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using MultiplayerXeno;
 using MonoGame.Extended;
 
@@ -18,7 +19,7 @@ public partial class WorldObject
 	public int LifeTime = -100;
 	public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
 	{
-		Id = data.Id;
+		ID = data.ID;
 		
 		if (type == null)
 		{
@@ -77,9 +78,9 @@ public partial class WorldObject
 #endif
 		}
 	}
-	public Unit? ControllableComponent { get;  set; }
+	public Unit? UnitComponent { get;  set; }
 
-	public readonly int Id;
+	public readonly int ID;
 
 	public int Health;
 
@@ -90,12 +91,12 @@ public partial class WorldObject
 			throw new Exception("attempted to  move and  edge or surface");
 		}
 
-		if (ControllableComponent != null)
+		if (UnitComponent != null)
 		{
-			TileLocation.ControllableAtLocation = null;
+			TileLocation.UnitAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			TileLocation = newTile;
-			newTile.ControllableAtLocation = this;
+			newTile.UnitAtLocation = UnitComponent;
 		}
 		else
 		{
@@ -159,35 +160,43 @@ public partial class WorldObject
 		if(destroyed)return;
 		destroyed = true;
 		
-		WorldManager.Instance.DeleteWorldObject(this);
+		
 		if(Type.DesturctionEffect != null)
 		{
+			//wrap this in a task
+
+			Task t = new Task(delegate
+			{
 #if CLIENT
 			Type.DesturctionEffect?.Animate(TileLocation.Position);
 #endif
-			Type.DesturctionEffect?.Apply(TileLocation.Position,this);
-			Thread.Sleep(300);
+				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
+			});
+			WorldManager.Instance.RunNextFrame(t);
+
 		}
 		
 #if CLIENT
-			if(Equals(GameLayout.SelectedUnit, ControllableComponent)){
+			if(Equals(GameLayout.SelectedUnit, UnitComponent)){
 				GameLayout.SelectUnit(null);
 			}
 		
-		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
+		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
 #else
-			if(GameManager.T1Units.Contains(Id)){
-				GameManager.T1Units.Remove(Id);
+			if(GameManager.T1Units.Contains(ID)){
+				GameManager.T1Units.Remove(ID);
 			}
-			if(GameManager.T2Units.Contains(Id)){
-				GameManager.T2Units.Remove(Id);
+			if(GameManager.T2Units.Contains(ID)){
+				GameManager.T2Units.Remove(ID);
 			}
 
 #endif
 		
+#if SERVER
+WorldManager.Instance.DeleteWorldObject(this);
+#endif
 
-
-		Console.WriteLine("Destroyed "+Id +" "+Type.TypeName);
+		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
 
 	}
 	public Visibility GetMinimumVisibility()
@@ -197,7 +206,7 @@ public partial class WorldObject
 			return Visibility.None;
 		}
 
-		if (ControllableComponent != null && ControllableComponent.Crouching)
+		if (UnitComponent != null && UnitComponent.Crouching)
 		{
 			return Visibility.Full;
 		}
@@ -224,9 +233,9 @@ public partial class WorldObject
 			return;
 		}
 		Console.WriteLine(this + " got hit " + TileLocation.Position);
-		if (ControllableComponent != null)
+		if (UnitComponent != null)
 		{//let controlable handle it
-			ControllableComponent.TakeDamage(dmg, detResist);
+			UnitComponent.TakeDamage(dmg, detResist);
 		}
 		else
 		{
@@ -249,9 +258,9 @@ public partial class WorldObject
 		OverRideColor = null;
 		PreviewData = new PreviewData();//probably very bad memory wise
 #endif 
-		if (ControllableComponent != null)
+		if (UnitComponent != null)
 		{
-			ControllableComponent.Update(gametime);
+			UnitComponent.Update(gametime);
 		}
 	}
 
@@ -269,7 +278,7 @@ public partial class WorldObject
 			cover = Type.VisibilityCover;
 		}
 			
-		if (ControllableComponent != null && ControllableComponent.Crouching)
+		if (UnitComponent != null && UnitComponent.Crouching)
 		{
 			return cover - 1;
 		}
@@ -283,13 +292,13 @@ public partial class WorldObject
 	{
 		WorldObjectData data = new WorldObjectData(Type.TypeName);
 		data.Facing = Facing;
-		data.Id = Id;
+		data.ID = ID;
 		data.Fliped = fliped;
 		data.Health = Health;
 
-		if (ControllableComponent != null)
+		if (UnitComponent != null)
 		{
-			UnitData cdata = ControllableComponent.GetData();
+			UnitData cdata = UnitComponent.GetData();
 			data.ControllableData = cdata;
 		}
 
@@ -298,7 +307,7 @@ public partial class WorldObject
 	}
 	protected bool Equals(WorldObject other)
 	{
-		return Id == other.Id;
+		return ID == other.ID;
 	}
 
 	public override bool Equals(object? obj)
@@ -311,7 +320,7 @@ public partial class WorldObject
 
 	public override int GetHashCode()
 	{
-		return Id;
+		return ID;
 	}
 		
 	public bool IsVisible()

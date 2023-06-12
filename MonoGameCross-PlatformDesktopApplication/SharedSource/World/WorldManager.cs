@@ -3,6 +3,7 @@ using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -31,7 +32,6 @@ namespace MultiplayerXeno
 
 		private WorldManager()
 		{
-			
 			_gridData = new WorldTile[100, 100];
 			for (int x = 0; x < 100; x++)
 			{
@@ -77,17 +77,17 @@ namespace MultiplayerXeno
 		{
 			foreach (var obj in WorldObjects.Values)
 			{
-				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam == teamOneTurn)
+				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayerOneTeam == teamOneTurn)
 				{
-					obj.ControllableComponent.StartTurn();
+					obj.UnitComponent.StartTurn();
 				}
 			}
 
 			foreach (var obj in WorldObjects.Values)
 			{
-				if (obj.ControllableComponent != null && obj.ControllableComponent.IsPlayerOneTeam != teamOneTurn)
+				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayerOneTeam != teamOneTurn)
 				{
-					obj.ControllableComponent.EndTurn();
+					obj.UnitComponent.EndTurn();
 				}
 			}
 
@@ -116,35 +116,42 @@ namespace MultiplayerXeno
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();
-			if (data.Surface != null)
+			Task t = new Task(delegate
 			{
-				MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
-			}
-
-			if (data.NorthEdge != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
-			}
-
-
-			if (data.WestEdge != null)
-			{
-				MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
-			}
-			if (data.ControllableAtLocation != null)
-			{
-				
-				MakeWorldObjectFromData((WorldObjectData)data.ControllableAtLocation , tile);
-				
-			}
-
-			if (data.ObjectsAtLocation != null)
-			{
-				foreach (var itm in data.ObjectsAtLocation)
+				Console.WriteLine("Loading data for tile at:" + data.position);
+				if (data.Surface != null)
 				{
-					MakeWorldObjectFromData(itm, tile);
+					MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
 				}
-			}
+
+				if (data.NorthEdge != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
+				}
+
+
+				if (data.WestEdge != null)
+				{
+					MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
+				}
+
+				if (data.UnitAtLocation != null)
+				{
+
+					MakeWorldObjectFromData((WorldObjectData) data.UnitAtLocation, tile);
+
+				}
+
+				if (data.ObjectsAtLocation != null)
+				{
+					foreach (var itm in data.ObjectsAtLocation)
+					{
+						MakeWorldObjectFromData(itm, tile);
+					}
+				}
+				
+			});
+			RunNextFrame(t);
 
 			return tile;
 		
@@ -154,7 +161,7 @@ namespace MultiplayerXeno
 		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, UnitData? controllableData = null)
 		{
 			WorldObjectData data = new WorldObjectData(prefabName);
-			data.Id = id;
+			data.ID = id;
 			data.Facing = facing;
 			data.ControllableData = controllableData;
 			MakeWorldObjectFromData(data, GetTileAtGrid(position));
@@ -165,9 +172,9 @@ namespace MultiplayerXeno
 		{
 			lock (syncobj)
 			{
-				if (data.Id != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
+				if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
-					DeleteWorldObject(data.Id); //delete existing object with same id, most likely caused by server updateing a specific entity
+					DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
 				}
 				createdObjects.Add(new Tuple<WorldObjectData, WorldTile>(data,tile));
 			}
@@ -181,9 +188,9 @@ namespace MultiplayerXeno
 		{
 			if (ignoreRange)
 			{
-				return CanSee(unit.worldObject.TileLocation.Position, to, 200, unit.Crouching);
+				return CanSee(unit.WorldObject.TileLocation.Position, to, 200, unit.Crouching);
 			}
-			return CanSee(unit.worldObject.TileLocation.Position, to, unit.GetSightRange(), unit.Crouching);
+			return CanSee(unit.WorldObject.TileLocation.Position, to, unit.GetSightRange(), unit.Crouching);
 		}
 
 		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)//if truesight is false it will do a proper raycast otherwise you will only collide with already visible objects
@@ -401,9 +408,9 @@ namespace MultiplayerXeno
 							result.CollisionPointShort = collisionPointshort;
 							result.VectorToCenter = collisionVector;
 							result.hit = true;
-							result.HitObjId = hitobj.Id;
+							result.HitObjId = hitobj.ID;
 							//if this is true then we're hitting a controllable form behind
-							if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+							if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
 							{
 								result.CollisionPointLong += -0.3f * dir;
 								result.CollisionPointShort += -0.3f * dir;
@@ -413,7 +420,7 @@ namespace MultiplayerXeno
 						}
 					}
 
-					if (hitobj.Id != -1 )
+					if (hitobj.ID != -1 )
 					{
 						
 						Cover c = hitobj.GetCover(visibilityCast);
@@ -425,9 +432,9 @@ namespace MultiplayerXeno
 								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
-								result.HitObjId = hitobj.Id;
+								result.HitObjId = hitobj.ID;
 								//if this is true then we're hitting a controllable form behind
-								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+								if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
 								{
 									result.CollisionPointLong += -0.3f * dir;
 									result.CollisionPointShort += -0.3f * dir;
@@ -445,8 +452,8 @@ namespace MultiplayerXeno
 								result.CollisionPointShort = collisionPointshort;
 								result.VectorToCenter = collisionVector;
 								result.hit = true;
-								result.HitObjId = hitobj.Id;
-								if (GetTileAtGrid(lastCheckingSquare).ControllableAtLocation?.ControllableComponent != null)
+								result.HitObjId = hitobj.ID;
+								if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
 								{
 									result.CollisionPointLong += -0.3f * dir;
 									result.CollisionPointShort += -0.3f * dir;
@@ -473,7 +480,7 @@ namespace MultiplayerXeno
 		{
 			if (obj == null) return;
 
-			DeleteWorldObject(obj.Id);
+			DeleteWorldObject(obj.ID);
 			
 		}
 		public void DeleteWorldObject(int id)
@@ -499,9 +506,9 @@ namespace MultiplayerXeno
 			GameManager.Forget(Obj);
 
 #if  CLIENT
-			if (Obj.ControllableComponent != null)
+			if (Obj.UnitComponent != null)
 			{
-				GameLayout.UnRegisterUnit(Obj.ControllableComponent);
+				GameLayout.UnRegisterUnit(Obj.UnitComponent);
 			}
 #endif
 			Obj.TileLocation.Remove(id);
@@ -573,15 +580,47 @@ namespace MultiplayerXeno
 
 		public static readonly object syncobj = new object();
 
+		
+		private static readonly List<Task> NextFrameTasks = new List<Task>();
+
+		public void RunNextFrame(Task t)
+		{
+			Task.Factory.StartNew(() =>
+			{
+				lock (syncobj)
+				{
+					NextFrameTasks.Add(t);
+				}
+			});
+		}
 
 		public void Update(float gameTime)
 		{
 		
 			lock (syncobj)
 			{
+				foreach (var task in NextFrameTasks)
+				{
+					task.RunSynchronously();
+				}
+				NextFrameTasks.Clear();
 #if SERVER
 				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
 #endif
+				
+				
+				foreach (var tile in _gridData)
+				{
+					tile.Update(gameTime);
+					
+				}
+
+				foreach (var obj in WorldObjects.Values)
+				{
+					obj.Update(gameTime);
+				}
+				
+				
 				foreach (var obj in objsToDel)
 				{
 #if CLIENT
@@ -601,20 +640,11 @@ namespace MultiplayerXeno
 				}
 				objsToDel.Clear();
 
-				foreach (var tile in _gridData)
-				{
-					tile.Update(gameTime);
-					
-				}
 
-				foreach (var obj in WorldObjects.Values)
-				{
-					obj.Update(gameTime);
-				}
 
 				foreach (var WO in createdObjects)
 				{
-					var obj = CreateWorldObj(WO);
+					CreateWorldObj(WO);
 #if CLIENT
 					if (GameManager.GameState == GameState.Playing)
 					{
@@ -623,10 +653,8 @@ namespace MultiplayerXeno
 
 					if (GameManager.GameState == GameState.Lobby)
 					{
-						if(obj.ControllableComponent == null){
 	
 							Camera.SetPos(WO.Item2.Position);
-						}
 					}
 #endif
 					
@@ -669,14 +697,22 @@ namespace MultiplayerXeno
 			//		}
 		}
 
-		private WorldObject CreateWorldObj(Tuple<WorldObjectData, WorldTile> obj)
+		private void CreateWorldObj(Tuple<WorldObjectData, WorldTile> obj)
 		{
 			var data = obj.Item1;
 			var tile = obj.Item2;
-			if(data.Id == -1){
-				data.Id = GetNextId();
+			if(data.ID == -1){
+				data.ID = GetNextId();
 			}
-				
+			if(WorldObjects.ContainsKey(data.ID)){ 
+				DeleteWorldObject(WorldObjects[data.ID]);
+				Task t = new Task(delegate
+				{
+					MakeWorldObjectFromData(obj.Item1, obj.Item2);
+				});
+				RunNextFrame(t);
+				return;
+			}	
 			
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, tile, data);
@@ -720,11 +756,11 @@ namespace MultiplayerXeno
 			else if(type.Controllable != null && data.ControllableData != null)
 			{
 				Unit component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
-				WO.ControllableComponent = component;
+				WO.UnitComponent = component;
 #if CLIENT
 				GameLayout.RegisterUnit(component);
 #endif
-				tile.ControllableAtLocation = WO;
+				tile.UnitAtLocation = WO.UnitComponent;
 
 				if (data.ControllableData.Value.JustSpawned)//bad spot for this but whatever for now
 				{
@@ -737,10 +773,10 @@ namespace MultiplayerXeno
 			}
 
 			
-			WorldObjects.EnsureCapacity(WO.Id + 1);
-			WorldObjects[WO.Id] = WO;
+			WorldObjects.EnsureCapacity(WO.ID + 1);
+			WorldObjects[WO.ID] = WO;
 
-			return WO;
+			return;
 		}
 
 		public MapData CurrentMap { get; set; }

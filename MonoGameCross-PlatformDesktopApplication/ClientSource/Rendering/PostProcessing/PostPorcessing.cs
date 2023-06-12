@@ -108,6 +108,14 @@ namespace MultiplayerXeno
 
 			DefaultParams["noise"] = 0.002f;
 			DefaultParams["clmagnitude"] = 3f;
+
+			foreach (var p in EffectParams)
+			{
+				if (!DefaultParams.ContainsKey(p.Key))
+				{
+					DefaultParams.Add(p.Key, p.Value);
+				}
+			}
 	
 			Task.Factory.StartNew(StartingTweens);
 		}
@@ -391,7 +399,7 @@ namespace MultiplayerXeno
 				}
 
 				AddTween(parameter, target, speed, wipeQueue);
-				Thread.Sleep(100);
+				Thread.Sleep(1000);
 				AddTween(parameter, startValue, returnSpeed, false);
 			});
 		}

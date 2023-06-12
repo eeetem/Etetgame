@@ -57,7 +57,7 @@ namespace MultiplayerXeno
 			{
 				spriteIndex = (int)Facing;
 			}
-			if (ControllableComponent != null&& ControllableComponent.Crouching)
+			if (UnitComponent != null&& UnitComponent.Crouching)
 			{//this is so fucking convoluted. i'll fix it whenever animations are in
 				sprite = Type.Controllable.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
 			
@@ -76,9 +76,9 @@ namespace MultiplayerXeno
 
 			Color color = TileLocation.GetTileColor();
 				
-			if (ControllableComponent != null)
+			if (UnitComponent != null)
 			{
-				if (ControllableComponent.IsMyTeam())
+				if (UnitComponent.IsMyTeam())
 				{
 					color = new Color(200,255,200);
 				}

@@ -16,16 +16,16 @@ namespace MultiplayerXeno
 {
 	public partial class Unit
 	{
-		public WorldObject worldObject { get; private set; }
+		public WorldObject WorldObject { get; private set; }
 		public UnitType Type { get; private set; }
 
 		
 
 		public readonly WorldAction?[] Inventory;
-		public Unit(bool isPlayerOneTeam, WorldObject worldObject, UnitType type, UnitData data)
+		public Unit(bool isPlayerOneTeam, WorldObject wo, UnitType type, UnitData data)
 		{
 			
-			this.worldObject = worldObject;
+			this.WorldObject = wo;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
 	
@@ -81,6 +81,10 @@ namespace MultiplayerXeno
 			overWatch = data.overwatch;
 			SelectedItemIndex = data.selectIndex;
 
+			if (data.LastItem != null)
+			{
+				LastItem = PrefabManager.UseItems[data.LastItem];
+			}
 			foreach (var effect in data.StatusEffects)
 			{
 				ApplyStatus(effect.Item1,effect.Item2);
@@ -165,7 +169,7 @@ namespace MultiplayerXeno
 				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
 				for (int i = 0; i < MovePoints; i++)
 				{
-					possibleMoves[i] = PathFinding.GetAllPaths(worldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, GetMoveRange() * (i + 1));
 				}return possibleMoves;
 			}
 
@@ -182,7 +186,7 @@ namespace MultiplayerXeno
 
 		public void TakeDamage(int dmg, int detResis)
 		{
-			Console.WriteLine(this +"(health:"+worldObject.Health+") hit for "+dmg);
+			Console.WriteLine(this +"(health:"+WorldObject.Health+") hit for "+dmg);
 			if (Determination > 0)
 			{
 				Console.WriteLine("blocked by determination");
@@ -197,11 +201,11 @@ namespace MultiplayerXeno
 			}
 
 
-			worldObject.Health -= dmg;
+			WorldObject.Health -= dmg;
 			
 			Console.WriteLine("unit hit for: "+dmg);
-			Console.WriteLine("outcome: health="+worldObject.Health);
-			if (worldObject.Health <= 0)
+			Console.WriteLine("outcome: health="+WorldObject.Health);
+			if (WorldObject.Health <= 0)
 			{
 				Console.WriteLine("dead");
 				ClearOverWatch();
@@ -210,16 +214,16 @@ namespace MultiplayerXeno
 					moving = false;
 				}
 
-				WorldManager.Instance.DeleteWorldObject(worldObject);//dead
+				WorldManager.Instance.DeleteWorldObject(WorldObject);//dead
 #if CLIENT
-				Audio.PlaySound("death",worldObject.TileLocation.Position);
+				Audio.PlaySound("death",WorldObject.TileLocation.Position);
 #endif
 				
 			}
 			else
 			{
 #if CLIENT
-				Audio.PlaySound("grunt",worldObject.TileLocation.Position);
+				Audio.PlaySound("grunt",WorldObject.TileLocation.Position);
 #endif
 			}
 
@@ -233,8 +237,8 @@ namespace MultiplayerXeno
 
 		public bool CanHit(Vector2Int target, bool lowTarget = false)
 		{
-			Vector2 shotDir = Vector2.Normalize(target - worldObject.TileLocation.Position);
-			Projectile proj = new Projectile(worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
+			Vector2 shotDir = Vector2.Normalize(target - WorldObject.TileLocation.Position);
+			Projectile proj = new Projectile(WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),0,100,lowTarget,Crouching,0,0,0);
 			
 				
 			if (proj.Result.hit)
@@ -267,9 +271,9 @@ namespace MultiplayerXeno
 			if(paniced)
 			{
 #if CLIENT
-				if (worldObject.IsVisible())
+				if (WorldObject.IsVisible())
 				{
-					new PopUpText("Recovering From Panic", worldObject.TileLocation.Position);
+					new PopUpText("Recovering From Panic", WorldObject.TileLocation.Position);
 				}	
 #endif
 			
@@ -301,7 +305,7 @@ namespace MultiplayerXeno
 			if (!result.Item1)
 			{
 #if CLIENT
-				new PopUpText(result.Item2, worldObject.TileLocation.Position);
+				new PopUpText(result.Item2, WorldObject.TileLocation.Position);
 				new PopUpText(result.Item2, target);
 #else
 				Console.WriteLine("tried to do action but failed: "+result.Item2);
@@ -311,6 +315,7 @@ namespace MultiplayerXeno
 			}
 #if CLIENT
 			a.ToPacket(this, target);
+			a.PerformClientSide(this, target);
 #else
 			a.ToPacket(this,target);
 			a.Perform(this, target);
@@ -326,9 +331,9 @@ namespace MultiplayerXeno
 
 		
 #if CLIENT
-			if (worldObject.IsVisible())
+			if (WorldObject.IsVisible())
 			{
-				var t = new PopUpText("Panic!", worldObject.TileLocation.Position);	
+				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position);	
 				t.scale = 2;
 				t.Color = Color.Red;
 			}
@@ -355,7 +360,7 @@ namespace MultiplayerXeno
 		{
 			
 #if SERVER
-			bool isFriendly = IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.ControllableComponent.IsPlayerOneTeam;
+			bool isFriendly = IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation.IsPlayerOneTeam;
 			//make this "can player see" fucntion
 			List<int> units;
 			if (IsPlayerOneTeam)
@@ -373,7 +378,7 @@ namespace MultiplayerXeno
 				var WO = WorldManager.Instance.GetObject(unit);
 				if (WO != null)
 				{
-					var tempVis = WorldManager.Instance.CanSee(WO.ControllableComponent, location);
+					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent, location);
 					if (tempVis > vis)
 					{
 						vis = tempVis;
@@ -383,10 +388,10 @@ namespace MultiplayerXeno
 			
 			}
 			
-			Console.WriteLine("overwatch spotted by "+worldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
-			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).ControllableAtLocation.GetMinimumVisibility())
+			Console.WriteLine("overwatch spotted by "+WorldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
+			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation.WorldObject.GetMinimumVisibility())
 			{
-				Console.WriteLine("overwatch fired by "+worldObject.TileLocation.Position);
+				Console.WriteLine("overwatch fired by "+WorldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
 			}
 #endif
@@ -435,14 +440,14 @@ namespace MultiplayerXeno
 					
 					try
 					{
-						worldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - worldObject.TileLocation.Position));
+						WorldObject.Face(Utility.Vec2ToDir(CurrentPath[0] - WorldObject.TileLocation.Position));
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine("Exception when facing, the values are: "+CurrentPath[0]+" and " +worldObject.TileLocation.Position + " exception: "+e);
+						Console.WriteLine("Exception when facing, the values are: "+CurrentPath[0]+" and " +WorldObject.TileLocation.Position + " exception: "+e);
 					}
 
-					worldObject.Move(CurrentPath[0]);
+					WorldObject.Move(CurrentPath[0]);
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
@@ -454,13 +459,13 @@ namespace MultiplayerXeno
 					}
 					else
 					{
-						_moveCounter = (float)WorldManager.Instance.GetTileAtGrid(CurrentPath[0]).TraverseCostFrom(worldObject.TileLocation.Position)*250f;
+						_moveCounter = (float)WorldManager.Instance.GetTileAtGrid(CurrentPath[0]).TraverseCostFrom(WorldObject.TileLocation.Position)*250f;
 					}
 #if CLIENT
 					WorldManager.Instance.MakeFovDirty();
-					if (worldObject.IsVisible())
+					if (WorldObject.IsVisible())
 					{
-						Audio.PlaySound("footstep", Utility.GridToWorldPos(worldObject.TileLocation.Position));
+						Audio.PlaySound("footstep", Utility.GridToWorldPos(WorldObject.TileLocation.Position));
 					}
 #endif
 					
@@ -489,14 +494,14 @@ namespace MultiplayerXeno
 			{
 				sts.Add(new Tuple<string?, int>(st.type.name,st.duration));
 			}
-			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex);
+			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex,LastItem?.Name);
 			data.JustSpawned = false;
 			return data;
 		}
 
 		protected bool Equals(Unit other)
 		{
-			return worldObject.Equals(other.worldObject);
+			return WorldObject.Equals(other.WorldObject);
 		}
 
 		public override bool Equals(object? obj)
@@ -509,7 +514,7 @@ namespace MultiplayerXeno
 
 		public override int GetHashCode()
 		{
-			return worldObject.GetHashCode();
+			return WorldObject.GetHashCode();
 		}
 
 		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
@@ -567,6 +572,7 @@ namespace MultiplayerXeno
 
 		public string GetVar(string var,string? param = null)
 		{
+			Console.WriteLine("getting value "+var+" with param "+param);
 			var type = GetType();
 			var field = type.GetField(var);
 			object? value = null;
@@ -582,11 +588,13 @@ namespace MultiplayerXeno
 
 			if (param == null)
 			{
+				Console.WriteLine("returning "+value);
 				return value.ToString();
 			}
 
 			var innerField = value.GetType().GetField(param);
 			var innerValue = innerField.GetValue(value);
+			Console.WriteLine("returning "+innerValue);
 			return innerValue.ToString();
 
 		}

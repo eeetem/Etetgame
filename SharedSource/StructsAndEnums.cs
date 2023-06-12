@@ -9,7 +9,7 @@ namespace MultiplayerXeno
 		public WorldObjectData? NorthEdge;
 		public WorldObjectData? WestEdge;
 		public WorldObjectData? Surface;
-		public WorldObjectData? ControllableAtLocation;
+		public WorldObjectData? UnitAtLocation;
 		public Vector2Int position;
 		public List<WorldObjectData> ObjectsAtLocation;
 		public WorldTileData(Vector2Int position)
@@ -18,7 +18,7 @@ namespace MultiplayerXeno
 			NorthEdge = null;
 			WestEdge = null;
 			Surface = null;
-			ControllableAtLocation = null;
+			UnitAtLocation = null;
 			ObjectsAtLocation = new List<WorldObjectData>();
 		}
 	}
@@ -38,7 +38,7 @@ namespace MultiplayerXeno
 	public partial struct WorldObjectData
 	{
 		public Direction Facing;
-		public int Id;
+		public int ID;
 
 		public bool Fliped;
 		//health
@@ -49,7 +49,7 @@ namespace MultiplayerXeno
 		public WorldObjectData(string prefab)
 		{
 			Prefab = prefab;
-			Id = -1;
+			ID = -1;
 			Facing = Direction.North;
 			ControllableData = null;
 			Fliped = false;
@@ -70,6 +70,7 @@ namespace MultiplayerXeno
 		public bool JustSpawned;
 		public bool overwatch;
 		public int selectIndex;
+		public string? LastItem;
 		public List<string?> Inventory { get; set; }
 		public List<Tuple<string?, int>> StatusEffects { get; set; }
 		
@@ -87,8 +88,9 @@ namespace MultiplayerXeno
 			Inventory = new List<string?>();
 			StatusEffects = new List<Tuple<string?, int>>();
 			selectIndex = -1;
+			LastItem = null;
 		}
-		public UnitData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex)
+		public UnitData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex,string? lastItem)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -102,6 +104,7 @@ namespace MultiplayerXeno
 			StatusEffects = sts;
 			this.overwatch = overwatch;
 			this.selectIndex = selectIndex;
+			LastItem = lastItem;
 		}
 
 	

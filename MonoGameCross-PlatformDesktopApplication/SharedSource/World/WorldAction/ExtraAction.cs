@@ -95,7 +95,7 @@ public class ExtraAction : IExtraAction
 	{
 		if (immideaateActivation)
 		{
-			target = actor.worldObject.TileLocation.Position;
+			target = actor.WorldObject.TileLocation.Position;
 		}
 		
 		actor.Suppress(-DeterminationChange,true);
@@ -113,7 +113,7 @@ public class ExtraAction : IExtraAction
 	{
 		if (immideaateActivation)
 		{
-			target = actor.worldObject.TileLocation.Position;
+			target = actor.WorldObject.TileLocation.Position;
 		}
 
 		WorldAction.Preview(actor, target, spriteBatch);
@@ -123,7 +123,7 @@ public class ExtraAction : IExtraAction
 	{
 		if (immideaateActivation)
 		{
-			target = actor.worldObject.TileLocation.Position;
+			target = actor.WorldObject.TileLocation.Position;
 		}
 		WorldAction.Animate(actor, target);
 	}

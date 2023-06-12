@@ -49,13 +49,13 @@ public class WorldAction
 
 	public void Execute(Unit actor, Vector2Int target)
 	{
-		Console.WriteLine("Executing Action "+Name+" on "+target+" by "+actor.worldObject.Id);
+		Console.WriteLine("Executing Action "+Name+" on "+target+" by "+actor.WorldObject.ID);
 		foreach (var method in DeliveryMethods)
 		{
 			var t = method.ExectuteAndProcessLocation(actor, target);
 			if (t != null)
 			{
-				Effect.Apply(t, actor.worldObject);
+				Effect.Apply(t, actor.WorldObject);
 			}
 		}
 #if CLIENT
@@ -74,7 +74,11 @@ public class WorldAction
 		if (!FreeFire && targetAid != TargetAid.None)
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(target);
-			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible() || tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
+			if (tile.UnitAtLocation == null || !tile.UnitAtLocation.WorldObject.IsVisible())
+			{
+				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
+			}
+			if (targetAid == TargetAid.Enemy && tile.UnitAtLocation.IsMyTeam())
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}
@@ -90,13 +94,21 @@ public class WorldAction
 		if (!FreeFire && targetAid != TargetAid.None)
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(target);
-			if (tile.ControllableAtLocation == null || !tile.ControllableAtLocation.IsVisible())
+			if (tile.UnitAtLocation == null || !tile.UnitAtLocation.WorldObject.IsVisible())
 			{
+				foreach (var m in DeliveryMethods)
+				{
+					m.InitPreview();
+				}
 				return;
 			}
 
-			if (targetAid == TargetAid.Enemy && tile.ControllableAtLocation.ControllableComponent.IsMyTeam())
+			if (targetAid == TargetAid.Enemy && tile.UnitAtLocation.IsMyTeam())
 			{
+				foreach (var m in DeliveryMethods)
+				{
+					m.InitPreview();//reset selection memory
+				}
 				return;
 			}
 		}
@@ -106,7 +118,7 @@ public class WorldAction
 		{
 			var result = method.Preview(actor, target, spriteBatch);
 			if(result == null) continue;
-			Effect.Preview(result, spriteBatch,actor.worldObject);
+			Effect.Preview(result, spriteBatch,actor.WorldObject);
 		}
 	
 	}

@@ -17,8 +17,8 @@ public class Face : Action
 	{
 		
 		
-		var targetDir =  Utility.GetDirection(actor.worldObject.TileLocation.Position, position);
-		if (targetDir == actor.worldObject.Facing)
+		var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, position);
+		if (targetDir == actor.WorldObject.Facing)
 		{
 			return new Tuple<bool, string>(false, "Already facing that direction");
 		}//dont let the action happen if the player is already facing that direction 
@@ -39,9 +39,9 @@ public class Face : Action
 
 	public override void Execute(Unit actor,Vector2Int target)
 	{
-		var targetDir = Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
+		var targetDir = Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
 		actor.canTurn = false;
-		actor.worldObject.Face(targetDir);
+		actor.WorldObject.Face(targetDir);
 	}
 #if CLIENT
 
@@ -56,8 +56,8 @@ public class Face : Action
 	{
 		if (lastTarget == new Vector2Int(0, 0))
 		{
-			var targetDir =  Utility.GetDirection(actor.worldObject.TileLocation.Position, target);
-			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.worldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
+			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
+			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
 			lastTarget = target;
 		}
 		if (lastTarget != target)

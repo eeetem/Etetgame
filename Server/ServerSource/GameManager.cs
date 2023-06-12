@@ -85,6 +85,10 @@ namespace MultiplayerXeno
 			{
 				NextTurn();
 			}
+			
+			Thread.Sleep(2000);//just in case
+			SendData();
+			
 		}
 
 		public static void SendData()

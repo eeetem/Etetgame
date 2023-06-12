@@ -45,7 +45,7 @@ public class Attack : Action
 
 	public override void ToPacket(Unit actor, Vector2Int target)
 	{
-		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
+		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
 		
 		packet.args.Add(Shootable.targeting.ToString());
 		

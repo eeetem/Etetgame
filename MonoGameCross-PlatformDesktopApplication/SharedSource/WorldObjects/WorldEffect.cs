@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -39,9 +40,9 @@ public class WorldEffect
 		var list = hitt.Except(excl).ToList();
 		if (Los)
 		{
-			if (user != null && user.ControllableComponent!=null)
+			if (user != null && user.UnitComponent!=null)
 			{
-				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user.ControllableComponent, x.Position, true));
+				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user.UnitComponent, x.Position, true));
 			}
 			else
 			{
@@ -103,35 +104,35 @@ public class WorldEffect
 		
 
 
-		if (tile.ControllableAtLocation != null && !Ignores.Contains(tile.ControllableAtLocation.ControllableComponent.Type.Name))
+		if (tile.UnitAtLocation != null && !Ignores.Contains(tile.UnitAtLocation.Type.Name))
 		{
 			
-			Unit ctr = tile.ControllableAtLocation.ControllableComponent;
-			if (user != null && user.ControllableComponent!=null)
+			Unit ctr = tile.UnitAtLocation;
+			if (user != null && user.UnitComponent!=null)
 			{
-				if(ctr.IsPlayerOneTeam == user.ControllableComponent.IsPlayerOneTeam && !TargetFriend) return;
-				if(ctr.IsPlayerOneTeam != user.ControllableComponent.IsPlayerOneTeam && !TargetFoe) return;
-				if(Equals(tile.ControllableAtLocation.ControllableComponent, user) && !TargetSelf) return;
+				if(ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return;
+				if(ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return;
+				if(Equals(tile.UnitAtLocation, user) && !TargetSelf) return;
 			
 			}
 			
-			tile.ControllableAtLocation.TakeDamage(Dmg, 0);
+			tile.UnitAtLocation.TakeDamage(Dmg, 0);
 			Act.Apply(ref ctr.ActionPoints);
 			Move.Apply(ref ctr.MovePoints);
 			ctr.Suppress(Det,noPanic);
 			MoveRange.Apply(ref ctr.MoveRangeEffect);
 			foreach (var status in RemoveStatus)
 			{
-				tile.ControllableAtLocation.ControllableComponent?.RemoveStatus(status);
+				tile.UnitAtLocation?.RemoveStatus(status);
 			}
 			foreach (var status in AddStatus)
 			{
-				tile.ControllableAtLocation.ControllableComponent?.ApplyStatus(status.Item1,status.Item2);
+				tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
 			}
 			
 			if(GiveItem!=null)
 			{
-				ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.ControllableComponent,ctr)]);
+				ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
 			}
 			
 		}
@@ -203,9 +204,9 @@ public class WorldEffect
 			tile.SouthEdge.PreviewData.finalDmg = Dmg;
 		}
 		
-		if (tile.ControllableAtLocation != null )
+		if (tile.UnitAtLocation != null )
 		{
-			WorldObject Wo = tile.ControllableAtLocation;
+			WorldObject Wo = tile.UnitAtLocation.WorldObject;
 			Wo.PreviewData.detDmg += Det;
 			Wo.PreviewData.finalDmg += Dmg;
 			Wo.PreviewData.totalDmg += Dmg;

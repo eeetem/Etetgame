@@ -7,9 +7,8 @@ timer sync on reconnect -> later
 lag on greande target;
 
 
-invalid target specialist -> reconnect
-
 deync error on heavies -> status effect sync?
+
 
 alt inspection of unit stats
 

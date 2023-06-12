@@ -26,7 +26,7 @@ public class Shootable : DeliveryMethod
 
 	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
-		if (target == actor.worldObject.TileLocation.Position)
+		if (target == actor.WorldObject.TileLocation.Position)
 		{
 			return new Tuple<bool, string>(false, "You can't shoot yourself!");
 		}
@@ -53,18 +53,18 @@ public class Shootable : DeliveryMethod
 
 	public Projectile MakeProjectile(Unit actor,Vector2Int target)
 	{
-		//target = actor.worldObject.TileLocation.Position + new Vector2(-10,0);
+		//target = actor.WorldObject.TileLocation.Position + new Vector2(-10,0);
 		bool lowShot =false;
 
 
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
 		if (targeting == TargetingType.Auto)
 		{
-			if (tile.ControllableAtLocation != null  && tile.ControllableAtLocation.ControllableComponent.Crouching) 
+			if (tile.UnitAtLocation != null  && tile.UnitAtLocation.Crouching) 
 			{
 				lowShot = true;
 #if CLIENT
-				if (!tile.ControllableAtLocation.IsVisible())
+				if (!tile.UnitAtLocation.WorldObject.IsVisible())
 				{
 					lowShot = false;
 				}
@@ -79,9 +79,9 @@ public class Shootable : DeliveryMethod
 			lowShot = false;
 		}
 		
-		Vector2 shotDir = Vector2.Normalize(target -actor.worldObject.TileLocation.Position);
-		Projectile projectile = new Projectile(actor.worldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
-		projectile.SupressionIgnores.Add(actor.worldObject.Id);
+		Vector2 shotDir = Vector2.Normalize(target -actor.WorldObject.TileLocation.Position);
+		Projectile projectile = new Projectile(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
+		projectile.SupressionIgnores.Add(actor.WorldObject.ID);
 		
 
 		return projectile;
@@ -104,7 +104,7 @@ public class Shootable : DeliveryMethod
 #endif			
 
 		
-		actor.worldObject.Face(Utility.GetDirection(actor.worldObject.TileLocation.Position,target));
+		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
 		if (p.Result.hit)
 		{
 			var obj = WorldManager.Instance.GetObject(p.Result.HitObjId);
@@ -129,7 +129,7 @@ public class Shootable : DeliveryMethod
 	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if (actor.worldObject.TileLocation.Position == target)
+		if (actor.WorldObject.TileLocation.Position == target)
 		{
 			return target;
 		}
@@ -183,9 +183,9 @@ public class Shootable : DeliveryMethod
 
 			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, Color.DarkBlue * 0.45f);
 
-			if (tile.ControllableAtLocation != null && !previewShot.SupressionIgnores.Contains(tile.ControllableAtLocation.Id))
+			if (tile.UnitAtLocation != null && !previewShot.SupressionIgnores.Contains(tile.UnitAtLocation.WorldObject.ID))
 			{
-				tile.ControllableAtLocation.PreviewData.detDmg += previewShot.SupressionStrenght;
+				tile.UnitAtLocation.WorldObject.PreviewData.detDmg += previewShot.SupressionStrenght;
 			}
 
 		}
@@ -256,7 +256,7 @@ public class Shootable : DeliveryMethod
 			var coverCast = previewShot.CoverCast;
 
 			Cover cover = coverObj.GetCover();
-			if (hitobj?.ControllableComponent != null && hitobj.ControllableComponent.Crouching)
+			if (hitobj?.UnitComponent != null && hitobj.UnitComponent.Crouching)
 			{
 				if (cover != Cover.Full)
 				{
@@ -309,12 +309,12 @@ public class Shootable : DeliveryMethod
 			data.distanceBlock = previewShot.OriginalDmg - previewShot.Dmg;
 			data.finalDmg += previewShot.Dmg - coverModifier;
 			data.coverBlock = coverModifier;
-			if (hitobj.ControllableComponent == null)
+			if (hitobj.UnitComponent == null)
 			{
 				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
 				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
 			}
-			else if (hitobj.ControllableComponent.Determination > 0)
+			else if (hitobj.UnitComponent.Determination > 0)
 			{
 				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
 				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;

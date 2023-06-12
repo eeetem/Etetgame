@@ -71,8 +71,9 @@ public abstract class Action
 
 	public virtual void InitAction()
 	{
-	
+		
 	}
+
 
 	public abstract Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
 
@@ -110,22 +111,31 @@ public abstract class Action
 		{
 			if (ActionType == ActionType.Attack)//only fog of war attacks
 			{
-				Camera.SetPos(actor.worldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
+				Camera.SetPos(actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
 			}
 		}
 		else
 		{
-			Camera.SetPos(actor.worldObject.TileLocation.Position);
+			Camera.SetPos(actor.WorldObject.TileLocation.Position);
 		}
 		Thread.Sleep(800);
 	}
 #endif
 	public virtual void ToPacket(Unit actor,Vector2Int target)
 	{
-		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.worldObject.Id+"");
-		var packet = new GameActionPacket(actor.worldObject.Id,target,ActionType);
+		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.WorldObject.ID+"");
+		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
 		Networking.DoAction(packet);
 	}
+	
+	
+#if CLIENT
+	public virtual void PerformClientSide(Unit actor, Vector2Int target)
+	{
+	}
+#endif
+	
+	
 	public void PerformFromPacket(Unit actor,Vector2Int target)
 	{
 #if CLIENT

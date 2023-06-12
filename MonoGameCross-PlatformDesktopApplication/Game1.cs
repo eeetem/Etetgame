@@ -111,15 +111,14 @@ namespace MultiplayerXeno
 
 		protected override void Update(GameTime gameTime)
 		{
-
+			GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
+			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 			Camera.Update(gameTime);
-			WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 			LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
 			PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 			UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 			DiscordManager.Update();
-			GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 			Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
 			
 			base.Update(gameTime);
