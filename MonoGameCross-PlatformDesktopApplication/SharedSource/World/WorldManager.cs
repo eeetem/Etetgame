@@ -118,7 +118,6 @@ namespace MultiplayerXeno
 			tile.Wipe();
 			Task t = new Task(delegate
 			{
-				Console.WriteLine("Loading data for tile at:" + data.position);
 				if (data.Surface != null)
 				{
 					MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
@@ -513,7 +512,6 @@ namespace MultiplayerXeno
 #endif
 			Obj.TileLocation.Remove(id);
 			WorldObjects.Remove(id);
-			
 
 		}
 

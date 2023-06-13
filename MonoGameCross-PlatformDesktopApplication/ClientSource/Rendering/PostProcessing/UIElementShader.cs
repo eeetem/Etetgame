@@ -25,7 +25,7 @@ public class UIElementShader : ShaderPreset
 		}
 
 		float range = 2.5f;
-		float min = 1.5f;
+		float min = 1f;
 		if (flicker)
 		{
 			range = 20;

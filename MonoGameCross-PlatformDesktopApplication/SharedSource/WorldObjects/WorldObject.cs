@@ -56,7 +56,7 @@ public partial class WorldObject
 		
 #endif
 			
-
+		Health = Math.Clamp(Health, 0, type.MaxHealth);
 	}
 
 
@@ -183,12 +183,7 @@ public partial class WorldObject
 		
 		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
 #else
-			if(GameManager.T1Units.Contains(ID)){
-				GameManager.T1Units.Remove(ID);
-			}
-			if(GameManager.T2Units.Contains(ID)){
-				GameManager.T2Units.Remove(ID);
-			}
+		
 
 #endif
 		

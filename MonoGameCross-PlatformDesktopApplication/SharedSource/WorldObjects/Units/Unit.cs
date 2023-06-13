@@ -25,7 +25,7 @@ namespace MultiplayerXeno
 		public Unit(bool isPlayerOneTeam, WorldObject wo, UnitType type, UnitData data)
 		{
 			
-			this.WorldObject = wo;
+			WorldObject = wo;
 			Type = type;
 			IsPlayerOneTeam = isPlayerOneTeam;
 	

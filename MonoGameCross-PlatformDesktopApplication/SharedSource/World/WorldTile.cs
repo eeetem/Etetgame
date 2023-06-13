@@ -267,7 +267,6 @@ namespace MultiplayerXeno
 			}
 			if (Surface != null && Surface.ID == id)
 			{
-				Console.WriteLine("deleted surface at " + Position);
 				Surface = null;
 			}
 

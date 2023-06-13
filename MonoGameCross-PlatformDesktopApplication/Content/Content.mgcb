@@ -55,11 +55,11 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/damage/grunt2.wav
 
-#begin CompressedContent/audio/damage/wilhelm.ogg
-/importer:OggImporter
-/processor:SongProcessor
+#begin CompressedContent/audio/damage/wilhelm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/damage/wilhelm.ogg
+/build:CompressedContent/audio/damage/wilhelm.wav
 
 #begin CompressedContent/audio/footsteps/Footstep 1.ogg
 /importer:OggImporter
@@ -691,6 +691,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/background.png
 
+#begin CompressedContent/textures/UI/GameHud/UnitBar/background.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/background.png
+
 #begin CompressedContent/textures/UI/GameHud/UnitBar/end button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -702,6 +714,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/end button.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/end button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/end button.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/enemyTurn.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/enemyTurn.png
 
 #begin CompressedContent/textures/UI/GameHud/UnitBar/enemyTurn.png
 /importer:TextureImporter
@@ -727,6 +763,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/fireNotch.png
 
+#begin CompressedContent/textures/UI/GameHud/UnitBar/fireNotch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/fireNotch.png
+
 #begin CompressedContent/textures/UI/GameHud/UnitBar/green.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -738,6 +786,42 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/green.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/green.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/green.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/greenoff.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/greenoff.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/moveNotch.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/moveNotch.png
 
 #begin CompressedContent/textures/UI/GameHud/UnitBar/moveNotch.png
 /importer:TextureImporter
@@ -763,6 +847,42 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/red.png
 
+#begin CompressedContent/textures/UI/GameHud/UnitBar/red.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/red.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/redoff.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/redoff.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/screen.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/screen.png
+
 #begin CompressedContent/textures/UI/GameHud/UnitBar/screen.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -787,6 +907,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/Timer.png
 
+#begin CompressedContent/textures/UI/GameHud/UnitBar/Timer.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/Timer.png
+
 #begin CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -798,6 +930,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/unitframe.png
+
+#begin CompressedContent/textures/UI/GameHud/UnitBar/yourTurn.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/UnitBar/yourTurn.png
 
 #begin CompressedContent/textures/UI/GameHud/UnitBar/yourTurn.png
 /importer:TextureImporter

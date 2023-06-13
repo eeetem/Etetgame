@@ -71,7 +71,10 @@ public abstract class Action
 
 	public virtual void InitAction()
 	{
-		
+#if CLIENT
+		GameLayout.ScreenData = null;
+#endif
+	
 	}
 
 

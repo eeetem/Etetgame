@@ -158,7 +158,7 @@
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
       <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs" />
       <Compile Update="ClientSource\Networking.cs">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Compile>
     </ItemGroup>
     <ItemGroup>

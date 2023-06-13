@@ -20,7 +20,7 @@ public static class Chat
 
 	}
 
-	private static float ticker = 600;
+	private static float ticker = 60000;
 	public static void Update(float delta)
 	{
 		if (deleteLoop)
@@ -28,7 +28,7 @@ public static class Chat
 			ticker -= delta;
 			if(ticker <= 0)
 			{
-				ticker = 600;
+				ticker = 60000;
 				Messages.Dequeue();
 				if (Messages.Count == 0)
 				{

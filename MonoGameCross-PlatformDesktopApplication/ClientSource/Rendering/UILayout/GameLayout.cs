@@ -138,7 +138,7 @@ public class GameLayout : MenuLayout
 			else
 			{
 				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
-				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/" + unit.Type.Name), Vector2.Zero, Color.White);
+				batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
 				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
 				batch.End();
 			}
@@ -147,6 +147,7 @@ public class GameLayout : MenuLayout
 
 
 			var healthTexture = TextureManager.GetTexture("UI/GameHud/UnitBar/red");
+			var healthTextureoff = TextureManager.GetTexture("UI/GameHud/UnitBar/redoff");
 			float healthWidth = healthTexture.Width;
 			float healthHeight = healthTexture.Height;
 			int baseWidth = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Width;
@@ -158,22 +159,26 @@ public class GameLayout : MenuLayout
 
 			for (int y = 0; y < unit.WorldObject.Type.MaxHealth; y++)
 			{
+				var indicator = healthTexture;
 				bool health = !(y >= unit.WorldObject.Health);
 				if (health)
 				{
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight), true);
+					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					indicator = healthTexture;
 				}
 				else
 				{
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					indicator = healthTextureoff;
 				}
 
-				batch.Draw(healthTexture, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+				batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
 				batch.End();
 			}
 
 			healthTexture = TextureManager.GetTexture("UI/GameHud/UnitBar/green");
+			healthTextureoff = TextureManager.GetTexture("UI/GameHud/UnitBar/greenoff");
 			healthWidth = healthTexture.Width;
 			healthHeight = healthTexture.Height;
 			healthBarWidth = (healthWidth + 1) * unit.Type.Maxdetermination;
@@ -183,18 +188,21 @@ public class GameLayout : MenuLayout
 
 			for (int y = 0; y < unit.Type.Maxdetermination; y++)
 			{
+				var indicator = healthTexture;
 				bool health = !(y >= unit.Determination);
 				if (health)
 				{
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight), true);
+					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					indicator = healthTexture;
 				}
 				else
 				{
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+					indicator = healthTextureoff;
 				}
 
-				batch.Draw(healthTexture, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+				batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
 				batch.End();
 			}
 
@@ -770,6 +778,8 @@ public class GameLayout : MenuLayout
 		
 	}
 
+
+	public static PreviewData? ScreenData;
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderBehindHud(batch, deltatime);
@@ -872,14 +882,15 @@ public class GameLayout : MenuLayout
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/BottomBar/screen"),Vector2.Zero,null,Color.White,0,Vector2.Zero,new Vector2(1f,1f),SpriteEffects.None,0);
 		bool drawPreviewDmg = false;
-		if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.PreviewData.totalDmg != 0)
+		
+		if (ScreenData is not null)
 		{
 			drawPreviewDmg = true;
 			batch.DrawText("Damage", new Vector2(12, 8), 1, 5, Color.White);
-			for (int i = 0; i < tile.UnitAtLocation.WorldObject.PreviewData.totalDmg; i++)
+			for (int i = 0; i < ScreenData.Value.totalDmg; i++)
 			{
 				Color c = Color.Green;
-				if ( tile.UnitAtLocation.WorldObject.PreviewData.totalDmg - tile.UnitAtLocation.WorldObject.PreviewData.finalDmg> i)
+				if ( ScreenData.Value.totalDmg - ScreenData.Value.finalDmg> i)
 				{
 					c = Color.Red;
 				}
@@ -887,17 +898,17 @@ public class GameLayout : MenuLayout
 			}
 			batch.DrawLine(0,22,200,22,Color.White,2);
 			batch.DrawText("Deter", new Vector2(12, 29), 1, 5, Color.White);
-			for (int i = 0; i < tile.UnitAtLocation.WorldObject.PreviewData.determinationBlock; i++)
+			for (int i = 0; i < ScreenData.Value.determinationBlock; i++)
 			{
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/healthenv"), new Vector2(55, 28) + i * new Vector2(-5, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 			}
 			batch.DrawText("Cover", new Vector2(12, 44), 1, 5, Color.White);
-			for (int i = 0; i < tile.UnitAtLocation.WorldObject.PreviewData.coverBlock; i++)
+			for (int i = 0; i < ScreenData.Value.coverBlock; i++)
 			{
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/healthenv"), new Vector2(55, 43) + i * new Vector2(5, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 			}
 			batch.DrawText("Range", new Vector2(12, 59), 1, 5, Color.White);
-			for (int i = 0; i < tile.UnitAtLocation.WorldObject.PreviewData.distanceBlock; i++)
+			for (int i = 0; i < ScreenData.Value.distanceBlock; i++)
 			{
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/healthenv"), new Vector2(55, 58) + i * new Vector2(5, 0), null, Color.Green, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 			}
@@ -929,8 +940,73 @@ public class GameLayout : MenuLayout
 			batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*g,0),null, Color.White,0,Vector2.Zero,3.2f,SpriteEffects.None,0);
 			g++;
 		}
-		batch.End();
 		
+		batch.DrawText("Health", new Vector2(15, 5), 1, 5, Color.White);
+		
+
+		var nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealth");
+		var healthTexture = TextureManager.GetTexture("UI/HoverHud/health");
+		var healthWidth = healthTexture.Width;
+		Vector2 healthBarPos = new Vector2(8, 14);
+
+		for (int y = 0; y < SelectedUnit.WorldObject.Type.MaxHealth; y++)
+		{
+			bool health = !(y>= SelectedUnit.WorldObject.Health);
+
+			Texture2D indicator;
+			if (health) {
+				indicator = healthTexture;
+			}
+			else {
+				indicator= nohealthTexture;
+			}
+			
+			batch.Draw(indicator,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			
+		}
+		batch.DrawText("Determination", new Vector2(15, 27), 1, 100, Color.White);
+		Vector2 DetPos = new Vector2(8, 40);
+		int detWidth = TextureManager.GetTexture("UI/HoverHud/detGreen").Width;
+		int detHeight = TextureManager.GetTexture("UI/HoverHud/detGreen").Height;
+		
+		for (int y = 0; y < SelectedUnit.Type.Maxdetermination; y++)
+		{
+			Texture2D indicator;
+			bool pulse = false;
+
+			if (y == SelectedUnit.Determination && !SelectedUnit.paniced)
+			{
+				indicator = TextureManager.GetTexture("UI/HoverHud/detYellow");
+				pulse = true;
+			}
+			else if (y >= SelectedUnit.Determination)
+			{
+				indicator = TextureManager.GetTexture("UI/HoverHud/detBlank");
+			}
+			else
+			{
+				indicator = TextureManager.GetTexture("UI/HoverHud/detGreen");
+			}
+
+		
+			float op = 1;
+			if (pulse)
+			{
+				op = animopacity+0.1f;
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+
+			}
+
+			batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White*op, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+			
+
+		}
+		if (SelectedUnit.paniced)
+		{
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(8,35), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+		}
+		
+		batch.End();
 		graphicsDevice.SetRenderTarget(timerRenderTarget);
 	
 		graphicsDevice.Clear(Color.Transparent);
@@ -989,7 +1065,7 @@ public class GameLayout : MenuLayout
 		batch.End();
 		PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostPorcessing.UIGlowEffect);
-		batch.Draw(infoScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) - bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
+		batch.Draw(infoScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width*globalScale.X)/2f - infoScreenRenderTarget.Width*globalScale.X/2f, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		batch.End();
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 		//centered
@@ -1134,7 +1210,7 @@ public class GameLayout : MenuLayout
 
 			for (int i = 0; i < movesToDraw; i++)
 			{
-					batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),startpos + new Vector2(1,0)*offset*globalScale.X,null,Color.White,0,Vector2.Zero,globalScale.X,SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),startpos + new Vector2(1,0)*offset*globalScale.X,null,Color.White,0,Vector2.Zero,globalScale.X,SpriteEffects.None,0);
 				offset+= 6;
 			}
 			offset+=10;
@@ -1426,6 +1502,7 @@ public class GameLayout : MenuLayout
 
 
 	private static float counter;
+	private static float animopacity;
 	private TextBox? inputBox;
 
 	public static void DrawHoverHud(SpriteBatch batch, WorldObject target,float deltaTime)
@@ -1435,7 +1512,7 @@ public class GameLayout : MenuLayout
 		{
 			counter= 0;
 		}
-		float animopacity = counter;
+		animopacity = counter;
 		if (counter > 1)
 		{
 			animopacity = 2- counter;
@@ -1643,7 +1720,7 @@ public class GameLayout : MenuLayout
 			if (unit.paniced)
 			{
 				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,17), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,18), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 				batch.End();
 			}
 

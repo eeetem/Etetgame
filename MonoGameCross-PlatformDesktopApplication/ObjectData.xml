@@ -100,7 +100,7 @@
         </effect>
       </defaultAttack>
 
-      <action immideate="true" det ="-3" mpoint="6[set]" apoint="1[set]">
+      <action immideate="true" det ="-3" mpoint="5[set]" apoint="1[set]">
        <name>Breach n Clear</name>
         <tip>Restores actions points and gives 6 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
         <effect visible ="false">
@@ -168,7 +168,7 @@
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
     <sprite name="Officer"  offset= "0,0"/>
     <name>Officer</name>
-    <controllable moveRange = "6" moves="2" actions="2" determination="2"  sightrange="20">
+    <controllable moveRange = "4" moves="3" actions="3" determination="2"  sightrange="20">
 
       <defaultAttack>
         <targetAid>enemy</targetAid>

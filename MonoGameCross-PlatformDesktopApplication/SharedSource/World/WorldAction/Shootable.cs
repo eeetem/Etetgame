@@ -4,6 +4,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
+
+
 namespace MultiplayerXeno.Items;
 
 public class Shootable : DeliveryMethod
@@ -89,9 +94,6 @@ public class Shootable : DeliveryMethod
 
 	public override Vector2Int ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
-		actor.ClearOverWatch();
-
-			
 		//client shouldnt be allowed to judge what got hit
 		//fire packet just makes the unit "shoot"
 		//actual damage and projectile is handled elsewhere
@@ -169,7 +171,12 @@ public class Shootable : DeliveryMethod
 				break;
 		}
 
-				
+		if (actor.Crouching)
+		{
+			targetHeight = "Low(Crouching)";
+		}
+
+
 		spriteBatch.DrawText("X:"+target.X+" Y:"+target.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(), 2/Camera.GetZoom(),Color.Wheat);
 
 
@@ -321,6 +328,7 @@ public class Shootable : DeliveryMethod
 			}
 
 			hitobj.PreviewData = data;
+			GameLayout.ScreenData = data;
 		}
 		
 		

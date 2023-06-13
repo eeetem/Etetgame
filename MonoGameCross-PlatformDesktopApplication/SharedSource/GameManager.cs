@@ -58,6 +58,14 @@ namespace MultiplayerXeno
 			T1SpawnPoints.Remove(wo.TileLocation.Position);
 			T2SpawnPoints.Remove(wo.TileLocation.Position);
 			CapturePoints.Remove(wo);
+			#if SERVER
+			if(T1Units.Contains(wo.ID)){
+				T1Units.Remove(wo.ID);
+			}
+			if(T2Units.Contains(wo.ID)){
+				T2Units.Remove(wo.ID);
+			}
+			#endif
 		}
 
 		private static void EndGame(bool player1Win)
