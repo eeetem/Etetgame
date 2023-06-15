@@ -102,7 +102,7 @@
 
       <action immideate="true" det ="-3" mpoint="5[set]" apoint="1[set]">
        <name>Breach n Clear</name>
-        <tip>Restores actions points and gives 6 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
+        <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
         <effect visible ="false">
           <applystatus status="BreachnClear" duration="1"/>
         </effect>
@@ -205,11 +205,11 @@
   <object VCover = "0" Faceable = "true" SCover ="3" Health="10">
     <sprite name="Specialist"  offset= "0,0"/>
     <name>Specialist</name>
-    <controllable moveRange = "4" inventory="5" supressionRange="2" moves="3" actions="1" determination="2">
+    <controllable moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
 
       <defaultAttack>
         <targetAid>enemy</targetAid>
-        <shootable dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="9"/>
+        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
         <effect>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
@@ -299,7 +299,7 @@
     <tip>Damages units in effect area</tip>
     <throwable throwRange="6"/>
     <effect range="3">
-      <damage det="1" dmg="6"/>
+      <damage det="1" dmg="5"/>
       <vfx name="tintR" target="5" speed="50"/>
       <vfx name="tintG" target="5" speed="50"/>
       <vfx name="clmagnitude" target="100" speed="50"/>

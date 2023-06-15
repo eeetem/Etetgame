@@ -8,6 +8,11 @@ lag on greande target;
 
 alt inspection of unit stats
 
+instant map pulling
+tutorial
+show action points next to action
+excom like action confirming
+
 
 action locking/rework:
 dont send actions untill recived confirm 
@@ -30,7 +35,7 @@ sfx list:
 --officer boost
 
 
-@everyone here's what you can blame for lack of holdout updates. A game i've been working for on for about ~1 year at this point. A hardcore turnbased tactics game akin to xenonauts/xcom however with full focus and attention on multiplayer. I'm currently in need of a few playtesters so if it sounds intresting feel free to join. This is a very early alpha build and everything you see in the screenshot is either a placeholder or WIP and subject to change
+@everyone here's what you can blame for lack of holdout updates. A game i've been working for on for about ~1 year at this point. A hardcore multiplayer-focused turnbased tactics game akin to xenonauts/xcom. I'm currently in need of a few playtesters so if it sounds intresting feel free to join the discord. This is a very early alpha build and everything you see in the screenshot is either a placeholder or WIP and subject to change
 https://discord.gg/TrmAJbMaQ3
 https://cdn.discordapp.com/attachments/1049679590278307873/1116384749439701144/image.png
 

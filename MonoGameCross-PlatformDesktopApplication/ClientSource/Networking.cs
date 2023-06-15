@@ -133,7 +133,9 @@ namespace MultiplayerXeno
 			using (Stream dataStream = new MemoryStream(rawData.Data))
 			{
 				BinaryFormatter bformatter = new BinaryFormatter();
+#pragma warning disable SYSLIB0011
 				WorldTileData prefabData = (WorldTileData)bformatter.Deserialize(dataStream);
+#pragma warning restore SYSLIB0011
 				Console.WriteLine("recived tile update "+prefabData.position);
 				WorldManager.Instance.LoadWorldTile(prefabData);
 
