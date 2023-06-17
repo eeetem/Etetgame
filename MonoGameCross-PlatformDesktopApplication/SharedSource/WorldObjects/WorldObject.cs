@@ -52,7 +52,7 @@ public partial class WorldObject
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
-		spriteVariation = Random.Shared.Next(type.variations);
+		spriteVariation = (tile.Position.X + tile.Position.Y + ID )% type.variations;
 		
 #endif
 			

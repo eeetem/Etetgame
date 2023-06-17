@@ -77,11 +77,17 @@ namespace MultiplayerXeno
 		}
 		public double TraverseCostFrom(Vector2Int from)
 		{
-			var dist = Utility.Distance(from,Position);
-			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
-			if (obstacle == Cover.None) return dist;
-			if(obstacle == Cover.Low) return dist + 1;
-			if(obstacle == Cover.High) return dist + 1;
+			try
+			{
+				var dist = Utility.Distance(from, Position);
+				Cover obstacle = WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
+				if (obstacle == Cover.None) return dist;
+				if (obstacle == Cover.Low) return dist + 1;
+				if (obstacle == Cover.High) return dist + 5;
+			}catch(Exception e)
+			{
+				Console.WriteLine(e);
+			}
 
 			throw new Exception("not traversible tile requested cost");
 		}

@@ -46,6 +46,7 @@ namespace MultiplayerXeno
 
 			Crouching = data.Crouching;
 			paniced = data.Panic;
+			ThisMoving = data.ThisMoving;
 
 
 #if CLIENT
@@ -69,6 +70,8 @@ namespace MultiplayerXeno
 			{
 				canTurn = (bool) data.canTurn;
 			}
+
+			MoveRangeEffect.Current = data.MoveRangeEffect;
 
 			Inventory = new WorldAction[type.InventorySize];
 			for (int i = 0; i < type.InventorySize; i++)
@@ -209,9 +212,10 @@ namespace MultiplayerXeno
 			{
 				Console.WriteLine("dead");
 				ClearOverWatch();
-				if (_thisMoving)
+				if (ThisMoving)
 				{
-					moving = false;
+					AnyUnitMoving = false;
+					ThisMoving = false;
 				}
 
 				WorldManager.Instance.DeleteWorldObject(WorldObject);//dead
@@ -341,10 +345,10 @@ namespace MultiplayerXeno
 			
 			Crouching = true;
 			paniced = true;
-			if (moving)
+			if (AnyUnitMoving)
 			{
-				moving = false;
-				_thisMoving = false;
+				AnyUnitMoving = false;
+				ThisMoving = false;
 			}
 			ClearOverWatch();
 			
@@ -356,11 +360,24 @@ namespace MultiplayerXeno
 
 
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
+		
+		
+		private bool overwatchShotThisMove = false;
+
 		public void OverWatchSpoted(Vector2Int location)
 		{
 			
+	
+
+			
 #if SERVER
-			bool isFriendly = IsPlayerOneTeam == WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation.IsPlayerOneTeam;
+
+			Unit unit = WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation;
+			if (unit == null)
+			{
+				throw new Exception("overwatch spoted with no unit at location");
+			}
+			bool isFriendly = IsPlayerOneTeam == unit.IsPlayerOneTeam;
 			//make this "can player see" fucntion
 			List<int> units;
 			if (IsPlayerOneTeam)
@@ -373,9 +390,9 @@ namespace MultiplayerXeno
 			}
 
 			Visibility vis = Visibility.None;
-			foreach (var unit in units)
+			foreach (var u in units)
 			{
-				var WO = WorldManager.Instance.GetObject(unit);
+				var WO = WorldManager.Instance.GetObject(u);
 				if (WO != null)
 				{
 					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent, location);
@@ -389,11 +406,14 @@ namespace MultiplayerXeno
 			}
 			
 			Console.WriteLine("overwatch spotted by "+WorldObject.TileLocation.Position+" is friendly: "+isFriendly+" vis: "+vis);
-			if (!isFriendly && CanHit(location)&& vis >= WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation.WorldObject.GetMinimumVisibility())
+			if(overwatchShotThisMove) return;
+			if (!isFriendly && CanHit(location)&& vis >= unit.WorldObject.GetMinimumVisibility())
 			{
 				Console.WriteLine("overwatch fired by "+WorldObject.TileLocation.Position);
 				DoAction(Action.Actions[ActionType.Attack], location);
+				overwatchShotThisMove = true;
 			}
+
 #endif
 			
 		}
@@ -412,15 +432,15 @@ namespace MultiplayerXeno
 
 
 		private List<Vector2Int>? CurrentPath = new List<Vector2Int>();
-		private bool _thisMoving;
-		public static bool moving;
+		public bool ThisMoving;
+		public static bool AnyUnitMoving;
 		private float _moveCounter;
 
 
 		public void MoveAnimation(List<Vector2Int>? path)
 		{
-			moving = true;
-			_thisMoving = true;
+			AnyUnitMoving = true;
+			ThisMoving = true;
 			CurrentPath = path;
 		}
 		
@@ -432,7 +452,7 @@ namespace MultiplayerXeno
 		public void Update(float gameTime)
 		{
 
-			if (_thisMoving)
+			if (ThisMoving)
 			{
 				_moveCounter -= gameTime;
 				if (_moveCounter < 0)
@@ -451,8 +471,20 @@ namespace MultiplayerXeno
 					CurrentPath.RemoveAt(0);
 					if (CurrentPath.Count == 0)
 					{
-						moving = false;
-						_thisMoving = false;
+						AnyUnitMoving = false;
+						ThisMoving = false;
+#if SERVER
+						foreach (var u in GameManager.T1Units)
+						{
+							WorldManager.Instance.GetObject(u).UnitComponent.overwatchShotThisMove = false;
+						}
+						foreach (var u in GameManager.T2Units)
+						{
+							WorldManager.Instance.GetObject(u).UnitComponent.overwatchShotThisMove = false;
+						}
+						Networking.SendTileUpdate(WorldObject.TileLocation);
+#endif
+						
 #if CLIENT
 						GameLayout.ReMakeMovePreview();
 #endif
@@ -494,7 +526,7 @@ namespace MultiplayerXeno
 			{
 				sts.Add(new Tuple<string?, int>(st.type.name,st.duration));
 			}
-			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex,LastItem?.Name);
+			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex,LastItem?.Name,MoveRangeEffect.Current,ThisMoving);
 			data.JustSpawned = false;
 			return data;
 		}

@@ -33,7 +33,7 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
 
-		if (Unit.moving)
+		if (Unit.AnyUnitMoving)
 		{
 			return new Tuple<bool, string>(false, "Can't move multiple units at once");
 		}
@@ -73,6 +73,8 @@ public class Move : Action
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
+
+		if(Unit.AnyUnitMoving) return;
 		if (lastTarget == new Vector2Int(0, 0))
 		{
 			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target).Path;

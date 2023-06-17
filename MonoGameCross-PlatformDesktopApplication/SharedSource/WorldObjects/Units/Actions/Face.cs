@@ -23,7 +23,7 @@ public class Face : Action
 			return new Tuple<bool, string>(false, "Already facing that direction");
 		}//dont let the action happen if the player is already facing that direction 
 
-		if (Unit.moving)
+		if (Unit.AnyUnitMoving)
 		{
 			return new Tuple<bool, string>(false, "Can't face while moving");
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using MultiplayerXeno;
 using Network;
 using Network.Converter;
@@ -12,9 +13,10 @@ namespace MultiplayerXeno
 		private static ServerConnectionContainer? serverConnectionContainer;
 		public static void Start(int port)
 		{
+		
 			//1. Start listen on a portw
 			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(port, false);
-
+			
 			serverConnectionContainer.ConnectionLost += (conn, b, cl) =>
 			{
 				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {conn.IPRemoteEndPoint.Address}. Reason {cl.ToString()}");
@@ -282,17 +284,16 @@ namespace MultiplayerXeno
 		{
 			WorldTileData worldTileData = wo.GetData();
 
-			using (MemoryStream stream = new MemoryStream())
+		
+				
+			string s = Newtonsoft.Json.JsonConvert.SerializeObject(worldTileData);
+			GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
+			GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
+			foreach (var spectator in GameManager.Spectators)
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(stream,worldTileData);
-				GameManager.Player1?.Connection?.SendRawData("TileUpdate",stream.ToArray());
-				GameManager.Player2?.Connection?.SendRawData("TileUpdate",stream.ToArray());
-				foreach (var spectator in GameManager.Spectators)
-				{
-					spectator.Connection?.SendRawData("TileUpdate",stream.ToArray());
-				}
+				spectator.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
 			}
+			
 			
 			
 			

@@ -112,7 +112,6 @@ namespace MultiplayerXeno
 		public WorldTile LoadWorldTile(WorldTileData data)
 		{
 
-			
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();
@@ -651,8 +650,7 @@ namespace MultiplayerXeno
 
 					if (GameManager.GameState == GameState.Lobby)
 					{
-	
-							Camera.SetPos(WO.Item2.Position);
+						Camera.SetPos(WO.Item2.Position);
 					}
 #endif
 					
@@ -751,9 +749,9 @@ namespace MultiplayerXeno
 						throw new Exception("edge cannot be cornerfacing");
 				}
 			}
-			else if(type.Controllable != null && data.ControllableData != null)
+			else if(type.Unit != null && data.ControllableData != null)
 			{
-				Unit component = type.Controllable.Instantiate(WO, data.ControllableData.Value);
+				Unit component = type.Unit.Instantiate(WO, data.ControllableData.Value);
 				WO.UnitComponent = component;
 #if CLIENT
 				GameLayout.RegisterUnit(component);
@@ -762,7 +760,7 @@ namespace MultiplayerXeno
 
 				if (data.ControllableData.Value.JustSpawned)//bad spot for this but whatever for now
 				{
-					type.Controllable.SpawnEffect?.Apply(tile.Position);
+					type.Unit.SpawnEffect?.Apply(tile.Position);
 				}
 			}
 			else

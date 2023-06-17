@@ -168,16 +168,21 @@ public static class PrefabManager
 			//	}
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 			int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
+			if (spritename == null)
+			{
+				spritename = name;
+			}
+			if (type.Unit != null)
+			{
+				spritename = "Units/" + spritename;
+			}
 #endif
 			
 				
 
 #if CLIENT
-
 			type.Transform = new Transform2();
 			type.Transform.Position = Utility.GridToWorldPos(Offset);
-
-				
 #endif
 
 			
@@ -185,25 +190,19 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-			if (spritename != null)
-			{
-				type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
-				if (type.Controllable != null)
-				{
-					type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(spritename + "Crouch"),3,3);
-				}
 
-					
+	
+
+			if (type.Unit != null)
+			{
+				type.GenerateSpriteSheet(spritename+"/Stand",spriteVariations,true);//this is a bit inconsistent but eeeh
+				type.Unit.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTextureFromPNG(spritename + "/Crouch"),3,3);
 			}
 			else
 			{
-				type.GenerateSpriteSheet(name,spriteVariations);
-				if (type.Controllable != null)
-				{
-					type.Controllable.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTexture(name + "Crouch"),3,3);
-				}
+				type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
 			}
-
+			
 
 #endif
 

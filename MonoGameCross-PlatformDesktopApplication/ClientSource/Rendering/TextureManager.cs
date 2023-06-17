@@ -58,10 +58,12 @@ public static class TextureManager
 
 		lock (SyncObj)
 		{
-			FileStream fileStream = new FileStream("Content/"+name+".png", FileMode.Open);
+			FileStream fileStream = new FileStream("Content/" + name + ".png", FileMode.Open);
 			Texture2D tex = Texture2D.FromStream(Game1.instance.GraphicsDevice, fileStream);
 			fileStream.Dispose();
 			PngTextures.Add(name, tex);
+				
+			
 		}
 
 

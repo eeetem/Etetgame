@@ -92,14 +92,14 @@ namespace MultiplayerXeno
 			to = Result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
 			RayCastOutcome cast;
 
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.High, false,true);
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
 			if (cast.hit && Result.HitObjId != cast.HitObjId)
 			{
 				CoverCast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.5f, to, Cover.Low, false,true);
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
 				if (cast.hit && Result.HitObjId != cast.HitObjId)
 				{
 					CoverCast = cast;
@@ -178,6 +178,11 @@ namespace MultiplayerXeno
 			
 			if (Result.hit)
 			{
+				var hitObj = WorldManager.Instance.GetObject(Result.HitObjId);
+				if (hitObj != null)
+				{
+							
+
 				if (CoverCast != null)
 				{
 					var hitobj = WorldManager.Instance.GetObject(Result.HitObjId);
@@ -216,13 +221,20 @@ namespace MultiplayerXeno
 						coverBlock = Dmg;
 						Dmg = 0;
 					}
-					WorldManager.Instance.GetObject(CoverCast.HitObjId)?.TakeDamage(coverBlock,0);
+					hitObj.TakeDamage(coverBlock,0);
 				}
 
 				
 				
-				WorldManager.Instance.GetObject(Result.HitObjId)?.TakeDamage(this);
-			
+				hitObj.TakeDamage(this);
+#if SERVER
+				Networking.SendTileUpdate(hitObj.TileLocation);
+#endif
+				}
+				else
+				{
+					Console.WriteLine("hitobj is null");
+				}
 			}
 			else
 			{
@@ -241,6 +253,10 @@ namespace MultiplayerXeno
 					tile.UnitAtLocation.Suppress(SupressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.UnitAtLocation.Determination);
 				}
+#if SERVER
+				Networking.SendTileUpdate(tile);
+#endif
+				
 			}
 			
 		}

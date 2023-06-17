@@ -54,7 +54,6 @@ namespace MultiplayerXeno
 		 static bool forceMoving = false;
 		public static void SetPos(Vector2Int vec)
 		{
-		
 
 			vec = Utility.GridToWorldPos(vec);
 			//vec.X -= Cam.BoundingRectangle.Width / 2;

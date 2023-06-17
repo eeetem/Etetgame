@@ -106,8 +106,7 @@ namespace MultiplayerXeno
 			EffectParams["dyamplitude"] = 80f;
 			EffectParams["dyfrequency"] = 80f;
 
-			DefaultParams["noise"] = 0.002f;
-			DefaultParams["clmagnitude"] = 3f;
+
 
 			foreach (var p in EffectParams)
 			{
@@ -137,12 +136,12 @@ namespace MultiplayerXeno
 			AddTween("clspeed", 7f, 2f, false);
 			AddTween("clalpha", 0.07f, 1f, false);
 			AddTween("shape", 0.1f, 5f, false);
-			AddTween("noise", 0.1f, 3f, false);
+			AddTween("noise", 0.1f, 5f, false);
 
 
 
-			AddTween("noise", 0.002f, 3f, false);
-			AddTween("clmagnitude", 0f, 0.5f, false);
+			AddTween("noise", 0.002f, 5f, false);
+			AddTween("clmagnitude", 0.01f, 2f, false);
 			
 
 			

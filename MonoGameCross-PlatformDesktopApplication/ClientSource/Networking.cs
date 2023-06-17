@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Threading;
 using MultiplayerXeno;
 using MultiplayerXeno.UILayouts;
@@ -129,19 +130,14 @@ namespace MultiplayerXeno
 		
 		private static void ReciveTileUpdate(RawData rawData, Connection connection)
 		{
+			string s = RawDataConverter.ToUTF8String(rawData);
+			WorldTileData prefabData = (WorldTileData) Newtonsoft.Json.JsonConvert.DeserializeObject(s, typeof(WorldTileData));
+			Console.WriteLine("recived tile update "+prefabData.position);
+			WorldManager.Instance.LoadWorldTile(prefabData);
+
+
+
 			
-			using (Stream dataStream = new MemoryStream(rawData.Data))
-			{
-				BinaryFormatter bformatter = new BinaryFormatter();
-#pragma warning disable SYSLIB0011
-				WorldTileData prefabData = (WorldTileData)bformatter.Deserialize(dataStream);
-#pragma warning restore SYSLIB0011
-				Console.WriteLine("recived tile update "+prefabData.position);
-				WorldManager.Instance.LoadWorldTile(prefabData);
-
-
-
-			}
 
 			
 		}

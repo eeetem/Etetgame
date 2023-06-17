@@ -114,7 +114,6 @@ namespace MultiplayerXeno.Pathfinding
 					// Add it to the done list
 					done.Add(current);
 					
-				
 
 					current.State = NodeState.Closed;
 					
@@ -122,22 +121,19 @@ namespace MultiplayerXeno.Pathfinding
 					if (current.CurrentCost <= range)
 					{
 						inRange.Add(current.Position);
-						//Console.WriteLine("added with range: "+current.CurrentCost);
+						Console.WriteLine("added with range: "+current.CurrentCost);
 					}
 					else
 					{
-						//Console.WriteLine("rejected with range: "+current.CurrentCost);
+						Console.WriteLine("rejected with range: "+current.CurrentCost);
 						continue;
 					}
-
-
 
 					foreach (var connected in current.ConnectedNodes)
 					{
 						if (connected is null) continue;
 
-						if (!connected.Traversable(current) ||
-						    connected.State == NodeState.Closed)
+						if (!connected.Traversable(current) || connected.State == NodeState.Closed)
 						{
 							continue; // Do ignore already checked and not traversable nodes.
 						}
@@ -146,26 +142,19 @@ namespace MultiplayerXeno.Pathfinding
 						if (connected.State == NodeState.Unconsidered)
 						{
 							connected.Parent = current;
-							connected.CurrentCost =
-								current.CurrentCost + current.TraversalCost(connected);
+							connected.CurrentCost = current.CurrentCost + current.TraversalCost(connected);
+
 							connected.State = NodeState.Open;
-
-							open.Enqueue(connected, connected.CurrentCost);
-
-
-
+							open.Enqueue(connected,connected.TotalCost);
 						}
 						else if (current != connected)
 						{
-							// Updating the cost of the node if the current way is cheaper than the previous
-							var newCCost = current.CurrentCost + Utility.Distance(current.Position,connected.Position);
+							var newCCost = current.CurrentCost + current.TraversalCost(connected);
 							if (newCCost < connected.CurrentCost)
 							{
 								connected.Parent = current;
 								connected.CurrentCost = newCCost;
-								open.Enqueue(connected,connected.CurrentCost);//check again
 							}
-							
 						}
 						else
 						{
@@ -300,7 +289,7 @@ namespace MultiplayerXeno.Pathfinding
 				}
 				else if (current != connected)
 				{
-					var newCCost = current.CurrentCost + Utility.Distance(current.Position,connected.Position);
+					var newCCost = current.CurrentCost + current.TraversalCost(connected);
 					if (newCCost < connected.CurrentCost)
 					{
 						connected.Parent = current;

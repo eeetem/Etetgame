@@ -35,7 +35,7 @@ public class GameLayout : MenuLayout
 		}
 	}
 
-	public static Unit SelectedUnit { get; private set;} = null!;
+	public static Unit? SelectedUnit { get; private set;} = null!;
 
 	public static void SelectUnit(Unit? controllable)
 	{
@@ -756,7 +756,12 @@ public class GameLayout : MenuLayout
 		Controllables.Add(c);
 		if (c.IsMyTeam())
 		{
-			SelectUnit(c);
+			if (SelectedUnit == null)
+			{
+				SelectUnit(c);
+			}
+
+			
 			MyUnits.Add(c);
 		}
 		else

@@ -259,72 +259,7 @@ public class PreGameLobbyLayout : MenuLayout
 		
 				rightStack.Widgets.Add(spectatorViewer);
 		
-			
-
-				var input = new TextBox()
-				{
-					Width = (int)(145*globalScale.X),
-					Height = 40,
-					Top = 0,
-					Left = 0,
-					Text = "",
-					HorizontalAlignment = HorizontalAlignment.Left,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					Font = DefaultFont.GetFont(20),
-					Border = new SolidBrush(new Color(31,81,255,240)),
-					BorderThickness = new Thickness(2)
-
-				};
-				input.KeyDown += (o, a) =>
-				{
-					if (a.Data == Keys.Enter)
-					{
-						if (input.Text != "")
-						{
-							if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
-							{
-								Networking.ChatMSG(input.Text);
-							}
-							else
-							{
-								MasterServerNetworking.ChatMSG(input.Text);
-							}
-
-
-							input.Text = "";
-						}
-					}
-				};
 				
-				var inputbtn = new TextButton()
-				{
-					Width = 50,
-					Height = 25,
-					Top = 0,
-					Left = 0,
-					Text = "Send",
-					HorizontalAlignment = HorizontalAlignment.Right,
-					VerticalAlignment = VerticalAlignment.Bottom,
-					Font = DefaultFont.GetFont(15)
-				};
-				inputbtn.Click += (o, a) =>
-				{
-					if (input.Text != "")
-					{
-						if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
-						{
-							Networking.ChatMSG(input.Text);
-						}
-						else
-						{
-							MasterServerNetworking.ChatMSG(input.Text);
-						}
-
-						input.Text = "";
-					}
-				};
-				middlePanel.Widgets.Add(input);
-				middlePanel.Widgets.Add(inputbtn);
 				
 				
 				///LEFT STACK///

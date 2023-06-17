@@ -59,7 +59,7 @@ namespace MultiplayerXeno
 			}
 			if (UnitComponent != null&& UnitComponent.Crouching)
 			{//this is so fucking convoluted. i'll fix it whenever animations are in
-				sprite = Type.Controllable.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+				sprite = Type.Unit.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
 			
 			}
 			else

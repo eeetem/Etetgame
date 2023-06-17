@@ -38,6 +38,7 @@ public class MasterServerNetworking
 				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
 					UI.SetUI(new MainMenuLayout());
+					Console.WriteLine("lost connection to master server");
 					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
 				}
 			};
@@ -58,7 +59,26 @@ public class MasterServerNetworking
 				if (AwaitingLobby)
 				{
 					AwaitingLobby = false;
-					Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+					Console.WriteLine("Connecting to started lobbby...");
+					var result = Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+					Console.WriteLine("result: "+result);
+					
+					//rety 5 times
+					int i = 0;
+					while (result == ConnectionResult.Timeout)
+					{
+						if(i >5)
+						{
+							Console.WriteLine("Failed to connect to lobby");
+							break;
+						}
+						Console.WriteLine("retrying...");
+						Thread.Sleep(100);
+						result = Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+						Console.WriteLine("result: "+result);
+						i++;
+					}
+					
 				}
 				else
 				{
@@ -67,14 +87,14 @@ public class MasterServerNetworking
 				}
 			});
 			
-			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
+	/*		serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
 				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
 					Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 				}
 				
-			});
+			});*/
 			Thread.Sleep(1000);
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
 			RefreshServers();
@@ -100,7 +120,7 @@ public class MasterServerNetworking
 		}
 		public static void ChatMSG(string content)
 		{
-			serverConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
+			//serverConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
 

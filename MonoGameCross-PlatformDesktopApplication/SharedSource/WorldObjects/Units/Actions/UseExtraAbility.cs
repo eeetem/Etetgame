@@ -65,7 +65,7 @@ public class UseExtraAbility : Action
 
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
-			if(AbilityIndex == -1)return;
+			if(AbilityIndex == -1 && AbilityIndex<actor.extraActions.Count)return;
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}

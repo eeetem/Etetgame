@@ -42,7 +42,7 @@ public class SquadCompBuilderLayout : UiLayout
 		//one button for each unit type
 		foreach (var obj in PrefabManager.WorldObjectPrefabs)
 		{
-			if(obj.Value.Controllable !=null){
+			if(obj.Value.Unit !=null){
 				units.Add(obj.Value.TypeName);
 			}
 		}
@@ -134,7 +134,7 @@ public class SquadCompBuilderLayout : UiLayout
 				btn.Click += (s, a) =>
 				{
 					placed.Inventory.Add(itm.Key);
-					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Controllable.InventorySize){
+					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit.InventorySize){
 						UI.Desktop.Widgets.Remove(itemMenu);
 					}
 				};

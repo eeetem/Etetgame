@@ -8,11 +8,18 @@ lag on greande target;
 
 alt inspection of unit stats
 
-instant map pulling
+
 tutorial
 show action points next to action
 excom like action confirming
 
+clearer unit boundry.
+reselect unit on ability use 
+
+
+
+unit moving resets chat
+overwatch
 
 action locking/rework:
 dont send actions untill recived confirm 

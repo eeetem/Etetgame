@@ -30,7 +30,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				{
 					if (Connection == con.Value)
 					{
-						SendChatMessage(con.Key+" left the game");
+						//SendChatMessage(con.Key+" left the game");
 						disconnectedPlayer = con.Key;
 						break;
 					}
@@ -62,7 +62,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			//need some sort of ddos protection
 			connection.RegisterStaticPacketHandler<LobbyStartPacket>(StartLobby);
 			connection.RegisterRawDataHandler("register",RegisterClient);
-			connection.RegisterRawDataHandler("chatmsg", (data, Connection) =>
+		/*	connection.RegisterRawDataHandler("chatmsg", (data, Connection) =>
 			{
 				foreach (var con in Players)
 				{
@@ -74,7 +74,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					}
 				}
 				
-			});
+			});*/
 			connection.RegisterRawDataHandler("RequestLobbies", (a, connection) =>
 			{
 				Console.WriteLine("RequestLobbies");
@@ -172,6 +172,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					}
 
 					Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
+					Thread.Sleep(1000);
 					connection.Send(lobbyData);
 					foreach (var player in Players)
 					{
@@ -203,7 +204,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 
 		private static  Dictionary<int, Tuple<Process,LobbyData>> Lobbies = new Dictionary<int,  Tuple<Process,LobbyData>>();
-
+/*
 		public static void SendChatMessage(string text)
 		{
 			foreach (var p in Players)
@@ -211,7 +212,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				p.Value.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			}
 
-		}
+		}*/
 		public static int GetNextFreePort()
 		{
 			int port = 1631;

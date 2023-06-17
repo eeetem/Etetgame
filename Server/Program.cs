@@ -61,6 +61,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 
 		public static void InformMasterServer()
 		{
+			return;
 			string msg = "[UPDATE]";
 			msg += "[PLAYERCOUNT]" +((GameManager.Player1 != null ? 0 : 1) + (GameManager.Player2 != null ? 0 : 1)) + "[/PLAYERCOUNT]";
 			msg += "[SPECTATORS]" +GameManager.Spectators.Count + "[/SPECTATORS]";

@@ -12,7 +12,7 @@ namespace MultiplayerXeno
 		public int variations;
 		
 	
-		public void GenerateSpriteSheet(string? name,int variations)
+		public void GenerateSpriteSheet(string? name,int variations, bool png = false)
 		{
 			this.variations = variations;
 			spriteSheet = new Texture2D[variations][];
@@ -23,14 +23,24 @@ namespace MultiplayerXeno
 				{
 					spriteName = name + i;
 				}
+				Texture2D tex;
+				if (png)
+				{
+					tex = TextureManager.GetTextureFromPNG(spriteName);
+				}
+				else
+				{
+					tex = TextureManager.GetTexture(spriteName);
+				}
 
 				if (!Faceable)
 				{
-					spriteSheet[i] = new[] {TextureManager.GetTexture(spriteName)};
+					
+					spriteSheet[i] = new[] {tex};
 					continue;
 				}
 
-				spriteSheet[i] = Utility.MakeSpriteSheet(TextureManager.GetTexture(spriteName), 3, 3);
+				spriteSheet[i] = Utility.MakeSpriteSheet(tex, 3, 3);
 			}
 		}
 		

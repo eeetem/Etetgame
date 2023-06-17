@@ -59,7 +59,6 @@
     <name>basicHalfWallLight</name>
   </object>
   <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
-    <sprite  name="Human" offset= "0,0"/>
     <name>Grunt</name>
     <controllable moveRange = "6" moves="2" determination="3">
       <defaultAttack>
@@ -86,7 +85,6 @@
   </object>
   
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
-    <sprite name="Scout"  offset= "0,0"/>
     <name>Scout</name>
     <controllable moveRange = "5" moves="3" determination="3" sightrange="18">
       
@@ -112,7 +110,6 @@
   </object>
   
   <object VCover = "0" Faceable = "true" SCover ="3" Health="16">
-    <sprite name="Heavy"  offset= "0,0"/>
     <name>Heavy</name>
     <controllable moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
       
@@ -166,7 +163,6 @@
   </object>
   
   <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
-    <sprite name="Officer"  offset= "0,0"/>
     <name>Officer</name>
     <controllable moveRange = "4" moves="3" actions="3" determination="2"  sightrange="20">
 
@@ -203,7 +199,6 @@
   </object>
 
   <object VCover = "0" Faceable = "true" SCover ="3" Health="10">
-    <sprite name="Specialist"  offset= "0,0"/>
     <name>Specialist</name>
     <controllable moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
 

@@ -71,6 +71,8 @@ namespace MultiplayerXeno
 		public bool overwatch;
 		public int selectIndex;
 		public string? LastItem;
+		public int MoveRangeEffect;
+		public bool ThisMoving;
 		public List<string?> Inventory { get; set; }
 		public List<Tuple<string?, int>> StatusEffects { get; set; }
 		
@@ -88,9 +90,11 @@ namespace MultiplayerXeno
 			Inventory = new List<string?>();
 			StatusEffects = new List<Tuple<string?, int>>();
 			selectIndex = -1;
+			MoveRangeEffect = 0;
 			LastItem = null;
+			ThisMoving = false;
 		}
-		public UnitData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex,string? lastItem)
+		public UnitData(bool team1, int actionPoints, int movePoints, bool canTurn, int determination, bool crouching,bool panic,List<string?> inv, List<Tuple<string?, int>> sts,bool overwatch,int selectIndex,string? lastItem, int moveRangeEffect,bool thisMoving)
 		{
 			Team1 = team1;
 			ActionPoints = actionPoints;
@@ -105,6 +109,8 @@ namespace MultiplayerXeno
 			this.overwatch = overwatch;
 			this.selectIndex = selectIndex;
 			LastItem = lastItem;
+			MoveRangeEffect = moveRangeEffect;
+			ThisMoving = thisMoving;
 		}
 
 	
