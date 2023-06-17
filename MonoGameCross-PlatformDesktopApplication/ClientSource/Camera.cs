@@ -1,5 +1,4 @@
-﻿using System;
-using CommonData;
+﻿using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,12 +11,12 @@ namespace MultiplayerXeno
 	public static class Camera
 	{
 
-		private static OrthographicCamera Cam { get; set; }
-		public static AudioListener AudioListener{ get; private set; }
+		private static OrthographicCamera Cam { get; set; } = null!;
+		public static AudioListener AudioListener{ get; private set; } = null!;
 
 		private static Vector2 velocity = new Vector2();
-		private static float ZoomVelocity = 0;
-		private static float scale = 1;
+		private static float zoomVelocity = 0;
+
 
 		public static void Init(GraphicsDevice graphicsDevice, GameWindow window)
 		{
@@ -33,6 +32,10 @@ namespace MultiplayerXeno
 		public static Vector2 GetPos()
 		{
 			return Cam.Center;
+		}
+		public static float GetZoom()
+		{
+			return Cam.Zoom;
 		}
 
 		//function that checks if a specfic position is visible
@@ -51,21 +54,18 @@ namespace MultiplayerXeno
 		 static bool forceMoving = false;
 		public static void SetPos(Vector2Int vec)
 		{
+
 			vec = Utility.GridToWorldPos(vec);
 			//vec.X -= Cam.BoundingRectangle.Width / 2;
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
 			MoveTarget = vec-(Vector2Int)Cam.Origin;
 			forceMoving = true;
-
-
 		}
 
 
 		private static Vector2 lastMousePos;
 		private static Vector2 GetMovementDirection()
 		{
-
-			
 			var state = Keyboard.GetState();
 			var mouseState = Mouse.GetState();
 			if (mouseState.MiddleButton == ButtonState.Pressed)
@@ -75,7 +75,7 @@ namespace MultiplayerXeno
 				if (lastpos != new Vector2(0, 0))
 				{
 					forceMoving = false;
-					return Vector2.Clamp((lastpos - new Vector2(mouseState.Position.X, mouseState.Position.Y)) / 30f, new Vector2(-3, -3), new Vector2(3, 3));
+					return Vector2.Clamp((lastpos - new Vector2(mouseState.Position.X, mouseState.Position.Y)) / 15f, new Vector2(-9, -9), new Vector2(9, 9));
 				}
 			}
 			else
@@ -115,7 +115,17 @@ namespace MultiplayerXeno
 					forceMoving = false;
 				}
 
-				return  Vector2.Clamp(difference/1500f,new Vector2(-3,-3),new Vector2(3,3));
+				
+				//todo make the transition smooth rather than an if statement
+				
+
+				difference = difference / 500f;
+				
+				
+				var vec =  Vector2.Clamp(difference,new Vector2(-3,-3),new Vector2(3,3));
+		
+
+				return vec;
 			}
 			
 			
@@ -127,17 +137,19 @@ namespace MultiplayerXeno
 			var state = Mouse.GetState();
 			return Vector2.Transform(new Vector2(state.Position.X, state.Position.Y), Cam.GetInverseViewMatrix());
 		}
+
+
 		private static int lastScroll;
 		public static void Update(GameTime gameTime)
 		{
 			
 			
 			var state = Mouse.GetState();
-			float diff = (float) (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
+			float diff = (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
 			lastScroll = state.ScrollWheelValue;
-			ZoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
-			Cam.ZoomIn(ZoomVelocity);
-			ZoomVelocity *= gameTime.GetElapsedSeconds()*45;
+			zoomVelocity += diff*gameTime.GetElapsedSeconds()*25f;
+			Cam.ZoomIn(zoomVelocity);
+			zoomVelocity *= gameTime.GetElapsedSeconds()*45;
 
 			float movementSpeed = 400*(Cam.MaximumZoom/Cam.Zoom);
 			Vector2 move = GetMovementDirection();
@@ -147,8 +159,8 @@ namespace MultiplayerXeno
 			velocity *= gameTime.GetElapsedSeconds()*45;
 
 
-			AudioListener.Position =  new Vector3(Cam.Center/80f,0);
-			AudioListener.Velocity = new Vector3(velocity/80f,10);
+			AudioListener.Position =  new Vector3(Cam.Center/150f,0);
+			AudioListener.Velocity = new Vector3(velocity/150f,10);
 
 		}
 	}

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
-using Microsoft.Xna.Framework;
-using Myra.Graphics2D.Brushes;
+using System.Linq;
+using MultiplayerXeno;
+using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno
 {
@@ -10,32 +10,22 @@ namespace MultiplayerXeno
 	{
 
 		public static bool IsPlayer1;
-		public static bool intated = false;
-		public static bool spectating = false;
-		public static List<Controllable> _myUnits = new List<Controllable>();
-		private static PreGameDataPacket _preGameData;
+		public static bool intated;
+		public static bool spectating;
+		private static PreGameDataPacket preGameData = new();
+		public static Dictionary<string,string> MapList = new Dictionary<string, string>();
+		public static Dictionary<string,string> CustomMapList = new Dictionary<string, string>();
 		public static PreGameDataPacket PreGameData
 		{
-			get => _preGameData;
+			get => preGameData;
 			set
 			{
-				_preGameData = value;
+				preGameData = value;
+				GenerateMapList();
 				UI.SetUI(null);
 			}
 		}
 
-		public static List<Controllable> MyUnits
-		{
-			get {
-				if (_myUnits.Count == 0)
-				{
-					CountMyUnits();
-				}
-
-				return _myUnits;
-			}
-			set { _myUnits = value; }
-		} 
 
 
 		public static bool IsMyTurn()
@@ -59,60 +49,90 @@ namespace MultiplayerXeno
 			
 			score = data.Score;
 			GameState = data.GameState;
-		
-			
+
+			try
+			{
 				switch (GameState)
 				{
 					case GameState.Lobby:
-						UI.SetUI(UI.PreGameLobby);
+						Audio.PlayMenu();
+						UI.SetUI(new PreGameLobbyLayout());
 						break;
 					case GameState.Setup:
 						if (spectating)
 						{
-							break;
+							Audio.PlayMenu();
+							UI.SetUI(new PreGameLobbyLayout());
+							break;//todo specating
 						}
-
-						UI.SetUI(UI.SetupUI);
+						UI.SetUI(new SquadCompBuilderLayout());
 						break;
 					case GameState.Playing:
 						StartGame();
 						break;
 				}
-			
+			}
+			catch(Exception e){
+				Console.WriteLine(e);
+			}
 
+		}
+
+		private static void GenerateMapList()
+		{
+			MapList.Clear();
+			foreach (var mapPath in PreGameData.MapList)
+			{
+				MapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
+			}
+			CustomMapList.Clear();
+			foreach (var mapPath in PreGameData.CustomMapList)
+			{
+				CustomMapList.Add(mapPath.Split("/").Last().Split(".").First(),mapPath);
+			}
+			
 		}
 
 		public static void StartGame()
 		{
 			if(intated)return;
 			intated = true;
-			CountMyUnits();
+			TimeTillNextTurn = PreGameData.TurnTime*1000;
+			Audio.PlayCombat();
 			WorldManager.Instance.MakeFovDirty();
-			UI.SetUI(UI.GameUi);
+			UI.SetUI(new GameLayout());
 		}
 
-		public static void CountMyUnits()
-		{
-			_myUnits.Clear();
-			foreach (var obj in UI.Controllables)
-			{
-				if (obj.IsPlayerOneTeam == IsPlayer1)
-				{
-					_myUnits.Add(obj);
-				}
-			}
-
-		}
 
 		public static void EndTurn()
 		{
 			if (IsPlayer1 != IsPlayer1Turn) return;
 
-			GameActionPacket packet = new GameActionPacket(-1,null,ActionType.EndTurn);
-			Networking.serverConnection.Send(packet);
-			UI.SelectControllable(null);
-			Action.SetActiveAction(null);
+			foreach (var unit in GameLayout.MyUnits)
+			{
+				if (unit.MovePoints > 0)
+				{
+					UI.OptionMessage("Are you sure?", "You have units with unspent move points", "no", (a,b)=> {  }, "yes", (a, b) =>
+					{
+						GameActionPacket packet = new GameActionPacket(-1,new Vector2Int(0,0),ActionType.EndTurn);
+						Networking.ServerConnection?.Send(packet);
+						Action.SetActiveAction(null);
 
+					});
+					return;
+				}
+			}
+
+			GameActionPacket packet = new GameActionPacket(-1,new Vector2Int(0,0),ActionType.EndTurn);
+			Networking.ServerConnection?.Send(packet);
+			Action.SetActiveAction(null);
+	
+		}
+
+		public static void ResetGame()
+		{
+			intated = false;
+			WorldManager.Instance.WipeGrid();
 		}
 
 

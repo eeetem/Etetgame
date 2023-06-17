@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -12,6 +11,8 @@ public class PopUpText
 	private Transform2 Transform;
 	private float aliveTime;
 	private string text;
+	public float scale = 1;
+	public Color Color = Color.White;
 	
 	public static readonly object syncobj = new object();
 	
@@ -28,16 +29,6 @@ public class PopUpText
 			Objects.Add(this);
 		}
 	}
-	
-	private static SpriteBatch spriteBatch;
-	private static GraphicsDevice graphicsDevice;
-	public static void Init(GraphicsDevice graphicsdevice)
-	{
-
-		graphicsDevice = graphicsdevice;
-		spriteBatch = new SpriteBatch(graphicsDevice);
-	}
-
 
 
 	public static void Update(float deltaTime)
@@ -54,14 +45,14 @@ public class PopUpText
 				if (obj.aliveTime > 1000)
 				{
 					Objects.Remove(obj);
-					Console.WriteLine("deleted obj");
+					
 				}
 
 			}
 		}
 	}
 
-	public static void Draw()
+	public static void Draw(SpriteBatch spriteBatch)
 	{
 		lock (syncobj)
 		{
@@ -72,8 +63,7 @@ public class PopUpText
 			{
 
 
-				spriteBatch.DrawString(Game1.SpriteFont, obj.text, obj.Transform.Position, Color.Black * ((1000-obj.aliveTime) / 1000), 0, Vector2.Zero, 3, new SpriteEffects(), 0);
-
+				spriteBatch.DrawText(obj.text, obj.Transform.Position, 5*obj.scale, 100, obj.Color * ((1000-obj.aliveTime) / 1000));
 
 
 			}

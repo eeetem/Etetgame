@@ -1,95 +1,131 @@
 ﻿using System;
 using System.Collections.Generic;
-using CommonData;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using MonoGame.Extended.Content;
+using Microsoft.Xna.Framework.Media;
 
 
 namespace MultiplayerXeno;
 
 public static class Audio
 {
-	private static Dictionary<string, SoundEffect> soundEffects = new Dictionary<string, SoundEffect>();
-	private static List<SoundEffectInstance> activeSounds = new List<SoundEffectInstance>();
+	private static List<Tuple<SoundEffectInstance, AudioEmitter>> activeSounds = new List<Tuple<SoundEffectInstance, AudioEmitter>>();
 	public static readonly object syncobj = new object();
-
-	public static void Init(ContentManager content)
+	private static ContentManager content = null!;
+	
+	private static float musicVolume = 0.5f;
+	public static float MusicVolume
 	{
-		
-		soundEffects.Add("death1",content.Load<SoundEffect>("audio/damage/death"));
-		soundEffects.Add("death2",content.Load<SoundEffect>("audio/damage/death2"));
-		soundEffects.Add("death3",content.Load<SoundEffect>("audio/damage/death3"));
-		soundEffects.Add("grunt1",content.Load<SoundEffect>("audio/damage/grunt"));
-		soundEffects.Add("grunt2",content.Load<SoundEffect>("audio/damage/grunt2"));
-		soundEffects.Add("wilhelm",content.Load<SoundEffect>("audio/damage/wilhelm"));
-		soundEffects.Add("rifle",content.Load<SoundEffect>("audio/rifle"));
-		soundEffects.Add("MG",content.Load<SoundEffect>("audio/mg"));
-		soundEffects.Add("shotgun",content.Load<SoundEffect>("audio/shotgun"));
-		soundEffects.Add("turn",content.Load<SoundEffect>("audio/turn"));
-		soundEffects.Add("capture",content.Load<SoundEffect>("audio/capture"));
-
-
-		for (int i = 1; i < 10; i++)
+		get
 		{
-			soundEffects.Add("footstep"+i,content.Load<SoundEffect>("audio/footsteps/Footstep "+i));
+			return musicVolume;
+		}
+		set
+		{
+			musicVolume = value;
+			MediaPlayer.Volume = MusicVolume;
+		}
+	}
+	public static float SoundVolume = 0.5f;
+		
+	public static Dictionary<string, SoundEffect> SFX = new Dictionary<string, SoundEffect>();
+	
+	public static void PlayMenu()
+	{
+		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/menu"));
+		MediaPlayer.IsRepeating = true;
+	}
+	public static void PlayCombat()
+	{
+
+		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/tension"));
+		MediaPlayer.IsRepeating = true;
+	}
+
+	private static SoundEffect GetSound(string name)
+	{
+		if (SFX.ContainsKey(name))
+		{
+			return SFX[name];
 		}
 
+		SFX.Add(name,content.Load<SoundEffect>("CompressedContent/audio/"+name));
+		
+		return SFX[name];
+	}
+	public static void Init(ContentManager content)
+	{
+		Audio.content = content;
 	}
 
-	public static void PlaySound(string name)
-	{
-		PlaySound(name,Camera.GetPos());
-	}
 
-	public static void PlaySound(string name, Vector2Int location)
+	public static void PlaySound(string name, Vector2Int? location = null , float pitchVariationScale = 1)
 	{
+		if (location == null)
+		{
+			location = Camera.GetPos();
+		}
+
 		string sfxID = name;
 		switch (name)
 		{
 			case "footstep":
-				sfxID = "footstep" + Random.Shared.Next(1, 10);
+				sfxID = "footsteps/Footstep " + Random.Shared.Next(1, 10);
 				break;
 			case "death":
 				if (Random.Shared.Next(100) == 1)
 				{
-					sfxID = "wilhelm";
+					sfxID = "damage/wilhelm";
 				}
 				else
 				{
-					sfxID = "death"+Random.Shared.Next(1,4);
+					sfxID = "damage/death"+Random.Shared.Next(1,4);
 				}
 
 				break;
 			case "grunt":
-				sfxID = "grunt"+Random.Shared.Next(1,2);//todo standartised audio system with variations
+				sfxID = "damage/grunt" + Random.Shared.Next(1, 2);
 				break;
-			
-			
 		}
 
 
-		
-		SoundEffectInstance instance = soundEffects[sfxID].CreateInstance();
-		instance.Pitch += (float)(Random.Shared.NextDouble() - 0.5f) / 2f;
-		AudioEmitter emitter = new AudioEmitter();
-		emitter.Position = new Vector3((Vector2)location/80f, 0);
-		instance.Play();
-		instance.Apply3D(Camera.AudioListener,emitter);
-		lock (syncobj)
+		try
 		{
-			activeSounds.Add(instance);
+			SoundEffectInstance instance = GetSound(sfxID).CreateInstance();
+			instance.Pitch += (float) ((Random.Shared.NextDouble() - 0.5f) / 2f) * pitchVariationScale;
+			instance.Volume = SoundVolume;
+			AudioEmitter emitter = new AudioEmitter();
+			emitter.Position = new Vector3((Vector2) location / 150f, 0);
+			instance.Play();
+			instance.Apply3D(Camera.AudioListener, emitter);
+			lock (syncobj)
+			{
+				activeSounds.Add(new Tuple<SoundEffectInstance, AudioEmitter>(instance,emitter));
+			}
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
 		}
 	}
+	
+	
+	
 
 	public static void Update(float gametime)
 	{
 		lock (syncobj)
 		{
-			foreach (var sound in activeSounds)
+			foreach (var sound in  new List<Tuple<SoundEffectInstance, AudioEmitter>>(activeSounds))
 			{
-				//sound.Apply3D(s);
+				sound.Item1.Apply3D(Camera.AudioListener, sound.Item2);
+				if (sound.Item1.State == SoundState.Stopped)
+				{
+					activeSounds.Remove(sound);
+				}
+
 			}
 		}
 	}

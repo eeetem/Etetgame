@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
-using CommonData;
+﻿using System.Numerics;
+using MultiplayerXeno;
+using Microsoft.Xna.Framework.Graphics;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace MultiplayerXeno
@@ -12,7 +12,7 @@ namespace MultiplayerXeno
 
 		public bool IsVisible(Visibility minimum = Visibility.Partial)
 		{
-			if (this.Visible >= minimum)
+			if (Visible >= minimum)
 			{
 				return true;
 			}
@@ -57,7 +57,7 @@ namespace MultiplayerXeno
 			HighestWatchLevel = 0;
 			foreach (var watcher in Watchers)
 			{
-				if (!watcher.worldObject.IsVisible())
+				if (!watcher.WorldObject.IsVisible())
 				{
 					return;
 				}
@@ -71,5 +71,10 @@ namespace MultiplayerXeno
 				
 			}
 		}
+
+
+	
 	}
+
+
 }

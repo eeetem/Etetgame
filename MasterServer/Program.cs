@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using CommonData;
 using Network;
 using Network.Converter;
 using Network.Enums;
@@ -18,7 +15,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		static float MSperTick = 1000 / tickrate;
 		static Stopwatch stopWatch = new Stopwatch();
 		public static Dictionary<string, Connection> Players = new Dictionary<string, Connection>();
-		private static ServerConnectionContainer serverConnectionContainer;
+		private static ServerConnectionContainer? serverConnectionContainer;
 		
 		static void Main(string[] args)
 		{
@@ -33,7 +30,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				{
 					if (Connection == con.Value)
 					{
-						SendChatMessage(con.Key+" left the game");
+						//SendChatMessage(con.Key+" left the game");
 						disconnectedPlayer = con.Key;
 						break;
 					}
@@ -59,13 +56,13 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
-			Console.WriteLine($"{serverConnectionContainer.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
+			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
 			connection.EnableLogging = true;
 			connection.TIMEOUT = 1000;
 			//need some sort of ddos protection
 			connection.RegisterStaticPacketHandler<LobbyStartPacket>(StartLobby);
 			connection.RegisterRawDataHandler("register",RegisterClient);
-			connection.RegisterRawDataHandler("chatmsg", (data, Connection) =>
+		/*	connection.RegisterRawDataHandler("chatmsg", (data, Connection) =>
 			{
 				foreach (var con in Players)
 				{
@@ -77,7 +74,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					}
 				}
 				
-			});
+			});*/
 			connection.RegisterRawDataHandler("RequestLobbies", (a, connection) =>
 			{
 				Console.WriteLine("RequestLobbies");
@@ -99,17 +96,20 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		}
 		private static void RegisterClient(RawData rawData, Connection connection)
 		{
-			Console.WriteLine("Begining Client Register");
+		
 			string name = RawDataConverter.ToUTF8String(rawData);
+			Console.WriteLine("Registering client: " + name);
+			if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
+			{
+				Kick("Invalid name",connection);
+				return;
+			}
 			if (Players.ContainsKey(name) && Players[name].IPRemoteEndPoint != connection.IPRemoteEndPoint)
 			{
 				Kick("Player with the same name already exists",connection);
 				return;
 			}
 			Players.Add(name,connection);
-			Console.WriteLine("Client Register Done");
-
-
 		}
 		public static void Kick(string reason,Connection connection)
 		{
@@ -146,7 +146,18 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				args.Add(lobbyStartPacket.Password);
 				process.StartInfo.Arguments = string.Join(" ", args);
 				process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
-				process.OutputDataReceived += (sender, args) => { Console.WriteLine("Server(" + port + "): " + args.Data); };
+				process.OutputDataReceived += (sender, args) =>
+				{
+					if (args.Data != null && args.Data.Contains("[UPDATE]"))
+					{
+						Lobbies[port].Item2.GameState = ExtractBetweenTags(args.Data, "STATE");
+						Lobbies[port].Item2.PlayerCount = Int32.Parse(ExtractBetweenTags(args.Data, "PLAYERCOUNT"));
+						Lobbies[port].Item2.MapName = ExtractBetweenTags(args.Data, "MAP");
+						Lobbies[port].Item2.Spectators =  Int32.Parse(ExtractBetweenTags(args.Data, "SPECTATORS"));
+					}
+
+					Console.WriteLine("Server(" + port + "): " + args.Data);
+				};
 				Console.WriteLine("starting...");
 				try
 				{
@@ -154,13 +165,14 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					Console.WriteLine("process started with id: "+process.Id);
 					process.BeginErrorReadLine();
 					process.BeginOutputReadLine();
-					LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, 0, port);
+					LobbyData lobbyData = new LobbyData(lobbyStartPacket.LobbyName, port);
 					if (lobbyStartPacket.Password != "")
 					{
 						lobbyData.HasPassword = true;
 					}
 
 					Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
+					Thread.Sleep(1000);
 					connection.Send(lobbyData);
 					foreach (var player in Players)
 					{
@@ -181,10 +193,18 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				
 			}
 
+		}   
+		public static string ExtractBetweenTags(string STR , string tag)
+		{       
+			string FinalString;     
+			int Pos1 = STR.IndexOf("["+tag+"]") + tag.Length+2;
+			int Pos2 = STR.IndexOf("[/"+tag+"]");
+			FinalString = STR.Substring(Pos1, Pos2 - Pos1);
+			return FinalString;
 		}
 
 		private static  Dictionary<int, Tuple<Process,LobbyData>> Lobbies = new Dictionary<int,  Tuple<Process,LobbyData>>();
-
+/*
 		public static void SendChatMessage(string text)
 		{
 			foreach (var p in Players)
@@ -192,7 +212,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				p.Value.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
 			}
 
-		}
+		}*/
 		public static int GetNextFreePort()
 		{
 			int port = 1631;

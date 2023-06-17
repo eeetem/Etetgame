@@ -1,20 +1,19 @@
-﻿using System;
-using System.Threading;
-using CommonData;
+﻿using System.Diagnostics;
+using MultiplayerXeno;
+
 namespace MultiplayerXeno
 {
 	public static partial class GameManager
 	{
 		public static Client? Player1;
 		public static Client? Player2;
-		public static List<Client> Spectators = new List<Client>();
+		public static List<Client> Spectators = new();
+		public static PreGameDataPacket PreGameData = new();
 
 
 
-		public static readonly List<WorldObject> T1SpawnPoints = new List<WorldObject>();
-		public static readonly List<WorldObject> T2SpawnPoints = new List<WorldObject>();
-		public static readonly List<int> T1Units = new List<int>();
-		public static readonly List<int> T2Units = new List<int>();
+		public static readonly List<int> T1Units = new();
+		public static readonly List<int> T2Units = new();
 
 		public static void StartSetup()
 		{
@@ -22,9 +21,10 @@ namespace MultiplayerXeno
 			if(Player1==null || Player2==null)return;
 
 			GameState = GameState.Setup;
-			
-			Networking.SendMapData(Player1.Connection);
-			Networking.SendMapData(Player2.Connection);
+
+			if (Player1.Connection != null) Networking.SendMapData(Player1.Connection);
+			if (Player2.Connection != null) Networking.SendMapData(Player2.Connection);
+
 			SendData();
 		}
 	
@@ -40,60 +40,55 @@ namespace MultiplayerXeno
 			
 				
 			//not a fan of this, should probably be made a single function
-			ControllableData cdata = new ControllableData(true);
+			UnitData cdata = new UnitData(true);
 			
 			int i = 0;
-			foreach (var spawn in T1SpawnPoints)
+
+			foreach (var spawn in Player1!.SquadComp!.Composition!)
 			{
-				int id = WorldManager.Instance.GetNextId();
-				T1Units.Add(id);
-				if (i < Player1.StartData.Soldiers)
+				if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
+				if (T1SpawnPoints.Contains(spawn.Position))
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
+					int id = WorldManager.Instance.GetNextId();
+					cdata.Inventory = spawn.Inventory;
+					WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, controllableData: cdata);
+					T1Units.Add(id);
+					i++;
+					
 				}
-				else if (i < Player1.StartData.Soldiers+ Player1.StartData.Heavies)
-				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else
-				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				
-				i++;
 			}
 
-			cdata = new ControllableData(false);
+			cdata = new UnitData(false);
 			i = 0;
-			foreach (var spawn in T2SpawnPoints)
+			foreach (var spawn in Player2!.SquadComp!.Composition!)
 			{
-				int id = WorldManager.Instance.GetNextId();
-				T2Units.Add(id);
-				if (i < Player2.StartData.Soldiers)
+				if(i>=WorldManager.Instance.CurrentMap.unitCount) break;
+				if (T2SpawnPoints.Contains(spawn.Position))
 				{
-					WorldManager.Instance.MakeWorldObject("Gunner", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else if (i < Player2.StartData.Soldiers+ Player2.StartData.Heavies)
-				{
-					WorldManager.Instance.MakeWorldObject("Heavy", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
-				}
-				else
-				{
-					WorldManager.Instance.MakeWorldObject("Scout", spawn.TileLocation.Position,Direction.North, id, controllableData: cdata);
+					int id = WorldManager.Instance.GetNextId();
+					cdata.Inventory = spawn.Inventory;
+					WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position,Direction.North, id, controllableData: cdata);
+					T2Units.Add(id);
+					i++;
+					
 				}
 
-
-				i++;
 			}
 
-			if (Random.Shared.Next(100) > 50)
-			{
-				NextTurn();
-			}
+
 
 		
 			Thread.Sleep(1000);//let the clients process spawns
 			SendData();
+			Thread.Sleep(1000);//let the clients process UI
+			if (Random.Shared.Next(100) > 50)
+			{
+				NextTurn();
+			}
+			
+			Thread.Sleep(2000);//just in case
+			SendData();
+			
 		}
 
 		public static void SendData()
@@ -108,7 +103,7 @@ namespace MultiplayerXeno
 			
 
 			//packet.
-			Player1?.Connection.Send(packet);
+			Player1?.Connection?.Send(packet);
 			
 			packet = new GameDataPacket
 			{
@@ -117,7 +112,7 @@ namespace MultiplayerXeno
 				Score = score,
 				GameState = GameState
 			};
-			Player2?.Connection.Send(packet);
+			Player2?.Connection?.Send(packet);
 			packet = new GameDataPacket
 			{
 				IsPlayer1Turn = IsPlayer1Turn,
@@ -127,8 +122,9 @@ namespace MultiplayerXeno
 			};
 			foreach (var spectator in Spectators)
 			{
-				spectator?.Connection.Send(packet);
+				spectator?.Connection?.Send(packet);
 			}
+			Program.InformMasterServer();
 		}
 	}
 }

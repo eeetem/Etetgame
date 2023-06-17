@@ -1,35 +1,33 @@
-﻿using System.Collections.Generic;
-using CommonData;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 
 
 namespace MultiplayerXeno
 {
 	public partial class WorldObject : IDrawable
 	{
-		private Transform2 DrawTransform;
-		private int spriteVariation = 0;
+		private Transform2 DrawTransform = null!;
+		private int spriteVariation;
 		private float DrawOrder;
+		public PreviewData PreviewData;
+		public Color? OverRideColor { get; set; }
+
 		public Transform2 GetDrawTransform()
 		{
-			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(this.TileLocation.Position);
+			DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(TileLocation.Position);
 			return DrawTransform;
 		}
 
-		public Vector2Int GetWorldPos()
+		public Vector2Int GetGridPos()
 		{
-			return this.TileLocation.Position;
+			return TileLocation.Position;
 		}
 
 		private void GenerateDrawOrder()
 		{
-			if (Type == null)
-			{
-				return;
-			}
 
 			DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
 			if (Type.Surface)
@@ -51,7 +49,7 @@ namespace MultiplayerXeno
 		{
 			Texture2D sprite;
 			int spriteIndex;
-			if (fliped)
+			if (fliped&& Type.Faceable)
 			{
 				spriteIndex = (int)Facing + 4;
 			}
@@ -59,9 +57,9 @@ namespace MultiplayerXeno
 			{
 				spriteIndex = (int)Facing;
 			}
-			if (ControllableComponent != null&& ControllableComponent.Crouching)
+			if (UnitComponent != null&& UnitComponent.Crouching)
 			{//this is so fucking convoluted. i'll fix it whenever animations are in
-				sprite = Type.Controllable.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+				sprite = Type.Unit.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
 			
 			}
 			else
@@ -78,9 +76,9 @@ namespace MultiplayerXeno
 
 			Color color = TileLocation.GetTileColor();
 				
-			if (ControllableComponent != null)
+			if (UnitComponent != null)
 			{
-				if (ControllableComponent.IsMyTeam())
+				if (UnitComponent.IsMyTeam())
 				{
 					color = new Color(200,255,200);
 				}
@@ -90,7 +88,16 @@ namespace MultiplayerXeno
 				}
 				
 			}
-			
+
+			if (OverRideColor != null)
+			{
+				Color newcolor = OverRideColor.Value;
+			//	newcolor.R += color.R;
+			//	newcolor.G += color.G;
+			//	newcolor.B += color.B;
+		//		newcolor.A += color.A;
+				color = newcolor;
+			}
 
 
 			if (IsTransparentUnderMouse())
@@ -105,19 +112,11 @@ namespace MultiplayerXeno
 
 
 
-		public bool IsVisible()
-		{
-			return GetMinimumVisibility() <= TileLocation.Visible;
-		}
-
-
-
 		public bool IsTransparentUnderMouse()
 		{
 			return Type.Edge && Utility.DoesEdgeBorderTile(this, Utility.WorldPostoGrid(Camera.GetMouseWorldPos()));
 		}
-
-
+		
 	}
 
 

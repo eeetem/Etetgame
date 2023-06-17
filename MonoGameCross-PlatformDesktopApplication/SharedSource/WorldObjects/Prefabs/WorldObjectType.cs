@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
-using CommonData;
+﻿using MultiplayerXeno;
 
 
 namespace MultiplayerXeno
@@ -11,13 +6,15 @@ namespace MultiplayerXeno
 	public partial class WorldObjectType
 	{
 
-		public readonly string TypeName;
-		public WorldObjectType(string name,ControllableType? controllableType)
+		public readonly string? TypeName;
+		public int MaxHealth;
+		public int lifetime = -100;
+		public WorldObjectType(string? name,UnitType? unitType)
 		{
 			TypeName = name;
-			if (controllableType != null)
+			if (unitType != null)
 			{
-				Controllable = controllableType;
+				Unit = unitType;
 			}
 			
 		}
@@ -30,28 +27,30 @@ namespace MultiplayerXeno
 					GameManager.CapturePoints.Add(objOfType);
 					break;
 				case "spawnPointT1":
-#if SERVER
-					GameManager.T1SpawnPoints.Add(objOfType);
-#endif
-				
+
+					GameManager.T1SpawnPoints.Add(objOfType.TileLocation.Position);
+		
 					break;
 				case "spawnPointT2":
-#if SERVER
-					GameManager.T2SpawnPoints.Add(objOfType);
-#endif
+
+					GameManager.T2SpawnPoints.Add(objOfType.TileLocation.Position);
+
 					break;
 			}
 		}
 
 
-		public Cover Cover = Cover.None;
+		public Cover SolidCover = Cover.None;
+		public Cover VisibilityCover = Cover.None;
 
-		public readonly ControllableType? Controllable;
+		public readonly UnitType? Unit;
+		public WorldEffect? DesturctionEffect;
 
 		//should probably be an enum
 		public bool Faceable { get; set; }
 		public bool Edge { get; set; }
 		public bool Surface { get; set; }
 		public bool Impassible { get; set; }
+		public int VisibilityObstructFactor { get; set; }
 	}
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CommonData;
 using MultiplayerXeno;
 
 namespace MultiplayerXeno.Pathfinding
@@ -15,10 +14,10 @@ namespace MultiplayerXeno.Pathfinding
 			foreach (var idkstfu in nodes)
 			{
 				var node = idkstfu.Element;
-				Node Cached = NodeCache[node.Position.X, node.Position.Y];
-				Cached.CurrentCost = node.CurrentCost;
+				Node cached = NodeCache[node.Position.X, node.Position.Y];
+				cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
-				Cached.EstimatedCost = node.EstimatedCost;
+				cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
@@ -29,10 +28,10 @@ namespace MultiplayerXeno.Pathfinding
 		{
 			foreach (var node in nodes)
 			{
-				Node Cached = NodeCache[node.Position.X, node.Position.Y];
-				Cached.CurrentCost = node.CurrentCost;
+				Node cached = NodeCache[node.Position.X, node.Position.Y];
+				cached.CurrentCost = node.CurrentCost;
 				node.CurrentCost = 0;
-				Cached.EstimatedCost = node.EstimatedCost;
+				cached.EstimatedCost = node.EstimatedCost;
 				node.EstimatedCost = 0;
 				node.Parent = null;
 				node.State = NodeState.Unconsidered;
@@ -92,7 +91,7 @@ namespace MultiplayerXeno.Pathfinding
 					if (node.Traversable(from))
 					{
 						// Calculate the Cost
-						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
+						node.CurrentCost = from.CurrentCost + from.TraversalCost(node);
 						node.State = NodeState.Open;
 						// Enqueue
 						open.Enqueue(node, node.TotalCost);
@@ -115,7 +114,6 @@ namespace MultiplayerXeno.Pathfinding
 					// Add it to the done list
 					done.Add(current);
 					
-				
 
 					current.State = NodeState.Closed;
 					
@@ -123,22 +121,19 @@ namespace MultiplayerXeno.Pathfinding
 					if (current.CurrentCost <= range)
 					{
 						inRange.Add(current.Position);
-						//Console.WriteLine("added with range: "+current.CurrentCost);
+						Console.WriteLine("added with range: "+current.CurrentCost);
 					}
 					else
 					{
-						//Console.WriteLine("rejected with range: "+current.CurrentCost);
+						Console.WriteLine("rejected with range: "+current.CurrentCost);
 						continue;
 					}
-
-
 
 					foreach (var connected in current.ConnectedNodes)
 					{
 						if (connected is null) continue;
 
-						if (!connected.Traversable(current) ||
-						    connected.State == NodeState.Closed)
+						if (!connected.Traversable(current) || connected.State == NodeState.Closed)
 						{
 							continue; // Do ignore already checked and not traversable nodes.
 						}
@@ -147,26 +142,19 @@ namespace MultiplayerXeno.Pathfinding
 						if (connected.State == NodeState.Unconsidered)
 						{
 							connected.Parent = current;
-							connected.CurrentCost =
-								current.CurrentCost + current.DistanceTo(connected) * connected.TraversalCostMultiplier;
+							connected.CurrentCost = current.CurrentCost + current.TraversalCost(connected);
+
 							connected.State = NodeState.Open;
-
-							open.Enqueue(connected, connected.CurrentCost);
-
-
-
+							open.Enqueue(connected,connected.TotalCost);
 						}
 						else if (current != connected)
 						{
-							// Updating the cost of the node if the current way is cheaper than the previous
-							var newCCost = current.CurrentCost + current.DistanceTo(connected);
+							var newCCost = current.CurrentCost + current.TraversalCost(connected);
 							if (newCCost < connected.CurrentCost)
 							{
 								connected.Parent = current;
 								connected.CurrentCost = newCCost;
-								open.Enqueue(connected,connected.CurrentCost);//check again
 							}
-							
 						}
 						else
 						{
@@ -181,9 +169,9 @@ namespace MultiplayerXeno.Pathfinding
 		}
 		public struct PathFindResult
 		{
-			public  List<Vector2Int> Path;
+			public  List<Vector2Int>? Path;
 			public  double Cost;
-			public PathFindResult(List<Vector2Int> path, double cost)
+			public PathFindResult(List<Vector2Int>? path, double cost)
 			{
 				Path = path;
 				Cost = cost;
@@ -215,8 +203,8 @@ namespace MultiplayerXeno.Pathfinding
 					if (node.Traversable(from))
 					{
 						// Calculate the Costs
-						node.CurrentCost = from.CurrentCost + from.DistanceTo(node) * node.TraversalCostMultiplier;
-						node.EstimatedCost = from.CurrentCost + node.DistanceTo(to);
+						node.CurrentCost = from.CurrentCost + from.TraversalCost(node);
+						node.EstimatedCost = from.CurrentCost + Utility.Distance(node.Position,to.Position);
 						node.State = NodeState.Open;
 						// Enqueue
 						open.Enqueue(node, node.TotalCost);
@@ -294,14 +282,14 @@ namespace MultiplayerXeno.Pathfinding
 				{
 					connected.Parent = current;
 					connected.CurrentCost =
-						current.CurrentCost + current.DistanceTo(connected) * connected.TraversalCostMultiplier;
-					connected.EstimatedCost = connected.CurrentCost + connected.DistanceTo(to);
+						current.CurrentCost + current.TraversalCost(connected);
+					connected.EstimatedCost = connected.CurrentCost + Utility.Distance(connected.Position,to.Position);
 					connected.State = NodeState.Open;
 					queue.Enqueue(connected,connected.TotalCost);
 				}
 				else if (current != connected)
 				{
-					var newCCost = current.CurrentCost + current.DistanceTo(connected);
+					var newCCost = current.CurrentCost + current.TraversalCost(connected);
 					if (newCCost < connected.CurrentCost)
 					{
 						connected.Parent = current;
@@ -342,11 +330,6 @@ namespace MultiplayerXeno.Pathfinding
 		public double EstimatedCost { get; set; }
 
 		/// <summary>
-		///     Gets a value indicating whether how costly it is to traverse over this node.
-		/// </summary>
-		public double TraversalCostMultiplier { get; } = 1;
-
-		/// <summary>
 		///     Gets or sets a value indicating whether to go from the start node to this node.
 		/// </summary>
 		public double CurrentCost { get; set; }
@@ -362,13 +345,8 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		public bool Traversable(Node from)
 		{
-			var tile = WorldManager.Instance.GetTileAtGrid(this.Position);
-			if (tile.ObjectAtLocation != null) return false;
-			if (tile.Surface != null && tile.Surface.Type.Impassible) return false;
-			Cover obstacle =WorldManager.Instance.GetTileAtGrid(from.Position).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.Position.X, Position.Y - from.Position.Y)));
-			if (obstacle > Cover.None) return false;
-
-			return true;
+			var tile = WorldManager.Instance.GetTileAtGrid(Position);
+			return tile.Traversible(from.Position);
 		}
 
 
@@ -392,7 +370,7 @@ namespace MultiplayerXeno.Pathfinding
 		/// <returns>A comparison between the costs.</returns>
 		public int CompareTo(Node? other) => TotalCost.CompareTo(other?.TotalCost ?? 0);
 
-		public bool Equals(Node? other) => CompareTo(other) == 0 && other?.Position == this.Position;
+		public bool Equals(Node? other) => CompareTo(other) == 0 && other?.Position == Position;
 
 		public static bool operator ==(Node? left, Node? right) => left?.Equals(right) != false;
 
@@ -400,7 +378,7 @@ namespace MultiplayerXeno.Pathfinding
 
 		public static bool operator <(Node left, Node right) => left.CompareTo(right) < 0;
 
-		public static bool operator !=(Node left, Node right) => !(left == right);
+		public static bool operator !=(Node? left, Node? right) => !(left == right);
 
 		public static bool operator <=(Node left, Node right) => left.CompareTo(right) <= 0;
 
@@ -416,27 +394,22 @@ namespace MultiplayerXeno.Pathfinding
 		/// </summary>
 		/// <param name="other">The other node.</param>
 		/// <returns>Distance between this and other.</returns>
-		public double DistanceTo(Node other) => Math.Sqrt(Vector2Int.SqrDistance(Position, other.Position));
+
+		public double TraversalCost(Node to)
+		{
+
+			var target = WorldManager.Instance.GetTileAtGrid(to.Position);
+			return target.TraverseCostFrom(Position);
+
+
+		}
 	}
 
-	/// <summary>
-        ///     The states the nodes can have.
-        /// </summary>
+
         public enum NodeState
         {
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Unconsidered = 0,
-
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Open = 1,
-
-	        /// <summary>
-	        ///     TODO.
-	        /// </summary>
 	        Closed = 2,
         }
 }

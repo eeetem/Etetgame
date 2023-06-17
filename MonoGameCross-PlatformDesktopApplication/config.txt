@@ -1,3 +1,2 @@
 ﻿[config]
-Name = shitass
-MasterServerIP = 3.87.184.102:1630
+MasterServerIP = 46.7.175.47:1630

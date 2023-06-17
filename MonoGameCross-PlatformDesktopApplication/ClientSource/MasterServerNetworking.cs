@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using CommonData;
+using MultiplayerXeno;
+using MultiplayerXeno.UILayouts;
 using Network;
 using Network.Converter;
 using Network.Enums;
-using Network.Extensions;
 
 namespace MultiplayerXeno;
 
 public class MasterServerNetworking
 {
-		public static TcpConnection serverConnection;
+		public static TcpConnection? serverConnection;
 		private static string Ipport="";
 		private static string Name="";
 		
@@ -35,10 +35,11 @@ public class MasterServerNetworking
 			
 			serverConnection.ConnectionClosed += (a, s) =>
 			{
-				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
+				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
+					UI.SetUI(new MainMenuLayout());
+					Console.WriteLine("lost connection to master server");
 					UI.ShowMessage("Lost Connection To Master Server", a.ToString());
-					UI.SetUI(UI.MainMenu);
 				}
 			};
 			
@@ -58,21 +59,42 @@ public class MasterServerNetworking
 				if (AwaitingLobby)
 				{
 					AwaitingLobby = false;
-					Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+					Console.WriteLine("Connecting to started lobbby...");
+					var result = Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+					Console.WriteLine("result: "+result);
+					
+					//rety 5 times
+					int i = 0;
+					while (result == ConnectionResult.Timeout)
+					{
+						if(i >5)
+						{
+							Console.WriteLine("Failed to connect to lobby");
+							break;
+						}
+						Console.WriteLine("retrying...");
+						Thread.Sleep(100);
+						result = Networking.Connect(ipport.Split(":")[0]+":"+data.Port,name);
+						Console.WriteLine("result: "+result);
+						i++;
+					}
+					
 				}
-
-				Lobbies.Add(data);
-				UI.SetUI(UI.LobbyBrowser);
+				else
+				{
+					Lobbies.Add(data);
+					UI.SetUI(new LobbyBrowserLayout());
+				}
 			});
 			
-			serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
+	/*		serverConnection.RegisterRawDataHandler("chatmsg", (rawData, b) =>
 			{
-				if(Networking.serverConnection == null || !Networking.serverConnection.IsAlive)
+				if(Networking.ServerConnection == null || !Networking.ServerConnection.IsAlive)
 				{
-					UI.RecieveChatMessage(RawDataConverter.ToUTF8String(rawData));	
+					Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 				}
 				
-			});
+			});*/
 			Thread.Sleep(1000);
 			serverConnection.SendRawData(RawDataConverter.FromUTF8String("register", name));
 			RefreshServers();
@@ -83,10 +105,10 @@ public class MasterServerNetworking
 		public static List<LobbyData> Lobbies = new List<LobbyData>();
 		public static List<string> Players = new List<string>();
 
-		private static bool AwaitingLobby = false;
+		private static bool AwaitingLobby;
 		public static void CreateLobby(LobbyStartPacket packet)
 		{
-			serverConnection.Send(packet);
+			serverConnection?.Send(packet);
 			AwaitingLobby = true;
 
 		}
@@ -94,16 +116,17 @@ public class MasterServerNetworking
 		public static void RefreshServers()
 		{
 			Lobbies.Clear();
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("RequestLobbies",""));
+			serverConnection?.SendRawData(RawDataConverter.FromUTF8String("RequestLobbies",""));
 		}
 		public static void ChatMSG(string content)
 		{
-			serverConnection.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
+			//serverConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
 			
 		}
 
 		public static void Disconnect()
 		{
-			serverConnection.Close(CloseReason.ClientClosed);
+			UI.SetUI(new MainMenuLayout());
+			serverConnection?.Close(CloseReason.ClientClosed);
 		}
 }

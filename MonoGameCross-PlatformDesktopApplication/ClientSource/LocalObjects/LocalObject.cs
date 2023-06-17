@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using CommonData;
+﻿using System.Collections.Generic;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno;
 
@@ -28,7 +26,7 @@ public class LocalObject : IDrawable
 		this.sprite = sprite;//inefficient but fuck it
 		Transform.Position = position;
 		Transform.Scale = new Vector2(6, 6);
-		this.Velocity = velocity;
+		Velocity = velocity;
 		this.lifeTime = lifeTime;
 		lock (syncobj)
 		{
@@ -61,7 +59,7 @@ public class LocalObject : IDrawable
 		return Transform;
 	}
 
-	public Vector2Int GetWorldPos()
+	public Vector2Int GetGridPos()
 	{
 		return Utility.WorldPostoGrid(Transform.Position);
 	}
@@ -91,7 +89,7 @@ public class LocalObject : IDrawable
 	public bool IsVisible()
 	{
 		
-		Vector2Int pos = GetWorldPos();
+		Vector2Int pos = GetGridPos();
 		if (!WorldManager.IsPositionValid(pos)) return false;
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
 		return GetMinimumVisibility() <= tile.Visible;

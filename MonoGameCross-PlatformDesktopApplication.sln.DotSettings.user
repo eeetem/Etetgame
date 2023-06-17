@@ -3,7 +3,10 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\etet\.nuget\packages\monogame.extended.gui\3.8.0\lib\netstandard2.0\MonoGame.Extended.Gui.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\etet\.nuget\packages\mono.nat\3.0.4\lib\net6.0\Mono.Nat.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\etet\.nuget\packages\fontstashsharp.monogame\1.2.8\lib\netstandard2.0\FontStashSharp.MonoGame.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">C:\Program Files\dotnet\sdk\6.0.308\MSBuild.dll</s:String>
-	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MsbuildVersion/@EntryValue">1114112</s:Int64>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">C:\Program Files\dotnet\sdk\6.0.410\MSBuild.dll</s:String>
+	
+	
+	
 	</wpf:ResourceDictionary>

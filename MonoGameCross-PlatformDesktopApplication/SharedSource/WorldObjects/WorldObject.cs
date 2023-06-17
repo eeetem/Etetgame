@@ -1,222 +1,337 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
-using CommonData;
-using Microsoft.Xna.Framework;
+using System.Threading;
+using System.Threading.Tasks;
+using MultiplayerXeno;
 using MonoGame.Extended;
 
-
-
-namespace MultiplayerXeno
-{
-	public partial class WorldObject
-	{
-
-		public WorldObject(WorldObjectType? type, int id, WorldTile tileLocation)
-		{
-			this.Id = id;
-			if (type == null)
-			{
-				type = new WorldObjectType("nullType",null);
-				this.Type = type;
-				return;
-			}
-			this.Type = type;
-
-
-			
-
-
-			
-			
-			TileLocation = tileLocation;
-			Type.SpecialBehaviour(this);
 #if CLIENT
-			DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
-			this.spriteVariation = Random.Shared.Next(type.variations);
-		
+using MultiplayerXeno.UILayouts;
+
 #endif
-			this.Id = id;
-			TileLocation = tileLocation;
 
 
-	
+namespace MultiplayerXeno;
 
+public partial class WorldObject
+{
+
+	public int LifeTime = -100;
+	public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
+	{
+		ID = data.ID;
+		
+		if (type == null)
+		{
+			type = new WorldObjectType("nullType",null);
+			Type = type;
+			return;
+		}
+		Type = type;
+
+		TileLocation = tile;
+		if (data.Health == 0 || data.Health == -100)
+		{
+			Health = type.MaxHealth;
+		}
+		else
+		{
+			Health = data.Health;
+		}
+		if (data.Lifetime == -100 || data.Lifetime == 0)//this will cause issues
+		{
+			LifeTime = type.lifetime;
+		}
+		else
+		{
+			LifeTime = data.Lifetime;
 		}
 
-		private WorldTile _tileLocation;
-		public WorldTile TileLocation
-		{
-			get => _tileLocation;
 
-			set
-			{
-				_tileLocation = value;
+
+		Type.SpecialBehaviour(this);
+#if CLIENT
+		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+		spriteVariation = (tile.Position.X + tile.Position.Y + ID )% type.variations;
+		
+#endif
+			
+		Health = Math.Clamp(Health, 0, type.MaxHealth);
+	}
+
+
+	private WorldTile _tileLocation = null!;
+	public WorldTile TileLocation
+	{
+		get => _tileLocation;
+
+		set
+		{
+			_tileLocation = value;
 #if CLIENT
 				
 
-				if (_tileLocation != null)
-				{
-					GenerateDrawOrder();
-				}
-#endif
-			}
-		}
-		public Controllable? ControllableComponent { get;  set; }
-
-		public readonly int Id;
-
-		public void Move(Vector2Int position)
-		{
-			if (Type.Edge || Type.Surface)
+			if (_tileLocation != null)
 			{
-				throw new Exception("attempted to  move and  edge or surface");
+				GenerateDrawOrder();
 			}
-			TileLocation.ObjectAtLocation = null;
+#endif
+		}
+	}
+	public Unit? UnitComponent { get;  set; }
+
+	public readonly int ID;
+
+	public int Health;
+
+	public void Move(Vector2Int position)
+	{
+		if (Type.Edge || Type.Surface)
+		{
+			throw new Exception("attempted to  move and  edge or surface");
+		}
+
+		if (UnitComponent != null)
+		{
+			TileLocation.UnitAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			TileLocation = newTile;
-			newTile.ObjectAtLocation = this;
+			newTile.UnitAtLocation = UnitComponent;
+		}
+		else
+		{
+			TileLocation.RemoveObject(this);
+			var newTile = WorldManager.Instance.GetTileAtGrid(position);
+			TileLocation = newTile;
+			newTile.PlaceObject(this);
+		}
+
+
 			
 #if CLIENT
-			GenerateDrawOrder();
+		GenerateDrawOrder();
 #endif
-		}
+	}
 		
 		
 
-		public bool fliped = false;//for display back texture
+	public bool fliped = false;//for display back texture
 
 
 		
 
-		public void Face(Direction dir,bool updateFOV  =true)
+	public void Face(Direction dir,bool updateFOV  =true)
+	{
+		if (!Type.Faceable)
 		{
-			if (!Type.Faceable)
-			{
-				return;
-			}
+			return;
+		}
 
-			while (dir < 0)
-			{
-				dir += 8;
-			}
+		dir = Utility.ClampFacing(dir);
 
-			while (dir > (Direction) 7)
-			{
-				dir -= 8;
-			}
-
-			Facing = dir;
+		Facing = dir;
 #if CLIENT
-			if (updateFOV)
-			{
-				WorldManager.Instance.MakeFovDirty();
-			}
+		if (updateFOV)
+		{
+			WorldManager.Instance.MakeFovDirty();
+		}
 #endif
 			
-		}
-		public Visibility GetMinimumVisibility()
+	}
+		
+	public void NextTurn()
+	{
+		if (LifeTime != -100)
 		{
-			if (Type.Surface || Type.Edge)
+			LifeTime--;
+			if (LifeTime <= 0)
 			{
-				return Visibility.None;
+				Destroy();
+					
 			}
+		}
+	}
 
-			if (ControllableComponent != null && ControllableComponent.Crouching)
+
+
+	bool destroyed;
+	public void Destroy()
+	{
+		if(destroyed)return;
+		destroyed = true;
+		
+		
+		if(Type.DesturctionEffect != null)
+		{
+			//wrap this in a task
+
+			Task t = new Task(delegate
 			{
-				return Visibility.Full;
-			}
+#if CLIENT
+			Type.DesturctionEffect?.Animate(TileLocation.Position);
+#endif
+				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
+			});
+			WorldManager.Instance.RunNextFrame(t);
 
-			return Visibility.Partial;
-		}
-		public void TakeDamage(Projectile proj)
-		{
-			Console.WriteLine(this + " got hit " + TileLocation.Position);
-			if (proj.dmg <= 0)
-			{return;
-			}
-
-			if (ControllableComponent != null)
-			{//let controlable handle it
-				ControllableComponent.TakeDamage(proj);
-				
-			}
-			else
-			{
-				//enviroment destruction
-				if (TileLocation.ObjectAtLocation == null) return;
-
-				var obj = TileLocation.ObjectAtLocation;
-
-			
-			}
-
-		}
-
-		public void Update(float gametime)
-		{
-
-			if (ControllableComponent != null)
-			{
-				ControllableComponent.Update(gametime);
-			}
-		}
-
-		public readonly WorldObjectType Type;	
-	
-		public Direction Facing { get; private set;}
-
-
-		public Cover GetCover()
-		{
-
-			if (ControllableComponent != null && ControllableComponent.Crouching)
-			{
-				return Type.Cover - 1;
-			}
-
-			return Type.Cover;
-
-
-
-		}
-
-
-		public WorldObjectData GetData()
-		{
-			WorldObjectData data = new WorldObjectData(Type.TypeName);
-			data.Facing = this.Facing;
-			data.Id = this.Id;
-			data.fliped = this.fliped;
-
-			if (ControllableComponent != null)
-			{
-				ControllableData cdata = ControllableComponent.GetData();
-				data.ControllableData = cdata;
-			}
-
-			return data;
-
-		}
-		protected bool Equals(WorldObject other)
-		{
-			return Id == other.Id;
-		}
-
-		public override bool Equals(object? obj)
-		{
-			if (ReferenceEquals(null, obj)) return false;
-			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != this.GetType()) return false;
-			return Equals((WorldObject) obj);
-		}
-
-		public override int GetHashCode()
-		{
-			return Id;
 		}
 		
+#if CLIENT
+			if(Equals(GameLayout.SelectedUnit, UnitComponent)){
+				GameLayout.SelectUnit(null);
+			}
+		
+		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
+#else
+		
+
+#endif
+		
+#if SERVER
+WorldManager.Instance.DeleteWorldObject(this);
+#endif
+
+		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
 
 	}
+	public Visibility GetMinimumVisibility()
+	{
+		if (Type.Surface || Type.Edge)
+		{
+			return Visibility.None;
+		}
+
+		if (UnitComponent != null && UnitComponent.Crouching)
+		{
+			return Visibility.Full;
+		}
+
+		return Visibility.Partial;
+	}
+
 	
+
+	public void TakeDamage(int dmg, int detResist)
+	{
+		if (LifeTime != -100)
+		{
+			LifeTime -= dmg;
+			if (LifeTime <= 0)
+			{
+				Destroy();
+			}
+		}
+		
+
+		if (dmg < 0)
+		{
+			return;
+		}
+		Console.WriteLine(this + " got hit " + TileLocation.Position);
+		if (UnitComponent != null)
+		{//let controlable handle it
+			UnitComponent.TakeDamage(dmg, detResist);
+		}
+		else
+		{
+			Health-= dmg-detResist;
+			if (Health <= 0)
+			{
+				Destroy();
+			}
+		}
+	}
+
+	public void TakeDamage(Projectile proj)
+	{
+		TakeDamage(proj.Dmg,proj.DeterminationResistanceCoefficient);
+	}
+
+	public void Update(float gametime)
+	{
+#if CLIENT
+		OverRideColor = null;
+		PreviewData = new PreviewData();//probably very bad memory wise
+#endif 
+		if (UnitComponent != null)
+		{
+			UnitComponent.Update(gametime);
+		}
+	}
+
+	public readonly WorldObjectType Type;	
+	
+	public Direction Facing { get; private set;}
+
+
+	public Cover GetCover(bool visibileCover = false)
+	{
+
+		Cover cover = Type.SolidCover;
+		if (visibileCover)
+		{
+			cover = Type.VisibilityCover;
+		}
+			
+		if (UnitComponent != null && UnitComponent.Crouching)
+		{
+			return cover - 1;
+		}
+
+		return cover;
+	}
+
+
+
+	public WorldObjectData GetData()
+	{
+		WorldObjectData data = new WorldObjectData(Type.TypeName);
+		data.Facing = Facing;
+		data.ID = ID;
+		data.Fliped = fliped;
+		data.Health = Health;
+
+		if (UnitComponent != null)
+		{
+			UnitData cdata = UnitComponent.GetData();
+			data.ControllableData = cdata;
+		}
+
+		return data;
+
+	}
+	protected bool Equals(WorldObject other)
+	{
+		return ID == other.ID;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != GetType()) return false;
+		return Equals((WorldObject) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		return ID;
+	}
+		
+	public bool IsVisible()
+	{
+#if SERVER
+		return true;	
+#else
+		if (TileLocation == null)
+		{
+			return true;
+		}
+
+		return GetMinimumVisibility() <= TileLocation.Visible;
+#endif
+	}
+
+		
+
 }

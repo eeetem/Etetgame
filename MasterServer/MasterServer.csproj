@@ -12,8 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CommonData\CommonData.csproj" />
- 
+      <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
     </ItemGroup>
 
 </Project>

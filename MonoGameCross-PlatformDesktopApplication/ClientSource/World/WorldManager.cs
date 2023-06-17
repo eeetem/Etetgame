@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Threading;
-using CommonData;
-using Microsoft.Xna.Framework;
+using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
-using Network;
 
 namespace MultiplayerXeno
 {
@@ -25,41 +19,49 @@ namespace MultiplayerXeno
 
 		public List<RayCastOutcome> RecentFOVRaycasts = new List<RayCastOutcome>();
 
-		private bool fovDirty = false;
-		public void MakeFovDirty()
+		private bool fovDirty;
+		private bool FullVis;
+		public void MakeFovDirty(bool fullvis = false)
 		{
 			fovDirty = true;
+			FullVis = fullvis;
 		}
 
 		
 		private void CalculateFov()
 		{
 			fovDirty = false;
-				if (!GameManager.intated)
-				{
-					return; //dont update fov untll atleast 1 server update has been recived
-				}
+	
 
+				
+				if (FullVis)
+				{
+					foreach (var tile in _gridData)
+					{
+						tile.Visible = Visibility.Full;
+					}
+					return;
+				}
 				RecentFOVRaycasts = new List<RayCastOutcome>();
 				foreach (var tile in _gridData)
 				{
 					tile.Visible = Visibility.None;
 				}
 
-
+				
 				foreach (var obj in WorldObjects.Values)
 				{
 
-					if (obj.ControllableComponent is not null && obj.ControllableComponent.IsMyTeam())
+					if (obj.UnitComponent is not null && obj.UnitComponent.IsMyTeam())
 					{
-						foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.ControllableComponent.GetSightRange(),obj.ControllableComponent.Crouching))
+						foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.UnitComponent.GetSightRange(),obj.UnitComponent.Crouching))
 						{
 							
 					
 							if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
 							{
 								GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
-								GetTileAtGrid(visTuple.Key)?.ObjectAtLocation?.ControllableComponent.Spoted();
+								GetTileAtGrid(visTuple.Key)?.UnitAtLocation?.Spoted();
 							}
 							
 							
