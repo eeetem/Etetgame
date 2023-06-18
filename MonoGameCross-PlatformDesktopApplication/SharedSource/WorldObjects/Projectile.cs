@@ -227,9 +227,7 @@ namespace MultiplayerXeno
 				
 				
 				hitObj.TakeDamage(this);
-#if SERVER
-				Networking.SendTileUpdate(hitObj.TileLocation);
-#endif
+
 				}
 				else
 				{
@@ -253,10 +251,7 @@ namespace MultiplayerXeno
 					tile.UnitAtLocation.Suppress(SupressionStrenght);
 					Console.WriteLine("supressed: determination="+tile.UnitAtLocation.Determination);
 				}
-#if SERVER
-				Networking.SendTileUpdate(tile);
-#endif
-				
+	
 			}
 			
 		}

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Network;
 using Network.Converter;
@@ -21,7 +22,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		{
 
 			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(1630, false);
-
+			
 			serverConnectionContainer.ConnectionLost += (Connection, b, c) =>
 			{
 				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {Connection.IPRemoteEndPoint.Address}. Reason {c.ToString()}");
@@ -49,7 +50,6 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 			serverConnectionContainer.Start();
 			
 			Console.WriteLine("Started master-server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
-
 			UpdateLoop();
 			
 			
@@ -57,7 +57,7 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
 			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
-			connection.EnableLogging = true;
+			connection.EnableLogging = false;
 			connection.TIMEOUT = 1000;
 			//need some sort of ddos protection
 			connection.RegisterStaticPacketHandler<LobbyStartPacket>(StartLobby);
@@ -146,6 +146,20 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 				args.Add(lobbyStartPacket.Password);
 				process.StartInfo.Arguments = string.Join(" ", args);
 				process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
+				DateTime date = DateTime.Now;
+				long id = date.ToFileTime();
+				Console.WriteLine("Creating server log at " + Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+lobbyStartPacket.LobbyName+")" +id+ ".log");
+				try
+				{
+					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/");
+					File.Create(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+lobbyStartPacket.LobbyName+")" +id+ ".log").Close();
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					throw;
+				}
+				
 				process.OutputDataReceived += (sender, args) =>
 				{
 					if (args.Data != null && args.Data.Contains("[UPDATE]"))
@@ -157,6 +171,11 @@ namespace MultiplayerXeno // Note: actual namespace depends on the project name.
 					}
 
 					Console.WriteLine("Server(" + port + "): " + args.Data);
+					//log
+					if (args.Data != null)
+					{
+						File.AppendAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+lobbyStartPacket.LobbyName+")" +id+ ".log", "[" + DateTime.Now + "] " + args.Data + "\n");
+					}
 				};
 				Console.WriteLine("starting...");
 				try

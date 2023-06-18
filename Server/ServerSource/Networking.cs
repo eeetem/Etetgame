@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using MultiplayerXeno;
 using Network;
@@ -55,8 +56,8 @@ namespace MultiplayerXeno
 			serverConnectionContainer.AllowUDPConnections = false;
 
 
-			selectedMap = "./Maps/Map1.mapdata";
-			WorldManager.Instance.LoadMap("./Maps/Ground Zero.mapdata");
+			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Map1.mapdata";
+			WorldManager.Instance.LoadMap(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata");
 			serverConnectionContainer.Start();
 			
 			Console.WriteLine("Started server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
@@ -111,7 +112,7 @@ namespace MultiplayerXeno
 		private static void ConnectionEstablished(Connection connection, ConnectionType type)
 		{
 			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
-			connection.EnableLogging = true;
+			connection.EnableLogging = false;
 			connection.TIMEOUT = 10000;
 
 			connection.RegisterRawDataHandler("register",RegisterClient);
@@ -157,8 +158,8 @@ namespace MultiplayerXeno
 			{
 				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
 					return;
-				File.Delete("./Maps/Custom/"+data.MapData.Name+".mapdata");
-				File.WriteAllText("./Maps/Custom/"+data.MapData.Name+".mapdata", data.MapData.Serialise());
+				File.Delete(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom/"+data.MapData.Name+".mapdata");
+				File.WriteAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom/"+data.MapData.Name+".mapdata", data.MapData.Serialise());
 				SendPreGameInfo();
 			});
 			
@@ -246,7 +247,7 @@ namespace MultiplayerXeno
 
 		}
 
-		private static string selectedMap = "/Maps/map.mapdata";
+		private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/map.mapdata";
 		public static void SendPreGameInfo()
 		{
 			var data = new PreGameDataPacket();
@@ -261,8 +262,8 @@ namespace MultiplayerXeno
 			{
 				data.Spectators.Add(spectator.Name);
 			}
-			data.MapList = Directory.GetFiles("./Maps/", "*.mapdata").ToList();
-			data.CustomMapList = Directory.GetFiles("./Maps/Custom", "*.mapdata").ToList();
+			data.MapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/", "*.mapdata").ToList();
+			data.CustomMapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom", "*.mapdata").ToList();
 			data.SelectedMap = selectedMap;
 			data.TurnTime = GameManager.PreGameData.TurnTime;
 			if (GameManager.Player1 != null)

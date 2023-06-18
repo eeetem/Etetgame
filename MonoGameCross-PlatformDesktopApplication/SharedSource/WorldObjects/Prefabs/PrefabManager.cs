@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -18,7 +19,7 @@ public static class PrefabManager
 	public static void MakePrefabs()
 	{
 		XmlDocument xmlDoc= new XmlDocument();
-		xmlDoc.Load("ObjectData.xml"); 
+		xmlDoc.Load(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/ObjectData.xml"); 
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("statuseffect"))
 		{

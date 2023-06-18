@@ -349,6 +349,11 @@ namespace MultiplayerXeno
 			{
 				AnyUnitMoving = false;
 				ThisMoving = false;
+#if SERVER
+
+				Networking.SendTileUpdate(WorldObject.TileLocation);
+#endif
+				
 			}
 			ClearOverWatch();
 			
@@ -434,6 +439,7 @@ namespace MultiplayerXeno
 		private List<Vector2Int>? CurrentPath = new List<Vector2Int>();
 		public bool ThisMoving;
 		public static bool AnyUnitMoving;
+		public static bool AnyUnitActuallyMoving;
 		private float _moveCounter;
 
 
@@ -446,14 +452,20 @@ namespace MultiplayerXeno
 		
 		public void EndTurn()
 		{
+			AnyUnitMoving = false;
 			StatusEffects.RemoveAll(x => x.duration <= 0);
 
 		}
+		
+		
 		public void Update(float gameTime)
 		{
+			AnyUnitActuallyMoving = false;
 
+			
 			if (ThisMoving)
 			{
+				AnyUnitActuallyMoving = true;
 				_moveCounter -= gameTime;
 				if (_moveCounter < 0)
 				{
@@ -502,6 +514,11 @@ namespace MultiplayerXeno
 #endif
 					
 				}
+			}
+
+			if (!AnyUnitActuallyMoving && AnyUnitMoving)
+			{
+				AnyUnitMoving = false;//hacky fix
 			}
 
 		}

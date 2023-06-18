@@ -73,14 +73,14 @@ namespace MultiplayerXeno
 			EffectParams["bloomAmount"] = 100f;
 			EffectParams["shape"] = 10;
 
-			EffectParams["noise"] = 0.5f;
+			EffectParams["noise"] = 0f;
 
 			
 			
 			//loose conection
-			EffectParams["clmagnitude"] = 100;
+			EffectParams["clmagnitude"] = 0.01f;
 			EffectParams["clalpha"] = 1;
-			EffectParams["clspeed"] = 1000;
+			EffectParams["clspeed"] = 1f;
 			EffectParams["overlayalpha"] = 0f;
 			
 			
@@ -121,7 +121,8 @@ namespace MultiplayerXeno
 
 		private static void StartingTweens()
 		{
-		
+			AddTween("noise", 1f, 100f, false);
+			AddTween("clmagnitude", 100, 100, false);
 			AddTween("dxspeed", 5, 1, false);
 			AddTween("dyspeed", 5, 1, false);
 			AddTween("dxfrequency", 0, 7f, false);
@@ -136,7 +137,7 @@ namespace MultiplayerXeno
 			AddTween("clspeed", 7f, 2f, false);
 			AddTween("clalpha", 0.07f, 1f, false);
 			AddTween("shape", 0.1f, 5f, false);
-			AddTween("noise", 0.1f, 5f, false);
+			AddTween("noise", 0.1f, 10f, false);
 
 
 
@@ -391,15 +392,13 @@ namespace MultiplayerXeno
 		{
 			Task.Factory.StartNew(() =>
 			{
-				var startValue = EffectParams[parameter];
-				if (DefaultParams.ContainsKey(parameter))
-				{
-					startValue = DefaultParams[parameter];
-				}
+			
+				var startValue = DefaultParams[parameter];
+				
 
 				AddTween(parameter, target, speed, wipeQueue);
-				Thread.Sleep(1000);
-				AddTween(parameter, startValue, returnSpeed, false);
+				Thread.Sleep((int) (1000f *  (10f/speed)));
+				AddTween(parameter, startValue, returnSpeed, true);
 			});
 		}
 		
