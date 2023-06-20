@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -19,7 +20,7 @@ public static class PrefabManager
 	public static void MakePrefabs()
 	{
 		XmlDocument xmlDoc= new XmlDocument();
-		xmlDoc.Load(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/ObjectData.xml"); 
+		xmlDoc.Load(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/ObjectData.xml"); 
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("statuseffect"))
 		{

@@ -42,8 +42,13 @@ namespace MultiplayerXeno
 		
 			if (newUI != null)
 			{
+
+
 				root = newUI.Generate(Desktop, currentUi);
-				currentUi = newUI;
+				if (currentUi.GetType() != newUI.GetType())
+				{
+					currentUi = newUI;
+				}
 			}
 			else
 			{

@@ -154,7 +154,8 @@ public partial class WorldObject
 
 
 
-	bool destroyed;
+	public bool destroyed { get; private set; } = false;
+
 	public void Destroy()
 	{
 		if(destroyed)return;

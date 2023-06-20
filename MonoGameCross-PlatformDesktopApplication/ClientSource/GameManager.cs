@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MultiplayerXeno;
 using MultiplayerXeno.UILayouts;
+using Myra.Graphics2D.UI;
 
 namespace MultiplayerXeno
 {
@@ -65,7 +68,14 @@ namespace MultiplayerXeno
 							UI.SetUI(new PreGameLobbyLayout());
 							break;//todo specating
 						}
+						var mySpawnPoints= IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
+						while (mySpawnPoints.Count==0)
+						{
+							Thread.Sleep(1000);
+								
+						}
 						UI.SetUI(new SquadCompBuilderLayout());
+			
 						break;
 					case GameState.Playing:
 						StartGame();

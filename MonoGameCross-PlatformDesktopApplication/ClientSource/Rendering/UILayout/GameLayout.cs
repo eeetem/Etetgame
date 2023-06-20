@@ -91,7 +91,10 @@ public class GameLayout : MenuLayout
 	public static void MakeUnitBarRenders(SpriteBatch batch)
 	{
 		if(_unitBar == null ||  _unitBar.Widgets.Count == 0) return;
+		if( MyUnits.Count == 0) return;
 		int columCounter = 0;
+		//sort by id
+		MyUnits.Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
 		foreach (var unit in MyUnits)
 		{
 			if (!unitBarRenderTargets.ContainsKey(unit))
@@ -326,9 +329,14 @@ public class GameLayout : MenuLayout
 			panel.Widgets.Add(swapTeam);
 		}
 
+		if (inputBox == null)
+		{
+			inputBox = new TextBox();
+			inputBox.Visible = false;
+		}
 
-		inputBox = new TextBox();
-		inputBox.Visible = false;
+	
+		
 		inputBox.HorizontalAlignment = HorizontalAlignment.Left;
 		inputBox.Background = new SolidBrush(Color.Transparent);
 		inputBox.Border = new SolidBrush(Color.Black);
@@ -362,7 +370,7 @@ public class GameLayout : MenuLayout
 		{
 			ScoreIndicator = new Label()
 			{
-				Top=90,
+				Top=150,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Left
 			};
@@ -1508,7 +1516,7 @@ public class GameLayout : MenuLayout
 
 	private static float counter;
 	private static float animopacity;
-	private TextBox? inputBox;
+	private static TextBox? inputBox;
 
 	public static void DrawHoverHud(SpriteBatch batch, WorldObject target,float deltaTime)
 	{

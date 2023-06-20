@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,9 +23,8 @@ public class SquadCompBuilderLayout : UiLayout
 		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
 		
-		mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
+		mySpawnPoints =  mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
 		Camera.SetPos(mySpawnPoints[0]);
-		
 		freeslots = new Label()
 		{
 			Text = "Free Units "+(WorldManager.Instance.CurrentMap.unitCount-_composition.Count),

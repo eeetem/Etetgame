@@ -454,7 +454,10 @@ namespace MultiplayerXeno
 		{
 			AnyUnitMoving = false;
 			StatusEffects.RemoveAll(x => x.duration <= 0);
-
+#if SERVER
+			Networking.SendTileUpdate(WorldObject.TileLocation);
+#endif
+			
 		}
 		
 		
@@ -494,7 +497,6 @@ namespace MultiplayerXeno
 						{
 							WorldManager.Instance.GetObject(u).UnitComponent.overwatchShotThisMove = false;
 						}
-						Networking.SendTileUpdate(WorldObject.TileLocation);
 #endif
 						
 #if CLIENT

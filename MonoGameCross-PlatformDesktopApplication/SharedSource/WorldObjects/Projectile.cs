@@ -48,71 +48,71 @@ namespace MultiplayerXeno
 			ShooterLow = shooterLow;
 			TargetLow = targetLow;
 
-		if (shooterLow)
-		{
-			Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
-		}
-		else if (targetLow)
-		{
-			Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
-		}
-		else
-		{
-			Result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
-		}
-
-		if (!Result.hit) {
-			var tile = WorldManager.Instance.GetTileAtGrid(to);
-			var obj = tile.UnitAtLocation;
-			if (obj != null) {
-#if CLIENT
-				if (obj.WorldObject.IsVisible()) {
-#endif
-					var controllable = obj;
-					if (controllable.Crouching && TargetLow == false) {
-						// Do nothing if targetLow is false
-					} else {
-						Result = new RayCastOutcome(from, to) {
-							hit = true,
-							HitObjId = obj.WorldObject.ID,
-							CollisionPointLong = to,
-						};
-					}
-#if CLIENT
-				}
-#endif
-			}
-		}
-
-	
-		if (Result.hit)
-		{
-
-			Vector2 dir = Vector2.Normalize(from - to);
-			to = Result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
-			RayCastOutcome cast;
-
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
-			if (cast.hit && Result.HitObjId != cast.HitObjId)
+			if (shooterLow)
 			{
-				CoverCast = cast;
+				Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
+			}
+			else if (targetLow)
+			{
+				Result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
+				Result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
+			}
+
+			if (!Result.hit) {
+				var tile = WorldManager.Instance.GetTileAtGrid(to);
+				var obj = tile.UnitAtLocation;
+				if (obj != null) {
+#if CLIENT
+					if (obj.WorldObject.IsVisible()) {
+#endif
+						var controllable = obj;
+						if (controllable.Crouching && TargetLow == false) {
+							// Do nothing if targetLow is false
+						} else {
+							Result = new RayCastOutcome(from, to) {
+								hit = true,
+								HitObjId = obj.WorldObject.ID,
+								CollisionPointLong = to,
+							};
+						}
+#if CLIENT
+					}
+#endif
+				}
+			}
+
+	
+			if (Result.hit)
+			{
+
+				Vector2 dir = Vector2.Normalize(from - to);
+				to = Result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
+				RayCastOutcome cast;
+
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
 				if (cast.hit && Result.HitObjId != cast.HitObjId)
 				{
 					CoverCast = cast;
 				}
 				else
 				{
-					CoverCast = null;
+					cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
+					if (cast.hit && Result.HitObjId != cast.HitObjId)
+					{
+						CoverCast = cast;
+					}
+					else
+					{
+						CoverCast = null;
+					}
 				}
+
+
+
 			}
-
-
-
-		}
 			
 
 			CalculateDetails();
@@ -183,11 +183,11 @@ namespace MultiplayerXeno
 				{
 							
 
-				if (CoverCast != null)
-				{
-					var hitobj = WorldManager.Instance.GetObject(Result.HitObjId);
-					Cover cover = WorldManager.Instance.GetObject(CoverCast.HitObjId)!.GetCover();
-						if (hitobj?.UnitComponent != null && hitobj.UnitComponent.Crouching)
+					if (CoverCast != null)
+					{
+						var coverObj = WorldManager.Instance.GetObject(CoverCast.HitObjId);
+						Cover cover = coverObj!.GetCover();
+						if (coverObj?.UnitComponent != null && coverObj.UnitComponent.Crouching)
 						{
 							if (cover != Cover.Full)
 							{ 
@@ -196,37 +196,41 @@ namespace MultiplayerXeno
 						}
 
 						int coverBlock = 0;
-					switch (cover)
-					{
-						case Cover.Full:
-							coverBlock = 20;
-							break;
-						case Cover.High:
-							coverBlock =4;
-							break;
-						case Cover.Low:
-							coverBlock =2;
-							break;
-						case Cover.None:
-							Console.Write("coverless object hit, this shouldnt happen");
-							//this shouldnt happen
-							break;
+						switch (cover)
+						{
+							case Cover.Full:
+								coverBlock = 20;
+								break;
+							case Cover.High:
+								coverBlock =4;
+								break;
+							case Cover.Low:
+								coverBlock =2;
+								break;
+							case Cover.None:
+								Console.Write("coverless object hit, this shouldnt happen");
+								//this shouldnt happen
+								break;
+						}
+						if(Dmg>coverBlock)
+						{
+							Dmg -= coverBlock;
+						}
+						else
+						{
+							coverBlock = Dmg;
+							Dmg = 0;
+						}
+						coverObj!.TakeDamage(coverBlock,0);
 					}
-					if(Dmg>coverBlock)
-					{
-						Dmg -= coverBlock;
-					}
-					else
-					{
-						coverBlock = Dmg;
-						Dmg = 0;
-					}
-					hitObj.TakeDamage(coverBlock,0);
-				}
 
 				
 				
-				hitObj.TakeDamage(this);
+					hitObj.TakeDamage(this);
+					if (!hitObj.destroyed && hitObj.UnitComponent is not null)
+					{
+						hitObj.Face( Utility.GetDirectionToSideWithPoint(hitObj.TileLocation.Position, Result.CollisionPointLong));
+					}
 
 				}
 				else

@@ -15,19 +15,9 @@ excom like action confirming
 
 clearer unit boundry.
 reselect unit on ability use 
-PLAYER COUNT NO UPDATING
-add glass to tutorial
-add alt to tutorial
+
 follow mode for specatator
-face in direction you were fired at
 
-spectators restarting placement
-shuffling of unit bar
-
-
-
-unit moving resets chat
-overwatch
 
 action locking/rework:
 dont send actions untill recived confirm 

@@ -84,12 +84,13 @@ namespace MultiplayerXeno
 				if (obstacle == Cover.None) return dist;
 				if (obstacle == Cover.Low) return dist + 1;
 				if (obstacle == Cover.High) return dist + 5;
+				if (obstacle == Cover.Full) return 1000000;
 			}catch(Exception e)
 			{
 				Console.WriteLine(e);
 			}
 
-			throw new Exception("not traversible tile requested cost");
+			throw new Exception("HOW DID YOU GET HERE");
 		}
 
 		private WorldObject? _northEdge;

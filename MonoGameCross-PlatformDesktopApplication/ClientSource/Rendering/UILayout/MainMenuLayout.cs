@@ -175,7 +175,7 @@ public class MainMenuLayout : UiLayout
 
 
 			var version = new Label();
-			version.Text = "Alpha 2.0.3";
+			version.Text = "Alpha 2.0.5";
 			version.VerticalAlignment = VerticalAlignment.Top;
 			version.HorizontalAlignment = HorizontalAlignment.Left;
 			version.Background = new SolidBrush(Color.Transparent);

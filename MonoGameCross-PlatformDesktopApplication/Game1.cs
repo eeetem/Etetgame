@@ -99,6 +99,14 @@ namespace MultiplayerXeno
 			_graphics.PreferredBackBufferHeight = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[1]);
 			resolution.Y = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[1]);
 			_graphics.IsFullScreen = bool.Parse(config.GetValue("settings", "fullscreen", "false"));
+			if (_graphics.IsFullScreen)
+			{
+				_graphics.PreferredBackBufferWidth= GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+				_graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+				resolution.X = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+				resolution.Y = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+			}
+
 			_graphics.ApplyChanges();
 			GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, _graphics.PreferredBackBufferWidth,_graphics.PreferredBackBufferHeight, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 0, RenderTargetUsage.PreserveContents);
 			GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;

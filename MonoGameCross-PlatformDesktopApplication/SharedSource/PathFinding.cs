@@ -121,11 +121,11 @@ namespace MultiplayerXeno.Pathfinding
 					if (current.CurrentCost <= range)
 					{
 						inRange.Add(current.Position);
-						Console.WriteLine("added with range: "+current.CurrentCost);
+						//Console.WriteLine("added with range: "+current.CurrentCost);
 					}
 					else
 					{
-						Console.WriteLine("rejected with range: "+current.CurrentCost);
+						//Console.WriteLine("rejected with range: "+current.CurrentCost);
 						continue;
 					}
 
