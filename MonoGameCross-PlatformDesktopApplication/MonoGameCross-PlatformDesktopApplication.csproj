@@ -151,14 +151,161 @@
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Compile Remove="ClientSource\Rendering\UILayout\LayoutWithMenu\UnitGameLayout.cs" />
-      <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
-      <Compile Remove="SharedSource\WorldObjects\Controllables\Actions\SecondWind.cs" />
       <Compile Update="ClientSource\Networking.cs">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Compile>
+      <Compile Include="..\MasterServer\LobbyPackets\LobbyData.cs">
+        <Link>LobbyPackets\LobbyData.cs</Link>
+      </Compile>
+      <Compile Include="..\MasterServer\LobbyPackets\LobbyStartPacket.cs">
+        <Link>LobbyPackets\LobbyStartPacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\GameManager.cs">
+        <Link>SharedSource\GameManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\GameActionPacket.cs">
+        <Link>SharedSource\Packets\GameActionPacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\GameDataPacket.cs">
+        <Link>SharedSource\Packets\GameDataPacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\GameSettings.cs">
+        <Link>SharedSource\Packets\GameSettings.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\MapData.cs">
+        <Link>SharedSource\Packets\MapData.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\PreGameDataPacket.cs">
+        <Link>SharedSource\Packets\PreGameDataPacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\ProjectilePacket.cs">
+        <Link>SharedSource\Packets\ProjectilePacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\ReplaySequencePacket.cs">
+        <Link>SharedSource\Packets\ReplaySequencePacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\SquadCompPacket.cs">
+        <Link>SharedSource\Packets\SquadCompPacket.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Packets\SquadMember.cs">
+        <Link>SharedSource\Packets\SquadMember.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\PathFinding.cs">
+        <Link>SharedSource\PathFinding.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\StructsAndEnums.cs">
+        <Link>SharedSource\StructsAndEnums.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Utility.cs">
+        <Link>SharedSource\Utility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\StatusEffectType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\StatusEffectType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\UnitType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\UnitType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\Value.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\Value.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\ValueChange.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\ValueChange.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\VariableValue.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\VariableValue.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\WorldObjectType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\WorldObjectType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Projectile.cs">
+        <Link>SharedSource\WorldObjects\Projectile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Unit.cs">
+        <Link>SharedSource\WorldObjects\Unit.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Action.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Attack.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Attack.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Face.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Face.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Move.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\OverWatch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\OverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\SelectItem.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\SelectItem.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseItem.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseItem.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Move.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\WorldEffect.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\WorldEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\StatusEffectInstance.cs">
+        <Link>SharedSource\WorldObjects\Units\StatusEffectInstance.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\WorldEffect.cs">
+        <Link>SharedSource\WorldObjects\WorldEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\WorldObject.cs">
+        <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\DeliveryMethod.cs">
+        <Link>SharedSource\World\WorldAction\DeliveryMethod.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\ExtraAction.cs">
+        <Link>SharedSource\World\WorldAction\ExtraAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\ExtraToggleAction.cs">
+        <Link>SharedSource\World\WorldAction\ExtraToggleAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\IExtraAction.cs">
+        <Link>SharedSource\World\WorldAction\IExtraAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\ImmideateDelivery.cs">
+        <Link>SharedSource\World\WorldAction\ImmideateDelivery.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\Shootable.cs">
+        <Link>SharedSource\World\WorldAction\Shootable.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\Throwable.cs">
+        <Link>SharedSource\World\WorldAction\Throwable.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\VissionCast.cs">
+        <Link>SharedSource\World\WorldAction\VissionCast.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldAction\WorldAction.cs">
+        <Link>SharedSource\World\WorldAction\WorldAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldManager.cs">
+        <Link>SharedSource\World\WorldManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\World\WorldTile.cs">
+        <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
     </ItemGroup>
     <ItemGroup>
@@ -174,5 +321,58 @@
         <Link>Maps\Not One Step Back.mapdata</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.AssemblyInfoInputs.cache">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.AssemblyInfoInputs.cache</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.assets.cache">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.assets.cache</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.csproj.AssemblyReference.cache">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.csproj.AssemblyReference.cache</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.csproj.CoreCompileInputs.cache">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.csproj.CoreCompileInputs.cache</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.csproj.FileListAbsolute.txt">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.csproj.FileListAbsolute.txt</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.GeneratedMSBuildEditorConfig.editorconfig">
+        <Link>SharedSource\obj\Debug\net6.0\SharedSource.GeneratedMSBuildEditorConfig.editorconfig</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\project.assets.json">
+        <Link>SharedSource\obj\project.assets.json</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\project.nuget.cache">
+        <Link>SharedSource\obj\project.nuget.cache</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\project.packagespec.json">
+        <Link>SharedSource\obj\project.packagespec.json</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\rider.project.restore.info">
+        <Link>SharedSource\obj\rider.project.restore.info</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\SharedSource.csproj.nuget.dgspec.json">
+        <Link>SharedSource\obj\SharedSource.csproj.nuget.dgspec.json</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\SharedSource.csproj.nuget.g.props">
+        <Link>SharedSource\obj\SharedSource.csproj.nuget.g.props</Link>
+      </Content>
+      <Content Include="..\SharedSource\obj\SharedSource.csproj.nuget.g.targets">
+        <Link>SharedSource\obj\SharedSource.csproj.nuget.g.targets</Link>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="..\SharedSource\bin\Debug\net6.0">
+        <Link>SharedSource\bin\Debug\net6.0</Link>
+      </Folder>
+      <Folder Include="..\SharedSource\GameActionPacket">
+        <Link>SharedSource\GameActionPacket</Link>
+      </Folder>
+      <Folder Include="..\SharedSource\obj\Debug\net6.0\ref">
+        <Link>SharedSource\obj\Debug\net6.0\ref</Link>
+      </Folder>
+      <Folder Include="..\SharedSource\obj\Debug\net6.0\refint">
+        <Link>SharedSource\obj\Debug\net6.0\refint</Link>
+      </Folder>
     </ItemGroup>
 </Project>

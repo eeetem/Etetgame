@@ -80,31 +80,6 @@ public abstract class Action
 
 	public abstract Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
 
-
-	public void Perform(Unit actor, Vector2Int target)
-	{
-		try
-		{
-
-#if CLIENT
-			Animate(actor,target);
-#endif
-			Execute(actor, target);
-#if CLIENT
-			WorldManager.Instance.MakeFovDirty();	
-		SetActiveAction(null);
-		UI.SetUI(null);
-#endif
-		}catch(Exception e)
-		{
-			Console.WriteLine(e);
-		}
-	}
-
-	
-
-	
-	public abstract void Execute(Unit actor, Vector2Int target);
 #if CLIENT
 	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
 	public virtual void Animate(Unit actor, Vector2Int target)
@@ -123,45 +98,35 @@ public abstract class Action
 		}
 		Thread.Sleep(800);
 	}
-#endif
-	public virtual void ToPacket(Unit actor,Vector2Int target)
+	public virtual void SendToServer(Unit actor,Vector2Int target)
 	{
 		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.WorldObject.ID+"");
 		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
 		Networking.DoAction(packet);
 	}
+#endif
+	
+
 	
 	
 #if CLIENT
-	public virtual void PerformClientSide(Unit actor, Vector2Int target)
+	public virtual void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
 	}
-#endif
-	
-	
-	public void PerformFromPacket(Unit actor,Vector2Int target)
+#else
+
+	public void PerformServerSide(Unit actor,Vector2Int target)
 	{
-#if CLIENT
-			WorldAction.FreeFire = true;
-#endif
-	
+
 		var result = CanPerform(actor, ref target);
 		if(!result.Item1)
 		{
-#if CLIENT
-			UI.ShowMessage("Desync Error","Unit ordered to perform an action it can't perform: "+result.Item2);
-#else
-				Console.WriteLine("Client sent an impossible action: "+result.Item2);
-#endif
+			Console.WriteLine("Client sent an impossible action: "+result.Item2);
 			return;
 		}
-		Perform(actor, target);
-#if SERVER
-		ToPacket(actor,target);
-#endif
-	
-#if CLIENT
-		WorldAction.FreeFire = false;
-#endif
+		ExecuteServerSide(actor, target);
+		
 	}
+	public abstract void ExecuteServerSide(Unit actor, Vector2Int target);
+#endif
 }

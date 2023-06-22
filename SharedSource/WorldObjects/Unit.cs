@@ -318,11 +318,10 @@ namespace MultiplayerXeno
 				return;
 			}
 #if CLIENT
-			a.ToPacket(this, target);
-			a.PerformClientSide(this, target);
+			a.SendToServer(this, target);
+			a.ExecuteClientSide(this, target);
 #else
-			a.ToPacket(this,target);
-			a.Perform(this, target);
+			a.PerformServerSide(this, target);
 #endif
 			
 			
@@ -349,11 +348,7 @@ namespace MultiplayerXeno
 			{
 				AnyUnitMoving = false;
 				ThisMoving = false;
-#if SERVER
-
-				Networking.SendTileUpdate(WorldObject.TileLocation);
-#endif
-				
+	
 			}
 			ClearOverWatch();
 			
@@ -454,9 +449,7 @@ namespace MultiplayerXeno
 		{
 			AnyUnitMoving = false;
 			StatusEffects.RemoveAll(x => x.duration <= 0);
-#if SERVER
-			Networking.SendTileUpdate(WorldObject.TileLocation);
-#endif
+
 			
 		}
 		

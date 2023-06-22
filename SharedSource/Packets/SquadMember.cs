@@ -1,4 +1,6 @@
-﻿namespace MultiplayerXeno;
+﻿using System.Collections.Generic;
+
+namespace MultiplayerXeno;
 
 public class SquadMember
 {

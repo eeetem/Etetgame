@@ -32,8 +32,8 @@ public class OverWatch : Action
 
 		return new Tuple<bool, string>(true, "");
 	}
-
-	public override void Execute(Unit actor,Vector2Int target)
+#if SERVER
+	public override void ExecuteServerSide(Unit actor,Vector2Int target)
 	{
 		actor.ActionPoints.Current=0;
 		actor.MovePoints.Current=0;
@@ -48,6 +48,8 @@ public class OverWatch : Action
 		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position, target));
 
 	}
+#endif
+
 
 	private HashSet<Projectile> GetOverWatchPositions(Unit actor,Vector2Int target)
 	{

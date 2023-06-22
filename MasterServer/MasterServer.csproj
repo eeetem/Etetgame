@@ -12,7 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SharedSource\SharedSource.csproj" />
     </ItemGroup>
 
 </Project>

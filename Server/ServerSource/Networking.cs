@@ -334,7 +334,7 @@ namespace MultiplayerXeno
 				return;
 			}
 
-			GameManager.ParsePacket(packet);
+			GameManager.ParseActionPacket(packet);
 
 
 

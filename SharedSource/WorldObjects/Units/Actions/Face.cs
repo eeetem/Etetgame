@@ -37,12 +37,15 @@ public class Face : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public override void Execute(Unit actor,Vector2Int target)
+#if SERVER
+	public override void ExecuteServerSide(Unit actor,Vector2Int target)
 	{
 		var targetDir = Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
 		actor.canTurn = false;
 		actor.WorldObject.Face(targetDir);
 	}
+#endif
+
 #if CLIENT
 
 	private Vector2Int lastTarget;

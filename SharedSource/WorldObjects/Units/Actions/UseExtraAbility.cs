@@ -41,13 +41,19 @@ public class UseExtraAbility : Action
 			}
 		}
 
-		public override void Execute(Unit actor, Vector2Int target)
-		{
-			IExtraAction action = actor.extraActions[AbilityIndex];
-			action.Execute(actor, target);
-		}
+#if SERVER
+	public override void ExecuteServerSide(Unit actor, Vector2Int target)
+	{
+		IExtraAction action = actor.extraActions[AbilityIndex];
+		action.Execute(actor, target);
+	}
+#endif
+	
 
-		public override void ToPacket(Unit actor, Vector2Int target)
+
+
+#if CLIENT
+		public override void SendToServer(Unit actor, Vector2Int target)
 		{
 			IExtraAction action = actor.extraActions[AbilityIndex];
 			var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
@@ -60,9 +66,6 @@ public class UseExtraAbility : Action
 			Networking.DoAction(packet);
 		
 		}
-
-#if CLIENT
-
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
 			if(AbilityIndex == -1 && AbilityIndex<actor.extraActions.Count)return;

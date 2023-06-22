@@ -17,17 +17,19 @@ public class SelectItem : Action
 		
 		return  new Tuple<bool, string>(true, "");
 	}
-
-	public override void Execute(Unit actor, Vector2Int target)
+#if SERVER
+	public override void ExecuteServerSide(Unit actor, Vector2Int target)
 	{
 		actor.SelectedItemIndex = target.X;
 	}
+#endif
+
 #if CLIENT
 
-	public override void PerformClientSide(Unit actor, Vector2Int target)
+	public override void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
 		actor.SelectedItemIndex = target.X;
-		base.PerformClientSide(actor,target);
+		base.ExecuteClientSide(actor,target);
 	}
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)

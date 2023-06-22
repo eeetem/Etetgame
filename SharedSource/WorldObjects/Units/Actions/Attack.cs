@@ -37,14 +37,21 @@ public class Attack : Action
 
 	}
 
-	public override void Execute(Unit actor,Vector2Int target)
+#if SERVER
+		public override void ExecuteServerSide(Unit actor,Vector2Int target)
 	{
 		actor.ActionPoints--;
 		actor.MovePoints--;
 		actor.Type.DefaultAttack.Execute(actor, target);
 	}
+#endif
 
-	public override void ToPacket(Unit actor, Vector2Int target)
+
+
+
+#if CLIENT
+
+	public override void SendToServer(Unit actor, Vector2Int target)
 	{
 		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
 		
@@ -54,7 +61,7 @@ public class Attack : Action
 		Networking.DoAction(packet);
 	}
 
-#if CLIENT
+
 	public override void InitAction()
 	{
 		GameLayout.SelectedUnit.Type.DefaultAttack.InitPreview();

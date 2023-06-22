@@ -38,7 +38,7 @@ namespace MultiplayerXeno
 			{
 				if (a == CloseReason.Timeout)
 				{
-					UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", Reconnect);
+					UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", (a, b) => { Reconnect(); });
 				}
 				else
 				{
@@ -75,8 +75,6 @@ namespace MultiplayerXeno
 			{
 				Chat.ReciveMessage(RawDataConverter.ToUTF8String(rawData));	
 			});
-
-			ServerConnection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
 			ServerConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
 			ServerConnection.RegisterStaticPacketHandler<PreGameDataPacket>((i, a) =>
 			{
@@ -118,12 +116,11 @@ namespace MultiplayerXeno
 
 		public static void UploadMap(string path)
 		{
-			
 			var packet = new MapDataPacket(MapData.Deserialse(File.ReadAllText(path)));
-			ServerConnection.Send(packet);
+			ServerConnection?.Send(packet);
 		}
 
-		private static void Reconnect(object sender, EventArgs e)
+		private static void Reconnect()
 		{
 			Connect(Ipport, Name);
 		}
@@ -136,17 +133,9 @@ namespace MultiplayerXeno
 			WorldManager.Instance.LoadWorldTile(prefabData);
 
 
-
-			
-
 			
 		}
-
-		private static void ReciveAction(GameActionPacket packet, Connection connection)
-		{
-			GameManager.ParsePacket(packet);
-		}
-
+		
 
 		private static void ReciveGameUpdate(GameDataPacket packet, Connection connection)
 		{

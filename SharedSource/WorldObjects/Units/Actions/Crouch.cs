@@ -22,18 +22,28 @@ public class Crouch : Action
 		
 		return new Tuple<bool, string>(true, "");
 	}
+#if CLIENT
+	public override void ExecuteClientSide(Unit actor, Vector2Int target)
+	{
+		base.ExecuteClientSide(actor, target);
+		actor.MovePoints--;
+		actor.canTurn = true;
+		actor.Crouching = !actor.Crouching;
+		actor.WorldObject.TileLocation.OverWatchTrigger();
+	}
 
-	public override void Execute(Unit actor,Vector2Int target)
+#else
+		public override void ExecuteServerSide(Unit actor,Vector2Int target)
 	{
 		
 		actor.MovePoints--;
 		actor.canTurn = true;
 		actor.Crouching = !actor.Crouching;
 		actor.WorldObject.TileLocation.OverWatchTrigger();
-#if CLIENT
-		GameLayout.ReMakeMovePreview();
-#endif
+
 	}
+#endif
+
 
 #if CLIENT
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
@@ -48,4 +58,3 @@ public class Crouch : Action
 	}
 #endif
 }
-

@@ -32,8 +32,8 @@ public class UseItem : Action
 
 	}
 
-	
-	public override void Execute(Unit actor, Vector2Int target)
+	#if SERVER
+	public override void ExecuteServerSide(Unit actor, Vector2Int target)
 	{
 		actor.ActionPoints--;
 		actor.SelectedItem?.Execute(actor, target);
@@ -42,6 +42,7 @@ public class UseItem : Action
 		actor.RemoveItem(actor.SelectedItemIndex);
 		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
 	}
+	#endif
 	
 #if CLIENT
 	public override void InitAction()

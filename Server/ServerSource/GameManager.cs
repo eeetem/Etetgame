@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using MultiplayerXeno;
+using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno
 {
@@ -125,6 +126,83 @@ namespace MultiplayerXeno
 				spectator?.Connection?.Send(packet);
 			}
 			Program.InformMasterServer();
+		}
+		
+		
+		public static void ParseActionPacket(GameActionPacket packet)
+		{
+			try
+			{
+				Console.WriteLine("recived action packet: " + packet.Type + " " + packet.UnitId + " " + packet.Target);
+				if (packet.Type == ActionType.EndTurn)
+				{
+					endTurnNextFrame = true;
+					return;
+				}
+
+				if (WorldManager.Instance.GetObject(packet.UnitId) == null)
+				{
+					Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
+					return;
+				}
+
+				Unit? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.UnitComponent;
+				if(controllable == null)
+				{
+					Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);
+					return;
+				}
+				Action act = Action.Actions[packet.Type]; //else get controllable specific actions
+				if (act.ActionType == ActionType.UseAbility)
+				{
+					int ability = int.Parse(packet.args[0]);
+					UseExtraAbility.AbilityIndex = ability;
+					UseExtraAbility.abilityLock = true;
+					IExtraAction a = controllable.extraActions[ability];
+					if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable) != null)
+					{
+						string target = packet.args[1];
+						switch (target)
+						{
+							case "Auto":
+								Shootable.targeting = Shootable.targeting = TargetingType.Auto;
+								break;
+							case "High":
+								Shootable.targeting = Shootable.targeting = TargetingType.High;
+								break;
+							case "Low":
+								Shootable.targeting = Shootable.targeting = TargetingType.Low;
+								break;
+							default:
+								throw new ArgumentException("Invalid target type");
+						}
+					}
+				}
+				else if (act.ActionType == ActionType.Attack)
+				{
+					string target = packet.args[0];
+					switch (target)
+					{
+						case "Auto":
+							Shootable.targeting = Shootable.targeting = TargetingType.Auto;
+							break;
+						case "High":
+							Shootable.targeting = Shootable.targeting = TargetingType.High;
+							break;
+						case "Low":
+							Shootable.targeting = Shootable.targeting = TargetingType.Low;
+							break;
+						default:
+							throw new ArgumentException("Invalid target type");
+					}
+				}
+
+				act.PerformServerSide(controllable, packet.Target);
+				UseExtraAbility.abilityLock = false;
+			}catch(Exception e)
+			{
+				Console.WriteLine("Error parsing packet: "+e);
+			}
 		}
 	}
 }
