@@ -584,8 +584,6 @@ namespace MultiplayerXeno
 				LastItem = u.LastItem?.Name;
 				MoveRangeEffect = u.MoveRangeEffect.Current;
 				ThisMoving = u.ThisMoving;
-				LastItem = u.LastItem?.Name;
-				ThisMoving = u.ThisMoving;
 			}
 
 
@@ -601,7 +599,7 @@ namespace MultiplayerXeno
 				message.Add(JustSpawned);
 				message.Add(Overwatch);
 				message.Add(SelectIndex);
-				message.Add(LastItem);
+				message.AddNullableString(LastItem);
 				message.Add(MoveRangeEffect);
 				message.Add(ThisMoving);
 
@@ -631,7 +629,7 @@ namespace MultiplayerXeno
 				JustSpawned = message.GetBool();
 				Overwatch = message.GetBool();
 				SelectIndex = message.GetInt();
-				LastItem = message.GetString();
+				LastItem = message.GetNullableString();
 				MoveRangeEffect = message.GetInt();
 				ThisMoving = message.GetBool();
 

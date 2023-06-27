@@ -3,12 +3,36 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using Riptide;
 
 namespace MultiplayerXeno;
 
 public  static partial class Utility
 { 
         
+    public static void AddNullableString(this Message msg, string? s)
+    {
+        if (s is null)
+        {
+            msg.Add(false);
+        }
+        else
+        {
+            msg.Add(true);
+            msg.Add(s);
+        }
+    }
+    public static string? GetNullableString(this Message msg)
+    {
+        if (msg.GetBool())
+        {
+            return msg.GetString();
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     public static double Distance(Vector2Int from, Vector2Int to)
     {
@@ -132,7 +156,7 @@ public  static partial class Utility
 
         //Get the pixel data from the original texture:
         Color[] originalData = new Color[original.Width * original.Height];
-        original.GetData<Color>(originalData);
+        original.GetData(originalData);
 
         int index = 0;
         for (int y = 0; y < yCount * partHeight; y += partHeight)
@@ -156,7 +180,7 @@ public  static partial class Utility
             }
 
             //Fill the part with the extracted data
-            part.SetData<Color>(partData);
+            part.SetData(partData);
             //Stick the part in the return array:                    
             r[index++] = part;
         }

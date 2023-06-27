@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using MultiplayerXeno.UILayouts;
 
 namespace MultiplayerXeno;
@@ -123,14 +124,20 @@ public static partial class GameManager
 					UI.SetUI(new PreGameLobbyLayout());
 					break;//todo specating
 				}
-				var mySpawnPoints= IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
-				while (mySpawnPoints.Count==0)
+
+				Task.Run(delegate
 				{
-					Thread.Sleep(1000);
-								
-				}
-				UI.SetUI(new SquadCompBuilderLayout());
-			
+					var mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
+					do
+					{
+						mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
+						Thread.Sleep(1000);
+
+					} while (mySpawnPoints.Count == 0);
+					UI.SetUI(new SquadCompBuilderLayout());
+
+				});
+		
 				break;
 			case GameState.Playing:
 				StartGame();

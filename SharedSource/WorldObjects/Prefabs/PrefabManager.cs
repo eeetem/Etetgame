@@ -25,7 +25,7 @@ public static class PrefabManager
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("statuseffect"))
 		{
 
-			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? string.Empty;
 			var effectelement = xmlObj.GetElementsByTagName("effect")[0];
 			if (effectelement != null)
 			{
@@ -38,8 +38,8 @@ public static class PrefabManager
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
 		{
-
-			string? name = xmlObj.GetElementsByTagName("name")[0]?.InnerText;
+			if(xmlObj == null) continue;
+			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? throw new Exception("null name for a prefab");
 			
 
 			UnitType? controllableType = null;
@@ -106,25 +106,25 @@ public static class PrefabManager
 			{
 				faceable = bool.Parse(xmlObj?.Attributes?["Faceable"]?.InnerText ?? "false");
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes?["Edge"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["Edge"] != null)
 			{
 				edge = bool.Parse(xmlObj?.Attributes?["Edge"]?.InnerText!);
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["Surface"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes!["Surface"] != null)
 			{
-				surface = bool.Parse(xmlObj?.Attributes?["Surface"].InnerText);
-				if (xmlObj.HasAttributes && xmlObj.Attributes["Impassible"] != null)
+				surface = bool.Parse(xmlObj?.Attributes?["Surface"]!.InnerText!);
+				if (xmlObj!.HasAttributes && xmlObj.Attributes!["Impassible"] != null)
 				{
-					impassible = bool.Parse(xmlObj?.Attributes?["Impassible"].InnerText);
+					impassible = bool.Parse(xmlObj?.Attributes?["Impassible"]!.InnerText!);
 				}
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["SCover"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["SCover"] != null)
 			{
-				scover = (Cover)int.Parse(xmlObj?.Attributes?["SCover"].InnerText);
+				scover = (Cover)int.Parse(xmlObj?.Attributes?["SCover"]!.InnerText!);
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["VCover"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["VCover"] != null)
 			{
-				string innerHtml = xmlObj?.Attributes?["VCover"].InnerText;
+				string innerHtml = xmlObj?.Attributes?["VCover"]!.InnerText!;
 				if (innerHtml.Contains("+"))
 				{
 					vcover = Cover.None;
@@ -132,7 +132,7 @@ public static class PrefabManager
 				}
 				else
 				{
-					vcover = (Cover)int.Parse(xmlObj?.Attributes?["VCover"].InnerText);	
+					vcover = (Cover)int.Parse(xmlObj?.Attributes?["VCover"]!.InnerText!);	
 				}
 
 					
@@ -141,13 +141,13 @@ public static class PrefabManager
 			{
 				vcover = scover;
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["Health"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["Health"] != null)
 			{
-				MaxHealth = int.Parse(xmlObj?.Attributes?["Health"].InnerText);
+				MaxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText!);
 			}
-			if (xmlObj.HasAttributes && xmlObj.Attributes["lifetime"] != null)
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["lifetime"] != null)
 			{
-				type.lifetime = int.Parse(xmlObj?.Attributes?["lifetime"].InnerText);
+				type.lifetime = int.Parse(xmlObj?.Attributes?["lifetime"]!.InnerText!);
 			}
 
 			type.Faceable = faceable;
@@ -157,8 +157,8 @@ public static class PrefabManager
 			type.Surface = surface;
 			type.Impassible = impassible;
 			type.MaxHealth = MaxHealth;
-			if(xmlObj.GetElementsByTagName("destroyEffect").Count > 0){
-				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]);	
+			if(xmlObj!.GetElementsByTagName("destroyEffect").Count > 0){
+				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
 			} 
 			
 

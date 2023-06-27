@@ -115,7 +115,7 @@ public static partial class Networking
 	public static void SendSquadComp(List<SquadMember> composition)
 	{
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SquadComp);
-		msg.AddSerializables<>(composition.ToString());
+		msg.AddSerializables(composition.ToArray());
 		client?.Send(msg);
 	}
 		

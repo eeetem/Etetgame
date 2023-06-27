@@ -406,9 +406,11 @@ public class GameLayout : MenuLayout
 			};
 			_unitBar.Widgets.Add(unitPanel);
 		}
-		
-			
-		overwatchBtn = new ImageButton();
+
+		if (SelectedUnit == null) return panel;
+
+
+			overwatchBtn = new ImageButton();
 		overwatchBtn.Click += (o, a) => Action.SetActiveAction(Action.ActionType.OverWatch);
 		overwatchBtn.MouseEntered += (o, a) => Tooltip("Watches over an area and attacks the first enemy that enters it",0,-1,-1);
 		overwatchBtn.MouseLeft += (o, a) =>  HideTooltip();
@@ -544,7 +546,7 @@ public class GameLayout : MenuLayout
 
 	public static void UpdateActionButtons()
 	{
-
+		if(SelectedUnit == null) return;
 		int top = (int) (-4*globalScale.X) ;
 		float scale = globalScale.X * 1.05f;
 		int totalBtns = 3 + SelectedUnit.extraActions.Count;
@@ -793,6 +795,8 @@ public class GameLayout : MenuLayout
 	public static PreviewData? ScreenData;
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
+		if(SelectedUnit==null) return;
+		
 		base.RenderBehindHud(batch, deltatime);
 		MakeUnitBarRenders(batch);
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
@@ -1103,6 +1107,7 @@ public class GameLayout : MenuLayout
 
 	public override void RenderFrontHud(SpriteBatch batch, float deltatime)
 	{
+		if(SelectedUnit==null) return;
 		base.RenderFrontHud(batch, deltatime);
 		/*
 				//bottom left corner
