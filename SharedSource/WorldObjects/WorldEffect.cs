@@ -4,10 +4,11 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 
 namespace MultiplayerXeno;
 
-public class WorldEffect
+public class WorldEffect : IMessageSerializable
 {
 	public int Dmg;
 	public int Det ;
@@ -16,7 +17,7 @@ public class WorldEffect
 	public int Range = 0;
 	public string? Sfx = "";
 	public string? PlaceItemPrefab = null;
-	public readonly List<Tuple<string?, int>> AddStatus = new List<Tuple<string?, int>>();
+	public readonly List<Tuple<string, int>> AddStatus = new List<Tuple<string?, int>>();
 	public readonly List<string> RemoveStatus = new List<string>();
 	public bool noPanic = false;
 	
@@ -30,7 +31,90 @@ public class WorldEffect
 	public bool TargetSelf =false;
 	public List<string> Ignores = new List<string>();
 	public VariableValue? GiveItem;
+	
+	public void Serialize(Message message)
+	{
+		message.AddInt(Dmg);
+		message.AddInt(Det);
+		message.AddSerializable(Move);
+		message.AddSerializable(Act);
+		message.Add(Range);
+		message.AddNullableString(Sfx);
+		message.AddNullableString(PlaceItemPrefab);
 
+		message.Add(AddStatus.Count);
+		foreach (var tuple in AddStatus)
+		{
+			message.Add(tuple.Item1);
+			message.Add(tuple.Item2);
+		}
+
+		message.AddStrings(RemoveStatus.ToArray());
+		
+		message.Add(Effects.Count);
+		foreach (var tuple in Effects)
+		{
+			message.Add(tuple.Item1);
+			message.Add(tuple.Item2);
+			message.Add(tuple.Item3);
+		}
+
+		
+		
+		message.Add(noPanic);
+		message.Add(Visible);
+		message.Add(MoveRange);
+		message.Add(Los);
+		message.Add(ExRange);
+		message.Add(TargetFoe);
+		message.Add(TargetFriend);
+		message.Add(TargetSelf);
+		message.AddStrings(Ignores.ToArray());
+
+
+		message.AddBool(GiveItem != null);
+		if(GiveItem != null) message.Add(GiveItem);
+	}
+
+	public void Deserialize(Message message)
+	{
+		Dmg = message.GetInt();
+		Det = message.GetInt();
+		Move = message.GetSerializable<ValueChange>();
+		Act = message.GetSerializable<ValueChange>();
+		Range = message.GetInt();
+		Sfx = message.GetNullableString();
+		PlaceItemPrefab = message.GetNullableString();
+
+		AddStatus.Clear();
+		for (int i = 0; i < message.GetInt(); i++)
+		{
+			AddStatus.Add(new Tuple<string, int>(message.GetString(), message.GetInt()));
+		}
+		RemoveStatus.Clear();
+		RemoveStatus.AddRange(message.GetStrings());
+		
+		Effects.Clear();
+		for (int i = 0; i < message.GetInt(); i++)
+		{
+			Effects.Add(new Tuple<string, string,string>(message.GetString(), message.GetString(), message.GetString()));
+		}
+		
+		noPanic = message.GetBool();
+		Visible = message.GetBool();
+		MoveRange = message.GetSerializable<ValueChange>();
+		Los = message.GetBool();
+		ExRange = message.GetInt();
+		TargetFoe = message.GetBool();
+		TargetFriend = message.GetBool();
+		TargetSelf = message.GetBool();
+		Ignores = message.GetStrings().ToList();
+
+		if (message.GetBool())
+		{
+			GiveItem = message.GetSerializable<VariableValue>();
+		}
+	}
 
 	private List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
 	{
@@ -258,4 +342,5 @@ public class WorldEffect
 		}
 	}
 #endif
+
 }

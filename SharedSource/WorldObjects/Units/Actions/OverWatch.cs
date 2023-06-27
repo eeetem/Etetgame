@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Items;
+using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using FontStashSharp;
 #endif
@@ -32,8 +33,9 @@ public class OverWatch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 #if SERVER
-	public override void ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
+		throw new NotImplementedException();
 		actor.ActionPoints.Current=0;
 		actor.MovePoints.Current=0;
 		var positions = GetOverWatchPositions(actor, target);

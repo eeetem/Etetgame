@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
+using Riptide;
+using System.Threading;
+using MultiplayerXeno.ReplaySequence;
 
 #if CLIENT
-using System.Threading;
 using MultiplayerXeno.UILayouts;
-
 #endif
 
 namespace MultiplayerXeno;
@@ -108,11 +110,12 @@ public abstract class Action
 		}
 		Thread.Sleep(800);
 	}
-	public virtual void SendToServer(Unit actor,Vector2Int target)
+
+	public virtual void SendToServer(Unit actor, Vector2Int target)
 	{
-		//Console.WriteLine("sending action packet: "+Type+" on "+target+" from "+actor.WorldObject.ID+"");
-	//	var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
-		//Networking.DoAction(packet);
+		Console.WriteLine("sending action packet: " + Type + " on " + target + " from " + actor.WorldObject.ID + "");
+		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type);
+		Networking.SendGameAction(packet);
 	}
 #endif
 	
@@ -134,9 +137,64 @@ public abstract class Action
 			Console.WriteLine("Client sent an impossible action: "+result.Item2);
 			return;
 		}
-		ExecuteServerSide(actor, target);
+		Task.Run(() =>
+		{
+			try
+			{
+				var actions = ExecuteServerSide(actor, target);
+				WorldManager.Instance.AddSequence(actions);
+				Networking.SendSequence(actions);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+
+		});
+		
 		
 	}
-	public abstract void ExecuteServerSide(Unit actor, Vector2Int target);
+	public abstract Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target);
 #endif
+	
+	
+	public class GameActionPacket : IMessageSerializable
+	{
+		public ActionType Type { get; set; }
+		public int UnitId { get; set; }
+		
+		public Vector2Int Target { get; set; }
+
+		public List<string> Args { get; set; } = new List<string>();
+
+		public GameActionPacket(int unitId, Vector2Int target, ActionType type)
+		{
+			UnitId = unitId;
+			Target = target;
+			Type = type;
+			Args = new List<string>();
+		}
+
+		public GameActionPacket()
+		{
+			
+		}
+
+		public void Serialize(Message message)
+		{
+			message.Add(UnitId);
+			message.Add(Target);
+			message.Add((int)Type);
+			message.AddStrings(Args.ToArray());
+		}
+
+		public void Deserialize(Message message)
+		{
+			UnitId = message.GetInt();
+			Target = message.GetSerializable<Vector2Int>();
+			Type = (ActionType)message.GetInt();
+			Args = message.GetStrings().ToList();
+		}
+	}
 }

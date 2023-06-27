@@ -1,4 +1,5 @@
 ﻿using System;
+using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
 
@@ -9,7 +10,14 @@ public class PlayAnimation : SequenceAction
 		throw new NotImplementedException();
 	}
 
-	public PlayAnimation(int actorID) : base(actorID)
+	protected override void SerializeArgs(Message message)
+	{
+		throw new NotImplementedException();
+	}
+
+	public PlayAnimation(int actorID) : base(actorID, SequenceType.PlayAnimation)
 	{
 	}
+	
+	
 }

@@ -124,6 +124,9 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseItem.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\UseItem.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Move.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\Move.cs</Link>
       </Compile>
@@ -133,8 +136,8 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\WorldEffect.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\WorldEffect.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\StatusEffectInstance.cs">
         <Link>SharedSource\WorldObjects\Units\StatusEffectInstance.cs</Link>

@@ -1,14 +1,31 @@
 ﻿using System;
+using Riptide;
 
 namespace MultiplayerXeno;
 
-public class VariableValue
+public class VariableValue : IMessageSerializable
 {
 
 	string? value;
 	string? var;
 	string? varParam;
 	bool _targetSelfNotOther;
+	
+	public void Serialize(Message message)
+	{
+		message.Add(_targetSelfNotOther);
+		message.AddNullableString(var);
+		message.AddNullableString(varParam);
+		message.AddNullableString(value);
+	}
+
+	public void Deserialize(Message message)
+	{
+		_targetSelfNotOther = message.GetBool();
+		var = message.GetNullableString();
+		varParam = message.GetNullableString();
+		value = message.GetNullableString();
+	}
 	public VariableValue(string input)
 	{
 		if (!input.Contains("{"))
@@ -37,6 +54,11 @@ public class VariableValue
 		value = null;
 	}
 
+	public VariableValue()
+	{
+		
+	}
+
 	public string GetValue(Unit user,Unit other)
 	{
 	
@@ -57,4 +79,6 @@ public class VariableValue
 
 
 	}
+
+
 }

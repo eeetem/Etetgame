@@ -57,13 +57,13 @@ public static class PrefabManager
 				controllableType.SightRange = int.Parse(contollableObj.Attributes?["sightrange"]?.InnerText ?? "16");
 				
 				
-				var defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
-				int DeterminationChange = int.Parse(defaultact.Attributes?["det"]?.InnerText ?? "0");
-				ValueChange MovePointChange =     new ValueChange(defaultact.Attributes?["mpoint"]?.InnerText ?? "0");
-				ValueChange ActionPointChange =   new ValueChange(defaultact.Attributes?["apoint"]?.InnerText ?? "0"); 
-				WorldAction action =	PraseWorldAction((XmlElement) defaultact);
+				XmlNode? defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
+				int determinationChange = int.Parse(defaultact?.Attributes?["det"]?.InnerText ?? "0");
+				ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "0");
+				ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "0"); 
+				WorldAction action =	PraseWorldAction((XmlElement) defaultact ?? throw new InvalidOperationException());
 
-				controllableType.DefaultAttack = new ExtraAction(action.Name,action.Description,DeterminationChange,MovePointChange,ActionPointChange,action,false);
+				controllableType.DefaultAttack = new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
 				
 				var speff = ((XmlElement) contollableObj).GetElementsByTagName("spawneffect")[0];
 				if (speff != null)
@@ -99,7 +99,7 @@ public static class PrefabManager
 			bool edge = false;
 			bool surface = false;
 			bool impassible = false;
-			int MaxHealth = 10;
+			int maxHealth = 10;
 			Cover vcover = Cover.None;
 			Cover scover = Cover.None;
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
@@ -143,7 +143,7 @@ public static class PrefabManager
 			}
 			if (xmlObj!.HasAttributes && xmlObj.Attributes?["Health"] != null)
 			{
-				MaxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText!);
+				maxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText!);
 			}
 			if (xmlObj!.HasAttributes && xmlObj.Attributes?["lifetime"] != null)
 			{
@@ -156,7 +156,7 @@ public static class PrefabManager
 			type.Edge = edge;
 			type.Surface = surface;
 			type.Impassible = impassible;
-			type.MaxHealth = MaxHealth;
+			type.MaxHealth = maxHealth;
 			if(xmlObj!.GetElementsByTagName("destroyEffect").Count > 0){
 				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
 			} 
@@ -164,7 +164,7 @@ public static class PrefabManager
 
 
 #if CLIENT
-			Vector2 Offset = new Vector2(-1.5f, -0.5f);
+			Vector2 offset = new Vector2(-1.5f, -0.5f);
 			//	if(faceable){
 			//			Offset = 
 			//	}
@@ -184,7 +184,7 @@ public static class PrefabManager
 
 #if CLIENT
 			type.Transform = new Transform2();
-			type.Transform.Position = Utility.GridToWorldPos(Offset);
+			type.Transform.Position = Utility.GridToWorldPos(offset);
 #endif
 
 			

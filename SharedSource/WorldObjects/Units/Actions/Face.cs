@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
@@ -37,8 +38,9 @@ public class Face : Action
 	}
 
 #if SERVER
-	public override void ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
+		throw new NotImplementedException();
 		var targetDir = Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
 		actor.canTurn = false;
 		actor.WorldObject.Face(targetDir);

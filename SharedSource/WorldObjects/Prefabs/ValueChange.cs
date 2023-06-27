@@ -1,6 +1,8 @@
-﻿namespace MultiplayerXeno;
+﻿using Riptide;
 
-public struct ValueChange
+namespace MultiplayerXeno;
+
+public struct ValueChange : IMessageSerializable
 {
 	public bool Set = false;
 	public bool Cap = false;
@@ -11,6 +13,20 @@ public struct ValueChange
 		Set = false;
 		Cap = false;
 		Value = 0;
+	}
+	
+	public void Serialize(Message message)
+	{
+		message.Add(Set);
+		message.Add(Cap);
+		message.Add(Value);
+	}
+
+	public void Deserialize(Message message)
+	{
+		Set = message.GetBool();
+		Cap = message.GetBool();
+		Value = message.GetInt();
 	}
 
 	public ValueChange(string input)
@@ -72,4 +88,6 @@ public struct ValueChange
 		
 		field += GetChange(field);
 	}
+
+
 }

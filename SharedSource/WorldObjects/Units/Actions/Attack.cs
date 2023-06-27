@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.Items;
+using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -36,8 +38,9 @@ public class Attack : Action
 	}
 
 #if SERVER
-		public override void ExecuteServerSide(Unit actor,Vector2Int target)
+		public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
+		throw new NotImplementedException();
 		actor.ActionPoints--;
 		actor.MovePoints--;
 		actor.Type.DefaultAttack.Execute(actor, target);
@@ -51,12 +54,9 @@ public class Attack : Action
 
 	public override void SendToServer(Unit actor, Vector2Int target)
 	{
-	//	var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
-		
-	//	packet.args.Add(Shootable.targeting.ToString());
-		
-		
-	//	Networking.DoAction(packet);
+	var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
+	packet.Args.Add(Shootable.targeting.ToString());
+	Networking.SendGameAction(packet);
 	}
 
 

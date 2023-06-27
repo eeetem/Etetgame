@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.ReplaySequence;
 
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -31,8 +32,9 @@ public class UseItem : Action
 	}
 
 	#if SERVER
-	public override void ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
+		throw new NotImplementedException();
 		actor.ActionPoints--;
 		actor.SelectedItem?.Execute(actor, target);
 		Console.WriteLine("Using Item "+actor.SelectedItem?.Name);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using MultiplayerXeno.ReplaySequence;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -64,24 +66,35 @@ public static partial class Networking
 	}
 
 	
-
-	/*
-
-			ServerConnection.RegisterStaticPacketHandler<ProjectilePacket>(ReciveProjectilePacket);
-
-		private static void ReciveProjectilePacket(ProjectilePacket packet, Connection connection)
+	[MessageHandler((ushort)NetworkMessageID.ReplaySequence)]
+	private static void RecieveReplaySequence(Message message)
+	{
+		Queue<SequenceAction> actions = new Queue<SequenceAction>();
+		while (message.UnreadLength>0)
 		{
-			new Projectile(packet);
+			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
+			SequenceAction sqc;
+			int id = message.GetInt();
+			switch (type)
+			{
+					
+				
+				case SequenceAction.SequenceType.Move:
+					sqc = new ReplaySequence.Move(id, message);
+					break;
+				case SequenceAction.SequenceType.Crouch:
+					sqc = new ReplaySequence.Crouch(id, message);
+					break;
+				case SequenceAction.SequenceType.WorldEffect:
+					sqc = new ReplaySequence.WorldChange(id, message);
+					break;
+				default:
+					throw new Exception("Unknown Sequence Type Recived");
+			
+			}
+			actions.Enqueue(sqc);
 		}
-
-		public static void DoAction(GameActionPacket packet)
-		{
-			ServerConnection?.Send(packet);
-		}
-
-
-
-
-
-	 */
+		WorldManager.Instance.AddSequence(actions);
+	
+	}
 }

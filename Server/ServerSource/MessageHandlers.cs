@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using MultiplayerXeno.Items;
 using Riptide;
 
 namespace MultiplayerXeno;
@@ -119,14 +120,9 @@ public static partial class Networking
 		[MessageHandler((ushort)NetworkMessageID.GameAction)]
 		private static void ParseGameAction(ushort senderID, Message message)
 		{
-	/*
+			Action.GameActionPacket packet = message.GetSerializable<Action.GameActionPacket>();
 			Console.WriteLine("recived action packet: " + packet.Type + " " + packet.UnitId + " " + packet.Target);
-			if (packet.Type == Action.ActionType.EndTurn)
-			{
-				
-				return;
-			}
-
+			
 			if (WorldManager.Instance.GetObject(packet.UnitId) == null)
 			{
 				Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
@@ -140,15 +136,15 @@ public static partial class Networking
 				return;
 			}
 			Action act = Action.Actions[packet.Type]; //else get controllable specific actions
-			if (act.ActionType == Action.ActionType.UseAbility)
+			if (act.Type == Action.ActionType.UseAbility)
 			{
-				int ability = int.Parse(packet.args[0]);
+				int ability = int.Parse(packet.Args[0]);
 				UseExtraAbility.AbilityIndex = ability;
 				UseExtraAbility.abilityLock = true;
 				IExtraAction a = controllable.extraActions[ability];
 				if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable) != null)
 				{
-					string target = packet.args[1];
+					string target = packet.Args[1];
 					switch (target)
 					{
 						case "Auto":
@@ -165,9 +161,9 @@ public static partial class Networking
 					}
 				}
 			}
-			else if (act.ActionType == Action.ActionType.Attack)
+			else if (act.Type == Action.ActionType.Attack)
 			{
-				string target = packet.args[0];
+				string target = packet.Args[0];
 				switch (target)
 				{
 					case "Auto":
@@ -186,7 +182,7 @@ public static partial class Networking
 
 			act.PerformServerSide(controllable, packet.Target);
 			UseExtraAbility.abilityLock = false;
-			*/
+			
 		}
 
 }

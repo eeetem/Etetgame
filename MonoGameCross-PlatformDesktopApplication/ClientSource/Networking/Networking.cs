@@ -132,7 +132,12 @@ public static partial class Networking
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Kick);
 		client?.Send(msg);
 	}
-	
 
-	
+
+	public static void SendGameAction(Action.GameActionPacket act)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameAction);
+		msg.AddSerializable(act);
+		client?.Send(msg);
+	}
 }

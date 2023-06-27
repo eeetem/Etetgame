@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
@@ -18,8 +19,9 @@ public class SelectItem : Action
 		return  new Tuple<bool, string>(true, "");
 	}
 #if SERVER
-	public override void ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
+		throw new NotImplementedException();
 		actor.SelectedItemIndex = target.X;
 	}
 #endif

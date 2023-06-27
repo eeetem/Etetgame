@@ -23,6 +23,7 @@ public partial class Networking
 		MapUpload =12,
 		TileUpdate=13,
 		MapDataInitiateConfirm = 14,
+		ReplaySequence = 15,
 	}
 	public class SquadMember : IMessageSerializable
 	{

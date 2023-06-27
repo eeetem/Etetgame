@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using MultiplayerXeno.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Transports.Udp;
@@ -293,5 +294,16 @@ public static partial class Networking
 		msg3.Release();
 		Program.InformMasterServer();
 			
+	}
+
+	public static void SendSequence(Queue<SequenceAction> actions)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+		foreach (var a in actions)
+		{
+			msg.Add((int) a.SqcType);
+			msg.AddSerializable(a);
+		}
+		server.SendToAll(msg);
 	}
 }

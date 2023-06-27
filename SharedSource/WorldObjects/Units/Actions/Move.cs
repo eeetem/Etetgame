@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MultiplayerXeno.Pathfinding;
+using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
@@ -42,7 +43,7 @@ public class Move : Action
 
 	
 #if SERVER
-		public override void ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 		int moveUse = 1;
@@ -51,11 +52,12 @@ public class Move : Action
 			moveUse++;
 		}
 
-	//	var queue = new Queue<SequenceAction>();
-	//	queue.Enqueue(new Move(actor.WorldObject.ID,result.Path,moveUse));
-	//	actor.MovePoints -= moveUse;
-	//	actor.canTurn = true;
-	//	actor.MoveAnimation(result.Path);
+		WorldEffect w = new WorldEffect();
+		w.Move.Value = -1;
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ReplaySequence.Move(actor.WorldObject.ID,result.Path!));
+		return queue;
 
 	}
 #endif

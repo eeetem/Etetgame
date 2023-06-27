@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
+using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -32,14 +33,14 @@ public class Crouch : Action
 	}
 
 #else
-		public override void ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
-		
-		actor.MovePoints--;
-		actor.canTurn = true;
-		actor.Crouching = !actor.Crouching;
-		actor.WorldObject.TileLocation.OverWatchTrigger();
-
+		WorldEffect w = new WorldEffect();
+		w.Move.Value = -1;
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
+		return queue;
 	}
 #endif
 

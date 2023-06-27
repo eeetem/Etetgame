@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Items;
+using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
@@ -42,8 +43,9 @@ public class UseExtraAbility : Action
 		}
 
 #if SERVER
-	public override void ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
+	throw new NotImplementedException();
 		IExtraAction action = actor.extraActions[AbilityIndex];
 		action.Execute(actor, target);
 	}
@@ -55,15 +57,15 @@ public class UseExtraAbility : Action
 #if CLIENT
 		public override void SendToServer(Unit actor, Vector2Int target)
 		{
-			//IExtraAction action = actor.extraActions[AbilityIndex];
-		//	var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
-		//	packet.args.Add(AbilityIndex.ToString());
-		//	foreach (var a in action.MakePacketArgs())
-		//	{
-		//		packet.args.Add(a);
-		//	}
-		
-		//	Networking.DoAction(packet);
+			IExtraAction action = actor.extraActions[AbilityIndex];
+			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
+			packet.Args.Add(AbilityIndex.ToString());
+			foreach (var a in action.MakePacketArgs())
+			{
+				packet.Args.Add(a);
+			}
+
+			Networking.SendGameAction(packet);
 		
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)

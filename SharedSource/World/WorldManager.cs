@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Riptide;
 using System.Linq;
+using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -880,6 +881,10 @@ namespace MultiplayerXeno
 			return true;
 		}
 
-		
+
+		public void AddSequence(Queue<SequenceAction> actions)
+		{
+			return;
+		}
 	}
 }

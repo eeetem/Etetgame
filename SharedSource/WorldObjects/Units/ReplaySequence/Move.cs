@@ -1,21 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
 
 public class Move : SequenceAction
 {
 	private List<Vector2Int> Path;
-	private int MovePoints;
-	public Move(int actorID,List<Vector2Int> path, int movePoints) : base(actorID)
+	public Move(int actorID,List<Vector2Int> path) : base(actorID,SequenceType.Move)
 	{
 		Path = path;
-		MovePoints = movePoints;
+	}
+	public Move(int actorID,Message args) : base(actorID,SequenceType.Move)
+	{
+		Path = args.GetSerializables<Vector2Int>().ToList();
 	}
 	public override void Do()
 	{
-		Unit act = WorldManager.Instance.GetObject(ActorID).UnitComponent;
-		act.MovePoints -= MovePoints;
-		act.MoveAnimation(Path);
-		act.canTurn = true;
+		
+		Actor.MoveAnimation(Path);
+		Actor.canTurn = true;
 	}
+
+	protected override void SerializeArgs(Message message)
+	{
+		message.AddSerializables(Path.ToArray());
+	}
+
+
 }
