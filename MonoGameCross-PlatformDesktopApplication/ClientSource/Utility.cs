@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.Sprites;
 
 namespace MultiplayerXeno;
 

@@ -1,10 +1,12 @@
-﻿namespace MultiplayerXeno.ReplaySequence;
+﻿using System;
+
+namespace MultiplayerXeno.ReplaySequence;
 
 public class PlayAnimation : SequenceAction
 {
 	public override void Do()
 	{
-		throw new System.NotImplementedException();
+		throw new NotImplementedException();
 	}
 
 	public PlayAnimation(int actorID) : base(actorID)

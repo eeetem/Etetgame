@@ -147,48 +147,18 @@
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
         <PackageReference Include="Myra" Version="1.4.5" />
         <PackageReference Include="NetDiscordRpc" Version="1.0.2" />
-        <PackageReference Include="Network" Version="6.2.5.23" />
+        <PackageReference Include="RiptideNetworking.Riptide" Version="2.0.0" />
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="ClientSource\Networking.cs">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Compile>
-      <Compile Include="..\MasterServer\LobbyPackets\LobbyData.cs">
-        <Link>LobbyPackets\LobbyData.cs</Link>
-      </Compile>
-      <Compile Include="..\MasterServer\LobbyPackets\LobbyStartPacket.cs">
-        <Link>LobbyPackets\LobbyStartPacket.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\Packets\GameActionPacket.cs">
-        <Link>SharedSource\Packets\GameActionPacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\GameDataPacket.cs">
-        <Link>SharedSource\Packets\GameDataPacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\GameSettings.cs">
-        <Link>SharedSource\Packets\GameSettings.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\MapData.cs">
-        <Link>SharedSource\Packets\MapData.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\PreGameDataPacket.cs">
-        <Link>SharedSource\Packets\PreGameDataPacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\ProjectilePacket.cs">
-        <Link>SharedSource\Packets\ProjectilePacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\ReplaySequencePacket.cs">
-        <Link>SharedSource\Packets\ReplaySequencePacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\SquadCompPacket.cs">
-        <Link>SharedSource\Packets\SquadCompPacket.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\Packets\SquadMember.cs">
-        <Link>SharedSource\Packets\SquadMember.cs</Link>
+      <Compile Include="..\SharedSource\Networking.cs">
+        <Link>SharedSource\Networking.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
@@ -307,6 +277,8 @@
       <Compile Include="..\SharedSource\World\WorldTile.cs">
         <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
+      <Compile Remove="ClientSource\MasterServerNetworking.cs" />
+      <Compile Remove="ClientSource\Rendering\UILayout\LobbyBrowserLayout.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\Server\Maps\Circus.mapdata">

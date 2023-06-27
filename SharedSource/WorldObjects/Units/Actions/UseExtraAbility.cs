@@ -55,15 +55,15 @@ public class UseExtraAbility : Action
 #if CLIENT
 		public override void SendToServer(Unit actor, Vector2Int target)
 		{
-			IExtraAction action = actor.extraActions[AbilityIndex];
-			var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
-			packet.args.Add(AbilityIndex.ToString());
-			foreach (var a in action.MakePacketArgs())
-			{
-				packet.args.Add(a);
-			}
+			//IExtraAction action = actor.extraActions[AbilityIndex];
+		//	var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
+		//	packet.args.Add(AbilityIndex.ToString());
+		//	foreach (var a in action.MakePacketArgs())
+		//	{
+		//		packet.args.Add(a);
+		//	}
 		
-			Networking.DoAction(packet);
+		//	Networking.DoAction(packet);
 		
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)

@@ -11,7 +11,7 @@ public class ImmideateDelivery : DeliveryMethod
 		
 	}
 
-	public override Vector2Int ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
 		return target;
 	}

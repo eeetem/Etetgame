@@ -1,26 +1,24 @@
-﻿using MultiplayerXeno;
-using Network;
+﻿using Riptide;
 
-namespace MultiplayerXeno
+namespace MultiplayerXeno;
+
+public class Client
 {
-	public class Client
+	public Connection? Connection;
+	public string Name;
+	public List<Networking.SquadMember>?  SquadComp { get; private set; }
+
+	public Client(string name,Connection? con)
 	{
-		public Connection? Connection;
-		public string Name;
-		public SquadCompPacket? SquadComp { get; private set; }
-
-		public Client(string name,Connection? con)
-		{
-			Name = name;
-			Connection = con;
-		}
-
-		public void SetSquadComp(SquadCompPacket packet)
-		{
-			SquadComp = packet;
-		}
-
-
-		//public static List<Client> Clients = new List<Client>();
+		Name = name;
+		Connection = con;
 	}
+
+	public void SetSquadComp(List<Networking.SquadMember> squad)
+	{
+		SquadComp = squad;
+	}
+
+
+	//public static List<Client> Clients = new List<Client>();
 }

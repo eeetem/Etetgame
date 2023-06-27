@@ -1,5 +1,4 @@
 ﻿using System;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 using MultiplayerXeno.UILayouts;

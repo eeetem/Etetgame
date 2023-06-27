@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using MultiplayerXeno.Items;
 using MultiplayerXeno.Pathfinding;
+using Riptide;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -66,10 +65,9 @@ namespace MultiplayerXeno
 				ActionPoints.Current = data.ActionPoints;
 			}
 
-			if (data.canTurn != null)
-			{
-				canTurn = (bool) data.canTurn;
-			}
+			
+			canTurn = data.CanTurn;
+			
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
 
@@ -81,8 +79,8 @@ namespace MultiplayerXeno
 					AddItem(PrefabManager.UseItems[data.Inventory[i]!]);
 				}
 			}
-			overWatch = data.overwatch;
-			SelectedItemIndex = data.selectIndex;
+			overWatch = data.Overwatch;
+			SelectedItemIndex = data.SelectIndex;
 
 			if (data.LastItem != null)
 			{
@@ -106,11 +104,11 @@ namespace MultiplayerXeno
 			{
 				if (Inventory[i] != null)
 				{
-					DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(i, 0));
+					DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
 					return;
 				}
 			}
-			DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(-1, 0));
+			DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(-1, 0));
 		}
 
 		public void AddItem(WorldAction item)
@@ -123,7 +121,7 @@ namespace MultiplayerXeno
 #if SERVER
 					if (SelectedItemIndex == -1)
 					{
-						DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(i, 0));
+						DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
 					}
 #endif
 					
@@ -410,7 +408,7 @@ namespace MultiplayerXeno
 			if (!isFriendly && CanHit(location)&& vis >= unit.WorldObject.GetMinimumVisibility())
 			{
 				Console.WriteLine("overwatch fired by "+WorldObject.TileLocation.Position);
-				DoAction(Action.Actions[ActionType.Attack], location);
+				DoAction(Action.Actions[Action.ActionType.Attack], location);
 				overwatchShotThisMove = true;
 			}
 
@@ -517,28 +515,144 @@ namespace MultiplayerXeno
 			}
 
 		}
+		[Serializable]
+		public struct UnitData : IMessageSerializable
+		{
+			public bool Team1;
+			public int ActionPoints;
+			public int MovePoints;
+			public bool CanTurn;
+			public int Determination;
+			public bool Crouching;
+			public bool Panic;
+			public bool JustSpawned;
+			public bool Overwatch;
+			public int SelectIndex;
+			public string? LastItem;
+			public int MoveRangeEffect;
+			public bool ThisMoving;
+			public List<string> Inventory { get; set; }
+			public List<Tuple<string, int>> StatusEffects { get; set; }
+		
+			public UnitData(bool team1)
+			{
+				Team1 = team1;
+				ActionPoints = -100;
+				MovePoints = -100;
+				CanTurn = false;
+				Determination = -100;
+				Crouching = false;
+				Panic = false;
+				JustSpawned = true;//it's always truea nd only set to false in getData
+				Overwatch = false;
+				Inventory = new List<string>();
+				StatusEffects = new List<Tuple<string, int>>();
+				SelectIndex = -1;
+				MoveRangeEffect = 0;
+				LastItem = null;
+				ThisMoving = false;
+			}
+			public UnitData(Unit u)
+			{
+				Team1 = u.IsPlayerOneTeam;
+				ActionPoints = u.ActionPoints.Current;
+				MovePoints = u.MovePoints.Current;
+				CanTurn = u.canTurn;
+				Determination = u.Determination;
+				Crouching =	u.Crouching;
+				JustSpawned = true;
+				Panic = u.paniced;
+				Inventory = new List<string>();
+				foreach (var i in u.Inventory)
+				{
+					if (i != null)
+					{
+						Inventory.Add(i.Name);
+					}
+					else
+					{
+						Inventory.Add("");
+					}
+				}
+				StatusEffects = new List<Tuple<string, int>>();
+				foreach (var st in u.StatusEffects)
+				{
+					StatusEffects.Add(new Tuple<string, int>(st.type.name,st.duration));
+				}
+				Overwatch = u.overWatch;
+				SelectIndex = u.SelectedItemIndex;
+				LastItem = u.LastItem?.Name;
+				MoveRangeEffect = u.MoveRangeEffect.Current;
+				ThisMoving = u.ThisMoving;
+				LastItem = u.LastItem?.Name;
+				ThisMoving = u.ThisMoving;
+			}
 
+
+			public void Serialize(Message message)
+			{
+				message.Add(Team1);
+				message.Add(ActionPoints);
+				message.Add(MovePoints);
+				message.AddBool(CanTurn);
+				message.Add(Determination);
+				message.Add(Crouching);
+				message.Add(Panic);
+				message.Add(JustSpawned);
+				message.Add(Overwatch);
+				message.Add(SelectIndex);
+				message.Add(LastItem);
+				message.Add(MoveRangeEffect);
+				message.Add(ThisMoving);
+
+				message.Add(Inventory.Count);
+				foreach (var i in Inventory)
+				{
+					message.Add(i);
+				}
+				message.Add(StatusEffects.Count);
+				foreach (var i in StatusEffects)
+				{
+					message.Add(i.Item1);
+					message.Add(i.Item2);
+				}
+
+			}
+
+			public void Deserialize(Message message)
+			{
+				Team1 = message.GetBool();
+				ActionPoints = message.GetInt();
+				MovePoints = message.GetInt();
+				CanTurn = message.GetBool();
+				Determination = message.GetInt();
+				Crouching = message.GetBool();
+				Panic = message.GetBool();
+				JustSpawned = message.GetBool();
+				Overwatch = message.GetBool();
+				SelectIndex = message.GetInt();
+				LastItem = message.GetString();
+				MoveRangeEffect = message.GetInt();
+				ThisMoving = message.GetBool();
+
+				Inventory = new List<string>();
+				var count = message.GetInt();
+				for (int i = 0; i < count; i++)
+				{
+					Inventory.Add(message.GetString());
+				}
+				StatusEffects = new List<Tuple<string, int>>();
+				count = message.GetInt();
+				for (int i = 0; i < count; i++)
+				{
+					StatusEffects.Add(new Tuple<string, int>(message.GetString(),message.GetInt()));
+				}
+			}
+		}
 		public UnitData GetData()
 		{
-			List<string?> inv = new List<string?>();
-			foreach (var i in Inventory)
-			{
-				if (i != null)
-				{
-					inv.Add(i.Name);
-				}
-				else
-				{
-					inv.Add(null);
-				}
-			}
-
-			List<Tuple<string?, int>> sts = new List<Tuple<string?, int>>();
-			foreach (var st in StatusEffects)
-			{
-				sts.Add(new Tuple<string?, int>(st.type.name,st.duration));
-			}
-			var data = new UnitData(IsPlayerOneTeam,ActionPoints.Current,MovePoints.Current,canTurn,Determination,Crouching,paniced,inv,sts,overWatch,SelectedItemIndex,LastItem?.Name,MoveRangeEffect.Current,ThisMoving);
+			
+			var data = new UnitData(this);
 			data.JustSpawned = false;
 			return data;
 		}

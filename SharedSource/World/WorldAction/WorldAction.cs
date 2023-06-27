@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.Xna.Framework;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
 
 #if CLIENT
@@ -53,9 +51,9 @@ public class WorldAction
 		foreach (var method in DeliveryMethods)
 		{
 			var t = method.ExectuteAndProcessLocation(actor, target);
-			if (t != null)
+			if (t.HasValue)
 			{
-				Effect.Apply(t, actor.WorldObject);
+				Effect.Apply(t.Value, actor.WorldObject);
 			}
 		}
 #if CLIENT
@@ -118,7 +116,7 @@ public class WorldAction
 		{
 			var result = method.Preview(actor, target, spriteBatch);
 			if(result == null) continue;
-			Effect.Preview(result, spriteBatch,actor.WorldObject);
+			Effect.Preview(result.Value, spriteBatch,actor.WorldObject);
 		}
 	
 	}

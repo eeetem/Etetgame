@@ -1,393 +1,297 @@
 ﻿using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
-using MultiplayerXeno;
-using Network;
-using Network.Converter;
-using Network.Enums;
-using Network.Packets;
+using Riptide;
+using Riptide.Transports.Tcp;
+using Riptide.Transports.Udp;
+using Riptide.Utils;
 
-namespace MultiplayerXeno
+namespace MultiplayerXeno;
+
+public static partial class Networking
 {
-	public static class Networking
+	private static Server server = null!;
+	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
+
+	public static void Start(ushort port)
 	{
-		private static ServerConnectionContainer? serverConnectionContainer;
-		public static void Start(int port)
-		{
 		
-			//1. Start listen on a portw
-			serverConnectionContainer = ConnectionFactory.CreateServerConnectionContainer(port, false);
+		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
+		//1. Start listen on a portw
+		Message.MaxPayloadSize = 50000000;
+		server = new Server(new UdpServer());
+
+		server.TimeoutTime = ushort.MaxValue;
+		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
+		server.HandleConnection += HandleConnection;
+		server.ClientDisconnected += ClientDisconnected;
+
+		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
+		WorldManager.Instance.LoadMap(selectedMap);
+		server.Start(port, 10);
 			
-			serverConnectionContainer.ConnectionLost += (conn, b, cl) =>
-			{
-				Console.WriteLine($"{serverConnectionContainer.Count} {b.ToString()} Connection lost {conn.IPRemoteEndPoint.Address}. Reason {cl.ToString()}");
-				string name;
-				if (conn == GameManager.Player1?.Connection)
-				{
-					name = GameManager.Player1.Name;
-				}else if (conn == GameManager.Player2?.Connection)
-				{
-					name = GameManager.Player2.Name;
-				}
-				else
-				{
-					return;
-				}
-				conn.KeepAlive = false;
-				if (GameManager.Player1?.Connection == conn)
-				{
-					GameManager.Player1.Connection = null;
-				}else if (GameManager.Player2?.Connection == conn)
-				{
-					GameManager.Player2.Connection = null;
-				}
-
-				
-				SendChatMessage(name+" left the game");
-				Thread.Sleep(1000);
-				SendPreGameInfo();
-				Thread.Sleep(10000);
-				if (serverConnectionContainer.Count == 0)
-				{
-					Environment.Exit(0);
-				}
-			};
-			serverConnectionContainer.ConnectionEstablished += ConnectionEstablished;
-			serverConnectionContainer.AllowUDPConnections = false;
-
-
-			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Map1.mapdata";
-			WorldManager.Instance.LoadMap(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata");
-			serverConnectionContainer.Start();
-			
-			Console.WriteLine("Started server at " + serverConnectionContainer.IPAddress +":"+ serverConnectionContainer.Port);
+		Console.WriteLine("Started server at port" + port);
 		
+	}
+
+	private static void HandleConnection(Connection connection, Message connectmessage)
+	{
+		string name = connectmessage.GetString();
+		Console.WriteLine("Begining Client Register: "+name);
+		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
+		{
+			var msg = Message.Create();
+			msg.AddString("Invalid Name");
+			server.Reject(connection,msg);
+			return;
 		}
 
-		public static void Kick(string reason,Connection connection)
+		if (GameManager.Player1 == null)
 		{
-			Console.WriteLine("Kicking " + connection.IPRemoteEndPoint?.Address + " for " + reason);
-			if (connection.IsAlive)
-			{
-				connection.SendRawData(RawDataConverter.FromUnicodeString("notify", reason));
-			}
-			connection.KeepAlive = false;
-			if (GameManager.Player1?.Connection == connection)
-			{
-				GameManager.Player1.Connection = null;
-			}else if (GameManager.Player2?.Connection == connection)
-			{
-				GameManager.Player2.Connection = null;
-			}
-
-			Thread.Sleep(1000);
-			connection.Close(CloseReason.ClientClosed);
+			GameManager.Player1 = new Client(name,connection);
+			SendChatMessage(name+" joined as Player 1");
 		}
-
-		public static void NotifyAll(string message)
+		else if (GameManager.Player1.Name == name)
 		{
-		
-			Notify(message,true);
-			Notify(message,false);
-		}
-
-		public static void Notify(string message, bool player1)
-		{
-			if (player1)
+			if (GameManager.Player1.Connection != null && !GameManager.Player1.Connection.IsNotConnected)
 			{
-				GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
-			}
-			else
-			{
-				GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUnicodeString("notify",message));	
-			}
-		}
-		
-
-
-		/// <summary>
-		/// We got a connection.
-		/// </summary>
-		/// <param name="connection">The connection we got. (TCP or UDP)</param>
-		private static void ConnectionEstablished(Connection connection, ConnectionType type)
-		{
-			Console.WriteLine($"{serverConnectionContainer!.Count} {connection.GetType()} connected on port {connection.IPRemoteEndPoint.Port}");
-			connection.EnableLogging = false;
-			connection.TIMEOUT = 10000;
-
-			connection.RegisterRawDataHandler("register",RegisterClient);
-			connection.RegisterRawDataHandler("chatmsg",ReciveChatMessage);
-			connection.RegisterRawDataHandler("kick", (i, conn) =>
-			{
-				if (conn != GameManager.Player1?.Connection)return;
-
-				if (GameManager.Player2 != null)
-				{
-					if (GameManager.Player2?.Connection != null) Kick("Kicked by host", GameManager.Player2.Connection);
-					GameManager.Player2 = null;
-				}
-
-				SendPreGameInfo();
-
-			});
-			connection.RegisterRawDataHandler("gameState", (packet, con) =>
-			{
-				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
-					return;
-				GameManager.StartSetup();
-			});
-			connection.RegisterRawDataHandler("mapSelect", (i, con) =>
-			{
-				if(con != GameManager.Player1?.Connection  || GameManager.GameState != GameState.Lobby)
-					return;
-				selectedMap = RawDataConverter.ToUTF8String(i);
-				WorldManager.Instance.LoadMap(selectedMap);
-	
-				SendPreGameInfo();
-			});
-			
-			connection.RegisterStaticPacketHandler<PreGameDataPacket>((data, con) =>
-			{
-				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
-					return;
-				GameManager.PreGameData.TurnTime = data.TurnTime;
-				SendPreGameInfo();
-			});
-			
-			connection.RegisterStaticPacketHandler<MapDataPacket>((data, con) =>
-			{
-				if(con != GameManager.Player1?.Connection || GameManager.GameState != GameState.Lobby)
-					return;
-				File.Delete(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom/"+data.MapData.Name+".mapdata");
-				File.WriteAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom/"+data.MapData.Name+".mapdata", data.MapData.Serialise());
-				SendPreGameInfo();
-			});
-			
-			connection.RegisterStaticPacketHandler<GameActionPacket>(ReciveAction);
-			connection.RegisterStaticPacketHandler<SquadCompPacket>(ReciveSquadComp);
-			Console.WriteLine("Registered handlers");
-
-		}
-
-		private static void ReciveSquadComp(SquadCompPacket packet, Connection connection)
-		{
-			if (GameManager.Player1?.Connection == connection)
-			{
-				GameManager.Player1.SetSquadComp(packet);
-			}else if (GameManager.Player2?.Connection == connection)
-			{
-				GameManager.Player2.SetSquadComp(packet);
-			}
-
-			if (GameManager.Player1?.SquadComp != null && GameManager.Player2?.SquadComp != null)
-			{
-				GameManager.StartGame();
-			}
-		}
-
-
-		private static void RegisterClient(RawData rawData, Connection connection)
-		{
-		
-			string name = RawDataConverter.ToUTF8String(rawData).ToLower();
-			Console.WriteLine("Begining Client Register: "+name);
-			if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
-			{
-				Kick("Invalid name",connection);
+				var msg = Message.Create();
+				msg.AddString("Player with same name is already in the game");
+				server.Reject(connection,msg);
 				return;
 			}
 
-			if (GameManager.Player1 == null)
-			{
-			
-				GameManager.Player1 = new Client(name,connection);
-				SendChatMessage(name+" joined as Player 1");
-			}
-			else if (GameManager.Player1.Name == name)
-			{
-				if (GameManager.Player1.Connection != null && GameManager.Player1.Connection.IsAlive)
-				{
-					Kick("Player with same name is already in the game",connection);
-					return;
-				}
-
-				GameManager.Player1.Connection = connection;//reconnection
-				SendChatMessage(name+" reconnected as Player 1");
+			GameManager.Player1.Connection = connection;//reconnection
+			SendChatMessage(name+" reconnected as Player 1");
 				
-			}
-			else if (GameManager.Player2 == null)
-			{
-			
-				GameManager.Player2 = new Client(name,connection);
-				SendChatMessage(name+" joined as Player 2");
-			}
-			else if (GameManager.Player2.Name == name)
-			{
-				if (GameManager.Player2.Connection != null && GameManager.Player2.Connection.IsAlive)
-				{
-					Kick("Player with same name is already in the game",connection);
-					return;
-				}
-				GameManager.Player2.Connection = connection;//reconnection
-				SendChatMessage(name+" reconnected as Player 2");
-			}
-			else
-			{
-				GameManager.Spectators.Add(new Client(name,connection));
-				SendChatMessage(name+" joined the spectators");
-			}
-
-			
-			GameManager.SendData();
-			SendPreGameInfo();
-			SendMapData(connection);
-
-			Console.WriteLine("Client Register Done");
-			
-
-
 		}
-
-		private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/map.mapdata";
-		public static void SendPreGameInfo()
+		else if (GameManager.Player2 == null)
 		{
-			var data = new PreGameDataPacket();
-			data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "None";
-			data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "None";
-			if (GameManager.Player2 != null &&( GameManager.Player2.Connection ==null || !GameManager.Player2.Connection.IsAlive))
-			{
-				data.Player2Name = "Reserved: " + data.Player2Name;
-			}
-			data.Spectators = new List<string>();
-			foreach (var spectator in GameManager.Spectators)
-			{
-				data.Spectators.Add(spectator.Name);
-			}
-			data.MapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/", "*.mapdata").ToList();
-			data.CustomMapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom", "*.mapdata").ToList();
-			data.SelectedMap = selectedMap;
-			data.TurnTime = GameManager.PreGameData.TurnTime;
-			if (GameManager.Player1 != null)
-				GameManager.Player1.Connection?.Send(data);
-			if (GameManager.Player2 != null)
-				GameManager.Player2.Connection?.Send(data);
 			
-			foreach (var spectator in GameManager.Spectators)
-			{
-				spectator.Connection?.Send(data);
-				
-			}
-
-			GameManager.PreGameData = data;
-			Program.InformMasterServer();
+			GameManager.Player2 = new Client(name,connection);
+			SendChatMessage(name+" joined as Player 2");
 		}
-
-		public static void SendTileUpdate(WorldTile wo)
+		else if (GameManager.Player2.Name == name)
 		{
-			WorldTileData worldTileData = wo.GetData();
-
-		
-				
-			string s = Newtonsoft.Json.JsonConvert.SerializeObject(worldTileData);
-			GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
-			GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
-			foreach (var spectator in GameManager.Spectators)
+			if (GameManager.Player2.Connection != null && !GameManager.Player2.Connection.IsNotConnected)
 			{
-				spectator.Connection?.SendRawData(RawDataConverter.FromUTF8String("TileUpdate", s));
-			}
-			
-			
-			
-			
-
-		}
-
-//since this is just a request we dont read raw data at all
-	
-		
-
-		public static void SendMapData(Connection connection)
-		{
-			WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
-			var packet = new MapDataPacket(WorldManager.Instance.CurrentMap);
-			connection.Send(packet);
-
-		}
-
-		private static void ReciveAction(GameActionPacket packet, Connection connection)
-		{
-			Client? currentPlayer;
-			if (GameManager.IsPlayer1Turn)
-			{
-			
-				currentPlayer = GameManager.Player1;
-			}
-			else
-			{
-				currentPlayer = GameManager.Player2;
-			}
-
-			if (currentPlayer?.Connection != connection)
-			{
-				//out of turn action. perhaps desync or hax? kick perhaps
-				
+				var msg = Message.Create();
+				msg.AddString("Player with same name is already in the game");
+				server.Reject(connection,msg);
 				return;
 			}
-
-			GameManager.ParseActionPacket(packet);
-
-
-
-
+			GameManager.Player2.Connection = connection;//reconnection
+			SendChatMessage(name+" reconnected as Player 2");
 		}
-
-		public static void DoAction(Packet packet)
+		else
 		{
-			GameManager.Player1?.Connection?.Send(packet);
-			GameManager.Player2?.Connection?.Send(packet);
-			foreach (var spectator in GameManager.Spectators)
-			{
-				spectator.Connection?.Send(packet);
-			}
-
+			GameManager.Spectators.Add(new Client(name,connection));
+			SendChatMessage(name+" joined the spectators");
 		}
 
+			
 
-		public static void ReciveChatMessage(RawData rawData, Connection connection)
-		{
-			string message = RawDataConverter.ToUTF8String(rawData);
-			string name;
-			if (GameManager.Player1?.Connection == connection)
-			{
-				name = "[Red]"+GameManager.Player1.Name+"[-]";
-			}
-			else if (GameManager.Player2?.Connection == connection)
-			{
-				name = "[Blue]"+GameManager.Player2.Name+"[-]";
-			}
-			else
-			{
-				return;
-			}
-			message = message.Replace("\n", "");
-			message = message.Replace("[", "");
-			message = message.Replace("]", "");
+		Console.WriteLine("Client Register Done");
+		server.Accept(connection);
+		SendGameData();
+		SendPreGameInfo();
+		SendMapData(connection);
 
-			message = $"{name}: {message}";
-			SendChatMessage(message);
-		}
-
-		public static void SendChatMessage(string text)
-		{
-			text = "[Yellow]" + text + "[-]";
-			GameManager.Player1?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
-			GameManager.Player2?.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
-			foreach (var spectator in GameManager.Spectators)
-			{
-				spectator.Connection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",text));
-			}
-		}
-
+	}
+		
+	public static readonly object mapUploadLock = new object();
+	public static void SendMapData(Connection connection)
+	{
 	
+		Console.WriteLine("initiating sending map data to "+connection.Id+"...");
+		WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
+		var packet = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataInitiate);
+		packet.AddString(WorldManager.Instance.CurrentMap.Name);
+		packet.AddString(WorldManager.Instance.CurrentMap.Author);
+		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
+		server.Send(packet,connection);
+		
+		Task.Run(() => {
+			while (!ClientsReadyForMap.Contains(connection.Id))
+			{
+				Thread.Sleep(100);
+			}
+
+			lock (mapUploadLock)
+			{
+				
+				Console.WriteLine("Actually sending map data to "+connection.Id+"...");
+				int sent = 0;	
+				for (int x = 0; x < 100; x++)
+				{
+					for (int y = 0; y < 100; y++)
+					{
+						var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+						if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
+						{
+							Console.WriteLine("Sending tile at "+x+","+y);
+							SendTileUpdate(tile,connection);//only send updates about tiles that have something on them
+							sent++;
+							//Thread.Sleep(1);
+							if (sent > 5)
+							{
+								Thread.Sleep(6);
+								sent = 0;
+							}
+						}
+					}
+				}
+				Console.WriteLine("finished sending map data to "+connection.Id);
+			
+			}
+			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
+			server.Send(msg,connection);
+
+		});
+
+	}
+
+	public static void Kick(string reason,Connection connection)
+	{
+		Console.WriteLine("Kicking " + connection.Id + " for " + reason);
+		if (connection.IsConnected)
+		{
+			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
+			msg.AddString(reason);
+			server.DisconnectClient(connection,msg);
+		}
+
+		if (GameManager.Player1?.Connection == connection)
+		{
+			GameManager.Player1.Connection = null;
+		}else if (GameManager.Player2?.Connection == connection)
+		{
+			GameManager.Player2.Connection = null;
+		}
+	}
+		
+	private static void ClientDisconnected(object? sender, ServerDisconnectedEventArgs e)
+	{
+		Console.WriteLine($"Connection lost. Reason {e.Reason} {server.ClientCount}");
+		string name;
+		if (e.Client == GameManager.Player1?.Connection)
+		{
+			name = GameManager.Player1.Name;
+			GameManager.Player1.Connection = null;
+			SendChatMessage(name+" left the game");
+		}else if (e.Client == GameManager.Player2?.Connection)
+		{
+			name = GameManager.Player2.Name;
+			GameManager.Player2.Connection = null;
+			SendChatMessage(name+" left the game");
+		}
+		else
+		{
+			var client = GameManager.Spectators.Find((a) => { return a.Connection == e.Client; });
+			name = client.Name;
+			GameManager.Spectators.Remove(client);
+			SendChatMessage(name+" stopped spectating");
+
+		}
+		Thread.Sleep(1000);
+		SendPreGameInfo();
+		Task.Run(() => { 
+			Thread.Sleep(15000);
+			if (server.ClientCount == 0)
+			{
+				Environment.Exit(0);
+			}});
+		
+	}
+
+
+
+	public static void NotifyAll(string message)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
+		msg.AddString(message);
+		server.SendToAll(msg);
+	}
+
+	public static void SendChatMessage(string text)
+	{
+		text = "[Yellow]" + text + "[-]";
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Chat);
+		msg.AddString(text);
+		server.SendToAll(msg);
+
+	}
+
+	public static void SendPreGameInfo()
+	{
+		var data = new GameManager.PreGameDataStruct();
+		data.HostName = GameManager.Player1 != null ? GameManager.Player1.Name : "None";
+		data.Player2Name = GameManager.Player2 != null ? GameManager.Player2.Name : "None";
+		if (GameManager.Player2 != null &&( GameManager.Player2.Connection ==null || GameManager.Player2.Connection.IsNotConnected))
+		{
+			data.Player2Name = "Reserved: " + data.Player2Name;
+		}
+		data.Spectators = new List<string>();
+		foreach (var spectator in GameManager.Spectators)
+		{
+			data.Spectators.Add(spectator.Name);
+		}
+		data.MapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/", "*.mapdata").ToList();
+		data.CustomMapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom", "*.mapdata").ToList();
+		data.SelectedMap = selectedMap;
+		data.TurnTime = GameManager.PreGameData.TurnTime;
+
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);
+		msg.Add(data);
+		server.SendToAll(msg);
+		GameManager.PreGameData = data;
+		Program.InformMasterServer();
+	}
+	public static void SendTileUpdate(WorldTile wo, Connection? connection = null)
+	{
+		WorldTile.WorldTileData worldTileData = wo.GetData();
+		var msg = Message.Create(MessageSendMode.Unreliable, NetworkMessageID.TileUpdate);
+		msg.Add(worldTileData);
+		if(connection is null)
+			server.SendToAll(msg);
+		else
+			server.Send(msg,connection);
+	}
+	
+
+	public static void Update()
+	{
+		server.Update();
+	}
+
+	public static void SendGameData()
+	{
+
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		var state = GameManager.GetState();
+		state.IsPlayerOne = true;
+		msg.Add(state);
+		if (GameManager.Player1 is not null  && GameManager.Player1.Connection is not null)
+		{
+			server.Send(msg, GameManager.Player1?.Connection);
+		}
+
+		var msg2 = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		state.IsPlayerOne = false;
+		msg2.Add(state);
+		if (GameManager.Player2 is not null  && GameManager.Player2.Connection is not null)
+		{
+			server.Send(msg2, GameManager.Player2?.Connection); //spectators dont care about isPlayerOne field
+		}
+		
+		var msg3 = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		state.IsPlayerOne = null;
+		msg3.Add(state);
+
+		foreach (var spectator in GameManager.Spectators)
+		{
+			server.Send(msg3, spectator.Connection,false);
+		}
+		msg3.Release();
+		Program.InformMasterServer();
+			
 	}
 }

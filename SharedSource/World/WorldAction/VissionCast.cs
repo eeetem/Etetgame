@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -53,7 +51,7 @@ public class VissionCast : DeliveryMethod
 		Vector2Int? result = ExectuteAndProcessLocation(actor, target);
 		if (result != null)
 		{
-			Vector2Int newTarget = result;
+			Vector2Int newTarget = result.Value;
 			spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Utility.GridToWorldPos(newTarget + new Vector2(-1.5f, -0.5f)), Color.Red);
 			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(newTarget + new Vector2(0.5f, 0.5f)), Color.Red, 2);
 		}

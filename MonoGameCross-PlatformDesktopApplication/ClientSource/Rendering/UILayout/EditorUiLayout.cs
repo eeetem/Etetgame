@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,12 +14,12 @@ public class EditorUiLayout : MenuLayout
 {
 
 
-	private static List<WorldObjectData>[,] buffer;
+	private static List<WorldObject.WorldObjectData>[,] buffer;
 
 	public EditorUiLayout()
 	{
 		DiscordManager.Client.UpdateState("In Level Editor");
-		WorldManager.Instance.CurrentMap = new MapData();
+		WorldManager.Instance.CurrentMap = new WorldManager.MapData();
 		WorldManager.Instance.CurrentMap.Name = "Unnamed";
 		for (int x = 0; x < 100; x++)
 		{
@@ -115,7 +113,7 @@ public class EditorUiLayout : MenuLayout
 			dialog.ButtonOk.Click += (sender, args) =>
 			{
 					
-				WorldManager.Instance.CurrentMap = new MapData();
+				WorldManager.Instance.CurrentMap = new WorldManager.MapData();
 				WorldManager.Instance.CurrentMap.Name = mapname.Text;
 				WorldManager.Instance.CurrentMap.Author = authorname.Text;
 				int units = 6;
@@ -345,7 +343,7 @@ public class EditorUiLayout : MenuLayout
 				var inputHeight = buffer.GetLength(1);
 
 				// We swap the sizes because rotating a 3x4 yields a 4x3.
-				var output =   new List<WorldObjectData>[inputHeight, inputWidth];
+				var output =   new List<WorldObject.WorldObjectData>[inputHeight, inputWidth];
 
 				var maxHeight = inputHeight - 1;
 
@@ -353,7 +351,7 @@ public class EditorUiLayout : MenuLayout
 				{
 					for (int i = 0; i < output.GetLength(0); i++)
 					{
-						output[i,j] = new List<WorldObjectData>();
+						output[i,j] = new List<WorldObject.WorldObjectData>();
 					}
 				}
 
@@ -400,14 +398,14 @@ public class EditorUiLayout : MenuLayout
 				var inputHeight = buffer.GetLength(1);
 
 				// We swap the sizes because rotating a 3x4 yields a 4x3.
-				var output = new List<WorldObjectData>[inputHeight, inputWidth];
+				var output = new List<WorldObject.WorldObjectData>[inputHeight, inputWidth];
 
 				var maxWidth = inputWidth - 1;
 				for (int j = 0; j < output.GetLength(1); j++)
 				{
 					for (int i = 0; i < output.GetLength(0); i++)
 					{
-						output[i,j] = new List<WorldObjectData>();
+						output[i,j] = new List<WorldObject.WorldObjectData>();
 					}
 				}
 
@@ -435,13 +433,13 @@ public class EditorUiLayout : MenuLayout
 			}
 		}
 
-		if (JustPressed(Keys.F))
+		if (JustPressed(Keys.F) && buffer.Length > 0)
 		{
 			var inputWidth = buffer.GetLength(0);
 			var inputHeight = buffer.GetLength(1);
 
 			// We swap the sizes because rotating a 3x4 yields a 4x3.
-			var output = new List<WorldObjectData>[inputWidth, inputHeight];
+			var output = new List<WorldObject.WorldObjectData>[inputWidth, inputHeight];
 
 			var maxWidth = inputWidth - 1;
 
@@ -449,7 +447,7 @@ public class EditorUiLayout : MenuLayout
 			{
 				for (int i = 0; i < output.GetLength(0); i++)
 				{
-					output[i,j] = new List<WorldObjectData>();
+					output[i,j] = new List<WorldObject.WorldObjectData>();
 				}
 			}
 
@@ -574,7 +572,7 @@ public class EditorUiLayout : MenuLayout
 				{
 					if (ActiveBrush == Brush.Copy)
 					{
-						buffer = new List<WorldObjectData>[bottomRightSelection.X - topLeftSelection.X+1,bottomRightSelection.Y - topLeftSelection.Y+1];
+						buffer = new List<WorldObject.WorldObjectData>[bottomRightSelection.X - topLeftSelection.X+1,bottomRightSelection.Y - topLeftSelection.Y+1];
 					}
 
 					for (int x = topLeftSelection.X; x <= bottomRightSelection.X; x++)
@@ -591,7 +589,7 @@ public class EditorUiLayout : MenuLayout
 							{
 								WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 								var data = tile.GetData();
-								buffer[x - topLeftSelection.X, y - topLeftSelection.Y] = new List<WorldObjectData>();
+								buffer[x - topLeftSelection.X, y - topLeftSelection.Y] = new List<WorldObject.WorldObjectData>();
 								if (data.NorthEdge != null)
 								{
 									var worldObjectData = data.NorthEdge.Value;

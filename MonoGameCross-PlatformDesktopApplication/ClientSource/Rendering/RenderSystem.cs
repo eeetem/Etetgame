@@ -84,7 +84,7 @@ public static class RenderSystem
 		spriteBatch.End();
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
 		int count = 0;
-		if (Action.ActiveAction == null || Action.ActiveAction.ActionType == ActionType.Move)
+		if (Action.ActiveAction == null || Action.ActiveAction.Type == Action.ActionType.Move)
 		{
 
 			foreach (var moves in GameLayout.previewMoves.Reverse())

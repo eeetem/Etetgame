@@ -1,9 +1,10 @@
 ﻿using System;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Riptide;
+using System.Linq;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -29,6 +30,8 @@ namespace MultiplayerXeno
 				return instance;
 			}
 		}
+		
+		
 
 		private WorldManager()
 		{
@@ -109,34 +112,34 @@ namespace MultiplayerXeno
 			return NextId;
 		}
 
-		public WorldTile LoadWorldTile(WorldTileData data)
+		public WorldTile LoadWorldTile(WorldTile.WorldTileData data)
 		{
-
+			Console.WriteLine("Loading tile at " + data.position);
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();
-			Task t = new Task(delegate
-			{
+		//	Task t = new Task(delegate
+		//	{
 				if (data.Surface != null)
 				{
-					MakeWorldObjectFromData((WorldObjectData) data.Surface, tile);
+					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.Surface, tile);
 				}
 
 				if (data.NorthEdge != null)
 				{
-					MakeWorldObjectFromData((WorldObjectData) data.NorthEdge, tile);
+					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.NorthEdge, tile);
 				}
 
 
 				if (data.WestEdge != null)
 				{
-					MakeWorldObjectFromData((WorldObjectData) data.WestEdge, tile);
+					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.WestEdge, tile);
 				}
 
 				if (data.UnitAtLocation != null)
 				{
 
-					MakeWorldObjectFromData((WorldObjectData) data.UnitAtLocation, tile);
+					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.UnitAtLocation, tile);
 
 				}
 
@@ -148,25 +151,25 @@ namespace MultiplayerXeno
 					}
 				}
 				
-			});
-			RunNextFrame(t);
+		//	});
+		//	RunNextFrame(t);
 
 			return tile;
 		
 		}
 		
 
-		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, UnitData? controllableData = null)
+		public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, Unit.UnitData? unitData = null)
 		{
-			WorldObjectData data = new WorldObjectData(prefabName);
+			WorldObject.WorldObjectData data = new WorldObject.WorldObjectData(prefabName);
 			data.ID = id;
 			data.Facing = facing;
-			data.ControllableData = controllableData;
+			data.UnitData = unitData;
 			MakeWorldObjectFromData(data, GetTileAtGrid(position));
 			return;
 		}
 
-		public void MakeWorldObjectFromData(WorldObjectData data, WorldTile tile)
+		public void MakeWorldObjectFromData(WorldObject.WorldObjectData data, WorldTile tile)
 		{
 			lock (syncobj)
 			{
@@ -174,13 +177,13 @@ namespace MultiplayerXeno
 				{
 					DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
 				}
-				createdObjects.Add(new Tuple<WorldObjectData, WorldTile>(data,tile));
+				createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
 			}
 
 			return;
 		}
 
-		private List<Tuple<WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObjectData, WorldTile>>();
+		private List<Tuple<WorldObject.WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObject.WorldObjectData, WorldTile>>();
 
 		public Visibility CanSee(Unit unit, Vector2 to, bool ignoreRange = false)
 		{
@@ -625,6 +628,7 @@ namespace MultiplayerXeno
 					{
 						MakeFovDirty();
 					}
+			
 #endif
 #if SERVER
 					if (WorldObjects.ContainsKey(obj))
@@ -641,6 +645,7 @@ namespace MultiplayerXeno
 
 				foreach (var WO in createdObjects)
 				{
+				//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
 					CreateWorldObj(WO);
 #if CLIENT
 					if (GameManager.GameState == GameState.Playing)
@@ -648,10 +653,7 @@ namespace MultiplayerXeno
 						MakeFovDirty();
 					}
 
-					if (GameManager.GameState == GameState.Lobby)
-					{
-						Camera.SetPos(WO.Item2.Position);
-					}
+		
 #endif
 					
 #if SERVER
@@ -663,17 +665,16 @@ namespace MultiplayerXeno
 				createdObjects.Clear();
 #if SERVER
 				//no need to update if we're loading an entire map
-				if (!Loading)
+			
+				foreach (var tile in tilesToUpdate)
 				{
-					foreach (var tile in tilesToUpdate)
-					{
-						Networking.SendTileUpdate(tile);
-					}
+					Networking.SendTileUpdate(tile);
 				}
+				
 
 				tilesToUpdate.Clear();
 #endif
-				Loading = false;
+		
 #if CLIENT
 				if(fovDirty){
 					CalculateFov();
@@ -693,7 +694,7 @@ namespace MultiplayerXeno
 			//		}
 		}
 
-		private void CreateWorldObj(Tuple<WorldObjectData, WorldTile> obj)
+		private void CreateWorldObj(Tuple<WorldObject.WorldObjectData, WorldTile> obj)
 		{
 			var data = obj.Item1;
 			var tile = obj.Item2;
@@ -749,16 +750,16 @@ namespace MultiplayerXeno
 						throw new Exception("edge cannot be cornerfacing");
 				}
 			}
-			else if(type.Unit != null && data.ControllableData != null)
+			else if(type.Unit != null && data.UnitData != null)
 			{
-				Unit component = type.Unit.Instantiate(WO, data.ControllableData.Value);
+				Unit component = type.Unit.Instantiate(WO, data.UnitData.Value);
 				WO.UnitComponent = component;
 #if CLIENT
 				GameLayout.RegisterUnit(component);
 #endif
 				tile.UnitAtLocation = WO.UnitComponent;
 
-				if (data.ControllableData.Value.JustSpawned)//bad spot for this but whatever for now
+				if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
 				{
 					type.Unit.SpawnEffect?.Apply(tile.Position);
 				}
@@ -776,10 +777,30 @@ namespace MultiplayerXeno
 		}
 
 		public MapData CurrentMap { get; set; }
-		
+		[Serializable]
+		public class MapData
+		{
+
+			public string Name = "New Map";
+			public string Author = "Unknown";
+			public int unitCount;
+			public List<WorldTile.WorldTileData> Data = new List<WorldTile.WorldTileData>();
+			
+
+			public static MapData FromJSON(string json)
+			{
+				return Newtonsoft.Json.JsonConvert.DeserializeObject<MapData>(json) ?? throw new InvalidOperationException();
+			}
+
+			public string ToJSON()
+			{
+				return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+			}
+
+		}
 		public void SaveCurrentMapTo(string path)
 		{
-			List<WorldTileData> prefabData = new List<WorldTileData>();
+			List<WorldTile.WorldTileData> prefabData = new List<WorldTile.WorldTileData>();
 			Vector2Int biggestPos = new Vector2Int(0, 0);//only save the bit of the map that has stuff
 			Vector2Int smallestPos = new Vector2Int(100, 100);//only save the bit of the map that has stuff
 			for (int x = 0; x < 100; x++)
@@ -813,7 +834,7 @@ namespace MultiplayerXeno
 			}
 
 			CurrentMap.Data = prefabData;
-			string json = CurrentMap.Serialise();
+			string json = CurrentMap.ToJSON();
 			if (File.Exists(path))
 			{
 				File.Delete(path);
@@ -830,13 +851,12 @@ namespace MultiplayerXeno
 			}
 		}
 
-		private static bool Loading;
 
 		public bool LoadMap(string path)
 		{
 			if (File.Exists(path))
 			{
-				MapData mapData = MapData.Deserialse(File.ReadAllText(path));
+				MapData mapData = MapData.FromJSON(File.ReadAllText(path));
 				return LoadMap(mapData);
 			}
 			else
@@ -849,34 +869,17 @@ namespace MultiplayerXeno
 
 		public bool LoadMap(MapData mapData)
 		{
-			if (Loading)
-			{
-				return false;
-			}
-
-			Loading = true;
 
 			WipeGrid();
 			CurrentMap = mapData;
 			foreach (var worldTileData in mapData.Data)
 			{
-				Loading = true;
 				LoadWorldTile(worldTileData);
 			}
-				
-				
 
-#if SERVER
-				Thread.Sleep(2000);
-				if (GameManager.Player1?.Connection != null) Networking.SendMapData(GameManager.Player1.Connection);
-				if (GameManager.Player2?.Connection != null)  Networking.SendMapData(GameManager.Player2.Connection);
-			foreach (var spec in GameManager.Spectators)
-			{
-				Networking.SendMapData(spec.Connection);
-			}
-			
-#endif
 			return true;
 		}
+
+		
 	}
 }

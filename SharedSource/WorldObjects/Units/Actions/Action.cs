@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
 
 #if CLIENT
 using System.Threading;
@@ -16,13 +14,13 @@ public abstract class Action
 {
 
 	public static readonly Dictionary<ActionType, Action> Actions = new();
-	public readonly ActionType ActionType;
+	public readonly ActionType Type;
 	public static Action? ActiveAction { get; private set; }
 
 	public Action(ActionType? type)
 	{
 		if(type==null) return;
-		ActionType = (ActionType)type;
+		Type = (ActionType)type;
 		Actions.Add((ActionType)type, this);
 	}
 
@@ -50,7 +48,7 @@ public abstract class Action
 	{
 		if (ActiveAction != null)
 		{
-			return ActiveAction.ActionType;
+			return ActiveAction.Type;
 		}
 
 		return null;
@@ -67,6 +65,18 @@ public abstract class Action
 		new UseExtraAbility();
 		new SelectItem();
 
+	}
+	public enum ActionType
+	{
+		Attack=1,
+		Move=2,
+		Face=3,
+		Crouch=4,
+		OverWatch = 5,
+		UseItem = 6,
+		UseAbility = 7,
+		SelectItem = 8,
+		
 	}
 
 	public virtual void InitAction()
@@ -87,7 +97,7 @@ public abstract class Action
 	
 		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
 		{
-			if (ActionType == ActionType.Attack)//only fog of war attacks
+			if (Type == ActionType.Attack)//only fog of war attacks
 			{
 				Camera.SetPos(actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
 			}
@@ -100,9 +110,9 @@ public abstract class Action
 	}
 	public virtual void SendToServer(Unit actor,Vector2Int target)
 	{
-		Console.WriteLine("sending action packet: "+ActionType+" on "+target+" from "+actor.WorldObject.ID+"");
-		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
-		Networking.DoAction(packet);
+		//Console.WriteLine("sending action packet: "+Type+" on "+target+" from "+actor.WorldObject.ID+"");
+	//	var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
+		//Networking.DoAction(packet);
 	}
 #endif
 	

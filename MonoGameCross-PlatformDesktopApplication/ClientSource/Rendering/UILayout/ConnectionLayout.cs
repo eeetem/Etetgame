@@ -2,7 +2,6 @@
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Network;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -55,16 +54,16 @@ public class ConnectionLayout : UiLayout
 		grid.Widgets.Add(exit);
 		button.Click += (s, a) =>
 		{
-			ConnectionResult result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
-			if (result == ConnectionResult.Connected)
+			var result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
+			if (result)
 			{
 				UI.ShowMessage("Connection Notice", "Connected to server!");
         
 			}
 			else
 			{
-				UI.ShowMessage("Connection Notice", "Failed to connect: " + result);
-        
+				UI.ShowMessage("Connection Notice", "Could not find server!");
+
 			}
         
 		};

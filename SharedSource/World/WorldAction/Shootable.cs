@@ -13,6 +13,13 @@ namespace MultiplayerXeno.Items;
 
 public class Shootable : DeliveryMethod
 {
+	
+	public enum TargetingType
+	{
+		Auto,
+		High,
+		Low
+	}
 	readonly int dmg;
 	readonly int detResistance;
 	readonly int supression;
@@ -92,7 +99,7 @@ public class Shootable : DeliveryMethod
 		return projectile;
 	}
 
-	public override Vector2Int ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
 	{
 		//client shouldnt be allowed to judge what got hit
 		//fire packet just makes the unit "shoot"
@@ -102,7 +109,7 @@ public class Shootable : DeliveryMethod
 		
 #if SERVER
 			p.Fire();
-			Networking.DoAction(new ProjectilePacket(p.Result,p.CoverCast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow,p.SupressionIgnores));
+		//	Networking.DoAction(new ProjectilePacket(p.Result,p.CoverCast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow,p.SupressionIgnores));
 #endif			
 
 		

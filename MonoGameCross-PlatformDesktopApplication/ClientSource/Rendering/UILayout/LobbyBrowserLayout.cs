@@ -1,5 +1,4 @@
 ﻿using System;
-using MultiplayerXeno;
 using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -9,7 +8,6 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Network;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -51,13 +49,13 @@ public class LobbyBrowserLayout : MenuLayout
 				{
 					if (input.Text != "")
 					{
-						if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
+						if (Networking.Connected)
 						{
 							Networking.ChatMSG(input.Text);
 						}
 						else
 						{
-							MasterServerNetworking.ChatMSG(input.Text);
+							//MasterServerNetworking.ChatMSG(input.Text);
 						}
 
 
@@ -66,35 +64,7 @@ public class LobbyBrowserLayout : MenuLayout
 				}
 			};
 				
-			var inputbtn = new TextButton()
-			{
-				Width = 50,
-				Height = 25,
-				Top = 0,
-				Left = 0,
-				Text = "Send",
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Bottom,
-				Font = DefaultFont.GetFont(15)
-			};
-			inputbtn.Click += (o, a) =>
-			{
-				if (input.Text != "")
-				{
-					if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
-					{
-						Networking.ChatMSG(input.Text);
-					}
-					else
-					{
-						MasterServerNetworking.ChatMSG(input.Text);
-					}
-
-					input.Text = "";
-				}
-			};
-			chatPanel.Widgets.Add(input);
-			chatPanel.Widgets.Add(inputbtn);
+		
 
 			var midPanel = new Panel()
 			{

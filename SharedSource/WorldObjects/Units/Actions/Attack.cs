@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
 #endif
@@ -53,12 +51,12 @@ public class Attack : Action
 
 	public override void SendToServer(Unit actor, Vector2Int target)
 	{
-		var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
+	//	var packet = new GameActionPacket(actor.WorldObject.ID,target,ActionType);
 		
-		packet.args.Add(Shootable.targeting.ToString());
+	//	packet.args.Add(Shootable.targeting.ToString());
 		
 		
-		Networking.DoAction(packet);
+	//	Networking.DoAction(packet);
 	}
 
 

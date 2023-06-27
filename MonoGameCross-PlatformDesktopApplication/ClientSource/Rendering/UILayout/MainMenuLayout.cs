@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Network;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -80,15 +77,15 @@ public class MainMenuLayout : UiLayout
 				{
 					Game1.config.SetValue("config","Name",input.Text);
 					Game1.config.Save();
-					var result = MasterServerNetworking.Connect(Game1.config.GetValue("config","MasterServerIP",""),input.Text);
-					if (result == ConnectionResult.Connected)
-					{
-						UI.SetUI(new LobbyBrowserLayout());
-					}
-					else
-					{
+					//var result = MasterServerNetworking.Connect(Game1.config.GetValue("config","MasterServerIP",""),input.Text);
+					//if (result == ConnectionResult.Connected)
+					//{
+				//		UI.SetUI(new LobbyBrowserLayout());
+				//	}
+				//	else
+				//	{
 						UI.ShowMessage("Error", "Could not connect to master server");
-					}
+				//	}
 				};
 				dialog.ShowModal(desktop);
 				
@@ -197,7 +194,7 @@ public class MainMenuLayout : UiLayout
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				var cdata = new UnitData(false);
+				var cdata = new Unit.UnitData(false);
 				int r = Random.Shared.Next(5);
 				string unit;
 				switch (r)

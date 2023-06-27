@@ -1,6 +1,4 @@
-﻿using Network.Packets;
-
-namespace MultiplayerXeno;
+﻿namespace MultiplayerXeno;
 
 public class LobbyStartPacket : Packet
 {

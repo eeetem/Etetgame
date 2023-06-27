@@ -1,9 +1,8 @@
 ﻿#nullable enable
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using MultiplayerXeno;
 using MonoGame.Extended;
+using Riptide;
 
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -16,6 +15,8 @@ namespace MultiplayerXeno;
 public partial class WorldObject
 {
 
+	
+	
 	public int LifeTime = -100;
 	public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
 	{
@@ -282,7 +283,62 @@ WorldManager.Instance.DeleteWorldObject(this);
 		return cover;
 	}
 
+	public struct WorldObjectData : IMessageSerializable
+	{
+		public Direction Facing;
+		public int ID;
 
+		public bool Fliped;
+		//health
+		public string Prefab;
+		public Unit.UnitData? UnitData;
+		public int Health;
+		public int Lifetime;
+		public WorldObjectData(string prefab)
+		{
+			Prefab = prefab;
+			ID = -1;
+			Facing = Direction.North;
+			UnitData = null;
+			Fliped = false;
+			Health = -100;
+			Lifetime = -100;
+		}
+
+		public void Serialize(Message message)
+		{
+			message.AddString(Prefab);
+			message.AddInt(ID);
+			message.AddInt((int)Facing);
+			message.AddBool(Fliped);
+			message.Add(Health);
+			message.Add(Lifetime);
+			message.AddBool(UnitData != null);
+			if (UnitData != null)
+			{
+				message.AddSerializable(UnitData.Value);
+			}
+		}
+
+		public void Deserialize(Message message)
+		{
+			Prefab = message.GetString();
+			ID = message.GetInt();
+			Facing = (Direction)message.GetInt();
+			Fliped = message.GetBool();
+			Health = message.GetInt();
+			Lifetime = message.GetInt();
+			bool hasUnit = message.GetBool();
+			if (hasUnit)
+			{
+				UnitData = message.GetSerializable<Unit.UnitData>();
+			}
+			else
+			{
+				UnitData = null;
+			}
+		}
+	}
 
 	public WorldObjectData GetData()
 	{
@@ -294,8 +350,8 @@ WorldManager.Instance.DeleteWorldObject(this);
 
 		if (UnitComponent != null)
 		{
-			UnitData cdata = UnitComponent.GetData();
-			data.ControllableData = cdata;
+			Unit.UnitData cdata = UnitComponent.GetData();
+			data.UnitData = cdata;
 		}
 
 		return data;

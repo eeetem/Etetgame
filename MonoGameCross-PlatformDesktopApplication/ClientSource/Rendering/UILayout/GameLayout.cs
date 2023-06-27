@@ -6,10 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MonoGame.Extended.Shapes;
 using MultiplayerXeno.Items;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
-using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -411,17 +409,17 @@ public class GameLayout : MenuLayout
 		
 			
 		overwatchBtn = new ImageButton();
-		overwatchBtn.Click += (o, a) => Action.SetActiveAction(ActionType.OverWatch);
+		overwatchBtn.Click += (o, a) => Action.SetActiveAction(Action.ActionType.OverWatch);
 		overwatchBtn.MouseEntered += (o, a) => Tooltip("Watches over an area and attacks the first enemy that enters it",0,-1,-1);
 		overwatchBtn.MouseLeft += (o, a) =>  HideTooltip();
 		panel.Widgets.Add(overwatchBtn);
 		crouchbtn = new ImageButton();
-		crouchbtn.Click += (o, a) => SelectedUnit.DoAction(Action.Actions[ActionType.Crouch], new Vector2Int(0,0));
+		crouchbtn.Click += (o, a) => SelectedUnit.DoAction(Action.Actions[Action.ActionType.Crouch], new Vector2Int(0,0));
 		crouchbtn.MouseEntered += (o, a) => Tooltip("Crouching improves benefits of cover and allows hiding under tall cover",0,0,0);
 		crouchbtn.MouseLeft += (o, a) => HideTooltip();
 		panel.Widgets.Add(crouchbtn);
 		itemBtn = new ImageButton();
-		itemBtn.Click += (o, a) => Action.SetActiveAction(ActionType.UseItem);
+		itemBtn.Click += (o, a) => Action.SetActiveAction(Action.ActionType.UseItem);
 		if (SelectedUnit.SelectedItem != null)
 		{
 			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + SelectedUnit.SelectedItem.Name + " - " + SelectedUnit.SelectedItem.Description, 0, -1, 0);
@@ -457,7 +455,7 @@ public class GameLayout : MenuLayout
 			{
 				if (SelectedUnit.Inventory[index] != null)
 				{
-					SelectedUnit.DoAction(Action.Actions[ActionType.SelectItem], new Vector2Int(index, 0));
+					SelectedUnit.DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(index, 0));
 					UpdateActionButtons();
 				}
 			};
@@ -479,7 +477,7 @@ public class GameLayout : MenuLayout
 					if (Action.ActiveAction == null)
 					{
 						UseExtraAbility.AbilityIndex = index;
-						Action.SetActiveAction(ActionType.UseAbility);
+						Action.SetActiveAction(Action.ActionType.UseAbility);
 					}
 				};
 				btn.MouseLeft += (o, a) =>
@@ -493,7 +491,7 @@ public class GameLayout : MenuLayout
 				btn.Click += (o, a) =>
 				{
 					Console.WriteLine("click");
-					Action.SetActiveAction(ActionType.UseAbility);
+					Action.SetActiveAction(Action.ActionType.UseAbility);
 					UseExtraAbility.AbilityIndex = index;
 					SelectedUnit.DoAction(Action.ActiveAction, SelectedUnit.WorldObject.TileLocation.Position);
 				};
@@ -503,7 +501,7 @@ public class GameLayout : MenuLayout
 				btn.Click += (o, a) =>
 				{
 					UseExtraAbility.AbilityIndex = index;
-					Action.SetActiveAction(ActionType.UseAbility);
+					Action.SetActiveAction(Action.ActionType.UseAbility);
 				};
 			}
 			panel.Widgets.Add(btn);
@@ -557,7 +555,7 @@ public class GameLayout : MenuLayout
 		overwatchBtn.VerticalAlignment = VerticalAlignment.Bottom;
 		overwatchBtn.Width = (int) (24 * scale);
 		overwatchBtn.Height = (int) (29 * scale);
-		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.OverWatch)
+		if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.OverWatch)
 		{
 			overwatchBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchbtn")), new Color(255, 140, 140));
 			overwatchBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchbtn")), new Color(255, 140, 140));
@@ -607,7 +605,7 @@ public class GameLayout : MenuLayout
 		itemBtn.VerticalAlignment = VerticalAlignment.Bottom;
 		itemBtn.Width = (int) (24 * scale);
 		itemBtn.Height = (int) (29 * scale);
-		if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseItem)
+		if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseItem)
 		{
 			itemBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
 			itemBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
@@ -724,7 +722,7 @@ public class GameLayout : MenuLayout
 			actbtn.VerticalAlignment = VerticalAlignment.Bottom;
 			actbtn.Width = (int) (24 * scale);
 			actbtn.Height = (int) (29 * scale);
-			if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.UseAbility && UseExtraAbility.AbilityIndex == index)
+			if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseAbility && UseExtraAbility.AbilityIndex == index)
 			{
 				actbtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
 				actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
@@ -1321,10 +1319,10 @@ public class GameLayout : MenuLayout
 		{
 			//we should attack
 			if(Action.ActiveAction == null){
-				Action.SetActiveAction(ActionType.Attack);
+				Action.SetActiveAction(Action.ActionType.Attack);
 			}
 			
-		}else if (Action.ActiveAction != null && Action.ActiveAction.ActionType == ActionType.Attack)
+		}else if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.Attack)
 		{
 				
 			Action.SetActiveAction(null);
@@ -1376,7 +1374,7 @@ public class GameLayout : MenuLayout
 
 
 		WorldAction.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
-		if(Action.ActiveAction != null && currentKeyboardState.IsKeyUp(Keys.LeftControl) && lastKeyboardState.IsKeyDown(Keys.LeftControl) && Action.ActiveAction.ActionType == ActionType.Attack)
+		if(Action.ActiveAction != null && currentKeyboardState.IsKeyUp(Keys.LeftControl) && lastKeyboardState.IsKeyDown(Keys.LeftControl) && Action.ActiveAction.Type == Action.ActionType.Attack)
 		{
 			Action.SetActiveAction(null);
 		}
@@ -1384,23 +1382,23 @@ public class GameLayout : MenuLayout
 		if(WorldAction.FreeFire){
 			if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
 			{
-				if (Shootable.targeting == TargetingType.Auto)
+				if (Shootable.targeting == Shootable.TargetingType.Auto)
 				{
-					Shootable.targeting = TargetingType.High;
+					Shootable.targeting = Shootable.TargetingType.High;
 				}
-				else if (Shootable.targeting == TargetingType.High)
+				else if (Shootable.targeting == Shootable.TargetingType.High)
 				{
-					Shootable.targeting = TargetingType.Low;
+					Shootable.targeting = Shootable.TargetingType.Low;
 				}
-				else if (Shootable.targeting == TargetingType.Low)
+				else if (Shootable.targeting == Shootable.TargetingType.Low)
 				{
-					Shootable.targeting = TargetingType.Auto;
+					Shootable.targeting = Shootable.TargetingType.Auto;
 				}
 			}
 		}
 		else
 		{
-			Shootable.targeting = TargetingType.Auto;
+			Shootable.targeting = Shootable.TargetingType.Auto;
 		}
 
 		if (JustPressed(Keys.Z))
@@ -1472,7 +1470,7 @@ public class GameLayout : MenuLayout
 
 		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
-		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.Visible && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==ActionType.Move)) { 
+		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.Visible && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==Action.ActionType.Move)) { 
 			SelectUnit(Tile.UnitAtLocation);
 			return;
 		}
@@ -1483,9 +1481,9 @@ public class GameLayout : MenuLayout
 			{
 
 				case null:
-					Action.SetActiveAction(ActionType.Face);
+					Action.SetActiveAction(Action.ActionType.Face);
 					break;
-				case ActionType.Face:
+				case Action.ActionType.Face:
 					SelectedUnit.DoAction(Action.ActiveAction,position);
 					break;
 				default:
@@ -1501,7 +1499,7 @@ public class GameLayout : MenuLayout
 			{
 
 				case null:
-					Action.SetActiveAction(ActionType.Move);
+					Action.SetActiveAction(Action.ActionType.Move);
 					break;
 				default:
 					SelectedUnit.DoAction(Action.ActiveAction, position);
@@ -1537,7 +1535,7 @@ public class GameLayout : MenuLayout
 		bool highlighted = false;
 
 		
-		if (Equals(SelectedUnit, target.UnitComponent) || MousePos == (Vector2) target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
+		if (Equals(SelectedUnit, target.UnitComponent) || MousePos == target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
 		{
 			opacity = 1;
 			highlighted = true;
@@ -1592,7 +1590,7 @@ public class GameLayout : MenuLayout
 		{
 			healthTexture = TextureManager.GetTexture("UI/HoverHud/healthenv");
 			nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealthenv");
-			if (target.Type.Edge && MousePos == (Vector2)target.TileLocation.Position)
+			if (target.Type.Edge && MousePos == target.TileLocation.Position)
 			{
 				if (Equals(target.TileLocation.NorthEdge, target)){
 					offset = new Vector2(0, -1);

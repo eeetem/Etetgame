@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MultiplayerXeno.Pathfinding;
-using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
@@ -126,7 +124,7 @@ public class Move : Action
 		
 		for (int i = 0; i < moveUse; i++)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),Utility.GridToWorldPos((Vector2)target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 4.5f,SpriteEffects.None,0f);
+			spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),Utility.GridToWorldPos(target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 4.5f,SpriteEffects.None,0f);
 		
 		}
 	}

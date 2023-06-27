@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Network;
-using Network.Converter;
-using Network.Enums;
-using Network.Packets;
 
 
 namespace MultiplayerXeno // Note: actual namespace depends on the project name.

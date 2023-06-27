@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -26,8 +24,9 @@ public class Throwable : DeliveryMethod
 
 		if (Vector2.Distance(target, actor.WorldObject.TileLocation.Position) > throwRange)
 		{
-			target = LastReturned;
 			if (LastReturned == null) return null;
+			target = LastReturned.Value;
+			
 		}
 
 		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target, Cover.Full,false,true);
@@ -42,9 +41,9 @@ public class Throwable : DeliveryMethod
 	{
 		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target) > throwRange)
 		{
-			if (LastReturned != null && Vector2.Distance(actor.WorldObject.TileLocation.Position, LastReturned) <= throwRange)
+			if (LastReturned != null && Vector2.Distance(actor.WorldObject.TileLocation.Position, LastReturned.Value) <= throwRange)
 			{
-				target = LastReturned;
+				target = LastReturned.Value;
 				return new Tuple<bool, string>(true, "");
 			}
 
@@ -59,8 +58,8 @@ public class Throwable : DeliveryMethod
 		Vector2Int? newTarget = ExectuteAndProcessLocation(actor, target);
 		if (newTarget == null) return newTarget;
 			
-		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(newTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
-		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)) , Utility.GridToWorldPos(newTarget+new Vector2(0.5f,0.5f)), Color.Red, 2);
+		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos((Vector2)newTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
+		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)) , Utility.GridToWorldPos((Vector2)newTarget+new Vector2(0.5f,0.5f)), Color.Red, 2);
 		
 		
 		

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MultiplayerXeno;
+﻿namespace MultiplayerXeno;
 
 public struct ValueChange
 {
