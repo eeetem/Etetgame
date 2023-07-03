@@ -17,6 +17,7 @@ public static class Program
 		Console.WriteLine("Hello World!");
 		PrefabManager.MakePrefabs();
 		Action.Init();
+		Utility.Init();
 		PathFinding.GenerateNodes();
 		//	Console.WriteLine("Enter Port:");
 		//string port = Console.ReadLine();

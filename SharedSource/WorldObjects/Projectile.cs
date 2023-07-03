@@ -18,25 +18,10 @@ public class Projectile
 	public bool ShooterLow;
 	public bool TargetLow;
 	public List<int> SupressionIgnores = new List<int>();
-/*		public Projectile(ProjectilePacket packet)
-		{
-			Result = packet.result;
-			CoverCast = packet.covercast;
-			Dmg = packet.dmg;
-			OriginalDmg = packet.dmg;
-			DropoffRange = packet.dropoffRange;
-			DeterminationResistanceCoefficient = packet.determinationResistanceCoefficient;
-			SupressionRange = packet.suppresionRange;
-			SupressionStrenght = packet.supressionStrenght;
-			ShooterLow = packet.shooterLow;
-			TargetLow = packet.targetLow;
-			SupressionIgnores = packet.SupressionIgnores;
-			CalculateDetails();
-			Fire();
-		}*/
+
 
 	
-	public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1)
+	public Projectile(Vector2 from, Vector2 to, int dmg, int dropoffRange, bool targetLow = false, bool shooterLow = false, int determinationResistanceCoefficient = 1, int supressionRange = 2,int supressionStrenght=1, bool clientPreview = false)
 	{
 		Dmg = dmg;
 		OriginalDmg = dmg;
@@ -63,23 +48,19 @@ public class Projectile
 		if (!Result.hit) {
 			var tile = WorldManager.Instance.GetTileAtGrid(to);
 			var obj = tile.UnitAtLocation;
-			if (obj != null) {
-#if CLIENT
-				if (obj.WorldObject.IsVisible()) {
-#endif
-					var controllable = obj;
-					if (controllable.Crouching && TargetLow == false) {
-						// Do nothing if targetLow is false
-					} else {
-						Result = new RayCastOutcome(from, to) {
-							hit = true,
-							HitObjId = obj.WorldObject.ID,
-							CollisionPointLong = to,
-						};
-					}
-#if CLIENT
+			if (obj != null && (!clientPreview || obj.WorldObject.IsVisible())) {
+				var controllable = obj;
+				if (controllable.Crouching && TargetLow == false) {
+					// Do nothing if targetLow is false
+				} else {
+					Result = new RayCastOutcome(from, to) {
+						hit = true,
+						HitObjId = obj.WorldObject.ID,
+						CollisionPointLong = to,
+					};
 				}
-#endif
+
+				
 			}
 		}
 

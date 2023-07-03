@@ -1,4 +1,5 @@
-﻿using Riptide;
+﻿using System.Threading.Tasks;
+using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
 
@@ -12,11 +13,15 @@ public class Crouch : SequenceAction
 	{
 	}
 
-	public override void Do()
+	protected override Task GenerateTask()
 	{
-		Actor.canTurn = true;
-		Actor.Crouching = !Actor.Crouching;
-		Actor.WorldObject.TileLocation.OverWatchTrigger();
+		var t = new Task(delegate
+		{
+			Actor.canTurn = true;
+			Actor.Crouching = !Actor.Crouching;
+			Actor.WorldObject.TileLocation.OverWatchTrigger();
+		});
+		return t;
 	}
 
 	protected override void SerializeArgs(Message message)

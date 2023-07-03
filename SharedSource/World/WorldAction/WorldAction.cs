@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -121,17 +122,7 @@ public class WorldAction
 	
 	}
 
-	public void Animate(Unit actor, Vector2Int target)
-	{
-		foreach (var method in DeliveryMethods)
-		{
-			method.Animate(actor, target);
-			Effect.Animate(target);//TODO: this is not correct
-			Thread.Sleep(300);
-		}
-		
-		
-	}
+
 	public void InitPreview()
 	{
 		foreach (var method in DeliveryMethods)

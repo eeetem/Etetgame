@@ -24,12 +24,6 @@ public abstract class DeliveryMethod
 
 	public abstract void InitPreview();
 
-	public void Animate(Unit actor, Vector2Int target)
-	{
-		AnimateChild(actor, target+offset);
-	}
-
-	public abstract void AnimateChild(Unit actor, Vector2Int target);
 #endif
 
 }

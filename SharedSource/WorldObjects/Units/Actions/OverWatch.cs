@@ -116,11 +116,7 @@ public class OverWatch : Action
 		}
 
 	}
-	public override void Animate(Unit actor, Vector2Int target)
-	{
-		base.Animate(actor,target);
-		return;
-	}
+
 #endif
 }
 

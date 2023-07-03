@@ -4,6 +4,11 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
+
 using Riptide;
 
 namespace MultiplayerXeno;
@@ -14,7 +19,7 @@ public class WorldEffect : IMessageSerializable
 	public int Det ;
 	public ValueChange Move ;
 	public ValueChange Act ;
-	public int Range = 0;
+	public int Range = 1;
 	public string? Sfx = "";
 	public string? PlaceItemPrefab = null;
 	public readonly List<Tuple<string, int>> AddStatus = new List<Tuple<string?, int>>();
@@ -146,7 +151,17 @@ public class WorldEffect : IMessageSerializable
 		{
 			ApplyOnTile(tile,user);
 		}
-
+#if CLIENT
+		if (Sfx != "")
+		{
+			Audio.PlaySound(Sfx, target);
+		}
+		
+		foreach (var effect in Effects)
+		{
+			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
+		}
+#endif
 	}
 	protected void ApplyOnTile(WorldTile tile,WorldObject? user = null)
 	{
@@ -198,10 +213,21 @@ public class WorldEffect : IMessageSerializable
 				if(Equals(tile.UnitAtLocation, user) && !TargetSelf) return;
 			
 			}
-			
-			tile.UnitAtLocation.TakeDamage(Dmg, 0);
+
+			if (Dmg != 0)//log spam prevention
+			{
+				tile.UnitAtLocation.TakeDamage(Dmg, 0);
+			}
+		
 			Act.Apply(ref ctr.ActionPoints);
 			Move.Apply(ref ctr.MovePoints);
+#if CLIENT
+			if(GameLayout.SelectedUnit == ctr)
+			{
+				GameLayout.ReMakeMovePreview();
+			}
+#endif
+	
 			ctr.Suppress(Det,noPanic);
 			MoveRange.Apply(ref ctr.MoveRangeEffect);
 			foreach (var status in RemoveStatus)
@@ -315,32 +341,7 @@ public class WorldEffect : IMessageSerializable
 		}
 	}
 
-	public void Animate(Vector2Int target)
-	{
-		
-		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
-		{
-			if (Visible)
-			{
-				Camera.SetPos(target + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
-			}
-		}
-		else
-		{
-			Camera.SetPos(target);
-		}
 
-
-		if (Sfx != null)
-		{
-			Audio.PlaySound(Sfx, target);
-		}
-		
-		foreach (var effect in Effects)
-		{
-			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
-		}
-	}
 #endif
 
 }

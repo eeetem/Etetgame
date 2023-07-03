@@ -17,10 +17,7 @@ public static class Audio
 	private static float musicVolume = 0.5f;
 	public static float MusicVolume
 	{
-		get
-		{
-			return musicVolume;
-		}
+		get => musicVolume;
 		set
 		{
 			musicVolume = value;

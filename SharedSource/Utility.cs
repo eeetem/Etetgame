@@ -8,8 +8,17 @@ using Riptide;
 namespace MultiplayerXeno;
 
 public  static partial class Utility
-{ 
-        
+{
+    public static void Init()
+    {
+        mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+    }
+
+    // Do this when you start your application
+    private static int mainThreadId;
+// If called in the non main thread, will return false;
+    public static bool IsMainThread => System.Threading.Thread.CurrentThread.ManagedThreadId == mainThreadId;
+
     public static void AddNullableString(this Message msg, string? s)
     {
         if (s is null)

@@ -23,10 +23,6 @@ public class Face : Action
 			return new Tuple<bool, string>(false, "Already facing that direction");
 		}//dont let the action happen if the player is already facing that direction 
 
-		if (Unit.AnyUnitMoving)
-		{
-			return new Tuple<bool, string>(false, "Can't face while moving");
-		}
 
 		if (!actor.canTurn)
 		{
@@ -40,10 +36,11 @@ public class Face : Action
 #if SERVER
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
-		throw new NotImplementedException();
-		var targetDir = Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
-		actor.canTurn = false;
-		actor.WorldObject.Face(targetDir);
+
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.Face(actor.WorldObject.ID,target));
+		return queue;
+
 	}
 #endif
 
@@ -89,11 +86,7 @@ public class Face : Action
 			
 		}
 	}
-	public override void Animate(Unit actor, Vector2Int target)
-	{
-	//	base.Animate(actor,target);
-		return;
-	}
+
 #endif
 
 

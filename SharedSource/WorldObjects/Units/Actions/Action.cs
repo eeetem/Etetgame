@@ -58,27 +58,25 @@ public abstract class Action
 
 	public static void Init()
 	{
-		new Attack();
 		new Face();
 		new Move();
 		new Crouch();
 		new OverWatch();
 		new UseItem();
-		new UseExtraAbility();
+		new UseAbility();
 		new SelectItem();
 
 	}
 	public enum ActionType
 	{
-		Attack=1,
+		SelectItem=1,
 		Move=2,
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
 		UseItem = 6,
 		UseAbility = 7,
-		SelectItem = 8,
-		
+
 	}
 
 	public virtual void InitAction()
@@ -94,22 +92,6 @@ public abstract class Action
 
 #if CLIENT
 	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
-	public virtual void Animate(Unit actor, Vector2Int target)
-	{
-	
-		if (WorldManager.Instance.GetTileAtGrid(target).Visible==Visibility.None)
-		{
-			if (Type == ActionType.Attack)//only fog of war attacks
-			{
-				Camera.SetPos(actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-3, 3), Random.Shared.Next(-3, 3)));
-			}
-		}
-		else
-		{
-			Camera.SetPos(actor.WorldObject.TileLocation.Position);
-		}
-		Thread.Sleep(800);
-	}
 
 	public virtual void SendToServer(Unit actor, Vector2Int target)
 	{

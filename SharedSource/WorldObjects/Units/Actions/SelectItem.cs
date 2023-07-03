@@ -21,8 +21,9 @@ public class SelectItem : Action
 #if SERVER
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
-		throw new NotImplementedException();
-		actor.SelectedItemIndex = target.X;
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.SelectItem(actor.WorldObject.ID,target.X));
+		return queue;
 	}
 #endif
 
@@ -30,8 +31,8 @@ public class SelectItem : Action
 
 	public override void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
-		actor.SelectedItemIndex = target.X;
 		base.ExecuteClientSide(actor,target);
+actor.SelectedItemIndex = target.X;
 	}
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)

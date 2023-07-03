@@ -33,11 +33,6 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
 
-		if (Unit.AnyUnitMoving)
-		{
-			return new Tuple<bool, string>(false, "Can't move multiple units at once");
-		}
-		
 		return new Tuple<bool, string>(true, "");
 	}
 
@@ -53,7 +48,9 @@ public class Move : Action
 		}
 
 		WorldEffect w = new WorldEffect();
-		w.Move.Value = -1;
+		w.Move.Value = -moveUse;
+		w.TargetFriend = true;
+		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		queue.Enqueue(new ReplaySequence.Move(actor.WorldObject.ID,result.Path!));
@@ -80,8 +77,6 @@ public class Move : Action
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-
-		if(Unit.AnyUnitMoving) return;
 		if (lastTarget == new Vector2Int(0, 0))
 		{
 			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target).Path;
@@ -131,9 +126,5 @@ public class Move : Action
 		}
 	}
 
-	public override void Animate(Unit actor, Vector2Int target)
-	{
-		return;
-	}
 #endif
 }

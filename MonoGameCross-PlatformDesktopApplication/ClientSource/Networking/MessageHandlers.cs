@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using MultiplayerXeno.ReplaySequence;
 using Myra.Graphics2D.UI;
 using Riptide;
@@ -21,6 +22,12 @@ public static partial class Networking
 		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapDataInitiateConfirm);
 		client?.Send(msg);
 	}
+	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
+	private static void RecieveEndTrugn(Message message)
+	{
+		GameManager.SetEndTurn();
+	}
+
 
 	[MessageHandler((ushort) NetworkMessageID.MapDataFinish)]
 	private static void FinishMapRecieve(Message message)
@@ -41,7 +48,7 @@ public static partial class Networking
 	{
 		
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		WorldManager.Instance.LoadWorldTile(data);
+		WorldManager.Instance.AddSequence(new UpdateTile(data));
 	}
 	
 	[MessageHandler((ushort)NetworkMessageID.Notify)]
@@ -78,7 +85,9 @@ public static partial class Networking
 			switch (type)
 			{
 					
-				
+				case SequenceAction.SequenceType.Face:
+					sqc = new ReplaySequence.Face(id, message);
+					break;
 				case SequenceAction.SequenceType.Move:
 					sqc = new ReplaySequence.Move(id, message);
 					break;
@@ -88,8 +97,17 @@ public static partial class Networking
 				case SequenceAction.SequenceType.WorldEffect:
 					sqc = new ReplaySequence.WorldChange(id, message);
 					break;
+				case SequenceAction.SequenceType.Action:
+					sqc = new ReplaySequence.DoAction(id, message);
+					break;
+				case SequenceAction.SequenceType.SelectItem:
+					sqc = new ReplaySequence.SelectItem(id, message);
+					break;
+				case SequenceAction.SequenceType.UseItem:
+					sqc = new ReplaySequence.UseSelectedItem(id, message);
+					break;
 				default:
-					throw new Exception("Unknown Sequence Type Recived");
+					throw new Exception("Unknown Sequence Type Recived: "+type);
 			
 			}
 			actions.Enqueue(sqc);

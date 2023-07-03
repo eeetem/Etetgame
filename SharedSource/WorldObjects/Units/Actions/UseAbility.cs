@@ -5,22 +5,17 @@ using MultiplayerXeno.ReplaySequence;
 
 namespace MultiplayerXeno;
 
-public class UseExtraAbility : Action
+public class UseAbility : Action
 {
 	
 	
-		public UseExtraAbility() : base(ActionType.UseAbility)
+		public UseAbility() : base(ActionType.UseAbility)
 		{
 		}
 
 		public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
 		{
-
-			if (AbilityIndex == -1)
-			{
-				return new Tuple<bool, string>(false, "No Action Selected");
-			}
-			IExtraAction action = actor.extraActions[AbilityIndex];
+			IExtraAction action = actor.GetAction(AbilityIndex);
 
 			return action.CanPerform(actor, ref target);
 
@@ -45,9 +40,11 @@ public class UseExtraAbility : Action
 #if SERVER
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
-	throw new NotImplementedException();
-		IExtraAction action = actor.extraActions[AbilityIndex];
-		action.Execute(actor, target);
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.DoAction(actor.WorldObject.ID,target,AbilityIndex));
+		return queue;
+
+
 	}
 #endif
 	
@@ -57,7 +54,7 @@ public class UseExtraAbility : Action
 #if CLIENT
 		public override void SendToServer(Unit actor, Vector2Int target)
 		{
-			IExtraAction action = actor.extraActions[AbilityIndex];
+			IExtraAction action = actor.GetAction(AbilityIndex);
 			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
 			packet.Args.Add(AbilityIndex.ToString());
 			foreach (var a in action.MakePacketArgs())
@@ -70,17 +67,11 @@ public class UseExtraAbility : Action
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
-			if(AbilityIndex == -1 && AbilityIndex<actor.extraActions.Count)return;
-			IExtraAction action = actor.extraActions[AbilityIndex];
+			IExtraAction action = actor.GetAction(AbilityIndex);
 			action.Preview(actor, target,spriteBatch);
 		}
 
-		public override void Animate(Unit actor, Vector2Int target)
-		{
-			base.Animate(actor,target);
-			IExtraAction action = actor.extraActions[AbilityIndex];
-			action.Animate(actor,target);
-		}
+
 #endif
 
 	

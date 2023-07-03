@@ -34,13 +34,16 @@ public class UseItem : Action
 	#if SERVER
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
-		throw new NotImplementedException();
-		actor.ActionPoints--;
-		actor.SelectedItem?.Execute(actor, target);
-		Console.WriteLine("Using Item "+actor.SelectedItem?.Name);
-		actor.LastItem = actor.SelectedItem;
-		actor.RemoveItem(actor.SelectedItemIndex);
-		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
+		
+		
+		WorldEffect w = new WorldEffect();
+		w.Act.Value = -1;
+		w.TargetFriend = true;
+		w.TargetSelf = true;
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ReplaySequence.UseSelectedItem(actor.WorldObject.ID,target));
+		return queue;
 	}
 	#endif
 	
@@ -57,11 +60,6 @@ public class UseItem : Action
 		actor.SelectedItem?.Preview(actor, target,spriteBatch);
 	}
 
-	public override void Animate(Unit actor, Vector2Int target)
-	{
-		base.Animate(actor,target);
-		actor.SelectedItem?.Animate(actor,target);
-	}
 #endif
 
 }

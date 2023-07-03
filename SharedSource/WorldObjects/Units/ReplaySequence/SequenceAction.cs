@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Threading;
+using MonoGame.Extended;
 using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
@@ -7,28 +10,76 @@ public abstract class SequenceAction : IMessageSerializable
 {
 	public enum SequenceType
 	{
-		Attack=1,
+		Action=1,
 		Move=2,
 		Face=3,
 		Crouch=4,
-		OverWatch = 5,
-		UseItem = 6,
-		WorldEffect = 9,
-		PlayAnimation =10,
+		UseItem = 5,
+		SelectItem = 6,
+		WorldEffect = 7,
+		PlayAnimation =8,
+		UpdateTile =9
 	}
 	public readonly SequenceType SqcType;
 
 	protected int ActorID;
-	protected Unit Actor => WorldManager.Instance.GetObject(ActorID).UnitComponent;
+	protected Unit Actor
+	{
+		get
+		{
+			var obj = WorldManager.Instance.GetObject(ActorID);
+			int attempts = 0;
+			while(obj == null)
+			{
+				Thread.Sleep(1000);
+				obj = WorldManager.Instance.GetObject(ActorID);
+				attempts++;
+				if (attempts>10)
+				{
+					throw new Exception("Sequence Actor not found");
+				}
+			}
+
+			return obj.UnitComponent;
+		}
+	}
+
 	public SequenceAction(int actorID,SequenceType tp)
 	{
 		SqcType = tp;
 		ActorID = actorID;
 	}
-	public abstract void Do();
-	
-	
-	protected abstract void SerializeArgs(Message message);
+
+	public virtual Task Do()
+	{
+		
+		var t = new Task(delegate
+		{
+#if CLIENT
+			if (Actor.WorldObject.TileLocation.Visible==Visibility.None)
+			{
+				// if (Visible)
+				// {
+				// Camera<>.SetPos(target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+				// }
+			}
+			else
+			{
+				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
+			}
+#endif
+			GenerateTask().RunSynchronously();
+		});
+
+
+		return t;
+
+	}
+
+	protected abstract Task GenerateTask();
+
+
+	protected abstract void SerializeArgs(Message message);	
 
 	public void Serialize(Message message)
 	{

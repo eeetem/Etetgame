@@ -71,10 +71,6 @@ public class Throwable : DeliveryMethod
 		LastReturned = null;
 	}
 
-	public override void AnimateChild(Unit actor, Vector2Int target)
-	{
-
-	}
 #endif
 
 }

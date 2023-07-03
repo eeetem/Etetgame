@@ -320,7 +320,7 @@ public static class PostPorcessing
 
 	
 		Texture2D cursorTexture2D  = cursorTextures[0];
-		if (Action.ActiveAction is {Type: Action.ActionType.Attack} || Action.ActiveAction is {Type: Action.ActionType.UseAbility})
+		if (Action.ActiveAction is {Type: Action.ActionType.UseAbility})
 		{
 			cursorTexture2D  = cursorTextures[1];
 		}

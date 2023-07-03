@@ -16,9 +16,7 @@ public interface IExtraAction : ICloneable
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
 #if CLIENT
-
 	void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
-	void Animate(Unit actor, Vector2Int target);
 	Texture2D Icon { get; }
 
 

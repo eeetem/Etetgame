@@ -169,9 +169,7 @@ public partial class WorldObject
 
 			Task t = new Task(delegate
 			{
-#if CLIENT
-			Type.DesturctionEffect?.Animate(TileLocation.Position);
-#endif
+
 				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			});
 			WorldManager.Instance.RunNextFrame(t);

@@ -26,8 +26,10 @@ public class UnitType
 
 
 	public Texture2D[] CrouchSpriteSheet = null!;
+
 	public ExtraAction DefaultAttack = null!;
-	public readonly List<IExtraAction> ExtraActions = new List<IExtraAction>();
+	public readonly List<IExtraAction> Actions = new List<IExtraAction>();
+
 	public WorldEffect? SpawnEffect { get; set; }
 
 	public Unit Instantiate(WorldObject parent,Unit.UnitData data)

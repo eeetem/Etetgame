@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
@@ -17,10 +18,35 @@ public class WorldChange : SequenceAction
 		this.target = args.GetSerializable<Vector2Int>();
 		this.effect = args.GetSerializable<WorldEffect>();
 	}
-	
-	public override void Do()
+
+	public override Task Do()
 	{
-		effect.Apply(target, Actor.WorldObject);
+		var t = new Task(delegate
+		{
+#if CLIENT
+			if (Actor.WorldObject.TileLocation.Visible==Visibility.None)
+			{
+				 if (effect.Visible)
+				 {
+				 Camera.SetPos(target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+				 }
+			}
+			else
+			{
+				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
+			}
+#endif
+			GenerateTask().RunSynchronously();
+		});
+
+
+		return t;
+	}
+
+	protected override Task GenerateTask()
+	{	
+		var t = new Task(delegate { effect.Apply(target, Actor.WorldObject); });
+		return t;
 	}
 
 	protected override void SerializeArgs(Message message)

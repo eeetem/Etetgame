@@ -26,10 +26,6 @@ public class ImmideateDelivery : DeliveryMethod
 		return;
 	}
 
-	public override void AnimateChild(Unit actor, Vector2Int target)
-	{
-		return;
-	}
 #endif
 
 }

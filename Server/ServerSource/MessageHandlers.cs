@@ -66,6 +66,7 @@ public static partial class Networking
 				GameManager.StartGame();
 			}
 		}
+		
 		[MessageHandler((ushort)NetworkMessageID.PreGameData)]
 		private static void RecivePreGameUpdate(ushort senderID,Message message)
 		{
@@ -139,9 +140,9 @@ public static partial class Networking
 			if (act.Type == Action.ActionType.UseAbility)
 			{
 				int ability = int.Parse(packet.Args[0]);
-				UseExtraAbility.AbilityIndex = ability;
-				UseExtraAbility.abilityLock = true;
-				IExtraAction a = controllable.extraActions[ability];
+				UseAbility.AbilityIndex = ability;
+				UseAbility.abilityLock = true;
+				IExtraAction a = controllable.GetAction(ability);
 				if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable) != null)
 				{
 					string target = packet.Args[1];
@@ -161,27 +162,9 @@ public static partial class Networking
 					}
 				}
 			}
-			else if (act.Type == Action.ActionType.Attack)
-			{
-				string target = packet.Args[0];
-				switch (target)
-				{
-					case "Auto":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.Auto;
-						break;
-					case "High":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.High;
-						break;
-					case "Low":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.Low;
-						break;
-					default:
-						throw new ArgumentException("Invalid target type");
-				}
-			}
 
 			act.PerformServerSide(controllable, packet.Target);
-			UseExtraAbility.abilityLock = false;
+			UseAbility.abilityLock = false;
 			
 		}
 

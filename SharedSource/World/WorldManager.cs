@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Riptide;
 using System.Linq;
+using System.Threading;
 using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -113,50 +114,43 @@ namespace MultiplayerXeno
 			return NextId;
 		}
 
-		public WorldTile LoadWorldTile(WorldTile.WorldTileData data)
+		public void LoadWorldTile(WorldTile.WorldTileData data)
 		{
 			Console.WriteLine("Loading tile at " + data.position);
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();
-		//	Task t = new Task(delegate
-		//	{
-				if (data.Surface != null)
+			if (data.Surface != null)
+			{
+				MakeWorldObjectFromData((WorldObject.WorldObjectData) data.Surface, tile);
+			}
+
+			if (data.NorthEdge != null)
+			{
+				MakeWorldObjectFromData((WorldObject.WorldObjectData) data.NorthEdge, tile);
+			}
+
+
+			if (data.WestEdge != null)
+			{
+				MakeWorldObjectFromData((WorldObject.WorldObjectData) data.WestEdge, tile);
+			}
+
+			if (data.UnitAtLocation != null)
+			{
+
+				MakeWorldObjectFromData((WorldObject.WorldObjectData) data.UnitAtLocation, tile);
+
+			}
+
+			if (data.ObjectsAtLocation != null)
+			{
+				foreach (var itm in data.ObjectsAtLocation)
 				{
-					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.Surface, tile);
+					MakeWorldObjectFromData(itm, tile);
 				}
+			}
 
-				if (data.NorthEdge != null)
-				{
-					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.NorthEdge, tile);
-				}
-
-
-				if (data.WestEdge != null)
-				{
-					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.WestEdge, tile);
-				}
-
-				if (data.UnitAtLocation != null)
-				{
-
-					MakeWorldObjectFromData((WorldObject.WorldObjectData) data.UnitAtLocation, tile);
-
-				}
-
-				if (data.ObjectsAtLocation != null)
-				{
-					foreach (var itm in data.ObjectsAtLocation)
-					{
-						MakeWorldObjectFromData(itm, tile);
-					}
-				}
-				
-		//	});
-		//	RunNextFrame(t);
-
-			return tile;
-		
 		}
 		
 
@@ -646,7 +640,7 @@ namespace MultiplayerXeno
 
 				foreach (var WO in createdObjects)
 				{
-				//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
+					//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
 					CreateWorldObj(WO);
 #if CLIENT
 					if (GameManager.GameState == GameState.Playing)
@@ -654,7 +648,6 @@ namespace MultiplayerXeno
 						MakeFovDirty();
 					}
 
-		
 #endif
 					
 #if SERVER
@@ -685,16 +678,42 @@ namespace MultiplayerXeno
 				
 			}
 
-
-			//	WipeGrid();
-			//	foreach (var obj in new List<WorldObject>(WorldObjects.Values))
-			//	{
-
-			//		gridData[obj.Position.X,obj.Position.Y].Add(obj.Id);
-
-			//		}
+			if (_currentSequenceTasks.Count == 0)
+			{
+				if (SequenceQueue.Count > 0)
+				{
+					_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
+					_currentSequenceTasks.Last().Start();
+					
+					while (SequenceQueue.Count>0 && typeof(UpdateTile) == SequenceQueue.Peek().GetType())//batch all the tile updates
+					{
+						_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
+						_currentSequenceTasks.Last().Start();
+					}
+				}
+			}
+			else if (_currentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
+			{
+				foreach (var t in _currentSequenceTasks)
+				{
+					if (t.Status == TaskStatus.RanToCompletion)
+					{
+						//done
+					}
+					else if (t.Status == TaskStatus.Faulted)
+					{
+						Console.WriteLine("Sequence task failed");
+						Console.WriteLine(t.Status);
+						throw t.Exception!;
+					}else{
+						Console.WriteLine("undefined sequence task state");
+					}
+				}
+				_currentSequenceTasks.Clear();
+			}
 		}
 
+		private List<Task> _currentSequenceTasks = new List<Task>();
 		private void CreateWorldObj(Tuple<WorldObject.WorldObjectData, WorldTile> obj)
 		{
 			var data = obj.Item1;
@@ -882,9 +901,19 @@ namespace MultiplayerXeno
 		}
 
 
+		private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
+
+		public void AddSequence(SequenceAction action)
+		{
+			SequenceQueue.Enqueue(action);
+		}
+
 		public void AddSequence(Queue<SequenceAction> actions)
 		{
-			return;
+			foreach (var a in actions)
+			{
+				AddSequence(a);
+			}
 		}
 	}
 }

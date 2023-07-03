@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 
 namespace MultiplayerXeno.Items;
 
 public class ExtraAction : IExtraAction
 {
-	public readonly string name;
-	public readonly string tooltip;
+	public readonly string name = null!;
+	public readonly string tooltip = null!;
 	public readonly int DeterminationChange;
 	public readonly ValueChange MovePointChange;
 	public readonly ValueChange ActionPointChange;
-	public readonly WorldAction act;
-	public WorldAction WorldAction { get => act; }
+	public readonly WorldAction act = null!;
+	public WorldAction WorldAction => act;
 	public readonly bool immideaateActivation;
+
 
 
 	public int[] GetConsiquences(Unit c)
@@ -21,11 +23,9 @@ public class ExtraAction : IExtraAction
 		return new[] {DeterminationChange, ActionPointChange.GetChange(c.ActionPoints), MovePointChange.GetChange(c.MovePoints)};
 	}
 
-	public bool ImmideateActivation { get => immideaateActivation; }
-	public string Tooltip
-	{
-		get => tooltip;
-	}
+	public bool ImmideateActivation => immideaateActivation;
+
+	public string Tooltip => tooltip;
 
 	public ExtraAction(string name, string tooltip, int determinationCost, ValueChange movePointCost, ValueChange actionPointCost, WorldAction action, bool immideaateActivation)
 	{
@@ -40,6 +40,11 @@ public class ExtraAction : IExtraAction
 		
 		Icon = act.Icon;
 #endif
+	}
+
+	public ExtraAction()
+	{
+		
 	}
 
 	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
@@ -119,14 +124,6 @@ public class ExtraAction : IExtraAction
 		WorldAction.Preview(actor, target, spriteBatch);
 	}
 
-	public void Animate(Unit actor, Vector2Int target)
-	{
-		if (immideaateActivation)
-		{
-			target = actor.WorldObject.TileLocation.Position;
-		}
-		WorldAction.Animate(actor, target);
-	}
 
 	public Texture2D Icon { get; set; }
 	
@@ -137,4 +134,6 @@ public class ExtraAction : IExtraAction
 	{
 		return new ExtraAction(name, tooltip, DeterminationChange, MovePointChange, ActionPointChange, act, immideaateActivation);	
 	}
+
+
 }

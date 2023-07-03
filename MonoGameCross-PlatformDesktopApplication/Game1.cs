@@ -45,6 +45,7 @@ public class Game1 : Game
 		WorldManager.Instance.Init();
 		Action.Init();
 		RenderSystem.Init(GraphicsDevice);
+		Utility.Init();
 
 		PathFinding.GenerateNodes();
 
@@ -126,7 +127,7 @@ public class Game1 : Game
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 		DiscordManager.Update();
 		Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
-			
+
 		base.Update(gameTime);
 	}
 	private static SpriteBatch spriteBatch;

@@ -17,10 +17,11 @@ public static partial class Networking
 		
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
-		Message.MaxPayloadSize = 50000000;
 		server = new Server(new UdpServer());
-
+#if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
+#endif
+		
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
@@ -304,6 +305,12 @@ public static partial class Networking
 			msg.Add((int) a.SqcType);
 			msg.AddSerializable(a);
 		}
+		server.SendToAll(msg);
+	}
+
+	public static void SendEndTurn()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.EndTurn);
 		server.SendToAll(msg);
 	}
 }

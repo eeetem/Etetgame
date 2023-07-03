@@ -19,9 +19,12 @@ public static partial class Networking
 	{
 		Ipport = ipport;
 		Name = name;
-		Message.MaxPayloadSize = 50000000;
+
 		client = new Client( new UdpClient());
+#if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
+#endif
+		
 		var msg = Message.Create();
 		msg.AddString(name);
 		bool result = client.Connect(ipport,message:msg);

@@ -3,7 +3,7 @@
         <OutputType>Exe</OutputType>
         <PublishReadyToRun>false</PublishReadyToRun>
         <TieredCompilation>false</TieredCompilation>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -199,9 +199,6 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Action.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Attack.cs">
-        <Link>SharedSource\WorldObjects\Units\Actions\Attack.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>
       </Compile>
@@ -217,14 +214,20 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\SelectItem.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\SelectItem.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs">
-        <Link>SharedSource\WorldObjects\Units\Actions\UseExtraAbility.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseAbility.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseItem.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\UseItem.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\DoAction.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\DoAction.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Face.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Face.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Move.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\Move.cs</Link>
@@ -232,8 +235,17 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SelectItem.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\SelectItem.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\UpdateTile.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\UpdateTile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\UseSelectedItem.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\UseSelectedItem.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs</Link>

@@ -46,7 +46,7 @@ public class Shootable : DeliveryMethod
 		
 		if (target != _lastTarget || targeting != lastTargetingType)
 		{
-			previewShot = MakeProjectile(actor, target);
+			previewShot = MakeProjectile(actor, target, true);
 			_lastTarget = target;
 		}
 
@@ -63,7 +63,7 @@ public class Shootable : DeliveryMethod
 	}
 
 
-	public Projectile MakeProjectile(Unit actor,Vector2Int target)
+	public Projectile MakeProjectile(Unit actor,Vector2Int target, bool clientPreview = false)
 	{
 		//target = actor.WorldObject.TileLocation.Position + new Vector2(-10,0);
 		bool lowShot =false;
@@ -75,12 +75,12 @@ public class Shootable : DeliveryMethod
 			if (tile.UnitAtLocation != null  && tile.UnitAtLocation.Crouching) 
 			{
 				lowShot = true;
-#if CLIENT
-				if (!tile.UnitAtLocation.WorldObject.IsVisible())
+		       
+				if (clientPreview && !tile.UnitAtLocation.WorldObject.IsVisible())
 				{
 					lowShot = false;
 				}
-#endif
+
 			}
 		}else if(targeting == TargetingType.Low)
 		{
@@ -92,7 +92,7 @@ public class Shootable : DeliveryMethod
 		}
 		
 		Vector2 shotDir = Vector2.Normalize(target -actor.WorldObject.TileLocation.Position);
-		Projectile projectile = new Projectile(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression);
+		Projectile projectile = new Projectile(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)+shotDir/new Vector2(2.5f,2.5f),target+new Vector2(0.5f,0.5f),dmg,dropOffRange,lowShot,actor.Crouching,detResistance,supressionRange,supression,clientPreview);
 		projectile.SupressionIgnores.Add(actor.WorldObject.ID);
 		
 
@@ -105,14 +105,9 @@ public class Shootable : DeliveryMethod
 		//fire packet just makes the unit "shoot"
 		//actual damage and projectile is handled elsewhere
 
-		Projectile p = MakeProjectile(actor, target);
-		
-#if SERVER
-			p.Fire();
-		//	Networking.DoAction(new ProjectilePacket(p.Result,p.CoverCast,p.OriginalDmg,p.DropoffRange,p.DeterminationResistanceCoefficient,p.SupressionRange,p.SupressionStrenght,p.ShooterLow,p.TargetLow,p.SupressionIgnores));
-#endif			
+		Projectile p = MakeProjectile(actor, target, false);
+		p.Fire();
 
-		
 		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
 		if (p.Result.hit)
 		{
@@ -145,7 +140,7 @@ public class Shootable : DeliveryMethod
 		
 		if (target != _lastTarget || targeting != lastTargetingType)
 		{
-			previewShot = MakeProjectile(actor, target);
+			previewShot = MakeProjectile(actor, target,true);
 			_lastTarget = target;
 		}
 
@@ -346,7 +341,6 @@ public class Shootable : DeliveryMethod
 	
 		return target;
 
-
 	}
 
 	public override void InitPreview()
@@ -356,9 +350,5 @@ public class Shootable : DeliveryMethod
 		//targeting = TargetingType.Auto;
 	}
 
-	public override void AnimateChild(Unit actor, Vector2Int target)
-	{
-	
-	}
 #endif
 }

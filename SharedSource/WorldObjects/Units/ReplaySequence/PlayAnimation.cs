@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
 
 public class PlayAnimation : SequenceAction
 {
-	public override void Do()
+
+	protected override Task GenerateTask()
 	{
 		throw new NotImplementedException();
 	}

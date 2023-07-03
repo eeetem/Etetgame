@@ -92,7 +92,7 @@ public class ExtraToggleAction : IExtraAction
 		return on.GetConsiquences(c);
 	}
 
-	public bool ImmideateActivation { get=> true; }
+	public bool ImmideateActivation => true;
 #if CLIENT
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
@@ -106,19 +106,6 @@ public class ExtraToggleAction : IExtraAction
 		}
 	}
 
-	public void Animate(Unit actor, Vector2Int target)
-	{
-		if (isOn)
-		{
-			on.Animate(actor,actor.WorldObject.TileLocation.Position);
-		}
-		else
-		{
-			off.Animate(actor,actor.WorldObject.TileLocation.Position);
-		}
-
-		
-	}
 
 	public Texture2D Icon
 	{

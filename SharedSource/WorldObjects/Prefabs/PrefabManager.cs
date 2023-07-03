@@ -59,11 +59,11 @@ public static class PrefabManager
 				
 				XmlNode? defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
 				int determinationChange = int.Parse(defaultact?.Attributes?["det"]?.InnerText ?? "0");
-				ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "0");
-				ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "0"); 
-				WorldAction action =	PraseWorldAction((XmlElement) defaultact ?? throw new InvalidOperationException());
+				ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "-1");
+				ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "-1"); 
+				WorldAction action =	PraseWorldAction((XmlElement) defaultact! ?? throw new InvalidOperationException());
 
-				controllableType.DefaultAttack = new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
+				controllableType.DefaultAttack =  new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
 				
 				var speff = ((XmlElement) contollableObj).GetElementsByTagName("spawneffect")[0];
 				if (speff != null)
@@ -76,17 +76,17 @@ public static class PrefabManager
 				var actions = ((XmlElement) contollableObj).GetElementsByTagName("action");
 				foreach (var act in actions)
 				{ 
-					controllableType.ExtraActions.Add(ParseControllableAction((XmlElement)act));
+					controllableType.Actions.Add(ParseControllableAction((XmlElement)act));
 				}
 				var toggleActions = ((XmlElement) contollableObj).GetElementsByTagName("toggleaction");
 				foreach (var act in toggleActions)
 				{
 					//	ExtraToggleAction toggle = new ExtraToggleAction();
 					XmlElement actobj = (XmlElement) act;
-					ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]);
-					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]);
+					ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
+					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
 					ExtraToggleAction toggle = new ExtraToggleAction(on,off);
-					controllableType.ExtraActions.Add(toggle);
+					controllableType.Actions.Add(toggle);
 				}
 
 			}
@@ -247,7 +247,7 @@ public static class PrefabManager
 		WorldEffect? eff = new WorldEffect();
 		string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
-		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "None";
+		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
 		WorldAction.TargetAid tAid = WorldAction.TargetAid.None;
 		
 		switch (aid)

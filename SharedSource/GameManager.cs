@@ -138,18 +138,14 @@ public static partial class GameManager
 		if(score > 8)EndGame(true);
 		if(score < -8)EndGame(false);
 
-
-	
-			
-
-
+		
 
 
 
 
 #if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
-		//	Networking.DoAction(new GameActionPacket(-1,null,ActionType.EndTurn));//defaults to end turn
+			Networking.SendEndTurn();
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;

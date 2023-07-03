@@ -26,10 +26,6 @@ public class Crouch : Action
 	public override void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
 		base.ExecuteClientSide(actor, target);
-		actor.MovePoints--;
-		actor.canTurn = true;
-		actor.Crouching = !actor.Crouching;
-		actor.WorldObject.TileLocation.OverWatchTrigger();
 	}
 
 #else
@@ -37,6 +33,8 @@ public class Crouch : Action
 	{
 		WorldEffect w = new WorldEffect();
 		w.Move.Value = -1;
+		w.TargetFriend = true;
+		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
@@ -51,10 +49,6 @@ public class Crouch : Action
 		throw new NotImplementedException();
 	}
 
-	public override void Animate(Unit actor, Vector2Int target)
-	{
-		base.Animate(actor,target);
-		return;
-	}
+
 #endif
 }
