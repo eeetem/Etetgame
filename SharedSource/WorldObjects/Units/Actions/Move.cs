@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -32,6 +33,10 @@ public class Move : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
+		if (actor.Paniced)
+		{
+			return new Tuple<bool, string>(false, "Cannot Move while Paniced");
+		}
 
 		return new Tuple<bool, string>(true, "");
 	}
@@ -47,13 +52,73 @@ public class Move : Action
 			moveUse++;
 		}
 
+		List<Unit> alreadyShot = new List<Unit>();
+		
+		List<Tuple<List<Unit>,Vector2Int>> ShootingSpots = new List<Tuple<List<Unit>, Vector2Int>>();
+		
+		foreach (var tile in result.Path)
+		{
+			var shooters = WorldManager.Instance.GetTileAtGrid(tile).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
+			
+			List<Unit> exclude = new List<Unit>();
+			
+			shooters.ForEach((s) =>
+			{
+				if (alreadyShot.Contains(s))
+				{
+					exclude.Add(s);
+				}
+			});
+			
+			foreach (var unit in exclude)
+			{
+				shooters.Remove(unit);
+			}
+			
+			
+			if (shooters.Count > 0)
+			{
+				ShootingSpots.Add(new Tuple<List<Unit>, Vector2Int>(shooters,tile));
+				alreadyShot.AddRange(shooters);
+			}
+		}
+
+		List<List<Vector2Int>> paths = new List<List<Vector2Int>>();
+		int i = 0;
+		paths.Add(new List<Vector2Int>());
+		
+		foreach (var tile in result.Path)
+		{
+			if(ShootingSpots.Find((t) => t.Item2 == tile) != null)
+			{
+				paths[i].Add(tile);
+				paths.Add(new List<Vector2Int>());
+				i++;
+			}
+			paths[i].Add(tile);
+		}
+		Debug.Assert(paths.Count == ShootingSpots.Count + 1);
+
 		WorldEffect w = new WorldEffect();
 		w.Move.Value = -moveUse;
 		w.TargetFriend = true;
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
-		queue.Enqueue(new ReplaySequence.Move(actor.WorldObject.ID,result.Path!));
+		for (int j = 0; j < paths.Count; j++)
+		{
+			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
+			queue.Enqueue(new ReplaySequence.Move(actor.WorldObject.ID,paths[j]));
+			if (j < ShootingSpots.Count)
+			{
+				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
+				foreach (var attacker in ShootingSpots[j].Item1)
+				{
+					queue.Enqueue(new ReplaySequence.DoAction(attacker.WorldObject.ID, ShootingSpots[j].Item2, -1));
+				}
+			}
+			
+		}
 		return queue;
 
 	}
@@ -61,7 +126,6 @@ public class Move : Action
 
 
 	
-
 #if CLIENT
 	
 	private static List<Vector2Int>? previewPath = new List<Vector2Int>();
@@ -77,6 +141,7 @@ public class Move : Action
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
+		if(WorldManager.Instance.SequenceRunning) return;
 		if (lastTarget == new Vector2Int(0, 0))
 		{
 			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target).Path;
@@ -112,17 +177,24 @@ public class Move : Action
 			spriteBatch.DrawLine(pos, nextpos, c, 8f);
 		}
 
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
-		int moveUse = 1;
-		while (result.Cost > actor.GetMoveRange() * moveUse)
+		try
 		{
-			moveUse++;
+			PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
+			int moveUse = 1;
+			while (result.Cost > actor.GetMoveRange() * moveUse)
+			{
+				moveUse++;
+			}
+
+			for (int i = 0; i < moveUse; i++)
+			{
+				spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"), Utility.GridToWorldPos(target) + new Vector2(-20 * moveUse, -30) + new Vector2(45, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
+
+			}
 		}
-		
-		for (int i = 0; i < moveUse; i++)
+		catch (Exception e)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),Utility.GridToWorldPos(target)+new Vector2(-20*moveUse,-30)+new Vector2(45,0)*i,null,Color.White,0f,Vector2.Zero, 4.5f,SpriteEffects.None,0f);
-		
+			Console.WriteLine(e);
 		}
 	}
 

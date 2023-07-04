@@ -168,9 +168,9 @@ public static class PathFinding
 	}
 	public struct PathFindResult
 	{
-		public  List<Vector2Int>? Path;
+		public  List<Vector2Int> Path;
 		public  double Cost;
-		public PathFindResult(List<Vector2Int>? path, double cost)
+		public PathFindResult(List<Vector2Int> path, double cost)
 		{
 			Path = path;
 			Cost = cost;

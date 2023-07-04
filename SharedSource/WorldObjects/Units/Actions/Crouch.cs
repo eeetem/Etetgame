@@ -31,6 +31,13 @@ public class Crouch : Action
 #else
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
+
+		Visibility vis = Visibility.Full;//inverted
+		if (actor.Crouching)
+		{
+			vis = Visibility.Partial;
+		}
+		var shooters = WorldManager.Instance.GetTileAtGrid(target).GetOverWatchShooters(actor,vis);
 		WorldEffect w = new WorldEffect();
 		w.Move.Value = -1;
 		w.TargetFriend = true;
@@ -38,6 +45,12 @@ public class Crouch : Action
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
+
+		foreach (var shooter in shooters)
+		{
+			queue.Enqueue(new ReplaySequence.DoAction(shooter.WorldObject.ID,actor.WorldObject.TileLocation.Position,-1));
+		}
+		
 		return queue;
 	}
 #endif

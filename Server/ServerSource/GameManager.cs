@@ -76,8 +76,13 @@ public static partial class GameManager
 		Thread.Sleep(1000); //let the clients process spawns
 		Networking.SendGameData();
 		Thread.Sleep(1000); //let the clients process UI
-		if (Random.Shared.Next(100) > 50)
+
+		var rng = Random.Shared.Next(100);
+		NextTurn();
+		Console.WriteLine("turn rng: "+rng);
+		if (rng > 50)
 		{
+			
 			NextTurn();
 		}
 

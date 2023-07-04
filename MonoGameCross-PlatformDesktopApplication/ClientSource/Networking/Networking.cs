@@ -43,11 +43,11 @@ public static partial class Networking
 		{
 			if (b.Reason == DisconnectReason.TimedOut)
 			{
-				UI.OptionMessage("Lost Connection: " + a.ToString(), "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", (a, b) => { Reconnect(); });
+				UI.OptionMessage("Lost Connection: " + a, "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", (a, b) => { Reconnect(); });
 			}
 			else
 			{
-				UI.ShowMessage("Connection Rejected By Server", b.ToString());
+				UI.ShowMessage("Connection Rejected By Server", b.ToString()!);
 				Disconnect();
 			}
 		};

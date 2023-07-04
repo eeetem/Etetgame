@@ -35,60 +35,14 @@ public class OverWatch : Action
 #if SERVER
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
 	{
-		throw new NotImplementedException();
-		actor.ActionPoints.Current=0;
-		actor.MovePoints.Current=0;
-		var positions = GetOverWatchPositions(actor, target);
-		foreach (var shot in positions)
-		{
-			WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint).Watch(actor);
-			actor.overWatchedTiles.Add(shot.Result.EndPoint);
-		}
-
-		actor.overWatch = true;
-		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position, target));
-
+		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(new ReplaySequence.OverWatch(actor.WorldObject.ID,target));
+		return queue;
 	}
 #endif
 
 
-	private HashSet<Projectile> GetOverWatchPositions(Unit actor,Vector2Int target)
-	{
-		var tiles = WorldManager.Instance.GetTilesAround(target,actor.Type.OverWatchSize);
-		HashSet<Projectile> possibleShots = new HashSet<Projectile>();
-		HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
-		foreach (var endTile in tiles)
-		{
-			
-			RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
-			foreach (var pos in outcome.Path)
-			{
-				positions.Add(pos);
-			}
 
-		}
-
-		foreach (var position in positions)
-		{
-			if (actor.CanHit(position))
-			{
-				foreach (var method in actor.Type.DefaultAttack.WorldAction.DeliveryMethods)
-				{
-					if (method is Shootable)
-					{
-						var proj = ((Shootable)method).MakeProjectile(actor, position);
-						possibleShots.Add(proj);
-						break;
-					}
-
-				}
-
-				
-			}
-		}
-
-		return possibleShots;
-	}
 #if CLIENT
 	
 
@@ -96,7 +50,7 @@ public class OverWatch : Action
 	{
 		
 		//todo mod support, make this not only for shootables
-		foreach (var shot in GetOverWatchPositions(actor,target))
+		foreach (var shot in actor.GetOverWatchPositions(target))
 		{
 
 			var tile = WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint);

@@ -22,7 +22,21 @@ public class DoAction : SequenceAction
 		Target = msg.GetSerializable<Vector2Int>();
 		ActionID = msg.GetInt();
 	}
-	
+
+
+	public override bool ShouldDo()
+	{
+		if (Actor.overWatch)
+		{
+			Console.WriteLine("Considering shooting on overwatch");
+			bool res = WorldManager.Instance.GetTileAtGrid(Target).UnitAtLocation != null;
+			Console.WriteLine("result: "+res);
+			return res;
+		}
+
+		return true;
+	}
+
 	public override Task Do()
 	{
 		var t = new Task(delegate

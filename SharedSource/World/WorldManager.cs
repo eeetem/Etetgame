@@ -505,6 +505,7 @@ namespace MultiplayerXeno
 			if (Obj.UnitComponent != null)
 			{
 				GameLayout.UnRegisterUnit(Obj.UnitComponent);
+				RemoveUnitTasks(Obj.UnitComponent);
 			}
 #endif
 			Obj.TileLocation.Remove(id);
@@ -576,7 +577,7 @@ namespace MultiplayerXeno
 		public static readonly object syncobj = new object();
 
 		
-		private static readonly List<Task> NextFrameTasks = new List<Task>();
+		private static readonly Queue<Task> NextFrameTasks = new Queue<Task>();
 
 		public void RunNextFrame(Task t)
 		{
@@ -584,7 +585,7 @@ namespace MultiplayerXeno
 			{
 				lock (syncobj)
 				{
-					NextFrameTasks.Add(t);
+					NextFrameTasks.Enqueue(t);
 				}
 			});
 		}
@@ -594,9 +595,10 @@ namespace MultiplayerXeno
 		
 			lock (syncobj)
 			{
-				foreach (var task in NextFrameTasks)
+				while (NextFrameTasks.Count>0)
 				{
-					task.RunSynchronously();
+					var t = NextFrameTasks.Dequeue();
+					t.RunSynchronously();
 				}
 				NextFrameTasks.Clear();
 #if SERVER
@@ -682,7 +684,16 @@ namespace MultiplayerXeno
 			{
 				if (SequenceQueue.Count > 0)
 				{
-					_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
+					var task = SequenceQueue.Dequeue();
+					while (!task.ShouldDo())
+					{
+						if(SequenceQueue.Count == 0){
+							return;
+						}
+						task = SequenceQueue.Dequeue();
+					}
+
+					_currentSequenceTasks.Add(task.Do());
 					_currentSequenceTasks.Last().Start();
 					
 					while (SequenceQueue.Count>0 && typeof(UpdateTile) == SequenceQueue.Peek().GetType())//batch all the tile updates
@@ -710,6 +721,24 @@ namespace MultiplayerXeno
 					}
 				}
 				_currentSequenceTasks.Clear();
+			}
+		}
+
+		public void RemoveUnitTasks(Unit actor)
+		{
+			Queue<SequenceAction> newQueue = new Queue<SequenceAction>();
+			foreach (var act in SequenceQueue)
+			{
+				if (act.ActorID != actor.WorldObject.ID)
+				{
+					newQueue.Enqueue(act);
+				}
+			}
+
+			SequenceQueue.Clear();
+			foreach (var n in newQueue)
+			{
+				SequenceQueue.Enqueue(n);
 			}
 		}
 
@@ -903,6 +932,7 @@ namespace MultiplayerXeno
 
 		private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
 
+		public bool SequenceRunning => SequenceQueue.Count > 0;
 		public void AddSequence(SequenceAction action)
 		{
 			SequenceQueue.Enqueue(action);

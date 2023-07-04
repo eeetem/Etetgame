@@ -107,12 +107,14 @@ public abstract class Action
 #if CLIENT
 	public virtual void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
+		Action.SetActiveAction(null);
 	}
 #else
 
 	public void PerformServerSide(Unit actor,Vector2Int target)
 	{
 
+		
 		var result = CanPerform(actor, ref target);
 		if(!result.Item1)
 		{

@@ -19,7 +19,52 @@ public partial class WorldTile
 	private List<Unit> Watchers = new List<Unit>();
 	private List<Unit> UnWatchQueue = new List<Unit>();
 	private int HighestWatchLevel;
-		
+#if SERVER
+	public List<Unit> GetOverWatchShooters(Unit actor,Visibility requiredVis)
+	{
+		List<Unit> shooters = new List<Unit>();
+		foreach (var watcher in Watchers)
+		{
+			
+			bool isFriendly = watcher.IsPlayerOneTeam == actor.IsPlayerOneTeam;
+			//make this "can player see" fucntion
+			List<int> units;
+			if (watcher.IsPlayerOneTeam)
+			{
+				units = GameManager.T1Units;
+			}
+			else
+			{
+				units = GameManager.T2Units;
+			}
+
+			Visibility vis = Visibility.None;
+			foreach (var u in units)
+			{
+				var WO = WorldManager.Instance.GetObject(u);
+				if (WO != null)
+				{
+					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent, Position);
+					if (tempVis > vis)
+					{
+						vis = tempVis;
+					}
+				}
+
+			}
+
+			Console.WriteLine("overwatch spotted by " + watcher.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
+			if (!isFriendly && watcher.CanHit(Position) && vis >= requiredVis)
+			{
+				shooters.Add(watcher);
+			}
+		}
+
+		return shooters;
+	}
+#endif
+	
+
 	public void Watch(Unit watcher)
 	{
 		lock (syncobj)
@@ -85,6 +130,10 @@ public partial class WorldTile
 			if (obstacle == Cover.Low) return dist + 1;
 			if (obstacle == Cover.High) return dist + 5;
 			if (obstacle == Cover.Full) return 1000000;
+			if (obstacle == null)
+			{
+				Console.WriteLine("ERROR: null obstale");
+			}
 		}catch(Exception e)
 		{
 			Console.WriteLine(e);
@@ -205,7 +254,6 @@ public partial class WorldTile
 			}
 
 			_unitAtLocation = value;
-			OverWatchTrigger();
 		}
 	}
 		
@@ -213,17 +261,6 @@ public partial class WorldTile
 		
 	private WorldObject? _surface;
 
-	public void OverWatchTrigger()
-	{
-		lock (syncobj)
-		{
-			foreach (var watcher in Watchers)
-			{
-				watcher.OverWatchSpoted(Position);
-			}
-
-		}
-	}
 
 	public WorldObject? Surface{
 		get => _surface;

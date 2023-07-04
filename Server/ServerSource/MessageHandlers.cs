@@ -136,6 +136,11 @@ public static partial class Networking
 				Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);
 				return;
 			}
+			if(controllable.IsPlayerOneTeam != GameManager.IsPlayer1Turn)
+			{
+				Console.WriteLine("Client sent an action out of turn");
+				return;
+			}
 			Action act = Action.Actions[packet.Type]; //else get controllable specific actions
 			if (act.Type == Action.ActionType.UseAbility)
 			{

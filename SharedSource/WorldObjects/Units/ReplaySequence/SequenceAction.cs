@@ -18,11 +18,12 @@ public abstract class SequenceAction : IMessageSerializable
 		SelectItem = 6,
 		WorldEffect = 7,
 		PlayAnimation =8,
-		UpdateTile =9
+		UpdateTile =9,
+		Overwatch = 10
 	}
 	public readonly SequenceType SqcType;
 
-	protected int ActorID;
+	public readonly int ActorID;
 	protected Unit Actor
 	{
 		get
@@ -48,6 +49,11 @@ public abstract class SequenceAction : IMessageSerializable
 	{
 		SqcType = tp;
 		ActorID = actorID;
+	}
+
+	public virtual bool ShouldDo()
+	{
+		return true;
 	}
 
 	public virtual Task Do()

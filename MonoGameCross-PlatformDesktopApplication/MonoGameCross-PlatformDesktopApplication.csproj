@@ -39,7 +39,7 @@
         <None Update="Content\Icons\breach N clear.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="Content\Icons\Breachnclear.png">
+        <None Update="Content\Icons\BreachnClear.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="Content\Icons\Command.png">
@@ -231,6 +231,9 @@
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Move.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Overwatch.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Overwatch.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs</Link>

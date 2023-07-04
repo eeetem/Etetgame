@@ -52,7 +52,7 @@ public class Shootable : DeliveryMethod
 
 		if (!WorldAction.FreeFire)
 		{
-			if (previewShot.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId).TileLocation.Position != (Vector2Int) previewShot.Result.EndPoint)
+			if (previewShot!.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId)!.TileLocation.Position != (Vector2Int) previewShot.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
 			}

@@ -44,7 +44,7 @@ namespace MultiplayerXeno
 			}
 
 			Crouching = data.Crouching;
-			paniced = data.Panic;
+			Paniced = data.Panic;
 
 #if CLIENT
 			WorldManager.Instance.MakeFovDirty();
@@ -74,7 +74,7 @@ namespace MultiplayerXeno
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != "")
 				{
-					AddItem(PrefabManager.UseItems[data.Inventory[i]!]);
+					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
 				}
 			}
 
@@ -201,7 +201,43 @@ namespace MultiplayerXeno
 
 		public bool IsPlayerOneTeam { get; private set; }
 
+		public HashSet<Projectile> GetOverWatchPositions(Vector2Int target)
+		{
+			var tiles = WorldManager.Instance.GetTilesAround(target,Type.OverWatchSize);
+			HashSet<Projectile> possibleShots = new HashSet<Projectile>();
+			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
+			foreach (var endTile in tiles)
+			{
+			
+				RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
+				foreach (var pos in outcome.Path)
+				{
+					positions.Add(pos);
+				}
 
+			}
+
+			foreach (var position in positions)
+			{
+				if (CanHit(position))
+				{
+					foreach (var method in Type.DefaultAttack.WorldAction.DeliveryMethods)
+					{
+						if (method is Shootable)
+						{
+							var proj = ((Shootable)method).MakeProjectile(this, position);
+							possibleShots.Add(proj);
+							break;
+						}
+
+					}
+
+				
+				}
+			}
+
+			return possibleShots;
+		}
 
 
 		public void TakeDamage(int dmg, int detResis)
@@ -229,8 +265,9 @@ namespace MultiplayerXeno
 			{
 				Console.WriteLine("dead");
 				ClearOverWatch();
-
+	
 				WorldManager.Instance.DeleteWorldObject(WorldObject); //dead
+				
 #if CLIENT
 				Audio.PlaySound("death",WorldObject.TileLocation.Position);
 #endif
@@ -285,7 +322,7 @@ namespace MultiplayerXeno
 				Determination++;
 			}
 
-			if (paniced)
+			if (Paniced)
 			{
 #if CLIENT
 				if (WorldObject.IsVisible())
@@ -295,7 +332,7 @@ namespace MultiplayerXeno
 #endif
 
 
-				paniced = false;
+				Paniced = false;
 				Determination--;
 				MovePoints--;
 				canTurn = false;
@@ -342,12 +379,10 @@ namespace MultiplayerXeno
 
 		}
 
-		public bool paniced { get; private set; }
+		public bool Paniced { get; private set; }
 
 		public void Panic()
 		{
-
-
 
 #if CLIENT
 			if (WorldObject.IsVisible())
@@ -359,7 +394,7 @@ namespace MultiplayerXeno
 #endif
 
 			Crouching = true;
-			paniced = true;
+			Paniced = true;
 
 			ClearOverWatch();
 
@@ -372,63 +407,7 @@ namespace MultiplayerXeno
 
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
 
-
-		public bool overwatchShotThisMove = false;
-
-		public void OverWatchSpoted(Vector2Int location)
-		{
-
-
-
-
-#if SERVER
-
-			Unit unit = WorldManager.Instance.GetTileAtGrid(location).UnitAtLocation;
-			if (unit == null)
-			{
-				throw new Exception("overwatch spoted with no unit at location");
-			}
-
-			bool isFriendly = IsPlayerOneTeam == unit.IsPlayerOneTeam;
-			//make this "can player see" fucntion
-			List<int> units;
-			if (IsPlayerOneTeam)
-			{
-				units = GameManager.T1Units;
-			}
-			else
-			{
-				units = GameManager.T2Units;
-			}
-
-			Visibility vis = Visibility.None;
-			foreach (var u in units)
-			{
-				var WO = WorldManager.Instance.GetObject(u);
-				if (WO != null)
-				{
-					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent, location);
-					if (tempVis > vis)
-					{
-						vis = tempVis;
-					}
-				}
-
-
-			}
-
-			Console.WriteLine("overwatch spotted by " + WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
-			if (overwatchShotThisMove) return;
-			if (!isFriendly && CanHit(location) && vis >= unit.WorldObject.GetMinimumVisibility())
-			{
-				//Console.WriteLine("overwatch fired by " + WorldObject.TileLocation.Position);
-			//	DoAction(Action.Actions[Action.ActionType.Attack], location);
-				overwatchShotThisMove = true;
-			}
-
-#endif
-
-		}
+		
 
 		public void ClearOverWatch()
 		{
@@ -501,7 +480,7 @@ namespace MultiplayerXeno
 				Determination = u.Determination;
 				Crouching =	u.Crouching;
 				JustSpawned = true;
-				Panic = u.paniced;
+				Panic = u.Paniced;
 				Inventory = new List<string>();
 				foreach (var i in u.Inventory)
 				{
@@ -634,9 +613,9 @@ namespace MultiplayerXeno
 				Panic();
 			}
 
-			if (paniced && Determination > 0)
+			if (Paniced && Determination > 0)
 			{
-				paniced = false;
+				Paniced = false;
 			}
 			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
 		}

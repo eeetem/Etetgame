@@ -990,7 +990,7 @@ public class GameLayout : MenuLayout
 			Texture2D indicator;
 			bool pulse = false;
 
-			if (y == SelectedUnit.Determination && !SelectedUnit.paniced)
+			if (y == SelectedUnit.Determination && !SelectedUnit.Paniced)
 			{
 				indicator = TextureManager.GetTexture("UI/HoverHud/detYellow");
 				pulse = true;
@@ -1017,7 +1017,7 @@ public class GameLayout : MenuLayout
 			
 
 		}
-		if (SelectedUnit.paniced)
+		if (SelectedUnit.Paniced)
 		{
 			batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(8,35), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 		}
@@ -1672,7 +1672,7 @@ public class GameLayout : MenuLayout
 				bool dissapate = false;
 				bool pulse = false;
 
-				if (y == unit.Determination && !unit.paniced)
+				if (y == unit.Determination && !unit.Paniced)
 				{
 					indicator = TextureManager.GetTexture("UI/HoverHud/detYellow");
 					pulse = true;
@@ -1729,7 +1729,7 @@ public class GameLayout : MenuLayout
 				}
 
 			}
-			if (unit.paniced)
+			if (unit.Paniced)
 			{
 				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,18), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);

@@ -106,6 +106,9 @@ public static partial class Networking
 				case SequenceAction.SequenceType.UseItem:
 					sqc = new ReplaySequence.UseSelectedItem(id, message);
 					break;
+				case SequenceAction.SequenceType.Overwatch:
+					sqc = new ReplaySequence.OverWatch(id, message);
+					break;
 				default:
 					throw new Exception("Unknown Sequence Type Recived: "+type);
 			

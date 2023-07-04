@@ -19,7 +19,7 @@ public class Crouch : SequenceAction
 		{
 			Actor.canTurn = true;
 			Actor.Crouching = !Actor.Crouching;
-			Actor.WorldObject.TileLocation.OverWatchTrigger();
+			
 		});
 		return t;
 	}
