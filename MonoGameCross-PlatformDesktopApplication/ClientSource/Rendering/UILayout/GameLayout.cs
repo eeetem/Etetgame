@@ -650,7 +650,7 @@ public class GameLayout : MenuLayout
 		{
 			for (int j = 0; j < SelectedUnit.Type.InventorySize; j++)
 			{
-				WorldAction? inv = SelectedUnit.Inventory[j];
+				UsableItem? inv = SelectedUnit.Inventory[j];
 				if (j == SelectedUnit.SelectedItemIndex)
 				{
 					var btn = InvButtons[j];

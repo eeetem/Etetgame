@@ -13,7 +13,7 @@ namespace MultiplayerXeno;
 public static class PrefabManager
 {
 	public static Dictionary<string, WorldObjectType> WorldObjectPrefabs = new Dictionary<string, WorldObjectType>();
-	public static Dictionary<string, WorldAction> UseItems = new Dictionary<string, WorldAction>();
+	public static Dictionary<string, UsableItem> UseItems = new Dictionary<string, UsableItem>();
 	public static Dictionary<string, StatusEffectType> StatusEffects = new Dictionary<string, StatusEffectType>();
 
 
@@ -207,19 +207,14 @@ public static class PrefabManager
 			
 
 #endif
-
-
 		}
-			
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
 		{
-
-	
-			var itm = PraseWorldAction(xmlObj);
-		
-			UseItems.Add(itm.Name,itm);
-				
+			var effect = PraseWorldAction(xmlObj);
+			string innerText = xmlObj.GetElementsByTagName("availability")[0]?.InnerText ?? "";
+			var itm = new UsableItem(effect, innerText != "" ? innerText.Split(",").ToList() : new List<string>());
+			UseItems.Add(effect.Name,itm);
 		}
 	}
 
@@ -231,8 +226,6 @@ public static class PrefabManager
 		ValueChange MovePointChange =     new ValueChange(actobj.Attributes?["mpoint"]?.InnerText ?? "0");
 		ValueChange ActionPointChange =   new ValueChange(actobj.Attributes?["apoint"]?.InnerText ?? "0"); 
 		WorldAction action;
-		
-		;
 		action = PraseWorldAction(actobj);
 		
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");

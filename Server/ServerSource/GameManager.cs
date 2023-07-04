@@ -45,7 +45,14 @@ public static partial class GameManager
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
 				int id = WorldManager.Instance.GetNextId();
-				cdata.Inventory = spawn.Inventory;
+				foreach (var c in spawn.Inventory)
+				{
+					if(PrefabManager.UseItems[c].allowedUnits.Count > 0)
+					{
+						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
+					}
+					cdata.Inventory.Add(c);
+				}
 				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
 				T1Units.Add(id);
 				i++;
@@ -61,7 +68,15 @@ public static partial class GameManager
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
 				int id = WorldManager.Instance.GetNextId();
-				cdata.Inventory = spawn.Inventory;
+				cdata.Inventory = new List<string>();
+				foreach (var c in spawn.Inventory)
+				{
+					if(PrefabManager.UseItems[c].allowedUnits.Count > 0)
+					{
+						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
+					}
+					cdata.Inventory.Add(c);
+				}
 				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
 				T2Units.Add(id);
 				i++;

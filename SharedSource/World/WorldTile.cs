@@ -49,7 +49,7 @@ public partial class WorldTile
 					{
 						vis = tempVis;
 					}
-				}
+				} 
 
 			}
 
