@@ -123,8 +123,9 @@ public partial class WorldTile
 	public double TraverseCostFrom(Vector2Int from)
 	{
 		try
-		{
+		{	
 			var dist = Utility.Distance(from, Position);
+			if (dist == 0) return 0;
 			Cover obstacle = WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
 			if (obstacle == Cover.None) return dist;
 			if (obstacle == Cover.Low) return dist + 1;

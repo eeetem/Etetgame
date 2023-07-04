@@ -4,7 +4,7 @@ using System.Data.SqlTypes;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.Xna.Framework;
 using Riptide;
 
 namespace MultiplayerXeno.ReplaySequence;
@@ -28,6 +28,9 @@ public class Move : SequenceAction
 
 	protected override Task GenerateTask()
 	{
+#if CLIENT
+		RenderSystem.debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
+#endif
 		var t = new Task(delegate
 		{
 			
