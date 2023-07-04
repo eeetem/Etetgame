@@ -1764,7 +1764,7 @@ public class GameLayout : MenuLayout
 
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-100,-150),null,Color.White*opacity,0,Vector2.Zero,1.2f,SpriteEffects.None,0);
+		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-70,-120),null,Color.White*opacity,0,Vector2.Zero,1.2f,SpriteEffects.None,0);
 		batch.End();
 
 		
