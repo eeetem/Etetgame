@@ -78,7 +78,7 @@ public  static partial class Utility
         return firstFloat * (1 - by) + secondFloat * by;
     }
         
-    public static int SIZE = 180;
+    public static int SIZE = 90;
 
     public static Vector2 GridToWorldPos(Vector2 gridpos)
     {

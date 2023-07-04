@@ -367,30 +367,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/Environment/ground2.png
 
-#begin CompressedContent/textures/Environment/ground3.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Environment/ground3.png
-
-#begin CompressedContent/textures/Environment/ground4.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Environment/ground4.png
-
 #begin CompressedContent/textures/Environment/paperMache.png
 /importer:TextureImporter
 /processor:TextureProcessor

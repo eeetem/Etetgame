@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/ground" variations = "5" offset= "0,0"/>
+    <sprite name="Environment/ground" variations = "3" offset= "0,0"/>
     <name>basicFloor</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
