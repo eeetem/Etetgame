@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
 
@@ -9,20 +11,21 @@ public partial class WorldObjectType
 
 	public Transform2 Transform;
 	public Texture2D[][] spriteSheet;
-	public int variations;
-		
+	public List<Tuple<string, int>> Variations;
+	public int TotalVariationsWeight;
 	
-	public void GenerateSpriteSheet(string? name,int variations, bool png = false)
+	public void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations, bool png = false)
 	{
-		this.variations = variations;
-		spriteSheet = new Texture2D[variations][];
-		for (int i = 0; i < variations; i++)
+		foreach (var va in variations)
 		{
-			string? spriteName = name;
-			if (this.variations>1)
-			{
-				spriteName = name + i;
-			}
+			TotalVariationsWeight += va.Item2;
+		}
+		this.Variations = variations;
+		spriteSheet = new Texture2D[variations.Count][];
+		for (int i = 0; i < variations.Count; i++)
+		{
+			string spriteName = name;
+			spriteName += variations[i].Item1;
 			Texture2D tex;
 			if (png)
 			{

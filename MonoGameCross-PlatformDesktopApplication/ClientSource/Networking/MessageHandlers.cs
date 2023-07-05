@@ -46,12 +46,11 @@ public static partial class Networking
 	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
 	private static void ReciveTileUpdate(Message message)
 	{
-		
+
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 		WorldManager.Instance.AddSequence(new UpdateTile(data));
-		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.TileUpdateConfirm);
-		msg.Add(data.position);
-		client?.Send(msg);
+		
+
 	}
 	
 	[MessageHandler((ushort)NetworkMessageID.Notify)]

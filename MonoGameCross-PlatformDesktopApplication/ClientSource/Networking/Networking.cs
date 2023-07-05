@@ -21,6 +21,7 @@ public static partial class Networking
 		Name = name;
 
 		client = new Client( new UdpClient());
+		Message.MaxPayloadSize = 2048;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif

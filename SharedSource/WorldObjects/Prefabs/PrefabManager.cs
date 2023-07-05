@@ -165,11 +165,23 @@ public static class PrefabManager
 
 #if CLIENT
 			Vector2 offset = new Vector2(-1.5f, -0.5f);
-			//	if(faceable){
-			//			Offset = 
-			//	}
+
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
-			int spriteVariations = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["variations"]?.InnerText ?? "1");
+			var xmlNodeList = xmlObj.GetElementsByTagName("sprite")[0]?.ChildNodes;
+
+			List<Tuple<string, int>> spriteVariations = new List<Tuple<string, int>>();
+			if (xmlNodeList != null)
+			{
+				foreach (var node in xmlNodeList)
+				{
+					XmlElement obj = (XmlElement) node;
+					spriteVariations.Add(new Tuple<string, int>(obj.GetAttribute("id"), int.Parse(obj.GetAttribute("weight"))));
+				}
+			}
+			if(spriteVariations.Count == 0){
+				spriteVariations.Add(new Tuple<string, int>("", 1));
+			}
+
 			if (spritename == null)
 			{
 				spritename = name;

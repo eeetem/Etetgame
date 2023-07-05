@@ -18,6 +18,7 @@ public static partial class Networking
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
 		server = new Server(new UdpServer());
+		Message.MaxPayloadSize = 2048;
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
 #endif
@@ -119,33 +120,37 @@ public static partial class Networking
 
 			lock (mapUploadLock)
 			{
-				
-				Console.WriteLine("Actually sending map data to "+connection.Id+"...");
-				int sent = 0;	
-				for (int x = 0; x < 100; x++)
+				try
 				{
-					for (int y = 0; y < 100; y++)
+					Console.WriteLine("Actually sending map data to " + connection.Id + "...");
+
+					for (int x = 0; x < 100; x++)
 					{
-						var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
-						if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
+						for (int y = 0; y < 100; y++)
 						{
-							Console.WriteLine("Sending tile at "+x+","+y);
-							SendTileUpdate(tile,connection);//only send updates about tiles that have something on them
-							sent++;
-							//Thread.Sleep(1);
-							if (sent > 5)
+							var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
-								Thread.Sleep(6);
-								sent = 0;
+								Console.WriteLine("Sending tile at " + x + "," + y);
+								SendTileUpdate(tile, connection); //only send updates about tiles that have something on them
 							}
+
+							
 						}
 					}
+
+					Console.WriteLine("finished sending map data to " + connection.Id);
+					var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
+					server.Send(msg, connection);
+
+				}catch(Exception e)
+				{
+					Console.WriteLine("Error sending map data to " + connection.Id);
+					Console.WriteLine(e);
 				}
-				Console.WriteLine("finished sending map data to "+connection.Id);
-			
+
+		
 			}
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
-			server.Send(msg,connection);
 
 		});
 
@@ -247,62 +252,27 @@ public static partial class Networking
 		GameManager.PreGameData = data;
 		Program.InformMasterServer();
 	}
-	
-	public static void SendTileUpdate(WorldTile wo, Connection? connection = null)
+
+
+	public static void SendTileUpdate(WorldTile tile, Connection? connection = null)
 	{
-		if (connection is null)
-		{
-			foreach (var c in server.Clients)
-			{
-				SendTileUpdate(wo,c);
-			}
-			return;
-		}
-		WorldTile.WorldTileData worldTileData = wo.GetData();
-		var msg = Message.Create(MessageSendMode.Unreliable, NetworkMessageID.TileUpdate);
+
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.TileUpdate);
+		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
-	
-	
-		if (tileUpdateConfirms.ContainsKey(connection.Id) == false)
-			tileUpdateConfirms.Add(connection.Id, new List<Vector2Int>());
-			
-		tileUpdateConfirms[connection.Id].Add(wo.Position);
-		server.Send(msg,connection);
 		
 
+		if(connection == null)
+			server.SendToAll(msg);
+		else
+			server.Send(msg,connection);
 	}
 
-	static Dictionary<int,List<Vector2Int>> tileUpdateConfirms = new Dictionary<int, List<Vector2Int>>();
-	[MessageHandler((ushort)NetworkMessageID.TileUpdateConfirm)]
-	private static void ConfirmTileUpdate(ushort senderID, Message message)
-	{
-		var pos = message.GetSerializable<Vector2Int>();
-		if (tileUpdateConfirms.ContainsKey(senderID))
-		{
-			tileUpdateConfirms[senderID].Remove(pos);
-		}
-		if(tileUpdateConfirms[senderID].Count == 0)
-			tileUpdateConfirms.Remove(senderID);
-		
-	}
-
-
-	private static int TileUpdateTicker = 0;
 	public static void Update()
 	{
-		server.Update();
-		if (tileUpdateConfirms.Count > 0)
+		lock (mapUploadLock)
 		{
-			TileUpdateTicker++;
-			if (TileUpdateTicker > 1000)
-			{
-				TileUpdateTicker= 0;
-				foreach (var c in tileUpdateConfirms)
-				{
-					foreach(var pos in c.Value)
-						SendTileUpdate(WorldManager.Instance.GetTileAtGrid(pos),server.Clients[c.Key]);
-				}
-			}
+			server.Update();
 		}
 	}
 
