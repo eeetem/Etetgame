@@ -20,7 +20,7 @@ namespace MultiplayerXeno
 
 
 
-		public readonly WorldAction?[] Inventory;
+		public readonly UsableItem?[] Inventory;
 
 		public Unit(bool isPlayerOneTeam, WorldObject wo, UnitType type, UnitData data)
 		{
@@ -69,7 +69,7 @@ namespace MultiplayerXeno
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
 
-			Inventory = new WorldAction[type.InventorySize];
+			Inventory = new UsableItem[type.InventorySize];
 			for (int i = 0; i < type.InventorySize; i++)
 			{
 				if (data.Inventory.Count > i && data.Inventory[i] != "")
@@ -113,7 +113,7 @@ namespace MultiplayerXeno
 			DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(-1, 0));
 		}
 
-		public void AddItem(WorldAction item)
+		public void AddItem(UsableItem item)
 		{
 			for (int i = 0; i < Inventory.Length; i++)
 			{
@@ -620,7 +620,7 @@ namespace MultiplayerXeno
 			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
 		}
 		
-		public WorldAction? SelectedItem
+		public UsableItem? SelectedItem
 		{
 			get
 			{
@@ -639,7 +639,7 @@ namespace MultiplayerXeno
 			}
 		}
 
-		public WorldAction? LastItem;
+		public UsableItem? LastItem;
 		
 
 		public string GetVar(string var,string? param = null)

@@ -6,7 +6,7 @@
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
     <sprite name="Environment/water" variations = "1" offset= "0,0"/>
-    <name>water</name>pa
+    <name>water</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/capturePoint" offset= "0,0"/>
@@ -53,10 +53,16 @@
   <object SCover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
     <name>basicHalfWall</name>
+	 <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
   </object>
   <object SCover = "1" Edge = "true">
     <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
     <name>basicHalfWallLight</name>
+	 <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
   </object>
   <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
     <name>Grunt</name>
@@ -289,10 +295,11 @@
       <place name="Satchel"/>
     </effect>
   </item>
-  <!--
+
   <item>
     <name>Frag</name>
     <tip>Damages units in effect area</tip>
+    <availability>Specialist</availability>
     <throwable throwRange="6"/>
     <effect range="3">
       <damage det="1" dmg="5"/>
@@ -304,7 +311,7 @@
       <place name="Crater"/>
     </effect>
   </item>
--->
+
   <item>
     <name>Flash</name>
     <tip>Immideately panics units in effect radius</tip>

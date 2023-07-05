@@ -178,6 +178,9 @@
       <Compile Include="..\SharedSource\WorldObjects\Prefabs\UnitType.cs">
         <Link>SharedSource\WorldObjects\Prefabs\UnitType.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\UsableItem.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\UsableItem.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Prefabs\Value.cs">
         <Link>SharedSource\WorldObjects\Prefabs\Value.cs</Link>
       </Compile>

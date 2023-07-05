@@ -37,7 +37,7 @@ public class Crouch : Action
 		{
 			vis = Visibility.Partial;
 		}
-		var shooters = WorldManager.Instance.GetTileAtGrid(target).GetOverWatchShooters(actor,vis);
+		var shooters = WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position).GetOverWatchShooters(actor,vis);
 		WorldEffect w = new WorldEffect();
 		w.Move.Value = -1;
 		w.TargetFriend = true;

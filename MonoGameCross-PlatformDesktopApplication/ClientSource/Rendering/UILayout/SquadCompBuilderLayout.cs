@@ -34,7 +34,7 @@ public class SquadCompBuilderLayout : UiLayout
 		panel.Widgets.Add(unitStack);
 
 
-		List<string?> units = new List<string?>();
+		List<string> units = new List<string>();
 		//one button for each unit type
 		foreach (var obj in PrefabManager.WorldObjectPrefabs)
 		{
@@ -91,7 +91,7 @@ public class SquadCompBuilderLayout : UiLayout
 	{
 		_currentlyPlacing = new Networking.SquadMember();
 		_currentlyPlacing.Prefab = unit;
-		_currentlyPlacing.Inventory = new List<string?>();
+		_currentlyPlacing.Inventory = new List<string>();
 
 	}
 
@@ -123,12 +123,17 @@ public class SquadCompBuilderLayout : UiLayout
 			itemMenu.Widgets.Add(stack);
 			foreach (var itm in PrefabManager.UseItems)
 			{
+				if (itm.Value.allowedUnits.Count > 0)
+				{
+					if(!itm.Value.allowedUnits.Contains(placed.Prefab)) continue;
+				}
+
 				var btn = new TextButton();
 				btn.Text = itm.Key;
 				btn.Click += (s, a) =>
 				{
 					placed.Inventory.Add(itm.Key);
-					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit.InventorySize){
+					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit!.InventorySize){
 						UI.Desktop.Widgets.Remove(itemMenu);
 					}
 				};
