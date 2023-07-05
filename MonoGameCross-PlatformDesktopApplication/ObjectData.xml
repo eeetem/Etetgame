@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/ground" variations = "3" offset= "0,0"/>
+    <sprite name="Environment/ground" variations = "9" offset= "0,0"/>
     <name>basicFloor</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
@@ -265,7 +265,7 @@
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
-    <destroyEffect range = "2" >
+    <destroyEffect visible="true" range = "2" >
       <damage det="1" dmg="15"/>
       <vfx name="tintR" target="5" speed="50"/>
       <vfx name="clmagnitude" target="100" speed="50"/>

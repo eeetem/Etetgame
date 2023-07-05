@@ -37,6 +37,7 @@ namespace MultiplayerXeno
 
 		private WorldManager()
 		{
+			CurrentMap = new MapData();
 			_gridData = new WorldTile[100, 100];
 			for (int x = 0; x < 100; x++)
 			{

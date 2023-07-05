@@ -36,15 +36,9 @@ public class Move : SequenceAction
 			
 			while (Path.Count >0)
 			{
-				Console.Write("Current Path:");
-				foreach (var p in Path)
-				{
-					Console.Write(p + " ");
-				}
-				Console.WriteLine("donepath");
+
 				var frametask1 = new Task(delegate
 				{
-				//	Console.WriteLine("running move task1: "+Path.Count);
 					try
 					{
 						if(Path[0] != Actor.WorldObject.TileLocation.Position)

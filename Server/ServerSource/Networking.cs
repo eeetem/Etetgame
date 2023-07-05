@@ -247,21 +247,63 @@ public static partial class Networking
 		GameManager.PreGameData = data;
 		Program.InformMasterServer();
 	}
+	
 	public static void SendTileUpdate(WorldTile wo, Connection? connection = null)
 	{
+		if (connection is null)
+		{
+			foreach (var c in server.Clients)
+			{
+				SendTileUpdate(wo,c);
+			}
+			return;
+		}
 		WorldTile.WorldTileData worldTileData = wo.GetData();
 		var msg = Message.Create(MessageSendMode.Unreliable, NetworkMessageID.TileUpdate);
 		msg.Add(worldTileData);
-		if(connection is null)
-			server.SendToAll(msg);
-		else
-			server.Send(msg,connection);
-	}
 	
+	
+		if (tileUpdateConfirms.ContainsKey(connection.Id) == false)
+			tileUpdateConfirms.Add(connection.Id, new List<Vector2Int>());
+			
+		tileUpdateConfirms[connection.Id].Add(wo.Position);
+		server.Send(msg,connection);
+		
 
+	}
+
+	static Dictionary<int,List<Vector2Int>> tileUpdateConfirms = new Dictionary<int, List<Vector2Int>>();
+	[MessageHandler((ushort)NetworkMessageID.TileUpdateConfirm)]
+	private static void ConfirmTileUpdate(ushort senderID, Message message)
+	{
+		var pos = message.GetSerializable<Vector2Int>();
+		if (tileUpdateConfirms.ContainsKey(senderID))
+		{
+			tileUpdateConfirms[senderID].Remove(pos);
+		}
+		if(tileUpdateConfirms[senderID].Count == 0)
+			tileUpdateConfirms.Remove(senderID);
+		
+	}
+
+
+	private static int TileUpdateTicker = 0;
 	public static void Update()
 	{
 		server.Update();
+		if (tileUpdateConfirms.Count > 0)
+		{
+			TileUpdateTicker++;
+			if (TileUpdateTicker > 1000)
+			{
+				TileUpdateTicker= 0;
+				foreach (var c in tileUpdateConfirms)
+				{
+					foreach(var pos in c.Value)
+						SendTileUpdate(WorldManager.Instance.GetTileAtGrid(pos),server.Clients[c.Key]);
+				}
+			}
+		}
 	}
 
 	public static void SendGameData()

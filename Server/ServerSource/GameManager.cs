@@ -35,12 +35,13 @@ public static partial class GameManager
 
 
 		//not a fan of this, should probably be made a single function
-		Unit.UnitData cdata = new Unit.UnitData(true);
+		
 
 		int i = 0;
 
 		foreach (var spawn in Player1!.SquadComp!)
 		{
+			Unit.UnitData cdata = new Unit.UnitData(true);
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
@@ -60,10 +61,11 @@ public static partial class GameManager
 			}
 		}
 
-		cdata = new Unit.UnitData(false);
+	
 		i = 0;
 		foreach (var spawn in Player2!.SquadComp!)
 		{
+			Unit.UnitData cdata = new Unit.UnitData(false);
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{

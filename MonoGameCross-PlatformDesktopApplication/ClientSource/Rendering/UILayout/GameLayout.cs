@@ -422,9 +422,10 @@ public class GameLayout : MenuLayout
 		panel.Widgets.Add(crouchbtn);
 		itemBtn = new ImageButton();
 		itemBtn.Click += (o, a) => Action.SetActiveAction(Action.ActionType.UseItem);
-		if (SelectedUnit.SelectedItem is not null)
+		var itm = SelectedUnit.SelectedItem;
+		if (itm is not null)
 		{
-			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + SelectedUnit.SelectedItem.Name + " - " + SelectedUnit.SelectedItem.Description, 0, -1, 0);
+			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + itm.Name + " - " + itm.Description, 0, -1, 0);
 			itemBtn.MouseLeft += (o, a) => HideTooltip();
 		}
 		else

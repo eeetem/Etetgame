@@ -65,6 +65,7 @@ public static class RenderSystem
 		int count = 0;
 		foreach (var pp in debugPaths)
 		{
+			break;
 			count++;
 
 				for (int i = 0; i < pp.Item2.Count - 1; i++)

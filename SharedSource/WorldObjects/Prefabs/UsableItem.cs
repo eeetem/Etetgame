@@ -7,38 +7,40 @@ namespace MultiplayerXeno;
 
 public class UsableItem
 {
-	WorldAction Effect;
+	WorldAction Action;
 	public readonly List<string> allowedUnits;
 
-	public UsableItem(WorldAction effect, List<string> allowedUnits)
+	public UsableItem(WorldAction action, List<string> allowedUnits)
 	{
-		Effect = effect;
+		Action = action;
 		this.allowedUnits = allowedUnits;
 	}
 
-	public string Name => Effect.Name;
-	public string Description => Effect.Description;
+	public string Name => Action.Name;
+	public string Description => Action.Description;
 
 
 	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
-		return Effect.CanPerform(actor,ref target);
+		return Action.CanPerform(actor,ref target);
 	}
 
 	public void Execute(Unit actor, Vector2Int target)
 	{
-		Effect.Execute(actor,target);
+		Action.Execute(actor,target);
 	}
 #if CLIENT
-	public Texture2D? Icon => Effect.Icon;
+	public Texture2D? Icon => Action.Icon;
+	public bool Visible => Action.Effect.Visible;
+
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		Effect.Preview(actor,target,spriteBatch);
+		Action.Preview(actor,target,spriteBatch);
 	}
 
 	public void InitPreview()
 	{
-		Effect.InitPreview();
+		Action.InitPreview();
 	}
 #endif
 

@@ -8,6 +8,9 @@ alt inspection of unit stats
 
 
 clearer move boundry.
+map load confirm
+officer ability activated even though not correct target
+smoke should not be vissible
 
 frag -> sepcialist only
 
