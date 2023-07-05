@@ -53,8 +53,24 @@ public partial class WorldObject
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
-		spriteVariation = (tile.Position.X + tile.Position.Y + ID )% type.variations;
+		var r = new Random(tile.Position.X + tile.Position.Y +ID);
+		int roll = (r.Next(1000)) % type.TotalVariationsWeight;
+		for (int i = 0; i < type.Variations.Count; i++)
+		{
+			if (roll < type.Variations[i].Item2)
+			{
+				spriteVariation = i;
+				break;
+			}
+			roll -= type.Variations[i].Item2;
 		
+		}
+
+		if (spriteVariation == null)
+		{
+			throw new Exception("failed to generate sprite variation");
+		}
+
 #endif
 			
 		Health = Math.Clamp(Health, 0, type.MaxHealth);
