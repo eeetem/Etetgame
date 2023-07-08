@@ -7,7 +7,7 @@ namespace MultiplayerXeno;
 public static partial class Networking
 {
 			
-		[MessageHandler((ushort)NetworkMessageID.Kick)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Kick)]
 		private static void KickRequest(ushort senderID, Message message)
 		{
 			if (senderID != GameManager.Player1?.Connection?.Id)return;
@@ -20,7 +20,7 @@ public static partial class Networking
 
 			SendPreGameInfo();
 		}
-		[MessageHandler((ushort)NetworkMessageID.EndTurn)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.EndTurn)]
 		private static void HandleEndTurn(ushort senderID,Message message)
 		{
 			Client? currentPlayer;
@@ -43,13 +43,13 @@ public static partial class Networking
 			GameManager.SetEndTurn();
 		}
 		
-		[MessageHandler((ushort)NetworkMessageID.StartGame)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.StartGame)]
 		private static void StartGameHandler(ushort senderID,Message message)
 		{
 			if(senderID != GameManager.Player1?.Connection?.Id || GameManager.GameState != GameState.Lobby) return;
 			GameManager.StartSetup();
 		}
-		[MessageHandler((ushort)NetworkMessageID.SquadComp)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.SquadComp)]
 		private static void ReciveSquadComp(ushort senderID,Message message)
 		{
 			List<SquadMember> squadMembers = message.GetSerializables<SquadMember>().ToList();
@@ -67,7 +67,7 @@ public static partial class Networking
 			}
 		}
 		
-		[MessageHandler((ushort)NetworkMessageID.PreGameData)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.PreGameData)]
 		private static void RecivePreGameUpdate(ushort senderID,Message message)
 		{
 			if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
@@ -76,7 +76,7 @@ public static partial class Networking
 			GameManager.PreGameData.TurnTime = data.TurnTime;
 			SendPreGameInfo();
 		}
-		[MessageHandler((ushort)NetworkMessageID.Chat)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Chat)]
 		private static void ReciveChatMsg(ushort senderID,Message message)
 		{
 			string text = message.GetString();
@@ -101,7 +101,7 @@ public static partial class Networking
 			SendChatMessage(text);
 		}
 
-		[MessageHandler((ushort) NetworkMessageID.MapUpload)]
+		[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapUpload)]
 		private static void ReciveMapUpload(ushort senderID, Message message)
 		{
 			//var data = message.GetSerializable<WorldManager.MapData>();
@@ -111,14 +111,14 @@ public static partial class Networking
 		}
 
 		private static List<ushort> ClientsReadyForMap = new List<ushort>();
-		[MessageHandler((ushort) NetworkMessageID.MapDataInitiateConfirm)]
+		[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapDataInitiateConfirm)]
 		private static void MapRecivedConfirm(ushort senderID, Message message)
 		{
 			Console.WriteLine("Recived map confirm from: " + senderID);
 			ClientsReadyForMap.Add(senderID);
 		}
 
-		[MessageHandler((ushort)NetworkMessageID.GameAction)]
+		[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameAction)]
 		private static void ParseGameAction(ushort senderID, Message message)
 		{
 			Action.GameActionPacket packet = message.GetSerializable<Action.GameActionPacket>();

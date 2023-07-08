@@ -55,6 +55,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Include="..\MasterServer\MasterServerData\NetMsgIds.cs">
+        <Link>ServerSource\NetMsgIds.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>

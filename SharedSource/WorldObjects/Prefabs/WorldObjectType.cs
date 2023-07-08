@@ -57,4 +57,5 @@ public partial class WorldObjectType
 	public bool Surface { get; set; }
 	public bool Impassible { get; set; }
 	public int VisibilityObstructFactor { get; set; }
+	
 }

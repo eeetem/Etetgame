@@ -618,6 +618,7 @@ namespace MultiplayerXeno
 				Paniced = false;
 			}
 			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
+			if(Determination<0) Determination = 0;
 		}
 		
 		public UsableItem? SelectedItem

@@ -103,7 +103,7 @@ public static partial class GameManager
 			NextTurn();
 		}
 
-		Thread.Sleep(2000); //just in case
+		Thread.Sleep(1000); //just in case
 		Networking.SendGameData();
 
 	}

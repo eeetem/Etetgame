@@ -40,7 +40,7 @@ public class VissionCast : DeliveryMethod
 		}
 		if (Visibility.None == WorldManager.Instance.CanSee(actor, target, true))
 		{
-			return new Tuple<bool, string>(true, "No Sight");
+			return new Tuple<bool, string>(false, "No Sight");
 		}
 		
 		return new Tuple<bool, string>(true, "");

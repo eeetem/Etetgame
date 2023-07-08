@@ -152,7 +152,7 @@ public class WorldEffect : IMessageSerializable
 			ApplyOnTile(tile,user);
 		}
 #if CLIENT
-		if (Sfx != "")
+		if (Sfx != "" && Sfx != null)
 		{
 			Audio.PlaySound(Sfx, target);
 		}

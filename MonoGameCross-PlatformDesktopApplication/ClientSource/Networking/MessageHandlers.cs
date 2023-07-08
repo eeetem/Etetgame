@@ -10,7 +10,7 @@ namespace MultiplayerXeno;
 public static partial class Networking
 {
 	private static Dialog? mapLoadMsg;
-	[MessageHandler((ushort)NetworkMessageID.MapDataInitiate)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.MapDataInitiate)]
 	private static void StartMapRecive(Message message)
 	{
 		mapLoadMsg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
@@ -19,31 +19,30 @@ public static partial class Networking
 		WorldManager.Instance.CurrentMap.Author = message.GetString();
 		WorldManager.Instance.CurrentMap.unitCount = message.GetInt();
 		WorldManager.Instance.WipeGrid();
-		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapDataInitiateConfirm);
+		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetMsgIds.NetworkMessageID.MapDataInitiateConfirm);
 		client?.Send(msg);
 	}
-	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.EndTurn)]
 	private static void RecieveEndTrugn(Message message)
 	{
 		GameManager.SetEndTurn();
 	}
 
 
-	[MessageHandler((ushort) NetworkMessageID.MapDataFinish)]
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapDataFinish)]
 	private static void FinishMapRecieve(Message message)
 	{
-
 		UI.Desktop.Widgets.Remove(mapLoadMsg);
 	}
 
-	[MessageHandler((ushort)NetworkMessageID.GameData)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
 	{
 		GameManager.GameStateData data = message.GetSerializable<GameManager.GameStateData>();
 		GameManager.SetData(data);
 	}
 
-	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.TileUpdate)]
 	private static void ReciveTileUpdate(Message message)
 	{
 
@@ -53,7 +52,7 @@ public static partial class Networking
 
 	}
 	
-	[MessageHandler((ushort)NetworkMessageID.Notify)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Notify)]
 	private static void ReciveNotify(Message message)
 	{
 		string i = message.GetString();
@@ -61,21 +60,21 @@ public static partial class Networking
 	}
 	
 	
-	[MessageHandler((ushort)NetworkMessageID.PreGameData)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.PreGameData)]
 	private static void RecivePreGameData(Message message)
 	{
 		Console.WriteLine("LobbyData Recived");
 		GameManager.PreGameData = message.GetSerializable<GameManager.PreGameDataStruct>();
 	}
 	
-	[MessageHandler((ushort)NetworkMessageID.Chat)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Chat)]
 	private static void ReciveChat(Message message)
 	{
 		Chat.ReciveMessage(message.GetString());	
 	}
 
 	
-	[MessageHandler((ushort)NetworkMessageID.ReplaySequence)]
+	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.ReplaySequence)]
 	private static void RecieveReplaySequence(Message message)
 	{
 		Queue<SequenceAction> actions = new Queue<SequenceAction>();

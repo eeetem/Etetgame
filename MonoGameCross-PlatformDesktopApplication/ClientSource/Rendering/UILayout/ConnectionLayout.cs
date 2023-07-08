@@ -57,7 +57,7 @@ public class ConnectionLayout : UiLayout
 			var result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
 			if (result)
 			{
-				UI.ShowMessage("Connection Notice", "Connected to server!");
+				UI.ShowMessage("Connection Notice", "Connecting to server....");
         
 			}
 			else

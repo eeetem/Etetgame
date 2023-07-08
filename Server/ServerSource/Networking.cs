@@ -17,7 +17,7 @@ public static partial class Networking
 		
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
-		server = new Server(new UdpServer());
+		server = new Server(new TcpServer());
 		Message.MaxPayloadSize = 2048;
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
@@ -106,7 +106,7 @@ public static partial class Networking
 	
 		Console.WriteLine("initiating sending map data to "+connection.Id+"...");
 		WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
-		var packet = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataInitiate);
+		var packet = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.MapDataInitiate);
 		packet.AddString(WorldManager.Instance.CurrentMap.Name);
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
@@ -131,7 +131,7 @@ public static partial class Networking
 							var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
-								Console.WriteLine("Sending tile at " + x + "," + y);
+								//Console.WriteLine("Sending tile at " + x + "," + y);
 								SendTileUpdate(tile, connection); //only send updates about tiles that have something on them
 							}
 
@@ -140,7 +140,7 @@ public static partial class Networking
 					}
 
 					Console.WriteLine("finished sending map data to " + connection.Id);
-					var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
+					var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.MapDataFinish);
 					server.Send(msg, connection);
 
 				}catch(Exception e)
@@ -161,7 +161,7 @@ public static partial class Networking
 		Console.WriteLine("Kicking " + connection.Id + " for " + reason);
 		if (connection.IsConnected)
 		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
+			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Notify);
 			msg.AddString(reason);
 			server.DisconnectClient(connection,msg);
 		}
@@ -213,7 +213,7 @@ public static partial class Networking
 
 	public static void NotifyAll(string message)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Notify);
 		msg.AddString(message);
 		server.SendToAll(msg);
 	}
@@ -221,7 +221,7 @@ public static partial class Networking
 	public static void SendChatMessage(string text)
 	{
 		text = "[Yellow]" + text + "[-]";
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Chat);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Chat);
 		msg.AddString(text);
 		server.SendToAll(msg);
 
@@ -246,7 +246,7 @@ public static partial class Networking
 		data.SelectedMap = selectedMap;
 		data.TurnTime = GameManager.PreGameData.TurnTime;
 
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.PreGameData);
 		msg.Add(data);
 		server.SendToAll(msg);
 		GameManager.PreGameData = data;
@@ -257,7 +257,7 @@ public static partial class Networking
 	public static void SendTileUpdate(WorldTile tile, Connection? connection = null)
 	{
 
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.TileUpdate);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
 		
@@ -279,7 +279,7 @@ public static partial class Networking
 	public static void SendGameData()
 	{
 
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
 		var state = GameManager.GetState();
 		state.IsPlayerOne = true;
 		msg.Add(state);
@@ -288,7 +288,7 @@ public static partial class Networking
 			server.Send(msg, GameManager.Player1?.Connection);
 		}
 
-		var msg2 = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		var msg2 = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
 		state.IsPlayerOne = false;
 		msg2.Add(state);
 		if (GameManager.Player2 is not null  && GameManager.Player2.Connection is not null)
@@ -296,7 +296,7 @@ public static partial class Networking
 			server.Send(msg2, GameManager.Player2?.Connection); //spectators dont care about isPlayerOne field
 		}
 		
-		var msg3 = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
+		var msg3 = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
 		state.IsPlayerOne = null;
 		msg3.Add(state);
 
@@ -311,7 +311,7 @@ public static partial class Networking
 
 	public static void SendSequence(Queue<SequenceAction> actions)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
 		foreach (var a in actions)
 		{
 			msg.Add((int) a.SqcType);
@@ -322,7 +322,7 @@ public static partial class Networking
 
 	public static void SendEndTurn()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.EndTurn);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.EndTurn);
 		server.SendToAll(msg);
 	}
 }
