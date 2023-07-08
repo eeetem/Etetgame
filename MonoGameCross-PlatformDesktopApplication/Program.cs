@@ -1,34 +1,33 @@
 ﻿using System;
 using System.IO;
 
-namespace MultiplayerXeno
+namespace MultiplayerXeno;
+
+public static class Program
 {
-	public static class Program
+	[STAThread]
+	static void Main()
 	{
-		[STAThread]
-		static void Main()
-		{
 			
-			AppDomain currentDomain = default(AppDomain);
-			currentDomain = AppDomain.CurrentDomain;
-			// Handler for unhandled exceptions.
-			currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
+		AppDomain currentDomain = default(AppDomain);
+		currentDomain = AppDomain.CurrentDomain;
+		// Handler for unhandled exceptions.
+		currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
 
-			using (var game = new Game1())
-				game.Run();
+		using (var game = new Game1())
+			game.Run();
 			
 			
 			
 			
-		}
+	}
 		
-		private static void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
-		{
+	private static void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+	{
 
-			DateTime date = DateTime.Now;
+		DateTime date = DateTime.Now;
 			
-			File.WriteAllText("CrashDump"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+		File.WriteAllText("CrashDump"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
 	
-		}
 	}
 }

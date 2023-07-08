@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -18,10 +17,7 @@ public static class Audio
 	private static float musicVolume = 0.5f;
 	public static float MusicVolume
 	{
-		get
-		{
-			return musicVolume;
-		}
+		get => musicVolume;
 		set
 		{
 			musicVolume = value;
@@ -91,8 +87,7 @@ public static class Audio
 		}
 
 
-		try
-		{
+		
 			SoundEffectInstance instance = GetSound(sfxID).CreateInstance();
 			instance.Pitch += (float) ((Random.Shared.NextDouble() - 0.5f) / 2f) * pitchVariationScale;
 			instance.Volume = SoundVolume;
@@ -104,11 +99,7 @@ public static class Audio
 			{
 				activeSounds.Add(new Tuple<SoundEffectInstance, AudioEmitter>(instance,emitter));
 			}
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-		}
+	
 	}
 	
 	

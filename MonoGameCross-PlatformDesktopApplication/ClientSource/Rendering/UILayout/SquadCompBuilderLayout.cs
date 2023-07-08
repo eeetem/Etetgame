@@ -1,11 +1,8 @@
 ﻿#nullable enable
 using System.Collections.Generic;
-using System.Linq;
-using MultiplayerXeno;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using Thickness = Myra.Graphics2D.Thickness;
@@ -14,7 +11,7 @@ namespace MultiplayerXeno.UILayouts;
 
 public class SquadCompBuilderLayout : UiLayout
 {
-	private readonly List<SquadMember> _composition = new List<SquadMember>();
+	private readonly List<Networking.SquadMember> _composition = new List<Networking.SquadMember>();
 	private Label freeslots;
 	private List<Vector2Int> mySpawnPoints = new List<Vector2Int>();
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
@@ -22,9 +19,8 @@ public class SquadCompBuilderLayout : UiLayout
 		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
 		
-		mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
+		mySpawnPoints =  mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
 		Camera.SetPos(mySpawnPoints[0]);
-		
 		freeslots = new Label()
 		{
 			Text = "Free Units "+(WorldManager.Instance.CurrentMap.unitCount-_composition.Count),
@@ -38,7 +34,7 @@ public class SquadCompBuilderLayout : UiLayout
 		panel.Widgets.Add(unitStack);
 
 
-		List<string?> units = new List<string?>();
+		List<string> units = new List<string>();
 		//one button for each unit type
 		foreach (var obj in PrefabManager.WorldObjectPrefabs)
 		{
@@ -76,9 +72,7 @@ public class SquadCompBuilderLayout : UiLayout
 		};
 		confirm.Click += (s, a) =>
 		{
-			SquadCompPacket packet = new SquadCompPacket();
-			packet.Composition = _composition;
-			Networking.ServerConnection.Send(packet);
+			Networking.SendSquadComp(_composition);
 			var lbl = new Label();
 			lbl.Text = "Waiting for other players";
 			lbl.HorizontalAlignment = HorizontalAlignment.Center;
@@ -92,12 +86,12 @@ public class SquadCompBuilderLayout : UiLayout
 	}
 
 	
-	SquadMember? _currentlyPlacing;
+	Networking.SquadMember? _currentlyPlacing;
 	private void StartPlacing(string? unit)
 	{
-		_currentlyPlacing = new SquadMember();
+		_currentlyPlacing = new Networking.SquadMember();
 		_currentlyPlacing.Prefab = unit;
-		_currentlyPlacing.Inventory = new List<string?>();
+		_currentlyPlacing.Inventory = new List<string>();
 
 	}
 
@@ -105,7 +99,7 @@ public class SquadCompBuilderLayout : UiLayout
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		SquadMember memberAtLocation = null;
+		Networking.SquadMember memberAtLocation = null;
 		foreach (var member in _composition)
 		{
 			if (member.Position == position)
@@ -129,12 +123,17 @@ public class SquadCompBuilderLayout : UiLayout
 			itemMenu.Widgets.Add(stack);
 			foreach (var itm in PrefabManager.UseItems)
 			{
+				if (itm.Value.allowedUnits.Count > 0)
+				{
+					if(!itm.Value.allowedUnits.Contains(placed.Prefab)) continue;
+				}
+
 				var btn = new TextButton();
 				btn.Text = itm.Key;
 				btn.Click += (s, a) =>
 				{
 					placed.Inventory.Add(itm.Key);
-					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit.InventorySize){
+					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit!.InventorySize){
 						UI.Desktop.Widgets.Remove(itemMenu);
 					}
 				};

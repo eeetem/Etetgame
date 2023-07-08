@@ -1,7 +1,6 @@
 ﻿
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
@@ -9,7 +8,6 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.File;
-using Network.Converter;
 
 namespace MultiplayerXeno.UILayouts;
 
@@ -29,7 +27,7 @@ public class PreGameLobbyLayout : MenuLayout
 			grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 
-			if (GameManager.PreGameData == null) return grid1;
+		
 
 			var rightStack = new VerticalStackPanel()
 			{
@@ -150,7 +148,9 @@ public class PreGameLobbyLayout : MenuLayout
 				{
 					if (int.TryParse(time.Text, out var timeLimit))
 					{
-						GameManager.PreGameData.TurnTime = timeLimit;
+						var data = GameManager.PreGameData;
+						data.TurnTime = timeLimit;
+						GameManager.PreGameData = data;
 						Networking.SendPreGameUpdate();
 					}
 					
@@ -195,7 +195,7 @@ public class PreGameLobbyLayout : MenuLayout
 					};
 					kick.Click += (s, a) =>
 					{
-						Networking.ServerConnection.SendRawData(RawDataConverter.FromBoolean("kick",true));
+						Networking.KickRequest();
 					};
 					lablekick.Widgets.Add(kick);
 					lablekick.Widgets.Add(label);
@@ -282,7 +282,9 @@ public class PreGameLobbyLayout : MenuLayout
 				{
 					if (!swapingMap)
 					{
-						GameManager.PreGameData.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
+						var data = GameManager.PreGameData;
+						data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
+						GameManager.PreGameData = data;
 						Networking.SendPreGameUpdate();
 						var lbl = new Label();
 						lbl.Text = "Swaping Map";
@@ -312,7 +314,10 @@ public class PreGameLobbyLayout : MenuLayout
 				{
 					if (!swapingMap)
 					{
-						GameManager.PreGameData.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
+						var data = GameManager.PreGameData;
+						data.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
+						GameManager.PreGameData = data;
+					
 						Networking.SendPreGameUpdate();
 						var lbl = new Label();
 						lbl.Text = "Swaping Map";

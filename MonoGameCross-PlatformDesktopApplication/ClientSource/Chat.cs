@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
 
 namespace MultiplayerXeno;
 
@@ -42,13 +40,13 @@ public static class Chat
 	{
 		if (message != "")
 		{ 
-			if (Networking.ServerConnection != null && Networking.ServerConnection.IsAlive)
+			if (Networking.Connected )
 			{
 				Networking.ChatMSG(message);
 			}
 			else
 			{
-				MasterServerNetworking.ChatMSG(message);
+			//	MasterServerNetworking.ChatMSG(message);
 			}
 		}
 	}

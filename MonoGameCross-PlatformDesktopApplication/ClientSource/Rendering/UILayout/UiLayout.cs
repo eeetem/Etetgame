@@ -1,7 +1,5 @@
 ﻿using System.IO;
-using MultiplayerXeno;
 using FontStashSharp;
-using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;

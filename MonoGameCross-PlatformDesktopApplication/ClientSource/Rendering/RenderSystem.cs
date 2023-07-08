@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +18,8 @@ public static class RenderSystem
 
 		graphicsDevice = graphicsdevice;
 	}
-	
+
+	public static List<Tuple<Color, List<Vector2Int>>> debugPaths = new List<Tuple<Color, List<Vector2Int>>>();
 	public static void Draw(SpriteBatch spriteBatch)
 	{
 
@@ -59,6 +62,26 @@ public static class RenderSystem
 		objs.Sort(new DrawableSort());
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
+		int count = 0;
+		foreach (var pp in debugPaths)
+		{
+			break;
+			count++;
+
+				for (int i = 0; i < pp.Item2.Count - 1; i++)
+				{
+					var path =  pp.Item2[i];
+					if (path.X < 0 || path.Y < 0) break;
+					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
+					var nextpos = Utility.GridToWorldPos((Vector2) pp.Item2[i + 1] + new Vector2(0.5f, 0.5f));
+
+					float mul = (float) WorldManager.Instance.GetTileAtGrid(pp.Item2[i + 1]).TraverseCostFrom(path);
+
+
+					spriteBatch.DrawLine(pos, nextpos, pp.Item1, count);
+				}
+			
+		}
 		foreach (var obj in unsortedObjs)
 		{
 			
@@ -83,8 +106,8 @@ public static class RenderSystem
 		}
 		spriteBatch.End();
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
-		int count = 0;
-		if (Action.ActiveAction == null || Action.ActiveAction.ActionType == ActionType.Move)
+		count = 0;
+		if (Action.ActiveAction == null || Action.ActiveAction.Type == Action.ActionType.Move)
 		{
 
 			foreach (var moves in GameLayout.previewMoves.Reverse())
@@ -122,7 +145,7 @@ public static class RenderSystem
 							break;
 
 					}
-					spriteBatch.DrawPolygon(pos,new Polygon(new List<Vector2> {Utility.GridToWorldPos(new(-0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,0.5f)),Utility.GridToWorldPos(new(-0.5f,0.5f))}),c,5f,0);
+					spriteBatch.DrawPolygon(pos,new Polygon(new List<Vector2> {Utility.GridToWorldPos(new(-0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,0.5f)),Utility.GridToWorldPos(new(-0.5f,0.5f))}),c,2.5f,0);
 				
 				}
 

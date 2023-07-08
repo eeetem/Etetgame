@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/ground" variations = "5" offset= "0,0"/>
+    <sprite name="Environment/ground" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="5"/>
+      <variation id="5" weight="10"/>
+      <variation id="6" weight="30"/>
+      <variation id="7" weight="30"/>
+      <variation id="3" weight="1"/>
+      <variation id="4" weight="1"/>
+      <variation id="8" weight="1"/>
+    </sprite>
     <name>basicFloor</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
     <sprite name="Environment/water" variations = "1" offset= "0,0"/>
-    <name>water</name>pa
+    <name>water</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite name="Environment/capturePoint" offset= "0,0"/>
@@ -53,10 +63,16 @@
   <object SCover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
     <name>basicHalfWall</name>
+	 <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
   </object>
   <object SCover = "1" Edge = "true">
     <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
     <name>basicHalfWallLight</name>
+	 <destroyEffect range = "1" >
+      <place name="basicWallDebris"/>
+    </destroyEffect>
   </object>
   <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
     <name>Grunt</name>
@@ -78,13 +94,13 @@
         <effect>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.1" speed="100"/>
-          <sfx name="rfile"/>
+          <sfx name="rifle"/>
         </effect>
       </action>
     </controllable>
   </object>
   
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="8" z="0.1">
     <name>Scout</name>
     <controllable moveRange = "5" moves="3" determination="3" sightrange="18">
       
@@ -109,7 +125,7 @@
     </controllable>
   </object>
   
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="16">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="16" z="0.1">
     <name>Heavy</name>
     <controllable moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
       
@@ -162,9 +178,9 @@
     </controllable>
   </object>
   
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="8">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="8" z="0.1">
     <name>Officer</name>
-    <controllable moveRange = "4" moves="3" actions="3" determination="2"  sightrange="20">
+    <controllable moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
 
       <defaultAttack>
         <targetAid>enemy</targetAid>
@@ -184,7 +200,7 @@
         </effect>
       </action>
 
-      <action det ="-1" mpoint="-1" apoint="-1">
+      <action det ="-1" mpoint="-1" apoint="0">
         <name>Command</name>
         <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
         <vissionCast range="22"/>
@@ -198,7 +214,7 @@
     </controllable>
   </object>
 
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="10">
+  <object VCover = "0" Faceable = "true" SCover ="3" Health="10" z="0.1">
     <name>Specialist</name>
     <controllable moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
 
@@ -250,7 +266,7 @@
   <statuseffect>
     <name>Boost</name>
     <effect visible="false">
-      <damage det="-2"/>
+      <damage det="0"/>
       <values act ="1[cap]" move="1[cap]" moveRange="0"/>
     </effect>
   </statuseffect>
@@ -259,7 +275,7 @@
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
-    <destroyEffect range = "2" >
+    <destroyEffect visible="true" range = "2" >
       <damage det="1" dmg="15"/>
       <vfx name="tintR" target="5" speed="50"/>
       <vfx name="clmagnitude" target="100" speed="50"/>
@@ -270,13 +286,13 @@
   </object>
 
 
-  <object VCover = "0" Faceable = "false" SCover ="0">
+  <object VCover = "0" Faceable = "false" SCover ="0" z="0">
     <sprite name="Environment/crater"  offset= "0,0"/>
     <name>Crater</name>
   </object>
   
   
-  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5">
+  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
     <sprite name="Environment/Smoke"  offset= "0,0"/>
     <name>Smoke</name>
   </object>
@@ -289,9 +305,11 @@
       <place name="Satchel"/>
     </effect>
   </item>
+
   <item>
     <name>Frag</name>
     <tip>Damages units in effect area</tip>
+    <availability>Specialist</availability>
     <throwable throwRange="6"/>
     <effect range="3">
       <damage det="1" dmg="5"/>
@@ -323,7 +341,7 @@
     <name>Smoke</name>
     <tip>Blocks line of sight</tip>
     <throwable throwRange="7"/>
-    <effect range="3">
+    <effect visible ="false" range="3">
       <place name="Smoke"/>
       <vfx name="clmagnitude" target="100" speed="40"/>
       <vfx name="noise" target="0.5" speed="50"/>
