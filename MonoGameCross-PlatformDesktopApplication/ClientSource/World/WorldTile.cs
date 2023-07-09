@@ -46,7 +46,6 @@ public partial class WorldTile
 
 
 
-
 		return color;
 	}
 	public void CalcWatchLevel()
@@ -59,10 +58,15 @@ public partial class WorldTile
 				return;
 			}
 
-			HighestWatchLevel = 1;
+			HighestWatchLevel = 0;
 			if (watcher.CanHit(Position,true))
 			{
 				HighestWatchLevel = 2;
+				return;
+			}
+			else if (watcher.CanHit(Position,false))
+			{
+				HighestWatchLevel = 1;
 				return;
 			}
 				

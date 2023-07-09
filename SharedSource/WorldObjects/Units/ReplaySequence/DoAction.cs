@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MultiplayerXeno.Items;
 using Riptide;
@@ -46,7 +47,22 @@ public class DoAction : SequenceAction
 			{
 				if (Actor.GetAction(ActionID).WorldAction.Effect.Visible)
 				{
+					Camera.SetPos(Actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+		
+				}
+			}
+			else
+			{
+				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
+			}
+
+			Thread.Sleep(600);
+			if (WorldManager.Instance.GetTileAtGrid(Target).Visible == Visibility.None)
+			{
+				if (Actor.GetAction(ActionID).WorldAction.Effect.Visible)
+				{
 					Camera.SetPos(Target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+		
 				}
 			}
 			else

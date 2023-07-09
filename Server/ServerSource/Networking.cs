@@ -278,7 +278,7 @@ public static partial class Networking
 
 	public static void SendGameData()
 	{
-
+		Console.WriteLine("sending game data");
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
 		var state = GameManager.GetState();
 		state.IsPlayerOne = true;

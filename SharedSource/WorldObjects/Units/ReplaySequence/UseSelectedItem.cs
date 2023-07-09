@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Riptide;
 using System.Threading.Tasks;
 
@@ -6,15 +7,15 @@ namespace MultiplayerXeno.ReplaySequence;
 
 public class UseSelectedItem : SequenceAction
 {
-	public Vector2Int target;
+	public Vector2Int Target;
 
 	public UseSelectedItem(int actorID, Vector2Int target) : base(actorID, SequenceType.UseItem)
 	{
-		this.target = target;
+		this.Target = target;
 	}
 	public UseSelectedItem(int actorID, Message args) : base(actorID, SequenceType.UseItem)
 	{
-		this.target = args.GetSerializable<Vector2Int>();
+		this.Target = args.GetSerializable<Vector2Int>();
 	}
 
 	public override Task Do()
@@ -22,22 +23,35 @@ public class UseSelectedItem : SequenceAction
 		var t = new Task(delegate
 		{
 #if CLIENT
-			if (Actor.WorldObject.TileLocation.Visible==Visibility.None)
+			if (Actor.WorldObject.TileLocation.Visible == Visibility.None)
 			{
 				if (Actor.SelectedItem.Visible)
 				{
-					Camera.SetPos(target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+					Camera.SetPos(Actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+		
 				}
 			}
 			else
 			{
 				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
 			}
+
+			Thread.Sleep(600);
+			if (WorldManager.Instance.GetTileAtGrid(Target).Visible == Visibility.None)
+			{
+				if (Actor.SelectedItem.Visible)
+				{
+					Camera.SetPos(Target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+		
+				}
+			}
+			else
+			{
+				Camera.SetPos(Target);
+			}
 #endif
 			GenerateTask().RunSynchronously();
 		});
-
-
 		return t;
 	}
 	protected override Task GenerateTask()
@@ -45,12 +59,12 @@ public class UseSelectedItem : SequenceAction
 		var t = new Task(delegate
 		{
 			var item = Actor.SelectedItem;
-			item.Execute(Actor, target);
+			item.Execute(Actor, Target);
 			Actor.LastItem = Actor.SelectedItem;
 			Actor.RemoveItem(Actor.SelectedItemIndex);
-			if (Actor.WorldObject.TileLocation.Position != target)
+			if (Actor.WorldObject.TileLocation.Position != Target)
 			{
-				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, target));
+				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
 			}
 		});
 		return t;
@@ -60,6 +74,6 @@ public class UseSelectedItem : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
-		message.AddSerializable(target);
+		message.AddSerializable(Target);
 	}
 }

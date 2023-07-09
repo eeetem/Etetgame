@@ -154,8 +154,7 @@ public class Projectile
 
 	public void Fire()
 	{
-		//play animation
-			
+		
 		if (Result.hit)
 		{
 			var hitObj = WorldManager.Instance.GetObject(Result.HitObjId);
@@ -209,7 +208,7 @@ public class Projectile
 				hitObj.TakeDamage(this);
 				if (!hitObj.destroyed && hitObj.UnitComponent is not null)
 				{
-					hitObj.Face( Utility.GetDirectionToSideWithPoint(hitObj.TileLocation.Position, Result.CollisionPointLong));
+					hitObj.Face( Utility.GetDirection(hitObj.TileLocation.Position, Result.StartPoint));
 				}
 
 			}

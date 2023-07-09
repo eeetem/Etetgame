@@ -185,7 +185,19 @@ public partial class WorldObject
 
 			Task t = new Task(delegate
 			{
-
+#if CLIENT
+			if (TileLocation.Visible==Visibility.None)
+			{
+				 if (Type.DesturctionEffect.Visible)
+				 {
+				 Camera.SetPos(TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
+				 }
+			}
+			else
+			{
+				Camera.SetPos(TileLocation.Position);
+			}
+#endif
 				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
 			});
 			WorldManager.Instance.RunNextFrame(t);

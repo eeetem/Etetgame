@@ -1,15 +1,15 @@
-hour counter: rough estimate may7 (400) + 5
 
-bugs:
+later
+officer self target -> modding cleanup
 no ghosting destruction -> no wall hack
 lag on greande target;
-
 alt inspection of unit stats
 
 
 clearer move boundry.
-crater z-figthing
-inventory desync
+play game, restart
+satchel not viisbile
+
 
 UI Rework:
 crouch indicator
