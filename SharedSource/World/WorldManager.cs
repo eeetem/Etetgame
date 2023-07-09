@@ -117,7 +117,7 @@ namespace MultiplayerXeno
 
 		public void LoadWorldTile(WorldTile.WorldTileData data)
 		{
-			Console.WriteLine("Loading tile at " + data.position);
+		//	Console.WriteLine("Loading tile at " + data.position);
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();

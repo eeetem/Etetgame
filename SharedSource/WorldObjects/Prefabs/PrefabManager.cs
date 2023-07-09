@@ -118,6 +118,8 @@ public static class PrefabManager
 					impassible = bool.Parse(xmlObj?.Attributes?["Impassible"]!.InnerText!);
 				}
 			}
+			
+
 			if (xmlObj!.HasAttributes && xmlObj.Attributes?["SCover"] != null)
 			{
 				scover = (Cover)int.Parse(xmlObj?.Attributes?["SCover"]!.InnerText!);
@@ -157,6 +159,7 @@ public static class PrefabManager
 			type.Surface = surface;
 			type.Impassible = impassible;
 			type.MaxHealth = maxHealth;
+			
 			if(xmlObj!.GetElementsByTagName("destroyEffect").Count > 0){
 				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
 			} 
@@ -164,6 +167,13 @@ public static class PrefabManager
 
 
 #if CLIENT
+
+			if (xmlObj!.HasAttributes && xmlObj.Attributes?["z"] != null)
+			{
+				type.Zoffset = float.Parse(xmlObj?.Attributes?["z"]!.InnerText!);
+			}
+
+
 			Vector2 offset = new Vector2(-1.5f, -0.5f);
 
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;

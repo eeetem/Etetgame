@@ -56,6 +56,15 @@ public abstract class MenuLayout : UiLayout
 
 	protected virtual void HandleMenuQuit()
 	{
-		Networking.Disconnect(); 
+		if (MasterServerNetworking.IsConnected)
+		{
+			UI.SetUI(new LobbyBrowserLayout());
+		}
+		else
+		{
+			UI.SetUI(new MainMenuLayout());
+		}
+
+		
 	}
 }

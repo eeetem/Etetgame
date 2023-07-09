@@ -161,11 +161,9 @@ public class LobbyBrowserLayout : MenuLayout
 					ip = ip.Substring(0, ip.LastIndexOf(':'));
 					ip += ":" + lobby.Port;
 					var result = Networking.Connect(ip, Game1.config.GetValue("config", "Name", "Operative#"+Random.Shared.Next(1000)));
-					if (result == ConnectionResult.Connected)
+					if (result)
 					{
-						UI.ShowMessage("Connection Notice", "Connected to server!");
-						UI.SetUI(new PreGameLobbyLayout());
-						DiscordManager.Client.UpdateState("In Battle");
+						UI.ShowMessage("Connection Notice", "Connecting to the server.....");
 					}
 					else
 					{
@@ -249,14 +247,8 @@ public class LobbyBrowserLayout : MenuLayout
 				var dialog = Dialog.CreateMessageBox("Creating Server...", popup);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
-					var packet = new LobbyStartPacket();
-					packet.LobbyName = txt.Text;
-				//	if (password.Text == "Enter Password")
-				//	{
-						packet.Password = "";
-				//	}
-				//	packet.Password = password.Text;
-					MasterServerNetworking.CreateLobby(packet);
+
+					MasterServerNetworking.CreateLobby(txt.Text);
 				};
 				
 				dialog.ShowModal(desktop);

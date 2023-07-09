@@ -13,7 +13,7 @@ public partial class WorldObjectType
 	public Texture2D[][] spriteSheet;
 	public List<Tuple<string, int>> Variations;
 	public int TotalVariationsWeight;
-	
+	public float Zoffset { get; set; }
 	public void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations, bool png = false)
 	{
 		foreach (var va in variations)

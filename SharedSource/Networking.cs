@@ -6,25 +6,6 @@ namespace MultiplayerXeno;
 
 public partial class Networking
 {
-	public enum NetworkMessageID : ushort
-	{
-		
-		Notify = 1,
-		Chat = 2,
-		PreGameData = 3,
-		Kick = 4,
-		MapDataInitiate =5,
-		MapDataFinish =6,
-		GameData =7,
-		GameAction =8,
-		StartGame =9,
-		EndTurn =10,
-		SquadComp =11,
-		MapUpload =12,
-		TileUpdate =13,
-		MapDataInitiateConfirm = 14,
-		ReplaySequence = 15,
-	}
 	public class SquadMember : IMessageSerializable
 	{
 		public string Prefab { get; set; } = "";

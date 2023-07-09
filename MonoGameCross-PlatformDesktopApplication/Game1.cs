@@ -118,6 +118,7 @@ public class Game1 : Game
 	protected override void Update(GameTime gameTime)
 	{
 		Networking.Update();
+		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);

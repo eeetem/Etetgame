@@ -36,6 +36,8 @@ public partial class WorldObject : IDrawable
 		{
 			DrawOrder += 0.5f;
 		}
+		
+		DrawOrder += Type.Zoffset;
 	}
 
 	public float GetDrawOrder()

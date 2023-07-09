@@ -3,8 +3,6 @@ using MultiplayerXeno.Pathfinding;
 
 namespace MultiplayerXeno; // Note: actual namespace depends on the project name.
 
-
-
 public static class Program
 {
 	
@@ -14,24 +12,33 @@ public static class Program
 		
 	static void Main(string[] args)
 	{
-		Console.WriteLine("Hello World!");
-		PrefabManager.MakePrefabs();
-		Action.Init();
-		Utility.Init();
-		PathFinding.GenerateNodes();
-		//	Console.WriteLine("Enter Port:");
-		//string port = Console.ReadLine();
-		string port = "52233";
-		if (args.Length > 0)
+		try
 		{
-			port = args[0];
-		}
+			Console.WriteLine("Hello World!");
+			PrefabManager.MakePrefabs();
+			Action.Init();
+			Utility.Init();
+			PathFinding.GenerateNodes();
+			//	Console.WriteLine("Enter Port:");
+			//string port = Console.ReadLine();
+			string port = "52233";
+			if (args.Length > 0)
+			{
+				port = args[0];
+			}
 
-		
-		Networking.Start(ushort.Parse(port));
-		Console.WriteLine("informing masterserver");
-		InformMasterServer();
-		UpdateLoop();
+
+			Networking.Start(ushort.Parse(port));
+			Console.WriteLine("informing masterserver");
+			InformMasterServer();
+			
+			UpdateLoop();
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			throw;
+		}
 			
 	}
 	static void UpdateLoop()

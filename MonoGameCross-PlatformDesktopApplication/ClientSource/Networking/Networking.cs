@@ -20,7 +20,7 @@ public static partial class Networking
 		Ipport = ipport;
 		Name = name;
 
-		client = new Client( new UdpClient());
+		client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
@@ -44,17 +44,37 @@ public static partial class Networking
 		{
 			if (b.Reason == DisconnectReason.TimedOut)
 			{
-				UI.OptionMessage("Lost Connection: " + a, "Do you want to reconnect?", "no", (a,b)=> { Disconnect(); }, "yes", (a, b) => { Reconnect(); });
+				UI.OptionMessage("Lost Connection: " + a, "Do you want to reconnect?", "no", (a, b) =>
+				{
+					Disconnect();
+					if (MasterServerNetworking.IsConnected)
+					{
+						UI.SetUI(new LobbyBrowserLayout());
+					}
+					else
+					{
+						UI.SetUI(new MainMenuLayout());
+					}
+				}, "yes", (a, b) => { Reconnect(); });
+				
 			}
 			else
 			{
 				UI.ShowMessage("Connection Rejected By Server", b.ToString()!);
 				Disconnect();
+				if (MasterServerNetworking.IsConnected)
+				{
+					UI.SetUI(new LobbyBrowserLayout());
+				}
+				else
+				{
+					UI.SetUI(new MainMenuLayout());
+				}
 			}
 		};
 		client.MessageReceived += (a, b) =>
 		{
-			Console.WriteLine("Recived Message: " + (NetworkMessageID)b.MessageId);
+			Console.WriteLine("Recived Message: " + (NetMsgIds.NetworkMessageID)b.MessageId);
 		};
 
 
@@ -65,8 +85,8 @@ public static partial class Networking
 	}
 	public static void SendStartGame()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.StartGame);
-		client.Send(msg);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.StartGame);
+		client?.Send(msg);
 	}
 	public static void Disconnect()
 	{
@@ -79,7 +99,7 @@ public static partial class Networking
 			}
 			else
 			{*/
-		UI.SetUI(new MainMenuLayout());
+	//	UI.SetUI(new MainMenuLayout());
 		//}
 		GameManager.ResetGame();
 	}
@@ -105,27 +125,27 @@ public static partial class Networking
 
 	public static void ChatMSG(string message)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Chat);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Chat);
 		msg.AddString(message);
 		client?.Send(msg);
 	}
 
 	public static void EndTurn()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.EndTurn);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.EndTurn);
 		client?.Send(msg);
 	}
 
 	public static void SendSquadComp(List<SquadMember> composition)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SquadComp);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.SquadComp);
 		msg.AddSerializables(composition.ToArray());
 		client?.Send(msg);
 	}
 		
 	public static void SendPreGameUpdate()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.PreGameData);
 		msg.AddSerializable(GameManager.PreGameData);
 		client?.Send(msg);
 	}
@@ -133,14 +153,14 @@ public static partial class Networking
 
 	public static void KickRequest()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Kick);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Kick);
 		client?.Send(msg);
 	}
 
 
 	public static void SendGameAction(Action.GameActionPacket act)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameAction);
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameAction);
 		msg.AddSerializable(act);
 		client?.Send(msg);
 	}

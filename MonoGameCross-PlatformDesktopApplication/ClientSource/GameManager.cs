@@ -89,6 +89,7 @@ public static partial class GameManager
 	public static void ResetGame()
 	{
 		intated = false;
+		spectating = false;
 		WorldManager.Instance.WipeGrid();
 	}
 

@@ -87,8 +87,7 @@ public static class Audio
 		}
 
 
-		try
-		{
+		
 			SoundEffectInstance instance = GetSound(sfxID).CreateInstance();
 			instance.Pitch += (float) ((Random.Shared.NextDouble() - 0.5f) / 2f) * pitchVariationScale;
 			instance.Volume = SoundVolume;
@@ -100,11 +99,7 @@ public static class Audio
 			{
 				activeSounds.Add(new Tuple<SoundEffectInstance, AudioEmitter>(instance,emitter));
 			}
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-		}
+	
 	}
 	
 	
