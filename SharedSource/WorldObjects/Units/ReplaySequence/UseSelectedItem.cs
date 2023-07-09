@@ -48,7 +48,10 @@ public class UseSelectedItem : SequenceAction
 			item.Execute(Actor, target);
 			Actor.LastItem = Actor.SelectedItem;
 			Actor.RemoveItem(Actor.SelectedItemIndex);
-			Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position,target));
+			if (Actor.WorldObject.TileLocation.Position != target)
+			{
+				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, target));
+			}
 		});
 		return t;
 

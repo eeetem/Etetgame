@@ -42,6 +42,7 @@ public class UseItem : Action
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ReplaySequence.SelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
 		queue.Enqueue(new ReplaySequence.UseSelectedItem(actor.WorldObject.ID,target));
 		return queue;
 	}

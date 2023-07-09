@@ -241,6 +241,9 @@ namespace MultiplayerXeno
 			Vector2 endpos = endcell;
 			int index = 0;
 			
+			
+			List<Task> tasks = new List<Task>();
+			
 			for (int j = 0; j < 4; j++)
 			{
 				
@@ -260,15 +263,21 @@ namespace MultiplayerXeno
 						break;
 					
 				}
-					
-				Vector2 Dir = Vector2.Normalize(startcell - endcell);
-				result[index] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover,visibilityCast ,false,minHitCoverSameTile);
+
+				int index1 = index;
+				Task t = new Task(delegate
+				{
+					Vector2 Dir = Vector2.Normalize(startcell - endcell);
+					result[index1] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover,visibilityCast ,false,minHitCoverSameTile);
+				});
+				t.Start();
+				tasks.Add(t);
 				index++;
 
 			}
-				
 			
-
+			Task.WaitAll(tasks.ToArray());
+			
 
 
 			return result;

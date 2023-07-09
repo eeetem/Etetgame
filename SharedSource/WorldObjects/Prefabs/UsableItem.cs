@@ -13,10 +13,11 @@ public class UsableItem
 	public UsableItem(WorldAction action, List<string> allowedUnits)
 	{
 		Action = action;
+		Name =	action.Name;
 		this.allowedUnits = allowedUnits;
 	}
 
-	public string Name => Action.Name;
+	public string Name;
 	public string Description => Action.Description;
 
 

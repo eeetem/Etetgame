@@ -47,7 +47,7 @@ public class Face : Action
 #if CLIENT
 
 	private Vector2Int lastTarget;
-	private Dictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
+	private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 	public override void InitAction()
 	{
 		lastTarget = new Vector2Int(0, 0);

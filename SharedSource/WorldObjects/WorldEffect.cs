@@ -208,10 +208,17 @@ public class WorldEffect : IMessageSerializable
 			Unit ctr = tile.UnitAtLocation;
 			if (user != null && user.UnitComponent!=null)
 			{
-				if(ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return;
-				if(ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return;
-				if(Equals(tile.UnitAtLocation, user) && !TargetSelf) return;
-			
+
+				if (Equals(tile.UnitAtLocation, user.UnitComponent))
+				{
+					if(!TargetSelf) return;
+				}
+				else
+				{
+					if (ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return;
+					if (ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return;
+				}
+				
 			}
 
 			if (Dmg != 0)//log spam prevention

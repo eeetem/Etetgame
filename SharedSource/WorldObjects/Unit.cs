@@ -666,7 +666,7 @@ namespace MultiplayerXeno
 			}
 
 			var innerField = value.GetType().GetField(param);
-			var innerValue = innerField.GetValue(value);
+			var innerValue = innerField?.GetValue(value);
 			Console.WriteLine("returning "+innerValue);
 			return innerValue.ToString();
 

@@ -19,7 +19,9 @@ public class Crouch : SequenceAction
 		{
 			Actor.canTurn = true;
 			Actor.Crouching = !Actor.Crouching;
-			
+#if CLIENT
+					WorldManager.Instance.MakeFovDirty();
+#endif
 		});
 		return t;
 	}

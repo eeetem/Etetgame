@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MultiplayerXeno;
@@ -46,48 +48,37 @@ public partial class WorldManager
 			tile.Visible = Visibility.None;
 		}
 
-				
-		foreach (var obj in WorldObjects.Values)
+		Parallel.ForEach(WorldObjects.Values, obj =>
 		{
-
 			if (obj.UnitComponent is not null && obj.UnitComponent.IsMyTeam())
 			{
 				foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.UnitComponent.GetSightRange(),obj.UnitComponent.Crouching))
 				{
-							
-					
 					if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
 					{
 						GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
 						GetTileAtGrid(visTuple.Key)?.UnitAtLocation?.Spoted();
 					}
-							
-							
-							
+
 				}
 			}
-		}
-			
+		});
+
 	}
 		
-	public Dictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
+	public ConcurrentDictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
 	{
 
 		int itteration = 0;
 
-		Dictionary<Vector2Int, Visibility> positionsToCheck = new Dictionary<Vector2Int, Visibility>();
+		List<Vector2Int> positionsToCheck = new List<Vector2Int>();
+		ConcurrentDictionary<Vector2Int, Visibility> resullt = new ConcurrentDictionary<Vector2Int, Visibility>();
 		Vector2Int initialpos = pos;
 		while (itteration < range+2)
 		{
-				
-				
 			if (IsPositionValid(pos))
 			{
-				var visibility = CanSee(initialpos,pos,range,crouched);
-				if (visibility > Visibility.None)
-				{
-					positionsToCheck.Add(pos, visibility);
-				}
+				positionsToCheck.Add(pos);
 			}
 				
 			Vector2Int offset;
@@ -109,20 +100,16 @@ public partial class WorldManager
 					
 				if (IsPositionValid(pos + invoffset * (x + 1)))
 				{
-					var visibility = CanSee(initialpos,pos + invoffset * (x + 1),range,crouched);
-					if (visibility > Visibility.None)
-					{
-						positionsToCheck.Add(pos + invoffset * (x + 1),visibility);
-					}
+
+					positionsToCheck.Add(pos + invoffset * (x + 1));
+					
 				}
 
 				if (IsPositionValid(pos + offset * (x + 1)))
 				{
-					var visibility = CanSee(initialpos,pos + offset * (x + 1),range,crouched);
-					if (visibility > Visibility.None)
-					{
-						positionsToCheck.Add(pos + offset * (x + 1),visibility);
-					}
+
+					positionsToCheck.Add(pos + offset * (x + 1));
+					
 				}
 			}
 
@@ -130,8 +117,14 @@ public partial class WorldManager
 			itteration++;
 		}
 
-
-		return positionsToCheck;
+		Parallel.ForEach(positionsToCheck, position =>
+		{
+			var vis = CanSee(initialpos, position, range, crouched);
+			if(vis != Visibility.None)
+				resullt.AddOrUpdate(position,vis,(key,old) => vis);
+		});
+		
+		return resullt;
 	}
 
 

@@ -66,7 +66,9 @@ public class MasterServerNetworking
 		
 		RefreshServers();
 
+
 		return true;
+		
 	}
 
 	public static List<LobbyData> Lobbies = new List<LobbyData>();
@@ -87,11 +89,7 @@ public class MasterServerNetworking
 		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetMsgIds.NetworkMessageID.Refresh);
 		Client.Send(msg);
 	}
-	public static void ChatMSG(string content)
-	{
-		//serverConnection?.SendRawData(RawDataConverter.FromUTF8String("chatmsg",content));
-			
-	}
+
 
 	public static void Disconnect()
 	{

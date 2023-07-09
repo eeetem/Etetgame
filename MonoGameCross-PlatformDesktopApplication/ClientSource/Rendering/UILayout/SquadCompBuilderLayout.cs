@@ -86,8 +86,8 @@ public class SquadCompBuilderLayout : UiLayout
 	}
 
 	
-	Networking.SquadMember? _currentlyPlacing;
-	private void StartPlacing(string? unit)
+	static Networking.SquadMember? _currentlyPlacing;
+	private static void StartPlacing(string? unit)
 	{
 		_currentlyPlacing = new Networking.SquadMember();
 		_currentlyPlacing.Prefab = unit;
@@ -114,6 +114,7 @@ public class SquadCompBuilderLayout : UiLayout
 			_composition.Add(_currentlyPlacing);
 			var placed = _currentlyPlacing;
 			_currentlyPlacing = null;
+			UI.Desktop.Widgets.Remove(itemMenu);
 			itemMenu = new Panel();
 			itemMenu.HorizontalAlignment = HorizontalAlignment.Center;
 			itemMenu.VerticalAlignment = VerticalAlignment.Center;
@@ -141,7 +142,7 @@ public class SquadCompBuilderLayout : UiLayout
 
 			}
 
-			if (UI.Desktop != null) UI.Desktop.Widgets.Add(itemMenu);
+			UI.Desktop.Widgets.Add(itemMenu);
 			
 		}
 		else if(memberAtLocation!=null)
