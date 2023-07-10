@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using MultiplayerXeno.ReplaySequence;
 using Myra.Graphics2D.UI;
 using Riptide;

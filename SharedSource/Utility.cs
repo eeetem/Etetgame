@@ -37,10 +37,8 @@ public  static partial class Utility
         {
             return msg.GetString();
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public static double Distance(Vector2Int from, Vector2Int to)
@@ -386,7 +384,7 @@ public  static partial class Utility
             return vec.Y > 0? 90
                 : vec.Y == 0? 0
                 : 270;
-        else if (vec.Y == 0) // special cases
+        if (vec.Y == 0) // special cases
             return vec.X >= 0? 0
                 : 180;
         float ret = RadToDeg(Math.Atan(vec.Y/vec.X));

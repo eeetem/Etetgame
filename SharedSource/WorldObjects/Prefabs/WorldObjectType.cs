@@ -1,26 +1,28 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using MonoGame.Extended;
+using Microsoft.Xna.Framework;
 
 namespace MultiplayerXeno;
 
 public partial class WorldObjectType
 {
 
-	public readonly string? TypeName;
+	public readonly string Name;
 	public int MaxHealth;
 	public int lifetime = -100;
-	public WorldObjectType(string? name,UnitType? unitType)
+	public WorldObjectType(string name)
 	{
-		TypeName = name;
-		if (unitType != null)
-		{
-			Unit = unitType;
-		}
+		Name = name;
+#if CLIENT
+		Transform = new Transform2();
+		Transform.Position = Utility.GridToWorldPos(new Vector2(-1.5f, -0.5f));
+#endif
 			
 	}
 
 	public void SpecialBehaviour(WorldObject objOfType)
 	{
-		switch (TypeName)
+		switch (Name)
 		{
 			case "capturePoint":
 				GameManager.CapturePoints.Add(objOfType);
@@ -47,8 +49,7 @@ public partial class WorldObjectType
 
 	public Cover SolidCover = Cover.None;
 	public Cover VisibilityCover = Cover.None;
-
-	public readonly UnitType? Unit;
+	
 	public WorldEffect? DesturctionEffect;
 
 	//should probably be an enum
@@ -57,5 +58,52 @@ public partial class WorldObjectType
 	public bool Surface { get; set; }
 	public bool Impassible { get; set; }
 	public int VisibilityObstructFactor { get; set; }
-	
+
+	public virtual void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
+	{
+			WorldTile newTile;
+			wo.Face(data.Facing,false);
+			if (Surface)
+			{
+				tile.Surface = wo;
+			}
+			else if (Edge)
+			{
+				switch (data.Facing)
+				{
+					case Direction.North:
+						tile.NorthEdge = wo;
+						break;
+				
+					case Direction.West:
+						tile.WestEdge = wo;
+						break;
+				
+					case Direction.East:
+						newTile = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
+						newTile.WestEdge = wo;
+						wo.Face(Direction.West, false);
+						wo.fliped = true;
+						wo.TileLocation = newTile;
+						break;
+					
+					case Direction.South:
+						newTile = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
+						newTile.NorthEdge = wo;
+						wo.Face(Direction.North,false);
+						wo.fliped = true;
+						wo.TileLocation = newTile;
+						break;
+					
+					default:
+						throw new Exception("edge cannot be cornerfacing");
+					
+				}
+			}
+			else
+			{
+				tile.PlaceObject(wo);
+			}
+		
+	}
 }

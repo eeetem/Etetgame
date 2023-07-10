@@ -36,11 +36,9 @@ public class SquadCompBuilderLayout : UiLayout
 
 		List<string> units = new List<string>();
 		//one button for each unit type
-		foreach (var obj in PrefabManager.WorldObjectPrefabs)
+		foreach (var obj in PrefabManager.UnitPrefabs)
 		{
-			if(obj.Value.Unit !=null){
-				units.Add(obj.Value.TypeName);
-			}
+			units.Add(obj.Value.Name);
 		}
 
 		foreach (var unit in units)
@@ -134,7 +132,7 @@ public class SquadCompBuilderLayout : UiLayout
 				btn.Click += (s, a) =>
 				{
 					placed.Inventory.Add(itm.Key);
-					if(placed.Inventory.Count>=PrefabManager.WorldObjectPrefabs[placed.Prefab].Unit!.InventorySize){
+					if(placed.Inventory.Count>=PrefabManager.UnitPrefabs[placed.Prefab].InventorySize){
 						UI.Desktop.Widgets.Remove(itemMenu);
 					}
 				};
@@ -173,13 +171,13 @@ public class SquadCompBuilderLayout : UiLayout
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		if (_currentlyPlacing != null)
 		{
-			var previewSprite = PrefabManager.WorldObjectPrefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.UnitPrefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
 		}
 
 		foreach (var member in _composition)
 		{
-			var previewSprite = PrefabManager.WorldObjectPrefabs[member.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
 			if (member.Inventory.Count > 0)
 			{

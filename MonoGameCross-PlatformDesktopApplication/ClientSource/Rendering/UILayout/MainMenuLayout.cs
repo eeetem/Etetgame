@@ -19,8 +19,6 @@ public class MainMenuLayout : UiLayout
 		{
 			Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
 		};
-			
-			
 
 		var menustack = new HorizontalStackPanel()
 		{
@@ -34,6 +32,7 @@ public class MainMenuLayout : UiLayout
 				
 		};
 		panel.Widgets.Add(menustack);
+		
 		var stack = new VerticalStackPanel()
 		{
 			//	Background = new SolidBrush(new Color(10,10,10)),
@@ -167,7 +166,7 @@ public class MainMenuLayout : UiLayout
 
 
 		var version = new Label();
-		version.Text = "Alpha 2.1.2";
+		version.Text = "Alpha 2.1.3";
 		version.VerticalAlignment = VerticalAlignment.Top;
 		version.HorizontalAlignment = HorizontalAlignment.Left;
 		version.Background = new SolidBrush(Color.Transparent);

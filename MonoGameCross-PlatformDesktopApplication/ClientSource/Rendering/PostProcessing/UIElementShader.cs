@@ -56,13 +56,7 @@ public class UIElementShader : ShaderPreset
 		{
 		//	EffectParams["shape"] = (55*uiAnim);
 		}
-		else
-		{
 		//	EffectParams["shape"] = (30f*uiAnim);
-		}
-
-
-
 	}
 
 	public override void Apply(Effect effect,Vector2 size)

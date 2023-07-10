@@ -44,7 +44,7 @@ public partial class WorldTile
 				var WO = WorldManager.Instance.GetObject(u);
 				if (WO != null)
 				{
-					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent, Position);
+					var tempVis = WorldManager.Instance.CanSee(WO.UnitComponent!, Position);
 					if (tempVis > vis)
 					{
 						vis = tempVis;

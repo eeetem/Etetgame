@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/ground" offset= "0,0">
+    <sprite name="Environment/Surfaces/ground" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="5"/>
@@ -15,19 +15,19 @@
     <name>basicFloor</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
-    <sprite name="Environment/water" variations = "1" offset= "0,0"/>
+    <sprite name="Environment/Surfaces/water" variations = "1" offset= "0,0"/>
     <name>water</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/capturePoint" offset= "0,0"/>
+    <sprite name="Environment/Surfaces/capturePoint" offset= "0,0"/>
     <name>capturePoint</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/spawnPoint1" offset= "0,0"/>
+    <sprite name="Environment/Surfaces/spawnPoint1" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/spawnPoint2"  offset= "0,0"/>
+    <sprite name="Environment/Surfaces/spawnPoint2"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
   <object SCover = "3" Edge = "true" Health="15">
@@ -63,198 +63,188 @@
   <object SCover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
     <name>basicHalfWall</name>
-	 <destroyEffect range = "1" >
+    <destroyEffect range = "1" >
       <place name="basicWallDebris"/>
     </destroyEffect>
   </object>
   <object SCover = "1" Edge = "true">
     <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
     <name>basicHalfWallLight</name>
-	 <destroyEffect range = "1" >
+    <destroyEffect range = "1" >
       <place name="basicWallDebris"/>
     </destroyEffect>
   </object>
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="13">
+
+  <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <controllable moveRange = "6" moves="2" determination="3">
-      <defaultAttack>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="0.5" speed="100"/>
-          <sfx name="rifle3"/>
-        </effect>
-      </defaultAttack>
-      <action det ="-2" mpoint="-1" apoint="-1">
-        <name>Headshot</name>
-        <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
-        <effect>
-          <vfx name="clmagnitude" target="5" speed="50"/>
-          <vfx name="noise" target="0.1" speed="100"/>
-          <sfx name="rifle"/>
-        </effect>
-      </action>
-    </controllable>
-  </object>
-  
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="8" z="0.1">
+    <defaultAttack>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="0.5" speed="100"/>
+        <sfx name="rifle3"/>
+      </effect>
+    </defaultAttack>
+    <action det ="-2" mpoint="-1" apoint="-1">
+      <name>Headshot</name>
+      <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
+      <effect>
+        <vfx name="clmagnitude" target="5" speed="50"/>
+        <vfx name="noise" target="0.1" speed="100"/>
+        <sfx name="rifle"/>
+      </effect>
+    </action>
+  </unit>
+
+  <unit Health="8" z="0.1" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
-    <controllable moveRange = "5" moves="3" determination="3" sightrange="18">
-      
-      <defaultAttack>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="1" speed="100"/>
-          <sfx name="shotgun"/>
-        </effect>
-      </defaultAttack>
 
-      <action immideate="true" det ="-3" mpoint="5[set]" apoint="1[set]">
-       <name>Breach n Clear</name>
-        <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
-        <effect visible ="false">
-          <applystatus status="BreachnClear" duration="1"/>
-        </effect>
-      </action>
-      
-    </controllable>
-  </object>
-  
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="16" z="0.1">
+    <defaultAttack>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="1" speed="100"/>
+        <sfx name="shotgun"/>
+      </effect>
+    </defaultAttack>
+
+    <action immideate="true" det ="-3" mpoint="5[set]" apoint="1[set]">
+      <name>Breach n Clear</name>
+      <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
+      <effect visible ="false">
+        <applystatus status="BreachnClear" duration="1"/>
+      </effect>
+    </action>
+
+  </unit>
+
+  <unit Health="16" z="0.1"  moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
     <name>Heavy</name>
-    <controllable moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
-      
-      <spawneffect>
-        <applystatus status="Holstered"/>
-      </spawneffect>
-      
-      <defaultAttack>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="0.5" speed="100"/>
-          <sfx name="mg"/>
+    
+    <spawneffect>
+      <applystatus status="Holstered"/>
+    </spawneffect>
+
+    <defaultAttack>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="0.5" speed="100"/>
+        <sfx name="mg"/>
+      </effect>
+    </defaultAttack>
+
+    <action det ="-3" mpoint="-1" apoint="-2">
+      <name>Suppress</name>
+      <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
+      <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shootable offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shootable offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shootable offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shootable offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect visible ="true">
+        <vfx name="clmagnitude" target="5" speed="50"/>
+        <vfx name="noise" target="0.1" speed="100"/>
+        <sfx name="mg"/>
+      </effect>
+    </action>
+
+    <toggleaction>
+      <toggleoff  det ="-1" mpoint="0" apoint="0">
+        <name>Holster</name>
+        <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
+        <effect visible ="false">
+          <applystatus status="Holstered"/>
         </effect>
-      </defaultAttack>
-      
-      <action det ="-3" mpoint="-1" apoint="-2">
-        <name>Suppress</name>
-        <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
-        <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shootable offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect visible ="true">
-          <vfx name="clmagnitude" target="5" speed="50"/>
-          <vfx name="noise" target="0.1" speed="100"/>
-          <sfx name="mg"/>
-        </effect>
-      </action>
-     
-      <toggleaction>
-        <toggleoff  det ="-1" mpoint="0" apoint="0">
-          <name>Holster</name>
-          <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
-          <effect visible ="false">
-           <applystatus status="Holstered"/>
-          </effect>
-        </toggleoff>
-        <toggleon name="" tip="" det ="-1" mpoint="-2" apoint="0">
-          <name>UnHolster</name>
-          <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
-          <effect visible ="false">
+      </toggleoff>
+      <toggleon name="" tip="" det ="-1" mpoint="-2" apoint="0">
+        <name>UnHolster</name>
+        <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
+        <effect visible ="false">
           <removestatus status="Holstered"/>
-          </effect>
-        </toggleon>
-      </toggleaction>
-      
-    </controllable>
-  </object>
-  
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="8" z="0.1">
+        </effect>
+      </toggleon>
+    </toggleaction>
+
+  </unit>
+
+  <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
     <name>Officer</name>
-    <controllable moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
 
-      <defaultAttack>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="1" speed="100"/>
-          <sfx name="rifle"/>
-        </effect>
-      </defaultAttack>
+    <defaultAttack>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="1" speed="100"/>
+        <sfx name="rifle"/>
+      </effect>
+    </defaultAttack>
 
-      <action immideate="true" det ="-2" mpoint="0" apoint="0">
-        <name>Rally</name>
-        <tip>All nearby friendlies stop panicking and gain full determiation</tip>
-        <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
-          <damage det="-100"/>
-        </effect>
-      </action>
+    <action immideate="true" det ="-2" mpoint="0" apoint="0">
+      <name>Rally</name>
+      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+      <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+        <damage det="-100"/>
+      </effect>
+    </action>
 
-      <action det ="-1" mpoint="-1" apoint="0">
-        <name>Command</name>
-        <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
-        <vissionCast range="22"/>
-        <effect range="1" visible ="false" target="friend">
-          <applystatus status="Boost" duration="1"/>
-        </effect>
-      </action>
-      
-      //battlefield execution
-      
-    </controllable>
-  </object>
+    <action det ="-1" mpoint="-1" apoint="0">
+      <name>Command</name>
+      <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
+      <vissionCast range="22"/>
+      <effect range="1" visible ="false" target="friend">
+        <applystatus status="Boost" duration="1"/>
+      </effect>
+    </action>
 
-  <object VCover = "0" Faceable = "true" SCover ="3" Health="10" z="0.1">
+
+  </unit>
+
+  <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
     <name>Specialist</name>
-    <controllable moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
 
-      <defaultAttack>
-        <targetAid>enemy</targetAid>
-        <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="1" speed="100"/>
-          <sfx name="rifle"/>
-        </effect>
-      </defaultAttack>
+    <defaultAttack>
+      <targetAid>enemy</targetAid>
+      <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="1" speed="100"/>
+        <sfx name="rifle"/>
+      </effect>
+    </defaultAttack>
 
-      <action det ="-1" mpoint="-1" apoint="-1">
-        <name>Resupply</name>
-        <tip>Give a targeted unit their last used item back</tip>
-        <targetAid>unit</targetAid>
-        <throwable throwRange="3" targetAid="unit"/>
-        <effect range="1" visible ="false" target="friend">
-          <giveItem item="{target.LastItem.Name}"/>
-        </effect>
-      </action>
-      <action  det ="-1" mpoint="-1" apoint="-1">
-        <name>Resupply</name>
-        <tip>Give a targeted unit item currently equipped by this unit</tip>
-        <targetAid>unit</targetAid>
-        <throwable throwRange="3"/>
-        <effect range="1" visible ="false" target="friend">
-          <giveItem item="{this.SelectedItem.Name}"/>
-        </effect>
-      </action>
-      
+    <action det ="-1" mpoint="-1" apoint="-1">
+      <name>Resupply</name>
+      <tip>Give a targeted unit their last used item back</tip>
+      <targetAid>unit</targetAid>
+      <throwable throwRange="3" targetAid="unit"/>
+      <effect range="1" visible ="false" target="friend">
+        <giveItem item="{target.LastItem.Name}"/>
+      </effect>
+    </action>
+    <action  det ="-1" mpoint="-1" apoint="-1">
+      <name>Resupply</name>
+      <tip>Give a targeted unit item currently equipped by this unit</tip>
+      <targetAid>unit</targetAid>
+      <throwable throwRange="3"/>
+      <effect range="1" visible ="false" target="friend">
+        <giveItem item="{this.SelectedItem.Name}"/>
+      </effect>
+    </action>
 
-    </controllable>
-  </object>
- 
+
+  </unit>
+
   <statuseffect>
     <name>Holstered</name>
     <effect visible="false">
-     <values act ="[set]0" move="2"/>
+      <values act ="[set]0" move="2"/>
     </effect>
   </statuseffect>
   <statuseffect>
@@ -270,8 +260,8 @@
       <values act ="1[cap]" move="1[cap]" moveRange="0"/>
     </effect>
   </statuseffect>
-  
-  
+
+
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
@@ -290,8 +280,8 @@
     <sprite name="Environment/crater"  offset= "0,0"/>
     <name>Crater</name>
   </object>
-  
-  
+
+
   <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
     <sprite name="Environment/Smoke"  offset= "0,0"/>
     <name>Smoke</name>

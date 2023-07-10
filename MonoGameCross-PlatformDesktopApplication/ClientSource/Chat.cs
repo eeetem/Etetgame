@@ -44,10 +44,7 @@ public static class Chat
 			{
 				Networking.ChatMSG(message);
 			}
-			else
-			{
 			//	MasterServerNetworking.ChatMSG(message);
-			}
 		}
 	}
 	

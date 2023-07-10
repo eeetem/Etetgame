@@ -35,7 +35,8 @@ public partial class WorldTile
 		{
 			var vec = color.ToVector3();
 			return new Color(vec.X/1.5f,vec.Y+0.2f, vec.Z/1.5f, 1);
-		}else if (HighestWatchLevel == 1)
+		}
+		if (HighestWatchLevel == 1)
 		{
 			var vec = color.ToVector3();
 			return new Color(vec.X+0.1f,vec.Y, vec.Z/1.5f, 1);
@@ -64,12 +65,13 @@ public partial class WorldTile
 				HighestWatchLevel = 2;
 				return;
 			}
-			else if (watcher.CanHit(Position,false))
+
+			if (watcher.CanHit(Position,false))
 			{
 				HighestWatchLevel = 1;
 				return;
 			}
-				
+
 		}
 	}
 

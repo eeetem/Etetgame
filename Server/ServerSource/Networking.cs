@@ -2,7 +2,6 @@
 using MultiplayerXeno.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
-using Riptide.Transports.Udp;
 using Riptide.Utils;
 
 namespace MultiplayerXeno;

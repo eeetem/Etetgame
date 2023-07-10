@@ -2,17 +2,21 @@
 using Microsoft.Xna.Framework.Graphics;
 using MultiplayerXeno.Items;
 
+#if CLIENT
+using MultiplayerXeno.UILayouts;
+#endif
+
+
 namespace MultiplayerXeno;
 
-public class UnitType
+public class UnitType : WorldObjectType
 {
 
-	public UnitType(string? name)
+	public UnitType(string name) : base(name)
 	{
-		Name = name;
+
 	}
 
-	public readonly string? Name;
 	public int MoveRange = 4;
 	public int SightRange = 16;
 	public int OverWatchSize = 2;
@@ -32,10 +36,33 @@ public class UnitType
 
 	public WorldEffect? SpawnEffect { get; set; }
 
-	public Unit Instantiate(WorldObject parent,Unit.UnitData data)
-	{
-		Unit obj = new Unit(data.Team1,parent,this,data);
 
-		return obj;
+	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
+	{
+		wo.Face(data.Facing,false);
+		Unit component = new Unit(wo,this,data.UnitData!.Value);
+
+#if CLIENT
+		GameLayout.RegisterUnit(component);
+#endif
+		tile.UnitAtLocation = component;
+
+		if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
+		{
+			this.SpawnEffect?.Apply(tile.Position);
+		}
 	}
+#if CLIENT
+	public override Texture2D GetSprite(int spriteVariation, int spriteIndex, WorldObject worldObject)
+	{
+		if (worldObject.UnitComponent!.Crouching)
+		{
+			return CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
+			
+		}
+
+		return base.GetSprite(spriteVariation, spriteIndex, worldObject);
+	}
+#endif
+	
 }

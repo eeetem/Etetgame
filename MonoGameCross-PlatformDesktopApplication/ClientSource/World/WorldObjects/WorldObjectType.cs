@@ -9,13 +9,17 @@ namespace MultiplayerXeno;
 public partial class WorldObjectType
 {
 
-	public Transform2 Transform;
+	public Transform2 Transform = new Transform2();
 	public Texture2D[][] spriteSheet;
 	public List<Tuple<string, int>> Variations;
 	public int TotalVariationsWeight;
 	public float Zoffset { get; set; }
-	public void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations, bool png = false)
+	public void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations = null)
 	{
+		if(variations == null){
+			variations = new List<Tuple<string, int>>();
+			variations.Add(new Tuple<string, int>("", 1));
+		}
 		foreach (var va in variations)
 		{
 			TotalVariationsWeight += va.Item2;
@@ -26,15 +30,8 @@ public partial class WorldObjectType
 		{
 			string spriteName = name;
 			spriteName += variations[i].Item1;
-			Texture2D tex;
-			if (png)
-			{
-				tex = TextureManager.GetTextureFromPNG(spriteName);
-			}
-			else
-			{
-				tex = TextureManager.GetTexture(spriteName);
-			}
+			Texture2D tex = TextureManager.GetTextureFromPNG(spriteName);
+
 
 			if (!Faceable)
 			{
@@ -46,5 +43,9 @@ public partial class WorldObjectType
 			spriteSheet[i] = Utility.MakeSpriteSheet(tex, 3, 3);
 		}
 	}
-		
+
+	public virtual Texture2D GetSprite(int spriteVariation, int spriteIndex, WorldObject worldObject)
+	{
+		return spriteSheet[spriteVariation][(int) Utility.NormaliseDir(spriteIndex)];
+	}
 }

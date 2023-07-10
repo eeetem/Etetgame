@@ -3,9 +3,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Riptide;
 using System.Linq;
-using System.Threading;
 using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using MultiplayerXeno.UILayouts;
@@ -773,61 +771,8 @@ namespace MultiplayerXeno
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, tile, data);
 			WO.fliped = data.Fliped;
-			WO.Face(data.Facing,false);
-			WorldTile newTile;
-			if (WO.Type.Surface)
-			{
-				tile.Surface = WO;
-			}
-			else if (type.Edge)
-			{
-				switch (data.Facing)
-				{
-					case Direction.North:
-						tile.NorthEdge = WO;
-						//WO.fliped = data.fliped;
-						break;
-					case Direction.West:
-						tile.WestEdge = WO;
-						//WO.fliped = data.fliped;
-						break;
-					case Direction.East:
-						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
-						newTile.WestEdge = WO;
-						WO.Face(Direction.West, false);
-						WO.fliped = true;
-						WO.TileLocation = newTile;
-						break;
-					case Direction.South:
-						newTile = GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
-						newTile.NorthEdge = WO;
-						WO.Face(Direction.North,false);
-						WO.fliped = true;
-						WO.TileLocation = newTile;
-						break;
-					default:
-						throw new Exception("edge cannot be cornerfacing");
-				}
-			}
-			else if(type.Unit != null && data.UnitData != null)
-			{
-				Unit component = type.Unit.Instantiate(WO, data.UnitData.Value);
-				WO.UnitComponent = component;
-#if CLIENT
-				GameLayout.RegisterUnit(component);
-#endif
-				tile.UnitAtLocation = WO.UnitComponent;
-
-				if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
-				{
-					type.Unit.SpawnEffect?.Apply(tile.Position);
-				}
-			}
-			else
-			{
-				tile.PlaceObject(WO);
-			}
-
+			
+			type.Place(WO,tile,data);
 			
 			WorldObjects.EnsureCapacity(WO.ID + 1);
 			WorldObjects[WO.ID] = WO;
@@ -918,12 +863,10 @@ namespace MultiplayerXeno
 				MapData mapData = MapData.FromJSON(File.ReadAllText(path));
 				return LoadMap(mapData);
 			}
-			else
-			{
-				return false;
-			}
 
-			
+			return false;
+
+
 		}
 
 		public bool LoadMap(MapData mapData)

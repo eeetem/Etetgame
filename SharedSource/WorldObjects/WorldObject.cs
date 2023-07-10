@@ -24,7 +24,7 @@ public partial class WorldObject
 		
 		if (type == null)
 		{
-			type = new WorldObjectType("nullType",null);
+			type = new WorldObjectType("nullType");
 			Type = type;
 			return;
 		}
@@ -209,7 +209,7 @@ public partial class WorldObject
 				GameLayout.SelectUnit(null);
 			}
 		
-		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
+		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
 #else
 		
 
@@ -219,7 +219,7 @@ public partial class WorldObject
 WorldManager.Instance.DeleteWorldObject(this);
 #endif
 
-		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
+		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
 
 	}
 	public Visibility GetMinimumVisibility()
@@ -368,7 +368,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 
 	public WorldObjectData GetData()
 	{
-		WorldObjectData data = new WorldObjectData(Type.TypeName);
+		WorldObjectData data = new WorldObjectData(Type.Name);
 		data.Facing = Facing;
 		data.ID = ID;
 		data.Fliped = fliped;
@@ -415,6 +415,6 @@ WorldManager.Instance.DeleteWorldObject(this);
 #endif
 	}
 
-		
 
+	
 }

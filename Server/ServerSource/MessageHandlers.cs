@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using MultiplayerXeno.Items;
+﻿using MultiplayerXeno.Items;
 using Riptide;
 
 namespace MultiplayerXeno;

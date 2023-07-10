@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using Microsoft.Xna.Framework.Graphics;
-using Riptide;
 
 #if CLIENT
 using MultiplayerXeno.UILayouts;

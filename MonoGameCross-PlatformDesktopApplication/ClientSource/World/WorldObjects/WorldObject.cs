@@ -57,18 +57,8 @@ public partial class WorldObject : IDrawable
 		{
 			spriteIndex = (int)Facing;
 		}
-		if (UnitComponent != null&& UnitComponent.Crouching)
-		{//this is so fucking convoluted. i'll fix it whenever animations are in
-			sprite = Type.Unit.CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
-			
-		}
-		else
-		{	
-			sprite = Type.spriteSheet[spriteVariation][(int) Utility.NormaliseDir(spriteIndex)];
-		}
+		return Type.GetSprite(spriteVariation, spriteIndex, this);
 
-
-		return sprite;
 	}
 
 	public Color GetColor()

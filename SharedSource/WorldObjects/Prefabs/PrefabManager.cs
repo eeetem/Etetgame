@@ -4,8 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended;
+
 using MultiplayerXeno.Items;
 
 namespace MultiplayerXeno;
@@ -13,6 +12,7 @@ namespace MultiplayerXeno;
 public static class PrefabManager
 {
 	public static Dictionary<string, WorldObjectType> WorldObjectPrefabs = new Dictionary<string, WorldObjectType>();
+	public static Dictionary<string, UnitType> UnitPrefabs = new Dictionary<string, UnitType>();
 	public static Dictionary<string, UsableItem> UseItems = new Dictionary<string, UsableItem>();
 	public static Dictionary<string, StatusEffectType> StatusEffects = new Dictionary<string, StatusEffectType>();
 
@@ -41,59 +41,7 @@ public static class PrefabManager
 			if(xmlObj == null) continue;
 			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? throw new Exception("null name for a prefab");
 			
-
-			UnitType? controllableType = null;
-			XmlNode? contollableObj = xmlObj.GetElementsByTagName("controllable")[0];
-			if (contollableObj != null)
-			{
-				
-				controllableType = new UnitType(name);
-				controllableType.MoveRange = int.Parse(contollableObj.Attributes?["moveRange"]?.InnerText ?? "4");
-				controllableType.Maxdetermination = int.Parse(contollableObj.Attributes?["determination"]?.InnerText ?? "2");
-				controllableType.InventorySize = int.Parse(contollableObj.Attributes?["inventory"]?.InnerText ?? "1");
-				controllableType.MaxMovePoints = int.Parse(contollableObj.Attributes?["moves"]?.InnerText ?? "2");
-				controllableType.MaxActionPoints = int.Parse(contollableObj.Attributes?["actions"]?.InnerText ?? "1");
-				controllableType.OverWatchSize = int.Parse(contollableObj.Attributes?["overwatch"]?.InnerText ?? "2");
-				controllableType.SightRange = int.Parse(contollableObj.Attributes?["sightrange"]?.InnerText ?? "16");
-				
-				
-				XmlNode? defaultact = ((XmlElement) contollableObj).GetElementsByTagName("defaultAttack")[0];
-				int determinationChange = int.Parse(defaultact?.Attributes?["det"]?.InnerText ?? "0");
-				ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "-1");
-				ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "-1"); 
-				WorldAction action =	PraseWorldAction((XmlElement) defaultact! ?? throw new InvalidOperationException());
-
-				controllableType.DefaultAttack =  new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
-				
-				var speff = ((XmlElement) contollableObj).GetElementsByTagName("spawneffect")[0];
-				if (speff != null)
-				{
-					controllableType.SpawnEffect = ParseEffect((XmlElement) speff);
-				}
-
-
-
-				var actions = ((XmlElement) contollableObj).GetElementsByTagName("action");
-				foreach (var act in actions)
-				{ 
-					controllableType.Actions.Add(ParseControllableAction((XmlElement)act));
-				}
-				var toggleActions = ((XmlElement) contollableObj).GetElementsByTagName("toggleaction");
-				foreach (var act in toggleActions)
-				{
-					//	ExtraToggleAction toggle = new ExtraToggleAction();
-					XmlElement actobj = (XmlElement) act;
-					ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
-					ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
-					ExtraToggleAction toggle = new ExtraToggleAction(on,off);
-					controllableType.Actions.Add(toggle);
-				}
-
-			}
-
-			WorldObjectType type = new WorldObjectType(name,controllableType);
-				
-
+			WorldObjectType type = new WorldObjectType(name);
 
 			bool faceable = true;
 			bool edge = false;
@@ -143,10 +91,7 @@ public static class PrefabManager
 			{
 				vcover = scover;
 			}
-			if (xmlObj!.HasAttributes && xmlObj.Attributes?["Health"] != null)
-			{
-				maxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText!);
-			}
+
 			if (xmlObj!.HasAttributes && xmlObj.Attributes?["lifetime"] != null)
 			{
 				type.lifetime = int.Parse(xmlObj?.Attributes?["lifetime"]!.InnerText!);
@@ -168,13 +113,11 @@ public static class PrefabManager
 
 #if CLIENT
 
-			if (xmlObj!.HasAttributes && xmlObj.Attributes?["z"] != null)
+			if (xmlObj.HasAttributes && xmlObj.Attributes?["z"] != null)
 			{
 				type.Zoffset = float.Parse(xmlObj?.Attributes?["z"]!.InnerText!);
 			}
 
-
-			Vector2 offset = new Vector2(-1.5f, -0.5f);
 
 			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
 			var xmlNodeList = xmlObj.GetElementsByTagName("sprite")[0]?.ChildNodes;
@@ -196,18 +139,10 @@ public static class PrefabManager
 			{
 				spritename = name;
 			}
-			if (type.Unit != null)
-			{
-				spritename = "Units/" + spritename;
-			}
+
 #endif
 			
 				
-
-#if CLIENT
-			type.Transform = new Transform2();
-			type.Transform.Position = Utility.GridToWorldPos(offset);
-#endif
 
 			
 				
@@ -217,18 +152,70 @@ public static class PrefabManager
 
 	
 
-			if (type.Unit != null)
-			{
-				type.GenerateSpriteSheet(spritename+"/Stand",spriteVariations,true);//this is a bit inconsistent but eeeh
-				type.Unit.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTextureFromPNG(spritename + "/Crouch"),3,3);
-			}
-			else
-			{
-				type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
-			}
-			
+
+			type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
 
 #endif
+		}
+
+		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("unit"))
+		{
+			if(xmlObj == null) continue;
+			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? throw new Exception("null name for a prefab");
+
+
+			UnitType unitType  = new UnitType(name);
+			unitType.Faceable = true;
+			unitType.SolidCover = Cover.Full;
+			unitType.VisibilityCover = Cover.None;
+
+			unitType.MaxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText ?? "10");
+			unitType.MoveRange = int.Parse(xmlObj.Attributes?["moveRange"]?.InnerText ?? "4");
+			unitType.Maxdetermination = int.Parse(xmlObj.Attributes?["determination"]?.InnerText ?? "2");
+			unitType.InventorySize = int.Parse(xmlObj.Attributes?["inventory"]?.InnerText ?? "1");
+			unitType.MaxMovePoints = int.Parse(xmlObj.Attributes?["moves"]?.InnerText ?? "2");
+			unitType.MaxActionPoints = int.Parse(xmlObj.Attributes?["actions"]?.InnerText ?? "1");
+			unitType.OverWatchSize = int.Parse(xmlObj.Attributes?["overwatch"]?.InnerText ?? "2");
+			unitType.SightRange = int.Parse(xmlObj.Attributes?["sightrange"]?.InnerText ?? "16");
+				
+				
+			XmlNode? defaultact = xmlObj.GetElementsByTagName("defaultAttack")[0];
+			int determinationChange = int.Parse(defaultact?.Attributes?["det"]?.InnerText ?? "0");
+			ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "-1");
+			ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "-1"); 
+			WorldAction action =	PraseWorldAction((XmlElement) defaultact! ?? throw new InvalidOperationException());
+
+			unitType.DefaultAttack =  new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
+				
+			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
+			if (speff != null)
+			{
+				unitType.SpawnEffect = ParseEffect((XmlElement) speff);
+			}
+
+			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
+			foreach (var act in actions)
+			{ 
+				unitType.Actions.Add(ParseControllableAction((XmlElement)act));
+			}
+			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
+			foreach (var act in toggleActions)
+			{
+				//	ExtraToggleAction toggle = new ExtraToggleAction();
+				XmlElement actobj = (XmlElement) act;
+				ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
+				ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
+				ExtraToggleAction toggle = new ExtraToggleAction(on,off);
+				unitType.Actions.Add(toggle);
+			}
+
+
+#if CLIENT
+			unitType.GenerateSpriteSheet("Units/"+name+"/Stand");//this is a bit inconsistent but eeeh
+			unitType.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTextureFromPNG("Units/"+name + "/Crouch"),3,3);
+#endif
+			WorldObjectPrefabs.Add(name,unitType);
+			UnitPrefabs.Add(name,unitType);
 		}
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))

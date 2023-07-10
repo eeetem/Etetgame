@@ -53,12 +53,9 @@ public class LobbyBrowserLayout : MenuLayout
 						{
 							Networking.ChatMSG(input.Text);
 						}
-						else
-						{
-							//MasterServerNetworking.ChatMSG(input.Text);
-						}
 
 
+						//MasterServerNetworking.ChatMSG(input.Text);
 						input.Text = "";
 					}
 				}

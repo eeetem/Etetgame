@@ -22,13 +22,13 @@ namespace MultiplayerXeno
 
 		public readonly UsableItem?[] Inventory;
 
-		public Unit(bool isPlayerOneTeam, WorldObject wo, UnitType type, UnitData data)
+		public Unit(WorldObject parent, UnitType type, UnitData data)
 		{
 
-			WorldObject = wo;
+			WorldObject = parent;
 			Type = type;
-			IsPlayerOneTeam = isPlayerOneTeam;
-
+			IsPlayerOneTeam = data.Team1;
+			parent.UnitComponent = this;
 
 			type.Actions.ForEach(extraAction => { Actions.Add((IExtraAction) extraAction.Clone()); });
 			DefaultAttack = (ExtraAction) type.DefaultAttack.Clone();

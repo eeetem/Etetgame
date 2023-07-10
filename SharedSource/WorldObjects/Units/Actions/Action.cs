@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
-using System.Threading;
 using MultiplayerXeno.ReplaySequence;
 
 #if CLIENT
