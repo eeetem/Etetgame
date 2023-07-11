@@ -18,11 +18,7 @@ public static partial class Networking
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		Message.MaxPayloadSize = 2048;
-		server.TimeoutTime = 30;
-#if DEBUG
-		server.TimeoutTime = ushort.MaxValue;
-#endif
-		
+
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;

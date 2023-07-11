@@ -244,7 +244,6 @@ public class LobbyBrowserLayout : MenuLayout
 				var dialog = Dialog.CreateMessageBox("Creating Server...", popup);
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
-
 					MasterServerNetworking.CreateLobby(txt.Text);
 				};
 				

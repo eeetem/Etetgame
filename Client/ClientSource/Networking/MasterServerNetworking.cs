@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MultiplayerXeno.UILayouts;
 using Riptide;
 using Riptide.Transports.Tcp;
@@ -16,16 +17,17 @@ public class MasterServerNetworking
 		
 	public static bool Connect(string ipport,string name)
 	{
+		if(Client!=null && Client.IsConnected)
+			Client.Disconnect();
+		
 		Ipport = ipport;
 		Name = name;
 
 
 		Client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
-		Client.TimeoutTime = 500;
-#if DEBUG
-		Client.TimeoutTime = ushort.MaxValue;
-#endif
+		Client.TimeoutTime = 11000;
+		Client.HeartbeatInterval = 5000;
 		
 		var msg = Message.Create();
 		msg.AddString(name);
@@ -51,11 +53,18 @@ public class MasterServerNetworking
 		};
 		Client.Disconnected += (a, b) =>
 		{
+			
 			Console.WriteLine("lost connection to master server");
 			if(!Networking.Connected)//only change ui if we're not in a server
 			{
 				UI.SetUI(new MainMenuLayout());
-				UI.ShowMessage("Lost Connection To Master Server", a.ToString());
+				Task t = new Task(() =>
+				{
+					System.Threading.Thread.Sleep(1000);
+					UI.ShowMessage("Lost Connection To Master Server", b.Reason.ToString());
+				});
+				WorldManager.Instance.RunNextFrame(t);
+				
 			}
 		};
 		Client.MessageReceived += (a, b) =>
@@ -63,7 +72,7 @@ public class MasterServerNetworking
 			Console.WriteLine("Recived Message: " + ( NetMsgIds.NetworkMessageID)b.MessageId);
 		};
 
-		
+
 		RefreshServers();
 
 
@@ -119,7 +128,8 @@ public class MasterServerNetworking
 	private static void RecieveLobbies(Message message)
 	{
 		Lobbies.Clear();
-		for (int i = 0; i < message.GetInt(); i++)
+		int count = message.GetInt();
+		for (int i = 0; i < count; i++)
 		{
 			Lobbies.Add(message.GetSerializable<LobbyData>());
 		}

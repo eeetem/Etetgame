@@ -24,7 +24,8 @@ public static class Program
 
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
-		server.TimeoutTime = 500;
+		server.TimeoutTime = 11000;
+		server.HeartbeatInterval = 5000;
 
 		server.ClientDisconnected += (a, b) =>
 		{
@@ -45,7 +46,9 @@ public static class Program
 				Players.Remove(disconnectedPlayer);
 			}
 		};
-	
+
+		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
+
 		server.Start(1630,100);
 			
 		Console.WriteLine("Started master-server");
@@ -56,8 +59,6 @@ public static class Program
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
-		Console.WriteLine($"new connection");
-
 		string name = connectmessage.GetString();
 		Console.WriteLine("Registering client: " + name);
 		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
@@ -116,13 +117,14 @@ public static class Program
 	[MessageHandler((ushort)  NetMsgIds.NetworkMessageID.LobbyStart)]
 	private static void StartLobby(ushort senderID,Message message)
 	{
+		Console.WriteLine("StartLobby Requested");
 		lock (syncobj)
 		{
 			string name = message.GetString();
 			string pass = message.GetString();
 
 
-			Console.WriteLine("StartLobby");
+			Console.WriteLine("Starting lobby:");
 			int port = GetNextFreePort();
 			Console.WriteLine("Port: " + port); //ddos or spam protection is needed
 			var process = new Process();
@@ -143,14 +145,16 @@ public static class Program
 			args.Add(port.ToString());
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
-			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
+			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
+			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
-			Console.WriteLine("Creating server log at " + Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log");
+			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
+			Console.WriteLine("Creating server log at " +path);
 			try
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/");
-				File.Create(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log").Close();
+				File.Create(path).Close();
 			}
 			catch (Exception e)
 			{
@@ -172,7 +176,7 @@ public static class Program
 				//log
 				if (args.Data != null)
 				{
-					File.AppendAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log", "[" + DateTime.Now + "] " + args.Data + "\n");
+					File.AppendAllText(path, "[" + DateTime.Now + "] " + args.Data + "\n");
 				}
 			};
 			Console.WriteLine("starting...");

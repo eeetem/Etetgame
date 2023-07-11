@@ -15,12 +15,15 @@ public static partial class Networking
 	public static bool Connected => client != null && client.IsConnected;
 	public static bool Connect(string ipport,string name)
 	{
+		
+		if(client!=null)
+			client.Disconnect();
+		
 		Ipport = ipport;
 		Name = name;
-
+		
 		client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
-		client.TimeoutTime = 30;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif
