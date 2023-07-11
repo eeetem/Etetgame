@@ -20,6 +20,7 @@ public static partial class Networking
 
 		client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
+		client.TimeoutTime = 30;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif

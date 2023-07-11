@@ -24,7 +24,7 @@ public static class Program
 
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
-
+		server.TimeoutTime = 500;
 
 		server.ClientDisconnected += (a, b) =>
 		{
@@ -56,7 +56,7 @@ public static class Program
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
-		Console.WriteLine($"{server.ClientCount} new connection");
+		Console.WriteLine($"new connection");
 
 		string name = connectmessage.GetString();
 		Console.WriteLine("Registering client: " + name);
@@ -168,7 +168,7 @@ public static class Program
 					Lobbies[port].Item2.Spectators =  Int32.Parse(ExtractBetweenTags(args.Data, "SPECTATORS"));
 				}
 
-				Console.WriteLine("Server(" + port + "): " + args.Data);
+				//Console.WriteLine("Server(" + port + "): " + args.Data);
 				//log
 				if (args.Data != null)
 				{

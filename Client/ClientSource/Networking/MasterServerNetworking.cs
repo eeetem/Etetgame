@@ -22,6 +22,7 @@ public class MasterServerNetworking
 
 		Client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
+		Client.TimeoutTime = 500;
 #if DEBUG
 		Client.TimeoutTime = ushort.MaxValue;
 #endif
@@ -77,7 +78,7 @@ public class MasterServerNetworking
 		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetMsgIds.NetworkMessageID.LobbyStart);
 		msg.Add(name);
 		msg.Add(password);
-		Client.Send(msg);
+		Client?.Send(msg);
 
 	}
 		
@@ -86,7 +87,7 @@ public class MasterServerNetworking
 	{
 		Lobbies.Clear();
 		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetMsgIds.NetworkMessageID.Refresh);
-		Client.Send(msg);
+		Client?.Send(msg);
 	}
 
 

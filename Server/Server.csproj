@@ -23,13 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\MonoGameCross-PlatformDesktopApplication\ObjectData.xml">
-        <Link>ObjectData.xml</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="Maps\g.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
@@ -202,6 +195,12 @@
       <Compile Include="..\SharedSource\World\WorldTile.cs">
         <Link>SharedSource\World\WorldTile.cs</Link>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\SharedSource\ObjectData.xml">
+        <Link>SharedSource\ObjectData.xml</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

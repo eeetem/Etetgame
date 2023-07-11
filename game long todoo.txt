@@ -8,8 +8,12 @@ alt inspection of unit stats
 
 clearer move boundry.
 play game, restart
-satchel not viisbile
+shrink top ui
+fov flickering
+shot preview to hit target
+freeze on turn end-
 
+gradual destrution
 
 UI Rework:
 crouch indicator

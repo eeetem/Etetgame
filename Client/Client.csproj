@@ -396,6 +396,9 @@
         <Link>Maps\Not One Step Back.mapdata</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <Content Include="..\SharedSource\ObjectData.xml">
+        <Link>SharedSource\ObjectData.xml</Link>
+      </Content>
       <Content Include="..\SharedSource\obj\Debug\net6.0\SharedSource.AssemblyInfoInputs.cache">
         <Link>SharedSource\obj\Debug\net6.0\SharedSource.AssemblyInfoInputs.cache</Link>
       </Content>

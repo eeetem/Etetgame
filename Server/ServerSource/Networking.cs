@@ -18,6 +18,7 @@ public static partial class Networking
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		Message.MaxPayloadSize = 2048;
+		server.TimeoutTime = 30;
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
 #endif
