@@ -284,8 +284,6 @@ namespace MultiplayerXeno
 				result.hit = false;
 				return result;
 			}
-			
-			
 
 			Vector2Int checkingSquare = new Vector2Int(startcell.X, startcell.Y);
 			Vector2Int lastCheckingSquare;

@@ -199,7 +199,8 @@
 
     <ItemGroup>
       <Content Include="..\SharedSource\ObjectData.xml">
-        <Link>SharedSource\ObjectData.xml</Link>
+        <Link>ObjectData.xml</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 

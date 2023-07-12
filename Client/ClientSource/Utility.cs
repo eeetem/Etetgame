@@ -21,14 +21,16 @@ public static partial class Utility
 		Color c = Color.White;
 		if (PrefabManager.WorldObjectPrefabs[prefab].Faceable)
 		{
-			
-			if ((int) dir == 2)
+			if (PrefabManager.WorldObjectPrefabs[prefab].Edge)
 			{
-				Pos += GridToWorldPos(new Vector2(1, 0));
-			}
-			else if ((int) dir == 4)
-			{
-				Pos += GridToWorldPos(new Vector2(0, 1));
+				if ((int) dir == 2)
+				{
+					Pos += GridToWorldPos(new Vector2(1, 0));
+				}
+				else if ((int) dir == 4)
+				{
+					Pos += GridToWorldPos(new Vector2(0, 1));
+				}
 			}
 
 			if (fliped)
