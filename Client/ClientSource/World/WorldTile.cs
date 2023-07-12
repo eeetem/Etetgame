@@ -5,11 +5,11 @@ namespace MultiplayerXeno;
 public partial class WorldTile
 {
 
-	public Visibility Visible;
+	public Visibility TileVisibility;
 
 	public bool IsVisible(Visibility minimum = Visibility.Partial)
 	{
-		if (Visible >= minimum)
+		if (TileVisibility >= minimum)
 		{
 			return true;
 		}
@@ -21,11 +21,11 @@ public partial class WorldTile
 	{
 		Color color = Color.White;
 			
-		if (Visible == Visibility.None)
+		if (TileVisibility == Visibility.None)
 		{
 			color = Color.DimGray;
 					
-		}else if (Visible == Visibility.Partial)
+		}else if (TileVisibility == Visibility.Partial)
 		{
 			color = Color.LightPink;
 		}

@@ -61,7 +61,7 @@ public abstract class SequenceAction : IMessageSerializable
 		var t = new Task(delegate
 		{
 #if CLIENT
-			if (Actor.WorldObject.TileLocation.Visible==Visibility.None)
+			if (Actor.WorldObject.TileLocation.TileVisibility==Visibility.None)
 			{
 				// if (Visible)
 				// {

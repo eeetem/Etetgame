@@ -21,7 +21,6 @@ public static class RenderSystem
 	public static List<Tuple<Color, List<Vector2Int>>> debugPaths = new List<Tuple<Color, List<Vector2Int>>>();
 	public static void Draw(SpriteBatch spriteBatch)
 	{
-
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		List<IDrawable> objs = new List<IDrawable>();
 		List<IDrawable> unsortedObjs = new List<IDrawable>();
@@ -94,13 +93,7 @@ public static class RenderSystem
 			}
 			
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
-				
-				
-			//spriteBatch.Draw(texture, transform.Position,  transform.Rotation,  transform.Scale,Color.Wheat,);
-			//	spriteBatch.DrawString(Game1.SpriteFont," "+worldTile.Visible,  transform.Position,Color.Black, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			
-			//spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Black, 0, Vector2.Zero, 2, new SpriteEffects(), 0);
-
 			
 		}
 		spriteBatch.End();
@@ -182,8 +175,7 @@ public static class RenderSystem
 
 		}
 		spriteBatch.End();
-*///pathfinddebug
-		
+		*/
 	}
 	
 	public class DrawableSort : Comparer<IDrawable>

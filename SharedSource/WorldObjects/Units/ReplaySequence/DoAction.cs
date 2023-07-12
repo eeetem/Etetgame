@@ -43,7 +43,7 @@ public class DoAction : SequenceAction
 		var t = new Task(delegate
 		{
 #if CLIENT
-			if (Actor.WorldObject.TileLocation.Visible == Visibility.None)
+			if (Actor.WorldObject.TileLocation.TileVisibility == Visibility.None)
 			{
 				if (Actor.GetAction(ActionID).WorldAction.Effect.Visible)
 				{
@@ -57,7 +57,7 @@ public class DoAction : SequenceAction
 			}
 
 			Thread.Sleep(600);
-			if (WorldManager.Instance.GetTileAtGrid(Target).Visible == Visibility.None)
+			if (WorldManager.Instance.GetTileAtGrid(Target).TileVisibility == Visibility.None)
 			{
 				if (Actor.GetAction(ActionID).WorldAction.Effect.Visible)
 				{

@@ -186,7 +186,7 @@ public partial class WorldObject
 			Task t = new Task(delegate
 			{
 #if CLIENT
-			if (TileLocation.Visible==Visibility.None)
+			if (TileLocation.TileVisibility==Visibility.None)
 			{
 				 if (Type.DesturctionEffect.Visible)
 				 {
@@ -411,7 +411,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 			return true;
 		}
 
-		return GetMinimumVisibility() <= TileLocation.Visible;
+		return GetMinimumVisibility() <= TileLocation.TileVisibility;
 #endif
 	}
 

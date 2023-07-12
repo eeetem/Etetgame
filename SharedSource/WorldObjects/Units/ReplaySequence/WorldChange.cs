@@ -24,7 +24,7 @@ public class WorldChange : SequenceAction
 		var t = new Task(delegate
 		{
 #if CLIENT
-			if (Actor.WorldObject.TileLocation.Visible==Visibility.None)
+			if (Actor.WorldObject.TileLocation.TileVisibility==Visibility.None)
 			{
 				 if (effect.Visible)
 				 {

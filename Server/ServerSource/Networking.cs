@@ -96,7 +96,7 @@ public static partial class Networking
 
 	}
 		
-	public static readonly object mapUploadLock = new object();
+	public static readonly object UpdateLock = new object();
 	public static void SendMapData(Connection connection)
 	{
 	
@@ -114,7 +114,7 @@ public static partial class Networking
 				Thread.Sleep(100);
 			}
 
-			lock (mapUploadLock)
+			lock (UpdateLock)
 			{
 				try
 				{
@@ -257,7 +257,7 @@ public static partial class Networking
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
 		
-
+		Console.WriteLine("Sending tile update for " + tile.Position);
 		if(connection == null)
 			server.SendToAll(msg);
 		else
@@ -266,7 +266,7 @@ public static partial class Networking
 
 	public static void Update()
 	{
-		lock (mapUploadLock)
+		lock (UpdateLock)
 		{
 			server.Update();
 		}
@@ -313,7 +313,12 @@ public static partial class Networking
 			msg.Add((int) a.SqcType);
 			msg.AddSerializable(a);
 		}
-		server.SendToAll(msg);
+
+		lock (UpdateLock)
+		{
+			server.SendToAll(msg);
+		}
+		
 	}
 
 	public static void SendEndTurn()

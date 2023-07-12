@@ -345,7 +345,11 @@ namespace MultiplayerXeno
 
 			}
 #if SERVER
-			SelectAnyItem();
+			Task t = new Task(delegate
+			{
+				SelectAnyItem();
+			});
+			WorldManager.Instance.RunNextFrame(t);
 #endif
 
 

@@ -14,7 +14,7 @@ public partial class WorldObjectType
 	public List<Tuple<string, int>> Variations;
 	public int TotalVariationsWeight;
 	public float Zoffset { get; set; }
-	public void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations = null)
+	public void GenerateSpriteSheet(string name,List<Tuple<string, int>>? variations = null)
 	{
 		if(variations == null){
 			variations = new List<Tuple<string, int>>();

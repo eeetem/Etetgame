@@ -287,12 +287,12 @@ public class GameLayout : MenuLayout
 		{
 			endBtn = new ImageButton()
 			{
-				Top = (int) (32.5f * globalScale.X),
-				Left = (int) (-14f * globalScale.X),
-				Width = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*1.15f),
-				Height = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*1.15f),
-				ImageWidth = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*1.15f),
-				ImageHeight = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*1.15f),
+				Top = (int) (25f * globalScale.X),
+				Left = (int) (-10.4f * globalScale.X),
+				Width = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*0.9f),
+				Height = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*0.9f),
+				ImageWidth = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*0.9f),
+				ImageHeight = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*0.9f),
 				HorizontalAlignment = HorizontalAlignment.Right,
 				VerticalAlignment = VerticalAlignment.Top,
 				Background = new SolidBrush(Color.Transparent),
@@ -385,12 +385,12 @@ public class GameLayout : MenuLayout
 			ColumnSpacing = 2,
 			HorizontalAlignment = HorizontalAlignment.Center,
 			VerticalAlignment = VerticalAlignment.Top,
-			MaxWidth = (int)(420f*globalScale.X),
-			//	Width = (int)(420f*globalScale.X),
-			MaxHeight = (int)(37f*globalScale.X),
+			MaxWidth = (int)(365f*globalScale.X),
+			//Width = (int)(365f*globalScale.X),
+			MaxHeight = (int)(26f*globalScale.X),
 			//Height = (int)(38f*globalScale.X),
 			Top = (int)(0f*globalScale.Y),
-			Left = (int)(-45f*globalScale.X),
+			Left = (int)(-5f*globalScale.X),
 			//ShowGridLines = true,
 		};
 		panel.Widgets.Add(_unitBar);
@@ -1028,7 +1028,9 @@ public class GameLayout : MenuLayout
 	
 		graphicsDevice.Clear(Color.Transparent);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/unitframe"), new Vector2(0, 0), null, Color.White, 0, Vector2.Zero, 1,SpriteEffects.None, 0);
+		
+		var frame = TextureManager.GetTexture("UI/GameHud/UnitBar/unitframe");
+		batch.Draw(frame, new Vector2(0,0), null, Color.White, 0, Vector2.Zero, 1,SpriteEffects.None, 0);
 		
 		var totalLenght = 259 + 30;
 		var fraction = GameManager.TimeTillNextTurn / (GameManager.PreGameData.TurnTime * 1000);
@@ -1041,7 +1043,7 @@ public class GameLayout : MenuLayout
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIGlowEffect);
 		var turn = TextureManager.GetTexture("UI/GameHud/UnitBar/enemyTurn");
 		if (GameManager.IsMyTurn())
-		{
+		{		
 			turn = TextureManager.GetTexture("UI/GameHud/UnitBar/yourTurn");
 		}
 
@@ -1055,7 +1057,7 @@ public class GameLayout : MenuLayout
 		//batch.Draw(rightCornerRenderTarget, new Vector2(Game1.resolution.X - (rightCornerRenderTarget.Width-104)*globalScale.Y*1.3f, Game1.resolution.Y - rightCornerRenderTarget.Height*globalScale.Y*1.3f), null, Color.White, 0, Vector2.Zero, globalScale.Y*1.3f ,SpriteEffects.None, 0);
 
 	
-		batch.Draw(timerRenderTarget, new Vector2(Game1.resolution.X-timerRenderTarget.Width*globalScale.X*1.15f, 0), null, Color.White, 0, Vector2.Zero, globalScale.X*1.15f ,SpriteEffects.None, 0);
+		batch.Draw(timerRenderTarget, new Vector2(Game1.resolution.X-timerRenderTarget.Width*globalScale.X*0.9f, 0), null, Color.White, 0, Vector2.Zero, globalScale.X*0.9f ,SpriteEffects.None, 0);
 		
 		Texture2D bar = TextureManager.GetTexture("UI/GameHud/BottomBar/mainbuttonbox");
 		if (toolTip)
@@ -1280,8 +1282,8 @@ public class GameLayout : MenuLayout
 
 	}
 
-	private Vector2Int MouseTileCoordinate = new(0, 0);
-	private Vector2Int LastMouseTileCoordinate = new(0, 0);
+	private Vector2Int _mouseTileCoordinate = new(0, 0);
+
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
@@ -1289,8 +1291,8 @@ public class GameLayout : MenuLayout
 	
 
 		//moves selected contorlable to the top
-		MouseTileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-		MouseTileCoordinate = Vector2.Clamp(MouseTileCoordinate, Vector2.Zero, new Vector2(99, 99));
+		_mouseTileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+		_mouseTileCoordinate = Vector2.Clamp(_mouseTileCoordinate, Vector2.Zero, new Vector2(99, 99));
 		int targetIndex = Controllables.IndexOf(SelectedUnit);
 		if (targetIndex != -1)
 		{
@@ -1301,7 +1303,7 @@ public class GameLayout : MenuLayout
 			}
 		}
 
-		var tile = WorldManager.Instance.GetTileAtGrid(MouseTileCoordinate);
+		var tile = WorldManager.Instance.GetTileAtGrid(_mouseTileCoordinate);
 		
 		if (tile.UnitAtLocation != null)
 		{
@@ -1344,8 +1346,6 @@ public class GameLayout : MenuLayout
 		{
 			if (endBtn != null) endBtn.Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/UnitBar/end button")), Color.White);
 		}
-		
-		LastMouseTileCoordinate = MouseTileCoordinate;
 	}
 
 	private bool drawExtra;
@@ -1472,7 +1472,7 @@ public class GameLayout : MenuLayout
 
 		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
-		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.Visible && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==Action.ActionType.Move)) { 
+		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.TileVisibility && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==Action.ActionType.Move)) { 
 			SelectUnit(Tile.UnitAtLocation);
 			return;
 		}

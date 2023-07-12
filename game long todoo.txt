@@ -7,8 +7,6 @@ alt inspection of unit stats
 
 
 clearer move boundry.
-play game, restart
-shrink top ui
 fov flickering
 shot preview to hit target
 freeze on turn end-

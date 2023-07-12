@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
@@ -31,39 +32,37 @@ public partial class WorldManager
 	private void CalculateFov()
 	{
 		fovDirty = false;
-	
-
+		
 				
 		if (FullVis)
 		{
 			foreach (var tile in _gridData)
 			{
-				tile.Visible = Visibility.Full;
+				tile.TileVisibility = Visibility.Full;
 			}
 			return;
 		}
 		RecentFOVRaycasts = new List<RayCastOutcome>();
 		foreach (var tile in _gridData)
 		{
-			tile.Visible = Visibility.None;
+			tile.TileVisibility = Visibility.None;
 		}
-
+	
 		Parallel.ForEach(WorldObjects.Values, obj =>
 		{
 			if (obj.UnitComponent is not null && obj.UnitComponent.IsMyTeam())
 			{
 				foreach (var visTuple in GetVisibleTiles(obj.TileLocation.Position,obj.Facing,obj.UnitComponent.GetSightRange(),obj.UnitComponent.Crouching))
 				{
-					if(GetTileAtGrid(visTuple.Key).Visible < visTuple.Value)
+					if(GetTileAtGrid(visTuple.Key).TileVisibility < visTuple.Value)
 					{
-						GetTileAtGrid(visTuple.Key).Visible = visTuple.Value;
-						GetTileAtGrid(visTuple.Key)?.UnitAtLocation?.Spoted();
+						GetTileAtGrid(visTuple.Key).TileVisibility = visTuple.Value;
+						GetTileAtGrid(visTuple.Key).UnitAtLocation?.Spoted();
 					}
-
 				}
 			}
 		});
-
+		
 	}
 		
 	public ConcurrentDictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)

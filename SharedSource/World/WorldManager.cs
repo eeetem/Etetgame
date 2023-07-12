@@ -171,13 +171,13 @@ namespace MultiplayerXeno
 				{
 					DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
 				}
-				createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
+				_createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
 			}
 
 			return;
 		}
 
-		private List<Tuple<WorldObject.WorldObjectData, WorldTile>> createdObjects = new List<Tuple<WorldObject.WorldObjectData, WorldTile>>();
+		private readonly List<Tuple<WorldObject.WorldObjectData, WorldTile>> _createdObjects = new List<Tuple<WorldObject.WorldObjectData, WorldTile>>();
 
 		public Visibility CanSee(Unit unit, Vector2 to, bool ignoreRange = false)
 		{
@@ -188,7 +188,7 @@ namespace MultiplayerXeno
 			return CanSee(unit.WorldObject.TileLocation.Position, to, unit.GetSightRange(), unit.Crouching);
 		}
 
-		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)//if truesight is false it will do a proper raycast otherwise you will only collide with already visible objects
+		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
 		{
 			if(Vector2.Distance(From, to) > sightRange)
 			{
@@ -214,7 +214,7 @@ namespace MultiplayerXeno
 				{
 					return Visibility.Full;
 				}
-				//i think this is for seeing over cover while crouched, dont quote me on that tho
+				//i think this is for seeing over distant cover while crouched, dont quote me on that tho
 				if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.HitObjId != -1 && GetObject(cast.HitObjId).GetCover(true) != Cover.Full)
 				{
 					return Visibility.Partial;
@@ -233,51 +233,28 @@ namespace MultiplayerXeno
 
 		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover,bool visibilityCast = false,Cover? minHitCoverSameTile = null)
 		{
-
 			RayCastOutcome[] result = new RayCastOutcome[4];
 			Vector2 startPos =startcell+new Vector2(0.5f,0.5f);
-			Vector2 endpos = endcell;
-			int index = 0;
-			
-			
-			List<Task> tasks = new List<Task>();
-			
-			for (int j = 0; j < 4; j++)
+			Vector2 Dir = Vector2.Normalize(startcell - endcell);
+			startPos += Dir / new Vector2(2.5f, 2.5f);
+			var t1 = Task.Run(() =>
 			{
-				
-				switch (j)
-				{
-					case 0:
-						endpos = endcell;
-						break;
-					case 1:
-						endpos = endcell + new Vector2(0f, 0.99f);
-						break;
-					case 2:
-						endpos = endcell + new Vector2(0.99f, 0f);
-						break;
-					case 3:
-						endpos = endcell + new Vector2(0.99f, 0.99f);
-						break;
-					
-				}
-
-				int index1 = index;
-				Task t = new Task(delegate
-				{
-					Vector2 Dir = Vector2.Normalize(startcell - endcell);
-					result[index1] = Raycast(startPos+Dir/new Vector2(2.5f,2.5f), endpos, minHitCover,visibilityCast ,false,minHitCoverSameTile);
-				});
-				t.Start();
-				tasks.Add(t);
-				index++;
-
-			}
+				result[0] = Raycast(startPos, endcell, minHitCover,visibilityCast ,false,minHitCoverSameTile);
+			});
+			var t2 = Task.Run(() =>
+			{
+				result[1] = Raycast(startPos, endcell+ new Vector2(0f, 0.99f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
+			});
+			var t3 = Task.Run(() =>
+			{
+				result[2] = Raycast(startPos,  endcell + new Vector2(0.99f, 0f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
+			});
+			var t4 = Task.Run(() =>
+			{
+				result[3] = Raycast(startPos, endcell + new Vector2(0.99f, 0.99f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
+			});
 			
-			Task.WaitAll(tasks.ToArray());
-			
-
-
+			Task.WaitAll(t1, t2, t3, t4);
 			return result;
 		}
 
@@ -583,6 +560,7 @@ namespace MultiplayerXeno
 		}
 
 		public static readonly object syncobj = new object();
+		public static readonly object TaskSync = new object();
 
 		
 		private static readonly Queue<Task> NextFrameTasks = new Queue<Task>();
@@ -591,7 +569,7 @@ namespace MultiplayerXeno
 		{
 			Task.Factory.StartNew(() =>
 			{
-				lock (syncobj)
+				lock (TaskSync)
 				{
 					NextFrameTasks.Enqueue(t);
 				}
@@ -600,8 +578,8 @@ namespace MultiplayerXeno
 
 		public void Update(float gameTime)
 		{
-		
-			lock (syncobj)
+
+			lock (TaskSync)
 			{
 				while (NextFrameTasks.Count>0)
 				{
@@ -609,22 +587,14 @@ namespace MultiplayerXeno
 					t.RunSynchronously();
 				}
 				NextFrameTasks.Clear();
+			}
+			
+			lock (syncobj)
+			{
+
 #if SERVER
 				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
 #endif
-				
-				
-				foreach (var tile in _gridData)
-				{
-					tile.Update(gameTime);
-					
-				}
-
-				foreach (var obj in WorldObjects.Values)
-				{
-					obj.Update(gameTime);
-				}
-				
 				
 				foreach (var obj in objsToDel)
 				{
@@ -648,7 +618,7 @@ namespace MultiplayerXeno
 
 
 
-				foreach (var WO in createdObjects)
+				foreach (var WO in _createdObjects)
 				{
 					//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
 					CreateWorldObj(WO);
@@ -657,7 +627,6 @@ namespace MultiplayerXeno
 					{
 						MakeFovDirty();
 					}
-
 #endif
 					
 #if SERVER
@@ -666,7 +635,7 @@ namespace MultiplayerXeno
 				}
 
 				
-				createdObjects.Clear();
+				_createdObjects.Clear();
 #if SERVER
 				//no need to update if we're loading an entire map
 			
@@ -678,13 +647,21 @@ namespace MultiplayerXeno
 
 				tilesToUpdate.Clear();
 #endif
-		
+				foreach (var tile in _gridData)
+				{
+					tile.Update(gameTime);
+					
+				}
+
+				foreach (var obj in WorldObjects.Values)
+				{
+					obj.Update(gameTime);
+				}
 #if CLIENT
 				if(fovDirty){
 					CalculateFov();
 				}
 #endif
-				
 				
 			}
 
@@ -703,12 +680,22 @@ namespace MultiplayerXeno
 
 					_currentSequenceTasks.Add(task.Do());
 					_currentSequenceTasks.Last().Start();
-					
-					while (SequenceQueue.Count>0 && typeof(UpdateTile) == SequenceQueue.Peek().GetType())//batch all the tile updates
+
+
+					while (true)
 					{
+						if (SequenceQueue.Count == 0)
+						{
+							break;
+						}
+
+						var tsk = SequenceQueue.Peek();
+						if(typeof(UpdateTile) != SequenceQueue.Peek().GetType()) break;
+						
 						_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
 						_currentSequenceTasks.Last().Start();
-					}
+					} 
+
 				}
 			}
 			else if (_currentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
