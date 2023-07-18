@@ -13,10 +13,10 @@ public static partial class NetworkingManager
 {
 	private static Server server = null!;
 	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
-
-	public static void Start(ushort port)
+	private static bool SinglePlayer = false;
+	public static void Start(ushort port, bool allowSP)
 	{
-		
+		SinglePlayer = allowSP;
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
@@ -46,50 +46,71 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		if (GameManager.Player1 == null)
+		if (SinglePlayer)
 		{
-			GameManager.Player1 = new ClientInstance(name,connection);
-			SendChatMessage(name+" joined as Player 1");
-		}
-		else if (GameManager.Player1.Name == name)
-		{
-			if (GameManager.Player1.Connection != null && !GameManager.Player1.Connection.IsNotConnected)
+			if (GameManager.Player1 == null || GameManager.Player1.Connection.IsNotConnected)
 			{
-				var msg = Message.Create();
-				msg.AddString("Player with same name is already in the game");
-				server.Reject(connection,msg);
-				return;
+				GameManager.Player1 = new ClientInstance(name,connection);
+				GameManager.Player2 = GameManager.Player1;
+				SendChatMessage(name+" joined as Solo Player");
+			}
+			else
+			{
+				GameManager.Spectators.Add(new ClientInstance(name,connection));
+				SendChatMessage(name+" joined the spectators");
 			}
 
-			GameManager.Player1.Connection = connection;//reconnection
-			SendChatMessage(name+" reconnected as Player 1");
-				
-		}
-		else if (GameManager.Player2 == null)
-		{
-			
-			GameManager.Player2 = new ClientInstance(name,connection);
-			SendChatMessage(name+" joined as Player 2");
-		}
-		else if (GameManager.Player2.Name == name)
-		{
-			if (GameManager.Player2.Connection != null && !GameManager.Player2.Connection.IsNotConnected)
-			{
-				var msg = Message.Create();
-				msg.AddString("Player with same name is already in the game");
-				server.Reject(connection,msg);
-				return;
-			}
-			GameManager.Player2.Connection = connection;//reconnection
-			SendChatMessage(name+" reconnected as Player 2");
+
 		}
 		else
 		{
-			GameManager.Spectators.Add(new ClientInstance(name,connection));
-			SendChatMessage(name+" joined the spectators");
-		}
-
 			
+		
+
+			if (GameManager.Player1 == null)
+			{
+				GameManager.Player1 = new ClientInstance(name,connection);
+				SendChatMessage(name+" joined as Player 1");
+			}
+			else if (GameManager.Player1.Name == name)
+			{
+				if (GameManager.Player1.Connection != null && !GameManager.Player1.Connection.IsNotConnected)
+				{
+					var msg = Message.Create();
+					msg.AddString("Player with same name is already in the game");
+					server.Reject(connection,msg);
+					return;
+				}
+
+				GameManager.Player1.Connection = connection;//reconnection
+				SendChatMessage(name+" reconnected as Player 1");
+				
+			}
+			else if (GameManager.Player2 == null)
+			{
+			
+				GameManager.Player2 = new ClientInstance(name,connection);
+				SendChatMessage(name+" joined as Player 2");
+			}
+			else if (GameManager.Player2.Name == name)
+			{
+				if (GameManager.Player2.Connection != null && !GameManager.Player2.Connection.IsNotConnected)
+				{
+					var msg = Message.Create();
+					msg.AddString("Player with same name is already in the game");
+					server.Reject(connection,msg);
+					return;
+				}
+				GameManager.Player2.Connection = connection;//reconnection
+				SendChatMessage(name+" reconnected as Player 2");
+			}
+			else
+			{
+				GameManager.Spectators.Add(new ClientInstance(name,connection));
+				SendChatMessage(name+" joined the spectators");
+			}
+
+		}
 
 		Console.WriteLine("Client Register Done");
 		server.Accept(connection);
@@ -241,7 +262,16 @@ public static partial class NetworkingManager
 			data.Spectators.Add(spectator.Name);
 		}
 		data.MapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/", "*.mapdata").ToList();
-		data.CustomMapList = Directory.GetFiles(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Custom", "*.mapdata").ToList();
+
+		string customMapDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Maps/Custom";
+		if(Directory.Exists(customMapDirectory)){
+			data.CustomMapList = Directory.GetFiles(customMapDirectory, "*.mapdata").ToList();
+		}
+
+		data.SinglePlayerLobby = SinglePlayer;
+		
+
+
 		data.SelectedMap = selectedMap;
 		data.TurnTime = GameManager.PreGameData.TurnTime;
 

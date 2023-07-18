@@ -4,6 +4,7 @@ officer self target -> modding cleanup
 no ghosting destruction -> no wall hack
 lag on greande target;
 alt inspection of unit stats
+server ui -> dont show custom map list on local server
 
 
 clearer move boundry.

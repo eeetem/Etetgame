@@ -15,19 +15,33 @@ namespace DefconNull.Rendering.UILayout;
 
 public class SquadCompBuilderLayout : UiLayout
 {
-	private readonly List<SquadMember> _composition = new List<SquadMember>();
+	private readonly List<SquadMember> MyComposition = new List<SquadMember>();
+	private readonly List<SquadMember> OtherComposition = new List<SquadMember>();
 	private Label freeslots;
-	private List<Vector2Int> mySpawnPoints = new List<Vector2Int>();
+	private Label otherfreeslots;
+	private List<Vector2Int> _mySpawnPoints = new List<Vector2Int>();
+	private List<Vector2Int> _otherSpawnPoints = new List<Vector2Int>();//for practice mode
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
 		
-		mySpawnPoints =  mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
-		Camera.SetPos(mySpawnPoints[0]);
+		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
+		if (GameManager.PreGameData.SinglePlayerLobby)
+		{
+			_otherSpawnPoints = GameManager.IsPlayer1 ? GameManager.T2SpawnPoints : GameManager.T1SpawnPoints;
+		}
+
+		Camera.SetPos(_mySpawnPoints[0]);
 		freeslots = new Label()
 		{
-			Text = "Free Units "+(WorldManager.Instance.CurrentMap.unitCount-_composition.Count),
+			Text = "Free Units: "+(WorldManager.Instance.CurrentMap.unitCount-MyComposition.Count),
+		};
+		otherfreeslots = new Label()
+		{
+			Top = 50,
+			Text = "Free Units(team 2): "+(WorldManager.Instance.CurrentMap.unitCount-MyComposition.Count),
+			Visible = GameManager.PreGameData.SinglePlayerLobby
 		};
 		panel.Widgets.Add(freeslots);
 
@@ -56,7 +70,7 @@ public class SquadCompBuilderLayout : UiLayout
 			};
 			unitButton.Click += (s, a) =>
 			{
-				if (_composition.Count >= WorldManager.Instance.CurrentMap.unitCount)
+				if (MyComposition.Count >= WorldManager.Instance.CurrentMap.unitCount)
 				{
 					return;
 				}
@@ -74,12 +88,21 @@ public class SquadCompBuilderLayout : UiLayout
 		};
 		confirm.Click += (s, a) =>
 		{
-			NetworkingManager.SendSquadComp(_composition);
-			var lbl = new Label();
-			lbl.Text = "Waiting for other players";
-			lbl.HorizontalAlignment = HorizontalAlignment.Center;
-			lbl.VerticalAlignment = VerticalAlignment.Center;
-			panel.Widgets.Add(lbl);
+			if (GameManager.PreGameData.SinglePlayerLobby)
+			{
+				NetworkingManager.SendDualSquadComp(MyComposition,OtherComposition);
+			}
+			else
+			{
+				NetworkingManager.SendSquadComp(MyComposition);
+				var lbl = new Label();
+				lbl.Text = "Waiting for other players";
+				lbl.HorizontalAlignment = HorizontalAlignment.Center;
+				lbl.VerticalAlignment = VerticalAlignment.Center;
+				panel.Widgets.Add(lbl);
+			}
+
+
 		};
 		panel.Widgets.Add(confirm);
 
@@ -102,7 +125,14 @@ public class SquadCompBuilderLayout : UiLayout
 	{
 		base.MouseDown(position, rightclick);
 		SquadMember memberAtLocation = null;
-		foreach (var member in _composition)
+		foreach (var member in MyComposition)
+		{
+			if (member.Position == position)
+			{
+				memberAtLocation = member;
+			}
+		}
+		foreach (var member in OtherComposition)
 		{
 			if (member.Position == position)
 			{
@@ -110,10 +140,18 @@ public class SquadCompBuilderLayout : UiLayout
 			}
 		}
 
-		if(_currentlyPlacing!=null&& memberAtLocation == null && mySpawnPoints.Contains(position))
+		if(_currentlyPlacing!=null&& memberAtLocation == null && (_mySpawnPoints.Contains(position)|| _otherSpawnPoints.Contains(position)))
 		{
 			_currentlyPlacing.Position = position;
-			_composition.Add(_currentlyPlacing);
+			if(_mySpawnPoints.Contains(position))
+			{
+				MyComposition.Add(_currentlyPlacing);
+			}
+			else
+			{
+				OtherComposition.Add(_currentlyPlacing);
+			}
+			
 			var placed = _currentlyPlacing;
 			_currentlyPlacing = null;
 			UI.Desktop.Widgets.Remove(itemMenu);
@@ -150,10 +188,12 @@ public class SquadCompBuilderLayout : UiLayout
 		else if(memberAtLocation!=null)
 		{
 			_currentlyPlacing = memberAtLocation;
-			_composition.Remove(memberAtLocation);
+			MyComposition.Remove(memberAtLocation);
+			OtherComposition.Remove(memberAtLocation);
 		}
 
-		freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - _composition.Count);
+		freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - MyComposition.Count);
+		otherfreeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - OtherComposition.Count);
 	}
 
 	public override void Update(float deltatime)
@@ -179,7 +219,7 @@ public class SquadCompBuilderLayout : UiLayout
 			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
 		}
 
-		foreach (var member in _composition)
+		foreach (var member in MyComposition)
 		{
 			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
@@ -193,9 +233,27 @@ public class SquadCompBuilderLayout : UiLayout
 				batch.DrawText(text, Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)),1,50, Color.Yellow);
 			}
 		}
-		foreach (var point in mySpawnPoints)
+		foreach (var member in OtherComposition)
+		{
+			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
+			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
+			if (member.Inventory.Count > 0)
+			{
+				string text = "";
+				foreach (var item in member.Inventory)
+				{
+					text+= item + "\n";
+				}
+				batch.DrawText(text, Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)),1,50, Color.Yellow);
+			}
+		}
+		foreach (var point in _mySpawnPoints)
 		{
 			batch.DrawCircle(Utility.GridToWorldPos((Vector2)point-new Vector2(-0.5f,-0.5f)),10,10,Color.Red,20f);
+		}
+		foreach (var point in _otherSpawnPoints)
+		{
+			batch.DrawCircle(Utility.GridToWorldPos((Vector2)point-new Vector2(-0.5f,-0.5f)),10,10,Color.Green,20f);
 		}
 		batch.End();
 	}

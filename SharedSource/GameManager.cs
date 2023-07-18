@@ -210,6 +210,8 @@ public static partial class GameManager
 		public List<string> Spectators { get; set; } = new List<string>();
 		public string SelectedMap { get; set; } = "";
 		public int TurnTime { get; set; } = 180;
+		
+		public bool SinglePlayerLobby { get; set; } = false;
 
 		public void Serialize(Message message)
 		{
@@ -223,6 +225,7 @@ public static partial class GameManager
 
 			message.Add(SelectedMap);
 			message.Add(TurnTime);
+			message.Add(SinglePlayerLobby);
 		}
 
 		public void Deserialize(Message message)
@@ -236,6 +239,7 @@ public static partial class GameManager
 
 			SelectedMap = message.GetString();
 			TurnTime = message.GetInt();
+			SinglePlayerLobby = message.GetBool();
 		}
 
 	}

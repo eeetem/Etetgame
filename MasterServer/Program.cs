@@ -144,6 +144,7 @@ public static class Program
 				
 			List<string> args = new List<string>();
 			args.Add(port.ToString());
+			args.Add("false");
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
 			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };

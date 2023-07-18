@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -117,7 +116,7 @@ public static partial class GameManager
 			
 		score = data.Score;
 		GameState = data.GameState;
-
+		
 			
 		switch (GameState)
 		{
@@ -154,7 +153,8 @@ public static partial class GameManager
 			
 
 	}
-	
+
+	static Process? localServerProcess = null;
 	public static void StartLocalServer()
 	{
 		Console.WriteLine("Starting local server:");
@@ -162,45 +162,40 @@ public static partial class GameManager
 		string pass = "";
 		int port = 52233;
 		Console.WriteLine("Port: " + port); //ddos or spam protection is needed
-		var process = new Process();
+		if(localServerProcess != null)
+			localServerProcess.Kill();
+		localServerProcess = new Process();
 		if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 		{
 			Console.WriteLine("Filename: ./Server");
-			process.StartInfo.FileName = "./Server";
+			localServerProcess.StartInfo.FileName = "./Server";
 		}
 		else
 		{
 			Console.WriteLine("Filename: ./Server.exe");
-			process.StartInfo.FileName = "./Server.exe";
+			localServerProcess.StartInfo.FileName = "./Server.exe";
 		}
 				
 		List<string> args = new List<string>();
 		args.Add(port.ToString());
+		args.Add("true");
 		args.Add(pass);
-		process.StartInfo.Arguments = string.Join(" ", args);
-		process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
-		process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
+		localServerProcess.StartInfo.Arguments = string.Join(" ", args);
+		localServerProcess.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
+		localServerProcess.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
 
 		Console.WriteLine("starting...");
-		try
-		{
-			process.Start();
-			Console.WriteLine("process started with id: "+process.Id);
-			process.BeginErrorReadLine();
-			process.BeginOutputReadLine();
-			LobbyData lobbyData = new LobbyData(name, port);
-			if (pass != "")
-			{
-				lobbyData.HasPassword = true;
-			}
 
-			Thread.Sleep(1000);
-			NetworkingManager.Connect("localhost:" + port,"Player");
+		localServerProcess.Start();
+		Console.WriteLine("process started with id: "+localServerProcess.Id);
+		
 
-		}catch(Exception e)
-		{
-			Console.WriteLine(e);
-		}
+
+		Thread.Sleep(1000);
+		bool res = NetworkingManager.Connect("localhost:" + port,"Player");
+		if (!res)
+			UI.ShowMessage("Failed to connect to local server", "Failed to connect to local server");
+
 	}
 
 }

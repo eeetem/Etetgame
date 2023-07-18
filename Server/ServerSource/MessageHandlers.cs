@@ -51,6 +51,10 @@ public static partial class NetworkingManager
 	private static void StartGameHandler(ushort senderID,Message message)
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id || GameManager.GameState != GameState.Lobby) return;
+		if (message.GetBool())
+		{
+			GameManager.Player2 = GameManager.Player1;//both are same player
+		}
 		GameManager.StartSetup();
 	}
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.SquadComp)]

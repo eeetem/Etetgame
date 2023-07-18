@@ -86,7 +86,7 @@ public abstract class UiLayout
 		currentKeyboardState = Keyboard.GetState();
 		
 #if DEBUG
-		if (currentKeyboardState.IsKeyDown(Keys.L) && lastKeyboardState.IsKeyUp(Keys.L))
+		if (currentKeyboardState.IsKeyDown(Keys.F5) && lastKeyboardState.IsKeyUp(Keys.F5))
 		{
 			UI.SetUI(null);
 		}

@@ -18,20 +18,25 @@ public static class Program
 		try
 		{
 			Console.WriteLine("Hello World!");
+			string port = "52233";
+			bool allowSinglePlayer = true;
+			if (args.Length > 1)
+			{
+				port = args[0];
+				allowSinglePlayer = args[1] == "true";
+			}
+			
 			PrefabManager.MakePrefabs();
 			Action.Init();
 			Utility.Init();
 			PathFinding.GenerateNodes();
 			//	Console.WriteLine("Enter Port:");
 			//string port = Console.ReadLine();
-			string port = "52233";
-			if (args.Length > 0)
-			{
-				port = args[0];
-			}
+			
 
 
-			NetworkingManager.Start(ushort.Parse(port));
+
+			NetworkingManager.Start(ushort.Parse(port),allowSinglePlayer);
 			Console.WriteLine("informing masterserver");
 			InformMasterServer();
 			

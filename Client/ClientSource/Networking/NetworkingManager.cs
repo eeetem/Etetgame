@@ -1,13 +1,14 @@
 ﻿
 using System;
 using System.Collections.Generic;
-
+using System.Net;
+using System.Net.Sockets;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
 using DefconNull.World;
 using Riptide;
-using Riptide.Transports.Tcp;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using TcpClient = Riptide.Transports.Tcp.TcpClient;
 
 namespace DefconNull.Networking;
 
@@ -17,9 +18,23 @@ public static partial class NetworkingManager
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;
+	
+	public static string GetLocalIPAddress()
+	{
+		var host = Dns.GetHostEntry(Dns.GetHostName());
+		foreach (var ip in host.AddressList)
+		{
+			if (ip.AddressFamily == AddressFamily.InterNetwork)
+			{
+				return ip.ToString();
+			}
+		}
+		throw new Exception("No network adapters with an IPv4 address in the system!");
+	}
 	public static bool Connect(string ipport,string name)
 	{
-		
+		ipport = ipport.Trim();
+		ipport = ipport.Replace("localhost", GetLocalIPAddress());
 		if(client!=null)
 			client.Disconnect();
 		
@@ -89,9 +104,10 @@ public static partial class NetworkingManager
 		return true;
 
 	}
-	public static void SendStartGame()
+	public static void SendStartGame(bool singleplayer = false)
 	{
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.StartGame);
+		msg.AddBool(singleplayer);
 		client?.Send(msg);
 	}
 	public static void Disconnect()
@@ -145,7 +161,16 @@ public static partial class NetworkingManager
 	public static void SendSquadComp(List<SquadMember> composition)
 	{
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.SquadComp);
+		msg.Add(false);
 		msg.AddSerializables(composition.ToArray());
+		client?.Send(msg);
+	}
+	public static void SendDualSquadComp(List<SquadMember> composition1,List<SquadMember> composition2)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.SquadComp);
+		msg.Add(true);
+		msg.AddSerializables(composition1.ToArray());
+		msg.AddSerializables(composition2.ToArray());
 		client?.Send(msg);
 	}
 		
