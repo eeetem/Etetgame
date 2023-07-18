@@ -1,4 +1,4 @@
-﻿namespace MultiplayerXeno;
+﻿namespace DefconNull.Networking;
 
 public class NetMsgIds
 {

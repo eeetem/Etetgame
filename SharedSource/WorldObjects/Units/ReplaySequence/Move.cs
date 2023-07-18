@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class Move : SequenceAction
 {
@@ -28,7 +28,7 @@ public class Move : SequenceAction
 	protected override Task GenerateTask()
 	{
 #if CLIENT
-		RenderSystem.debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
+	//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
 #endif
 		var t = new Task(delegate
 		{

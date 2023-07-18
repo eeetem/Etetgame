@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 [Serializable]
 public class RayCastOutcome//fuck the network library holy moly
@@ -145,7 +145,7 @@ public struct Vector2Int : IMessageSerializable
 		
 	public static Vector2Int operator-(Vector2Int a, Vector2Int b)
 		=> new Vector2Int(a.X-b.X, a.Y-b.Y);
-	public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => lhs?.X == rhs?.X&&lhs?.Y == rhs?.Y;
+	public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => lhs.Equals(rhs);
 	
 	public static bool operator !=(Vector2Int? lhs, Vector2Int? rhs) => !(lhs == rhs);
 	

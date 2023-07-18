@@ -1,38 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public class ExtraAction : IExtraAction
 {
 	public readonly string name = null!;
 	public readonly string tooltip = null!;
-	public readonly int DeterminationChange;
-	public readonly ValueChange MovePointChange;
-	public readonly ValueChange ActionPointChange;
+	public readonly int DetCost;
+	public readonly int MoveCost;
+	public readonly int ActCost;
 	public readonly WorldAction act = null!;
 	public WorldAction WorldAction => act;
 	public readonly bool immideaateActivation;
 
 
 
-	public int[] GetConsiquences(Unit c)
+	public Tuple<int,int,int> GetCost(Unit c)
 	{
-		return new[] {DeterminationChange, ActionPointChange.GetChange(c.ActionPoints), MovePointChange.GetChange(c.MovePoints)};
+		return new Tuple<int, int, int>(DetCost,ActCost,MoveCost);
 	}
 
 	public bool ImmideateActivation => immideaateActivation;
 
 	public string Tooltip => tooltip;
 
-	public ExtraAction(string name, string tooltip, int determinationCost, ValueChange movePointCost, ValueChange actionPointCost, WorldAction action, bool immideaateActivation)
+	public ExtraAction(string name, string tooltip, int determinationCost, int movePointCost, int actionPointCost, WorldAction action, bool immideaateActivation)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
-		DeterminationChange = determinationCost;
-		MovePointChange = movePointCost;
-		ActionPointChange  = actionPointCost;
+		DetCost = determinationCost;
+		MoveCost = movePointCost;
+		ActCost  = actionPointCost;
 		act = action;
 		this.immideaateActivation = immideaateActivation;
 #if CLIENT
@@ -60,27 +61,22 @@ public class ExtraAction : IExtraAction
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
 	{
-		if (actor.Determination + DeterminationChange < 0)
+		if (actor.Determination - DetCost < 0)
 		{
 			return new Tuple<bool, string>(false, "Not enough determination");
 		}
 		
-
-		if (!MovePointChange.Set)
+		if (actor.MovePoints - MoveCost < 0)
 		{
-			if (actor.MovePoints + MovePointChange.Value < 0)
-			{
-				return new Tuple<bool, string>(false, "Not enough move points");
-			}
+			return new Tuple<bool, string>(false, "Not enough move points");
 		}
+		
 
-		if (!MovePointChange.Set)
+		if (actor.ActionPoints - MoveCost < 0)
 		{
-			if (actor.ActionPoints + ActionPointChange.Value < 0)
-			{
-				return new Tuple<bool, string>(false, "Not enough action points");
-			}
+			return new Tuple<bool, string>(false, "Not enough action points");
 		}
+		
 
 		return new Tuple<bool, string>(true, "");
 	}
@@ -102,9 +98,9 @@ public class ExtraAction : IExtraAction
 			target = actor.WorldObject.TileLocation.Position;
 		}
 		
-		actor.Suppress(-DeterminationChange,true);
-		MovePointChange.Apply(ref actor.MovePoints);
-		ActionPointChange.Apply(ref actor.ActionPoints);
+		actor.Suppress(-DetCost,true);
+		actor.MovePoints -= MoveCost;
+		actor.ActionPoints -= ActCost;
 		WorldAction.Execute( actor,  target);
 	}
 #if CLIENT
@@ -131,7 +127,7 @@ public class ExtraAction : IExtraAction
 
 	public object Clone()
 	{
-		return new ExtraAction(name, tooltip, DeterminationChange, MovePointChange, ActionPointChange, act, immideaateActivation);	
+		return new ExtraAction(name, tooltip, DetCost, MoveCost, ActCost, act, immideaateActivation);	
 	}
 
 

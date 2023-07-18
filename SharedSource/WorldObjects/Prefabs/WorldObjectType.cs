@@ -1,8 +1,11 @@
 ﻿using System;
-using MonoGame.Extended;
-using Microsoft.Xna.Framework;
 
-namespace MultiplayerXeno;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended;
+#if CLIENT
+using Myra.Graphics2D;
+#endif
+namespace DefconNull.World.WorldObjects;
 
 public partial class WorldObjectType
 {

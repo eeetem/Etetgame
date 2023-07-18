@@ -1,7 +1,7 @@
-﻿using MultiplayerXeno;
+﻿
 using Myra.Graphics2D.UI;
 
-namespace MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
+namespace DefconNull.Rendering.CustomUIElements;
 
 public class SoundButton : TextButton
 {

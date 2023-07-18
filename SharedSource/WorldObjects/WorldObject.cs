@@ -1,16 +1,15 @@
 ﻿#nullable enable
 using System;
 using System.Threading.Tasks;
+
 using MonoGame.Extended;
 using Riptide;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
-
+using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public partial class WorldObject
 {

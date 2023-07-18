@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class WorldChange : SequenceAction
 {
@@ -15,8 +15,8 @@ public class WorldChange : SequenceAction
 	}
 	public WorldChange(int actorID, Message args) : base(actorID, SequenceType.WorldEffect)
 	{
-		this.target = args.GetSerializable<Vector2Int>();
-		this.effect = args.GetSerializable<WorldEffect>();
+		target = args.GetSerializable<Vector2Int>();
+		effect = args.GetSerializable<WorldEffect>();
 	}
 
 	public override Task Do()

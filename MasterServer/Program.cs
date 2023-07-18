@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using DefconNull.Networking;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Utils;
 
-namespace MultiplayerXeno; // Note: actual namespace depends on the project name.
+namespace MasterServer; // Note: actual namespace depends on the project name.
 
 public static class Program
 {

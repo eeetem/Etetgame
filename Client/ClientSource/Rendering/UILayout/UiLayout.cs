@@ -1,4 +1,5 @@
 ﻿using System.IO;
+
 using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.Styles;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public abstract class UiLayout
 {

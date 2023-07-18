@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public class Projectile
 {

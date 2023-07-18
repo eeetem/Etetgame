@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D.UI;
+using Riptide;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class EditorUiLayout : MenuLayout
 {

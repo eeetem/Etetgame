@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
+using DefconNull.World.WorldActions;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public class UnitType : WorldObjectType
 {
@@ -49,7 +48,7 @@ public class UnitType : WorldObjectType
 
 		if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
 		{
-			this.SpawnEffect?.Apply(tile.Position);
+			SpawnEffect?.Apply(tile.Position);
 		}
 	}
 #if CLIENT

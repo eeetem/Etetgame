@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Riptide;
 using System.Threading.Tasks;
+using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class UseSelectedItem : SequenceAction
 {
@@ -11,11 +11,11 @@ public class UseSelectedItem : SequenceAction
 
 	public UseSelectedItem(int actorID, Vector2Int target) : base(actorID, SequenceType.UseItem)
 	{
-		this.Target = target;
+		Target = target;
 	}
 	public UseSelectedItem(int actorID, Message args) : base(actorID, SequenceType.UseItem)
 	{
-		this.Target = args.GetSerializable<Vector2Int>();
+		Target = args.GetSerializable<Vector2Int>();
 	}
 
 	public override Task Do()

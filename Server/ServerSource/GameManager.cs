@@ -1,10 +1,15 @@
-﻿namespace MultiplayerXeno;
+﻿using DefconNull.Networking;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
+
+
+namespace DefconNull;
 
 public static partial class GameManager
 {
-	public static Client? Player1;
-	public static Client? Player2;
-	public static List<Client> Spectators = new();
+	public static ClientInstance? Player1;
+	public static ClientInstance? Player2;
+	public static List<ClientInstance> Spectators = new();
 	public static PreGameDataStruct PreGameData = new();
 
 
@@ -20,7 +25,7 @@ public static partial class GameManager
 		GameState = GameState.Setup;
 
 
-		Networking.SendGameData();
+		NetworkingManager.SendGameData();
 	}
 
 
@@ -91,7 +96,7 @@ public static partial class GameManager
 
 
 		Thread.Sleep(1000); //let the clients process spawns
-		Networking.SendGameData();
+		NetworkingManager.SendGameData();
 		Thread.Sleep(1000); //let the clients process UI
 
 		var rng = Random.Shared.Next(100);
@@ -104,7 +109,7 @@ public static partial class GameManager
 		}
 
 		Thread.Sleep(1000); //just in case
-		Networking.SendGameData();
+		NetworkingManager.SendGameData();
 
 	}
 

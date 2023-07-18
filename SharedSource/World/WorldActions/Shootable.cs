@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
+
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public class Shootable : DeliveryMethod
 {

@@ -1,9 +1,10 @@
 ﻿using System;
+using DefconNull.Networking;
+using DefconNull.World.WorldActions;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.ReplaySequence;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class UseAbility : Action
 {
@@ -15,8 +16,8 @@ public class UseAbility : Action
 
 		public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
 		{
+			
 			IExtraAction action = actor.GetAction(AbilityIndex);
-
 			return action.CanPerform(actor, ref target);
 
 		}
@@ -41,7 +42,7 @@ public class UseAbility : Action
 	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
 	{
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.DoAction(actor.WorldObject.ID,target,AbilityIndex));
+		queue.Enqueue(new DoAction(actor.WorldObject.ID,target,AbilityIndex));
 		return queue;
 
 
@@ -62,7 +63,7 @@ public class UseAbility : Action
 				packet.Args.Add(a);
 			}
 
-			Networking.SendGameAction(packet);
+			NetworkingManager.SendGameAction(packet);
 		
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MultiplayerXeno.UILayouts;
+
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
+using DefconNull.World;
 using Riptide;
 using Riptide.Transports.Tcp;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Networking;
 
 public class MasterServerNetworking
 {
-	public static Client? Client;
+	public static Riptide.Client? Client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool IsConnected => Client != null && Client.IsConnected;
@@ -24,7 +27,7 @@ public class MasterServerNetworking
 		Name = name;
 
 
-		Client = new Client( new TcpClient());
+		Client = new Riptide.Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
 		Client.TimeoutTime = 11000;
 		Client.HeartbeatInterval = 5000;
@@ -55,7 +58,7 @@ public class MasterServerNetworking
 		{
 			
 			Console.WriteLine("lost connection to master server");
-			if(!Networking.Connected)//only change ui if we're not in a server
+			if(!NetworkingManager.Connected)//only change ui if we're not in a server
 			{
 				UI.SetUI(new MainMenuLayout());
 				Task t = new Task(() =>
@@ -119,7 +122,7 @@ public class MasterServerNetworking
 	{
 		Console.WriteLine("Connecting to started lobbby...");
 		var data = message.GetSerializable<LobbyData>();
-		var result = Networking.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
+		var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
 		Console.WriteLine("result: "+result);
 	
 	}

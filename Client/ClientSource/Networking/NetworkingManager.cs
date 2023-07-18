@@ -1,15 +1,19 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using MultiplayerXeno.UILayouts;
+
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
+using DefconNull.World;
 using Riptide;
 using Riptide.Transports.Tcp;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
+namespace DefconNull.Networking;
 
-namespace MultiplayerXeno;
-
-public static partial class Networking
+public static partial class NetworkingManager
 {
-	private static Client? client;
+	private static Riptide.Client? client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;
@@ -22,7 +26,7 @@ public static partial class Networking
 		Ipport = ipport;
 		Name = name;
 		
-		client = new Client( new TcpClient());
+		client = new Riptide.Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;

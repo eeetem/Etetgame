@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using DefconNull.Networking;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static class Chat
 {
@@ -40,9 +41,9 @@ public static class Chat
 	{
 		if (message != "")
 		{ 
-			if (Networking.Connected )
+			if (NetworkingManager.Connected )
 			{
-				Networking.ChatMSG(message);
+				NetworkingManager.ChatMSG(message);
 			}
 			//	MasterServerNetworking.ChatMSG(message);
 		}

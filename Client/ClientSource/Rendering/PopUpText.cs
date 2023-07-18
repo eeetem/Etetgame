@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Rendering;
 
 public class PopUpText
 {

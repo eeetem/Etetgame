@@ -1,12 +1,13 @@
 ﻿using System;
+
+using DefconNull.Rendering.UILayout;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MultiplayerXeno.UILayouts;
 using Myra;
 using Myra.Graphics2D.UI;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Rendering;
 
 public static class UI
 {

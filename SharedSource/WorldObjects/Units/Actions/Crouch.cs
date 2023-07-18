@@ -1,10 +1,9 @@
 ﻿using System;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.ReplaySequence;
 #if CLIENT
-using MultiplayerXeno.UILayouts;
 #endif
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class Crouch : Action
 {
@@ -43,12 +42,12 @@ public class Crouch : Action
 		w.TargetFriend = true;
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
 
 		foreach (var shooter in shooters)
 		{
-			queue.Enqueue(new ReplaySequence.DoAction(shooter.WorldObject.ID,actor.WorldObject.TileLocation.Position,-1));
+			queue.Enqueue(new DoAction(shooter.WorldObject.ID,actor.WorldObject.TileLocation.Position,-1));
 		}
 		
 		return queue;

@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <RootNamespace>DefconNull</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -54,8 +55,8 @@
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\Networking.cs">
-        <Link>SharedSource\Networking.cs</Link>
+      <Compile Include="..\SharedSource\NetworkingManager.cs">
+        <Link>SharedSource\NetworkingManager.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
@@ -162,31 +163,31 @@
       <Compile Include="..\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\DeliveryMethod.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\DeliveryMethod.cs">
         <Link>SharedSource\World\WorldAction\DeliveryMethod.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ExtraAction.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\ExtraAction.cs">
         <Link>SharedSource\World\WorldAction\ExtraAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ExtraToggleAction.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\ExtraToggleAction.cs">
         <Link>SharedSource\World\WorldAction\ExtraToggleAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\IExtraAction.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\IExtraAction.cs">
         <Link>SharedSource\World\WorldAction\IExtraAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ImmideateDelivery.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\ImmideateDelivery.cs">
         <Link>SharedSource\World\WorldAction\ImmideateDelivery.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\Shootable.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\Shootable.cs">
         <Link>SharedSource\World\WorldAction\Shootable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\Throwable.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\Throwable.cs">
         <Link>SharedSource\World\WorldAction\Throwable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\VissionCast.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\VissionCast.cs">
         <Link>SharedSource\World\WorldAction\VissionCast.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\WorldAction.cs">
+      <Compile Include="..\SharedSource\World\WorldActions\WorldAction.cs">
         <Link>SharedSource\World\WorldAction\WorldAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\World\WorldManager.cs">

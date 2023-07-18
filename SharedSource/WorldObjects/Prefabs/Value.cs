@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public struct Value
 {

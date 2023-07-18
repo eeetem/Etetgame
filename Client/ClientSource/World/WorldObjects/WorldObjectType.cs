@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.Rendering;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using Riptide;
 
-
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public partial class WorldObjectType
 {
@@ -24,7 +25,7 @@ public partial class WorldObjectType
 		{
 			TotalVariationsWeight += va.Item2;
 		}
-		this.Variations = variations;
+		Variations = variations;
 		spriteSheet = new Texture2D[variations.Count][];
 		for (int i = 0; i < variations.Count; i++)
 		{

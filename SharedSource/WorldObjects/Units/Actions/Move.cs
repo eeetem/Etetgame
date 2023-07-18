@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MultiplayerXeno.Pathfinding;
-using MultiplayerXeno.ReplaySequence;
 
-namespace MultiplayerXeno;
+using Microsoft.Xna.Framework.Graphics;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended;
+#if CLIENT
+using DefconNull.Rendering;
+#endif
+
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class Move : Action
 {
@@ -104,7 +107,7 @@ public class Move : Action
 		w.TargetFriend = true;
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		for (int j = 0; j < paths.Count; j++)
 		{
 			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
@@ -114,7 +117,7 @@ public class Move : Action
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-					queue.Enqueue(new ReplaySequence.DoAction(attacker.WorldObject.ID, ShootingSpots[j].Item2, -1));
+					queue.Enqueue(new DoAction(attacker.WorldObject.ID, ShootingSpots[j].Item2, -1));
 				}
 			}
 			

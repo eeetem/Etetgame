@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Rendering;
 
 public static class TextureManager
 {

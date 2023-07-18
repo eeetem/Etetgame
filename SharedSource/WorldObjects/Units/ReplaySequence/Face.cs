@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class Face : SequenceAction
 {
@@ -12,7 +12,7 @@ public class Face : SequenceAction
 	}
 	public Face(int actorID, Message args) : base(actorID, SequenceType.Face)
 	{
-		this.target = args.GetSerializable<Vector2Int>();
+		target = args.GetSerializable<Vector2Int>();
 	}
 
 	protected override Task GenerateTask()

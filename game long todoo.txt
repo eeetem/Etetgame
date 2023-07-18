@@ -7,7 +7,7 @@ alt inspection of unit stats
 
 
 clearer move boundry.
-fov flickering
+
 shot preview to hit target
 freeze on turn end-
 

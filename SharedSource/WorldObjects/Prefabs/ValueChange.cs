@@ -1,6 +1,6 @@
 ﻿using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public struct ValueChange : IMessageSerializable
 {

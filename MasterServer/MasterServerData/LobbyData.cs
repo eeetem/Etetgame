@@ -1,13 +1,13 @@
 ﻿using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Networking;
 	public class LobbyData:IMessageSerializable
 	{
-		public string Name { get; set; }
-		public string MapName { get; set; }
+		public string Name { get; set; } = "";
+		public string MapName { get; set; } = "";
 		public int PlayerCount { get; set; }
 		public int Spectators { get; set; }
-		public string GameState { get; set; }
+		public string GameState { get; set; } = "";
 		public int Port{ get; set; }
 		public bool HasPassword{ get; set; }
 		//spectators

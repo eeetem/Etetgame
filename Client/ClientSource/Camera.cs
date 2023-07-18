@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static class Camera
 {

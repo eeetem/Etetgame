@@ -1,9 +1,14 @@
-﻿using MultiplayerXeno.Items;
+﻿
+using DefconNull.World;
+using DefconNull.World.WorldActions;
+using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.Actions;
 using Riptide;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Networking;
 
-public static partial class Networking
+public static partial class NetworkingManager
 {
 			
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Kick)]
@@ -22,7 +27,7 @@ public static partial class Networking
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.EndTurn)]
 	private static void HandleEndTurn(ushort senderID,Message message)
 	{
-		Client? currentPlayer;
+		ClientInstance? currentPlayer;
 		if (GameManager.IsPlayer1Turn)
 		{
 			
@@ -120,14 +125,14 @@ public static partial class Networking
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
-		if (GameManager.Player1.Connection.Id == senderID)
+		if (GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID)
 		{
 			if (!GameManager.IsPlayer1Turn){
 				Console.WriteLine("Client sent an action out of turn");
 				return;
 			}
 		}
-		else if (GameManager.Player2.Connection.Id == senderID)
+		else if (GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID)
 		{
 			if (GameManager.IsPlayer1Turn){
 				Console.WriteLine("Client sent an action out of turn");

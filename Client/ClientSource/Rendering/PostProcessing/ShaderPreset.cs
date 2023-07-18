@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering;
+namespace DefconNull.Rendering.PostProcessing;
 
 public abstract class ShaderPreset
 {

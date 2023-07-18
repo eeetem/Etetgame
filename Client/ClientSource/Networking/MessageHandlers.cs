@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using MultiplayerXeno.ReplaySequence;
+
+using DefconNull.Rendering;
+using DefconNull.World;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Myra.Graphics2D.UI;
 using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Networking;
 
-public static partial class Networking
+public static partial class NetworkingManager
 {
 	private static Dialog? mapLoadMsg;
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.MapDataInitiate)]
@@ -47,7 +50,6 @@ public static partial class Networking
 
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 		WorldManager.Instance.AddSequence(new UpdateTile(data));
-		
 
 	}
 	
@@ -86,28 +88,28 @@ public static partial class Networking
 			{
 					
 				case SequenceAction.SequenceType.Face:
-					sqc = new ReplaySequence.Face(id, message);
+					sqc = new Face(id, message);
 					break;
 				case SequenceAction.SequenceType.Move:
-					sqc = new ReplaySequence.Move(id, message);
+					sqc = new Move(id, message);
 					break;
 				case SequenceAction.SequenceType.Crouch:
-					sqc = new ReplaySequence.Crouch(id, message);
+					sqc = new Crouch(id, message);
 					break;
 				case SequenceAction.SequenceType.WorldEffect:
-					sqc = new ReplaySequence.WorldChange(id, message);
+					sqc = new WorldChange(id, message);
 					break;
 				case SequenceAction.SequenceType.Action:
-					sqc = new ReplaySequence.DoAction(id, message);
+					sqc = new DoAction(id, message);
 					break;
 				case SequenceAction.SequenceType.SelectItem:
-					sqc = new ReplaySequence.SelectItem(id, message);
+					sqc = new SelectItem(id, message);
 					break;
 				case SequenceAction.SequenceType.UseItem:
-					sqc = new ReplaySequence.UseSelectedItem(id, message);
+					sqc = new UseSelectedItem(id, message);
 					break;
 				case SequenceAction.SequenceType.Overwatch:
-					sqc = new ReplaySequence.OverWatch(id, message);
+					sqc = new OverWatch(id, message);
 					break;
 				default:
 					throw new Exception("Unknown Sequence Type Recived: "+type);

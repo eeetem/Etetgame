@@ -1,11 +1,18 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using MultiplayerXeno.UILayouts;
+using DefconNull.Networking;
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
+using DefconNull.World;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static partial class GameManager
 {
@@ -73,7 +80,7 @@ public static partial class GameManager
 				UI.OptionMessage("Are you sure?", "You have units with unspent move points", "no", (a,b)=> {  }, "yes", (a, b) =>
 				{
 						
-					Networking.EndTurn();
+					NetworkingManager.EndTurn();
 					Action.SetActiveAction(null);
 
 				});
@@ -81,7 +88,7 @@ public static partial class GameManager
 			}
 		}
 
-		Networking.EndTurn();
+		NetworkingManager.EndTurn();
 		Action.SetActiveAction(null);
 	
 	}
@@ -147,4 +154,53 @@ public static partial class GameManager
 			
 
 	}
+	
+	public static void StartLocalServer()
+	{
+		Console.WriteLine("Starting local server:");
+		string name = "LocalServer";
+		string pass = "";
+		int port = 52233;
+		Console.WriteLine("Port: " + port); //ddos or spam protection is needed
+		var process = new Process();
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+		{
+			Console.WriteLine("Filename: ./Server");
+			process.StartInfo.FileName = "./Server";
+		}
+		else
+		{
+			Console.WriteLine("Filename: ./Server.exe");
+			process.StartInfo.FileName = "./Server.exe";
+		}
+				
+		List<string> args = new List<string>();
+		args.Add(port.ToString());
+		args.Add(pass);
+		process.StartInfo.Arguments = string.Join(" ", args);
+		process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
+		process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
+
+		Console.WriteLine("starting...");
+		try
+		{
+			process.Start();
+			Console.WriteLine("process started with id: "+process.Id);
+			process.BeginErrorReadLine();
+			process.BeginOutputReadLine();
+			LobbyData lobbyData = new LobbyData(name, port);
+			if (pass != "")
+			{
+				lobbyData.HasPassword = true;
+			}
+
+			Thread.Sleep(1000);
+			NetworkingManager.Connect("localhost:" + port,"Player");
+
+		}catch(Exception e)
+		{
+			Console.WriteLine(e);
+		}
+	}
+
 }

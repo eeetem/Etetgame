@@ -1,5 +1,9 @@
 ﻿#nullable enable
+
 using System.Collections.Generic;
+using DefconNull.Networking;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -7,11 +11,11 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using Thickness = Myra.Graphics2D.Thickness;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class SquadCompBuilderLayout : UiLayout
 {
-	private readonly List<Networking.SquadMember> _composition = new List<Networking.SquadMember>();
+	private readonly List<SquadMember> _composition = new List<SquadMember>();
 	private Label freeslots;
 	private List<Vector2Int> mySpawnPoints = new List<Vector2Int>();
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
@@ -19,7 +23,7 @@ public class SquadCompBuilderLayout : UiLayout
 		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
 		
-		mySpawnPoints =  mySpawnPoints= GameManager.IsPlayer1 ? GameManager.T1SpawnPoints : GameManager.T2SpawnPoints;
+		mySpawnPoints =  mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
 		Camera.SetPos(mySpawnPoints[0]);
 		freeslots = new Label()
 		{
@@ -70,7 +74,7 @@ public class SquadCompBuilderLayout : UiLayout
 		};
 		confirm.Click += (s, a) =>
 		{
-			Networking.SendSquadComp(_composition);
+			NetworkingManager.SendSquadComp(_composition);
 			var lbl = new Label();
 			lbl.Text = "Waiting for other players";
 			lbl.HorizontalAlignment = HorizontalAlignment.Center;
@@ -84,10 +88,10 @@ public class SquadCompBuilderLayout : UiLayout
 	}
 
 	
-	static Networking.SquadMember? _currentlyPlacing;
+	static SquadMember? _currentlyPlacing;
 	private static void StartPlacing(string? unit)
 	{
-		_currentlyPlacing = new Networking.SquadMember();
+		_currentlyPlacing = new SquadMember();
 		_currentlyPlacing.Prefab = unit;
 		_currentlyPlacing.Inventory = new List<string>();
 
@@ -97,7 +101,7 @@ public class SquadCompBuilderLayout : UiLayout
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		Networking.SquadMember memberAtLocation = null;
+		SquadMember memberAtLocation = null;
 		foreach (var member in _composition)
 		{
 			if (member.Position == position)

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class Crouch : SequenceAction
 {

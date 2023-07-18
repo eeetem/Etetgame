@@ -1,12 +1,15 @@
 ﻿using System.Reflection;
-using MultiplayerXeno.ReplaySequence;
+
+
+using DefconNull.World;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Utils;
 
-namespace MultiplayerXeno;
+namespace DefconNull.Networking;
 
-public static partial class Networking
+public static partial class NetworkingManager
 {
 	private static Server server = null!;
 	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
@@ -45,7 +48,7 @@ public static partial class Networking
 
 		if (GameManager.Player1 == null)
 		{
-			GameManager.Player1 = new Client(name,connection);
+			GameManager.Player1 = new ClientInstance(name,connection);
 			SendChatMessage(name+" joined as Player 1");
 		}
 		else if (GameManager.Player1.Name == name)
@@ -65,7 +68,7 @@ public static partial class Networking
 		else if (GameManager.Player2 == null)
 		{
 			
-			GameManager.Player2 = new Client(name,connection);
+			GameManager.Player2 = new ClientInstance(name,connection);
 			SendChatMessage(name+" joined as Player 2");
 		}
 		else if (GameManager.Player2.Name == name)
@@ -82,7 +85,7 @@ public static partial class Networking
 		}
 		else
 		{
-			GameManager.Spectators.Add(new Client(name,connection));
+			GameManager.Spectators.Add(new ClientInstance(name,connection));
 			SendChatMessage(name+" joined the spectators");
 		}
 

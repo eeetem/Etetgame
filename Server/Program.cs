@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
-using MultiplayerXeno.Pathfinding;
+using DefconNull.Networking;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
-namespace MultiplayerXeno; // Note: actual namespace depends on the project name.
+namespace DefconNull; // Note: actual namespace depends on the project name.
 
 public static class Program
 {
@@ -28,7 +31,7 @@ public static class Program
 			}
 
 
-			Networking.Start(ushort.Parse(port));
+			NetworkingManager.Start(ushort.Parse(port));
 			Console.WriteLine("informing masterserver");
 			InformMasterServer();
 			
@@ -48,7 +51,7 @@ public static class Program
 		{
 			stopWatch.Restart();
 
-			Networking.Update();
+			NetworkingManager.Update();
 			GameManager.Update(MSperTick);
 			WorldManager.Instance.Update(MSperTick);
 				

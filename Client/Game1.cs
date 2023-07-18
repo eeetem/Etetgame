@@ -1,11 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using DefconNull.LocalObjects;
+using DefconNull.Networking;
+using DefconNull.Rendering;
+using DefconNull.Rendering.PostProcessing;
+using DefconNull.Rendering.UILayout;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.Actions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Pathfinding;
-using MultiplayerXeno.UILayouts;
 using Salaros.Configuration;
 
-
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public class Game1 : Game
 {
@@ -117,7 +123,7 @@ public class Game1 : Game
 
 	protected override void Update(GameTime gameTime)
 	{
-		Networking.Update();
+		NetworkingManager.Update();
 		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);

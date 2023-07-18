@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using DefconNull.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
-namespace MultiplayerXeno;
+namespace DefconNull.LocalObjects;
 
-public class LocalObject : IDrawable
+public class LocalObject : Rendering.IDrawable
 {
 	private Transform2 Transform;
 	private Vector2 Velocity;

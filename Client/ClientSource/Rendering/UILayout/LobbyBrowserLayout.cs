@@ -1,15 +1,15 @@
 ﻿using System;
+using DefconNull.Networking;
+using DefconNull.Rendering.CustomUIElements;
 using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
-using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class LobbyBrowserLayout : MenuLayout
 {
@@ -49,9 +49,9 @@ public class LobbyBrowserLayout : MenuLayout
 				{
 					if (input.Text != "")
 					{
-						if (Networking.Connected)
+						if (NetworkingManager.Connected)
 						{
-							Networking.ChatMSG(input.Text);
+							NetworkingManager.ChatMSG(input.Text);
 						}
 
 
@@ -157,7 +157,7 @@ public class LobbyBrowserLayout : MenuLayout
 					var ip = Game1.config.GetValue("config", "MasterServerIP", "");
 					ip = ip.Substring(0, ip.LastIndexOf(':'));
 					ip += ":" + lobby.Port;
-					var result = Networking.Connect(ip, Game1.config.GetValue("config", "Name", "Operative#"+Random.Shared.Next(1000)));
+					var result = NetworkingManager.Connect(ip, Game1.config.GetValue("config", "Name", "Operative#"+Random.Shared.Next(1000)));
 					if (result)
 					{
 						UI.ShowMessage("Connection Notice", "Connecting to the server.....");

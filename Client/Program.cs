@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static class Program
 {

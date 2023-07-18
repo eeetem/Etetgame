@@ -1,6 +1,7 @@
-﻿using Color = Microsoft.Xna.Framework.Color;
+﻿using DefconNull.World.WorldObjects;
+using Color = Microsoft.Xna.Framework.Color;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World;
 
 public partial class WorldTile
 {
@@ -54,7 +55,7 @@ public partial class WorldTile
 		HighestWatchLevel = 0;
 		foreach (var watcher in Watchers)
 		{
-			if (!watcher.WorldObject.IsVisible())
+			if (!this.IsVisible())
 			{
 				return;
 			}

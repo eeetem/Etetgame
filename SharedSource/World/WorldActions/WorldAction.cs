@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public class WorldAction
 {

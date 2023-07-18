@@ -1,13 +1,12 @@
 ﻿using System;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.ReplaySequence;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class UseItem : Action
 {
@@ -41,9 +40,9 @@ public class UseItem : Action
 		w.TargetFriend = true;
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
 		queue.Enqueue(new ReplaySequence.SelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
-		queue.Enqueue(new ReplaySequence.UseSelectedItem(actor.WorldObject.ID,target));
+		queue.Enqueue(new UseSelectedItem(actor.WorldObject.ID,target));
 		return queue;
 	}
 	#endif

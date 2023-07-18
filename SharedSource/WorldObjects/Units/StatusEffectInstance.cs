@@ -1,4 +1,6 @@
-﻿namespace MultiplayerXeno;
+﻿
+
+namespace DefconNull.World.WorldObjects.Units;
 
 public class StatusEffectInstance
 {

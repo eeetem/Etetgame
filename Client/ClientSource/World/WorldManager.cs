@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World;
 
 public partial class WorldManager
 {
@@ -75,7 +75,7 @@ public partial class WorldManager
 		Vector2Int initialpos = pos;
 		while (itteration < range+2)
 		{
-			if (IsPositionValid(pos))
+			if (DefconNull.World.WorldManager.IsPositionValid(pos))
 			{
 				positionsToCheck.Add(pos);
 			}
@@ -97,14 +97,14 @@ public partial class WorldManager
 			for (int x = 0; x < itteration; x++)
 			{
 					
-				if (IsPositionValid(pos + invoffset * (x + 1)))
+				if (DefconNull.World.WorldManager.IsPositionValid(pos + invoffset * (x + 1)))
 				{
 
 					positionsToCheck.Add(pos + invoffset * (x + 1));
 					
 				}
 
-				if (IsPositionValid(pos + offset * (x + 1)))
+				if (DefconNull.World.WorldManager.IsPositionValid(pos + offset * (x + 1)))
 				{
 
 					positionsToCheck.Add(pos + offset * (x + 1));
@@ -120,7 +120,7 @@ public partial class WorldManager
 		{
 			var vis = CanSee(initialpos, position, range, crouched);
 			if(vis != Visibility.None)
-				resullt.AddOrUpdate(position,vis,(key,old) => vis);
+				resullt.AddOrUpdate(position,(Visibility) vis,(key,old) => vis);
 		});
 		
 		return resullt;

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 
-using MultiplayerXeno.Items;
-
-namespace MultiplayerXeno;
+using DefconNull.World.WorldActions;
+#if CLIENT
+using DefconNull.Rendering;
+#endif
+namespace DefconNull.World.WorldObjects;
 
 public static class PrefabManager
 {
@@ -180,12 +182,15 @@ public static class PrefabManager
 				
 				
 			XmlNode? defaultact = xmlObj.GetElementsByTagName("defaultAttack")[0];
-			int determinationChange = int.Parse(defaultact?.Attributes?["det"]?.InnerText ?? "0");
-			ValueChange movePointChange =     new ValueChange(defaultact?.Attributes?["mpoint"]?.InnerText ?? "-1");
-			ValueChange actionPointChange =   new ValueChange(defaultact?.Attributes?["apoint"]?.InnerText ?? "-1"); 
+			int detCost = int.Parse(defaultact?.Attributes?["detCost"]?.InnerText ?? "0");
+			int moveCost =  int.Parse(defaultact?.Attributes?["moveCost"]?.InnerText ?? "1");
+			int actCost =  int.Parse(defaultact?.Attributes?["actCost"]?.InnerText ?? "1"); 
 			WorldAction action =	PraseWorldAction((XmlElement) defaultact! ?? throw new InvalidOperationException());
 
-			unitType.DefaultAttack =  new ExtraAction(action.Name,action.Description,determinationChange,movePointChange,actionPointChange,action,false);
+			if(detCost<0||moveCost<0||actCost<0){
+				throw new Exception("negative cost for action");
+			}
+			unitType.DefaultAttack =  new ExtraAction(action.Name,action.Description,detCost,moveCost,actCost,action,false);
 				
 			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
 			if (speff != null)
@@ -231,14 +236,16 @@ public static class PrefabManager
 	{
 		string actname;
 		string tooltip;
-		int DeterminationChange = int.Parse(actobj.Attributes?["det"]?.InnerText ?? "0");
-		ValueChange MovePointChange =     new ValueChange(actobj.Attributes?["mpoint"]?.InnerText ?? "0");
-		ValueChange ActionPointChange =   new ValueChange(actobj.Attributes?["apoint"]?.InnerText ?? "0"); 
+		int DetCost = int.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
+		int MoveCost =     int.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
+		int ActCost =   int.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
 		WorldAction action;
 		action = PraseWorldAction(actobj);
-		
+		if(DetCost<0||MoveCost<0||ActCost<0){
+			throw new Exception("negative cost for action");
+		}
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		ExtraAction a = new ExtraAction(action.Name, action.Description, DeterminationChange, MovePointChange, ActionPointChange, action,immideaateActivation);
+		ExtraAction a = new ExtraAction(action.Name, action.Description, DetCost, MoveCost, ActCost, action,immideaateActivation);
 		return a;
 	}
 

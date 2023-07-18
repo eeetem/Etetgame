@@ -1,11 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
+namespace DefconNull.World.WorldObjects;
 
-namespace MultiplayerXeno;
-
-public partial class WorldObject : IDrawable
+public partial class WorldObject : Rendering.IDrawable
 {
 	private Transform2 DrawTransform = null!;
 	private int spriteVariation;
@@ -15,7 +15,7 @@ public partial class WorldObject : IDrawable
 
 	public Transform2 GetDrawTransform()
 	{
-		DrawTransform.Position = Type.Transform.Position +Utility.GridToWorldPos(TileLocation.Position);
+		DrawTransform.Position = Type.Transform.Position + Utility.GridToWorldPos(TileLocation.Position);
 		return DrawTransform;
 	}
 
@@ -106,5 +106,6 @@ public partial class WorldObject : IDrawable
 	{
 		return Type.Edge && Utility.DoesEdgeBorderTile(this, Utility.WorldPostoGrid(Camera.GetMouseWorldPos()));
 	}
-		
+
+
 }

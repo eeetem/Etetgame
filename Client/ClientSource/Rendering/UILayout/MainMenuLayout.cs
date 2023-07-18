@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
+using DefconNull.Networking;
+using DefconNull.Rendering.CustomUIElements;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class MainMenuLayout : UiLayout
 {
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		Networking.Disconnect();
+		NetworkingManager.Disconnect();
 		MasterServerNetworking.Disconnect();
 		var panel = new Panel()
 		{
@@ -25,34 +28,52 @@ public class MainMenuLayout : UiLayout
 			//	Background = new SolidBrush(Color.wh),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Bottom,
-			Top = (int)(200*globalScale.Y),
-			Height = (int)(300*globalScale.Y),
-			Width = (int)(500*globalScale.X),
+			Top = (int) (200 * globalScale.Y),
+			Height = (int) (300 * globalScale.Y),
+			Width = (int) (500 * globalScale.X),
 			Spacing = 25,
-				
+
 		};
 		panel.Widgets.Add(menustack);
-		
-		var stack = new VerticalStackPanel()
+
+
+
+
+
+		var MPStack = new VerticalStackPanel()
 		{
 			//	Background = new SolidBrush(new Color(10,10,10)),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Bottom,
-			Height = (int)(300*globalScale.Y),
-			Top = (int)(15*globalScale.Y)
+			Height = (int) (300 * globalScale.Y),
+			Top = (int) (-15 * globalScale.Y)
 		};
-		menustack.Widgets.Add(stack);
-			
+		menustack.Widgets.Add(MPStack);
+
 		var startlbl = new Label()
 		{
 			TextColor = Color.Red,
 			GridColumn = 0,
 			GridRow = 1,
-			Text = "START",
+			Text = "Start Game",
 			HorizontalAlignment = HorizontalAlignment.Center
 		};
-		stack.Widgets.Add(startlbl);
-			
+		MPStack.Widgets.Add(startlbl);
+		var singleplayer = new SoundButton
+		{
+			GridColumn = 0,
+			GridRow = 2,
+			Text = "Host/SinglePlayer",
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
+		singleplayer.Click += (a, b) =>
+		{
+			GameManager.StartLocalServer();
+		};
+
+
+		MPStack.Widgets.Add(singleplayer);
 		var lobybtn = new SoundButton
 		{
 			GridColumn = 0,
@@ -85,7 +106,7 @@ public class MainMenuLayout : UiLayout
 				
 				
 		};
-		stack.Widgets.Add(lobybtn);
+		MPStack.Widgets.Add(lobybtn);
 
 		var btn = new SoundButton
 		{
@@ -96,7 +117,7 @@ public class MainMenuLayout : UiLayout
 
 		btn.Click += (s, a) => { UI.SetUI(new ConnectionLayout()); };
 
-		stack.Widgets.Add(btn);
+		MPStack.Widgets.Add(btn);
 
 		var button2 = new SoundButton
 		{

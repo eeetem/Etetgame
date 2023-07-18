@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Riptide;
 
-namespace MultiplayerXeno.ReplaySequence;
+namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class SelectItem : SequenceAction
 {
@@ -12,7 +12,7 @@ public class SelectItem : SequenceAction
 	}
 	public SelectItem(int actorID, Message args) : base(actorID, SequenceType.SelectItem)
 	{
-		this.itemIndex = args.GetInt();
+		itemIndex = args.GetInt();
 	}
 
 	protected override Task GenerateTask()

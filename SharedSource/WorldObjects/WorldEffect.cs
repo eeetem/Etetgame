@@ -1,17 +1,17 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using Riptide;
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.PostProcessing;
+using DefconNull.Rendering.UILayout;
 #endif
 
-using Riptide;
-
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public class WorldEffect : IMessageSerializable
 {

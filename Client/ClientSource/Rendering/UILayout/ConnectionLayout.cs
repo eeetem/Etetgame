@@ -1,9 +1,10 @@
 ﻿using System;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
+using DefconNull.Networking;
+using DefconNull.Rendering.CustomUIElements;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class ConnectionLayout : UiLayout
 {
@@ -54,7 +55,7 @@ public class ConnectionLayout : UiLayout
 		grid.Widgets.Add(exit);
 		button.Click += (s, a) =>
 		{
-			var result = Networking.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
+			var result = NetworkingManager.Connect(textBox.Text.Trim(), textBox2.Text.Trim());
 			if (result)
 			{
 				UI.ShowMessage("Connection Notice", "Connecting to server....");

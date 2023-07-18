@@ -1,7 +1,7 @@
 ﻿using System;
 using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public class VariableValue : IMessageSerializable
 {

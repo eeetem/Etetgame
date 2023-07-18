@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldActions;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects;
 
 public class UsableItem
 {

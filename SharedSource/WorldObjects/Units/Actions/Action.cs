@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefconNull.Networking;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
-using MultiplayerXeno.ReplaySequence;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.UILayout;
 #endif
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public abstract class Action
 {
@@ -96,7 +96,7 @@ public abstract class Action
 	{
 		Console.WriteLine("sending action packet: " + Type + " on " + target + " from " + actor.WorldObject.ID + "");
 		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type);
-		Networking.SendGameAction(packet);
+		NetworkingManager.SendGameAction(packet);
 	}
 #endif
 	
@@ -106,7 +106,7 @@ public abstract class Action
 #if CLIENT
 	public virtual void ExecuteClientSide(Unit actor, Vector2Int target)
 	{
-		Action.SetActiveAction(null);
+		SetActiveAction(null);
 	}
 #else
 
@@ -126,7 +126,7 @@ public abstract class Action
 			{
 				var actions = ExecuteServerSide(actor, target);
 				WorldManager.Instance.AddSequence(actions);
-				Networking.SendSequence(actions);
+				NetworkingManager.SendSequence(actions);
 			}
 			catch (Exception e)
 			{

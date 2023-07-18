@@ -1,9 +1,15 @@
 ﻿using System;
+
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
-namespace MultiplayerXeno.Items;
+#if CLIENT
+using DefconNull.Rendering;
+#endif
+
+namespace DefconNull.World.WorldActions;
 
 public class Throwable : DeliveryMethod
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public class ExtraToggleAction : IExtraAction
 {
@@ -82,14 +83,14 @@ public class ExtraToggleAction : IExtraAction
 		}
 	}
 
-	public int[]  GetConsiquences(Unit c)
+	public Tuple<int,int,int> GetCost(Unit c)
 	{
 		if (isOn)
 		{
-			return off.GetConsiquences(c);
+			return off.GetCost(c);
 		}
 
-		return on.GetConsiquences(c);
+		return on.GetCost(c);
 	}
 
 	public bool ImmideateActivation => true;

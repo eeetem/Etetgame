@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DefconNull.Rendering.PostProcessing;
+using DefconNull.World;
+using DefconNull.World.WorldActions;
+using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.Actions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 using Thickness = Myra.Graphics2D.Thickness;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class GameLayout : MenuLayout
 {
@@ -473,7 +477,7 @@ public class GameLayout : MenuLayout
 		
 			var btn = new ImageButton();
 			ActionButtons.Add(btn);
-			btn.MouseEntered += (o, a) => Tooltip(action.Tooltip,action.GetConsiquences(SelectedUnit)[0],action.GetConsiquences(SelectedUnit)[1],action.GetConsiquences(SelectedUnit)[2]);
+			btn.MouseEntered += (o, a) => Tooltip(action.Tooltip,action.GetCost(SelectedUnit).Item1,action.GetCost(SelectedUnit).Item2,action.GetCost(SelectedUnit).Item3);
 			btn.MouseLeft += (o, a) => HideTooltip();
 			if (action.ImmideateActivation)
 			{

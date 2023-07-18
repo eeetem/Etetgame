@@ -1,15 +1,15 @@
-﻿
-using System;
+﻿using System;
+using DefconNull.Networking;
+using DefconNull.Rendering.CustomUIElements;
+using DefconNull.World;
 using Microsoft.Xna.Framework;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
-using MultiplayerXeno.UILayouts.LayoutWithMenu;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Myra.Graphics2D.UI.File;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class PreGameLobbyLayout : MenuLayout
 {
@@ -91,7 +91,7 @@ public class PreGameLobbyLayout : MenuLayout
 				btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
 			}
 
-			btn.Click += (s, a) => { Networking.SendStartGame(); };
+			btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
 			rightStack.Widgets.Add(btn);
 			var linebreak = new Label()
 			{
@@ -151,7 +151,7 @@ public class PreGameLobbyLayout : MenuLayout
 						var data = GameManager.PreGameData;
 						data.TurnTime = timeLimit;
 						GameManager.PreGameData = data;
-						Networking.SendPreGameUpdate();
+						NetworkingManager.SendPreGameUpdate();
 					}
 					
 					UI.Desktop.Widgets.Remove(gameOptionsMenu);
@@ -195,7 +195,7 @@ public class PreGameLobbyLayout : MenuLayout
 					};
 					kick.Click += (s, a) =>
 					{
-						Networking.KickRequest();
+						NetworkingManager.KickRequest();
 					};
 					lablekick.Widgets.Add(kick);
 					lablekick.Widgets.Add(label);
@@ -285,7 +285,7 @@ public class PreGameLobbyLayout : MenuLayout
 						var data = GameManager.PreGameData;
 						data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
 						GameManager.PreGameData = data;
-						Networking.SendPreGameUpdate();
+						NetworkingManager.SendPreGameUpdate();
 						var lbl = new Label();
 						lbl.Text = "Swaping Map";
 						lbl.HorizontalAlignment = HorizontalAlignment.Center;
@@ -318,7 +318,7 @@ public class PreGameLobbyLayout : MenuLayout
 						data.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
 						GameManager.PreGameData = data;
 					
-						Networking.SendPreGameUpdate();
+						NetworkingManager.SendPreGameUpdate();
 						var lbl = new Label();
 						lbl.Text = "Swaping Map";
 						lbl.HorizontalAlignment = HorizontalAlignment.Center;
@@ -383,7 +383,7 @@ public class PreGameLobbyLayout : MenuLayout
 					file.ButtonOk.Click += (o, e) =>
 					{
 						var path = file.FilePath;
-						Networking.UploadMap(path);
+						NetworkingManager.UploadMap(path);
 						file.Close();
 					};
 					grid1.Widgets.Add(file);

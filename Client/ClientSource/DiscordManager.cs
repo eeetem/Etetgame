@@ -2,7 +2,7 @@
 using NetDiscordRpc;
 using NetDiscordRpc.RPC;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static class DiscordManager
 {

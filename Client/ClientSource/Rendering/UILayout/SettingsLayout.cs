@@ -1,12 +1,12 @@
 ﻿using System.Globalization;
 using System.Linq;
+using DefconNull.Rendering.CustomUIElements;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.CustomUIElements;
 using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
-namespace MultiplayerXeno.UILayouts;
+namespace DefconNull.Rendering.UILayout;
 
 public class SettingsLayout : UiLayout
 {

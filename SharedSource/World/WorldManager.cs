@@ -1,14 +1,20 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
-using MultiplayerXeno.ReplaySequence;
+using System.Threading.Tasks;
+using DefconNull.Networking;
+
+using DefconNull.World.WorldObjects;
+
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework;
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.UILayout;
 #endif
-namespace MultiplayerXeno
+
+
+namespace DefconNull.World
 {
 	public  partial class WorldManager
 	{
@@ -639,7 +645,7 @@ namespace MultiplayerXeno
 			
 				foreach (var tile in tilesToUpdate)
 				{
-					Networking.SendTileUpdate(tile);
+					NetworkingManager.SendTileUpdate(tile);
 				}
 				
 

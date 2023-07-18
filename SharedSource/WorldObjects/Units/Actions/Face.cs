@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.ReplaySequence;
 
-namespace MultiplayerXeno;
+namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class Face : Action
 {

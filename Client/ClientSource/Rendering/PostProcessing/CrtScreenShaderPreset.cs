@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoGameCrossPlatformDesktopApplication.ClientSource.Rendering.PostProcessing;
+namespace DefconNull.Rendering.PostProcessing;
 
 public class CrtScreenShaderPreset : ShaderPreset
 {

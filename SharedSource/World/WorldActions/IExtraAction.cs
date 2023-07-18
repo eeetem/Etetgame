@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public interface IExtraAction : ICloneable
 {
@@ -12,7 +13,7 @@ public interface IExtraAction : ICloneable
 	List<string> MakePacketArgs();
 	void Execute(Unit actor, Vector2Int target);
 	WorldAction WorldAction { get; }
-	int[]  GetConsiquences(Unit c);
+	Tuple<int, int, int> GetCost(Unit c);
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
 #if CLIENT

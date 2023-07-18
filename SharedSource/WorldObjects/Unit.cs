@@ -1,17 +1,20 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldActions;
+using DefconNull.World.WorldObjects.Units;
 using Microsoft.Xna.Framework;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.Pathfinding;
 using Riptide;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+
+using DefconNull.Rendering;
 #endif
 
 #nullable enable
 
 
-namespace MultiplayerXeno
+namespace DefconNull.World.WorldObjects
 {
 	public partial class Unit
 	{
@@ -143,7 +146,7 @@ namespace MultiplayerXeno
 		
 		public IExtraAction GetAction(int index)
 		{
-			if(index == -1)
+			if(index == -1 || index >= Actions.Count)
 			{
 				return DefaultAttack;
 			}
@@ -643,6 +646,8 @@ namespace MultiplayerXeno
 				_selectedItemIndex = value;
 			}
 		}
+
+		public int Health => WorldObject.Health;
 
 		public UsableItem? LastItem;
 		

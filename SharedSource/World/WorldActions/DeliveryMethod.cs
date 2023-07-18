@@ -1,7 +1,8 @@
 ﻿using System;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno.Items;
+namespace DefconNull.World.WorldActions;
 
 public abstract class DeliveryMethod
 {

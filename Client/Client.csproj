@@ -6,6 +6,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Nullable>enable</Nullable>
+        <RootNamespace>DefconNull</RootNamespace>
     </PropertyGroup>
     <PropertyGroup>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -253,7 +254,7 @@
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Update="ClientSource\Networking.cs">
+      <Compile Update="ClientSource\NetworkingManager.cs">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </Compile>
       <Compile Include="..\MasterServer\MasterServerData\LobbyData.cs">
@@ -265,8 +266,8 @@
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\Networking.cs">
-        <Link>SharedSource\Networking.cs</Link>
+      <Compile Include="..\SharedSource\NetworkingManager.cs">
+        <Link>SharedSource\NetworkingManager.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
@@ -373,32 +374,32 @@
       <Compile Include="..\SharedSource\WorldObjects\WorldObject.cs">
         <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\DeliveryMethod.cs">
-        <Link>SharedSource\World\WorldAction\DeliveryMethod.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\DeliveryMethod.cs">
+        <Link>SharedSource\World\WorldActions\DeliveryMethod.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ExtraAction.cs">
-        <Link>SharedSource\World\WorldAction\ExtraAction.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\ExtraAction.cs">
+        <Link>SharedSource\World\WorldActions\ExtraAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ExtraToggleAction.cs">
-        <Link>SharedSource\World\WorldAction\ExtraToggleAction.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\ExtraToggleAction.cs">
+        <Link>SharedSource\World\WorldActions\ExtraToggleAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\IExtraAction.cs">
-        <Link>SharedSource\World\WorldAction\IExtraAction.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\IExtraAction.cs">
+        <Link>SharedSource\World\WorldActions\IExtraAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\ImmideateDelivery.cs">
-        <Link>SharedSource\World\WorldAction\ImmideateDelivery.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\ImmideateDelivery.cs">
+        <Link>SharedSource\World\WorldActions\ImmideateDelivery.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\Shootable.cs">
-        <Link>SharedSource\World\WorldAction\Shootable.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\Shootable.cs">
+        <Link>SharedSource\World\WorldActions\Shootable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\Throwable.cs">
-        <Link>SharedSource\World\WorldAction\Throwable.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\Throwable.cs">
+        <Link>SharedSource\World\WorldActions\Throwable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\VissionCast.cs">
-        <Link>SharedSource\World\WorldAction\VissionCast.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\VissionCast.cs">
+        <Link>SharedSource\World\WorldActions\VissionCast.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\World\WorldAction\WorldAction.cs">
-        <Link>SharedSource\World\WorldAction\WorldAction.cs</Link>
+      <Compile Include="..\SharedSource\World\WorldActions\WorldAction.cs">
+        <Link>SharedSource\World\WorldActions\WorldAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\World\WorldManager.cs">
         <Link>SharedSource\World\WorldManager.cs</Link>
@@ -478,4 +479,5 @@
         <Link>SharedSource\obj\Debug\net6.0\refint</Link>
       </Folder>
     </ItemGroup>
+
 </Project>

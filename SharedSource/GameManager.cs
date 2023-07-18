@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using DefconNull.Networking;
+using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Riptide;
-using System.Linq;
-
 #if  CLIENT
-using MultiplayerXeno.UILayouts;//probably seperate this into a clientsidegamemanager
+using DefconNull.Rendering.UILayout;
 #endif
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static partial class GameManager
 {
@@ -74,11 +76,11 @@ public static partial class GameManager
 			GameState = GameState.Over;
 			if (player1Win)
 			{
-				Networking.NotifyAll(Player1!.Name + " Wins!");	
+				NetworkingManager.NotifyAll(Player1!.Name + " Wins!");	
 			}
 			else
 			{
-				Networking.NotifyAll(Player2!.Name + " Wins!");	
+				NetworkingManager.NotifyAll(Player2!.Name + " Wins!");	
 			}
 
 
@@ -145,7 +147,7 @@ public static partial class GameManager
 
 #if SERVER
 			Console.WriteLine("turn: "+IsPlayer1Turn);
-			Networking.SendEndTurn();
+			NetworkingManager.SendEndTurn();
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;

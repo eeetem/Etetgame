@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefconNull.World;
 
-namespace MultiplayerXeno.Pathfinding;
+namespace DefconNull;
 
 public static class PathFinding
 {
@@ -217,7 +218,7 @@ public static class PathFinding
 				{
 					ResetNodes(done);
 					ResetNodes(open.UnorderedItems);
-					return new PathFindResult(null, 0);
+					return new PathFindResult(new List<Vector2Int>(), 0);
 				}
 
 				// Selecting next Element from queue

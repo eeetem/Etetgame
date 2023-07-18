@@ -90,7 +90,7 @@
         <sfx name="rifle3"/>
       </effect>
     </defaultAttack>
-    <action det ="-2" mpoint="-1" apoint="-1">
+    <action det ="2" moveCost="1" actCost="1">
       <name>Headshot</name>
       <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
@@ -116,7 +116,7 @@
       </effect>
     </defaultAttack>
 
-    <action immideate="true" det ="-3" mpoint="5[set]" apoint="1[set]">
+    <action immideate="true" detCost ="3">
       <name>Breach n Clear</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
       <effect visible ="false">
@@ -143,7 +143,7 @@
       </effect>
     </defaultAttack>
 
-    <action det ="-3" mpoint="-1" apoint="-2">
+    <action detCost ="3" moveCost="1" actCost="2">
       <name>Suppress</name>
       <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
       <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
@@ -159,14 +159,14 @@
     </action>
 
     <toggleaction>
-      <toggleoff  det ="-1" mpoint="0" apoint="0">
+      <toggleoff  detCost ="1" mpoint="0" apoint="0">
         <name>Holster</name>
         <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
         <effect visible ="false">
           <applystatus status="Holstered"/>
         </effect>
       </toggleoff>
-      <toggleon name="" tip="" det ="-1" mpoint="-2" apoint="0">
+      <toggleon name="" tip="" detCost ="1" mpoint="2" apoint="0">
         <name>UnHolster</name>
         <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
         <effect visible ="false">
@@ -190,7 +190,7 @@
       </effect>
     </defaultAttack>
 
-    <action immideate="true" det ="-2" mpoint="0" apoint="0">
+    <action immideate="true" detCost ="2" moveCost="0" actCost="0">
       <name>Rally</name>
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
       <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
@@ -198,7 +198,7 @@
       </effect>
     </action>
 
-    <action det ="-1" mpoint="-1" apoint="0">
+    <action detCost ="1" moveCost="1" actCost="0">
       <name>Command</name>
       <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
       <vissionCast range="22"/>
@@ -223,7 +223,7 @@
       </effect>
     </defaultAttack>
 
-    <action det ="-1" mpoint="-1" apoint="-1">
+    <action detCost ="1" moveCost="1" actCost="1">
       <name>Resupply</name>
       <tip>Give a targeted unit their last used item back</tip>
       <targetAid>unit</targetAid>
@@ -232,7 +232,7 @@
         <giveItem item="{target.LastItem.Name}"/>
       </effect>
     </action>
-    <action  det ="-1" mpoint="-1" apoint="-1">
+    <action detCost ="1" moveCost="1" actCost="1">
       <name>Resupply</name>
       <tip>Give a targeted unit item currently equipped by this unit</tip>
       <targetAid>unit</targetAid>
@@ -254,7 +254,7 @@
   <statuseffect>
     <name>BreachnClear</name>
     <effect visible="false">
-      <values act ="0" move="0" moveRange="-3"/>
+      <values act ="1[set]" move="5[set]" moveRange="-3"/>
     </effect>
   </statuseffect>
   <statuseffect>

@@ -1,8 +1,10 @@
 ﻿using System;
+using DefconNull.Rendering;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
 public static partial class Utility
 {
@@ -25,11 +27,11 @@ public static partial class Utility
 			{
 				if ((int) dir == 2)
 				{
-					Pos += GridToWorldPos(new Vector2(1, 0));
+					Pos += Utility.GridToWorldPos(new Vector2(1, 0));
 				}
 				else if ((int) dir == 4)
 				{
-					Pos += GridToWorldPos(new Vector2(0, 1));
+					Pos += Utility.GridToWorldPos(new Vector2(0, 1));
 				}
 			}
 
@@ -37,7 +39,7 @@ public static partial class Utility
 			{
 				dir+= 4;
 			}
-			dir = ClampFacing(dir);
+			dir = Utility.ClampFacing(dir);
 
 			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].spriteSheet[0][(int) dir];
 		}
