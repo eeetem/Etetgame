@@ -75,7 +75,7 @@ public partial class WorldManager
 		Vector2Int initialpos = pos;
 		while (itteration < range+2)
 		{
-			if (DefconNull.World.WorldManager.IsPositionValid(pos))
+			if (IsPositionValid(pos))
 			{
 				positionsToCheck.Add(pos);
 			}
@@ -97,14 +97,14 @@ public partial class WorldManager
 			for (int x = 0; x < itteration; x++)
 			{
 					
-				if (DefconNull.World.WorldManager.IsPositionValid(pos + invoffset * (x + 1)))
+				if (IsPositionValid(pos + invoffset * (x + 1)))
 				{
 
 					positionsToCheck.Add(pos + invoffset * (x + 1));
 					
 				}
 
-				if (DefconNull.World.WorldManager.IsPositionValid(pos + offset * (x + 1)))
+				if (IsPositionValid(pos + offset * (x + 1)))
 				{
 
 					positionsToCheck.Add(pos + offset * (x + 1));

@@ -14,7 +14,7 @@ namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
-	private static Riptide.Client? client;
+	private static Client? client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;
@@ -41,12 +41,10 @@ public static partial class NetworkingManager
 		Ipport = ipport;
 		Name = name;
 		
-		client = new Riptide.Client( new TcpClient());
+		client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
-#if DEBUG
-		client.TimeoutTime = ushort.MaxValue;
-#endif
-		
+
+		client.TimeoutTime = 10000;
 		var msg = Message.Create();
 		msg.AddString(name);
 		bool result = client.Connect(ipport,message:msg);

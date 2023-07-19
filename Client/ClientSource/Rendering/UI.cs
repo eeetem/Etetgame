@@ -33,6 +33,7 @@ public static class UI
 		
 
 	private static UiLayout currentUi = new MainMenuLayout();
+	private static UiLayout? lastDifferentUI = new MainMenuLayout();
 	private static Widget root = null!;
 	public static void SetUI(UiLayout? newUI)
 	{
@@ -42,17 +43,21 @@ public static class UI
 		
 		if (newUI != null)
 		{
-
-
-			root = newUI.Generate(Desktop, currentUi);
+			
 			if (currentUi.GetType() != newUI.GetType())
 			{
+				lastDifferentUI = currentUi;
+				root = newUI.Generate(Desktop, lastDifferentUI);
 				currentUi = newUI;
+			}
+			else
+			{
+				root = currentUi.Generate(Desktop,lastDifferentUI);
 			}
 		}
 		else
 		{
-			root = currentUi.Generate(Desktop, currentUi);
+			root = currentUi.Generate(Desktop, lastDifferentUI);
 		}
 
 		Console.WriteLine("Changing UI to: "+currentUi);

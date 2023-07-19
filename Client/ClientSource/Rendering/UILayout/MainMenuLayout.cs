@@ -63,7 +63,7 @@ public class MainMenuLayout : UiLayout
 		{
 			GridColumn = 0,
 			GridRow = 2,
-			Text = "Host/SinglePlayer",
+			Text = "SinglePlayer",
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch
 		};

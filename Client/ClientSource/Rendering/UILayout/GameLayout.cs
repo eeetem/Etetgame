@@ -287,33 +287,11 @@ public class GameLayout : MenuLayout
 		Init();
 		WorldManager.Instance.MakeFovDirty(false);
 		var panel = new Panel ();
-		if (!GameManager.spectating)
-		{
-			endBtn = new ImageButton()
-			{
-				Top = (int) (25f * globalScale.X),
-				Left = (int) (-10.4f * globalScale.X),
-				Width = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*0.9f),
-				Height = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*0.9f),
-				ImageWidth = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X*0.9f),
-				ImageHeight = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X*0.9f),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top,
-				Background = new SolidBrush(Color.Transparent),
-				OverBackground = new SolidBrush(Color.Transparent),
-				PressedBackground = new SolidBrush(Color.Transparent),
-				Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/UnitBar/end button")),
-			};
-			endBtn.Click += (o, a) => GameManager.EndTurn();
-			
-
-			panel.Widgets.Add(endBtn);
-		}
-		else
+		if (GameManager.spectating || GameManager.PreGameData.SinglePlayerLobby)
 		{
 			var swapTeam = new TextButton
 			{
-				Top = (int) (0f * globalScale.Y),
+				Top = (int) (100f * globalScale.Y),
 				Left = (int) (-10f * globalScale.X),
 				Width = (int) (80 * globalScale.X),
 				HorizontalAlignment = HorizontalAlignment.Right,
@@ -329,6 +307,29 @@ public class GameLayout : MenuLayout
 				UI.SetUI(null);
 			};
 			panel.Widgets.Add(swapTeam);
+		}
+
+		if (!GameManager.spectating)
+		{
+			endBtn = new ImageButton()
+			{
+				Top = (int) (25f * globalScale.X),
+				Left = (int) (-10.4f * globalScale.X),
+				Width = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
+				Height = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
+				ImageWidth = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
+				ImageHeight = (int) (TextureManager.GetTexture("UI/GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Top,
+				Background = new SolidBrush(Color.Transparent),
+				OverBackground = new SolidBrush(Color.Transparent),
+				PressedBackground = new SolidBrush(Color.Transparent),
+				Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/UnitBar/end button")),
+			};
+			endBtn.Click += (o, a) => GameManager.EndTurn();
+
+
+			panel.Widgets.Add(endBtn);
 		}
 
 		if (inputBox == null)

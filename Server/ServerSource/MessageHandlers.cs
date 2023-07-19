@@ -51,16 +51,29 @@ public static partial class NetworkingManager
 	private static void StartGameHandler(ushort senderID,Message message)
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id || GameManager.GameState != GameState.Lobby) return;
-		if (message.GetBool())
-		{
-			GameManager.Player2 = GameManager.Player1;//both are same player
-		}
 		GameManager.StartSetup();
 	}
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.SquadComp)]
 	private static void ReciveSquadComp(ushort senderID,Message message)
 	{
+		
+		if (message.GetBool())
+		{
+			if (!SinglePlayer)
+			{
+				Kick("This server is not running in singpleplayer mode", senderID);
+				return;
+			}
+
+			
+			GameManager.Player1!.SetSquadComp(message.GetSerializables<SquadMember>().ToList());
+
+			GameManager.Player2!.SetSquadComp(message.GetSerializables<SquadMember>().ToList());
+			GameManager.StartGame();
+			return;
+		}
 		List<SquadMember> squadMembers = message.GetSerializables<SquadMember>().ToList();
+
 		if (GameManager.Player1?.Connection?.Id == senderID)
 		{
 			GameManager.Player1.SetSquadComp(squadMembers);
@@ -129,17 +142,30 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
-		if (GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID)
+		if (!SinglePlayer)
 		{
-			if (!GameManager.IsPlayer1Turn){
-				Console.WriteLine("Client sent an action out of turn");
-				return;
+			if (GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID)
+			{
+				if (!GameManager.IsPlayer1Turn)
+				{
+					Console.WriteLine("Client sent an action out of turn");
+					return;
+				}
+			}
+			else if (GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID)
+			{
+				if (GameManager.IsPlayer1Turn)
+				{
+					Console.WriteLine("Client sent an action out of turn");
+					return;
+				}
 			}
 		}
-		else if (GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID)
+		else
 		{
-			if (GameManager.IsPlayer1Turn){
-				Console.WriteLine("Client sent an action out of turn");
+			if (!(GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID) || !(GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID))
+			{
+				Console.WriteLine("Spectator tried to control a unit");
 				return;
 			}
 		}

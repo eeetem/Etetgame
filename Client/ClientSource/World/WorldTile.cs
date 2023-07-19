@@ -55,7 +55,7 @@ public partial class WorldTile
 		HighestWatchLevel = 0;
 		foreach (var watcher in Watchers)
 		{
-			if (!this.IsVisible())
+			if (!IsVisible())
 			{
 				return;
 			}

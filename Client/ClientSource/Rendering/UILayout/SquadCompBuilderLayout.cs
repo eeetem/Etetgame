@@ -15,8 +15,8 @@ namespace DefconNull.Rendering.UILayout;
 
 public class SquadCompBuilderLayout : UiLayout
 {
-	private readonly List<SquadMember> MyComposition = new List<SquadMember>();
-	private readonly List<SquadMember> OtherComposition = new List<SquadMember>();
+	private static readonly List<SquadMember> MyComposition = new List<SquadMember>();
+	private static readonly List<SquadMember> OtherComposition = new List<SquadMember>();
 	private Label freeslots;
 	private Label otherfreeslots;
 	private List<Vector2Int> _mySpawnPoints = new List<Vector2Int>();
@@ -25,11 +25,13 @@ public class SquadCompBuilderLayout : UiLayout
 	{
 		WorldManager.Instance.MakeFovDirty(true);
 		var panel = new Panel();
-		
 		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
+		
 		if (GameManager.PreGameData.SinglePlayerLobby)
 		{
-			_otherSpawnPoints = GameManager.IsPlayer1 ? GameManager.T2SpawnPoints : GameManager.T1SpawnPoints;
+			_mySpawnPoints = GameManager.T1SpawnPoints;
+
+			_otherSpawnPoints = GameManager.T2SpawnPoints;
 		}
 
 		Camera.SetPos(_mySpawnPoints[0]);
@@ -40,10 +42,11 @@ public class SquadCompBuilderLayout : UiLayout
 		otherfreeslots = new Label()
 		{
 			Top = 50,
-			Text = "Free Units(team 2): "+(WorldManager.Instance.CurrentMap.unitCount-MyComposition.Count),
+			Text = "Free Units(team 2): "+(WorldManager.Instance.CurrentMap.unitCount-OtherComposition.Count),
 			Visible = GameManager.PreGameData.SinglePlayerLobby
 		};
 		panel.Widgets.Add(freeslots);
+		panel.Widgets.Add(otherfreeslots);
 
 		var unitStack = new HorizontalStackPanel();
 		unitStack.HorizontalAlignment = HorizontalAlignment.Center;
@@ -193,7 +196,7 @@ public class SquadCompBuilderLayout : UiLayout
 		}
 
 		freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - MyComposition.Count);
-		otherfreeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - OtherComposition.Count);
+		otherfreeslots.Text = "Free Units(team 2): " + (WorldManager.Instance.CurrentMap.unitCount - OtherComposition.Count);
 	}
 
 	public override void Update(float deltatime)

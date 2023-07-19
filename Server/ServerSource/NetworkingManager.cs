@@ -20,6 +20,7 @@ public static partial class NetworkingManager
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
+		server.TimeoutTime = 10000;
 		Message.MaxPayloadSize = 2048;
 
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
@@ -48,10 +49,10 @@ public static partial class NetworkingManager
 
 		if (SinglePlayer)
 		{
-			if (GameManager.Player1 == null || GameManager.Player1.Connection.IsNotConnected)
+			if ((GameManager.Player1 == null || GameManager.Player1.Connection == null || GameManager.Player1.Connection.IsNotConnected))
 			{
 				GameManager.Player1 = new ClientInstance(name,connection);
-				GameManager.Player2 = GameManager.Player1;
+				GameManager.Player2 = new ClientInstance(name,connection);
 				SendChatMessage(name+" joined as Solo Player");
 			}
 			else
@@ -174,6 +175,13 @@ public static partial class NetworkingManager
 
 		});
 
+	}
+
+	public static void Kick(string reason, ushort id)
+	{
+		Connection c;
+		server.TryGetClient(id, out c);
+		Kick(reason,c);
 	}
 
 	public static void Kick(string reason,Connection connection)

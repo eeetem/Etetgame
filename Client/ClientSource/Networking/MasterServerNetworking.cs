@@ -13,7 +13,7 @@ namespace DefconNull.Networking;
 
 public class MasterServerNetworking
 {
-	public static Riptide.Client? Client;
+	public static Client? Client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool IsConnected => Client != null && Client.IsConnected;
@@ -27,7 +27,7 @@ public class MasterServerNetworking
 		Name = name;
 
 
-		Client = new Riptide.Client( new TcpClient());
+		Client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048;
 		Client.TimeoutTime = 11000;
 		Client.HeartbeatInterval = 5000;
