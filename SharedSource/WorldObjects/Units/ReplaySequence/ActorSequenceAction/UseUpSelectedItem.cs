@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DefconNull.World;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
-public class UseSelectedItem : SequenceAction
+public class UseUpSelectedItem : UnitSequenceAction
 {
 	public Vector2Int Target;
 
-	public UseSelectedItem(int actorID, Vector2Int target) : base(actorID, SequenceType.UseItem)
+	public UseUpSelectedItem(int actorID, Vector2Int target) : base(actorID, SequenceType.UseItem)
 	{
 		Target = target;
 	}
-	public UseSelectedItem(int actorID, Message args) : base(actorID, SequenceType.UseItem)
+	public UseUpSelectedItem(int actorID, Message args) : base(actorID, SequenceType.UseItem)
 	{
 		Target = args.GetSerializable<Vector2Int>();
 	}
@@ -25,7 +27,7 @@ public class UseSelectedItem : SequenceAction
 #if CLIENT
 			if (Actor.WorldObject.TileLocation.TileVisibility == Visibility.None)
 			{
-				if (Actor.SelectedItem.Visible)
+				if (Actor.SelectedItem!.Visible)
 				{
 					Camera.SetPos(Actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
 		
@@ -58,14 +60,8 @@ public class UseSelectedItem : SequenceAction
 	{
 		var t = new Task(delegate
 		{
-			var item = Actor.SelectedItem;
-			item.Execute(Actor, Target);
 			Actor.LastItem = Actor.SelectedItem;
 			Actor.RemoveItem(Actor.SelectedItemIndex);
-			if (Actor.WorldObject.TileLocation.Position != Target)
-			{
-				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
-			}
 		});
 		return t;
 
@@ -74,6 +70,7 @@ public class UseSelectedItem : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
+		base.SerializeArgs(message);
 		message.AddSerializable(Target);
 	}
 }

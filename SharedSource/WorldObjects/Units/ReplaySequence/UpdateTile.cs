@@ -6,9 +6,9 @@ namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class UpdateTile : SequenceAction
 {
-
+	public override bool CanBatch => true;
 	public WorldTile.WorldTileData Data;
-	public UpdateTile(WorldTile.WorldTileData data) : base(-1, SequenceType.UpdateTile)
+	public UpdateTile(WorldTile.WorldTileData data) : base(SequenceType.UpdateTile)
 	{
 		Data = data;
 	}

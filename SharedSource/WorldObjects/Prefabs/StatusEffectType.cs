@@ -13,6 +13,6 @@ public class StatusEffectType
 
 	public void Apply(Unit actor)
 	{
-		effect.Apply(actor.WorldObject.TileLocation.Position);
+		effect.ApplyConsiqunces(actor.WorldObject.TileLocation.Position);
 	}
 }

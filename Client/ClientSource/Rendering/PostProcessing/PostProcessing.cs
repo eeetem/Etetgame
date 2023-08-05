@@ -14,7 +14,7 @@ using Color = Microsoft.Xna.Framework.Color;
 
 namespace DefconNull.Rendering.PostProcessing;
 
-public static class PostPorcessing
+public static class PostProcessing
 {
 	private static ContentManager content;
 	private static GraphicsDevice graphicsDevice;

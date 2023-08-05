@@ -13,10 +13,10 @@ public static partial class NetworkingManager
 {
 	private static Server server = null!;
 	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
-	private static bool SinglePlayer = false;
+	private static bool SinglePlayerFeatures = false;
 	public static void Start(ushort port, bool allowSP)
 	{
-		SinglePlayer = allowSP;
+		SinglePlayerFeatures = allowSP;
 		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
@@ -39,7 +39,7 @@ public static partial class NetworkingManager
 	{
 		string name = connectmessage.GetString();
 		Console.WriteLine("Begining Client Register: "+name);
-		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
+		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']')||name=="AI"||name=="Practice Opponent")
 		{
 			var msg = Message.Create();
 			msg.AddString("Invalid Name");
@@ -47,71 +47,52 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		if (SinglePlayer)
+
+
+		if (GameManager.Player1 == null)
 		{
-			if ((GameManager.Player1 == null || GameManager.Player1.Connection == null || GameManager.Player1.Connection.IsNotConnected))
+			GameManager.Player1 = new ClientInstance(name,connection);
+			SendChatMessage(name+" joined as Player 1");
+		}
+		else if (GameManager.Player1.Name == name)
+		{
+			if (GameManager.Player1.Connection != null && !GameManager.Player1.Connection.IsNotConnected)
 			{
-				GameManager.Player1 = new ClientInstance(name,connection);
-				GameManager.Player2 = new ClientInstance(name,connection);
-				SendChatMessage(name+" joined as Solo Player");
-			}
-			else
-			{
-				GameManager.Spectators.Add(new ClientInstance(name,connection));
-				SendChatMessage(name+" joined the spectators");
+				var msg = Message.Create();
+				msg.AddString("Player with same name is already in the game");
+				server.Reject(connection,msg);
+				return;
 			}
 
-
+			GameManager.Player1.Connection = connection;//reconnection
+			SendChatMessage(name+" reconnected as Player 1");
+				
+		}
+		else if (GameManager.Player2 == null)
+		{
+			
+			GameManager.Player2 = new ClientInstance(name,connection);
+			SendChatMessage(name+" joined as Player 2");
+		}
+		else if (GameManager.Player2.Name == name)
+		{
+			if (GameManager.Player2.Connection != null && !GameManager.Player2.Connection.IsNotConnected)
+			{
+				var msg = Message.Create();
+				msg.AddString("Player with same name is already in the game");
+				server.Reject(connection,msg);
+				return;
+			}
+			GameManager.Player2.Connection = connection;//reconnection
+			SendChatMessage(name+" reconnected as Player 2");
 		}
 		else
 		{
-			
-		
-
-			if (GameManager.Player1 == null)
-			{
-				GameManager.Player1 = new ClientInstance(name,connection);
-				SendChatMessage(name+" joined as Player 1");
-			}
-			else if (GameManager.Player1.Name == name)
-			{
-				if (GameManager.Player1.Connection != null && !GameManager.Player1.Connection.IsNotConnected)
-				{
-					var msg = Message.Create();
-					msg.AddString("Player with same name is already in the game");
-					server.Reject(connection,msg);
-					return;
-				}
-
-				GameManager.Player1.Connection = connection;//reconnection
-				SendChatMessage(name+" reconnected as Player 1");
-				
-			}
-			else if (GameManager.Player2 == null)
-			{
-			
-				GameManager.Player2 = new ClientInstance(name,connection);
-				SendChatMessage(name+" joined as Player 2");
-			}
-			else if (GameManager.Player2.Name == name)
-			{
-				if (GameManager.Player2.Connection != null && !GameManager.Player2.Connection.IsNotConnected)
-				{
-					var msg = Message.Create();
-					msg.AddString("Player with same name is already in the game");
-					server.Reject(connection,msg);
-					return;
-				}
-				GameManager.Player2.Connection = connection;//reconnection
-				SendChatMessage(name+" reconnected as Player 2");
-			}
-			else
-			{
-				GameManager.Spectators.Add(new ClientInstance(name,connection));
-				SendChatMessage(name+" joined the spectators");
-			}
-
+			GameManager.Spectators.Add(new ClientInstance(name,connection));
+			SendChatMessage(name+" joined the spectators");
 		}
+
+		
 
 		Console.WriteLine("Client Register Done");
 		server.Accept(connection);
@@ -228,13 +209,17 @@ public static partial class NetworkingManager
 		}
 		Thread.Sleep(1000);
 		SendPreGameInfo();
-		Task.Run(() => { 
+#if !DEBUG
+				Task.Run(() => { 
 			Thread.Sleep(15000);
 			if (server.ClientCount == 0)
 			{
 				Environment.Exit(0);
 			}});
-		
+
+#endif
+
+
 	}
 
 
@@ -276,7 +261,7 @@ public static partial class NetworkingManager
 			data.CustomMapList = Directory.GetFiles(customMapDirectory, "*.mapdata").ToList();
 		}
 
-		data.SinglePlayerLobby = SinglePlayer;
+		data.SinglePLayerFeatures = SinglePlayerFeatures;
 		
 
 
@@ -328,13 +313,13 @@ public static partial class NetworkingManager
 		var msg2 = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
 		state.IsPlayerOne = false;
 		msg2.Add(state);
-		if (GameManager.Player2 is not null  && GameManager.Player2.Connection is not null)
+		if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && !GameManager.Player2.IsPracticeOpponent && !GameManager.Player2.IsAI) 
 		{
-			server.Send(msg2, GameManager.Player2?.Connection); //spectators dont care about isPlayerOne field
+			server.Send(msg2, GameManager.Player2?.Connection); 
 		}
 		
 		var msg3 = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameData);
-		state.IsPlayerOne = null;
+		state.IsPlayerOne = null;//spectators dont care about isPlayerOne field
 		msg3.Add(state);
 
 		foreach (var spectator in GameManager.Spectators)
@@ -348,15 +333,16 @@ public static partial class NetworkingManager
 
 	public static void SendSequence(Queue<SequenceAction> actions)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
-		foreach (var a in actions)
-		{
-			msg.Add((int) a.SqcType);
-			msg.AddSerializable(a);
-		}
-
 		lock (UpdateLock)
 		{
+			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
+			foreach (var a in actions)
+			{
+				msg.Add((int) a.SqcType);
+				msg.AddSerializable(a);
+			}
+
+		
 			server.SendToAll(msg);
 		}
 		

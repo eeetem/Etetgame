@@ -411,7 +411,7 @@ public static class PrefabManager
 				eff.RemoveStatus.Add(statname);
 			}
 		}
-#if CLIENT
+
 		var extraction = ((XmlElement)effect).GetElementsByTagName("vfx");
 		foreach (var elem in extraction)
 		{
@@ -422,7 +422,7 @@ public static class PrefabManager
 
 		var sfx = ((XmlElement)effect).GetElementsByTagName("sfx")[0]?.Attributes?["name"]?.InnerText;
 		eff.Sfx = sfx;
-#endif
+
 
 		return eff;
 	}

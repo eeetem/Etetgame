@@ -196,7 +196,7 @@ namespace DefconNull.World.WorldObjects
 				return possibleMoves;
 			}
 
-			return new List<Vector2Int>[0];
+			return Array.Empty<List<Vector2Int>>();
 
 
 
@@ -245,7 +245,11 @@ namespace DefconNull.World.WorldObjects
 
 		public void TakeDamage(int dmg, int detResis)
 		{
-			Console.WriteLine(this + "(health:" + WorldObject.Health + ") hit for " + dmg);
+			if (dmg != 0) //log spam prevention
+			{
+				Console.WriteLine(this + "(health:" + WorldObject.Health + ") hit for " + dmg);
+			}
+
 			if (Determination > 0)
 			{
 				Console.WriteLine("blocked by determination");
@@ -352,7 +356,7 @@ namespace DefconNull.World.WorldObjects
 			{
 				SelectAnyItem();
 			});
-			WorldManager.Instance.RunNextFrame(t);
+			WorldManager.Instance.RunNextAfterFrames(t);
 #endif
 
 
@@ -373,9 +377,9 @@ namespace DefconNull.World.WorldObjects
 #else
 				Console.WriteLine("tried to do action but failed: " + result.Item2);
 #endif
-
 				return;
 			}
+			Console.WriteLine("performing actionL " + a.Type + " on " + target);
 #if CLIENT
 			a.SendToServer(this, target);
 			a.ExecuteClientSide(this, target);
@@ -610,12 +614,12 @@ namespace DefconNull.World.WorldObjects
 			StatusEffects.RemoveAll(x => x.type.name == effectName);
 		}
 
-		public void Suppress(int supression, bool noPanic = false)
+		public void Suppress(int supression)
 		{
 			if(supression==0) return;
 			
 			Determination-= supression;
-			if (Determination <= 0 && !noPanic)
+			if (Determination <= 0)
 			{
 				Panic();
 			}

@@ -51,7 +51,6 @@ public enum Cover
 	Low=1,//small fences and such, visible when crouch
 	High=2,//small walls and such, hidden when crouched
 	Full=3,//full impassible walls
-	Ignore=1000,//for raycasts
 }
 [Serializable]
 public enum Direction

@@ -42,10 +42,10 @@ public static partial class GameManager
 #endif
 				
 #if SERVER
-				if (TimeTillNextTurn < 0)
-				{
-					NextTurn();
-				}
+			if (TimeTillNextTurn < 0)
+			{
+				NextTurn();
+			}
 #endif
 		}
 			
@@ -61,33 +61,33 @@ public static partial class GameManager
 		T2SpawnPoints.Remove(wo.TileLocation.Position);
 		CapturePoints.Remove(wo);
 #if SERVER
-			if(T1Units.Contains(wo.ID)){
-				T1Units.Remove(wo.ID);
-			}
-			if(T2Units.Contains(wo.ID)){
-				T2Units.Remove(wo.ID);
-			}
+		if(T1Units.Contains(wo.ID)){
+			T1Units.Remove(wo.ID);
+		}
+		if(T2Units.Contains(wo.ID)){
+			T2Units.Remove(wo.ID);
+		}
 #endif
 	}
 
 	private static void EndGame(bool player1Win)
 	{
 #if SERVER
-			GameState = GameState.Over;
-			if (player1Win)
-			{
-				NetworkingManager.NotifyAll(Player1!.Name + " Wins!");	
-			}
-			else
-			{
-				NetworkingManager.NotifyAll(Player2!.Name + " Wins!");	
-			}
+		GameState = GameState.Over;
+		if (player1Win)
+		{
+			NetworkingManager.NotifyAll(Player1!.Name + " Wins!");	
+		}
+		else
+		{
+			NetworkingManager.NotifyAll(Player2!.Name + " Wins!");	
+		}
 
 
 #endif
 	}
 
-	private static void NextTurn()
+	private static void NextTurn(bool aiHackyBypass = false)
 	{
 		playedWarning = false;
 		endTurnNextFrame = false;
@@ -146,14 +146,24 @@ public static partial class GameManager
 
 
 #if SERVER
-			Console.WriteLine("turn: "+IsPlayer1Turn);
-			NetworkingManager.SendEndTurn();
+		Console.WriteLine("turn: "+IsPlayer1Turn);
+		NetworkingManager.SendEndTurn();
+		if (!aiHackyBypass)
+		{
+			if (!IsPlayer1Turn && Player2.IsAI)
+			{
+				StartAITurn();
+			}
+		}
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
+		
+
 	}
 
 	
+
 	public static void SetEndTurn()
 	{
 		endTurnNextFrame = true;
@@ -201,17 +211,21 @@ public static partial class GameManager
 		{
 		}
 
-
+		public enum LobbyMode
+		{
+			Multiplayer,
+			Practice,
+			Aiskirmish
+		}
 		public string HostName { get; set; } = "";
 		public string Player2Name { get; set; } = "";
 		public List<string> MapList { get; set; } = new List<string>();
 		public List<string> CustomMapList { get; set; } = new List<string>();
-
 		public List<string> Spectators { get; set; } = new List<string>();
 		public string SelectedMap { get; set; } = "";
 		public int TurnTime { get; set; } = 180;
-		
-		public bool SinglePlayerLobby { get; set; } = false;
+		public bool SinglePLayerFeatures { get; set; } = false;
+		public LobbyMode Mode { get; set; } = LobbyMode.Multiplayer;
 
 		public void Serialize(Message message)
 		{
@@ -225,7 +239,8 @@ public static partial class GameManager
 
 			message.Add(SelectedMap);
 			message.Add(TurnTime);
-			message.Add(SinglePlayerLobby);
+			message.Add(SinglePLayerFeatures);
+			message.Add((int)Mode);
 		}
 
 		public void Deserialize(Message message)
@@ -239,7 +254,8 @@ public static partial class GameManager
 
 			SelectedMap = message.GetString();
 			TurnTime = message.GetInt();
-			SinglePlayerLobby = message.GetBool();
+			SinglePLayerFeatures = message.GetBool();
+			Mode = (LobbyMode)message.GetInt();
 		}
 
 	}

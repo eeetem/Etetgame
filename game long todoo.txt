@@ -6,6 +6,7 @@ lag on greande target;
 alt inspection of unit stats
 server ui -> dont show custom map list on local server
 
+apply shader to every obj in effect area rather than whole screen
 
 clearer move boundry.
 

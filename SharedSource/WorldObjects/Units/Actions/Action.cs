@@ -124,7 +124,8 @@ public abstract class Action
 		{
 			try
 			{
-				var actions = ExecuteServerSide(actor, target);
+				
+				var actions = GetConsiquenes(actor, target);
 				WorldManager.Instance.AddSequence(actions);
 				NetworkingManager.SendSequence(actions);
 			}
@@ -138,7 +139,7 @@ public abstract class Action
 		
 		
 	}
-	public abstract Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target);
+	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target);
 #endif
 	
 	

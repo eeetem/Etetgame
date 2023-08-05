@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldActions;
@@ -11,22 +13,14 @@ public class ImmideateDelivery : DeliveryMethod
 		return new Tuple<bool, string>(true, "");
 		
 	}
-
-	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
-		return target;
+		return new List<SequenceAction>();
 	}
-#if CLIENT
-	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override float GetOptimalRangeAI(float margin)
 	{
-		return target;
-	}
-	
-	public override void InitPreview()
-	{
-		return;
+		return margin;
 	}
 
-#endif
 
 }

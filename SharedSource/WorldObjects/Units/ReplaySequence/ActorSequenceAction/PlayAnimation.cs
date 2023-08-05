@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
-public class PlayAnimation : SequenceAction
+public class PlayAnimation : UnitSequenceAction
 {
 
 	protected override Task GenerateTask()

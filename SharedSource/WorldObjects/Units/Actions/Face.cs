@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -34,11 +35,11 @@ public class Face : Action
 	}
 
 #if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.Face(actor.WorldObject.ID,target));
+		queue.Enqueue(new FaceUnit(actor.WorldObject.ID,target));
 		return queue;
 
 	}

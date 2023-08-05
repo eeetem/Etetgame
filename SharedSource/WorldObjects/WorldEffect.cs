@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DefconNull.SharedSource.Units.ReplaySequence;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
@@ -24,8 +28,7 @@ public class WorldEffect : IMessageSerializable
 	public string? PlaceItemPrefab = null;
 	public readonly List<Tuple<string, int>> AddStatus = new List<Tuple<string?, int>>();
 	public readonly List<string> RemoveStatus = new List<string>();
-	public bool noPanic = false;
-	
+
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
 	public bool Visible;
 	public ValueChange MoveRange ;
@@ -65,8 +68,7 @@ public class WorldEffect : IMessageSerializable
 		}
 
 		
-		
-		message.Add(noPanic);
+
 		message.Add(Visible);
 		message.Add(MoveRange);
 		message.Add(Los);
@@ -105,7 +107,7 @@ public class WorldEffect : IMessageSerializable
 			Effects.Add(new Tuple<string, string,string>(message.GetString(), message.GetString(), message.GetString()));
 		}
 		
-		noPanic = message.GetBool();
+
 		Visible = message.GetBool();
 		MoveRange = message.GetSerializable<ValueChange>();
 		Los = message.GetBool();
@@ -144,46 +146,58 @@ public class WorldEffect : IMessageSerializable
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
-	public void Apply(Vector2Int target, WorldObject? user = null)
+	public List<SequenceAction> ApplyConsiqunces(Vector2Int target, WorldObject? user = null)
 	{
 		_ignoreList = new List<WorldObject>();
+		
+		var list = new List<SequenceAction>();
 		foreach (var tile in GetAffectedTiles(target,user))
 		{
-			ApplyOnTile(tile,user);
+			foreach (var sqc in ConsiquencesOnTile(tile,user))
+			{
+				list.Add(sqc);
+			}
+
 		}
-#if CLIENT
+
 		if (Sfx != "" && Sfx != null)
 		{
-			Audio.PlaySound(Sfx, target);
+			list.Add(new PlaySound(Sfx, target));
+			//Audio.PlaySound(Sfx, target);
 		}
-		
 		foreach (var effect in Effects)
 		{
-			PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
+			list.Add(new PostProcessingEffect(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f));
+	//		PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
 		}
-#endif
-	}
-	protected void ApplyOnTile(WorldTile tile,WorldObject? user = null)
-	{
 
+		return list;
+	}
+	protected List<SequenceAction> ConsiquencesOnTile(WorldTile tile,WorldObject? user = null)
+	{
+		var consiquences = new List<SequenceAction>();
 		if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
 		{
-			tile.EastEdge?.TakeDamage(Dmg, 0);
+			//tile.EastEdge?.TakeDamage(Dmg, 0);
+			consiquences.Add(new TakeDamage(Dmg,0, tile.EastEdge!.ID));
 			_ignoreList.Add(tile.EastEdge!);
 		}
 		if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 		{
-			tile.WestEdge?.TakeDamage(Dmg, 0);
+			//tile.WestEdge?.TakeDamage(Dmg, 0);
+			consiquences.Add(new TakeDamage(Dmg,0, tile.WestEdge!.ID));
 			_ignoreList.Add(tile.WestEdge!);
 		}
 		if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
 		{
-			tile.NorthEdge?.TakeDamage(Dmg, 0);
+			//tile.NorthEdge?.TakeDamage(Dmg, 0);
+			consiquences.Add(new TakeDamage(Dmg,0, tile.NorthEdge!.ID));
 			_ignoreList.Add(tile.NorthEdge!);
 		}
 		if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
 		{
-			tile.SouthEdge?.TakeDamage(Dmg, 0);
+			//tile.SouthEdge?.TakeDamage(Dmg, 0);
+			consiquences.Add(new TakeDamage(Dmg,0, tile.SouthEdge!.ID));
 			_ignoreList.Add(tile.SouthEdge!);
 		}
 
@@ -191,17 +205,14 @@ public class WorldEffect : IMessageSerializable
 		foreach (var item in tile.ObjectsAtLocation)
 		{
 			item.TakeDamage(Dmg,0);
+			consiquences.Add(new TakeDamage(Dmg,0, item!.ID));
 		}
+		
 		if (PlaceItemPrefab!=null)
 		{
-#if SERVER
-			WorldManager.Instance.MakeWorldObject(PlaceItemPrefab, tile.Position, user?.Facing ?? Direction.North);
-#endif
+			consiquences.Add(new MakeWorldObject(PlaceItemPrefab, tile.Position, user?.Facing ?? Direction.North));
 		}
 		
-		
-
-
 		if (tile.UnitAtLocation != null && !Ignores.Contains(tile.UnitAtLocation.Type.Name))
 		{
 			
@@ -211,50 +222,44 @@ public class WorldEffect : IMessageSerializable
 
 				if (Equals(tile.UnitAtLocation, user.UnitComponent))
 				{
-					if(!TargetSelf) return;
+					if(!TargetSelf) return consiquences;
 				}
 				else
 				{
-					if (ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return;
-					if (ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return;
+					if (ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return consiquences;
+					if (ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return consiquences;
 				}
 				
 			}
 
-			if (Dmg != 0)//log spam prevention
-			{
-				tile.UnitAtLocation.TakeDamage(Dmg, 0);
-			}
-		
-			Act.Apply(ref ctr.ActionPoints);
-			Move.Apply(ref ctr.MovePoints);
-#if CLIENT
-			if(GameLayout.SelectedUnit == ctr)
-			{
-				GameLayout.ReMakeMovePreview();
-			}
-#endif
-	
-			ctr.Suppress(Det,noPanic);
-			MoveRange.Apply(ref ctr.MoveRangeEffect);
+			consiquences.Add(new TakeDamage(Dmg,0,ctr.WorldObject.ID));
+			consiquences.Add(new Suppress(Det,ctr.WorldObject.ID));
+			consiquences.Add(new ChangeUnitValues(ctr.WorldObject.ID,Act.GetChange(ctr.ActionPoints),Move.GetChange(ctr.MovePoints),0, MoveRange.GetChange(ctr.MoveRangeEffect)));
+		//	Act.Apply(ref ctr.ActionPoints);
+		//	Move.Apply(ref ctr.MovePoints);
+		//	ctr.Suppress(Det);
+			//MoveRange.Apply(ref ctr.MoveRangeEffect);
 			foreach (var status in RemoveStatus)
 			{
-				tile.UnitAtLocation?.RemoveStatus(status);
+				consiquences.Add(new UnitStatusEffect(ctr.WorldObject.ID,false,status));
+			//	tile.UnitAtLocation?.RemoveStatus(status);
 			}
 			foreach (var status in AddStatus)
 			{
-				tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
+				consiquences.Add(new UnitStatusEffect(ctr.WorldObject.ID,true,status.Item1,status.Item2));
+				//tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
 			}
 			
 			if(GiveItem!=null)
 			{
-				ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
+				consiquences.Add(new GiveItem(ctr.WorldObject.ID,GiveItem.GetValue(user.UnitComponent,ctr)));
+			//	ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
 			}
 			
 		}
 
 
-
+		return consiquences;
 	}
 #if CLIENT
 	

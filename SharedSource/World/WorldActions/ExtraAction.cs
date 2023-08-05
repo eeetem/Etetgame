@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldActions;
@@ -26,6 +28,12 @@ public class ExtraAction : IExtraAction
 	public bool ImmideateActivation => immideaateActivation;
 
 	public string Tooltip => tooltip;
+
+
+	public float GetOptimalRange()
+	{
+		return act.GetOptimalRangeAI();
+	}
 
 	public ExtraAction(string name, string tooltip, int determinationCost, int movePointCost, int actionPointCost, WorldAction action, bool immideaateActivation)
 	{
@@ -91,24 +99,25 @@ public class ExtraAction : IExtraAction
 		return new List<string>();
 	}
 
-	public void Execute(Unit actor, Vector2Int target)
+	public List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target)
 	{
 		if (immideaateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
 		}
+		var consiquences = new List<SequenceAction>();
+		consiquences.Add(new ChangeUnitValues(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost));
 		
-		actor.Suppress(-DetCost,true);
-		actor.MovePoints -= MoveCost;
-		actor.ActionPoints -= ActCost;
-		WorldAction.Execute( actor,  target);
+		var actConsiquences =  WorldAction.GetConsiquences( actor,  target);
+
+		foreach (var c in actConsiquences)
+		{
+			consiquences.Add(c);
+		}
+		return consiquences;
 	}
 #if CLIENT
 	
-	public void InitPreview()
-	{
-		WorldAction.InitPreview();
-	}
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (immideaateActivation)

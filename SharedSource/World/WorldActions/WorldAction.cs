@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 using DefconNull.Rendering;
@@ -43,24 +44,35 @@ public class WorldAction
 #endif
 	}
 
-	
+	public float GetOptimalRangeAI()
+	{
+		return DeliveryMethods[0].GetOptimalRangeAI(Effect.Range-1);
+	}
 
-	public void Execute(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsiquences(Unit actor, Vector2Int target)
 	{
 		Console.WriteLine("Executing Action "+Name+" on "+target+" by "+actor.WorldObject.ID);
+		var changes = new List<SequenceAction>();
 		foreach (var method in DeliveryMethods)
 		{
-			var t = method.ExectuteAndProcessLocation(actor, target);
-			if (t.HasValue)
+			Vector2Int? nullTarget = target;
+			var t = method.ExectuteAndProcessLocation(actor,ref nullTarget);
+			if (nullTarget.HasValue)
 			{
-				Effect.Apply(t.Value, actor.WorldObject);
+				foreach (var change in t)
+				{
+					changes.Add(change);
+				}
+				foreach (var change in Effect.ApplyConsiqunces(nullTarget.Value, actor.WorldObject))
+				{
+					changes.Add(change);
+				}
+
+				
 			}
 		}
-#if CLIENT
-		GameLayout.ReMakeMovePreview();
-#endif
-		
-		
+		return changes;
+
 	}
 
 
@@ -94,19 +106,11 @@ public class WorldAction
 			var tile = WorldManager.Instance.GetTileAtGrid(target);
 			if (tile.UnitAtLocation == null || !tile.UnitAtLocation.WorldObject.IsVisible())
 			{
-				foreach (var m in DeliveryMethods)
-				{
-					m.InitPreview();
-				}
 				return;
 			}
 
 			if (targetAid == TargetAid.Enemy && tile.UnitAtLocation.IsMyTeam())
 			{
-				foreach (var m in DeliveryMethods)
-				{
-					m.InitPreview();//reset selection memory
-				}
 				return;
 			}
 		}
@@ -114,24 +118,17 @@ public class WorldAction
 
 		foreach (var method in DeliveryMethods)
 		{
-			var result = method.Preview(actor, target, spriteBatch);
-			if(result == null) continue;
-			Effect.Preview(result.Value, spriteBatch,actor.WorldObject);
+			//todo fix this
+			//var result = method.Preview(actor, target, spriteBatch);
+			//if(result == null) continue;
+		//	Effect.Preview(result.Value, spriteBatch,actor.WorldObject);
 		}
 	
 	}
-
-
-	public void InitPreview()
-	{
-		foreach (var method in DeliveryMethods)
-		{
-			method.InitPreview();
-		}
-	}
+	
 
 #endif
 
 
-	
+
 }

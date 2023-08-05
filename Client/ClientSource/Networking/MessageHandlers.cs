@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 
 using DefconNull.Rendering;
+using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -83,38 +85,67 @@ public static partial class NetworkingManager
 		{
 			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
 			SequenceAction sqc;
-			int id = message.GetInt();
-			switch (type)
+			if ((int) type >= 100) //over 100 is a non unit action
 			{
-					
-				case SequenceAction.SequenceType.Face:
-					sqc = new Face(id, message);
-					break;
-				case SequenceAction.SequenceType.Move:
-					sqc = new Move(id, message);
-					break;
-				case SequenceAction.SequenceType.Crouch:
-					sqc = new Crouch(id, message);
-					break;
-				case SequenceAction.SequenceType.WorldEffect:
-					sqc = new WorldChange(id, message);
-					break;
-				case SequenceAction.SequenceType.Action:
-					sqc = new DoAction(id, message);
-					break;
-				case SequenceAction.SequenceType.SelectItem:
-					sqc = new SelectItem(id, message);
-					break;
-				case SequenceAction.SequenceType.UseItem:
-					sqc = new UseSelectedItem(id, message);
-					break;
-				case SequenceAction.SequenceType.Overwatch:
-					sqc = new OverWatch(id, message);
-					break;
-				default:
-					throw new Exception("Unknown Sequence Type Recived: "+type);
-			
+				switch (type)
+				{
+					case SequenceAction.SequenceType.PlaySound:
+						sqc = new PlaySound(message);
+						break;
+					case SequenceAction.SequenceType.PostProcessingEffect:
+						sqc = new PostProcessingEffect(message);
+						break;
+					case SequenceAction.SequenceType.TakeDamage:
+						sqc = new TakeDamage(message);
+						break;
+					case SequenceAction.SequenceType.MakeWorldObject:
+						sqc = new MakeWorldObject(message);
+						break;
+					default:
+						throw new Exception("Unknown Sequence Type Recived: " + type);
+
+				}
 			}
+			else
+			{
+				int id = message.GetInt();
+				switch (type)
+				{
+					
+					case SequenceAction.SequenceType.Face:
+						sqc = new FaceUnit(id, message);
+						break;
+					case SequenceAction.SequenceType.Move:
+						sqc = new UnitMove(id, message);
+						break;
+					case SequenceAction.SequenceType.Crouch:
+						sqc = new CrouchUnit(id, message);
+						break;
+					case SequenceAction.SequenceType.SelectItem:
+						sqc = new UnitSelectItem(id, message);
+						break;
+					case SequenceAction.SequenceType.UseItem:
+						sqc = new UseUpSelectedItem(id, message);
+						break;
+					case SequenceAction.SequenceType.Overwatch:
+						sqc = new UnitOverWatch(id, message);
+						break;
+					case SequenceAction.SequenceType.ChangeUnitPoints:
+						sqc = new ChangeUnitValues(id, message);
+						break;
+					case SequenceAction.SequenceType.Suppress:
+						sqc = new Suppress(id, message);
+						break;
+					case SequenceAction.SequenceType.UnitStatusEffect:
+						sqc = new Suppress(id, message);
+						break;
+					default:
+						throw new Exception("Unknown Sequence Type Recived: "+type);
+			
+				}
+			}
+
+			
 			actions.Enqueue(sqc);
 		}
 		WorldManager.Instance.AddSequence(actions);

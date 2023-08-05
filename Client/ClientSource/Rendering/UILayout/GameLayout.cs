@@ -113,8 +113,8 @@ public class GameLayout : MenuLayout
 			if (unit.ActionPoints > 0 || unit.MovePoints > 0)
 			{
 				batch.End();
-				PostPorcessing.ShuffleUIeffect(columCounter + 123, new Vector2(unitBarRenderTargets[unit].Width, unitBarRenderTargets[unit].Height));
-				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+				PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(unitBarRenderTargets[unit].Width, unitBarRenderTargets[unit].Height));
+				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
 				batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
 				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
@@ -123,8 +123,8 @@ public class GameLayout : MenuLayout
 				int notchpos = 0;
 				for (i = 0; i < unit.MovePoints; i++)
 				{
-					PostPorcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Height));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Height));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch"), new Vector2(6 * notchpos, 0), Color.White);
 					batch.End();
 					notchpos++;
@@ -132,8 +132,8 @@ public class GameLayout : MenuLayout
 
 				for (i = 0; i < unit.ActionPoints; i++)
 				{
-					PostPorcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Height));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Height));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch"), new Vector2(6 * notchpos, 0), Color.White);
 					batch.End();
 					notchpos++;
@@ -168,8 +168,8 @@ public class GameLayout : MenuLayout
 				bool health = !(y >= unit.WorldObject.Health);
 				if (health)
 				{
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					indicator = healthTexture;
 				}
 				else
@@ -197,8 +197,8 @@ public class GameLayout : MenuLayout
 				bool health = !(y >= unit.Determination);
 				if (health)
 				{
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					indicator = healthTexture;
 				}
 				else
@@ -287,7 +287,7 @@ public class GameLayout : MenuLayout
 		Init();
 		WorldManager.Instance.MakeFovDirty(false);
 		var panel = new Panel ();
-		if (GameManager.spectating || GameManager.PreGameData.SinglePlayerLobby)
+		if (GameManager.spectating || GameManager.PreGameData.SinglePLayerFeatures)
 		{
 			var swapTeam = new TextButton
 			{
@@ -762,7 +762,7 @@ public class GameLayout : MenuLayout
 
 	private static readonly List<Unit> Controllables = new();
 	public static List<Unit> MyUnits = new();
-	private static List<Unit> EnemyUnits = new();
+	public static List<Unit> EnemyUnits = new();
 
 	
 	public static void RegisterUnit(Unit c)
@@ -1044,8 +1044,8 @@ public class GameLayout : MenuLayout
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/Timer"), Vector2.Zero, null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/Timer"), Vector2.Zero, new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
 		batch.End();
-		PostPorcessing.ShuffleUIeffect(595,new Vector2(10,10),true);
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostPorcessing.UIGlowEffect);
+		PostProcessing.PostProcessing.ShuffleUIeffect(595,new Vector2(10,10),true);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostProcessing.PostProcessing.UIGlowEffect);
 		var turn = TextureManager.GetTexture("UI/GameHud/UnitBar/enemyTurn");
 		if (GameManager.IsMyTurn())
 		{		
@@ -1076,8 +1076,8 @@ public class GameLayout : MenuLayout
 	
 		if (drawPreviewDmg)
 		{	batch.End();
-			PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
-			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostPorcessing.UIGlowEffect);
+			PostProcessing.PostProcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 			batch.End();
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
@@ -1087,8 +1087,8 @@ public class GameLayout : MenuLayout
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		}
 		batch.End();
-		PostPorcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostPorcessing.UIGlowEffect);
+		PostProcessing.PostProcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
+		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 		batch.Draw(infoScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width*globalScale.X)/2f - infoScreenRenderTarget.Width*globalScale.X/2f, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		batch.End();
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
@@ -1635,8 +1635,8 @@ public class GameLayout : MenuLayout
 				batch.Draw(nohealthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				batch.End();
 				i = y;
-				PostPorcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted,true);
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				PostProcessing.PostProcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted,true);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(healthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
 				//batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
 				batch.End();
@@ -1647,8 +1647,8 @@ public class GameLayout : MenuLayout
 			Texture2D indicator;
 			if (health)
 			{
-				PostPorcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				PostProcessing.PostProcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted);
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 				indicator = healthTexture;
 			}
 			else
@@ -1705,16 +1705,16 @@ public class GameLayout : MenuLayout
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted, true);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted, true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
 				}
 				else if (litup)
 				{
 
-					PostPorcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, new Color(0,0,0), 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
 				}
@@ -1737,7 +1737,7 @@ public class GameLayout : MenuLayout
 			}
 			if (unit.Paniced)
 			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostPorcessing.UIGlowEffect);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,18), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 				batch.End();
 			}
@@ -1747,8 +1747,8 @@ public class GameLayout : MenuLayout
 			i = 0;
 			for (int j = 0; j < target.UnitComponent.MovePoints; j++)
 			{	
-				PostPorcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState: SamplerState.PointClamp, effect:PostPorcessing.UIGlowEffect);
+				PostProcessing.PostProcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
+				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState: SamplerState.PointClamp, effect:PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),pointPos+new Vector2(o*i,0),Color.White);
 				batch.End();
 				i++;
@@ -1758,8 +1758,8 @@ public class GameLayout : MenuLayout
 			
 			for (int j = 0; j < target.UnitComponent.ActionPoints; j++)
 			{	
-				PostPorcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState:  SamplerState.PointClamp, effect:PostPorcessing.UIGlowEffect);
+				PostProcessing.PostProcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
+				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState:  SamplerState.PointClamp, effect:PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*i,0),null, Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
 				batch.End();
 				i++;

@@ -8,6 +8,7 @@ using DefconNull.Networking;
 using DefconNull.World.WorldObjects;
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 #if CLIENT
 using DefconNull.Rendering.UILayout;
@@ -121,7 +122,7 @@ namespace DefconNull.World
 
 		public void LoadWorldTile(WorldTile.WorldTileData data)
 		{
-		//	Console.WriteLine("Loading tile at " + data.position);
+			//	Console.WriteLine("Loading tile at " + data.position);
 
 			WorldTile tile = GetTileAtGrid(data.position);
 			tile.Wipe();
@@ -171,7 +172,7 @@ namespace DefconNull.World
 
 		public void MakeWorldObjectFromData(WorldObject.WorldObjectData data, WorldTile tile)
 		{
-			lock (syncobj)
+			lock (createSync)
 			{
 				if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
@@ -470,7 +471,7 @@ namespace DefconNull.World
 		}
 		public void DeleteWorldObject(int id)
 		{
-			lock (syncobj)
+			lock (deleteSync)
 			{
 				objsToDel.Add(id);
 			}
@@ -494,7 +495,6 @@ namespace DefconNull.World
 			if (Obj.UnitComponent != null)
 			{
 				GameLayout.UnRegisterUnit(Obj.UnitComponent);
-				RemoveUnitTasks(Obj.UnitComponent);
 			}
 #endif
 			Obj.TileLocation.Remove(id);
@@ -544,7 +544,7 @@ namespace DefconNull.World
 
 		public void WipeGrid()
 		{
-			lock (syncobj)
+			lock (deleteSync)
 			{
 				
 			
@@ -563,19 +563,20 @@ namespace DefconNull.World
 			}
 		}
 
-		public static readonly object syncobj = new object();
+		public static readonly object deleteSync = new object();
+		public static readonly object createSync = new object();
 		public static readonly object TaskSync = new object();
 
 		
-		private static readonly Queue<Task> NextFrameTasks = new Queue<Task>();
+		private static List<Tuple<Task,int>> NextFrameTasks = new List<Tuple<Task,int>>();
 
-		public void RunNextFrame(Task t)
+		public void RunNextAfterFrames(Task t, int frames = 1)
 		{
 			Task.Factory.StartNew(() =>
 			{
 				lock (TaskSync)
 				{
-					NextFrameTasks.Enqueue(t);
+					NextFrameTasks.Add(new Tuple<Task, int>(t, frames));
 				}
 			});
 		}
@@ -585,21 +586,30 @@ namespace DefconNull.World
 
 			lock (TaskSync)
 			{
-				while (NextFrameTasks.Count>0)
+				List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
+				foreach (var task in NextFrameTasks)
 				{
-					var t = NextFrameTasks.Dequeue();
-					t.RunSynchronously();
+					if (task.Item2 > 1)
+					{
+						updatedList.Add(new Tuple<Task, int>(task.Item1, task.Item2 - 1));
+					}
+					else
+					{
+						task.Item1.RunSynchronously();
+					}
 				}
-				NextFrameTasks.Clear();
+
+				NextFrameTasks = updatedList;
 			}
+
 			
-			lock (syncobj)
+#if SERVER
+			HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
+#endif
+			lock (deleteSync)
 			{
 
-#if SERVER
-				HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
-#endif
-				
+
 				foreach (var obj in objsToDel)
 				{
 #if CLIENT
@@ -607,7 +617,7 @@ namespace DefconNull.World
 					{
 						MakeFovDirty();
 					}
-			
+
 #endif
 #if SERVER
 					if (WorldObjects.ContainsKey(obj))
@@ -618,10 +628,15 @@ namespace DefconNull.World
 					DestroyWorldObject(obj);
 					//	Console.WriteLine("deleting: "+obj);
 				}
+
 				objsToDel.Clear();
 
+			}
 
-
+			lock (createSync)
+			{
+				
+			
 				foreach (var WO in _createdObjects)
 				{
 					//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
@@ -632,10 +647,12 @@ namespace DefconNull.World
 						MakeFovDirty();
 					}
 #endif
-					
+					if (GameManager.GameState != GameState.Playing)
+					{
 #if SERVER
-					tilesToUpdate.Add(WO.Item2);
+						tilesToUpdate.Add(WO.Item2);
 #endif
+					}
 				}
 
 				
@@ -651,23 +668,24 @@ namespace DefconNull.World
 
 				tilesToUpdate.Clear();
 #endif
-				foreach (var tile in _gridData)
-				{
-					tile.Update(gameTime);
+			}
+			foreach (var tile in _gridData)
+			{
+				tile.Update(gameTime);
 					
-				}
+			}
 
-				foreach (var obj in WorldObjects.Values)
-				{
-					obj.Update(gameTime);
-				}
+			foreach (var obj in WorldObjects.Values)
+			{
+				obj.Update(gameTime);
+			}
 #if CLIENT
-				if(fovDirty){
-					CalculateFov();
-				}
+			if(fovDirty){
+				CalculateFov();
+			}
 #endif
 				
-			}
+		
 
 			if (_currentSequenceTasks.Count == 0)
 			{
@@ -681,11 +699,13 @@ namespace DefconNull.World
 						}
 						task = SequenceQueue.Dequeue();
 					}
-
+					Console.WriteLine("runnin sequnce task: "+task.SqcType);
 					_currentSequenceTasks.Add(task.Do());
 					_currentSequenceTasks.Last().Start();
+					
 
-
+					
+					//batch tile updates and other things
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
@@ -694,7 +714,7 @@ namespace DefconNull.World
 						}
 
 						var tsk = SequenceQueue.Peek();
-						if(typeof(UpdateTile) != SequenceQueue.Peek().GetType()) break;
+						if(SequenceQueue.Peek().CanBatch) break;
 						
 						_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
 						_currentSequenceTasks.Last().Start();
@@ -708,7 +728,7 @@ namespace DefconNull.World
 				{
 					if (t.Status == TaskStatus.RanToCompletion)
 					{
-						//done
+						Console.WriteLine("sequence task finished");
 					}
 					else if (t.Status == TaskStatus.Faulted)
 					{
@@ -723,23 +743,6 @@ namespace DefconNull.World
 			}
 		}
 
-		public void RemoveUnitTasks(Unit actor)
-		{
-			Queue<SequenceAction> newQueue = new Queue<SequenceAction>();
-			foreach (var act in SequenceQueue)
-			{
-				if (act.ActorID != actor.WorldObject.ID)
-				{
-					newQueue.Enqueue(act);
-				}
-			}
-
-			SequenceQueue.Clear();
-			foreach (var n in newQueue)
-			{
-				SequenceQueue.Enqueue(n);
-			}
-		}
 
 		private List<Task> _currentSequenceTasks = new List<Task>();
 		private void CreateWorldObj(Tuple<WorldObject.WorldObjectData, WorldTile> obj)
@@ -755,7 +758,7 @@ namespace DefconNull.World
 				{
 					MakeWorldObjectFromData(obj.Item1, obj.Item2);
 				});
-				RunNextFrame(t);
+				RunNextAfterFrames(t);
 				return;
 			}	
 			
@@ -876,10 +879,11 @@ namespace DefconNull.World
 
 		private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
 
-		public bool SequenceRunning => SequenceQueue.Count > 0;
+		public bool SequenceRunning => SequenceQueue.Count > 0 || _currentSequenceTasks.Count > 0;
 		public void AddSequence(SequenceAction action)
 		{
 			SequenceQueue.Enqueue(action);
+			Console.WriteLine("adding action "+action.SqcType+" to sequence");
 		}
 
 		public void AddSequence(Queue<SequenceAction> actions)
@@ -889,5 +893,71 @@ namespace DefconNull.World
 				AddSequence(a);
 			}
 		}
+
+		public int GetTileMovementScore(Vector2Int vec, Unit unit)
+		{
+			int score = 0;
+			bool team = unit.IsPlayerOneTeam;
+			var tile = GetTileAtGrid(vec);
+#if SERVER
+			var myTeamUnitsIds = team ? GameManager.T1Units : GameManager.T2Units;
+			var otherTeamUnitsIds = team ? GameManager.T2Units : GameManager.T1Units;
+
+			List<Unit> myTeamUnits = new List<Unit>();
+			List<Unit> otherTeamUnits = new List<Unit>();
+			foreach (var id in myTeamUnitsIds)
+			{
+				myTeamUnits.Add(GetObject(id).UnitComponent);
+			}
+
+			foreach (var id in otherTeamUnitsIds)
+			{
+				otherTeamUnits.Add(GetObject(id).UnitComponent);
+			}
+
+#else
+			var myTeamUnits = GameLayout.MyUnits;//this assumes we're getting movement score for our own units
+			var otherTeamUnits = GameLayout.EnemyUnits;
+#endif
+			
+			
+			
+			
+			//add points for being in range of your primiary attack
+			float closestDistance=1000;
+			
+			foreach (var u in otherTeamUnits)
+			{
+				var enemyLoc = u.WorldObject.TileLocation.Position;
+				var dist = Vector2.Distance(enemyLoc, vec);
+				if(dist< closestDistance){
+					closestDistance = dist;
+				}
+			}
+			
+
+			closestDistance -= unit.GetAction(-1).GetOptimalRange();
+			int distanceReward = 30;
+
+			while (closestDistance > 0)//subtract points for being too far away
+			{
+				distanceReward--;
+				closestDistance--;
+			}
+		
+			score += distanceReward;
+			
+			
+			//add points for being protected
+			foreach (var u in otherTeamUnits)
+			{
+				//u.GetAction(-1)
+			}
+
+
+
+			return score;
+		}
+
 	}
 }

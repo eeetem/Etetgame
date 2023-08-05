@@ -1,5 +1,6 @@
 ﻿using System;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 #endif
@@ -28,7 +29,7 @@ public class Crouch : Action
 	}
 
 #else
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -42,12 +43,18 @@ public class Crouch : Action
 		w.TargetFriend = true;
 		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
-		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
+		//	queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new CrouchUnit(actor.WorldObject.ID));
 
 		foreach (var shooter in shooters)
 		{
-			queue.Enqueue(new DoAction(shooter.WorldObject.ID,actor.WorldObject.TileLocation.Position,-1));
+			UseAbility.AbilityIndex = -1;
+			var res = Actions[ActionType.UseAbility].GetConsiquenes(shooter,actor.WorldObject.TileLocation.Position);
+			foreach (var a in res)
+			{
+				queue.Enqueue(a);
+			}
+		
 		}
 		
 		return queue;

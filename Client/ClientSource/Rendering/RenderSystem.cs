@@ -142,6 +142,7 @@ public static class RenderSystem
 							break;
 
 					}
+					spriteBatch.DrawText(WorldManager.Instance.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
 					spriteBatch.DrawPolygon(pos,new Polygon(new List<Vector2> {Utility.GridToWorldPos(new(-0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,0.5f)),Utility.GridToWorldPos(new(-0.5f,0.5f))}),c,2.5f,0);
 				
 				}
@@ -150,7 +151,6 @@ public static class RenderSystem
 			}
 		}
 		spriteBatch.End();
-		
 		
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);

@@ -1,18 +1,20 @@
 ﻿using System.Threading.Tasks;
+using DefconNull.World;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
-public class OverWatch : SequenceAction
+public class UnitOverWatch : UnitSequenceAction
 {
 	public Vector2Int Target;
 
-	public OverWatch(int actorID, Vector2Int tg) : base(actorID, SequenceType.Overwatch)
+	public UnitOverWatch(int actorID, Vector2Int tg) : base(actorID, SequenceType.Overwatch)
 	{
 		Target = tg;
 	}
 
-	public OverWatch(int actorID, Message msg) : base(actorID, SequenceType.Overwatch)
+	public UnitOverWatch(int actorID, Message msg) : base(actorID, SequenceType.Overwatch)
 	{
 		Target = msg.GetSerializable<Vector2Int>();
 	}
@@ -47,6 +49,7 @@ public class OverWatch : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
+		base.SerializeArgs(message);
 		message.Add(Target);
 	}
 }

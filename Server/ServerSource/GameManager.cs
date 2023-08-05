@@ -1,6 +1,9 @@
-﻿using DefconNull.Networking;
+﻿using System.Collections.Concurrent;
+using DefconNull.Networking;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.Actions;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 
 namespace DefconNull;
@@ -36,7 +39,7 @@ public static partial class GameManager
 			return;
 		}
 
-		GameState = GameState.Playing;
+	
 
 
 		//not a fan of this, should probably be made a single function
@@ -53,7 +56,7 @@ public static partial class GameManager
 				int id = WorldManager.Instance.GetNextId();
 				foreach (var c in spawn.Inventory)
 				{
-					if(PrefabManager.UseItems[c].allowedUnits.Count > 0)
+					if(PrefabManager.UseItems.ContainsKey(c) && PrefabManager.UseItems[c].allowedUnits.Count > 0)
 					{
 						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
 					}
@@ -66,7 +69,27 @@ public static partial class GameManager
 			}
 		}
 
-	
+		var newComcp = new List<SquadMember>();
+		if (Player2!.IsAI)
+		{
+			for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount; j++)
+			{
+				var sq = new SquadMember();
+				sq.Prefab = "Grunt";
+				Vector2Int pos = new Vector2Int(0, 0);
+				do
+				{
+					pos = T2SpawnPoints[Random.Shared.Next(T2SpawnPoints.Count)];
+				}while(newComcp.Find((s) => s.Position == pos) != null);
+				sq.Position = pos;
+				var l = new List<string>();
+				l.Add("Flash");
+				sq.Inventory = l;
+				newComcp.Add(sq);
+			}
+			Player2.SetSquadComp(newComcp);
+		}
+
 		i = 0;
 		foreach (var spawn in Player2!.SquadComp!)
 		{
@@ -78,7 +101,7 @@ public static partial class GameManager
 				cdata.Inventory = new List<string>();
 				foreach (var c in spawn.Inventory)
 				{
-					if(PrefabManager.UseItems[c].allowedUnits.Count > 0)
+					if(PrefabManager.UseItems.ContainsKey(c) && PrefabManager.UseItems[c].allowedUnits.Count > 0)
 					{
 						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
 					}
@@ -93,23 +116,93 @@ public static partial class GameManager
 		}
 
 
-
-
-		Thread.Sleep(1000); //let the clients process spawns
-		NetworkingManager.SendGameData();
-		Thread.Sleep(1000); //let the clients process UI
-
-		var rng = Random.Shared.Next(100);
-		NextTurn();
-		Console.WriteLine("turn rng: "+rng);
-		if (rng > 50)
+		var t = new Task(delegate
 		{
-			
-			NextTurn();
-		}
 
-		Thread.Sleep(1000); //just in case
-		NetworkingManager.SendGameData();
+			GameState = GameState.Playing;
+		
+		
+			var rng = Random.Shared.Next(100);
+			NextTurn(true);
+			Console.WriteLine("turn rng: "+rng);
+			if (rng > 50)
+			{
+				NextTurn();
+			}
+
+			Thread.Sleep(1000); //just in case
+			NetworkingManager.SendGameData();
+
+
+		});
+		WorldManager.Instance.RunNextAfterFrames(t,5);//let units be created and sent before we swtich to playing
+
+
+
+	}
+	private static void StartAITurn()
+	{
+		var t = new Task(delegate
+		{
+			Task.Run(() =>
+			{
+				foreach (var u in T2Units)
+				{
+					var unit = WorldManager.Instance.GetObject(u)!.UnitComponent;
+					Console.WriteLine("---------AI acting with unit: "+unit!.WorldObject.TileLocation.Position);
+					while (unit!.MovePoints > 0)
+					{
+						Console.WriteLine("moving("+unit.MovePoints.Current+")");
+						var allLocations = unit.GetPossibleMoveLocations();
+						ConcurrentBag<Tuple<Vector2Int, int>> scoredLocations = new ConcurrentBag<Tuple<Vector2Int, int>>();
+						if (allLocations.Length == 0)
+						{
+							Console.WriteLine("unable to move, cancleing");
+							break;
+						}
+
+						Parallel.ForEach(allLocations[0], l =>
+						{
+							int score = WorldManager.Instance.GetTileMovementScore(l, unit);
+							scoredLocations.Add(new Tuple<Vector2Int, int>(l,score));
+						});
+						int score = WorldManager.Instance.GetTileMovementScore(unit.WorldObject.TileLocation.Position, unit);
+						scoredLocations.Add(new Tuple<Vector2Int, int>(unit.WorldObject.TileLocation.Position,score));
+
+						int bestOf = Math.Min(scoredLocations.Count, 1);
+						
+						
+						var result = scoredLocations
+							.OrderByDescending(x => x.Item2)
+							.Take(bestOf)
+							.ToArray();
+						//pick random location out of top 3
+						int r = Random.Shared.Next(bestOf);
+						Vector2Int target = result[r].Item1;
+
+						if (target == unit.WorldObject.TileLocation.Position)
+						{
+							Console.WriteLine("AI decided to stay put");
+							break;
+						}
+						
+
+						Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+result[r].Item2);
+						unit.DoAction(Action.Actions[Action.ActionType.Move], target);
+						Console.WriteLine(" waiting for sequence to clear.....");
+						do
+						{
+							Thread.Sleep(1000);
+						} while (WorldManager.Instance.SequenceRunning);
+
+					}
+					Console.WriteLine("---------AI DONE ---- acting with unit: "+unit!.WorldObject.TileLocation.Position);
+				}
+				Console.WriteLine("AI turn over, ending turn"); 
+				NextTurn();
+			});
+		});
+		WorldManager.Instance.RunNextAfterFrames(t,2);
 
 	}
 

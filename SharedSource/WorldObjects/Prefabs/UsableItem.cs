@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.World.WorldActions;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldObjects;
@@ -26,9 +27,9 @@ public class UsableItem
 		return Action.CanPerform(actor,ref target);
 	}
 
-	public void Execute(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsiquences(Unit actor, Vector2Int target)
 	{
-		Action.Execute(actor,target);
+		return Action.GetConsiquences(actor,target);
 	}
 #if CLIENT
 	public Texture2D? Icon => Action.Icon;
@@ -39,10 +40,6 @@ public class UsableItem
 		Action.Preview(actor,target,spriteBatch);
 	}
 
-	public void InitPreview()
-	{
-		Action.InitPreview();
-	}
 #endif
 
 

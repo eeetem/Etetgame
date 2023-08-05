@@ -1,5 +1,7 @@
 ﻿using System;
+using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 using DefconNull.Rendering.UILayout;
@@ -31,29 +33,34 @@ public class UseItem : Action
 	}
 
 	#if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
 	{
-		
-		
-		WorldEffect w = new WorldEffect();
-		w.Act.Value = -1;
-		w.TargetFriend = true;
-		w.TargetSelf = true;
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
-		queue.Enqueue(new ReplaySequence.SelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
-		queue.Enqueue(new UseSelectedItem(actor.WorldObject.ID,target));
+		
+		
+		var item = actor.SelectedItem;
+		var cons = item.GetConsiquences(actor, target);
+		
+		
+		
+		queue.Enqueue(new UnitSelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
+		queue.Enqueue(new UseUpSelectedItem(actor.WorldObject.ID,target));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,-1));
+		if (actor.WorldObject.TileLocation.Position != target)
+		{
+			queue.Enqueue(new FaceUnit(actor.WorldObject.ID, target));
+		}
+
+		foreach (var c in cons)
+		{
+			queue.Enqueue(c);
+		}
+
 		return queue;
 	}
 	#endif
 	
 #if CLIENT
-	public override void InitAction()
-	{
-		//bad
-		GameLayout.SelectedUnit?.SelectedItem?.InitPreview();
-		base.InitAction();
-	}
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{

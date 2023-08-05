@@ -27,5 +27,7 @@ public class NetMsgIds
 		Chat = 17,
 		PreGameData = 18,
 		Kick = 19,
+		AddAI = 20,
+		PracticeMode = 21,
 	}
 }

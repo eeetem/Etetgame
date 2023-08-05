@@ -1,6 +1,7 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -20,36 +21,39 @@ public class Throwable : DeliveryMethod
 		this.throwRange = throwRange;
 	}
 
-	private static Vector2Int? LastReturned = new Vector2Int(0,0);
-	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	private static Vector2Int? lastReturned;
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
-		if (target == actor.WorldObject.TileLocation.Position)
+		if (target!.Value == actor.WorldObject.TileLocation.Position)
 		{
-			return target;
+			return new List<SequenceAction>();
 		}
 
-		if (Vector2.Distance(target, actor.WorldObject.TileLocation.Position) > throwRange)
+		if (Vector2.Distance(target.Value, actor.WorldObject.TileLocation.Position) > throwRange)
 		{
-			if (LastReturned == null) return null;
-			target = LastReturned.Value;
-			
+			target = lastReturned;
+			return new List<SequenceAction>();
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target, Cover.Full,false,true);
-		LastReturned = outcome.EndPoint;
-		return outcome.CollisionPointShort;
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target!.Value, Cover.Full,false,true);
+		lastReturned = outcome.EndPoint;
+		target= outcome.CollisionPointShort;
+		return new List<SequenceAction>();
 	}
 
-	
+	public override float GetOptimalRangeAI(float margin)
+	{
+		return throwRange+margin;
+	}
 
 
 	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
 	{
 		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target) > throwRange)
 		{
-			if (LastReturned != null && Vector2.Distance(actor.WorldObject.TileLocation.Position, LastReturned.Value) <= throwRange)
+			if (lastReturned != null && Vector2.Distance(actor.WorldObject.TileLocation.Position, lastReturned.Value) <= throwRange)
 			{
-				target = LastReturned.Value;
+				target = lastReturned.Value;
 				return new Tuple<bool, string>(true, "");
 			}
 
@@ -58,25 +62,5 @@ public class Throwable : DeliveryMethod
 		
 		return new Tuple<bool, string>(true, "");
 	}
-#if CLIENT
-	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
-	{
-		Vector2Int? newTarget = ExectuteAndProcessLocation(actor, target);
-		if (newTarget == null) return newTarget;
-			
-		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos((Vector2)newTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
-		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position+new Vector2(0.5f,0.5f)) , Utility.GridToWorldPos((Vector2)newTarget+new Vector2(0.5f,0.5f)), Color.Red, 2);
-		
-		
-		
-		return newTarget;
-	}
-
-	public override void InitPreview()
-	{
-		LastReturned = null;
-	}
-
-#endif
 
 }

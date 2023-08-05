@@ -18,7 +18,8 @@ public static partial class NetworkingManager
 
 		if (GameManager.Player2 != null)
 		{
-			if (GameManager.Player2?.Connection != null) Kick("Kicked by host", GameManager.Player2.Connection);
+			//dont kick host when kicking ai or practice bot
+			if (GameManager.Player2?.Connection != null && GameManager.Player2.Connection != GameManager.Player1.Connection) Kick("Kicked by host", GameManager.Player2.Connection);
 			GameManager.Player2 = null;
 		}
 
@@ -59,16 +60,16 @@ public static partial class NetworkingManager
 		
 		if (message.GetBool())
 		{
-			if (!SinglePlayer)
+			if (GameManager.Player2 != null && !GameManager.Player2.IsPracticeOpponent)
 			{
-				Kick("This server is not running in singpleplayer mode", senderID);
+				Kick("This server is not running in practice mode", senderID);
 				return;
 			}
 
 			
 			GameManager.Player1!.SetSquadComp(message.GetSerializables<SquadMember>().ToList());
 
-			GameManager.Player2!.SetSquadComp(message.GetSerializables<SquadMember>().ToList());
+			GameManager.Player2?.SetSquadComp(message.GetSerializables<SquadMember>().ToList());
 			GameManager.StartGame();
 			return;
 		}
@@ -82,7 +83,7 @@ public static partial class NetworkingManager
 			GameManager.Player2.SetSquadComp(squadMembers);
 		}
 
-		if (GameManager.Player1?.SquadComp != null && GameManager.Player2?.SquadComp != null)
+		if (GameManager.Player1!.SquadComp != null && (GameManager.Player2!.SquadComp != null || GameManager.Player2.IsAI))
 		{
 			GameManager.StartGame();
 		}
@@ -142,7 +143,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
-		if (!SinglePlayer)
+		if (!GameManager.Player2!.IsPracticeOpponent)
 		{
 			if (GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID)
 			{
@@ -222,6 +223,31 @@ public static partial class NetworkingManager
 		act.PerformServerSide(controllable, packet.Target);
 		UseAbility.abilityLock = false;
 			
+	}
+	
+
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.AddAI)]
+	private static void AddAI(ushort senderID, Message message)
+	{
+		if(!SinglePlayerFeatures) return;
+		if (GameManager.Player2 != null) return;
+		Connection c;
+		server.TryGetClient(senderID, out c);
+		GameManager.Player2 = new ClientInstance("AI", c);
+		GameManager.Player2.IsAI = true;
+		SendPreGameInfo();
+	}
+
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.PracticeMode)]
+	private static void PracticeMode(ushort senderID, Message message)
+	{
+		if(!SinglePlayerFeatures) return;
+		if (GameManager.Player2 != null) return;
+		Connection c;
+		server.TryGetClient(senderID, out c);
+		GameManager.Player2 = new ClientInstance("Practice Opponent", c);
+		GameManager.Player2.IsPracticeOpponent = true;
+		SendPreGameInfo();
 	}
 
 }

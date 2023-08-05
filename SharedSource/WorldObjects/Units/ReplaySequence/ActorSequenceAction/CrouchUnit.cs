@@ -1,15 +1,16 @@
 ﻿using System.Threading.Tasks;
+using DefconNull.World;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
-public class Crouch : SequenceAction
+public class CrouchUnit : UnitSequenceAction
 {
 	
-	public Crouch(int actorID) : base(actorID, SequenceType.Crouch)
+	public CrouchUnit(int actorID) : base(actorID, SequenceType.Crouch)
 	{
 	}
-	public Crouch(int actorID,Message msg) : base(actorID, SequenceType.Crouch)
+	public CrouchUnit(int actorID,Message msg) : base(actorID, SequenceType.Crouch)
 	{
 	}
 
@@ -28,6 +29,7 @@ public class Crouch : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
+		base.SerializeArgs(message);
 		return;
 	}
 }

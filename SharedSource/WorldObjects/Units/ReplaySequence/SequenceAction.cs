@@ -9,45 +9,32 @@ public abstract class SequenceAction : IMessageSerializable
 {
 	public enum SequenceType
 	{
-		Action=1,
+		
+		PlaySound =100,
+		PostProcessingEffect =101,
+		TakeDamage = 102,
+		UpdateTile =103,
+		MakeWorldObject =104,
+		
+		ChangeUnitPoints =0,
+		GiveItem =1,
 		Move=2,
 		Face=3,
 		Crouch=4,
 		UseItem = 5,
 		SelectItem = 6,
-		WorldEffect = 7,
+		Suppress = 7,
 		PlayAnimation =8,
-		UpdateTile =9,
-		Overwatch = 10
+		Overwatch = 9,
+		UnitStatusEffect =10,
+		
 	}
 	public readonly SequenceType SqcType;
-
-	public readonly int ActorID;
-	protected Unit Actor
-	{
-		get
-		{
-			var obj = WorldManager.Instance.GetObject(ActorID);
-			int attempts = 0;
-			while(obj == null)
-			{
-				Thread.Sleep(1000);
-				obj = WorldManager.Instance.GetObject(ActorID);
-				attempts++;
-				if (attempts>10)
-				{
-					throw new Exception("Sequence Actor not found");
-				}
-			}
-
-			return obj.UnitComponent;
-		}
-	}
-
-	public SequenceAction(int actorID,SequenceType tp)
+	public bool IsUnitAction => (int) SqcType < 100;
+	public virtual bool CanBatch => false;
+	public SequenceAction(SequenceType tp)
 	{
 		SqcType = tp;
-		ActorID = actorID;
 	}
 
 	public virtual bool ShouldDo()
@@ -57,27 +44,7 @@ public abstract class SequenceAction : IMessageSerializable
 
 	public virtual Task Do()
 	{
-		
-		var t = new Task(delegate
-		{
-#if CLIENT
-			if (Actor.WorldObject.TileLocation.TileVisibility==Visibility.None)
-			{
-				// if (Visible)
-				// {
-				// Camera<>.SetPos(target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
-				// }
-			}
-			else
-			{
-				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
-			}
-#endif
-			GenerateTask().RunSynchronously();
-		});
-
-
-		return t;
+		return GenerateTask();
 
 	}
 
@@ -88,7 +55,6 @@ public abstract class SequenceAction : IMessageSerializable
 
 	public void Serialize(Message message)
 	{
-		message.Add(ActorID);
 		SerializeArgs(message);
 	}
 

@@ -2,6 +2,7 @@
 using DefconNull.Networking;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldObjects.Units.Actions;
@@ -10,39 +11,45 @@ public class UseAbility : Action
 {
 	
 	
-		public UseAbility() : base(ActionType.UseAbility)
-		{
-		}
+	public UseAbility() : base(ActionType.UseAbility)
+	{
+	}
 
-		public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
-		{
+	public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
+	{
 			
-			IExtraAction action = actor.GetAction(AbilityIndex);
-			return action.CanPerform(actor, ref target);
+		IExtraAction action = actor.GetAction(AbilityIndex);
+		return action.CanPerform(actor, ref target);
 
-		}
+	}
 
-		public static bool abilityLock = false;
-		private static int _abilityIndex = -1;
+	public static bool abilityLock = false;
+	private static int _abilityIndex = -1;
 
-		public static int AbilityIndex
-		{
-			get => _abilityIndex;
-			set {
-				if (abilityLock)
-				{
-					return;
-				}
-
-				_abilityIndex = value;
+	public static int AbilityIndex
+	{
+		get => _abilityIndex;
+		set {
+			if (abilityLock)
+			{
+				return;
 			}
+
+			_abilityIndex = value;
 		}
+	}
 
 #if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
 	{
+
+		IExtraAction action = actor.GetAction(AbilityIndex);
+		var res = action.ExecutionResult(actor, target);
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new DoAction(actor.WorldObject.ID,target,AbilityIndex));
+		foreach (var sequenceAction in res)
+		{
+			queue.Enqueue(sequenceAction);
+		}
 		return queue;
 
 

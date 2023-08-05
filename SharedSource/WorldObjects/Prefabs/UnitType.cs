@@ -48,7 +48,15 @@ public class UnitType : WorldObjectType
 
 		if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
 		{
-			SpawnEffect?.Apply(tile.Position);
+			if (SpawnEffect != null)
+			{
+				
+				foreach (var c in SpawnEffect.ApplyConsiqunces(tile.Position))
+				{
+					WorldManager.Instance.AddSequence(c);
+				}
+			}
+
 		}
 	}
 #if CLIENT

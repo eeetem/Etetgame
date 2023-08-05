@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -101,29 +102,31 @@ public class Shootable : DeliveryMethod
 		return projectile;
 	}
 
-	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
 		//client shouldnt be allowed to judge what got hit
 		//fire packet just makes the unit "shoot"
 		//actual damage and projectile is handled elsewhere
+		
+		Vector2Int vectarget = target!.Value;
+		Projectile p = MakeProjectile(actor, vectarget, false);
+		var fireResults = p.Fire();
 
-		Projectile p = MakeProjectile(actor, target, false);
-		p.Fire();
-
-		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,target));
+		actor.WorldObject.Face(Utility.GetDirection(actor.WorldObject.TileLocation.Position,vectarget));
 		if (p.Result.hit)
 		{
 			var obj = WorldManager.Instance.GetObject(p.Result.HitObjId);
 			if (obj == null)
 			{
-				return p.Result.CollisionPointShort;
+				target = p.Result.CollisionPointShort;
+				return fireResults;
 			}
-			return obj.TileLocation.Position;
+			target = obj.TileLocation.Position;
+			return fireResults;
 		}
-	
-		return target;
-		
-		
+
+
+		return fireResults;
 	}
 #if CLIENT
 	protected Projectile? previewShot;
@@ -131,8 +134,8 @@ public class Shootable : DeliveryMethod
 	private Vector2Int _lastTarget = new Vector2Int(0,0);
 	private TargetingType lastTargetingType = TargetingType.Auto;
 
-
-	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+/*
+	public override Vector2Int? PreviewChild(Unit actor, Vector2Int? target, SpriteBatch spriteBatch)
 	{
 		
 		if (actor.WorldObject.TileLocation.Position == target)
@@ -344,13 +347,18 @@ public class Shootable : DeliveryMethod
 		return target;
 
 	}
+	*/
 
-	public override void InitPreview()
+
+	
+#endif
+	
+	public override float GetOptimalRangeAI(float margin)
 	{
-		previewShot = null;
-		_lastTarget = new Vector2Int(0,0);
-		//targeting = TargetingType.Auto;
+		if(margin>0)
+			return dropOffRange+margin;
+		
+		return dropOffRange + supressionRange;
 	}
 
-#endif
 }

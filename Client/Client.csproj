@@ -332,38 +332,59 @@
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseItem.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\UseItem.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\DoAction.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\DoAction.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Crouch.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\CrouchUnit.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\CrouchUnit.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Face.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Face.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\FaceUnit.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\FaceUnit.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Move.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Move.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\GiveItem.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\GiveItem.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\Overwatch.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\Overwatch.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\Suppress.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\Suppress.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\PlayAnimation.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitMove.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitMove.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SelectItem.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\SelectItem.cs</Link>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitOverWatch.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitOverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\PlayAnimation.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\PlayAnimation.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitSelectItem.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitSelectItem.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitSequenceAction.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitSequenceAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitStatusEffect.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UnitStatusEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UseUpSelectedItem.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\ActorSequenceAction\UseUpSelectedItem.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\MakeWorldObject.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\MakeWorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PlaySound.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\PlaySound.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\PostProcessingEffect.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\PostProcessingEffect.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\SequenceAction.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\TakeDamage.cs">
+        <Link>SharedSource\WorldObjects\Units\ReplaySequence\TakeDamage.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\UpdateTile.cs">
         <Link>SharedSource\WorldObjects\Units\ReplaySequence\UpdateTile.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\UseSelectedItem.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\UseSelectedItem.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs">
-        <Link>SharedSource\WorldObjects\Units\ReplaySequence\WorldChange.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\StatusEffectInstance.cs">
         <Link>SharedSource\WorldObjects\Units\StatusEffectInstance.cs</Link>

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using DefconNull.SharedSource.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 #if CLIENT
@@ -46,7 +47,7 @@ public class Move : Action
 
 	
 #if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 		int moveUse = 1;
@@ -102,22 +103,25 @@ public class Move : Action
 		}
 		Debug.Assert(paths.Count == ShootingSpots.Count + 1);
 
-		WorldEffect w = new WorldEffect();
-		w.Move.Value = -moveUse;
-		w.TargetFriend = true;
-		w.TargetSelf = true;
+
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-moveUse,0));
 		for (int j = 0; j < paths.Count; j++)
 		{
 			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
-			queue.Enqueue(new ReplaySequence.Move(actor.WorldObject.ID,paths[j]));
+			queue.Enqueue(new UnitMove(actor.WorldObject.ID,paths[j]));
 			if (j < ShootingSpots.Count)
 			{
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-					queue.Enqueue(new DoAction(attacker.WorldObject.ID, ShootingSpots[j].Item2, -1));
+					UseAbility.AbilityIndex = -1;
+					var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
+					foreach (var a in res)
+					{
+						queue.Enqueue(a);
+					}
+					
 				}
 			}
 			

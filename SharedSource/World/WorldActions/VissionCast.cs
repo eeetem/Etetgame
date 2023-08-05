@@ -1,6 +1,7 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -20,21 +21,26 @@ public class VissionCast : DeliveryMethod
 	}
 
 	private static Vector2Int? LastReturned;
-	public override Vector2Int? ExectuteAndProcessLocationChild(Unit actor, Vector2Int target)
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
-		if (Vector2.Distance(target, actor.WorldObject.TileLocation.Position) > range)
+		Vector2Int vectarget =  target!.Value;
+		if (Vector2.Distance(vectarget, actor.WorldObject.TileLocation.Position) > range)
 		{
-			return LastReturned;
+			target = LastReturned;
+			return new List<SequenceAction>();
 		}
-		if (Visibility.None == WorldManager.Instance.CanSee(actor, target, true))
+		if (Visibility.None == WorldManager.Instance.CanSee(actor, vectarget, true))
 		{
-			return LastReturned;
+			target = LastReturned;
+			return new List<SequenceAction>();
 		}
-
-		return target;
+		return new List<SequenceAction>();
 	}
 
-	
+	public override float GetOptimalRangeAI(float margin)
+	{
+		return range+margin;
+	}
 
 
 	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
@@ -50,27 +56,6 @@ public class VissionCast : DeliveryMethod
 		
 		return new Tuple<bool, string>(true, "");
 	}
-#if CLIENT
-	public override Vector2Int? PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
-	{
-		Vector2Int? result = ExectuteAndProcessLocation(actor, target);
-		if (result != null)
-		{
-			Vector2Int newTarget = result.Value;
-			spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Utility.GridToWorldPos(newTarget + new Vector2(-1.5f, -0.5f)), Color.Red);
-			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(newTarget + new Vector2(0.5f, 0.5f)), Color.Red, 2);
-		}
 
-
-		return result;
-	}
-
-
-	public override void InitPreview()
-	{
-		LastReturned = null;
-	}
-
-#endif
 
 }

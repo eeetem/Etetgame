@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldActions;
@@ -23,6 +24,13 @@ public class ExtraToggleAction : IExtraAction
 			return on.tooltip;
 		}
 	}
+
+	public float GetOptimalRange()
+	{
+		return isOn ? on.GetOptimalRange() : off.GetOptimalRange();
+	}
+
+
 	public ExtraToggleAction(ExtraAction on, ExtraAction off)
 	{
 		this.on = on;
@@ -57,17 +65,17 @@ public class ExtraToggleAction : IExtraAction
 		return on.MakePacketArgs();
 	}
 
-	public void Execute(Unit actor, Vector2Int target)
+	public List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target)
 	{
 		if (isOn)
 		{
-			off.Execute(actor,target);
+			return	off.ExecutionResult(actor,target);
 		}
 		else
 		{
-			on.Execute(actor,target);
+			return on.ExecutionResult(actor,target);
 		}
-
+		//todo make this a world change
 		isOn = !isOn;
 
 	}

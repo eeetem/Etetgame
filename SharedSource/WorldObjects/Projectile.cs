@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.SharedSource.Units.ReplaySequence;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 
 namespace DefconNull.World.WorldObjects;
@@ -152,9 +155,9 @@ public class Projectile
 		return tiles;
 	}
 
-	public void Fire()
+	public List<SequenceAction> Fire()
 	{
-		
+		var retrunList = new List<SequenceAction>();
 		if (Result.hit)
 		{
 			var hitObj = WorldManager.Instance.GetObject(Result.HitObjId);
@@ -200,16 +203,21 @@ public class Projectile
 						coverBlock = Dmg;
 						Dmg = 0;
 					}
-					coverObj!.TakeDamage(coverBlock,0);
+
+					var act = new TakeDamage(coverBlock, 0, coverObj!.ID);
+					retrunList.Add(act);
+					//coverObj!.TakeDamage(coverBlock,0);
 				}
 
-				
-				
-				hitObj.TakeDamage(this);
-				if (!hitObj.destroyed && hitObj.UnitComponent is not null)
+				if (hitObj.UnitComponent is not null)
 				{
-					hitObj.Face( Utility.GetDirection(hitObj.TileLocation.Position, Result.StartPoint));
+					var act = new FaceUnit(hitObj.ID, Result.StartPoint);
+					retrunList.Add(act);
 				}
+				var act2 = new TakeDamage(Dmg, DeterminationResistanceCoefficient, hitObj.ID);
+				retrunList.Add(act2);
+			
+				
 
 			}
 			else
@@ -222,21 +230,19 @@ public class Projectile
 			Console.WriteLine("MISS");
 			//nothing is hit
 		}
-
-		Console.WriteLine("starting to supress");
 		List<WorldTile> tiles = SupressedTiles();
-		Console.WriteLine("checking " + tiles.Count + " tiles");
 
 		foreach (var tile in tiles)
 		{
 			if (tile.UnitAtLocation != null && !SupressionIgnores.Contains(tile.UnitAtLocation.WorldObject.ID))
 			{
-				tile.UnitAtLocation.Suppress(SupressionStrenght);
-				Console.WriteLine("supressed: determination="+tile.UnitAtLocation.Determination);
+				var act2 = new Suppress(SupressionStrenght, tile.UnitAtLocation.WorldObject.ID);
+				retrunList.Add(act2);
 			}
 	
 		}
-			
+
+		return retrunList;
 	}
 
 }

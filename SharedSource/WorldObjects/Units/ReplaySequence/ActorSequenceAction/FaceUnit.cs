@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
-public class Face : SequenceAction
+public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int target;
-	public Face(int actorID, Vector2Int target) : base(actorID, SequenceType.Face)
+	public FaceUnit(int actorID, Vector2Int target) : base(actorID, SequenceType.Face)
 	{
 		this.target = target;
 	}
-	public Face(int actorID, Message args) : base(actorID, SequenceType.Face)
+	public FaceUnit(int actorID, Message args) : base(actorID, SequenceType.Face)
 	{
 		target = args.GetSerializable<Vector2Int>();
 	}
@@ -30,6 +31,7 @@ public class Face : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
+		base.SerializeArgs(message);
 		message.AddSerializable(target);
 	}
 }

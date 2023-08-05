@@ -66,7 +66,7 @@ public class MasterServerNetworking
 					System.Threading.Thread.Sleep(1000);
 					UI.ShowMessage("Lost Connection To Master Server", b.Reason.ToString());
 				});
-				WorldManager.Instance.RunNextFrame(t);
+				WorldManager.Instance.RunNextAfterFrames(t);
 				
 			}
 		};

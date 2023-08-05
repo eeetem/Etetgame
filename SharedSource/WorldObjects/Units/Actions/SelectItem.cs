@@ -1,5 +1,7 @@
-﻿using System;
+﻿
+using System;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldObjects.Units.Actions;
@@ -19,10 +21,10 @@ public class SelectItem : Action
 		return  new Tuple<bool, string>(true, "");
 	}
 #if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
 	{
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.SelectItem(actor.WorldObject.ID,target.X));
+		queue.Enqueue(new UnitSelectItem(actor.WorldObject.ID,target.X));
 		return queue;
 	}
 #endif

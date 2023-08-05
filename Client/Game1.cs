@@ -1,4 +1,5 @@
 ﻿
+using System;
 using DefconNull.LocalObjects;
 using DefconNull.Networking;
 using DefconNull.Rendering;
@@ -6,10 +7,10 @@ using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.Actions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Salaros.Configuration;
+using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull;
 
@@ -81,7 +82,7 @@ public class Game1 : Game
 		Audio.Init(Content);
 		
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
-		PostPorcessing.Init(Content, GraphicsDevice);
+		PostProcessing.Init(Content, GraphicsDevice);
 		PrefabManager.MakePrefabs();
 		ConfigParserSettings st = new ConfigParserSettings();
 		st.Culture = System.Globalization.CultureInfo.InvariantCulture;
@@ -117,7 +118,7 @@ public class Game1 : Game
 		Camera.Init(GraphicsDevice,Window);
 		Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.2"), System.Globalization.CultureInfo.InvariantCulture);
 		Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.7"), System.Globalization.CultureInfo.InvariantCulture);
-		PostPorcessing.RemakeRenderTarget();
+		PostProcessing.RemakeRenderTarget();
 		UI.SetUI(null);
 	}
 
@@ -149,7 +150,7 @@ public class Game1 : Game
 		UI.Render(gameTime.ElapsedGameTime.Milliseconds,spriteBatch);//potentially move this into the render system!	Long live Forg!
 		PopUpText.Draw(spriteBatch);
 
-		PostPorcessing.Apply(gameTime.ElapsedGameTime.Milliseconds);
+		PostProcessing.Apply(gameTime.ElapsedGameTime.Milliseconds);
 		GraphicsDevice.SetRenderTarget(null);
 		base.Draw(gameTime);
 	}

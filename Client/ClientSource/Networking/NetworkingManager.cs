@@ -193,4 +193,17 @@ public static partial class NetworkingManager
 		msg.AddSerializable(act);
 		client?.Send(msg);
 	}
+
+
+	public static void PracticeMode()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.PracticeMode);
+		client?.Send(msg);
+	}
+
+	public static void AddAI()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.AddAI);
+		client?.Send(msg);
+	}
 }

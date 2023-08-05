@@ -123,25 +123,24 @@ public partial class WorldTile
 	}
 	public double TraverseCostFrom(Vector2Int from)
 	{
-		try
-		{	
-			var dist = Utility.Distance(from, Position);
-			if (dist == 0) return 0;
-			Cover obstacle = WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
-			if (obstacle == Cover.None) return dist;
-			if (obstacle == Cover.Low) return dist + 1;
-			if (obstacle == Cover.High) return dist + 5;
-			if (obstacle == Cover.Full) return 1000000;
-			if (obstacle == null)
-			{
-				Console.WriteLine("ERROR: null obstale");
-			}
-		}catch(Exception e)
-		{
-			Console.WriteLine(e);
-		}
 
-		throw new Exception("HOW DID YOU GET HERE");
+		var dist = Utility.Distance(from, Position);
+		if (dist == 0) return 0;
+		Cover obstacle = WorldManager.Instance.GetTileAtGrid(from).GetCover(Utility.Vec2ToDir(new Vector2Int(Position.X - from.X, Position.Y - from.Y)));
+		if (obstacle == Cover.None) return dist;
+		if (obstacle == Cover.Low) return dist + 1;
+		if (obstacle == Cover.High) return dist + 5;
+		if (obstacle == Cover.Full)
+		{
+			throw new Exception("cannot traverse full cover");
+		}
+		if (obstacle == null)
+		{
+			throw new Exception("ERROR: null obstacle");
+		}
+		
+		throw new Exception("how did we get here");
+
 	}
 
 	private WorldObject? _northEdge;

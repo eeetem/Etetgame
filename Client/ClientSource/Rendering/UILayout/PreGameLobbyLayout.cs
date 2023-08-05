@@ -73,50 +73,27 @@ public class PreGameLobbyLayout : MenuLayout
 
 
 
-	
-
-		if (GameManager.PreGameData.SinglePlayerLobby)
+		var btn = new TextButton()
 		{
+			Text = "GO",
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Center,
+			Top = 0,
+			Width = (int) (200 * globalScale.X),
+			Height = (int) (100 * globalScale.Y),
+			Background = new TextureRegion(TextureManager.GetTexture("UI/button")),
+			OverBackground = new TextureRegion(TextureManager.GetTexture("UI/button")),
+			//	Font =DefaultFont.GetFont(50)
 
-			var Practice = new TextButton()
-			{
-				Text = "Practice  Mode",
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Top = 0,
-				Width = (int) (200 * globalScale.X),
-				Height = (int) (100 * globalScale.Y),
-
-			};
-			Practice.Click += (s, a) => { NetworkingManager.SendStartGame(true); };
-			rightStack.Widgets.Add(Practice);
-		}
-		else
+		};
+		if (!GameManager.IsPlayer1)
 		{
-			var btn = new TextButton()
-			{
-				Text = "GO",
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				Top = 0,
-				Width = (int) (200 * globalScale.X),
-				Height = (int) (100 * globalScale.Y),
-				Background = new TextureRegion(TextureManager.GetTexture("UI/button")),
-				OverBackground = new TextureRegion(TextureManager.GetTexture("UI/button")),
-				//	Font =DefaultFont.GetFont(50)
-
-			};
-			if (!GameManager.IsPlayer1)
-			{
-				btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
-				btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
-			}
-
-			btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
-			rightStack.Widgets.Add(btn);
-			
-			
+			btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
+			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
 		}
+
+		btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
+		rightStack.Widgets.Add(btn);
 
 		var linebreak = new Label()
 		{
@@ -135,7 +112,7 @@ public class PreGameLobbyLayout : MenuLayout
 
 		};
 		rightStack.Widgets.Add(options);
-		options.Click+= (s, a) =>
+		options.Click += (s, a) =>
 		{
 			if (UI.Desktop.Widgets.Contains(gameOptionsMenu)) return;
 			gameOptionsMenu = new Panel();
@@ -162,7 +139,7 @@ public class PreGameLobbyLayout : MenuLayout
 			{
 				Text = "Apply",
 				Top = 25,
-				HorizontalAlignment = HorizontalAlignment.Center, 
+				HorizontalAlignment = HorizontalAlignment.Center,
 			};
 			if (!GameManager.IsPlayer1)
 			{
@@ -178,7 +155,7 @@ public class PreGameLobbyLayout : MenuLayout
 					GameManager.PreGameData = data;
 					NetworkingManager.SendPreGameUpdate();
 				}
-					
+
 				UI.Desktop.Widgets.Remove(gameOptionsMenu);
 				gameOptionsMenu = null;
 			};
@@ -186,31 +163,34 @@ public class PreGameLobbyLayout : MenuLayout
 
 			UI.Desktop.Widgets.Add(gameOptionsMenu);
 		};
-		if (!GameManager.PreGameData.SinglePlayerLobby)
+
+		linebreak = new Label()
 		{
-			linebreak = new Label()
-			{
-				Text = "______________",
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Width = (int) (400 * globalScale.X),
-			};
-			rightStack.Widgets.Add(linebreak);
+			Text = "______________",
+			HorizontalAlignment = HorizontalAlignment.Center,
+			Width = (int) (400 * globalScale.X),
+		};
+		rightStack.Widgets.Add(linebreak);
 
 
-			var lablekick = new HorizontalStackPanel();
-			lablekick.HorizontalAlignment = HorizontalAlignment.Center;
-			rightStack.Widgets.Add(lablekick);
+		var lablekick = new HorizontalStackPanel();
+		lablekick.HorizontalAlignment = HorizontalAlignment.Center;
+		rightStack.Widgets.Add(lablekick);
 
 
-			var label = new Label()
-			{
-				Text = "Opponent:",
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				//	Height = (int)(80*globalScale.Y),
-				Background = new SolidBrush(Color.Black),
-			};
 
+		var label = new Label()
+		{
+			Text = "Opponent:",
+			VerticalAlignment = VerticalAlignment.Center,
+			HorizontalAlignment = HorizontalAlignment.Center,
+			//	Height = (int)(80*globalScale.Y),
+			Background = new SolidBrush(Color.Black),
+		};
+
+		if (GameManager.PreGameData.Player2Name != "None")
+		{
+			
 			var kick = new ImageButton()
 			{
 				VerticalAlignment = VerticalAlignment.Center,
@@ -222,200 +202,227 @@ public class PreGameLobbyLayout : MenuLayout
 			};
 			kick.Click += (s, a) => { NetworkingManager.KickRequest(); };
 			lablekick.Widgets.Add(kick);
-			lablekick.Widgets.Add(label);
-			string oponentName = GameManager.PreGameData.Player2Name;
-			if (!GameManager.IsPlayer1)
-			{
-				oponentName = GameManager.PreGameData.HostName;
-			}
-
-			var namelable = new Label()
-			{
-				Text = oponentName,
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Background = new SolidBrush(Color.Black),
-				Top = 0,
-				Wrap = true
-			};
-			rightStack.Widgets.Add(namelable);
-
-
 		}
-
-		linebreak = new Label()
+		else if (GameManager.PreGameData.SinglePLayerFeatures)
 		{
-			Text = "______________",
-			HorizontalAlignment = HorizontalAlignment.Center,
-			Width = (int)(400*globalScale.X),
-		};
-		rightStack.Widgets.Add(linebreak);
+			var addAI = new ImageButton()
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Right,
+				Left = -10,
+				Width = 50,
+				Height = 50,
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/AI")), Color.White),
+			};
+			addAI.Click += (s, a) => { NetworkingManager.AddAI(); };
+			var addPractice = new ImageButton()
+			{
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Right,
+				Left = -10,
+				Width = 50,
+				Height = 50,
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/pract")), Color.White),
+			};
+			addPractice.Click += (s, a) => { NetworkingManager.PracticeMode();};
+			lablekick.Widgets.Add(addAI);
+			lablekick.Widgets.Add(addPractice);
+		}
+	
+	lablekick.Widgets.Add(label);
+	string oponentName = GameManager.PreGameData.Player2Name;
+		if (!GameManager.IsPlayer1)
+	{
+		oponentName = GameManager.PreGameData.HostName;
+	}
+
+	var namelable = new Label()
+	{
+		Text = oponentName,
+		VerticalAlignment = VerticalAlignment.Center,
+		HorizontalAlignment = HorizontalAlignment.Center,
+		Background = new SolidBrush(Color.Black),
+		Top = 0,
+		Wrap = true
+	};
+	rightStack.Widgets.Add(namelable);
+
+
+		
+
+	linebreak = new Label()
+	{
+		Text = "______________",
+		HorizontalAlignment = HorizontalAlignment.Center,
+		Width = (int)(400*globalScale.X),
+	};
+	rightStack.Widgets.Add(linebreak);
 
 				
-		var spectatorViewer = new ScrollViewer();
-		var spectatorList = new VerticalStackPanel();
-		spectatorViewer.Content = spectatorList;
-		spectatorViewer.Height = (int) (80 * globalScale.Y);
+	var spectatorViewer = new ScrollViewer();
+	var spectatorList = new VerticalStackPanel();
+	spectatorViewer.Content = spectatorList;
+	spectatorViewer.Height = (int) (80 * globalScale.Y);
 
-		var lbl = new Label()
+	var lbl = new Label()
+	{
+		Text = "SPECTATORS:",
+		VerticalAlignment = VerticalAlignment.Center,
+		HorizontalAlignment = HorizontalAlignment.Center,
+		Background = new SolidBrush(Color.Black),
+		Top = 0,
+		Wrap = true
+	};
+	rightStack.Widgets.Add(lbl);
+	foreach (var spectator in GameManager.PreGameData.Spectators)
+	{
+		var spec = new Label()
 		{
-			Text = "SPECTATORS:",
+			Text = spectator,
 			VerticalAlignment = VerticalAlignment.Center,
 			HorizontalAlignment = HorizontalAlignment.Center,
 			Background = new SolidBrush(Color.Black),
 			Top = 0,
+						
 			Wrap = true
 		};
-		rightStack.Widgets.Add(lbl);
-		foreach (var spectator in GameManager.PreGameData.Spectators)
-		{
-			var spec = new Label()
-			{
-				Text = spectator,
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				Background = new SolidBrush(Color.Black),
-				Top = 0,
-						
-				Wrap = true
-			};
-			spectatorList.Widgets.Add(spec);
-		}
-		
-		rightStack.Widgets.Add(spectatorViewer);
-		
-				
-				
-				
-		///LEFT STACK///
-		var officialSelection = new ListBox()
-		{
-			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Bottom
-		};
-		officialSelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
-		foreach (var path in GameManager.MapList)
-		{
-			var item = new ListItem()
-			{
-				Text = path.Key,
-			};
-			officialSelection.Items.Add(item);
-		}
-				
-		officialSelection.SelectedIndexChanged += (s, a) =>
-		{
-			if (!swapingMap)
-			{
-				var data = GameManager.PreGameData;
-				data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
-				GameManager.PreGameData = data;
-				NetworkingManager.SendPreGameUpdate();
-				var lbl = new Label();
-				lbl.Text = "Swaping Map";
-				lbl.HorizontalAlignment = HorizontalAlignment.Center;
-				lbl.VerticalAlignment = VerticalAlignment.Center;
-				leftpanel.Widgets.Add(lbl);
-				swapingMap = true;
-			}
-		};
-		var communitySelection = new ListBox()
-		{
-			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Bottom
-		};
-		communitySelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
-		foreach (var path in GameManager.CustomMapList)
-		{
-			var item = new ListItem()
-			{
-				Text = path.Key,
-						
-			};
-					
-			communitySelection.Items.Add(item);
-		}
-		communitySelection.SelectedIndexChanged += (s, a) =>
-		{
-			if (!swapingMap)
-			{
-				var data = GameManager.PreGameData;
-				data.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
-				GameManager.PreGameData = data;
-					
-				NetworkingManager.SendPreGameUpdate();
-				var lbl = new Label();
-				lbl.Text = "Swaping Map";
-				lbl.HorizontalAlignment = HorizontalAlignment.Center;
-				lbl.VerticalAlignment = VerticalAlignment.Center;
-				leftpanel.Widgets.Add(lbl);
-				swapingMap = true;
-			}
-		};
-
-		var tab1 = new TextButton()
-		{
-			Text = "Official",
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Top,
-			Border = new SolidBrush(new Color(31,81,255,240)),
-			BorderThickness = new Thickness(1)
-		};
-		var tab2 = new TextButton()
-		{
-			Text = "Community",
-			HorizontalAlignment = HorizontalAlignment.Right,
-			VerticalAlignment = VerticalAlignment.Top,
-			Border = new SolidBrush(new Color(31,81,255,240)),
-			BorderThickness = new Thickness(1)
-		};
-		var tab3 = new TextButton()
-		{
-			Text = "Local",
-			HorizontalAlignment = HorizontalAlignment.Center,
-			VerticalAlignment = VerticalAlignment.Top,
-			Left = -12,
-			Border = new SolidBrush(new Color(31,81,255,240)),
-			BorderThickness = new Thickness(1)
-		};
-		leftpanel.Widgets.Add(tab1);
-		leftpanel.Widgets.Add(tab2);
-		leftpanel.Widgets.Add(tab3);
-		leftpanel.Widgets.Add(officialSelection);
-		tab1.Click += (i, a) =>
-		{
-			leftpanel.Widgets.Remove(officialSelection);
-			leftpanel.Widgets.Remove(communitySelection);
-			leftpanel.Widgets.Add(officialSelection);
-		};
-		tab2.Click += (i, a) =>
-		{
-			leftpanel.Widgets.Remove(communitySelection);
-			leftpanel.Widgets.Remove(officialSelection);
-			leftpanel.Widgets.Add(communitySelection);
-		};
-		tab3.Click += (i, a) =>
-		{
-			leftpanel.Widgets.Remove(communitySelection);
-			leftpanel.Widgets.Remove(officialSelection);
-			leftpanel.Widgets.Add(communitySelection);
-			var file = new FileDialog(FileDialogMode.OpenFile)
-			{
-						
-			};
-			if (file == null) throw new ArgumentNullException(nameof(file));
-			file.FilePath = "./Maps";
-			file.ButtonOk.Click += (o, e) =>
-			{
-				var path = file.FilePath;
-				NetworkingManager.UploadMap(path);
-				file.Close();
-			};
-			grid1.Widgets.Add(file);
-
-		};
-
-				
-		return grid1;
+		spectatorList.Widgets.Add(spec);
 	}
+		
+	rightStack.Widgets.Add(spectatorViewer);
+		
+				
+				
+				
+	///LEFT STACK///
+	var officialSelection = new ListBox()
+	{
+		HorizontalAlignment = HorizontalAlignment.Stretch,
+		VerticalAlignment = VerticalAlignment.Bottom
+	};
+	officialSelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
+	foreach (var path in GameManager.MapList)
+	{
+		var item = new ListItem()
+		{
+			Text = path.Key,
+		};
+		officialSelection.Items.Add(item);
+	}
+				
+	officialSelection.SelectedIndexChanged += (s, a) =>
+	{
+		if (!swapingMap)
+		{
+			var data = GameManager.PreGameData;
+			data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
+			GameManager.PreGameData = data;
+			NetworkingManager.SendPreGameUpdate();
+			var lbl = new Label();
+			lbl.Text = "Swaping Map";
+			lbl.HorizontalAlignment = HorizontalAlignment.Center;
+			lbl.VerticalAlignment = VerticalAlignment.Center;
+			leftpanel.Widgets.Add(lbl);
+			swapingMap = true;
+		}
+	};
+var communitySelection = new ListBox()
+{
+	HorizontalAlignment = HorizontalAlignment.Stretch,
+	VerticalAlignment = VerticalAlignment.Bottom
+};
+communitySelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
+foreach (var path in GameManager.CustomMapList)
+{
+	var item = new ListItem()
+	{
+		Text = path.Key,
+						
+	};
+					
+	communitySelection.Items.Add(item);
+}
+communitySelection.SelectedIndexChanged += (s, a) =>
+{
+	if (!swapingMap)
+	{
+		var data = GameManager.PreGameData;
+		data.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
+		GameManager.PreGameData = data;
+					
+		NetworkingManager.SendPreGameUpdate();
+		var lbl = new Label();
+		lbl.Text = "Swaping Map";
+		lbl.HorizontalAlignment = HorizontalAlignment.Center;
+		lbl.VerticalAlignment = VerticalAlignment.Center;
+		leftpanel.Widgets.Add(lbl);
+		swapingMap = true;
+	}
+};
+
+var tab1 = new TextButton()
+{
+	Text = "Official",
+	HorizontalAlignment = HorizontalAlignment.Left,
+	VerticalAlignment = VerticalAlignment.Top,
+	Border = new SolidBrush(new Color(31,81,255,240)),
+	BorderThickness = new Thickness(1)
+};
+var tab2 = new TextButton()
+{
+	Text = "Community",
+	HorizontalAlignment = HorizontalAlignment.Right,
+	VerticalAlignment = VerticalAlignment.Top,
+	Border = new SolidBrush(new Color(31,81,255,240)),
+	BorderThickness = new Thickness(1)
+};
+var tab3 = new TextButton()
+{
+	Text = "Local",
+	HorizontalAlignment = HorizontalAlignment.Center,
+	VerticalAlignment = VerticalAlignment.Top,
+	Left = -12,
+	Border = new SolidBrush(new Color(31,81,255,240)),
+	BorderThickness = new Thickness(1)
+};
+leftpanel.Widgets.Add(tab1);
+leftpanel.Widgets.Add(tab2);
+leftpanel.Widgets.Add(tab3);
+leftpanel.Widgets.Add(officialSelection);
+tab1.Click += (i, a) =>
+{
+	leftpanel.Widgets.Remove(officialSelection);
+	leftpanel.Widgets.Remove(communitySelection);
+	leftpanel.Widgets.Add(officialSelection);
+};
+tab2.Click += (i, a) =>
+{
+	leftpanel.Widgets.Remove(communitySelection);
+	leftpanel.Widgets.Remove(officialSelection);
+	leftpanel.Widgets.Add(communitySelection);
+};
+tab3.Click += (i, a) =>
+{
+	leftpanel.Widgets.Remove(communitySelection);
+	leftpanel.Widgets.Remove(officialSelection);
+	leftpanel.Widgets.Add(communitySelection);
+	var file = new FileDialog(FileDialogMode.OpenFile)
+	{
+						
+	};
+	if (file == null) throw new ArgumentNullException(nameof(file));
+	file.FilePath = "./Maps";
+	file.ButtonOk.Click += (o, e) =>
+	{
+		var path = file.FilePath;
+		NetworkingManager.UploadMap(path);
+		file.Close();
+	};
+	grid1.Widgets.Add(file);
+
+};
+
+				
+return grid1;
+}
 }

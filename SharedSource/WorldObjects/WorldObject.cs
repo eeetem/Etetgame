@@ -197,9 +197,9 @@ public partial class WorldObject
 				Camera.SetPos(TileLocation.Position);
 			}
 #endif
-				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
+				Type.DesturctionEffect?.ApplyConsiqunces(TileLocation.Position,this);
 			});
-			WorldManager.Instance.RunNextFrame(t);
+			WorldManager.Instance.RunNextAfterFrames(t);
 
 		}
 		
@@ -268,11 +268,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 			}
 		}
 	}
-
-	public void TakeDamage(Projectile proj)
-	{
-		TakeDamage(proj.Dmg,proj.DeterminationResistanceCoefficient);
-	}
+	
 
 	public void Update(float gametime)
 	{

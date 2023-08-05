@@ -2,6 +2,7 @@
 
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
@@ -33,10 +34,10 @@ public class OverWatch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 #if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
 	{
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.OverWatch(actor.WorldObject.ID,target));
+		queue.Enqueue(new UnitOverWatch(actor.WorldObject.ID,target));
 		return queue;
 	}
 #endif
