@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+#if CLIENT
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout;
+#endif
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -26,7 +31,7 @@ public class UnitMove : UnitSequenceAction
 		return !Actor.Paniced;
 	}
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 #if CLIENT
 	//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
@@ -80,6 +85,9 @@ public class UnitMove : UnitSequenceAction
 			}
 
 			Actor.canTurn = true;
+#if CLIENT
+		GameLayout.ReMakeMovePreview();	
+#endif
 		});
 
 		return t;
@@ -92,5 +100,10 @@ public class UnitMove : UnitSequenceAction
 		message.AddSerializables(Path.ToArray());
 	}
 
-
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

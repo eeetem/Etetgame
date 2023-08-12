@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+
+
+
+#if CLIENT
 using Microsoft.Xna.Framework.Graphics;
+using DefconNull.Rendering;
+#endif
 
 namespace DefconNull.World.WorldActions;
 
-public class ExtraAction : IExtraAction
+public class UnitAbility : IUnitAbility
 {
 	public readonly string name = null!;
 	public readonly string tooltip = null!;
 	public readonly int DetCost;
 	public readonly int MoveCost;
 	public readonly int ActCost;
-	public readonly WorldAction act = null!;
-	public WorldAction WorldAction => act;
 	public readonly bool immideaateActivation;
 
-
+	public List<IWorldEffect> Effects { get; }
 
 	public Tuple<int,int,int> GetCost(Unit c)
 	{
@@ -30,32 +34,37 @@ public class ExtraAction : IExtraAction
 	public string Tooltip => tooltip;
 
 
-	public float GetOptimalRange()
+	public float GetOptimalRangeAI()
 	{
-		return act.GetOptimalRangeAI();
+		//get average
+		var total = 0f;
+		foreach (var effect in Effects)
+		{
+			total += effect.GetOptimalRangeAI();
+		}
+
+		return total / Effects.Count;
 	}
 
-	public ExtraAction(string name, string tooltip, int determinationCost, int movePointCost, int actionPointCost, WorldAction action, bool immideaateActivation)
+
+	public UnitAbility(string name, string tooltip, int determinationCost, int movePointCost, int actionPointCost, List<IWorldEffect> effects, bool immideaateActivation)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
 		DetCost = determinationCost;
 		MoveCost = movePointCost;
 		ActCost  = actionPointCost;
-		act = action;
+		Effects = effects;
 		this.immideaateActivation = immideaateActivation;
 #if CLIENT
-		
-		Icon = act.Icon;
+		if (name != "")
+		{
+			Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
+		}
 #endif
 	}
 
-	public ExtraAction()
-	{
-		
-	}
-
-	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
 	{
 
 		var res = HasEnoughPointsToPerform(actor);
@@ -64,7 +73,16 @@ public class ExtraAction : IExtraAction
 			return res;
 		}
 
-		return WorldAction.CanPerform(actor, ref target);
+		foreach (var effect in Effects)
+		{
+			var result = effect.CanPerform(actor, target);
+			if (!result.Item1)
+			{
+				return result;
+			}
+		}
+		return new Tuple<bool, string>(true, "");
+	
 	}
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
@@ -91,11 +109,6 @@ public class ExtraAction : IExtraAction
 
 	public List<string> MakePacketArgs()
 	{
-		if(WorldAction.DeliveryMethods.Find(x => x is Shootable)!= null)
-		{
-			return new List<string>() {Shootable.targeting.ToString()};
-		}
-
 		return new List<string>();
 	}
 
@@ -108,16 +121,23 @@ public class ExtraAction : IExtraAction
 		var consiquences = new List<SequenceAction>();
 		consiquences.Add(new ChangeUnitValues(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost));
 		
-		var actConsiquences =  WorldAction.GetConsiquences( actor,  target);
-
-		foreach (var c in actConsiquences)
+		foreach (var effect in Effects)
 		{
-			consiquences.Add(c);
+			var actConsiquences =  effect.GetConsiquences( actor,  target);
+
+			foreach (var c in actConsiquences)
+			{
+				consiquences.Add(c);
+			}
 		}
+
 		return consiquences;
 	}
+
+	
 #if CLIENT
 	
+
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (immideaateActivation)
@@ -125,7 +145,12 @@ public class ExtraAction : IExtraAction
 			target = actor.WorldObject.TileLocation.Position;
 		}
 
-		WorldAction.Preview(actor, target, spriteBatch);
+		foreach (var eff in Effects)
+		{
+			eff.Preview(actor, target, spriteBatch);
+		}
+		
+		
 	}
 
 
@@ -136,8 +161,18 @@ public class ExtraAction : IExtraAction
 
 	public object Clone()
 	{
-		return new ExtraAction(name, tooltip, DetCost, MoveCost, ActCost, act, immideaateActivation);	
+		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation);	
 	}
 
 
+	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget)
+	{
+		foreach (var effect in Effects)
+		{
+			if (effect.CanPerform(actor, target).Item1)
+				return true;
+		}
+
+		return false;
+	}
 }

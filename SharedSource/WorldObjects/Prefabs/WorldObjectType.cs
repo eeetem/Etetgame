@@ -1,5 +1,5 @@
 ﻿using System;
-
+using DefconNull.World.WorldActions;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 #if CLIENT
@@ -53,7 +53,7 @@ public partial class WorldObjectType
 	public Cover SolidCover = Cover.None;
 	public Cover VisibilityCover = Cover.None;
 	
-	public WorldEffect? DesturctionEffect;
+	public WorldConsiqences? DesturctionEffect;
 
 	//should probably be an enum
 	public bool Faceable { get; set; }

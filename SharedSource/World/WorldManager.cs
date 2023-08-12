@@ -238,6 +238,30 @@ namespace DefconNull.World
 			return Visibility.None;
 		}
 
+		public struct RayCastOutcome//fuck the network library holy moly
+		{
+			public Vector2 CollisionPointLong= new Vector2(0, 0);
+			public Vector2 CollisionPointShort= new Vector2(0, 0);
+			public Vector2 StartPoint;
+			public Vector2 EndPoint;
+			public Vector2 VectorToCenter;
+			public List<Vector2Int> Path;
+			public int HitObjId{ get; set; }
+
+			public bool hit{ get; set; }
+
+			public RayCastOutcome(Vector2 start, Vector2 end)
+			{
+				CollisionPointLong = new Vector2(0, 0);
+				CollisionPointShort = new Vector2(0, 0);
+				hit = false;
+				EndPoint = end;
+				HitObjId = -1;
+				StartPoint = start;
+				Path = new List<Vector2Int>();
+	
+			}
+		}
 		public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover,bool visibilityCast = false,Cover? minHitCoverSameTile = null)
 		{
 			RayCastOutcome[] result = new RayCastOutcome[4];
@@ -700,7 +724,7 @@ namespace DefconNull.World
 						task = SequenceQueue.Dequeue();
 					}
 					Console.WriteLine("runnin sequnce task: "+task.SqcType);
-					_currentSequenceTasks.Add(task.Do());
+					_currentSequenceTasks.Add(task.GenerateTask());
 					_currentSequenceTasks.Last().Start();
 					
 
@@ -712,11 +736,10 @@ namespace DefconNull.World
 						{
 							break;
 						}
-
-						var tsk = SequenceQueue.Peek();
-						if(SequenceQueue.Peek().CanBatch) break;
 						
-						_currentSequenceTasks.Add(SequenceQueue.Dequeue().Do());
+						if(!SequenceQueue.Peek().CanBatch) break;
+						
+						_currentSequenceTasks.Add(SequenceQueue.Dequeue().GenerateTask());
 						_currentSequenceTasks.Last().Start();
 					} 
 
@@ -886,7 +909,7 @@ namespace DefconNull.World
 			Console.WriteLine("adding action "+action.SqcType+" to sequence");
 		}
 
-		public void AddSequence(Queue<SequenceAction> actions)
+		public void AddSequence(IEnumerable<SequenceAction> actions)
 		{
 			foreach (var a in actions)
 			{
@@ -936,7 +959,7 @@ namespace DefconNull.World
 			}
 			
 
-			closestDistance -= unit.GetAction(-1).GetOptimalRange();
+			closestDistance -= unit.GetAction(-1).GetOptimalRangeAI();
 			int distanceReward = 30;
 
 			while (closestDistance > 0)//subtract points for being too far away

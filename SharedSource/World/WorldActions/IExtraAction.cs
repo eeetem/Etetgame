@@ -6,23 +6,22 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldActions;
 
-public interface IExtraAction : ICloneable
+public interface IUnitAbility : ICloneable
 {
-	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target);
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor);
+	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget = false);
 
-	List<string> MakePacketArgs();
 	List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target);
-	WorldAction WorldAction { get; }
+	List<IWorldEffect> Effects { get; }
 	Tuple<int, int, int> GetCost(Unit c);
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
-	float GetOptimalRange();
+	float GetOptimalRangeAI();
 #if CLIENT
 	void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
 	Texture2D Icon { get; }
-
-
+	
 #endif
 
 }

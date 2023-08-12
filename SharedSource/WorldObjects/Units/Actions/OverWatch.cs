@@ -17,7 +17,7 @@ public class OverWatch : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int position)
+	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int position)
 	{
 	
 
@@ -54,12 +54,12 @@ public class OverWatch : Action
 		foreach (var shot in actor.GetOverWatchPositions(target))
 		{
 
-			var tile = WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint);
+			var tile = WorldManager.Instance.GetTileAtGrid(shot.Item1);
 			if (tile.Surface == null) continue;
 			
 			Color c = Color.Yellow * 0.45f;
 			
-			if (actor.CanHit(shot.Result.EndPoint,true))
+			if (shot.Item2)
 			{
 				c = Color.Green * 0.45f;
 			}
@@ -67,7 +67,7 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
-			spriteBatch.DrawText(""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
+			//spriteBatch.DrawText(""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
 		}
 
 	}

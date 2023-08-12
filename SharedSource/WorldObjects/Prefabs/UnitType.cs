@@ -30,10 +30,10 @@ public class UnitType : WorldObjectType
 
 	public Texture2D[] CrouchSpriteSheet = null!;
 
-	public ExtraAction DefaultAttack = null!;
-	public readonly List<IExtraAction> Actions = new List<IExtraAction>();
+	public UnitAbility DefaultAttack = null!;
+	public readonly List<IUnitAbility> Actions = new List<IUnitAbility>();
 
-	public WorldEffect? SpawnEffect { get; set; }
+	public WorldConsiqences? SpawnEffect { get; set; }
 
 
 	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
@@ -51,7 +51,7 @@ public class UnitType : WorldObjectType
 			if (SpawnEffect != null)
 			{
 				
-				foreach (var c in SpawnEffect.ApplyConsiqunces(tile.Position))
+				foreach (var c in SpawnEffect.GetApplyConsiqunces(tile.Position))
 				{
 					WorldManager.Instance.AddSequence(c);
 				}

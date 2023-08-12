@@ -1,4 +1,5 @@
 ﻿using System;
+using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +14,7 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
 	{
 		if (actor.MovePoints <= 0)
 		{
@@ -38,12 +39,9 @@ public class Crouch : Action
 			vis = Visibility.Partial;
 		}
 		var shooters = WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position).GetOverWatchShooters(actor,vis);
-		WorldEffect w = new WorldEffect();
-		w.Move.Value = -1;
-		w.TargetFriend = true;
-		w.TargetSelf = true;
+
 		var queue = new Queue<SequenceAction>();
-		//	queue.Enqueue(new WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0));
 		queue.Enqueue(new CrouchUnit(actor.WorldObject.ID));
 
 		foreach (var shooter in shooters)

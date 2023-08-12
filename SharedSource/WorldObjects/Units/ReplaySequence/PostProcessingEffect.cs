@@ -3,6 +3,7 @@ using Riptide;
 
 #if CLIENT
 using DefconNull.Rendering.PostProcessing;
+using Microsoft.Xna.Framework.Graphics;
 #endif
 
 namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -35,7 +36,7 @@ public class PostProcessingEffect : SequenceAction
 	}
 
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -54,4 +55,11 @@ public class PostProcessingEffect : SequenceAction
 		message.Add(wipeQueue);
 		message.Add(returnSpeed);
 	}
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

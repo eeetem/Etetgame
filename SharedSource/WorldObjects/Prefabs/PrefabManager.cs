@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Xml;
 
 using DefconNull.World.WorldActions;
+using DefconNull.World.WorldActions.DeliveryMethods;
 #if CLIENT
 using DefconNull.Rendering;
 #endif
@@ -31,7 +32,7 @@ public static class PrefabManager
 			var effectelement = xmlObj.GetElementsByTagName("effect")[0];
 			if (effectelement != null)
 			{
-				var itm = ParseEffect(effectelement);
+				var itm = ParseConsiquences(effectelement);
 				var st = new StatusEffectType(name,itm);
 				StatusEffects.Add(name, st);
 			}
@@ -108,7 +109,7 @@ public static class PrefabManager
 			type.MaxHealth = maxHealth;
 			
 			if(xmlObj!.GetElementsByTagName("destroyEffect").Count > 0){
-				type.DesturctionEffect = ParseEffect(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
+				type.DesturctionEffect = ParseConsiquences(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
 			} 
 			
 
@@ -181,35 +182,27 @@ public static class PrefabManager
 			unitType.SightRange = int.Parse(xmlObj.Attributes?["sightrange"]?.InnerText ?? "16");
 				
 				
-			XmlNode? defaultact = xmlObj.GetElementsByTagName("defaultAttack")[0];
-			int detCost = int.Parse(defaultact?.Attributes?["detCost"]?.InnerText ?? "0");
-			int moveCost =  int.Parse(defaultact?.Attributes?["moveCost"]?.InnerText ?? "1");
-			int actCost =  int.Parse(defaultact?.Attributes?["actCost"]?.InnerText ?? "1"); 
-			WorldAction action =	PraseWorldAction((XmlElement) defaultact! ?? throw new InvalidOperationException());
+			XmlElement defaultact = (XmlElement)xmlObj.GetElementsByTagName("defaultAction")[0]! ?? throw new InvalidOperationException();
+			unitType.DefaultAttack = ParseUnitAbility(defaultact);
 
-			if(detCost<0||moveCost<0||actCost<0){
-				throw new Exception("negative cost for action");
-			}
-			unitType.DefaultAttack =  new ExtraAction(action.Name,action.Description,detCost,moveCost,actCost,action,false);
-				
 			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
 			if (speff != null)
 			{
-				unitType.SpawnEffect = ParseEffect((XmlElement) speff);
+				unitType.SpawnEffect = ParseConsiquences((XmlElement) speff);
 			}
 
 			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
 			foreach (var act in actions)
 			{ 
-				unitType.Actions.Add(ParseControllableAction((XmlElement)act));
+				unitType.Actions.Add(ParseUnitAbility((XmlElement)act));
 			}
 			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
 			foreach (var act in toggleActions)
 			{
 				//	ExtraToggleAction toggle = new ExtraToggleAction();
 				XmlElement actobj = (XmlElement) act;
-				ExtraAction on = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
-				ExtraAction off = ParseControllableAction((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
+				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
+				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
 				ExtraToggleAction toggle = new ExtraToggleAction(on,off);
 				unitType.Actions.Add(toggle);
 			}
@@ -225,57 +218,81 @@ public static class PrefabManager
 
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
 		{
-			var effect = PraseWorldAction(xmlObj);
-			string innerText = xmlObj.GetElementsByTagName("availability")[0]?.InnerText ?? "";
-			var itm = new UsableItem(effect, innerText != "" ? innerText.Split(",").ToList() : new List<string>());
-			UseItems.Add(effect.Name,itm);
+			var effects = ParseWorldEffects(xmlObj);
+			string avail = xmlObj.GetElementsByTagName("availability")[0]?.InnerText ?? "";
+			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? "";
+			string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? "";
+			List<string> availableToUnits = new List<string>();
+			if (avail != "")
+			{
+				availableToUnits = avail.Split(',').ToList();
+			}
+		
+			
+			var itm = new UsableItem(name, tip, effects, availableToUnits.ToList());
+			UseItems.Add(itm.Name,itm);
 		}
 	}
 
-	private static ExtraAction ParseControllableAction(XmlElement actobj)
+	private static UnitAbility ParseUnitAbility(XmlElement actobj)
 	{
 		string actname;
 		string tooltip;
 		int DetCost = int.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
 		int MoveCost =     int.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
 		int ActCost =   int.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
-		WorldAction action;
-		action = PraseWorldAction(actobj);
+		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
+		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
 		if(DetCost<0||MoveCost<0||ActCost<0){
 			throw new Exception("negative cost for action");
 		}
+		List<IWorldEffect> effects = ParseWorldEffects(actobj);
+
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		ExtraAction a = new ExtraAction(action.Name, action.Description, DetCost, MoveCost, ActCost, action,immideaateActivation);
+		UnitAbility a = new UnitAbility(name, tip, DetCost, MoveCost, ActCost, effects,immideaateActivation);
 		return a;
 	}
 
-	private static WorldAction PraseWorldAction(XmlElement xmlObj)
+	private static Shootable ParseShoot(XmlElement xmlElement)
 	{
+		
+		int dmg = int.Parse(xmlElement.Attributes?["dmg"]?.InnerText ?? "0");
+		int detRes = int.Parse(xmlElement.Attributes?["detRes"]?.InnerText ?? "0");
+		int supression = int.Parse(xmlElement.Attributes?["supression"]?.InnerText ?? "0");
+		int supressionRange = int.Parse(xmlElement.Attributes?["supressionRange"]?.InnerText ?? "0");
+		int dropoff = int.Parse(xmlElement.Attributes?["dropOffRange"]?.InnerText ?? "10");
 
-		List<DeliveryMethod> usgs = new List<DeliveryMethod>();
-		WorldEffect? eff = new WorldEffect();
-		string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? "";
-		string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
+		return new Shootable(dmg, detRes, supression, supressionRange, dropoff);
+	}
+
+	private static WorldEffect ParseWorldEffect(XmlElement xmlObj)
+	{
+		DeliveryMethod dvm = null;
+		WorldConsiqences? eff = new WorldConsiqences();
+/*
 		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
-		WorldAction.TargetAid tAid = WorldAction.TargetAid.None;
+		WorldEffect.TargetAid tAid = WorldEffect.TargetAid.None;
 		
 		switch (aid)
 		{
 			case "none":
-				tAid = WorldAction.TargetAid.None;
+				tAid = WorldEffect.TargetAid.None;
 				break;
 			case "unit":
-				tAid = WorldAction.TargetAid.Unit;
+				tAid = WorldEffect.TargetAid.Unit;
 				break;
 			case "enemy":
-				tAid = WorldAction.TargetAid.Enemy;
+				tAid = WorldEffect.TargetAid.Enemy;
 				break;
-		}
+		}*/
 		//loop through all child nodes of the element
-		foreach (var n in  xmlObj.ChildNodes)
+		if (xmlObj.GetElementsByTagName("delivery")[0] == null)
 		{
-			XmlNode node = (XmlNode) n;
-			DeliveryMethod dvm = null;
+			dvm = new ImmideateDelivery();
+		}
+		else
+		{
+			XmlNode node = (XmlNode) xmlObj.GetElementsByTagName("delivery")[0]!.ChildNodes[0]!;
 			if (node.Name == "throwable")
 			{	
 				
@@ -287,47 +304,49 @@ public static class PrefabManager
 				int throwRange = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				dvm = new VissionCast(throwRange);
 			}
-			else if (node.Name == "shootable")
-			{
-				int dmg = int.Parse(node.Attributes?["dmg"]?.InnerText ?? "0");
-				int detRes = int.Parse(node.Attributes?["detRes"]?.InnerText ?? "0");
-				int supression = int.Parse(node.Attributes?["supression"]?.InnerText ?? "0");
-				int supressionRange = int.Parse(node.Attributes?["supressionRange"]?.InnerText ?? "0");
-				int dropoff = int.Parse(node.Attributes?["dropOffRange"]?.InnerText ?? "10");
-				dvm = new Shootable(dmg,detRes,supression,supressionRange,dropoff);
-			}
-	
-			if (dvm != null)
-			{
-				Vector2Int offset = Vector2Int.Parse(node.Attributes?["offset"]?.InnerText ?? "0,0");
-				dvm.offset = offset;
-				usgs.Add(dvm);
-			}
+		
+
+			//	if (dvm != null)
+			//	{
+			//		Vector2Int offset = Vector2Int.Parse(node.Attributes?["offset"]?.InnerText ?? "0,0");
+			//		dvm.offset = offset;
+			//		usgs.Add(dvm);
+			//	}
+			if(dvm==null)
+				throw new Exception("no delivery method");
 		}
 		
-		if (usgs.Count == 0)
-		{
-			usgs.Add(new ImmideateDelivery());
-		}
+
 		//make function
-		var effectelement = xmlObj.GetElementsByTagName("effect")[0];
+		var effectelement = xmlObj.GetElementsByTagName("consiquences")[0];
 		if (effectelement != null)
 		{
-			eff = ParseEffect(effectelement);
+			eff = ParseConsiquences(effectelement);
 		}
 		
 			
-		WorldAction itm = new WorldAction(name,tip,usgs,eff);
-#if CLIENT
-		itm.targetAid = tAid;
-#endif
-	
+		WorldEffect itm = new WorldEffect(dvm,eff);
+
 		return itm;
 	}
 
-	private static WorldEffect ParseEffect(XmlNode effect)
+	private static List<IWorldEffect> ParseWorldEffects(XmlElement xmlObj)
 	{
-		WorldEffect eff = new WorldEffect();
+		List<IWorldEffect> effects = new List<IWorldEffect>();
+		foreach (XmlElement shoot in xmlObj.GetElementsByTagName("shoot"))
+		{
+			effects.Add(ParseShoot(shoot));
+		}
+		foreach (XmlElement effect in xmlObj.GetElementsByTagName("effect"))
+		{
+			effects.Add(ParseWorldEffect(effect));
+		}
+		return effects;
+	}
+
+	private static WorldConsiqences ParseConsiquences(XmlNode effect)
+	{
+		WorldConsiqences eff = new WorldConsiqences();
 				
 		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "1");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");

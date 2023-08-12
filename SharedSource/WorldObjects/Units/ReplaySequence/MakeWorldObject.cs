@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -30,7 +31,7 @@ public class MakeWorldObject : SequenceAction
 	}
 
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -46,4 +47,10 @@ public class MakeWorldObject : SequenceAction
 		message.Add((int)facing);
 		message.Add(id);
 	}
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		spriteBatch.DrawPrefab(Utility.GridToWorldPos(Position), prefab, facing);
+	}
+#endif
 }

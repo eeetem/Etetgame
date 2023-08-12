@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -16,7 +18,7 @@ public class FaceUnit : UnitSequenceAction
 		target = args.GetSerializable<Vector2Int>();
 	}
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -34,4 +36,10 @@ public class FaceUnit : UnitSequenceAction
 		base.SerializeArgs(message);
 		message.AddSerializable(target);
 	}
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

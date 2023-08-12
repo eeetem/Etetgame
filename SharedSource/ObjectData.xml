@@ -81,46 +81,60 @@
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <defaultAttack>
+    <defaultAction moveCost="1" actCost="2">
       <targetAid>enemy</targetAid>
-      <shootable dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+
+      <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+      
       <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="0.5" speed="100"/>
-        <sfx name="rifle3"/>
+        <consiqences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="rifle3"/>
+        </consiqences>
       </effect>
-    </defaultAttack>
+    </defaultAction>
+    
     <action det ="2" moveCost="1" actCost="1">
       <name>Headshot</name>
       <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
-      <shootable dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
+      
+      <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
+      
       <effect>
-        <vfx name="clmagnitude" target="5" speed="50"/>
-        <vfx name="noise" target="0.1" speed="100"/>
-        <sfx name="rifle"/>
+        <consiqences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="rifle"/>
+        </consiqences>
       </effect>
     </action>
   </unit>
 
-  <unit Health="8" z="0.1" moveRange = "5" moves="3" determination="3" sightrange="18">
+  <unit Health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
-    <defaultAttack>
+    <defaultAction moveCost="1" actCost="2">
       <targetAid>enemy</targetAid>
-      <shootable dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
+      <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
       <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="1" speed="100"/>
-        <sfx name="shotgun"/>
+        <consiqences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="1" speed="100"/>
+          <sfx name="shotgun"/>
+          <fowSpot range="4"/>
+        </consiqences>
       </effect>
-    </defaultAttack>
+    </defaultAction>
 
     <action immideate="true" detCost ="3">
       <name>Breach n Clear</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
-      <effect visible ="false">
-        <applystatus status="BreachnClear" duration="1"/>
+      <effect>
+        <consiqences>
+          <applystatus status="BreachnClear" duration="1"/>
+        </consiqences>
       </effect>
     </action>
 
@@ -133,28 +147,33 @@
       <applystatus status="Holstered"/>
     </spawneffect>
 
-    <defaultAttack>
+    <defaultAction moveCost="1" actCost="2">
       <targetAid>enemy</targetAid>
-      <shootable dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
       <effect>
         <vfx name="clmagnitude" target="20" speed="50"/>
         <vfx name="noise" target="0.5" speed="100"/>
         <sfx name="mg"/>
       </effect>
-    </defaultAttack>
+    </defaultAction>
 
     <action detCost ="3" moveCost="1" actCost="2">
       <name>Suppress</name>
       <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
-      <shootable dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shootable offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shootable offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shootable offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shootable offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      
+      <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      
       <effect visible ="true">
-        <vfx name="clmagnitude" target="5" speed="50"/>
-        <vfx name="noise" target="0.1" speed="100"/>
-        <sfx name="mg"/>
+        <consiqences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.1" speed="100"/>
+          <sfx name="mg"/>
+          <fowSpot range="4"/>
+        </consiqences>
       </effect>
     </action>
 
@@ -180,21 +199,24 @@
   <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
     <name>Officer</name>
 
-    <defaultAttack>
+    <defaultAction moveCost="1" actCost="2">
       <targetAid>enemy</targetAid>
-      <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
       <effect>
         <vfx name="clmagnitude" target="20" speed="50"/>
         <vfx name="noise" target="1" speed="100"/>
         <sfx name="rifle"/>
       </effect>
-    </defaultAttack>
+    </defaultAction>
 
     <action immideate="true" detCost ="2" moveCost="0" actCost="0">
       <name>Rally</name>
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
-      <effect visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
-        <damage det="-100"/>
+      
+      <effect>
+        <consiqences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+          <damage det="-100"/>
+        </consiqences>
       </effect>
     </action>
 
@@ -213,69 +235,97 @@
   <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
     <name>Specialist</name>
 
-    <defaultAttack>
+    <defaultAction moveCost="1" actCost="2">
+      
       <targetAid>enemy</targetAid>
-      <shootable dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
+      
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
       <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="1" speed="100"/>
-        <sfx name="rifle"/>
+        <consiqences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="1" speed="100"/>
+          <sfx name="rifle"/>
+        </consiqences>
       </effect>
-    </defaultAttack>
+    </defaultAction>
 
     <action detCost ="1" moveCost="1" actCost="1">
       <name>Resupply</name>
       <tip>Give a targeted unit their last used item back</tip>
       <targetAid>unit</targetAid>
-      <throwable throwRange="3" targetAid="unit"/>
-      <effect range="1" visible ="false" target="friend">
-        <giveItem item="{target.LastItem.Name}"/>
+      
+      <effect>
+        <delivery>
+          <throwable throwRange="3"/>
+        </delivery>
+        <consiqences>
+          <giveItem item="{target.LastItem.Name}"/>
+        </consiqences>
       </effect>
     </action>
+    
     <action detCost ="1" moveCost="1" actCost="1">
       <name>Resupply</name>
       <tip>Give a targeted unit item currently equipped by this unit</tip>
       <targetAid>unit</targetAid>
-      <throwable throwRange="3"/>
-      <effect range="1" visible ="false" target="friend">
-        <giveItem item="{this.SelectedItem.Name}"/>
+
+      <effect>
+        <delivery>
+          <throwable throwRange="3"/>
+        </delivery>
+        <consiqences>
+          <giveItem item="{target.SelectedItem.Name}"/>
+        </consiqences>
       </effect>
     </action>
-
-
+    
   </unit>
 
   <statuseffect>
     <name>Holstered</name>
-    <effect visible="false">
+
+    <effect>
+      <consiqences>
       <values act ="[set]0" move="2"/>
-    </effect>
+    </consiqences>
+  </effect>
   </statuseffect>
+  
   <statuseffect>
     <name>BreachnClear</name>
-    <effect visible="false">
-      <values act ="1[set]" move="5[set]" moveRange="-3"/>
+    
+    <effect>
+      <consiqences>
+       <values act ="1[set]" move="5[set]" moveRange="-3"/>
+      </consiqences>
     </effect>
   </statuseffect>
+  
   <statuseffect>
     <name>Boost</name>
-    <effect visible="false">
-      <damage det="0"/>
-      <values act ="1[cap]" move="1[cap]" moveRange="0"/>
+    
+    <effect>
+      <consiqences>
+        <values act ="1[cap]" move="1[cap]" moveRange="0"/>
+      </consiqences>
     </effect>
   </statuseffect>
-
-
+  
+  
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
-    <destroyEffect visible="true" range = "2" >
-      <damage det="1" dmg="15"/>
-      <vfx name="tintR" target="5" speed="50"/>
-      <vfx name="clmagnitude" target="100" speed="50"/>
-      <vfx name="noise" target="3" speed="60"/>
-      <sfx name="grenade"/>
-      <place name="Crater"/>
+    
+    <destroyEffect visible="true" range = "2">
+      <consiqences range="1">
+        <damage det="1" dmg="15"/>
+        <vfx name="tintR" target="5" speed="50"/>
+        <vfx name="clmagnitude" target="100" speed="50"/>
+        <vfx name="noise" target="3" speed="60"/>
+        <sfx name="grenade"/>
+        <place name="Crater"/>
+      <fowSpot range="4"/>
+      </consiqences>
     </destroyEffect>
   </object>
 
@@ -294,53 +344,72 @@
   <item>
     <name>Satchel Charge</name>
     <tip>Blows up after 1 turn dealing huge damage. Best for destroying enviroment</tip>
-    <throwable throwRange="4"/>
-    <effect visible ="false" range="1">
+
+    <delivery>
+      <throwable throwRange="4"/>
+    </delivery>
+    <consiqences range="1">
       <place name="Satchel"/>
-    </effect>
+    </consiqences>
   </item>
 
   <item>
     <name>Frag</name>
     <tip>Damages units in effect area</tip>
     <availability>Specialist</availability>
-    <throwable throwRange="6"/>
-    <effect range="3">
-      <damage det="1" dmg="5"/>
-      <vfx name="tintR" target="5" speed="50"/>
-      <vfx name="tintG" target="5" speed="50"/>
-      <vfx name="clmagnitude" target="100" speed="50"/>
-      <vfx name="noise" target="2" speed="50"/>
-      <sfx name="grenade"/>
-      <place name="Crater"/>
+   
+    <effect>
+      <delivery>
+        <throwable throwRange="6"/>
+      </delivery>
+      <consiqences range="3">
+        <damage det="1" dmg="5"/>
+        <vfx name="tintR" target="5" speed="50"/>
+        <vfx name="tintG" target="5" speed="50"/>
+        <vfx name="clmagnitude" target="100" speed="50"/>
+        <vfx name="noise" target="2" speed="50"/>
+        <sfx name="grenade"/>
+        <place name="Crater"/>
+        <fowSpot range="4"/>
+      </consiqences>
     </effect>
   </item>
 
   <item>
     <name>Flash</name>
     <tip>Immideately panics units in effect radius</tip>
-    <throwable throwRange="6"/>
+
+    
     <effect range="3">
-      <damage det="100" dmg="0"/>
-      <vfx name="tintR" target="20" speed="50"/>
-      <vfx name="tintG" target="20" speed="50"/>
-      <vfx name="tintB" target="20" speed="50"/>
-      <vfx name="clmagnitude" target="50" speed="50"/>
-      <vfx name="noise" target="1" speed="50"/>
-      <sfx name="bang"/>
+      <delivery>
+        <throwable throwRange="6"/>
+      </delivery>
+      <consiqences range="3">
+        <damage det="100" dmg="0"/>
+        <vfx name="tintR" target="20" speed="50"/>
+        <vfx name="tintG" target="20" speed="50"/>
+        <vfx name="tintB" target="20" speed="50"/>
+        <vfx name="clmagnitude" target="50" speed="50"/>
+        <vfx name="noise" target="1" speed="50"/>
+        <sfx name="bang"/>
+        <fowSpot range="4"/>
+      </consiqences>
     </effect>
   </item>
 
   <item>
     <name>Smoke</name>
     <tip>Blocks line of sight</tip>
-    <throwable throwRange="7"/>
-    <effect visible ="false" range="3">
+
+    <delivery>
+      <throwable throwRange="7"/>
+    </delivery>
+    <consiqences range="3">
       <place name="Smoke"/>
       <vfx name="clmagnitude" target="100" speed="40"/>
       <vfx name="noise" target="0.5" speed="50"/>
       <sfx name="smoke"/>
-    </effect>
+    </consiqences>
   </item>
 
 </root>

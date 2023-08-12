@@ -16,7 +16,7 @@ public class UseItem : Action
 	{
 	}
 	
-	public override Tuple<bool, string> CanPerform(Unit actor, ref  Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
 	{
 
 		if (actor.SelectedItem == null)
@@ -28,7 +28,7 @@ public class UseItem : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough action points!");
 		}
-		return actor.SelectedItem.CanPerform(actor,ref  target);
+		return actor.SelectedItem.CanPerform(actor, target);
 
 	}
 

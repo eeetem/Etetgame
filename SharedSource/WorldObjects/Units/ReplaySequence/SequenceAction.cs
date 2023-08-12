@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -16,7 +17,7 @@ public abstract class SequenceAction : IMessageSerializable
 		UpdateTile =103,
 		MakeWorldObject =104,
 		
-		ChangeUnitPoints =0,
+		ChangeUnitValues =0,
 		GiveItem =1,
 		Move=2,
 		Face=3,
@@ -42,13 +43,8 @@ public abstract class SequenceAction : IMessageSerializable
 		return true;
 	}
 
-	public virtual Task Do()
-	{
-		return GenerateTask();
 
-	}
-
-	protected abstract Task GenerateTask();
+	public abstract Task GenerateTask();
 
 
 	protected abstract void SerializeArgs(Message message);	
@@ -62,4 +58,7 @@ public abstract class SequenceAction : IMessageSerializable
 	{
 		throw new Exception("cannot deserialize abstract SequenceAction");
 	}
+#if CLIENT
+	public virtual void Preview(SpriteBatch spriteBatch){}
+#endif
 }

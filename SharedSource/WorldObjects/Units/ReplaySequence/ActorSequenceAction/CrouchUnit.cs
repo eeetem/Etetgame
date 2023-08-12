@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DefconNull.World;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -14,7 +15,7 @@ public class CrouchUnit : UnitSequenceAction
 	{
 	}
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -32,4 +33,11 @@ public class CrouchUnit : UnitSequenceAction
 		base.SerializeArgs(message);
 		return;
 	}
+
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

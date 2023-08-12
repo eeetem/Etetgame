@@ -19,7 +19,7 @@ public class Move : Action
 	{
 	}
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
 	{
 		
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, position);

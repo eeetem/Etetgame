@@ -199,8 +199,8 @@ public static partial class NetworkingManager
 			int ability = int.Parse(packet.Args[0]);
 			UseAbility.AbilityIndex = ability;
 			UseAbility.abilityLock = true;
-			IExtraAction a = controllable.GetAction(ability);
-			if (a.WorldAction.DeliveryMethods.Find(x => x is Shootable) != null)
+			IUnitAbility a = controllable.GetAction(ability);
+			/*if (a.WorldEffect.DeliveryMethods.Find(x => x is Shootable) != null)
 			{
 				string target = packet.Args[1];
 				switch (target)
@@ -217,7 +217,7 @@ public static partial class NetworkingManager
 					default:
 						throw new ArgumentException("Invalid target type");
 				}
-			}
+			}*/
 		}
 
 		act.PerformServerSide(controllable, packet.Target);

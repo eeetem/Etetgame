@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
@@ -22,7 +25,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 		duration = msg.GetInt();
 	}
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -45,4 +48,15 @@ public class UnitStatusEffect  : UnitSequenceAction
 		message.Add(effectName);
 		message.Add(duration);
 	}
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		Texture2D sprite = Actor.WorldObject.GetTexture();
+		spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Yellow * 0.8f);
+
+		
+		//todo UI rework
+	}
+#endif
 }

@@ -8,13 +8,14 @@ namespace DefconNull.World.WorldActions;
 
 public class ImmideateDelivery : DeliveryMethod
 {
-	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
 	{
 		return new Tuple<bool, string>(true, "");
 		
 	}
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
+		target = actor.WorldObject.TileLocation.Position;
 		return new List<SequenceAction>();
 	}
 	public override float GetOptimalRangeAI(float margin)

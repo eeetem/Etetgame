@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -19,7 +20,7 @@ public class PlaySound : SequenceAction
 		location = msg.GetSerializable<Vector2Int>();
 	}
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -35,4 +36,12 @@ public class PlaySound : SequenceAction
 		message.Add(sfx);
 		message.Add(location);
 	}
+	
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

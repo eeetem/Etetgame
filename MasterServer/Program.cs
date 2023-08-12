@@ -15,7 +15,7 @@ public static class Program
 	static readonly float MSperTick = 1000f / tickrate;
 	static Stopwatch stopWatch = new Stopwatch();
 	public static Dictionary<string, Connection> Players = new Dictionary<string, Connection>();
-	private static Server server;
+	private static Server server = null!;
 		
 	static void Main(string[] args)
 	{
@@ -106,7 +106,7 @@ public static class Program
 			msg.Add(lobby.Value.Item2);
 		}
 		server.Send(msg, senderID);
-		Connection c = null;
+		Connection? c;
 		server.TryGetClient(senderID, out c);
 		if(c!=null){
 			SendPlayerList(c);
@@ -151,11 +151,11 @@ public static class Program
 			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
-			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
+			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
 			Console.WriteLine("Creating server log at " +path);
 			try
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/");
+				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/");
 				File.Create(path).Close();
 			}
 			catch (Exception e)

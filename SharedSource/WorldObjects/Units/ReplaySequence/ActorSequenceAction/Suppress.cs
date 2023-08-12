@@ -1,4 +1,7 @@
 ﻿using System.Threading.Tasks;
+using DefconNull.World;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.SharedSource.Units.ReplaySequence;
@@ -25,7 +28,8 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 		message.Add(detDmg);
 	}
 
-	protected override Task GenerateTask()
+
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -33,4 +37,16 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 		});
 		return t;
 	}
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+
+		Texture2D sprite = Actor.WorldObject.GetTexture();
+		spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Blue * 0.8f);
+		
+		Actor.WorldObject.PreviewData.detDmg = detDmg;
+	}
+#endif
+
 }

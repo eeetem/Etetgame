@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DefconNull.SharedSource.Units.ReplaySequence;
+using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
@@ -15,9 +16,9 @@ using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
 #endif
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.World.WorldActions;
 
-public class WorldEffect : IMessageSerializable
+public class WorldConsiqences : IMessageSerializable
 {
 	public int Dmg;
 	public int Det ;
@@ -123,7 +124,7 @@ public class WorldEffect : IMessageSerializable
 		}
 	}
 
-	private List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
+	public List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
 	{
 			var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
 		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, Cover.Low);
@@ -146,7 +147,7 @@ public class WorldEffect : IMessageSerializable
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
-	public List<SequenceAction> ApplyConsiqunces(Vector2Int target, WorldObject? user = null)
+	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target, WorldObject? user = null)
 	{
 		_ignoreList = new List<WorldObject>();
 		
@@ -261,99 +262,5 @@ public class WorldEffect : IMessageSerializable
 
 		return consiquences;
 	}
-#if CLIENT
-	
-
-	protected void PreviewOnTile(WorldTile tile, SpriteBatch spriteBatch, WorldObject? user, int previewRecursiveDepth=0)
-	{
-		if (tile.Surface == null)return;
-
-		Texture2D sprite = tile.Surface.GetTexture();
-		
-		Color c = Color.DarkRed;
-		switch (previewRecursiveDepth)
-		{
-			case 0:
-				c = Color.DarkRed;
-				break;
-			case 1:
-				c = Color.Red;
-				break;
-			case 2:
-				c = Color.Orange;
-				break;
-			case 3:
-				c = Color.Yellow;
-				break;
-			case 4:
-				c = Color.Green;
-				break;
-			case 5:
-				c = Color.Blue;
-				break;
-			case 6:
-				c = Color.Indigo;
-				break;
-			case 7:
-				c = Color.Violet;
-				break;
-			case 8:
-				c = Color.White;
-				break;
-			default:
-				c = Color.White;
-				break;
-			
-		}
-
-		spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.45f);
-
-		if (tile.WestEdge != null && tile.WestEdge.PreviewData.finalDmg < Dmg)
-		{
-			tile.WestEdge.PreviewData.finalDmg = Dmg;
-		}
-		if (tile.NorthEdge != null&& tile.NorthEdge.PreviewData.finalDmg < Dmg)
-		{
-			tile.NorthEdge.PreviewData.finalDmg = Dmg;
-		}
-		if (tile.EastEdge != null&& tile.EastEdge.PreviewData.finalDmg < Dmg)
-		{
-			tile.EastEdge.PreviewData.finalDmg = Dmg;
-		}
-		if (tile.SouthEdge != null&& tile.SouthEdge.PreviewData.finalDmg < Dmg)
-		{
-			tile.SouthEdge.PreviewData.finalDmg = Dmg;
-		}
-		
-		if (tile.UnitAtLocation != null )
-		{
-			WorldObject Wo = tile.UnitAtLocation.WorldObject;
-			Wo.PreviewData.detDmg += Det;
-			Wo.PreviewData.finalDmg += Dmg;
-			Wo.PreviewData.totalDmg += Dmg;
-		}
-
-		if (PlaceItemPrefab != null)
-		{
-			var prefab = PrefabManager.WorldObjectPrefabs[PlaceItemPrefab];
-			if(prefab.DesturctionEffect!=null){
-				prefab.DesturctionEffect.Preview(tile.Position,spriteBatch,user,previewRecursiveDepth+1);
-			}
-		}
-
-		
-	}
-	
-
-	public void Preview(Vector2Int target, SpriteBatch spriteBatch, WorldObject? user,int previewRecursiveDepth=0)
-	{
-		foreach (var tile in GetAffectedTiles(target,user))
-		{
-			PreviewOnTile(tile,spriteBatch,user,previewRecursiveDepth);
-		}
-	}
-
-
-#endif
 
 }

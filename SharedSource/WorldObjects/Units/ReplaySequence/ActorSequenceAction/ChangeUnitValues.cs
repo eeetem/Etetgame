@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DefconNull.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.SharedSource.Units.ReplaySequence;
@@ -10,14 +12,14 @@ public class ChangeUnitValues : UnitSequenceAction
 	private int moveChange;
 	private int detChange;
 	private int moveRangeEffect;
-	public ChangeUnitValues(int actorID, int actChange=0, int moveChange=0, int detChange=0, int moveRangeEffect =0) : base(actorID,  SequenceType.ChangeUnitPoints)
+	public ChangeUnitValues(int actorID, int actChange=0, int moveChange=0, int detChange=0, int moveRangeEffect =0) : base(actorID,  SequenceType.ChangeUnitValues)
 	{
 		this.actChange = actChange;
 		this.moveChange = moveChange;
 		this.detChange = detChange;
 		this.moveRangeEffect = moveRangeEffect;
 	}
-	public ChangeUnitValues(int actorID, Message msg) : base(actorID, SequenceType.ChangeUnitPoints)
+	public ChangeUnitValues(int actorID, Message msg) : base(actorID, SequenceType.ChangeUnitValues)
 	{
 		actChange = msg.GetInt();
 		moveChange = msg.GetInt();
@@ -26,7 +28,7 @@ public class ChangeUnitValues : UnitSequenceAction
 	}
 	
 
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -46,4 +48,11 @@ public class ChangeUnitValues : UnitSequenceAction
 		message.Add(detChange);
 		message.Add(moveRangeEffect);
 	}
+
+#if CLIENT
+	override public void Preview(SpriteBatch spriteBatch)
+	{
+		//todo UI rework
+	}
+#endif
 }

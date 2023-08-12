@@ -1,18 +1,20 @@
-﻿namespace DefconNull.World.WorldObjects;
+﻿using DefconNull.World.WorldActions;
+
+namespace DefconNull.World.WorldObjects;
 
 public class StatusEffectType
 {
 	public readonly string name;
-	readonly WorldEffect effect;
+	readonly WorldConsiqences _consiqences;
 
-	public StatusEffectType(string name, WorldEffect itm)
+	public StatusEffectType(string name, WorldConsiqences itm)
 	{
 		this.name = name;
-		effect = itm;
+		_consiqences = itm;
 	}
 
 	public void Apply(Unit actor)
 	{
-		effect.ApplyConsiqunces(actor.WorldObject.TileLocation.Position);
+		WorldManager.Instance.AddSequence(_consiqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
 	}
 }

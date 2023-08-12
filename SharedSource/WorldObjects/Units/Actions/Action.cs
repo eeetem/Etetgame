@@ -87,7 +87,7 @@ public abstract class Action
 	}
 
 
-	public abstract Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target);
 
 #if CLIENT
 	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
@@ -114,7 +114,7 @@ public abstract class Action
 	{
 
 		
-		var result = CanPerform(actor, ref target);
+		var result = CanPerform(actor, target);
 		if(!result.Item1)
 		{
 			Console.WriteLine("Client sent an impossible action: "+result.Item2);

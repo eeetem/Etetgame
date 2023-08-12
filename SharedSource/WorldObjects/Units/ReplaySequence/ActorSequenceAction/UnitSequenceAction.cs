@@ -33,31 +33,10 @@ public abstract class UnitSequenceAction : SequenceAction
 				}
 			}
 
-			return obj.UnitComponent;
+			return obj.UnitComponent!;
 		}
 	}
-
-	public override Task Do()
-	{
-		var t = new Task(delegate
-		{
-#if CLIENT
-			if (Actor.WorldObject.TileLocation.TileVisibility==Visibility.None)
-			{
-				// if (Visible)
-				// {
-				// Camera<>.SetPos(target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
-				// }
-			}
-			else
-			{
-				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
-			}
-#endif
-			GenerateTask().RunSynchronously();
-		});
-		return t;
-	}
+	
 
 
 

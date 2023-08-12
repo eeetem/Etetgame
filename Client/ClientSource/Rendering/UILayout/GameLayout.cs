@@ -858,7 +858,7 @@ public class GameLayout : MenuLayout
 				{
 					batch.Begin(transformMatrix: Camera.GetViewMatrix(),samplerState: SamplerState.AnisotropicClamp);
 					batch.DrawText(""+obj.LifeTime, Utility.GridToWorldPos(tile.Position + new Vector2(0f,0f)),  5,5, Color.White);
-					obj.Type.DesturctionEffect?.Preview(obj.TileLocation.Position,batch,null);
+					//obj.Type.DesturctionEffect?.Preview(obj.TileLocation.Position,batch,null);
 					batch.End();
 				}
 
@@ -1329,7 +1329,7 @@ public class GameLayout : MenuLayout
 
 
 		//SHOULD AUTOSWTICH TO ATTACK
-		if (WorldAction.FreeFire||( tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.IsVisible() &&!tile.UnitAtLocation.IsMyTeam()))
+		if (WorldEffect.FreeFire||( tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.IsVisible() &&!tile.UnitAtLocation.IsMyTeam()))
 		{
 			if(Action.ActiveAction == null){
 				Action.SetActiveAction(Action.ActionType.UseAbility);
@@ -1379,13 +1379,13 @@ public class GameLayout : MenuLayout
 		}
 
 
-		WorldAction.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
+		WorldEffect.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
 		if(Action.ActiveAction != null && currentKeyboardState.IsKeyUp(Keys.LeftControl) && lastKeyboardState.IsKeyDown(Keys.LeftControl) && Action.ActiveAction.Type == Action.ActionType.UseAbility && UseAbility.AbilityIndex == -1)
 		{
 			Action.SetActiveAction(null);
 		}
 
-		if(WorldAction.FreeFire){
+		if(WorldEffect.FreeFire){
 			if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
 			{
 				if (Shootable.targeting == Shootable.TargetingType.Auto)

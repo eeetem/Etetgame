@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.World.WorldActions;
 
-public class ExtraToggleAction : IExtraAction
+public class ExtraToggleAction : IUnitAbility
 {
-	private readonly ExtraAction on;
-	private readonly ExtraAction off;
+	private readonly UnitAbility on;
+	private readonly UnitAbility off;
 	private bool isOn;
 
 
@@ -25,26 +25,26 @@ public class ExtraToggleAction : IExtraAction
 		}
 	}
 
-	public float GetOptimalRange()
+	public float GetOptimalRangeAI()
 	{
-		return isOn ? on.GetOptimalRange() : off.GetOptimalRange();
+		return isOn ? on.GetOptimalRangeAI() : off.GetOptimalRangeAI();
 	}
 
 
-	public ExtraToggleAction(ExtraAction on, ExtraAction off)
+	public ExtraToggleAction(UnitAbility on, UnitAbility off)
 	{
 		this.on = on;
 		this.off = off;
 	}
 
 
-	public Tuple<bool, string> CanPerform(Unit actor,ref Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
 	{
 		if (isOn)
 		{
-			return off.CanPerform(actor,ref target);
+			return off.CanPerform(actor, target);
 		}
-		return on.CanPerform(actor,ref target);
+		return on.CanPerform(actor, target);
 	}
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
@@ -54,6 +54,18 @@ public class ExtraToggleAction : IExtraAction
 			return off.HasEnoughPointsToPerform(actor);
 		}
 		return on.HasEnoughPointsToPerform(actor);
+	}
+
+	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget = false)
+	{
+		if (isOn)
+		{
+			return off.CanHit(actor,target,lowTarget);
+		}
+		return on.CanHit(actor,target,lowTarget);
+		
+
+		
 	}
 
 	public List<string> MakePacketArgs()
@@ -67,27 +79,29 @@ public class ExtraToggleAction : IExtraAction
 
 	public List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target)
 	{
+		List<SequenceAction> r = new List<SequenceAction>();
 		if (isOn)
 		{
-			return	off.ExecutionResult(actor,target);
-		}
-		else
+			r =	off.ExecutionResult(actor,target);
+		}else
 		{
-			return on.ExecutionResult(actor,target);
+			r = on.ExecutionResult(actor,target);
 		}
 		//todo make this a world change
 		isOn = !isOn;
 
+		return r;
 	}
-	
-	public WorldAction WorldAction	{
+
+
+	public List<IWorldEffect> Effects	{
 		get {
 			if (isOn)
 			{
-				return on.WorldAction;
+				return on.Effects;
 			}
 
-			return off.WorldAction;
+			return off.Effects;
 		}
 	}
 
@@ -131,6 +145,6 @@ public class ExtraToggleAction : IExtraAction
 #endif
 	public object Clone()
 	{
-		return new ExtraToggleAction((ExtraAction)on.Clone(),(ExtraAction)off.Clone());
+		return new ExtraToggleAction((UnitAbility)on.Clone(),(UnitAbility)off.Clone());
 	}
 }

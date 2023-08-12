@@ -15,11 +15,11 @@ public class UseAbility : Action
 	{
 	}
 
-	public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target)
 	{
 			
-		IExtraAction action = actor.GetAction(AbilityIndex);
-		return action.CanPerform(actor, ref target);
+		IUnitAbility action = actor.GetAction(AbilityIndex);
+		return action.CanPerform(actor, target);
 
 	}
 
@@ -43,7 +43,7 @@ public class UseAbility : Action
 	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
 	{
 
-		IExtraAction action = actor.GetAction(AbilityIndex);
+		IUnitAbility action = actor.GetAction(AbilityIndex);
 		var res = action.ExecutionResult(actor, target);
 		var queue = new Queue<SequenceAction>();
 		foreach (var sequenceAction in res)
@@ -62,20 +62,16 @@ public class UseAbility : Action
 #if CLIENT
 		public override void SendToServer(Unit actor, Vector2Int target)
 		{
-			IExtraAction action = actor.GetAction(AbilityIndex);
+			IUnitAbility action = actor.GetAction(AbilityIndex);
 			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
 			packet.Args.Add(AbilityIndex.ToString());
-			foreach (var a in action.MakePacketArgs())
-			{
-				packet.Args.Add(a);
-			}
 
 			NetworkingManager.SendGameAction(packet);
 		
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
-			IExtraAction action = actor.GetAction(AbilityIndex);
+			IUnitAbility action = actor.GetAction(AbilityIndex);
 			action.Preview(actor, target,spriteBatch);
 		}
 

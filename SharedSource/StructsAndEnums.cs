@@ -5,31 +5,8 @@ using Riptide;
 
 namespace DefconNull;
 
-[Serializable]
-public class RayCastOutcome//fuck the network library holy moly
-{
-	public Vector2 CollisionPointLong;
-	public Vector2 CollisionPointShort;
-	public Vector2 StartPoint;
-	public Vector2 EndPoint;
-	public Vector2 VectorToCenter;
-	public List<Vector2Int> Path;
-	public int HitObjId{ get; set; }
 
-	public bool hit{ get; set; }
 
-	public RayCastOutcome(Vector2 start, Vector2 end)
-	{
-		CollisionPointLong = new Vector2(0, 0);
-		CollisionPointShort = new Vector2(0, 0);
-		hit = false;
-		EndPoint = end;
-		HitObjId = -1;
-		StartPoint = start;
-		Path = new List<Vector2Int>();
-	
-	}
-}
 public enum Visibility
 {
 	None=0,

@@ -14,7 +14,7 @@ public class Face : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
 	{
 		
 		

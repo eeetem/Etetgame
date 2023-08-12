@@ -6,6 +6,7 @@ using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -130,14 +131,14 @@ public static partial class NetworkingManager
 					case SequenceAction.SequenceType.Overwatch:
 						sqc = new UnitOverWatch(id, message);
 						break;
-					case SequenceAction.SequenceType.ChangeUnitPoints:
+					case SequenceAction.SequenceType.ChangeUnitValues:
 						sqc = new ChangeUnitValues(id, message);
 						break;
 					case SequenceAction.SequenceType.Suppress:
 						sqc = new Suppress(id, message);
 						break;
 					case SequenceAction.SequenceType.UnitStatusEffect:
-						sqc = new Suppress(id, message);
+						sqc = new UnitStatusEffect(id, message);
 						break;
 					default:
 						throw new Exception("Unknown Sequence Type Recived: "+type);

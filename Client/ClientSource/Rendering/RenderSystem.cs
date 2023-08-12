@@ -109,42 +109,45 @@ public static class RenderSystem
 
 			foreach (var moves in GameLayout.previewMoves.Reverse())
 			{
-				foreach (var path in moves)
+				Color c = Color.White;
+				switch (count)
 				{
+					case 0:
+						c = Color.Red;
+						break;
+					case 1:
+						c = Color.Orange;
+						break;
+					case 2:
+						c = Color.Yellow;
+						break;
+					case 3:
+						c = Color.GreenYellow;
+						break;
+					case 4:
+						c = Color.Green;
+						break;
+					case 5:
+						c = Color.LightGreen;
+						break;
+					default:
+						c = Color.White;
+						break;
 
-
-					if (path.X < 0 || path.Y < 0) break;
+				}
+				spriteBatch.DrawOutline(moves, c, 4f);
+				foreach (var path in moves)
+				{	
+					
 					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
 
-					Color c = Color.White;
-					switch (count)
-					{
-						case 0:
-							c = Color.Red;
-							break;
-						case 1:
-							c = Color.Orange;
-							break;
-						case 2:
-							c = Color.Yellow;
-							break;
-						case 3:
-							c = Color.GreenYellow;
-							break;
-						case 4:
-							c = Color.Green;
-							break;
-						case 5:
-							c = Color.LightGreen;
-							break;
-						default:
-							c = Color.White;
-							break;
+					var tile = WorldManager.Instance.GetTileAtGrid(path);
+					Texture2D sprite =tile.Surface!.GetTexture();
+					spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
 
-					}
 					spriteBatch.DrawText(WorldManager.Instance.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
-					spriteBatch.DrawPolygon(pos,new Polygon(new List<Vector2> {Utility.GridToWorldPos(new(-0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,-0.5f)),Utility.GridToWorldPos(new(0.5f,0.5f)),Utility.GridToWorldPos(new(-0.5f,0.5f))}),c,2.5f,0);
-				
+					
+
 				}
 
 				count++;

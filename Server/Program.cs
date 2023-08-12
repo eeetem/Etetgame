@@ -15,38 +15,31 @@ public static class Program
 		
 	static void Main(string[] args)
 	{
-		try
+		Console.WriteLine("Hello World!");
+		string port = "52233";
+		bool allowSinglePlayer = true;
+		if (args.Length > 1)
 		{
-			Console.WriteLine("Hello World!");
-			string port = "52233";
-			bool allowSinglePlayer = true;
-			if (args.Length > 1)
-			{
-				port = args[0];
-				allowSinglePlayer = args[1] == "true";
-			}
-			
-			PrefabManager.MakePrefabs();
-			Action.Init();
-			Utility.Init();
-			PathFinding.GenerateNodes();
-			//	Console.WriteLine("Enter Port:");
-			//string port = Console.ReadLine();
-			
-
-
-
-			NetworkingManager.Start(ushort.Parse(port),allowSinglePlayer);
-			Console.WriteLine("informing masterserver");
-			InformMasterServer();
-			
-			UpdateLoop();
+			port = args[0];
+			allowSinglePlayer = args[1] == "true";
 		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-			throw;
-		}
+			
+		PrefabManager.MakePrefabs();
+		Action.Init();
+		Utility.Init();
+		PathFinding.GenerateNodes();
+		//	Console.WriteLine("Enter Port:");
+		//string port = Console.ReadLine();
+			
+
+
+
+		NetworkingManager.Start(ushort.Parse(port),allowSinglePlayer);
+		Console.WriteLine("informing masterserver");
+		InformMasterServer();
+			
+		UpdateLoop();
+
 			
 	}
 	static void UpdateLoop()

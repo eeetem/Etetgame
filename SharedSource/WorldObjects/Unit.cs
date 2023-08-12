@@ -33,8 +33,8 @@ namespace DefconNull.World.WorldObjects
 			IsPlayerOneTeam = data.Team1;
 			parent.UnitComponent = this;
 
-			type.Actions.ForEach(extraAction => { Actions.Add((IExtraAction) extraAction.Clone()); });
-			DefaultAttack = (ExtraAction) type.DefaultAttack.Clone();
+			type.Actions.ForEach(extraAction => { Actions.Add((IUnitAbility) extraAction.Clone()); });
+			DefaultAttack = (UnitAbility) type.DefaultAttack.Clone();
 
 
 			if (data.Determination == -100)
@@ -140,11 +140,11 @@ namespace DefconNull.World.WorldObjects
 			Inventory[index] = null;
 		}
 
-		public List<IExtraAction> Actions = new List<IExtraAction>();
-		private ExtraAction DefaultAttack;
+		public List<IUnitAbility> Actions = new List<IUnitAbility>();
+		private UnitAbility DefaultAttack;
 
 		
-		public IExtraAction GetAction(int index)
+		public IUnitAbility GetAction(int index)
 		{
 			if(index == -1 || index >= Actions.Count)
 			{
@@ -204,15 +204,13 @@ namespace DefconNull.World.WorldObjects
 
 		public bool IsPlayerOneTeam { get; private set; }
 
-		public HashSet<Projectile> GetOverWatchPositions(Vector2Int target)
+		public HashSet<Tuple<Vector2Int,bool>> GetOverWatchPositions(Vector2Int target)
 		{
 			var tiles = WorldManager.Instance.GetTilesAround(target,Type.OverWatchSize);
-			HashSet<Projectile> possibleShots = new HashSet<Projectile>();
 			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
 			foreach (var endTile in tiles)
 			{
-			
-				RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
 				foreach (var pos in outcome.Path)
 				{
 					positions.Add(pos);
@@ -220,26 +218,20 @@ namespace DefconNull.World.WorldObjects
 
 			}
 
+			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
 			{
-				if (CanHit(position))
+				if (Type.DefaultAttack.CanHit(this,position,true))
 				{
-					foreach (var method in Type.DefaultAttack.WorldAction.DeliveryMethods)
-					{
-						if (method is Shootable)
-						{
-							var proj = ((Shootable)method).MakeProjectile(this, position);
-							possibleShots.Add(proj);
-							break;
-						}
-
-					}
-
-				
+					result.Add(new Tuple<Vector2Int, bool>(position,true));
+				}
+				else if (Type.DefaultAttack.CanHit(this,position,false))
+				{
+					result.Add(new Tuple<Vector2Int, bool>(position,false));
 				}
 			}
 
-			return possibleShots;
+			return result;
 		}
 
 
@@ -295,23 +287,7 @@ namespace DefconNull.World.WorldObjects
 			return Type.SightRange;
 		}
 
-		public bool CanHit(Vector2Int target, bool lowTarget = false)
-		{
-			Vector2 shotDir = Vector2.Normalize(target - WorldObject.TileLocation.Position);
-			Projectile proj = new Projectile(WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + shotDir / new Vector2(2.5f, 2.5f), target + new Vector2(0.5f, 0.5f), 0, 100, lowTarget, Crouching, 0, 0, 0);
 
-
-			if (proj.Result.hit)
-			{
-				var hitobj = WorldManager.Instance.GetObject(proj.Result.HitObjId);
-				if (hitobj!.Type.Edge || hitobj.TileLocation.Position != target)
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
 
 		public void StartTurn()
 		{
@@ -368,7 +344,7 @@ namespace DefconNull.World.WorldObjects
 			if (!IsMyTeam()) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
-			var result = a.CanPerform(this, ref target);
+			var result = a.CanPerform(this, target);
 			if (!result.Item1)
 			{
 #if CLIENT

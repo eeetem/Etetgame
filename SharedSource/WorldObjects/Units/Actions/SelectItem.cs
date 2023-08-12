@@ -13,7 +13,7 @@ public class SelectItem : Action
 		
 	}
 
-	public override Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
 	{
 		if(target.X>=actor.Inventory.Length || target.X < -1)
 			return new Tuple<bool, string>(false, "Invalid Item");

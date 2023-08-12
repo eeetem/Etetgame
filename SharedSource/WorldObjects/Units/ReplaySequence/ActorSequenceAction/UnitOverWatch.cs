@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -19,15 +20,8 @@ public class UnitOverWatch : UnitSequenceAction
 		Target = msg.GetSerializable<Vector2Int>();
 	}
 	
-	public override Task Do()
-	{
-		var t = new Task(delegate
-		{
-			GenerateTask().RunSynchronously();
-		});
-		return t;
-	}
-	protected override Task GenerateTask()
+
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -36,8 +30,8 @@ public class UnitOverWatch : UnitSequenceAction
 			var positions = Actor.GetOverWatchPositions(Target);
 			foreach (var shot in positions)
 			{
-				WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint).Watch(Actor);
-				Actor.overWatchedTiles.Add(shot.Result.EndPoint);
+				WorldManager.Instance.GetTileAtGrid(shot.Item1).Watch(Actor);
+				Actor.overWatchedTiles.Add(shot.Item1);
 			}
 
 			Actor.overWatch = true;
@@ -52,4 +46,11 @@ public class UnitOverWatch : UnitSequenceAction
 		base.SerializeArgs(message);
 		message.Add(Target);
 	}
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }

@@ -197,7 +197,7 @@ public partial class WorldObject
 				Camera.SetPos(TileLocation.Position);
 			}
 #endif
-				Type.DesturctionEffect?.ApplyConsiqunces(TileLocation.Position,this);
+				Type.DesturctionEffect?.GetApplyConsiqunces(TileLocation.Position,this);
 			});
 			WorldManager.Instance.RunNextAfterFrames(t);
 

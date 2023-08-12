@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.WorldObjects.Units.ReplaySequence;
@@ -20,43 +21,7 @@ public class UseUpSelectedItem : UnitSequenceAction
 		Target = args.GetSerializable<Vector2Int>();
 	}
 
-	public override Task Do()
-	{
-		var t = new Task(delegate
-		{
-#if CLIENT
-			if (Actor.WorldObject.TileLocation.TileVisibility == Visibility.None)
-			{
-				if (Actor.SelectedItem!.Visible)
-				{
-					Camera.SetPos(Actor.WorldObject.TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
-		
-				}
-			}
-			else
-			{
-				Camera.SetPos(Actor.WorldObject.TileLocation.Position);
-			}
-
-			Thread.Sleep(600);
-			if (WorldManager.Instance.GetTileAtGrid(Target).TileVisibility == Visibility.None)
-			{
-				if (Actor.SelectedItem.Visible)
-				{
-					Camera.SetPos(Target + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
-		
-				}
-			}
-			else
-			{
-				Camera.SetPos(Target);
-			}
-#endif
-			GenerateTask().RunSynchronously();
-		});
-		return t;
-	}
-	protected override Task GenerateTask()
+	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
@@ -73,4 +38,12 @@ public class UseUpSelectedItem : UnitSequenceAction
 		base.SerializeArgs(message);
 		message.AddSerializable(Target);
 	}
+	
+	
+#if CLIENT
+	public override void Preview(SpriteBatch spriteBatch)
+	{
+		//no need to preview
+	}
+#endif
 }
