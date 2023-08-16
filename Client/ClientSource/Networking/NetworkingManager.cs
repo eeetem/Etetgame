@@ -45,6 +45,10 @@ public static partial class NetworkingManager
 		Message.MaxPayloadSize = 2048;
 
 		client.TimeoutTime = 10000;
+#if DEBUG
+		client.TimeoutTime = ushort.MaxValue;
+#endif
+
 		var msg = Message.Create();
 		msg.AddString(name);
 		bool result = client.Connect(ipport,message:msg);

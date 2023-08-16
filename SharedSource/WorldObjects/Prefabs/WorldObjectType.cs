@@ -53,7 +53,7 @@ public partial class WorldObjectType
 	public Cover SolidCover = Cover.None;
 	public Cover VisibilityCover = Cover.None;
 	
-	public WorldConsiqences? DesturctionEffect;
+	public WorldConseqences? DestructionConseqences;
 
 	//should probably be an enum
 	public bool Faceable { get; set; }

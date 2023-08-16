@@ -12,31 +12,52 @@ public static class Audio
 	private static List<Tuple<SoundEffectInstance, AudioEmitter>> activeSounds = new List<Tuple<SoundEffectInstance, AudioEmitter>>();
 	public static readonly object syncobj = new object();
 	private static ContentManager content = null!;
+
+	private static Tuple<string,SoundEffectInstance>? CurrentMusic = null;
 	
 	private static float musicVolume = 0.5f;
+
 	public static float MusicVolume
 	{
 		get => musicVolume;
 		set
 		{
 			musicVolume = value;
-			MediaPlayer.Volume = MusicVolume;
+			if (CurrentMusic != null)
+			{
+				CurrentMusic.Item2.Volume = value;
+			}
 		}
 	}
+	
 	public static float SoundVolume = 0.5f;
 		
 	public static Dictionary<string, SoundEffect> SFX = new Dictionary<string, SoundEffect>();
-	
-	public static void PlayMenu()
+	public static void PlayMusic(GameState g)
 	{
-		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/menu"));
-		MediaPlayer.IsRepeating = true;
-	}
-	public static void PlayCombat()
-	{
+		string nextSong = "";
+		switch (g)
+		{
+			case GameState.Lobby:
+				nextSong =  "Trespassing";
+				break;
+			default:
+				nextSong = "";
+				break;
+		}
 
-		MediaPlayer.Play(content.Load<Song>("CompressedContent/audio/music/tension"));
-		MediaPlayer.IsRepeating = true;
+		if (nextSong != "")
+		{
+			if (CurrentMusic == null || CurrentMusic.Item2.State == SoundState.Stopped || CurrentMusic.Item1 != nextSong)
+			{
+				var instance = content.Load<SoundEffect>("CompressedContent/audio/music/" + nextSong).CreateInstance();
+				instance.Volume = MusicVolume;
+				instance.IsLooped = true;
+				CurrentMusic = new Tuple<string, SoundEffectInstance>(nextSong, instance);
+				instance.Play();
+			}
+		}
+
 	}
 
 	private static SoundEffect GetSound(string name)

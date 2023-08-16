@@ -11,9 +11,10 @@ namespace DefconNull.World.WorldObjects;
 public class UnitType : WorldObjectType
 {
 
-	public UnitType(string name) : base(name)
+	public UnitType(string name,UnitAbility defAttack, List<IUnitAbility> actions) : base(name)
 	{
-
+		DefaultAttack = defAttack;
+		Actions = actions;
 	}
 
 	public int MoveRange = 4;
@@ -30,34 +31,25 @@ public class UnitType : WorldObjectType
 
 	public Texture2D[] CrouchSpriteSheet = null!;
 
-	public UnitAbility DefaultAttack = null!;
-	public readonly List<IUnitAbility> Actions = new List<IUnitAbility>();
+	private UnitAbility DefaultAttack = null!;
+	private readonly List<IUnitAbility> Actions = new List<IUnitAbility>();
 
-	public WorldConsiqences? SpawnEffect { get; set; }
+	public WorldConseqences? SpawnEffect { get; set; }
 
 
 	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
 	{
 		wo.Face(data.Facing,false);
 		Unit component = new Unit(wo,this,data.UnitData!.Value);
+		Actions.ForEach(extraAction => { component.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+		component.DefaultAttack = (UnitAbility) DefaultAttack.Clone();
 
 #if CLIENT
 		GameLayout.RegisterUnit(component);
 #endif
 		tile.UnitAtLocation = component;
 
-		if (data.UnitData.Value.JustSpawned)//bad spot for this but whatever for now
-		{
-			if (SpawnEffect != null)
-			{
-				
-				foreach (var c in SpawnEffect.GetApplyConsiqunces(tile.Position))
-				{
-					WorldManager.Instance.AddSequence(c);
-				}
-			}
 
-		}
 	}
 #if CLIENT
 	public override Texture2D GetSprite(int spriteVariation, int spriteIndex, WorldObject worldObject)

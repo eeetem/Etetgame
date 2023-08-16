@@ -39,7 +39,7 @@ public class UseItem : Action
 		
 		
 		var item = actor.SelectedItem;
-		var cons = item.GetConsiquences(actor, target);
+		var cons = item.GetConsequences(actor, target);
 		
 		
 		

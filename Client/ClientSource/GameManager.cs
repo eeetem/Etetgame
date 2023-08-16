@@ -62,7 +62,6 @@ public static partial class GameManager
 		if(intated)return;
 		intated = true;
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
-		Audio.PlayCombat();
 		WorldManager.Instance.MakeFovDirty();
 		UI.SetUI(new GameLayout());
 	}
@@ -116,18 +115,16 @@ public static partial class GameManager
 			
 		score = data.Score;
 		GameState = data.GameState;
-		
-			
+
+		Audio.PlayMusic(GameState);
 		switch (GameState)
 		{
 			case GameState.Lobby:
-				Audio.PlayMenu();
 				UI.SetUI(new PreGameLobbyLayout());
 				break;
 			case GameState.Setup:
 				if (spectating)
 				{
-					Audio.PlayMenu();
 					UI.SetUI(new PreGameLobbyLayout());
 					break;//todo specating
 				}

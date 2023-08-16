@@ -140,8 +140,11 @@ public static partial class NetworkingManager
 					case SequenceAction.SequenceType.UnitStatusEffect:
 						sqc = new UnitStatusEffect(id, message);
 						break;
+					case SequenceAction.SequenceType.AbilityToggle:
+						sqc = new UnitAbilitToggle(id, message);
+						break;
 					default:
-						throw new Exception("Unknown Sequence Type Recived: "+type);
+						throw new Exception("Unknown Unit Sequence Type Recived: "+type);
 			
 				}
 			}

@@ -5,16 +5,16 @@ namespace DefconNull.World.WorldObjects;
 public class StatusEffectType
 {
 	public readonly string name;
-	readonly WorldConsiqences _consiqences;
+	readonly WorldConseqences _conseqences;
 
-	public StatusEffectType(string name, WorldConsiqences itm)
+	public StatusEffectType(string name, WorldConseqences itm)
 	{
 		this.name = name;
-		_consiqences = itm;
+		_conseqences = itm;
 	}
 
 	public void Apply(Unit actor)
 	{
-		WorldManager.Instance.AddSequence(_consiqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
+		WorldManager.Instance.AddSequence(_conseqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
 	}
 }

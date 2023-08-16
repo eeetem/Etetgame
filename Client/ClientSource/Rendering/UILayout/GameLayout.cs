@@ -471,7 +471,7 @@ public class GameLayout : MenuLayout
 		}
 
 		i = 0;
-		foreach (var action in SelectedUnit.Actions)
+		foreach (var action in SelectedUnit.Abilities)
 		{
 
 			var index = i;
@@ -557,7 +557,7 @@ public class GameLayout : MenuLayout
 		if(SelectedUnit == null) return;
 		int top = (int) (-4*globalScale.X) ;
 		float scale = globalScale.X * 1.05f;
-		int totalBtns = 3 + SelectedUnit.Actions.Count;
+		int totalBtns = 3 + SelectedUnit.Abilities.Count;
 		int btnWidth = (int) (24 * scale);
 		int totalWidth = totalBtns * btnWidth;
 		int startOffest = Game1.resolution.X / 2 - totalWidth / 2;
@@ -722,7 +722,7 @@ public class GameLayout : MenuLayout
 
 
 		i = 0;
-		foreach (var action in SelectedUnit.Actions)
+		foreach (var action in SelectedUnit.Abilities)
 		{
 
 			var index = i;
@@ -737,7 +737,7 @@ public class GameLayout : MenuLayout
 				actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
 				actbtn.Image = new ColoredRegion(new TextureRegion(action.Icon), Color.Red);
 			}
-			else if(SelectedUnit.Actions[index].HasEnoughPointsToPerform(SelectedUnit).Item1)
+			else if(SelectedUnit.Abilities[index].HasEnoughPointsToPerform(SelectedUnit).Item1)
 			{
 				actbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));
 				actbtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));

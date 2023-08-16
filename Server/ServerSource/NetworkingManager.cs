@@ -22,6 +22,9 @@ public static partial class NetworkingManager
 		server = new Server(new TcpServer());
 		server.TimeoutTime = 10000;
 		Message.MaxPayloadSize = 2048;
+#if DEBUG
+		server.TimeoutTime = ushort.MaxValue;
+#endif
 
 		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
@@ -331,7 +334,20 @@ public static partial class NetworkingManager
 			
 	}
 
-	public static void SendSequence(Queue<SequenceAction> actions)
+	public static void SendSequence(SequenceAction a)
+	{
+		lock (UpdateLock)
+		{
+			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
+
+			msg.Add((int) a.SqcType);
+			msg.AddSerializable(a);
+			server.SendToAll(msg);
+		}
+		
+	}
+
+	public static void SendSequence(IEnumerable<SequenceAction> actions)
 	{
 		lock (UpdateLock)
 		{

@@ -142,8 +142,11 @@ public static class RenderSystem
 					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
 
 					var tile = WorldManager.Instance.GetTileAtGrid(path);
-					Texture2D sprite =tile.Surface!.GetTexture();
-					spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
+					if (tile.Surface != null)
+					{
+						Texture2D sprite =tile.Surface.GetTexture();
+						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
+					}
 
 					spriteBatch.DrawText(WorldManager.Instance.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
 					

@@ -90,7 +90,7 @@ public class Game1 : Game
 
 		_graphics.ApplyChanges();
 			
-		Audio.PlayMenu();
+		Audio.PlayMusic(GameState.Lobby);
 			
 	
 	}

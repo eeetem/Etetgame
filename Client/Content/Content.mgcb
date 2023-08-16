@@ -133,23 +133,11 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg-old1.wav
 
-#begin CompressedContent/audio/music/menu.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
+#begin CompressedContent/audio/music/Trespassing.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/menu.mp3
-
-#begin CompressedContent/audio/music/oldmusic.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:CompressedContent/audio/music/oldmusic.mp3
-
-#begin CompressedContent/audio/music/tension.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:CompressedContent/audio/music/tension.mp3
+/build:CompressedContent/audio/music/Trespassing.wav
 
 #begin CompressedContent/audio/rifle.wav
 /importer:WavImporter
@@ -271,18 +259,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/background.png
 
-#begin CompressedContent/textures/UI/background.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/background.png
-
 #begin CompressedContent/textures/UI/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -294,30 +270,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/button.png
-
-#begin CompressedContent/textures/UI/button.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/button.png
-
-#begin CompressedContent/textures/UI/button2.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/button2.png
 
 #begin CompressedContent/textures/UI/button2.png
 /importer:TextureImporter
@@ -343,18 +295,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/coverIndicator.png
 
-#begin CompressedContent/textures/UI/coverIndicator.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/coverIndicator.png
-
 #begin CompressedContent/textures/UI/discord.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -366,30 +306,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/discord.png
-
-#begin CompressedContent/textures/UI/discord.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/discord.png
-
-#begin CompressedContent/textures/UI/Fire.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/Fire.png
 
 #begin CompressedContent/textures/UI/Fire.png
 /importer:TextureImporter
@@ -943,18 +859,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/kick.png
 
-#begin CompressedContent/textures/UI/kick.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/kick.png
-
 #begin CompressedContent/textures/UI/pract.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -966,18 +870,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/pract.png
-
-#begin CompressedContent/textures/UI/targetingCursor.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/targetingCursor.png
 
 #begin CompressedContent/textures/UI/targetingCursor.png
 /importer:TextureImporter

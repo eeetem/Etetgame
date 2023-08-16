@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units;
 using Microsoft.Xna.Framework;
@@ -33,8 +33,6 @@ namespace DefconNull.World.WorldObjects
 			IsPlayerOneTeam = data.Team1;
 			parent.UnitComponent = this;
 
-			type.Actions.ForEach(extraAction => { Actions.Add((IUnitAbility) extraAction.Clone()); });
-			DefaultAttack = (UnitAbility) type.DefaultAttack.Clone();
 
 
 			if (data.Determination == -100)
@@ -96,6 +94,22 @@ namespace DefconNull.World.WorldObjects
 
 			if (data.JustSpawned)
 			{
+#if SERVER
+				if (type.SpawnEffect != null)
+				{
+					Task t = new Task(delegate
+					{
+						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject.TileLocation.Position))
+						{
+							WorldManager.Instance.AddSequence(c);
+							Networking.NetworkingManager.SendSequence(c);
+						}
+					});
+					WorldManager.Instance.RunNextAfterFrames(t);
+				}
+#endif
+
+
 				StartTurn();
 			}
 		}
@@ -140,17 +154,17 @@ namespace DefconNull.World.WorldObjects
 			Inventory[index] = null;
 		}
 
-		public List<IUnitAbility> Actions = new List<IUnitAbility>();
-		private UnitAbility DefaultAttack;
+		public List<IUnitAbility> Abilities = new List<IUnitAbility>();
+		public UnitAbility DefaultAttack;
 
-		
+
 		public IUnitAbility GetAction(int index)
 		{
-			if(index == -1 || index >= Actions.Count)
+			if(index == -1 || index >= Abilities.Count)
 			{
 				return DefaultAttack;
 			}
-			return Actions[index];
+			return Abilities[index];
 		}
 
 
@@ -221,11 +235,11 @@ namespace DefconNull.World.WorldObjects
 			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
 			{
-				if (Type.DefaultAttack.CanHit(this,position,true))
+				if (DefaultAttack.CanHit(this,position,true))
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,true));
 				}
-				else if (Type.DefaultAttack.CanHit(this,position,false))
+				else if (DefaultAttack.CanHit(this,position,false))
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,false));
 				}

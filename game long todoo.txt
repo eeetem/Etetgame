@@ -2,18 +2,19 @@
 later
 officer self target -> modding cleanup
 no ghosting destruction -> no wall hack
-lag on greande target;
 alt inspection of unit stats
 server ui -> dont show custom map list on local server
 
 apply shader to every obj in effect area rather than whole screen
 
-clearer move boundry.
-
-shot preview to hit target
-freeze on turn end-
 
 gradual destrution
+
+
+fowspot
+
+overwatch dmg previewc
+
 
 UI Rework:
 crouch indicator

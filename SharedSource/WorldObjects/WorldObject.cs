@@ -178,45 +178,31 @@ public partial class WorldObject
 		destroyed = true;
 		
 		
-		if(Type.DesturctionEffect != null)
+		if(Type.DestructionConseqences != null)
 		{
-			//wrap this in a task
-
+            
 			Task t = new Task(delegate
 			{
-#if CLIENT
-			if (TileLocation.TileVisibility==Visibility.None)
-			{
-				 if (Type.DesturctionEffect.Visible)
-				 {
-				 Camera.SetPos(TileLocation.Position + new Vector2Int(Random.Shared.Next(-4, 4), Random.Shared.Next(-4, 4)));
-				 }
-			}
-			else
-			{
-				Camera.SetPos(TileLocation.Position);
-			}
-#endif
-				Type.DesturctionEffect?.GetApplyConsiqunces(TileLocation.Position,this);
+				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
 			});
-			WorldManager.Instance.RunNextAfterFrames(t);
+			WorldManager.Instance.RunNextAfterFrames(t,4);
 
 		}
 		
 #if CLIENT
-			if(Equals(GameLayout.SelectedUnit, UnitComponent)){
-				GameLayout.SelectUnit(null);
-			}
+		if(Equals(GameLayout.SelectedUnit, UnitComponent)){
+			GameLayout.SelectUnit(null);
+		}
 		
 		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
 #else
 		
 
 #endif
+
 		
-#if SERVER
-WorldManager.Instance.DeleteWorldObject(this);
-#endif
+		WorldManager.Instance.DeleteWorldObject(this);
+
 
 		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
 

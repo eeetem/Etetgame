@@ -37,16 +37,16 @@
   <object SCover = "3" Edge = "true" Health="15">
     <sprite  name="Environment/basicWall"  offset= "0,0"/>
     <name>basicWall</name>
-    <destroyEffect range = "1" >
+    <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
-    </destroyEffect>
+    </destroyConsequences>
   </object>
   <object SCover = "3" Edge = "true" Health="1000">
     <sprite  name="Environment/borderWall"  offset= "0,0"/>
     <name>borderWall</name>
-    <destroyEffect range = "1" >
+    <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
-    </destroyEffect>
+    </destroyConsequences>
   </object>
   <object SCover = "0" Edge = "true" Health="5">
     <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
@@ -67,16 +67,16 @@
   <object SCover = "2" Edge = "true">
     <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
     <name>basicHalfWall</name>
-    <destroyEffect range = "1" >
+    <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
-    </destroyEffect>
+    </destroyConsequences>
   </object>
   <object SCover = "1" Edge = "true">
     <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
     <name>basicHalfWallLight</name>
-    <destroyEffect range = "1" >
+    <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
-    </destroyEffect>
+    </destroyConsequences>
   </object>
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
@@ -87,11 +87,11 @@
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
       
       <effect>
-        <consiqences>
+        <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.5" speed="100"/>
           <sfx name="rifle3"/>
-        </consiqences>
+        </consequences>
       </effect>
     </defaultAction>
     
@@ -103,11 +103,11 @@
       <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
       
       <effect>
-        <consiqences>
+        <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.5" speed="100"/>
           <sfx name="rifle"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
   </unit>
@@ -119,12 +119,12 @@
       <targetAid>enemy</targetAid>
       <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
       <effect>
-        <consiqences>
+        <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
           <sfx name="shotgun"/>
           <fowSpot range="4"/>
-        </consiqences>
+        </consequences>
       </effect>
     </defaultAction>
 
@@ -132,9 +132,9 @@
       <name>Breach n Clear</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
       <effect>
-        <consiqences>
+        <consequences>
           <applystatus status="BreachnClear" duration="1"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
 
@@ -168,28 +168,32 @@
       <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
       
       <effect visible ="true">
-        <consiqences>
+        <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.1" speed="100"/>
           <sfx name="mg"/>
           <fowSpot range="4"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
 
     <toggleaction>
-      <toggleoff  detCost ="1" mpoint="0" apoint="0">
+      <toggleoff  detCost ="1" moveCost="0" actCost="0">
         <name>Holster</name>
         <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
-        <effect visible ="false">
-          <applystatus status="Holstered"/>
+        <effect>
+          <consequences>
+            <applystatus status="Holstered"/>
+          </consequences>
         </effect>
       </toggleoff>
-      <toggleon name="" tip="" detCost ="1" mpoint="2" apoint="0">
+      <toggleon name="" tip="" detCost ="1" moveCost="2" actCost="0">
         <name>UnHolster</name>
         <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
-        <effect visible ="false">
-          <removestatus status="Holstered"/>
+        <effect>
+          <consequences>
+            <removestatus status="Holstered"/>
+          </consequences>
         </effect>
       </toggleon>
     </toggleaction>
@@ -214,18 +218,24 @@
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
       
       <effect>
-        <consiqences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+        <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
           <damage det="-100"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
 
     <action detCost ="1" moveCost="1" actCost="0">
       <name>Command</name>
       <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
-      <vissionCast range="22"/>
+      
+
       <effect range="1" visible ="false" target="friend">
-        <applystatus status="Boost" duration="1"/>
+        <delivery>
+          <vissionCast range="22"/>
+        </delivery>
+        <consequences>
+          <applystatus status="Boost" duration="1"/>
+        </consequences>
       </effect>
     </action>
 
@@ -241,11 +251,11 @@
       
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
       <effect>
-        <consiqences>
+        <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
           <sfx name="rifle"/>
-        </consiqences>
+        </consequences>
       </effect>
     </defaultAction>
 
@@ -258,9 +268,9 @@
         <delivery>
           <throwable throwRange="3"/>
         </delivery>
-        <consiqences>
+        <consequences>
           <giveItem item="{target.LastItem.Name}"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
     
@@ -273,9 +283,9 @@
         <delivery>
           <throwable throwRange="3"/>
         </delivery>
-        <consiqences>
+        <consequences>
           <giveItem item="{target.SelectedItem.Name}"/>
-        </consiqences>
+        </consequences>
       </effect>
     </action>
     
@@ -283,11 +293,10 @@
 
   <statuseffect>
     <name>Holstered</name>
-
     <effect>
-      <consiqences>
+      <consequences>
       <values act ="[set]0" move="2"/>
-    </consiqences>
+    </consequences>
   </effect>
   </statuseffect>
   
@@ -295,9 +304,9 @@
     <name>BreachnClear</name>
     
     <effect>
-      <consiqences>
+      <consequences>
        <values act ="1[set]" move="5[set]" moveRange="-3"/>
-      </consiqences>
+      </consequences>
     </effect>
   </statuseffect>
   
@@ -305,9 +314,9 @@
     <name>Boost</name>
     
     <effect>
-      <consiqences>
+      <consequences>
         <values act ="1[cap]" move="1[cap]" moveRange="0"/>
-      </consiqences>
+      </consequences>
     </effect>
   </statuseffect>
   
@@ -316,17 +325,15 @@
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
     
-    <destroyEffect visible="true" range = "2">
-      <consiqences range="1">
+    <destroyConsequences range="2">
         <damage det="1" dmg="15"/>
         <vfx name="tintR" target="5" speed="50"/>
         <vfx name="clmagnitude" target="100" speed="50"/>
         <vfx name="noise" target="3" speed="60"/>
         <sfx name="grenade"/>
         <place name="Crater"/>
-      <fowSpot range="4"/>
-      </consiqences>
-    </destroyEffect>
+        <fowSpot range="4"/>
+    </destroyConsequences>
   </object>
 
 
@@ -345,12 +352,15 @@
     <name>Satchel Charge</name>
     <tip>Blows up after 1 turn dealing huge damage. Best for destroying enviroment</tip>
 
-    <delivery>
-      <throwable throwRange="4"/>
-    </delivery>
-    <consiqences range="1">
-      <place name="Satchel"/>
-    </consiqences>
+    <effect>
+      <delivery>
+        <throwable throwRange="4"/>
+      </delivery>
+      <consequences range="1">
+        <place name="Satchel"/>
+      </consequences>
+    </effect>
+
   </item>
 
   <item>
@@ -362,7 +372,7 @@
       <delivery>
         <throwable throwRange="6"/>
       </delivery>
-      <consiqences range="3">
+      <consequences range="3">
         <damage det="1" dmg="5"/>
         <vfx name="tintR" target="5" speed="50"/>
         <vfx name="tintG" target="5" speed="50"/>
@@ -371,7 +381,7 @@
         <sfx name="grenade"/>
         <place name="Crater"/>
         <fowSpot range="4"/>
-      </consiqences>
+      </consequences>
     </effect>
   </item>
 
@@ -384,7 +394,7 @@
       <delivery>
         <throwable throwRange="6"/>
       </delivery>
-      <consiqences range="3">
+      <consequences range="3">
         <damage det="100" dmg="0"/>
         <vfx name="tintR" target="20" speed="50"/>
         <vfx name="tintG" target="20" speed="50"/>
@@ -393,7 +403,7 @@
         <vfx name="noise" target="1" speed="50"/>
         <sfx name="bang"/>
         <fowSpot range="4"/>
-      </consiqences>
+      </consequences>
     </effect>
   </item>
 
@@ -404,12 +414,12 @@
     <delivery>
       <throwable throwRange="7"/>
     </delivery>
-    <consiqences range="3">
+    <consequences range="3">
       <place name="Smoke"/>
       <vfx name="clmagnitude" target="100" speed="40"/>
       <vfx name="noise" target="0.5" speed="50"/>
       <sfx name="smoke"/>
-    </consiqences>
+    </consequences>
   </item>
 
 </root>

@@ -32,7 +32,7 @@ public static class PrefabManager
 			var effectelement = xmlObj.GetElementsByTagName("effect")[0];
 			if (effectelement != null)
 			{
-				var itm = ParseConsiquences(effectelement);
+				var itm = ParseConsequences(effectelement);
 				var st = new StatusEffectType(name,itm);
 				StatusEffects.Add(name, st);
 			}
@@ -108,8 +108,8 @@ public static class PrefabManager
 			type.Impassible = impassible;
 			type.MaxHealth = maxHealth;
 			
-			if(xmlObj!.GetElementsByTagName("destroyEffect").Count > 0){
-				type.DesturctionEffect = ParseConsiquences(xmlObj.GetElementsByTagName("destroyEffect")[0]!);	
+			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
+				type.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
 			} 
 			
 
@@ -166,8 +166,29 @@ public static class PrefabManager
 			if(xmlObj == null) continue;
 			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? throw new Exception("null name for a prefab");
 
+			
 
-			UnitType unitType  = new UnitType(name);
+			List<IUnitAbility> actionsList = new List<IUnitAbility>();
+			
+			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
+			foreach (var act in actions)
+			{ 
+				actionsList.Add(ParseUnitAbility((XmlElement)act));
+			}
+			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
+			foreach (var act in toggleActions)
+			{
+				//	ExtraToggleAction toggle = new ExtraToggleAction();
+				XmlElement actobj = (XmlElement) act;
+				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
+				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
+				ToggleAbility toggle = new ToggleAbility(on,off,actionsList.Count);
+				actionsList.Add(toggle);
+			}
+
+			XmlElement defaultact = (XmlElement)xmlObj.GetElementsByTagName("defaultAction")[0]! ?? throw new InvalidOperationException();
+			UnitType unitType = new UnitType(name, ParseUnitAbility(defaultact), actionsList);
+			
 			unitType.Faceable = true;
 			unitType.SolidCover = Cover.Full;
 			unitType.VisibilityCover = Cover.None;
@@ -182,30 +203,14 @@ public static class PrefabManager
 			unitType.SightRange = int.Parse(xmlObj.Attributes?["sightrange"]?.InnerText ?? "16");
 				
 				
-			XmlElement defaultact = (XmlElement)xmlObj.GetElementsByTagName("defaultAction")[0]! ?? throw new InvalidOperationException();
-			unitType.DefaultAttack = ParseUnitAbility(defaultact);
+	
 
 			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
 			if (speff != null)
 			{
-				unitType.SpawnEffect = ParseConsiquences((XmlElement) speff);
+				unitType.SpawnEffect = ParseConsequences((XmlElement) speff);
 			}
 
-			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
-			foreach (var act in actions)
-			{ 
-				unitType.Actions.Add(ParseUnitAbility((XmlElement)act));
-			}
-			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
-			foreach (var act in toggleActions)
-			{
-				//	ExtraToggleAction toggle = new ExtraToggleAction();
-				XmlElement actobj = (XmlElement) act;
-				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
-				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
-				ExtraToggleAction toggle = new ExtraToggleAction(on,off);
-				unitType.Actions.Add(toggle);
-			}
 
 
 #if CLIENT
@@ -238,14 +243,12 @@ public static class PrefabManager
 	{
 		string actname;
 		string tooltip;
-		int DetCost = int.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
-		int MoveCost =     int.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
-		int ActCost =   int.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
+		ushort DetCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
+		ushort MoveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
+		ushort ActCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
 		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
-		if(DetCost<0||MoveCost<0||ActCost<0){
-			throw new Exception("negative cost for action");
-		}
+
 		List<IWorldEffect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
@@ -268,7 +271,7 @@ public static class PrefabManager
 	private static WorldEffect ParseWorldEffect(XmlElement xmlObj)
 	{
 		DeliveryMethod dvm = null;
-		WorldConsiqences? eff = new WorldConsiqences();
+		WorldConseqences? eff = new WorldConseqences();
 /*
 		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
 		WorldEffect.TargetAid tAid = WorldEffect.TargetAid.None;
@@ -318,10 +321,10 @@ public static class PrefabManager
 		
 
 		//make function
-		var effectelement = xmlObj.GetElementsByTagName("consiquences")[0];
+		var effectelement = xmlObj.GetElementsByTagName("consequences")[0];
 		if (effectelement != null)
 		{
-			eff = ParseConsiquences(effectelement);
+			eff = ParseConsequences(effectelement);
 		}
 		
 			
@@ -344,9 +347,9 @@ public static class PrefabManager
 		return effects;
 	}
 
-	private static WorldConsiqences ParseConsiquences(XmlNode effect)
+	private static WorldConseqences ParseConsequences(XmlNode effect)
 	{
-		WorldConsiqences eff = new WorldConsiqences();
+		WorldConseqences eff = new WorldConseqences();
 				
 		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "1");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");

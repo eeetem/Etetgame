@@ -50,12 +50,12 @@ public class UsableItem
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public List<SequenceAction> GetConsiquences(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
 	{
 		var cons = new List<SequenceAction>();
 		foreach (var effect in _effects)
 		{
-			cons.AddRange(effect.GetConsiquences(actor,target));
+			cons.AddRange(effect.GetConsequences(actor,target));
 		}
 		return cons;
 	}
