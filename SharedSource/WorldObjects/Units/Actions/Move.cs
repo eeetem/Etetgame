@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -115,13 +116,14 @@ public class Move : Action
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-					UseAbility.AbilityIndex = -1;
+				/*	UseAbility.AbilityIndex = ;
 					var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
 					foreach (var a in res)
 					{
 						queue.Enqueue(a);
-					}
-					
+					}*/
+					var act = new DelayedAbilityUse(attacker.WorldObject.ID,-1,ShootingSpots[j].Item2);
+					queue.Enqueue(act);
 				}
 			}
 			

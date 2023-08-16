@@ -84,15 +84,15 @@ public class ToggleAbility : IUnitAbility
 		return on.MakePacketArgs();
 	}
 
-	public List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
 	{
 		List<SequenceAction> r = new List<SequenceAction>();
 		if (isOn)
 		{
-			r =	off.ExecutionResult(actor,target);
+			r =	off.GetConsequences(actor,target);
 		}else
 		{
-			r = on.ExecutionResult(actor,target);
+			r = on.GetConsequences(actor,target);
 		}
 			
 		//todo make this a world change

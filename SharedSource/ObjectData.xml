@@ -115,7 +115,7 @@
   <unit Health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
-    <defaultAction moveCost="1" actCost="2">
+    <defaultAction moveCost="1" actCost="1">
       <targetAid>enemy</targetAid>
       <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
       <effect>

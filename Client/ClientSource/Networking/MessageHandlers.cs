@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using DefconNull.Rendering;
+using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -142,6 +143,9 @@ public static partial class NetworkingManager
 						break;
 					case SequenceAction.SequenceType.AbilityToggle:
 						sqc = new UnitAbilitToggle(id, message);
+						break;
+					case SequenceAction.SequenceType.DelayedAbilityUse:
+						sqc = new DelayedAbilityUse(id, message);
 						break;
 					default:
 						throw new Exception("Unknown Unit Sequence Type Recived: "+type);

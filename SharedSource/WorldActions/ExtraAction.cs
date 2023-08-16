@@ -120,7 +120,7 @@ public class UnitAbility : IUnitAbility
 		return new List<string>();
 	}
 
-	public List<SequenceAction> ExecutionResult(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
 	{
 		if (immideaateActivation)
 		{
@@ -177,10 +177,12 @@ public class UnitAbility : IUnitAbility
 	{
 		foreach (var effect in Effects)
 		{
-			if (effect.CanPerform(actor, target).Item1)
-				return true;
+			if (!effect.CanPerform(actor, target).Item1)
+				return false;
 		}
 
-		return false;
+		return true;
 	}
+
+
 }

@@ -16,5 +16,6 @@ public interface IWorldEffect
 #if CLIENT
 		void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
 #endif
-	
+
+
 }

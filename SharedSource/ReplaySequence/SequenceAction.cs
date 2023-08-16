@@ -29,6 +29,7 @@ public abstract class SequenceAction : IMessageSerializable
 		Overwatch = 9,
 		UnitStatusEffect =10,
 		AbilityToggle = 11,
+		DelayedAbilityUse =12
 	}
 	public readonly SequenceType SqcType;
 	public bool IsUnitAction => (int) SqcType < 100;

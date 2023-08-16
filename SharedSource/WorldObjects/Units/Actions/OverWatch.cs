@@ -6,6 +6,7 @@ using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
+using DefconNull.World.WorldActions;
 using FontStashSharp;
 #endif
 namespace DefconNull.World.WorldObjects.Units.Actions;
@@ -67,8 +68,16 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
-		//	if(actor.GetAction())
-			//spriteBatch.DrawText(""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
+
+			if (actor.DefaultAttack.Effects[0].GetType() == typeof(Shootable))
+			{
+				var shoot = (Shootable) actor.DefaultAttack.Effects[0];
+				var projectile = shoot.GenerateProjectile(actor,shot.Item1,shot.Item2);
+				spriteBatch.DrawText(""+projectile.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
+			}
+
+		
+
 		}
 
 	}

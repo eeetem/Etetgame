@@ -73,6 +73,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\CrouchUnit.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\CrouchUnit.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\DelayedAbilityUse.cs">
+        <Link>SharedSource\ReplaySequence\ActorSequenceAction\DelayedAbilityUse.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\FaceUnit.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\FaceUnit.cs</Link>
       </Compile>

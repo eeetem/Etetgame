@@ -82,7 +82,7 @@ public class Shootable : IWorldEffect
 		public WorldManager.RayCastOutcome Result { get; set; }
 		public WorldManager.RayCastOutcome? CoverCast { get; set; } = null; //tallest cover on the way
 		public int Dmg = 0;
-		public Vector2[] DropOffPoints = null!;
+		public Vector2[] DropOffPoints = new Vector2[0];
 		public readonly List<int> SupressionIgnores = new List<int>();
 		public bool shooterLow;
 		public bool targetLow;
@@ -94,7 +94,7 @@ public class Shootable : IWorldEffect
 		}
 	}
 
-	private Projectile GenerateProjectile(Unit actor,Vector2Int target, bool targetLow)
+	public Projectile GenerateProjectile(Unit actor,Vector2Int target, bool targetLow)
 	{
 		
 		bool shooterLow = actor.Crouching;

@@ -10,9 +10,9 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class TakeDamage : SequenceAction
 {
 	public override bool CanBatch => true;
-	private int dmg;
-	private int detResistance;
-	private int objID;
+	public int dmg;
+	public int detResistance;
+	public int objID;
 	
 	public TakeDamage(int dmg, int detResistance, int objID) : base(SequenceType.TakeDamage)
 	{

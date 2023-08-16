@@ -44,7 +44,7 @@ public class UseAbility : Action
 	{
 
 		IUnitAbility action = actor.GetAction(AbilityIndex);
-		var res = action.ExecutionResult(actor, target);
+		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
 		foreach (var sequenceAction in res)
 		{

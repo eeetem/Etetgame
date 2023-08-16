@@ -34,11 +34,11 @@ public class UnitMove : UnitSequenceAction
 	public override Task GenerateTask()
 	{
 #if CLIENT
-	//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
+		//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
 #endif
 		var t = new Task(delegate
 		{
-		//	int tick = 0;
+			//	int tick = 0;
 			
 			while (Path.Count >0)
 			{
@@ -47,21 +47,16 @@ public class UnitMove : UnitSequenceAction
 
 				var frametask1 = new Task(delegate
 				{
-					try
-					{
-						if(Path[0] != Actor.WorldObject.TileLocation.Position)
-							Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
-					}
-					catch (Exception e)
-					{
-						Console.WriteLine("Exception when facing, the values are: " + Path[0] + " and " + Actor.WorldObject.TileLocation.Position + " exception: " + e);
-					}
+
+					if(Path[0] != Actor.WorldObject.TileLocation.Position)
+						Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
+
 				});
 				WorldManager.Instance.RunNextAfterFrames(frametask1);
 				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
 				var frametask2 = new Task(delegate
 				{
-				//	Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
+					//	Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
 					Actor.WorldObject.Move(Path[0]);
 					Path.RemoveAt(0);
 
@@ -74,7 +69,7 @@ public class UnitMove : UnitSequenceAction
 #endif
 					
 				});
-			//	Console.WriteLine("queued movement task to: "+Path[0]+" path size left: "+Path.Count);
+				//	Console.WriteLine("queued movement task to: "+Path[0]+" path size left: "+Path.Count);
 				WorldManager.Instance.RunNextAfterFrames(frametask2);
 
 				while (frametask2.Status != TaskStatus.RanToCompletion)
@@ -86,7 +81,7 @@ public class UnitMove : UnitSequenceAction
 
 			Actor.canTurn = true;
 #if CLIENT
-		GameLayout.ReMakeMovePreview();	
+			GameLayout.ReMakeMovePreview();	
 #endif
 		});
 
