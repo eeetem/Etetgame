@@ -123,7 +123,6 @@
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
           <sfx name="shotgun"/>
-          <fowSpot range="4"/>
         </consequences>
       </effect>
     </defaultAction>
@@ -172,7 +171,6 @@
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.1" speed="100"/>
           <sfx name="mg"/>
-          <fowSpot range="4"/>
         </consequences>
       </effect>
     </action>
@@ -332,7 +330,7 @@
         <vfx name="noise" target="3" speed="60"/>
         <sfx name="grenade"/>
         <place name="Crater"/>
-        <fowSpot range="4"/>
+        <fowSpot scatter="4"/>
     </destroyConsequences>
   </object>
 
@@ -380,7 +378,7 @@
         <vfx name="noise" target="2" speed="50"/>
         <sfx name="grenade"/>
         <place name="Crater"/>
-        <fowSpot range="4"/>
+        <fowSpot scatter="4"/>
       </consequences>
     </effect>
   </item>
@@ -402,7 +400,7 @@
         <vfx name="clmagnitude" target="50" speed="50"/>
         <vfx name="noise" target="1" speed="50"/>
         <sfx name="bang"/>
-        <fowSpot range="4"/>
+        <fowSpot scatter="4"/>
       </consequences>
     </effect>
   </item>

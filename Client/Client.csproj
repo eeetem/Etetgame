@@ -317,6 +317,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\MakeWorldObject.cs">
         <Link>SharedSource\ReplaySequence\MakeWorldObject.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\MoveCamera.cs">
+        <Link>SharedSource\ReplaySequence\MoveCamera.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\PlaySound.cs">
         <Link>SharedSource\ReplaySequence\PlaySound.cs</Link>
       </Compile>

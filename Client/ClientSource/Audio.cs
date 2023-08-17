@@ -39,7 +39,7 @@ public static class Audio
 		switch (g)
 		{
 			case GameState.Lobby:
-				nextSong =  "Trespassing";
+				nextSong =  "tresspassing";
 				break;
 			default:
 				nextSong = "";

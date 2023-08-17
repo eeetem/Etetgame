@@ -1,5 +1,6 @@
 ﻿using System;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
@@ -46,6 +47,18 @@ public class UseAbility : Action
 		IUnitAbility action = actor.GetAction(AbilityIndex);
 		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
+		if (AbilityIndex == -1)//hardcode shooter spotting for n
+		{
+			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, true, 3);
+			queue.Enqueue(m);
+		}
+		else
+		{
+			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 0);
+			queue.Enqueue(m);
+		}
+
+		
 		foreach (var sequenceAction in res)
 		{
 			queue.Enqueue(sequenceAction);

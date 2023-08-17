@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefconNull.ReplaySequence;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -249,6 +250,8 @@ public class Shootable : IWorldEffect
 		 */
 		var p = GenerateProjectile(actor, target, targetLow);
 		var retrunList = new List<SequenceAction>();
+		var m = new MoveCamera(p.Result.CollisionPointLong, true, 3);
+		retrunList.Add(m);
 		var turnact = new FaceUnit(actor.WorldObject.ID, target);
 		retrunList.Add(turnact);
 		if (p.Result.hit)
@@ -365,8 +368,8 @@ public class Shootable : IWorldEffect
 	
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
 	int perivewActorID = -1;
-	List<SequenceAction> previewCache = new List<SequenceAction>(); 
-	Projectile previewShot = new Projectile();
+	List<SequenceAction> previewCache = new List<SequenceAction>();
+	private Projectile? previewShot;
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
@@ -377,10 +380,13 @@ public class Shootable : IWorldEffect
 			previewTarget = target;
 			previewShot = GenerateProjectile(actor, target, true);
 		}
-	
+		if(previewShot==null)
+		{
+			return;
+		}
 		
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
-		var area = SupressedTiles(previewShot);
+		var area = SupressedTiles(previewShot.Value);
 		spriteBatch.DrawOutline(area, Color.Blue, 5);
 		string targetHeight = "fix this shit";
 /*
@@ -423,18 +429,18 @@ public class Shootable : IWorldEffect
 		}
 
 
-		var startPoint = Utility.GridToWorldPos(previewShot.Result.StartPoint);
-		var endPoint = Utility.GridToWorldPos(previewShot.Result.EndPoint);
+		var startPoint = Utility.GridToWorldPos(previewShot.Value.Result.StartPoint);
+		var endPoint = Utility.GridToWorldPos(previewShot.Value.Result.EndPoint);
 
 		Vector2 point1 = startPoint;
 		Vector2 point2;
 		int k = 0;
 		var dmg = preDropOffDmg;
-		foreach (var dropOff in previewShot.DropOffPoints)
+		foreach (var dropOff in previewShot.Value.DropOffPoints)
 		{
-			if (dropOff == previewShot.DropOffPoints.Last())
+			if (dropOff == previewShot.Value.DropOffPoints.Last())
 			{
-				point2 = Utility.GridToWorldPos(previewShot.Result.CollisionPointLong);
+				point2 = Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong);
 
 			}
 			else
@@ -472,19 +478,19 @@ public class Shootable : IWorldEffect
 
 		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 5);
 		WorldObject? hitobj = null;
-		if (previewShot.Result.HitObjId != -1)
+		if (previewShot.Value.Result.HitObjId != -1)
 		{
-			hitobj = WorldManager.Instance.GetObject(previewShot.Result.HitObjId);
+			hitobj = WorldManager.Instance.GetObject(previewShot.Value.Result.HitObjId);
 		}
 
 		WorldObject? coverObj = null;
-		if (previewShot.CoverCast.HasValue && previewShot.CoverCast.Value.hit)
+		if (previewShot.Value.CoverCast.HasValue && previewShot.Value.CoverCast.Value.hit)
 		{
-			coverObj = WorldManager.Instance.GetObject(previewShot.CoverCast.Value.HitObjId);
+			coverObj = WorldManager.Instance.GetObject(previewShot.Value.CoverCast.Value.HitObjId);
 		}
 		if(coverObj!= null){
 			//crash here?
-			var coverCast = previewShot.CoverCast!.Value;
+			var coverCast = previewShot.Value.CoverCast!.Value;
 			
 
 			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
@@ -502,7 +508,7 @@ public class Shootable : IWorldEffect
 
 		if (hitobj != null)
 		{
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Result.CollisionPointLong), 5, 10, Color.Red, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 25f);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 
 //			var data = hitobj.PreviewData;

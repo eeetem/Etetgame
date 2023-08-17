@@ -133,11 +133,11 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg-old1.wav
 
-#begin CompressedContent/audio/music/Trespassing.wav
-/importer:WavImporter
+#begin CompressedContent/audio/music/tresspassing.ogg
+/importer:OggImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Trespassing.wav
+/build:CompressedContent/audio/music/tresspassing.ogg;CompressedContent/audio/music/Tresspassing.ogg
 
 #begin CompressedContent/audio/rifle.wav
 /importer:WavImporter

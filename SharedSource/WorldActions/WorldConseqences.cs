@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using DefconNull.ReplaySequence;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -40,7 +41,9 @@ public class WorldConseqences : IMessageSerializable
 	public bool TargetSelf =false;
 	public List<string> Ignores = new List<string>();
 	public VariableValue? GiveItem;
-	
+	public bool FogOfWarSpot { get; set; }
+	public int FogOfWarSpotScatter { get; set; }
+
 	public void Serialize(Message message)
 	{
 		message.AddInt(Dmg);
@@ -152,6 +155,15 @@ public class WorldConseqences : IMessageSerializable
 		_ignoreList = new List<WorldObject>();
 		
 		var list = new List<SequenceAction>();
+		if (FogOfWarSpot)
+		{
+			list.Add(new MoveCamera(target,true,FogOfWarSpotScatter));
+		}
+		else
+		{
+		//	list.Add(new MoveCamera(target,false,0));
+		}
+
 		foreach (var tile in GetAffectedTiles(target,user))
 		{
 			foreach (var sqc in ConsequencesOnTile(tile,user))

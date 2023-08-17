@@ -1,4 +1,5 @@
 ﻿using System;
+using DefconNull.ReplaySequence;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
@@ -37,11 +38,14 @@ public class UseItem : Action
 	{
 		var queue = new Queue<SequenceAction>();
 		
-		
+        
+		var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 0);
+		queue.Enqueue(m);
+
 		var item = actor.SelectedItem;
 		var cons = item.GetConsequences(actor, target);
 		
-		
+
 		
 		queue.Enqueue(new UnitSelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
 		queue.Enqueue(new UseUpSelectedItem(actor.WorldObject.ID,target));

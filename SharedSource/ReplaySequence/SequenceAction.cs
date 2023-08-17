@@ -16,6 +16,7 @@ public abstract class SequenceAction : IMessageSerializable
 		TakeDamage = 102,
 		UpdateTile =103,
 		MakeWorldObject =104,
+		MoveCamera=105,
 		
 		ChangeUnitValues =0,
 		GiveItem =1,
@@ -29,7 +30,8 @@ public abstract class SequenceAction : IMessageSerializable
 		Overwatch = 9,
 		UnitStatusEffect =10,
 		AbilityToggle = 11,
-		DelayedAbilityUse =12
+		DelayedAbilityUse =12,
+		
 	}
 	public readonly SequenceType SqcType;
 	public bool IsUnitAction => (int) SqcType < 100;

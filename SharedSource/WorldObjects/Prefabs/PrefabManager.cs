@@ -386,6 +386,13 @@ public static class PrefabManager
 			eff.Dmg =  int.Parse(dmgitm.Attributes?["dmg"]?.InnerText ?? "0");
 			eff.Det = int.Parse(dmgitm.Attributes?["det"]?.InnerText ?? "0");
 		}
+		XmlNode? fowSpot = ((XmlElement) effect).GetElementsByTagName("fowSpot")[0];
+		if (fowSpot != null)
+		{
+			eff.FogOfWarSpot = true;
+			eff.FogOfWarSpotScatter = int.Parse(fowSpot.Attributes?["scatter"]?.InnerText ?? "0");
+		}
+        
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
 		if (valitm != null)
 		{

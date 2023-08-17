@@ -50,7 +50,8 @@ public static class Camera
 	}
 
 	static Vector2 MoveTarget;
-	static bool forceMoving = false;
+	public static bool ForceMoving { get; private set; }
+
 	public static void SetPos(Vector2Int vec)
 	{
 
@@ -59,7 +60,7 @@ public static class Camera
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
 		MoveTarget = vec-(Vector2Int)Cam.Origin;
 		
-		forceMoving = true;
+		ForceMoving = true;
 	}
 
 
@@ -74,7 +75,7 @@ public static class Camera
 			lastMousePos = new Vector2(mouseState.Position.X,mouseState.Position.Y);
 			if (lastpos != new Vector2(0, 0))
 			{
-				forceMoving = false;
+				ForceMoving = false;
 				return Vector2.Clamp((lastpos - new Vector2(mouseState.Position.X, mouseState.Position.Y)) / 15f, new Vector2(-9, -9), new Vector2(9, 9));
 			}
 		}
@@ -103,23 +104,21 @@ public static class Camera
 
 		if (movementDirection.Length() != 0)
 		{
-			forceMoving = false;
+			ForceMoving = false;
 			return movementDirection;
 		}//overrideforcemove
 
-		if (forceMoving)
+		if (ForceMoving)
 		{
 			Vector2 difference = MoveTarget - Cam.Position;
-			if (difference.Length() < 20)
+			if (difference.Length() < 25)
 			{
-				forceMoving = false;
+				ForceMoving = false;
 			}
 
-				
-			//todo make the transition smooth rather than an if statement
-				
+	
 
-			difference = difference / 500f;
+			difference = difference / 400f;
 				
 				
 			var vec =  Vector2.Clamp(difference,new Vector2(-3,-3),new Vector2(3,3));

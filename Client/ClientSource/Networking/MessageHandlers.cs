@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using DefconNull.Rendering;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
@@ -102,6 +103,9 @@ public static partial class NetworkingManager
 						break;
 					case SequenceAction.SequenceType.MakeWorldObject:
 						sqc = new MakeWorldObject(message);
+						break;
+					case SequenceAction.SequenceType.MoveCamera:
+						sqc = new MoveCamera(message);
 						break;
 					default:
 						throw new Exception("Unknown Sequence Type Recived: " + type);
