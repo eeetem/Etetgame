@@ -127,12 +127,6 @@ public static partial class NetworkingManager
 					case SequenceAction.SequenceType.Crouch:
 						sqc = new CrouchUnit(req, message);
 						break;
-					case SequenceAction.SequenceType.SelectItem:
-						sqc = new UnitSelectItem(req, message);
-						break;
-					case SequenceAction.SequenceType.UseItem:
-						sqc = new UseUpSelectedItem(req, message);
-						break;
 					case SequenceAction.SequenceType.Overwatch:
 						sqc = new UnitOverWatch(req, message);
 						break;

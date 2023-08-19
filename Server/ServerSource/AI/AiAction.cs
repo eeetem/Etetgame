@@ -22,7 +22,6 @@ public abstract class AIAction
 		FinaliseMovement=1,
 		Move=2,
 		OverWatch = 5,
-		UseItem = 6,
 		UseAbility = 7,
 
 	}

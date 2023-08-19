@@ -26,7 +26,6 @@ public class UnitType : WorldObjectType
 
 	public int Maxdetermination = 2;
 
-	public int InventorySize = 1;
 
 
 	public Texture2D[] CrouchSpriteSheet = null!;

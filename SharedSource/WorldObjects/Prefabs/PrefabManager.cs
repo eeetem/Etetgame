@@ -16,7 +16,6 @@ public static class PrefabManager
 {
 	public static Dictionary<string, WorldObjectType> WorldObjectPrefabs = new Dictionary<string, WorldObjectType>();
 	public static Dictionary<string, UnitType> UnitPrefabs = new Dictionary<string, UnitType>();
-	public static Dictionary<string, UsableItem> UseItems = new Dictionary<string, UsableItem>();
 	public static Dictionary<string, StatusEffectType> StatusEffects = new Dictionary<string, StatusEffectType>();
 
 
@@ -196,7 +195,7 @@ public static class PrefabManager
 			unitType.MaxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText ?? "10");
 			unitType.MoveRange = int.Parse(xmlObj.Attributes?["moveRange"]?.InnerText ?? "4");
 			unitType.Maxdetermination = int.Parse(xmlObj.Attributes?["determination"]?.InnerText ?? "2");
-			unitType.InventorySize = int.Parse(xmlObj.Attributes?["inventory"]?.InnerText ?? "1");
+			
 			unitType.MaxMovePoints = int.Parse(xmlObj.Attributes?["moves"]?.InnerText ?? "2");
 			unitType.MaxActionPoints = int.Parse(xmlObj.Attributes?["actions"]?.InnerText ?? "1");
 			unitType.OverWatchSize = int.Parse(xmlObj.Attributes?["overwatch"]?.InnerText ?? "2");
@@ -220,23 +219,7 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);
 		}
-
-		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("item"))
-		{
-			var effects = ParseWorldEffects(xmlObj);
-			string avail = xmlObj.GetElementsByTagName("availability")[0]?.InnerText ?? "";
-			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? "";
-			string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? "";
-			List<string> availableToUnits = new List<string>();
-			if (avail != "")
-			{
-				availableToUnits = avail.Split(',').ToList();
-			}
-		
-			
-			var itm = new UsableItem(name, tip, effects, availableToUnits.ToList());
-			UseItems.Add(itm.Name,itm);
-		}
+        
 	}
 
 	private static UnitAbility ParseUnitAbility(XmlElement actobj)
@@ -409,15 +392,7 @@ public static class PrefabManager
 				eff.PlaceItemPrefab = innerText;
 			}
 		}
-		XmlNode? giveItem = ((XmlElement) effect).GetElementsByTagName("giveItem")[0];
-		if(giveItem !=null)
-		{
-			string? innerText = giveItem.Attributes?["item"]?.InnerText;
-			if (innerText != null)
-			{
-				eff.GiveItem = new VariableValue(innerText);
-			}
-		}
+
 
 		var statusapp = ((XmlElement) effect).GetElementsByTagName("applystatus");
 		foreach (var status in statusapp)

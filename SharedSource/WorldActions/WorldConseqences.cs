@@ -39,7 +39,7 @@ public class WorldConseqences : IMessageSerializable
 	public bool TargetFriend =false;
 	public bool TargetSelf =false;
 	public List<string> Ignores = new List<string>();
-	public VariableValue? GiveItem;
+
 	public bool FogOfWarSpot { get; set; }
 	public int FogOfWarSpotScatter { get; set; }
 
@@ -82,8 +82,6 @@ public class WorldConseqences : IMessageSerializable
 		message.AddStrings(Ignores.ToArray());
 
 
-		message.AddBool(GiveItem != null);
-		if(GiveItem != null) message.Add(GiveItem);
 	}
 
 	public void Deserialize(Message message)
@@ -120,10 +118,7 @@ public class WorldConseqences : IMessageSerializable
 		TargetSelf = message.GetBool();
 		Ignores = message.GetStrings().ToList();
 
-		if (message.GetBool())
-		{
-			GiveItem = message.GetSerializable<VariableValue>();
-		}
+		
 	}
 
 	public List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
@@ -277,13 +272,7 @@ public class WorldConseqences : IMessageSerializable
 			consequences.Add(new UnitStatusEffect(req,true,status.Item1,status.Item2));
 			//tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
 		}
-			
-		if(GiveItem!=null)
-		{
-			consequences.Add(new GiveItem(req,GiveItem, user != null ? user.ID : -1));
-			//	ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
-		}
-			
+
 		
 
 

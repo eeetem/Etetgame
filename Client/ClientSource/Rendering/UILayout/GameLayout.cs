@@ -281,7 +281,7 @@ public class GameLayout : MenuLayout
 	}
 
 	private static Grid? _unitBar;
-	private static bool invOpen;
+
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		Init();
@@ -425,52 +425,13 @@ public class GameLayout : MenuLayout
 		crouchbtn.MouseEntered += (o, a) => Tooltip("Crouching improves benefits of cover and allows hiding under tall cover",0,0,0);
 		crouchbtn.MouseLeft += (o, a) => HideTooltip();
 		panel.Widgets.Add(crouchbtn);
-		itemBtn = new ImageButton();
-		itemBtn.Click += (o, a) => Action.SetActiveAction(Action.ActionType.UseItem);
-		var itm = SelectedUnit.SelectedItem;
-		if (itm is not null)
-		{
-			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item:\n" + itm.Name + " - " + itm.Description, 0, -1, 0);
-			itemBtn.MouseLeft += (o, a) => HideTooltip();
-		}
-		else
-		{
-			itemBtn.MouseEntered += (o, a) => Tooltip("Activates selected item", 0, -1, 0);
-			itemBtn.MouseLeft += (o, a) => HideTooltip();
-		}
 
-		panel.Widgets.Add(itemBtn);
-		
-		
-		collpaseBtn = new ImageButton();
-		collpaseBtn.Click += (o, a) =>
-		{
-			invOpen = !invOpen; 
-			UpdateActionButtons();
-		};
-		panel.Widgets.Add(collpaseBtn);
-		
 		ActionButtons.Clear();
-		InvButtons.Clear();
+
+
+	
+
 		int i = 0;
-
-		for (int j = 0; j < SelectedUnit.Type.InventorySize; j++)
-		{
-			int index = j;
-			var btn = new ImageButton();
-			InvButtons.Add(btn);
-			btn.Click+= (o, a) =>
-			{
-				if (SelectedUnit.Inventory[index] != null)
-				{
-					SelectedUnit.DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(index, 0));
-					UpdateActionButtons();
-				}
-			};
-			panel.Widgets.Add(btn);
-		}
-
-		i = 0;
 		foreach (var action in SelectedUnit.Abilities)
 		{
 
@@ -547,10 +508,9 @@ public class GameLayout : MenuLayout
 
 	private static ImageButton overwatchBtn = null!;
 	private static ImageButton crouchbtn = null!;
-	private static ImageButton itemBtn = null!;
-	private static ImageButton collpaseBtn = null!;
+
 	private static readonly List<ImageButton> ActionButtons = new();
-	private static readonly List<ImageButton> InvButtons = new();
+
 
 	public static void UpdateActionButtons()
 	{
@@ -611,117 +571,10 @@ public class GameLayout : MenuLayout
 		crouchbtn.Top = top;
 		crouchbtn.Left = startOffest + btnWidth;
 
-		itemBtn.HorizontalAlignment = HorizontalAlignment.Left;
-		itemBtn.VerticalAlignment = VerticalAlignment.Bottom;
-		itemBtn.Width = (int) (24 * scale);
-		itemBtn.Height = (int) (29 * scale);
-		if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseItem)
-		{
-			itemBtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
-			itemBtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
-			if (SelectedUnit.SelectedItem != null)
-			{
-				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedUnit.SelectedItem?.Icon), new Color(255, 140, 140));
-			}
-		}
-		else if(SelectedUnit.SelectedItem != null && SelectedUnit.ActionPoints > 0)
-		{
-			itemBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));
-			itemBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));
-			itemBtn.Image = new TextureRegion(SelectedUnit.SelectedItem?.Icon);
-
-				
-			
-		}
-		else
-		{
-			itemBtn.Background =  new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")),Color.Gray);
-			itemBtn.OverBackground =  new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")),Color.Gray);
-			if (SelectedUnit.SelectedItem != null)
-			{
-				itemBtn.Image = new ColoredRegion(new TextureRegion(SelectedUnit.SelectedItem?.Icon),Color.Gray);
-			}else
-			{
-				itemBtn.Image = null;
-			}
-		}
-
-		itemBtn.ImageHeight = (int) (29 * scale);
-		itemBtn.ImageWidth = (int) (24 * scale);
-		itemBtn.Top = top;
-		itemBtn.Left = startOffest + btnWidth*0;
+	
 
 		int i = 0;
-		if (invOpen)
-		{
-			for (int j = 0; j < SelectedUnit.Type.InventorySize; j++)
-			{
-				UsableItem? inv = SelectedUnit.Inventory[j];
-				if (j == SelectedUnit.SelectedItemIndex)
-				{
-					var btn = InvButtons[j];
-					btn.Visible = false;
-					continue;
-				}
 
-				var invbtn = InvButtons[j];
-				invbtn.Visible = true;
-				invbtn.HorizontalAlignment = HorizontalAlignment.Left;
-				invbtn.VerticalAlignment = VerticalAlignment.Bottom;
-				invbtn.Width = (int) (24 * scale);
-				invbtn.Height = (int) (29 * scale);
-				invbtn.ImageHeight = (int) (29 * scale);
-				invbtn.ImageWidth = (int) (24 * scale);
-				invbtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/empty"));
-				if (inv != null)
-				{
-					invbtn.Image = new TextureRegion(inv.Icon);
-				}
-				else
-				{
-					invbtn.Image = null;
-				}
-
-				invbtn.Top = (int) (top - (i+1)*invbtn.Height);
-				invbtn.Left = itemBtn.Left;
-				i++;
-			}
-		}
-		else
-		{
-			foreach (var btn in InvButtons)
-			{
-				btn.Visible = false;
-			}
-		}
-
-		if (SelectedUnit.Inventory.Length < 2)
-		{
-			collpaseBtn.Visible = false;
-		}
-		else
-		{
-			collpaseBtn.Visible = true;
-		}
-
-		collpaseBtn.HorizontalAlignment = HorizontalAlignment.Left;
-		collpaseBtn.VerticalAlignment = VerticalAlignment.Bottom;
-		collpaseBtn.Width = (int) (24 * scale);
-		collpaseBtn.Height = (int) (7 * scale);
-		collpaseBtn.ImageWidth = (int) (23 * scale);
-		collpaseBtn.ImageHeight = (int) (7 * scale);
-		collpaseBtn.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/invbtn"));
-		collpaseBtn.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/invbtn"));
-		collpaseBtn.Top = (int) (top - itemBtn.Height);
-		collpaseBtn.Left = itemBtn.Left;
-		if (invOpen)
-		{
-			collpaseBtn.Top = (int)(top - (i+1)*itemBtn.Height);
-			
-		}
-
-
-		i = 0;
 		foreach (var action in SelectedUnit.Abilities)
 		{
 
@@ -1197,8 +1050,8 @@ public class GameLayout : MenuLayout
 
 		
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		batch.DrawText("Z",new Vector2(itemBtn.Left+12*globalScale.Y+3*globalScale.Y,crouchbtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
-		batch.DrawText("X",new Vector2(crouchbtn.Left+12*globalScale.Y+3*globalScale.Y,itemBtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+	//	batch.DrawText("Z",new Vector2(itemBtn.Left+12*globalScale.Y+3*globalScale.Y,crouchbtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
+		batch.DrawText("X",new Vector2(crouchbtn.Left+12*globalScale.Y+3*globalScale.Y,crouchbtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
 		batch.DrawText("C",new Vector2(overwatchBtn.Left+12*globalScale.Y+3*globalScale.Y,overwatchBtn.Top+Game1.resolution.Y-20*globalScale.Y),globalScale.Y*1.6f, 1,Color.White);
 		//	batch.Draw(leftCornerRenderTarget, new Vector2(0, Game1.resolution.Y - leftCornerRenderTarget.Height*globalScale.Y*2f), null, Color.White, 0, Vector2.Zero, globalScale.Y*2f ,SpriteEffects.None, 0);
 
@@ -1409,7 +1262,7 @@ public class GameLayout : MenuLayout
 
 		if (JustPressed(Keys.Z))
 		{
-			itemBtn.DoClick();
+	//		itemBtn.DoClick();
 		}else if (JustPressed(Keys.X))
 		{
 			crouchbtn.DoClick();

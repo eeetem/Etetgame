@@ -61,19 +61,17 @@ public abstract class Action
 		new Move();
 		new Crouch();
 		new OverWatch();
-		new UseItem();
 		new UseAbility();
-		new SelectItem();
 
 	}
 	public enum ActionType
 	{
-		SelectItem=1,
+
 		Move=2,
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
-		UseItem = 6,
+		
 		UseAbility = 7,
 
 	}

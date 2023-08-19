@@ -21,9 +21,7 @@ namespace DefconNull.World.WorldObjects
 		public WorldObject WorldObject { get; private set; }
 		public UnitType Type { get; private set; }
 
-
-
-		public readonly UsableItem?[] Inventory;
+        
 
 		public Unit(WorldObject parent, UnitType type, UnitData data)
 		{
@@ -70,23 +68,7 @@ namespace DefconNull.World.WorldObjects
 
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
-
-			Inventory = new UsableItem[type.InventorySize];
-			for (int i = 0; i < type.InventorySize; i++)
-			{
-				if (data.Inventory.Count > i && data.Inventory[i] != "")
-				{
-					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
-				}
-			}
-
-			overWatch = data.Overwatch;
-			SelectedItemIndex = data.SelectIndex;
-
-			if (data.LastItem != null)
-			{
-				LastItem = PrefabManager.UseItems[data.LastItem];
-			}
+            
 
 			foreach (var effect in data.StatusEffects)
 			{
@@ -114,46 +96,9 @@ namespace DefconNull.World.WorldObjects
 				StartTurn();
 			}
 		}
+        
 
 
-		public void SelectAnyItem()
-		{
-			if (SelectedItem != null) return;
-			for (int i = 0; i < Inventory.Length; i++)
-			{
-				if (Inventory[i] != null)
-				{
-					DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
-					return;
-				}
-			}
-
-			DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(-1, 0));
-		}
-
-		public void AddItem(UsableItem item)
-		{
-			for (int i = 0; i < Inventory.Length; i++)
-			{
-				if (Inventory[i] == null)
-				{
-					Inventory[i] = item;
-#if SERVER
-					if (SelectedItemIndex == -1)
-					{
-						DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
-					}
-#endif
-
-					return;
-				}
-			}
-		}
-
-		public void RemoveItem(int index)
-		{
-			Inventory[index] = null;
-		}
 
 		public List<IUnitAbility> Abilities = new List<IUnitAbility>();
 		public UnitAbility DefaultAttack;
@@ -348,13 +293,6 @@ namespace DefconNull.World.WorldObjects
 				effect.Apply(this);
 
 			}
-#if SERVER
-			Task t = new Task(delegate
-			{
-				SelectAnyItem();
-			});
-			WorldManager.Instance.RunNextAfterFrames(t);
-#endif
 
 
 		}
@@ -455,11 +393,10 @@ namespace DefconNull.World.WorldObjects
 			public bool Panic;
 			public bool JustSpawned;
 			public bool Overwatch;
-			public int SelectIndex;
-			public string? LastItem;
+
 			public int MoveRangeEffect;
 
-			public List<string> Inventory { get; set; }
+
 			public List<Tuple<string, int>> StatusEffects { get; set; }
 		
 			public UnitData(bool team1)
@@ -473,11 +410,11 @@ namespace DefconNull.World.WorldObjects
 				Panic = false;
 				JustSpawned = true;//it's always truea nd only set to false in getData
 				Overwatch = false;
-				Inventory = new List<string>();
+				
 				StatusEffects = new List<Tuple<string, int>>();
-				SelectIndex = 0;
+
 				MoveRangeEffect = 0;
-				LastItem = null;
+
 			}
 			public UnitData(Unit u)
 			{
@@ -489,26 +426,14 @@ namespace DefconNull.World.WorldObjects
 				Crouching =	u.Crouching;
 				JustSpawned = true;
 				Panic = u.Paniced;
-				Inventory = new List<string>();
-				foreach (var i in u.Inventory)
-				{
-					if (i != null)
-					{
-						Inventory.Add(i.Name);
-					}
-					else
-					{
-						Inventory.Add("");
-					}
-				}
+				
 				StatusEffects = new List<Tuple<string, int>>();
 				foreach (var st in u.StatusEffects)
 				{
 					StatusEffects.Add(new Tuple<string, int>(st.type.name,st.duration));
 				}
 				Overwatch = u.overWatch;
-				SelectIndex = u.SelectedItemIndex;
-				LastItem = u.LastItem?.Name;
+
 				MoveRangeEffect = u.MoveRangeEffect.Current;
 			}
 
@@ -524,15 +449,9 @@ namespace DefconNull.World.WorldObjects
 				message.Add(Panic);
 				message.Add(JustSpawned);
 				message.Add(Overwatch);
-				message.Add(SelectIndex);
-				message.AddNullableString(LastItem);
+
 				message.Add(MoveRangeEffect);
 
-				message.Add(Inventory.Count);
-				foreach (var i in Inventory)
-				{
-					message.Add(i);
-				}
 				message.Add(StatusEffects.Count);
 				foreach (var i in StatusEffects)
 				{
@@ -553,19 +472,12 @@ namespace DefconNull.World.WorldObjects
 				Panic = message.GetBool();
 				JustSpawned = message.GetBool();
 				Overwatch = message.GetBool();
-				SelectIndex = message.GetInt();
-				LastItem = message.GetNullableString();
+
 				MoveRangeEffect = message.GetInt();
 
 
-				Inventory = new List<string>();
-				var count = message.GetInt();
-				for (int i = 0; i < count; i++)
-				{
-					Inventory.Add(message.GetString());
-				}
 				StatusEffects = new List<Tuple<string, int>>();
-				count = message.GetInt();
+				int count = message.GetInt();
 				for (int i = 0; i < count; i++)
 				{
 					StatusEffects.Add(new Tuple<string, int>(message.GetString(),message.GetInt()));
@@ -628,30 +540,10 @@ namespace DefconNull.World.WorldObjects
 			if(Determination>Type.Maxdetermination) Determination.Current = Type.Maxdetermination;
 			if(Determination<0) Determination.Current = 0;
 		}
-		
-		public UsableItem? SelectedItem
-		{
-			get
-			{
-				if(SelectedItemIndex == -1) return null;
-				return Inventory[SelectedItemIndex];
-			}
-		}
-		private int _selectedItemIndex = 0;
-		public int SelectedItemIndex
-		{
-			get => _selectedItemIndex;
-			set
-			{
-				
-				_selectedItemIndex = value;
-			}
-		}
+
 
 		public int Health => WorldObject.Health;
 
-		public UsableItem? LastItem;
-		
 
 		public string GetVar(string var,string? param = null)
 		{

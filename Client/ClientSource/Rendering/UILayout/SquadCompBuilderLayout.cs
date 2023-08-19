@@ -121,7 +121,6 @@ public class SquadCompBuilderLayout : UiLayout
 	{
 		_currentlyPlacing = new SquadMember();
 		_currentlyPlacing.Prefab = unit;
-		_currentlyPlacing.Inventory = new List<string>();
 
 	}
 
@@ -165,27 +164,7 @@ public class SquadCompBuilderLayout : UiLayout
 			itemMenu.VerticalAlignment = VerticalAlignment.Center;
 			itemMenu.Background = new SolidBrush(Color.Black * 0.5f);
 			itemMenu.BorderThickness = new Thickness(1);
-			var stack = new VerticalStackPanel();
-			itemMenu.Widgets.Add(stack);
-			foreach (var itm in PrefabManager.UseItems)
-			{
-				if (itm.Value.allowedUnits.Count > 0)
-				{
-					if(!itm.Value.allowedUnits.Contains(placed.Prefab)) continue;
-				}
 
-				var btn = new TextButton();
-				btn.Text = itm.Key;
-				btn.Click += (s, a) =>
-				{
-					placed.Inventory.Add(itm.Key);
-					if(placed.Inventory.Count>=PrefabManager.UnitPrefabs[placed.Prefab].InventorySize){
-						UI.Desktop.Widgets.Remove(itemMenu);
-					}
-				};
-				stack.Widgets.Add(btn);
-
-			}
 
 			UI.Desktop.Widgets.Add(itemMenu);
 			
@@ -228,29 +207,13 @@ public class SquadCompBuilderLayout : UiLayout
 		{
 			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
-			if (member.Inventory.Count > 0)
-			{
-				string text = "";
-				foreach (var item in member.Inventory)
-				{
-					text+= item + "\n";
-				}
-				batch.DrawText(text, Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)),1,50, Color.Yellow);
-			}
+			
 		}
 		foreach (var member in OtherComposition)
 		{
 			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
-			if (member.Inventory.Count > 0)
-			{
-				string text = "";
-				foreach (var item in member.Inventory)
-				{
-					text+= item + "\n";
-				}
-				batch.DrawText(text, Utility.GridToWorldPos(member.Position + new Vector2(-0.5f, -0.5f)),1,50, Color.Yellow);
-			}
+			
 		}
 		foreach (var point in _mySpawnPoints)
 		{

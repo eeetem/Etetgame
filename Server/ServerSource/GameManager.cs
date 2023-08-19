@@ -55,14 +55,6 @@ public static partial class GameManager
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
 				int id = WorldManager.Instance.GetNextId();
-				foreach (var c in spawn.Inventory)
-				{
-					if(PrefabManager.UseItems.ContainsKey(c) && PrefabManager.UseItems[c].allowedUnits.Count > 0)
-					{
-						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
-					}
-					cdata.Inventory.Add(c);
-				}
 				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
 				T1Units.Add(id);
 				i++;
@@ -83,9 +75,6 @@ public static partial class GameManager
 					pos = T2SpawnPoints[Random.Shared.Next(T2SpawnPoints.Count)];
 				}while(newComcp.Find((s) => s.Position == pos) != null);
 				sq.Position = pos;
-				var l = new List<string>();
-				l.Add("Flash");
-				sq.Inventory = l;
 				newComcp.Add(sq);
 			}
 			Player2.SetSquadComp(newComcp);
@@ -99,15 +88,6 @@ public static partial class GameManager
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
 				int id = WorldManager.Instance.GetNextId();
-				cdata.Inventory = new List<string>();
-				foreach (var c in spawn.Inventory)
-				{
-					if(PrefabManager.UseItems.ContainsKey(c) && PrefabManager.UseItems[c].allowedUnits.Count > 0)
-					{
-						if(!PrefabManager.UseItems[c].allowedUnits.Contains(spawn.Prefab)) continue;
-					}
-					cdata.Inventory.Add(c);
-				}
 				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
 				T2Units.Add(id);
 				i++;
