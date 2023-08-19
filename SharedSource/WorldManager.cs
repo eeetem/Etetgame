@@ -743,9 +743,10 @@ namespace DefconNull.World
 						{
 							break;
 						}
+				
+						if(!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
 						
-						if(!SequenceQueue.Peek().CanBatch) break;
-						
+                        
 						_currentSequenceTasks.Add(SequenceQueue.Dequeue().GenerateTask());
 						_currentSequenceTasks.Last().Start();
 					} 
@@ -772,6 +773,8 @@ namespace DefconNull.World
 				_currentSequenceTasks.Clear();
 			}
 		}
+
+
 
 
 		private List<Task> _currentSequenceTasks = new List<Task>();
@@ -924,70 +927,7 @@ namespace DefconNull.World
 			}
 		}
 
-		public int GetTileMovementScore(Vector2Int vec, Unit unit)
-		{
-			int score = 0;
-			bool team = unit.IsPlayerOneTeam;
-			var tile = GetTileAtGrid(vec);
-#if SERVER
-			var myTeamUnitsIds = team ? GameManager.T1Units : GameManager.T2Units;
-			var otherTeamUnitsIds = team ? GameManager.T2Units : GameManager.T1Units;
-
-			List<Unit> myTeamUnits = new List<Unit>();
-			List<Unit> otherTeamUnits = new List<Unit>();
-			foreach (var id in myTeamUnitsIds)
-			{
-				myTeamUnits.Add(GetObject(id).UnitComponent);
-			}
-
-			foreach (var id in otherTeamUnitsIds)
-			{
-				otherTeamUnits.Add(GetObject(id).UnitComponent);
-			}
-
-#else
-			var myTeamUnits = GameLayout.MyUnits;//this assumes we're getting movement score for our own units
-			var otherTeamUnits = GameLayout.EnemyUnits;
-#endif
-			
-			
-			
-			
-			//add points for being in range of your primiary attack
-			float closestDistance=1000;
-			
-			foreach (var u in otherTeamUnits)
-			{
-				var enemyLoc = u.WorldObject.TileLocation.Position;
-				var dist = Vector2.Distance(enemyLoc, vec);
-				if(dist< closestDistance){
-					closestDistance = dist;
-				}
-			}
-			
-
-			closestDistance -= unit.GetAction(-1).GetOptimalRangeAI();
-			int distanceReward = 30;
-
-			while (closestDistance > 0)//subtract points for being too far away
-			{
-				distanceReward--;
-				closestDistance--;
-			}
-		
-			score += distanceReward;
-			
-			
-			//add points for being protected
-			foreach (var u in otherTeamUnits)
-			{
-				//u.GetAction(-1)
-			}
-
-
-
-			return score;
-		}
+	
 
 	}
 }

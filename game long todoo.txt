@@ -1,6 +1,6 @@
 
 later
-officer self target -> modding cleanup
+
 no ghosting destruction -> no wall hack
 alt inspection of unit stats
 server ui -> dont show custom map list on local server
@@ -11,9 +11,9 @@ apply shader to every obj in effect area rather than whole screen
 gradual destrution
 
 
-fowspot
+AI
 
-
+tiles not loading
 
 
 UI Rework:

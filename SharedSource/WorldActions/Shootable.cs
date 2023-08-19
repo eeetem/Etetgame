@@ -425,7 +425,7 @@ public class Shootable : IWorldEffect
 
 		foreach (var act in previewCache)
 		{
-			act.Preview(spriteBatch);
+			act.PreviewIfShould(spriteBatch);
 		}
 
 

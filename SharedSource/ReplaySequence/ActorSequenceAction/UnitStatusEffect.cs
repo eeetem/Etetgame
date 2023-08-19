@@ -13,13 +13,19 @@ public class UnitStatusEffect  : UnitSequenceAction
 	int duration;
 	public override bool CanBatch => true;
 
-	public UnitStatusEffect(int actorID, bool addNotRemove, string effectName, int duration = 0) : base(actorID, SequenceType.UnitStatusEffect)
+	public UnitStatusEffect(Vector2Int actorID, bool addNotRemove, string effectName, int duration = 0) : base(new TargetingRequirements(actorID), SequenceType.UnitStatusEffect)
 	{
 		this.addNotRemove = addNotRemove;
 		this.effectName = effectName;
 		this.duration = duration;
 	}
-	public UnitStatusEffect(int actorID, Message msg) : base(actorID, SequenceType.UnitStatusEffect)
+	public UnitStatusEffect(TargetingRequirements actorID, bool addNotRemove, string effectName, int duration = 0) : base(actorID, SequenceType.UnitStatusEffect)
+	{
+		this.addNotRemove = addNotRemove;
+		this.effectName = effectName;
+		this.duration = duration;
+	}
+	public UnitStatusEffect(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.UnitStatusEffect)
 	{
 		addNotRemove = msg.GetBool();
 		effectName = msg.GetString();
@@ -51,8 +57,9 @@ public class UnitStatusEffect  : UnitSequenceAction
 	}
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
+
 		Texture2D sprite = Actor.WorldObject.GetTexture();
 		spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Yellow * 0.8f);
 

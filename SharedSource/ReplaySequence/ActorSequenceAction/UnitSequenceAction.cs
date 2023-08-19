@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.World;
@@ -10,30 +11,78 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
 public abstract class UnitSequenceAction : SequenceAction
 {
-	
-	public UnitSequenceAction(int actorID, SequenceAction.SequenceType type) : base(type)
+
+	TargetingRequirements Requirements;
+	public struct TargetingRequirements : IMessageSerializable
 	{
-		ActorID = actorID;
+		public int ActorID = -1;
+		public Vector2Int Position = new Vector2Int(-1, -1);
+		public List<string> TypesToIgnore = new List<string>();
+
+		public TargetingRequirements(int id)
+		{
+			ActorID = id;
+		}
+		public TargetingRequirements(Vector2Int id)
+		{
+			Position = id;
+		}
+
+		public void Serialize(Message message)
+		{
+			message.Add(ActorID);
+			message.Add(Position);
+			message.Add(TypesToIgnore.ToArray());
+		}
+
+		public void Deserialize(Message message)
+		{
+			ActorID = message.GetInt();
+			Position = message.GetSerializable<Vector2Int>();
+			TypesToIgnore = new List<string>();
+			TypesToIgnore.AddRange(message.GetStrings());
+		}
 	}
-	public readonly int ActorID;
+	public UnitSequenceAction(TargetingRequirements actorID, SequenceAction.SequenceType type) : base(type)
+	{
+		Requirements = actorID;
+	}
+
+
+	public override bool ShouldDo()
+	{
+		if (Requirements.ActorID != -1) return true;
+		if (Requirements.Position == new Vector2Int(-1, -1)) return false;
+		var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
+		if(tile.UnitAtLocation == null) return false;
+		var obj = tile.UnitAtLocation;
+		if(Requirements.TypesToIgnore.Contains(obj!.Type.Name )) return false;
+
+		return true;
+	}
+
 	protected Unit Actor
 	{
 		get
 		{
-			var obj = WorldManager.Instance.GetObject(ActorID);
-			int attempts = 0;
-			while(obj == null)
+			if (Requirements.ActorID!= -1)
 			{
-				Thread.Sleep(1000);
-				obj = WorldManager.Instance.GetObject(ActorID);
-				attempts++;
-				if (attempts>10)
-				{
-					throw new Exception("Sequence Actor not found");
-				}
+				var obj = WorldManager.Instance.GetObject(Requirements.ActorID);
+				if(obj == null) throw new Exception("Sequence Actor not found");
+				return obj!.UnitComponent!;
 			}
 
-			return obj.UnitComponent!;
+			if (Requirements.Position != new Vector2Int(-1, -1))
+			{
+				var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
+				var obj = tile.UnitAtLocation;
+				if(obj == null) throw new Exception("Sequence Actor not found");
+				return obj!;
+			}
+
+			throw new Exception("Sequence Actor not specified for search");
+            
+
 		}
 	}
 	
@@ -42,6 +91,9 @@ public abstract class UnitSequenceAction : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
-		message.Add(ActorID);
+		message.Add(Requirements.ActorID);
+		message.Add(Requirements.Position);
+		message.Add(Requirements.TypesToIgnore.ToArray());
 	}
+
 }

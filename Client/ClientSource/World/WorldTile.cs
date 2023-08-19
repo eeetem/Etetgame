@@ -61,13 +61,13 @@ public partial class WorldTile
 			}
 
 			HighestWatchLevel = 0;
-			if (watcher.DefaultAttack.CanHit(watcher,Position,true))
+			if (watcher.DefaultAttack.CanPerform(watcher,Position).Item1)
 			{
 				HighestWatchLevel = 2;
 				return;
 			}
 
-			if (watcher.DefaultAttack.CanHit(watcher,Position,false))
+			if (watcher.DefaultAttack.CanPerform(watcher,Position).Item1)
 			{
 				HighestWatchLevel = 1;
 				return;

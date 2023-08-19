@@ -11,12 +11,16 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 	public override bool CanBatch => true;
 	private int detDmg;
 
-	public Suppress(int detDmg, int actorID) : base(actorID, SequenceType.Suppress)
+	public Suppress(int detDmg, int actorID) : base(new TargetingRequirements(actorID), SequenceType.Suppress)
+	{
+		this.detDmg = detDmg;
+	}
+	public Suppress(int detDmg, TargetingRequirements actorID) : base(actorID, SequenceType.Suppress)
 	{
 		this.detDmg = detDmg;
 	}
 	
-	public Suppress(int actorID, Message msg) : base(actorID, SequenceType.Suppress)
+	public Suppress(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.Suppress)
 	{
 		detDmg = msg.GetInt();
 	}
@@ -39,8 +43,9 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 	}
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
+		if(!ShouldDo())return;
 		if (Actor.WorldObject.IsVisible())
 		{
 			Texture2D sprite = Actor.WorldObject.GetTexture();

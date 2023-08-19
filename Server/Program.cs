@@ -14,7 +14,7 @@ public static class Program
 	static Stopwatch stopWatch = new Stopwatch();
 		
 	static void Main(string[] args)
-	{
+	{ 
 		Console.WriteLine("Hello World!");
 		string port = "52233";
 		bool allowSinglePlayer = true;
@@ -28,6 +28,7 @@ public static class Program
 		Action.Init();
 		Utility.Init();
 		PathFinding.GenerateNodes();
+		AI.AI.Init();
 		//	Console.WriteLine("Enter Port:");
 		//string port = Console.ReadLine();
 			

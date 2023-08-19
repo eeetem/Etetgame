@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
@@ -10,15 +11,23 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class TakeDamage : SequenceAction
 {
 	public override bool CanBatch => true;
-	public int dmg;
-	public int detResistance;
-	public int objID;
-	
+	private int dmg;
+	private int detResistance;
+	private int objID = -1;
+	private Vector2Int position = new Vector2Int(-1,-1);
+	private List<string> Ignores = new List<string>();
 	public TakeDamage(int dmg, int detResistance, int objID) : base(SequenceType.TakeDamage)
 	{
 		this.dmg = dmg;
 		this.detResistance = detResistance;
 		this.objID = objID;
+	}
+	public TakeDamage(int dmg, int detResistance,Vector2Int position, List<string> ignores) : base(SequenceType.TakeDamage)
+	{
+		this.dmg = dmg;
+		this.detResistance = detResistance;
+		this.position = position;
+		this.Ignores = ignores;
 	}
 	
 	public TakeDamage(Message args) : base(SequenceType.TakeDamage)
@@ -28,11 +37,35 @@ public class TakeDamage : SequenceAction
 		objID = args.GetInt();
 	}
 
+	public override bool ShouldDo()
+	{
+
+		if (objID != -1) return true;
+		if (position == new Vector2Int(-1, -1)) return false;
+		var tile = WorldManager.Instance.GetTileAtGrid(position);
+		if(tile.UnitAtLocation == null) return false;
+		var obj = tile.UnitAtLocation;
+		if(Ignores.Contains(obj!.Type.Name )) return false;
+
+		return true;
+	}
+
 	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
-			WorldManager.Instance.GetObject(objID)!.TakeDamage(dmg, detResistance);
+			if (objID != -1)
+			{
+				WorldManager.Instance.GetObject(objID)!.TakeDamage(dmg, detResistance);
+			}
+			else
+			{
+				var u =WorldManager.Instance.GetTileAtGrid(position).UnitAtLocation!;
+                if(Ignores.Contains(u.Type.Name)) return ;
+				u.TakeDamage(dmg, detResistance);
+			}
+
+
 		});
 		return t;
 	}
@@ -45,14 +78,15 @@ public class TakeDamage : SequenceAction
 	}
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
-		if(dmg == 0)
+		if(dmg == 0 || objID == -1)
 			return;
 
+		
 		var obj = WorldManager.Instance.GetObject(objID);
 
-		if (obj!.IsVisible())
+		if (obj !=null && obj!.IsVisible())
 		{
 			obj!.PreviewData.totalDmg += dmg;
 

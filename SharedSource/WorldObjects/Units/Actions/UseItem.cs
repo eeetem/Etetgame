@@ -44,12 +44,13 @@ public class UseItem : Action
 
 		var item = actor.SelectedItem;
 		var cons = item.GetConsequences(actor, target);
-		
 
-		
+
+		ValueChange valueChange = new ValueChange();
+		valueChange.Value = -1;
 		queue.Enqueue(new UnitSelectItem(actor.WorldObject.ID,actor.SelectedItemIndex));
 		queue.Enqueue(new UseUpSelectedItem(actor.WorldObject.ID,target));
-		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,-1));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,valueChange));
 		if (actor.WorldObject.TileLocation.Position != target)
 		{
 			queue.Enqueue(new FaceUnit(actor.WorldObject.ID, target));

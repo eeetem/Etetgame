@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -106,7 +105,7 @@ public class Move : Action
 
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-moveUse,0));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-moveUse,0,0));
 		for (int j = 0; j < paths.Count; j++)
 		{
 			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
@@ -116,14 +115,14 @@ public class Move : Action
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-				/*	UseAbility.AbilityIndex = ;
+					UseAbility.AbilityIndex = -1;
 					var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
 					foreach (var a in res)
 					{
 						queue.Enqueue(a);
-					}*/
-					var act = new DelayedAbilityUse(attacker.WorldObject.ID,-1,ShootingSpots[j].Item2);
-					queue.Enqueue(act);
+					}
+				//	var act = new DelayedAbilityUse(attacker.WorldObject.ID,-1,ShootingSpots[j].Item2);
+				//	queue.Enqueue(act);
 				}
 			}
 			

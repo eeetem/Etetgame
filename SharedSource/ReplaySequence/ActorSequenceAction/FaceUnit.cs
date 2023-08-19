@@ -9,11 +9,11 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int target;
-	public FaceUnit(int actorID, Vector2Int target) : base(actorID, SequenceType.Face)
+	public FaceUnit(int actorID, Vector2Int target) : base(new TargetingRequirements(actorID), SequenceType.Face)
 	{
 		this.target = target;
 	}
-	public FaceUnit(int actorID, Message args) : base(actorID, SequenceType.Face)
+	public FaceUnit(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.Face)
 	{
 		target = args.GetSerializable<Vector2Int>();
 	}
@@ -37,7 +37,7 @@ public class FaceUnit : UnitSequenceAction
 		message.AddSerializable(target);
 	}
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

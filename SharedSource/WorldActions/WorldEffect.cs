@@ -135,7 +135,7 @@ public class WorldEffect : IWorldEffect
 		
 		foreach (var act in previewCache)
 		{
-			act.Preview(spriteBatch);
+			act.PreviewIfShould(spriteBatch);
 		}
 
 		if (previewArea.Item1.HasValue)

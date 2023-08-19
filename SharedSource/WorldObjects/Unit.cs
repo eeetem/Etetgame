@@ -34,15 +34,16 @@ namespace DefconNull.World.WorldObjects
 			parent.UnitComponent = this;
 
 
-
-			if (data.Determination == -100)
+			Determination = new Value(0, type.Maxdetermination);
+			if (data.Determination != -100)
 			{
-				Determination = type.Maxdetermination;
+				Determination.Current = data.Determination;
 			}
 			else
 			{
-				Determination = data.Determination;
+				Determination.SetToMax();
 			}
+
 
 			Crouching = data.Crouching;
 			Paniced = data.Panic;
@@ -156,7 +157,13 @@ namespace DefconNull.World.WorldObjects
 
 		public List<IUnitAbility> Abilities = new List<IUnitAbility>();
 		public UnitAbility DefaultAttack;
-
+		public List<IUnitAbility> GetFullAbilityList()
+		{
+			var list = new List<IUnitAbility>();
+			list.AddRange(Abilities);
+			list.Add(DefaultAttack);
+			return list;
+		}
 
 		public IUnitAbility GetAction(int index)
 		{
@@ -173,7 +180,7 @@ namespace DefconNull.World.WorldObjects
 
 		public Value MovePoints;
 		public Value ActionPoints;
-		public int Determination;
+		public Value Determination;
 
 		public bool Crouching { get; set; }
 
@@ -235,11 +242,11 @@ namespace DefconNull.World.WorldObjects
 			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
 			{
-				if (DefaultAttack.CanHit(this,position,true))
+				if (DefaultAttack.CanPerform(this,position).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,true));
 				}
-				else if (DefaultAttack.CanHit(this,position,false))
+				else if (DefaultAttack.CanPerform(this,position).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,false));
 				}
@@ -305,13 +312,13 @@ namespace DefconNull.World.WorldObjects
 
 		public void StartTurn()
 		{
-			MovePoints.Reset();
+			MovePoints.SetToMax();
 			canTurn = true;
-			ActionPoints.Reset();
-			MoveRangeEffect.Reset();
+			ActionPoints.SetToMax();
+			MoveRangeEffect.SetToMax();
 			if (Determination < 0)
 			{
-				Determination = 0;
+				Determination.Current = 0;
 			}
 
 			if (Determination < Type.Maxdetermination)
@@ -478,7 +485,7 @@ namespace DefconNull.World.WorldObjects
 				ActionPoints = u.ActionPoints.Current;
 				MovePoints = u.MovePoints.Current;
 				CanTurn = u.canTurn;
-				Determination = u.Determination;
+				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
 				JustSpawned = true;
 				Panic = u.Paniced;
@@ -618,8 +625,8 @@ namespace DefconNull.World.WorldObjects
 			{
 				Paniced = false;
 			}
-			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
-			if(Determination<0) Determination = 0;
+			if(Determination>Type.Maxdetermination) Determination.Current = Type.Maxdetermination;
+			if(Determination<0) Determination.Current = 0;
 		}
 		
 		public UsableItem? SelectedItem

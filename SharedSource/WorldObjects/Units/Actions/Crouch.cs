@@ -41,7 +41,7 @@ public class Crouch : Action
 		var shooters = WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position).GetOverWatchShooters(actor,vis);
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0));
+		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0,0));
 		queue.Enqueue(new CrouchUnit(actor.WorldObject.ID));
 
 		foreach (var shooter in shooters)

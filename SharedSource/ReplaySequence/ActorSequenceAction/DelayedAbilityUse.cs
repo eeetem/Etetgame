@@ -8,13 +8,13 @@ public class DelayedAbilityUse  : UnitSequenceAction
 {
 	int abilityIndex;
 	Vector2Int target;
-	public DelayedAbilityUse(int actorID, int abilityIndex, Vector2Int target) : base(actorID, SequenceType.DelayedAbilityUse)
+	public DelayedAbilityUse(int actorID, int abilityIndex, Vector2Int target) : base(new TargetingRequirements(actorID), SequenceType.DelayedAbilityUse)
 	{
 		this.abilityIndex = abilityIndex;
 		this.target = target;
 	}
 	
-	public DelayedAbilityUse(int actorID, Message msg) : base(actorID, SequenceType.DelayedAbilityUse)
+	public DelayedAbilityUse(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.DelayedAbilityUse)
 	{
 		abilityIndex = msg.GetInt();
 		target = msg.GetSerializable<Vector2Int>();

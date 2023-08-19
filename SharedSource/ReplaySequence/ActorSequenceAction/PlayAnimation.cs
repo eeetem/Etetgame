@@ -19,11 +19,11 @@ public class PlayAnimation : UnitSequenceAction
 		throw new NotImplementedException();
 	}
 
-	public PlayAnimation(int actorID) : base(actorID, SequenceType.PlayAnimation)
+	public PlayAnimation(int actorID) : base(new TargetingRequirements(actorID), SequenceType.PlayAnimation)
 	{
 	}
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

@@ -171,18 +171,7 @@ public class UnitAbility : IUnitAbility
 	{
 		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation);	
 	}
-
-
-	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget)
-	{
-		foreach (var effect in Effects)
-		{
-			if (!effect.CanPerform(actor, target).Item1)
-				return false;
-		}
-
-		return true;
-	}
+    
 
 
 }

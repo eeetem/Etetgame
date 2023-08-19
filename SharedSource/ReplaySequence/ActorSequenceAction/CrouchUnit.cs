@@ -8,10 +8,10 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class CrouchUnit : UnitSequenceAction
 {
 	
-	public CrouchUnit(int actorID) : base(actorID, SequenceType.Crouch)
+	public CrouchUnit(int actorID) : base(new TargetingRequirements(actorID), SequenceType.Crouch)
 	{
 	}
-	public CrouchUnit(int actorID,Message msg) : base(actorID, SequenceType.Crouch)
+	public CrouchUnit(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.Crouch)
 	{
 	}
 
@@ -35,7 +35,7 @@ public class CrouchUnit : UnitSequenceAction
 	}
 
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

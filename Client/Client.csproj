@@ -356,8 +356,8 @@
       <Compile Include="..\SharedSource\WorldActions\ExtraAction.cs">
         <Link>SharedSource\WorldActions\ExtraAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\IExtraAction.cs">
-        <Link>SharedSource\WorldActions\IExtraAction.cs</Link>
+      <Compile Include="..\SharedSource\WorldActions\IUnitAbility.cs">
+        <Link>SharedSource\WorldActions\IUnitAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\IWorldEffect.cs">
         <Link>SharedSource\WorldActions\IWorldEffect.cs</Link>

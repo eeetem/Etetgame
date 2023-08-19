@@ -10,12 +10,12 @@ public class UnitOverWatch : UnitSequenceAction
 {
 	public Vector2Int Target;
 
-	public UnitOverWatch(int actorID, Vector2Int tg) : base(actorID, SequenceType.Overwatch)
+	public UnitOverWatch(int actorID, Vector2Int tg) : base(new TargetingRequirements(actorID), SequenceType.Overwatch)
 	{
 		Target = tg;
 	}
 
-	public UnitOverWatch(int actorID, Message msg) : base(actorID, SequenceType.Overwatch)
+	public UnitOverWatch(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.Overwatch)
 	{
 		Target = msg.GetSerializable<Vector2Int>();
 	}
@@ -48,7 +48,7 @@ public class UnitOverWatch : UnitSequenceAction
 	}
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

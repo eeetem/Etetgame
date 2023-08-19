@@ -59,7 +59,7 @@ public class VariableValue : IMessageSerializable
 		
 	}
 
-	public string GetValue(Unit user,Unit other)
+	public string GetValue(Unit? user,Unit? other)
 	{
 	
 		if (value != null)

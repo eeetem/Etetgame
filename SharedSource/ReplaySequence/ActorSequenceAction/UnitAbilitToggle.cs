@@ -9,12 +9,12 @@ public class UnitAbilitToggle : UnitSequenceAction
 	
 	int abilityID;
 	public override bool CanBatch => true;
-	public UnitAbilitToggle(int actorID, int abilityID) : base(actorID, SequenceType.AbilityToggle)
+	public UnitAbilitToggle(int actorID, int abilityID) : base(new TargetingRequirements(actorID), SequenceType.AbilityToggle)
 	{
 		this.abilityID = abilityID;
 	}
 	
-	public UnitAbilitToggle(int actorID, Message msg) : base(actorID, SequenceType.AbilityToggle)
+	public UnitAbilitToggle(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.AbilityToggle)
 	{
 		abilityID = msg.GetInt();
 	}

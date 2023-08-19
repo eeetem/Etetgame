@@ -62,6 +62,16 @@ public abstract class SequenceAction : IMessageSerializable
 		throw new Exception("cannot deserialize abstract SequenceAction");
 	}
 #if CLIENT
-	public virtual void Preview(SpriteBatch spriteBatch){}
+
+	public void PreviewIfShould(SpriteBatch spriteBatch)
+	{
+		if(!ShouldDo()) return;
+		Preview(spriteBatch);
+	}
+
+	protected virtual void Preview(SpriteBatch spriteBatch)
+	{
+	}
+
 #endif
 }

@@ -8,11 +8,11 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class UnitSelectItem : UnitSequenceAction
 {
 	public int itemIndex;
-	public UnitSelectItem(int actorID, int itemIndex) : base(actorID, SequenceType.SelectItem)
+	public UnitSelectItem(int actorID, int itemIndex) : base(new TargetingRequirements(actorID), SequenceType.SelectItem)
 	{
 		this.itemIndex = itemIndex;
 	}
-	public UnitSelectItem(int actorID, Message args) : base(actorID, SequenceType.SelectItem)
+	public UnitSelectItem(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.SelectItem)
 	{
 		itemIndex = args.GetInt();
 	}
@@ -34,7 +34,7 @@ public class UnitSelectItem : UnitSequenceAction
 	}
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

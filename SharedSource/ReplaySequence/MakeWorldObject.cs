@@ -50,13 +50,13 @@ public class MakeWorldObject : SequenceAction
 		message.Add(id);
 	}
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		spriteBatch.DrawPrefab(Utility.GridToWorldPos(Position), prefab, facing);
 		if (PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences != null)
 		{
 			spriteBatch.DrawOutline(PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences.GetAffectedTiles(Position, null), Color.Yellow, 4);
-			PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences!.GetApplyConsiqunces(Position, null).ForEach(x => x.Preview(spriteBatch));
+			PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences!.GetApplyConsiqunces(Position, null).ForEach(x => x.PreviewIfShould(spriteBatch));
 		}
 	}
 #endif

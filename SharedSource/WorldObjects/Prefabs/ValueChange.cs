@@ -29,6 +29,11 @@ public struct ValueChange : IMessageSerializable
 		Value = message.GetInt();
 	}
 
+	public ValueChange(int input)
+	{
+		Value = input;
+	}
+
 	public ValueChange(string input)
 	{
 		if (input.Contains("[cap]"))

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using DefconNull.AI;
 using DefconNull.Networking;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
@@ -140,72 +141,5 @@ public static partial class GameManager
 
 
 	}
-	private static void StartAITurn()
-	{
-		var t = new Task(delegate
-		{
-			Task.Run(() =>
-			{
-				foreach (var u in T2Units)
-				{
-					var unit = WorldManager.Instance.GetObject(u)!.UnitComponent;
-					Console.WriteLine("---------AI acting with unit: "+unit!.WorldObject.TileLocation.Position);
-					while (unit!.MovePoints > 0)
-					{
-						Console.WriteLine("moving("+unit.MovePoints.Current+")");
-						var allLocations = unit.GetPossibleMoveLocations();
-						ConcurrentBag<Tuple<Vector2Int, int>> scoredLocations = new ConcurrentBag<Tuple<Vector2Int, int>>();
-						if (allLocations.Length == 0)
-						{
-							Console.WriteLine("unable to move, cancleing");
-							break;
-						}
-
-						Parallel.ForEach(allLocations[0], l =>
-						{
-							int score = WorldManager.Instance.GetTileMovementScore(l, unit);
-							scoredLocations.Add(new Tuple<Vector2Int, int>(l,score));
-						});
-						int score = WorldManager.Instance.GetTileMovementScore(unit.WorldObject.TileLocation.Position, unit);
-						scoredLocations.Add(new Tuple<Vector2Int, int>(unit.WorldObject.TileLocation.Position,score));
-
-						int bestOf = Math.Min(scoredLocations.Count, 1);
-						
-						
-						var result = scoredLocations
-							.OrderByDescending(x => x.Item2)
-							.Take(bestOf)
-							.ToArray();
-						//pick random location out of top 3
-						int r = Random.Shared.Next(bestOf);
-						Vector2Int target = result[r].Item1;
-
-						if (target == unit.WorldObject.TileLocation.Position)
-						{
-							Console.WriteLine("AI decided to stay put");
-							break;
-						}
-						
-
-						Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+result[r].Item2);
-						unit.DoAction(Action.Actions[Action.ActionType.Move], target);
-						Console.WriteLine(" waiting for sequence to clear.....");
-						do
-						{
-							Thread.Sleep(1000);
-						} while (WorldManager.Instance.SequenceRunning);
-
-					}
-					Console.WriteLine("---------AI DONE ---- acting with unit: "+unit!.WorldObject.TileLocation.Position);
-				}
-				Console.WriteLine("AI turn over, ending turn"); 
-				NextTurn();
-			});
-		});
-		WorldManager.Instance.RunNextAfterFrames(t,2);
-
-	}
-
-
 	
 }

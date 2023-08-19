@@ -10,7 +10,6 @@ public interface IUnitAbility : ICloneable
 {
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target);
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor);
-	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget = false);
 
 	List<SequenceAction> GetConsequences(Unit actor, Vector2Int target);
 	List<IWorldEffect> Effects { get; }

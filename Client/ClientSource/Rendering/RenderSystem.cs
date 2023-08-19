@@ -148,7 +148,7 @@ public static class RenderSystem
 						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
 					}
 
-					spriteBatch.DrawText(WorldManager.Instance.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
+				//	spriteBatch.DrawText(AI.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
 					
 
 				}

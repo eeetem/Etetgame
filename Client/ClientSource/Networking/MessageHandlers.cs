@@ -114,42 +114,42 @@ public static partial class NetworkingManager
 			}
 			else
 			{
-				int id = message.GetInt();
+				UnitSequenceAction.TargetingRequirements req = message.GetSerializable<UnitSequenceAction.TargetingRequirements>();
 				switch (type)
 				{
 					
 					case SequenceAction.SequenceType.Face:
-						sqc = new FaceUnit(id, message);
+						sqc = new FaceUnit(req, message);
 						break;
 					case SequenceAction.SequenceType.Move:
-						sqc = new UnitMove(id, message);
+						sqc = new UnitMove(req, message);
 						break;
 					case SequenceAction.SequenceType.Crouch:
-						sqc = new CrouchUnit(id, message);
+						sqc = new CrouchUnit(req, message);
 						break;
 					case SequenceAction.SequenceType.SelectItem:
-						sqc = new UnitSelectItem(id, message);
+						sqc = new UnitSelectItem(req, message);
 						break;
 					case SequenceAction.SequenceType.UseItem:
-						sqc = new UseUpSelectedItem(id, message);
+						sqc = new UseUpSelectedItem(req, message);
 						break;
 					case SequenceAction.SequenceType.Overwatch:
-						sqc = new UnitOverWatch(id, message);
+						sqc = new UnitOverWatch(req, message);
 						break;
 					case SequenceAction.SequenceType.ChangeUnitValues:
-						sqc = new ChangeUnitValues(id, message);
+						sqc = new ChangeUnitValues(req, message);
 						break;
 					case SequenceAction.SequenceType.Suppress:
-						sqc = new Suppress(id, message);
+						sqc = new Suppress(req, message);
 						break;
 					case SequenceAction.SequenceType.UnitStatusEffect:
-						sqc = new UnitStatusEffect(id, message);
+						sqc = new UnitStatusEffect(req, message);
 						break;
 					case SequenceAction.SequenceType.AbilityToggle:
-						sqc = new UnitAbilitToggle(id, message);
+						sqc = new UnitAbilitToggle(req, message);
 						break;
 					case SequenceAction.SequenceType.DelayedAbilityUse:
-						sqc = new DelayedAbilityUse(id, message);
+						sqc = new DelayedAbilityUse(req, message);
 						break;
 					default:
 						throw new Exception("Unknown Unit Sequence Type Recived: "+type);

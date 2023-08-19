@@ -81,7 +81,7 @@
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <defaultAction moveCost="1" actCost="2">
+    <defaultAction moveCost="1" d="1">
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
@@ -146,7 +146,7 @@
       <applystatus status="Holstered"/>
     </spawneffect>
 
-    <defaultAction moveCost="1" actCost="2">
+    <defaultAction moveCost="1" actCost="1">
       <targetAid>enemy</targetAid>
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
       <effect>
@@ -201,7 +201,7 @@
   <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
     <name>Officer</name>
 
-    <defaultAction moveCost="1" actCost="2">
+    <defaultAction moveCost="1" actCost="1">
       <targetAid>enemy</targetAid>
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
       <effect>
@@ -243,7 +243,7 @@
   <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
     <name>Specialist</name>
 
-    <defaultAction moveCost="1" actCost="2">
+    <defaultAction moveCost="1" actCost="1">
       
       <targetAid>enemy</targetAid>
       

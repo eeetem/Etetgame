@@ -22,7 +22,7 @@ public struct Value
 	public int Max;
 	public int Current;
 
-	public void Reset()
+	public void SetToMax()
 	{
 		Current = Max;
 	}

@@ -164,7 +164,7 @@ public static partial class NetworkingManager
 		}
 		else
 		{
-			if (!(GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID) || !(GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID))
+			if (!(GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID) && !(GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID))
 			{
 				Console.WriteLine("Spectator tried to control a unit");
 				return;

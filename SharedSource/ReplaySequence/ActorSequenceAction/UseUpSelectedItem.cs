@@ -12,11 +12,11 @@ public class UseUpSelectedItem : UnitSequenceAction
 {
 	public Vector2Int Target;
 
-	public UseUpSelectedItem(int actorID, Vector2Int target) : base(actorID, SequenceType.UseItem)
+	public UseUpSelectedItem(int actorID, Vector2Int target) : base(new TargetingRequirements(actorID), SequenceType.UseItem)
 	{
 		Target = target;
 	}
-	public UseUpSelectedItem(int actorID, Message args) : base(actorID, SequenceType.UseItem)
+	public UseUpSelectedItem(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.UseItem)
 	{
 		Target = args.GetSerializable<Vector2Int>();
 	}
@@ -41,7 +41,7 @@ public class UseUpSelectedItem : UnitSequenceAction
 	
 	
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

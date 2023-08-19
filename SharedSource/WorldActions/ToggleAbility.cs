@@ -63,17 +63,6 @@ public class ToggleAbility : IUnitAbility
 		return on.HasEnoughPointsToPerform(actor);
 	}
 
-	public bool CanHit(Unit actor, Vector2Int target, bool lowTarget = false)
-	{
-		if (isOn)
-		{
-			return off.CanHit(actor,target,lowTarget);
-		}
-		return on.CanHit(actor,target,lowTarget);
-		
-
-		
-	}
 
 	public List<string> MakePacketArgs()
 	{

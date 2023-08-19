@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -129,7 +128,7 @@ public class WorldConseqences : IMessageSerializable
 
 	public List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
 	{
-			var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
+		var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
 		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, Cover.Low);
 		var list = hitt.Except(excl).ToList();
 		if (Los)
@@ -161,7 +160,7 @@ public class WorldConseqences : IMessageSerializable
 		}
 		else
 		{
-		//	list.Add(new MoveCamera(target,false,0));
+			//	list.Add(new MoveCamera(target,false,0));
 		}
 
 		foreach (var tile in GetAffectedTiles(target,user))
@@ -181,7 +180,7 @@ public class WorldConseqences : IMessageSerializable
 		foreach (var effect in Effects)
 		{
 			list.Add(new PostProcessingEffect(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f));
-	//		PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
+			//		PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
 		}
 
 		return list;
@@ -189,47 +188,55 @@ public class WorldConseqences : IMessageSerializable
 	protected List<SequenceAction> ConsequencesOnTile(WorldTile tile,WorldObject? user = null)
 	{
 		var consequences = new List<SequenceAction>();
-		if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
+		if (Dmg > 0)
 		{
-			//tile.EastEdge?.TakeDamage(Dmg, 0);
-			consequences.Add(new TakeDamage(Dmg,0, tile.EastEdge!.ID));
-			_ignoreList.Add(tile.EastEdge!);
-		}
-		if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
-		{
-			//tile.WestEdge?.TakeDamage(Dmg, 0);
-			consequences.Add(new TakeDamage(Dmg,0, tile.WestEdge!.ID));
-			_ignoreList.Add(tile.WestEdge!);
-		}
-		if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
-		{
-			//tile.NorthEdge?.TakeDamage(Dmg, 0);
-			consequences.Add(new TakeDamage(Dmg,0, tile.NorthEdge!.ID));
-			_ignoreList.Add(tile.NorthEdge!);
-		}
-		if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
-		{
-			//tile.SouthEdge?.TakeDamage(Dmg, 0);
-			consequences.Add(new TakeDamage(Dmg,0, tile.SouthEdge!.ID));
-			_ignoreList.Add(tile.SouthEdge!);
-		}
+			if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
+			{
+				//tile.EastEdge?.TakeDamage(Dmg, 0);
+
+				consequences.Add(new TakeDamage(Dmg, 0, tile.EastEdge!.ID));
+				_ignoreList.Add(tile.EastEdge!);
+			}
+
+			if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
+			{
+
+				consequences.Add(new TakeDamage(Dmg, 0, tile.WestEdge!.ID));
+				_ignoreList.Add(tile.WestEdge!);
 
 
-		foreach (var item in tile.ObjectsAtLocation)
-		{
-			item.TakeDamage(Dmg,0);
-			consequences.Add(new TakeDamage(Dmg,0, item!.ID));
+
+			}
+
+			if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
+			{
+				//tile.NorthEdge?.TakeDamage(Dmg, 0);
+				consequences.Add(new TakeDamage(Dmg, 0, tile.NorthEdge!.ID));
+				_ignoreList.Add(tile.NorthEdge!);
+			}
+
+			if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
+			{
+				//tile.SouthEdge?.TakeDamage(Dmg, 0);
+				consequences.Add(new TakeDamage(Dmg, 0, tile.SouthEdge!.ID));
+				_ignoreList.Add(tile.SouthEdge!);
+			}
+
+
+			foreach (var item in tile.ObjectsAtLocation)
+			{
+				item.TakeDamage(Dmg, 0);
+				consequences.Add(new TakeDamage(Dmg, 0, item!.ID));
+			}
 		}
 		
+
 		if (PlaceItemPrefab!=null)
 		{
 			consequences.Add(new MakeWorldObject(PlaceItemPrefab, tile.Position, user?.Facing ?? Direction.North));
 		}
-		
-		if (tile.UnitAtLocation != null && !Ignores.Contains(tile.UnitAtLocation.Type.Name))
-		{
-			
-			Unit ctr = tile.UnitAtLocation;
+
+		/*
 			if (user != null && user.UnitComponent!=null)
 			{
 
@@ -242,34 +249,42 @@ public class WorldConseqences : IMessageSerializable
 					if (ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return consequences;
 					if (ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return consequences;
 				}
-				
-			}
 
-			consequences.Add(new TakeDamage(Dmg,0,ctr.WorldObject.ID));
-			consequences.Add(new Suppress(Det,ctr.WorldObject.ID));
-			consequences.Add(new ChangeUnitValues(ctr.WorldObject.ID,Act.GetChange(ctr.ActionPoints),Move.GetChange(ctr.MovePoints),0, MoveRange.GetChange(ctr.MoveRangeEffect)));
-		//	Act.Apply(ref ctr.ActionPoints);
-		//	Move.Apply(ref ctr.MovePoints);
-		//	ctr.Suppress(Det);
-			//MoveRange.Apply(ref ctr.MoveRangeEffect);
-			foreach (var status in RemoveStatus)
-			{
-				consequences.Add(new UnitStatusEffect(ctr.WorldObject.ID,false,status));
-			//	tile.UnitAtLocation?.RemoveStatus(status);
 			}
-			foreach (var status in AddStatus)
-			{
-				consequences.Add(new UnitStatusEffect(ctr.WorldObject.ID,true,status.Item1,status.Item2));
-				//tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
-			}
-			
-			if(GiveItem!=null)
-			{
-				consequences.Add(new GiveItem(ctr.WorldObject.ID,GiveItem.GetValue(user.UnitComponent,ctr)));
-			//	ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
-			}
-			
+*/
+		
+		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);
+		req.TypesToIgnore.AddRange(Ignores);
+		if (Dmg > 0)
+		{
+			consequences.Add(new TakeDamage(Dmg,0,tile.Position,Ignores));
 		}
+
+		if (Det > 0)
+		{
+			consequences.Add(new Suppress(Det, req));
+		}
+
+		consequences.Add(new ChangeUnitValues(req,Act,Move,null, MoveRange));
+
+		foreach (var status in RemoveStatus)
+		{
+			consequences.Add(new UnitStatusEffect(req,false,status));
+			//	tile.UnitAtLocation?.RemoveStatus(status);
+		}
+		foreach (var status in AddStatus)
+		{
+			consequences.Add(new UnitStatusEffect(req,true,status.Item1,status.Item2));
+			//tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
+		}
+			
+		if(GiveItem!=null)
+		{
+			consequences.Add(new GiveItem(req,GiveItem, user != null ? user.ID : -1));
+			//	ctr.AddItem(PrefabManager.UseItems[GiveItem.GetValue(user.UnitComponent,ctr)]);
+		}
+			
+		
 
 
 		return consequences;

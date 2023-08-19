@@ -87,7 +87,7 @@ public static partial class GameManager
 #endif
 	}
 
-	private static void NextTurn(bool aiHackyBypass = false)
+	public static void NextTurn(bool aiHackyBypass = false)
 	{
 		playedWarning = false;
 		endTurnNextFrame = false;
@@ -152,7 +152,12 @@ public static partial class GameManager
 		{
 			if (!IsPlayer1Turn && Player2.IsAI)
 			{
-				StartAITurn();
+				List<Unit> units = new List<Unit>();
+				foreach (var u in T2Units)
+				{
+					units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+				}
+				AI.AI.DoAITurn(units);
 			}
 		}
 #endif

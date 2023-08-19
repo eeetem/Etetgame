@@ -17,11 +17,11 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class UnitMove : UnitSequenceAction
 {
 	private List<Vector2Int> Path;
-	public UnitMove(int actorID,List<Vector2Int> path) : base(actorID,SequenceType.Move)
+	public UnitMove(int actorID,List<Vector2Int> path) : base(new TargetingRequirements(actorID),SequenceType.Move)
 	{
 		Path = path;
 	}
-	public UnitMove(int actorID,Message args) : base(actorID,SequenceType.Move)
+	public UnitMove(TargetingRequirements actorID, Message args) : base(actorID,SequenceType.Move)
 	{
 		Path = args.GetSerializables<Vector2Int>().ToList();
 	}
@@ -96,7 +96,7 @@ public class UnitMove : UnitSequenceAction
 	}
 
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
+	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}
