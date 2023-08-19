@@ -22,7 +22,7 @@ public class UnitAbility : IUnitAbility
 	public readonly ushort ActCost;
 	public readonly bool immideaateActivation;
 
-	public List<IWorldEffect> Effects { get; }
+	public List<Effect> Effects { get; }
 
 	public Tuple<int,int,int> GetCost(Unit c)
 	{
@@ -47,7 +47,7 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<IWorldEffect> effects, bool immideaateActivation)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation)
 	{
 		this.name = name;
 		this.tooltip = tooltip;

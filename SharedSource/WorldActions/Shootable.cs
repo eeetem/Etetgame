@@ -17,7 +17,7 @@ using DefconNull.Rendering.UILayout;
 
 namespace DefconNull.World.WorldActions;
 
-public class Shootable : IWorldEffect
+public class Shootable : Effect
 {
 	
 	public enum TargetingType
@@ -42,38 +42,10 @@ public class Shootable : IWorldEffect
 		this.dropOffRange = dropOffRange;
 	}
 
-	public Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target)
-	{
-		if (target == actor.WorldObject.TileLocation.Position)
-		{
-			return new Tuple<bool, string>(false, "You can't shoot yourself!");
-		}
-		
-		/*
-#if CLIENT
-		
-		if (target != _lastTarget || targeting != lastTargetingType)
-		{
-			previewShot = MakeProjectile(actor, target, true);
-			_lastTarget = target;
-		}
-
-		if (!WorldEffect.FreeFire)
-		{
-			if (previewShot!.Result.hit && WorldManager.Instance.GetObject(previewShot.Result.HitObjId)!.TileLocation.Position != (Vector2Int) previewShot.Result.EndPoint)
-			{
-				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
-			}
-		}
-#endif
-	*/
-		return new Tuple<bool, string>(true, "");
-	}
+    
 
 
-
-
-	public float GetOptimalRangeAI()
+	public override float GetOptimalRangeAI()
 	{
 		return dropOffRange + supressionRange;
 	}
@@ -198,7 +170,7 @@ public class Shootable : IWorldEffect
 	}
 
 	public static bool targetLow =false;
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target)
 	{
 		if(actor.WorldObject.TileLocation.Position == target)
 		{
@@ -219,7 +191,7 @@ public class Shootable : IWorldEffect
 		return new Tuple<bool, string>(true,"");
 	}
 
-	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target)
 	{
 		
 		/*
@@ -370,7 +342,7 @@ public class Shootable : IWorldEffect
 	int perivewActorID = -1;
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	private Projectile? previewShot;
-	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target).Item1)	

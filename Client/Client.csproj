@@ -344,14 +344,14 @@
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\VissionCast.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\VissionCast.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldActions\Effect.cs">
+        <Link>SharedSource\WorldActions\Effect.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldActions\ExtraAction.cs">
         <Link>SharedSource\WorldActions\ExtraAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\IUnitAbility.cs">
         <Link>SharedSource\WorldActions\IUnitAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\IWorldEffect.cs">
-        <Link>SharedSource\WorldActions\IWorldEffect.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
         <Link>SharedSource\WorldActions\Shootable.cs</Link>

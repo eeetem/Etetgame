@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework;
 
 namespace DefconNull.World.WorldActions;
 
-public class WorldEffect : IWorldEffect
+public class WorldEffect : Effect
 {
 	public readonly DeliveryMethod DeliveryMethod;
 	public readonly WorldConseqences Conseqences;
@@ -35,12 +35,12 @@ public class WorldEffect : IWorldEffect
 		Conseqences = conseqences;
 	}
 
-	public float GetOptimalRangeAI()
+	public override float GetOptimalRangeAI()
 	{
 		return DeliveryMethod.GetOptimalRangeAI(Conseqences.Range-1);
 	}
 
-	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target)
 	{
 		Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
@@ -70,7 +70,7 @@ public class WorldEffect : IWorldEffect
 		var tiles = new HashSet<WorldTile>();
 
 		Vector2Int? nullTarget = target;
-		if (!CanPerform(actor, target).Item1)
+		if (!CanPerformChild(actor, target).Item1)
 		{
 			return new Tuple<Vector2Int?, HashSet<WorldTile>>(nullTarget,tiles);
 		}
@@ -93,7 +93,7 @@ public class WorldEffect : IWorldEffect
 
 
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target)
 	{
 #if CLIENT
 		if (!FreeFire && targetAid != TargetAid.None)
@@ -120,7 +120,7 @@ public class WorldEffect : IWorldEffect
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
 	private Tuple<Vector2Int?, HashSet<WorldTile>> previewArea = new Tuple<Vector2Int?, HashSet<WorldTile>>(null,new HashSet<WorldTile>());
 
-	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target).Item1)	

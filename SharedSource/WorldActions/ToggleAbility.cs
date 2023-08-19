@@ -91,7 +91,7 @@ public class ToggleAbility : IUnitAbility
 	}
 
 
-	public List<IWorldEffect> Effects	{
+	public List<Effect> Effects	{
 		get {
 			if (isOn)
 			{

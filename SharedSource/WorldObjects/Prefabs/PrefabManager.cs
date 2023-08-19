@@ -224,18 +224,17 @@ public static class PrefabManager
 
 	private static UnitAbility ParseUnitAbility(XmlElement actobj)
 	{
-		string actname;
-		string tooltip;
-		ushort DetCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
-		ushort MoveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
-		ushort ActCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
+
+		ushort detCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
+		ushort moveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
+		ushort actCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
 		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
 
-		List<IWorldEffect> effects = ParseWorldEffects(actobj);
+		List<Effect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, DetCost, MoveCost, ActCost, effects,immideaateActivation);
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation);
 		return a;
 	}
 
@@ -248,13 +247,18 @@ public static class PrefabManager
 		int supressionRange = int.Parse(xmlElement.Attributes?["supressionRange"]?.InnerText ?? "0");
 		int dropoff = int.Parse(xmlElement.Attributes?["dropOffRange"]?.InnerText ?? "10");
 
-		return new Shootable(dmg, detRes, supression, supressionRange, dropoff);
+
+
+		var shoot = new Shootable(dmg, detRes, supression, supressionRange, dropoff);
+		Vector2Int offset = Vector2Int.Parse(xmlElement.Attributes?["offset"]?.InnerText ?? "0,0");
+		shoot.Offset = offset;
+		return shoot;
 	}
 
 	private static WorldEffect ParseWorldEffect(XmlElement xmlObj)
 	{
-		DeliveryMethod dvm = null;
-		WorldConseqences? eff = new WorldConseqences();
+		DeliveryMethod? dvm = null;
+		WorldConseqences eff = new WorldConseqences();
 /*
 		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
 		WorldEffect.TargetAid tAid = WorldEffect.TargetAid.None;
@@ -292,14 +296,14 @@ public static class PrefabManager
 			}
 		
 
-			//	if (dvm != null)
-			//	{
-			//		Vector2Int offset = Vector2Int.Parse(node.Attributes?["offset"]?.InnerText ?? "0,0");
-			//		dvm.offset = offset;
-			//		usgs.Add(dvm);
-			//	}
+			
+      
+        
+			
 			if(dvm==null)
 				throw new Exception("no delivery method");
+			
+
 		}
 		
 
@@ -312,13 +316,16 @@ public static class PrefabManager
 		
 			
 		WorldEffect itm = new WorldEffect(dvm,eff);
+		
+		Vector2Int offset = Vector2Int.Parse(xmlObj.Attributes?["offset"]?.InnerText ?? "0,0");
+		itm.Offset = offset;
 
 		return itm;
 	}
 
-	private static List<IWorldEffect> ParseWorldEffects(XmlElement xmlObj)
+	private static List<Effect> ParseWorldEffects(XmlElement xmlObj)
 	{
-		List<IWorldEffect> effects = new List<IWorldEffect>();
+		List<Effect> effects = new List<Effect>();
 		foreach (XmlElement shoot in xmlObj.GetElementsByTagName("shoot"))
 		{
 			effects.Add(ParseShoot(shoot));

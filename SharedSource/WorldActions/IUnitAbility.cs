@@ -12,7 +12,7 @@ public interface IUnitAbility : ICloneable
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor);
 
 	List<SequenceAction> GetConsequences(Unit actor, Vector2Int target);
-	List<IWorldEffect> Effects { get; }
+	List<Effect> Effects { get; }
 	Tuple<int, int, int> GetCost(Unit c);
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
