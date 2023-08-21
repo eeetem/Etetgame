@@ -88,7 +88,7 @@ namespace DefconNull.World
 		{
 			foreach (var obj in WorldObjects.Values)
 			{
-				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayerOneTeam == teamOneTurn)
+				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayer1Team == teamOneTurn)
 				{
 					obj.UnitComponent.StartTurn();
 				}
@@ -96,7 +96,7 @@ namespace DefconNull.World
 
 			foreach (var obj in WorldObjects.Values)
 			{
-				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayerOneTeam != teamOneTurn)
+				if (obj.UnitComponent != null && obj.UnitComponent.IsPlayer1Team != teamOneTurn)
 				{
 					obj.UnitComponent.EndTurn();
 				}

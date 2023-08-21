@@ -1,4 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
@@ -15,19 +19,22 @@ public class AI
 		new Move();
 
 	}
+
+	public static Task AItask;
 	public static void DoAITurn(List<Unit> squad)
 	{
 		var t = new Task(delegate
 		{
-			Task.Run(() =>
+            AItask = Task.Run(() =>
 			{
 				foreach (var unit in squad)
-				{
+				{	
+					if(unit.IsPlayer1Team != GameManager.IsPlayer1Turn) break;
 					Console.WriteLine("---------AI acting with unit: "+unit!.WorldObject.TileLocation.Position);
                     
-					while (unit!.MovePoints.Current > unit!.ActionPoints.Current)
+					while (0>unit!.MovePoints.Current)
 					{
-
+						AiActions[AIAction.AIActionType.Move].Execute(unit);
 						do
 						{
 							Thread.Sleep(1000);
@@ -44,9 +51,6 @@ public class AI
 
 	}
 
-
-	
-	
 
 
 }

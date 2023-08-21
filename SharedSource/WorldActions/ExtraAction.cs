@@ -32,6 +32,7 @@ public class UnitAbility : IUnitAbility
 	public bool ImmideateActivation => immideaateActivation;
 
 	public string Tooltip => tooltip;
+	public string Name => name;
 
 
 	public float GetOptimalRangeAI()
@@ -73,6 +74,7 @@ public class UnitAbility : IUnitAbility
 			return res;
 		}
 
+        
 		foreach (var effect in Effects)
 		{
 			var result = effect.CanPerform(actor, target);

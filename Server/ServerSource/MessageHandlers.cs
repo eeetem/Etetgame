@@ -187,7 +187,7 @@ public static partial class NetworkingManager
 			Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);
 			return;
 		}
-		if(controllable.IsPlayerOneTeam != GameManager.IsPlayer1Turn)
+		if(controllable.IsPlayer1Team != GameManager.IsPlayer1Turn)
 		{
 			Console.WriteLine("Client sent an action for worng teams Unit");
 			return;

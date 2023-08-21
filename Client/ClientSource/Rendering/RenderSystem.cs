@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using DefconNull.AI;
 using DefconNull.LocalObjects;
 using DefconNull.Rendering.UILayout;
 using DefconNull.World;
@@ -148,12 +148,20 @@ public static class RenderSystem
 						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
 					}
 
-				//	spriteBatch.DrawText(AI.GetTileMovementScore(path,GameLayout.SelectedUnit).ToString(),pos,Color.White);
+					
 					
 
 				}
 
 				count++;
+			}
+
+			for (int x = 0; x < 100; x++)
+			{
+				for (int y = 0; y < 100; y++)
+				{
+					spriteBatch.DrawText(GameLayout.AIMoveCache[x,y].ToString(),Utility.GridToWorldPos(new Vector2(x,y) + new Vector2(0.5f,0.5f)),Color.White);
+				}
 			}
 		}
 		spriteBatch.End();

@@ -15,6 +15,7 @@ using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Move = DefconNull.AI.Move;
 using Thickness = Myra.Graphics2D.Thickness;
 
 namespace DefconNull.Rendering.UILayout;
@@ -56,10 +57,21 @@ public class GameLayout : MenuLayout
 		UI.SetUI( new GameLayout());
 		Camera.SetPos(controllable.WorldObject.TileLocation.Position);
 	}
+
+	public static int[,] AIMoveCache = new int[100,100];
 	public static void ReMakeMovePreview()
 	{
 		previewMoves = SelectedUnit.GetPossibleMoveLocations();
-
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
+			{
+				if (WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y)).Surface != null)
+				{
+				//ds	AIMoveCache[x, y] = AI.Move.GetTileMovementScore(new Vector2Int(x, y), GameLayout.SelectedUnit, out _);
+				}
+			}
+		}
 	}
 
 	private static RenderTarget2D? hoverHudRenderTarget;
@@ -721,6 +733,8 @@ public class GameLayout : MenuLayout
 			{
 				DrawHoverHud(batch, edge, deltatime);
 			}
+
+
 		}
 		foreach (var controllable in Controllables)
 		{
@@ -1061,11 +1075,27 @@ public class GameLayout : MenuLayout
 				offset+= 15;
 			}
 		}
-		
-
-		
-	
 		batch.End();
+
+		if (drawExtra)
+		{
+			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
+			Move.MoveCalcualtion details;
+			int res = AI.Move.GetTileMovementScore(TileCoordinate, SelectedUnit, out details);
+
+			string text = $" Total: {res}\n Closest Distance: {details.closestDistance}\n Distance Reward: {details.distanceReward}\n ProtectionPenalty: {details.protectionPentalty}\n";
+			foreach (var attack in details.EnemyAttackScores)
+			{
+				text += $" Attack: {attack.Item1} DMG: {attack.Item2}, SUP: {attack.Item3}\n";
+			}
+            text += $" Clumping Penalty: {details.clumpingPenalty}\n Visibility Score: {details.visibilityScore}\n Damage Potential: {details.damagePotential}\n";
+			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
+			batch.DrawText(text,Vector2.One,  3,100, Color.White);
+			batch.End();
+		}
+
+	
 
 	}
 

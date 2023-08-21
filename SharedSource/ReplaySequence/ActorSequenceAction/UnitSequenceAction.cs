@@ -12,7 +12,7 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public abstract class UnitSequenceAction : SequenceAction
 {
 
-	TargetingRequirements Requirements;
+	public TargetingRequirements Requirements;
 	public struct TargetingRequirements : IMessageSerializable
 	{
 		public int ActorID = -1;

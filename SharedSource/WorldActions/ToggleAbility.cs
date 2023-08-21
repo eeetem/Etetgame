@@ -25,6 +25,18 @@ public class ToggleAbility : IUnitAbility
 			return on.tooltip;
 		}
 	}
+	public string Name
+	{
+		get {
+			if (isOn)
+			{
+				return off.name;
+			}
+
+			return on.name;
+		}
+	}
+
 
 	public void Toggle()
 	{

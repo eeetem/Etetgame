@@ -7,11 +7,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Riptide;
+#if CLIENT
+using DefconNull.Rendering.UILayout;
+#endif
 
 namespace DefconNull;
 
 public static partial class Utility
 {
+    
+  
+    
     public static void Init()
     {
         mainThreadId = Thread.CurrentThread.ManagedThreadId;
@@ -302,19 +308,19 @@ public static partial class Utility
         }
 
 
-        if (dir.X < 0.1 && dir.X > -0.1)
+        if (dir.X < 0.3 && dir.X > -0.3)
         {
             return Direction.West;
         }
-        if (dir.X < 1.1 && dir.X > 0.9)
+        if (dir.X < 1.3 && dir.X > 0.7)
         {
             return Direction.East;
         }
-        if (dir.Y < 0.1 && dir.Y > -0.1)
+        if (dir.Y < 0.3 && dir.Y > -0.3)
         {
             return Direction.North;
         }
-        if (dir.Y < 1.1 && dir.Y > 0.9)
+        if (dir.Y < 1.3 && dir.Y > 0.7)
         {
             return Direction.South;
         }

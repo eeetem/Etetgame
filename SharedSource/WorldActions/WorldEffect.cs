@@ -42,7 +42,7 @@ public class WorldEffect : Effect
 
 	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target)
 	{
-		Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
+		//Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
 
 		Vector2Int? nullTarget = target;

@@ -89,6 +89,7 @@ public static partial class GameManager
 
 	public static void NextTurn(bool aiHackyBypass = false)
 	{
+	
 		playedWarning = false;
 		endTurnNextFrame = false;
 		IsPlayer1Turn = !IsPlayer1Turn;
@@ -98,7 +99,7 @@ public static partial class GameManager
 		Vector2Int capPoint = Vector2.Zero;
 		foreach (var point in CapturePoints)
 		{
-			bool? team1 = point.TileLocation.UnitAtLocation?.IsPlayerOneTeam;
+			bool? team1 = point.TileLocation.UnitAtLocation?.IsPlayer1Team;
 			if (team1 == null) continue;
 
 			if ((bool) team1)
@@ -148,7 +149,7 @@ public static partial class GameManager
 #if SERVER
 		Console.WriteLine("turn: "+IsPlayer1Turn);
 		NetworkingManager.SendEndTurn();
-		if (!aiHackyBypass)
+	/*	if (!aiHackyBypass)
 		{
 			if (!IsPlayer1Turn && Player2.IsAI)
 			{
@@ -159,7 +160,27 @@ public static partial class GameManager
 				}
 				AI.AI.DoAITurn(units);
 			}
+		}*/
+	
+	//AI Match
+	if (IsPlayer1Turn)
+	{
+		List<Unit> units = new List<Unit>();
+		foreach (var u in T1Units)
+		{
+			units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
 		}
+		AI.AI.DoAITurn(units);
+	}
+	else
+	{
+		List<Unit> units = new List<Unit>();
+		foreach (var u in T2Units)
+		{
+			units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+		}
+		AI.AI.DoAITurn(units);
+	}
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using DefconNull.AI;
 using DefconNull.Networking;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,10 +12,10 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class TakeDamage : SequenceAction
 {
 	public override bool CanBatch => true;
-	private int dmg;
-	private int detResistance;
+	public readonly int dmg;
+	public readonly int detResistance;
 	private int objID = -1;
-	private Vector2Int position = new Vector2Int(-1,-1);
+	public Vector2Int position = new Vector2Int(-1,-1);
 	private List<string> Ignores = new List<string>();
 	public TakeDamage(int dmg, int detResistance, int objID) : base(SequenceType.TakeDamage)
 	{
@@ -109,4 +110,7 @@ public class TakeDamage : SequenceAction
 
 	}
 #endif
+
+
+
 }

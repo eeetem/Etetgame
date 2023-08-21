@@ -28,7 +28,7 @@ namespace DefconNull.World.WorldObjects
 
 			WorldObject = parent;
 			Type = type;
-			IsPlayerOneTeam = data.Team1;
+			IsPlayer1Team = data.Team1;
 			parent.UnitComponent = this;
 
 
@@ -168,7 +168,7 @@ namespace DefconNull.World.WorldObjects
 
 		}
 
-		public bool IsPlayerOneTeam { get; private set; }
+		public bool IsPlayer1Team { get; private set; }
 
 		public HashSet<Tuple<Vector2Int,bool>> GetOverWatchPositions(Vector2Int target)
 		{
@@ -418,7 +418,7 @@ namespace DefconNull.World.WorldObjects
 			}
 			public UnitData(Unit u)
 			{
-				Team1 = u.IsPlayerOneTeam;
+				Team1 = u.IsPlayer1Team;
 				ActionPoints = u.ActionPoints.Current;
 				MovePoints = u.MovePoints.Current;
 				CanTurn = u.canTurn;

@@ -16,6 +16,7 @@ public interface IUnitAbility : ICloneable
 	Tuple<int, int, int> GetCost(Unit c);
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
+	string Name { get; }
 	float GetOptimalRangeAI();
 #if CLIENT
 	void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);

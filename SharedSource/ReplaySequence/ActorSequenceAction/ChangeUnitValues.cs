@@ -96,6 +96,8 @@ public class ChangeUnitValues : UnitSequenceAction
 		message.Add(moveRangeEffect);
 	}
 
+
+
 #if CLIENT
 
 	protected override void Preview(SpriteBatch spriteBatch)

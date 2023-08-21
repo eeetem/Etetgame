@@ -239,7 +239,7 @@
 
 
   </unit>
-
+<!--
   <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
     <name>Specialist</name>
 
@@ -288,7 +288,7 @@
     </action>
     
   </unit>
-
+-->
   <statuseffect>
     <name>Holstered</name>
     <effect>

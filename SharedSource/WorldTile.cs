@@ -27,10 +27,10 @@ public partial class WorldTile
 		foreach (var watcher in Watchers)
 		{
 			
-			bool isFriendly = watcher.IsPlayerOneTeam == actor.IsPlayerOneTeam;
+			bool isFriendly = watcher.IsPlayer1Team == actor.IsPlayer1Team;
 			//make this "can player see" fucntion
 			List<int> units;
-			if (watcher.IsPlayerOneTeam)
+			if (watcher.IsPlayer1Team)
 			{
 				units = GameManager.T1Units;
 			}

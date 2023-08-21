@@ -114,34 +114,32 @@ public class Shootable : Effect
 			}
 		}
 		WorldManager.RayCastOutcome? coverCast = null;
-		if (result.hit)
+
+		Vector2 dir = Vector2.Normalize(from - to);
+		to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
+		WorldManager.RayCastOutcome cast;
+
+		cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
+		if (cast.hit && result.HitObjId != cast.HitObjId)
 		{
-
-			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
-			WorldManager.RayCastOutcome cast;
-
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
+			coverCast = cast;
+		}
+		else
+		{
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
 			if (cast.hit && result.HitObjId != cast.HitObjId)
 			{
 				coverCast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
-				if (cast.hit && result.HitObjId != cast.HitObjId)
-				{
-					coverCast = cast;
-				}
-				else
-				{
-					coverCast = null;
-				}
+				coverCast = null;
 			}
-
-
-
 		}
+
+
+
+		
 		Projectile p = new Projectile(result,coverCast);
 		p.targetLow = targetLow;
 		p.SupressionIgnores.Add(actor.WorldObject.ID);
@@ -201,10 +199,10 @@ public class Shootable : Effect
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
 		if (targeting == TargetingType.Auto)
 		{
-			if (tile.UnitAtLocation != null  && tile.UnitAtLocation.Crouching) 
+			if (tile.UnitAtLocation != null  && tile.UnitAtLocation.Crouching)
 			{
 				lowShot = true;
-		       
+
 				if (clientPreview && !tile.UnitAtLocation.WorldObject.IsVisible())
 				{
 					lowShot = false;
@@ -226,54 +224,55 @@ public class Shootable : Effect
 		retrunList.Add(m);
 		var turnact = new FaceUnit(actor.WorldObject.ID, target);
 		retrunList.Add(turnact);
+		if (p.CoverCast.HasValue)
+		{
+			var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId);
+			Cover cover = coverObj!.GetCover();
+			if (coverObj?.UnitComponent != null && coverObj.UnitComponent.Crouching)
+			{
+				if (cover != Cover.Full)
+				{
+					cover++;
+				}
+			}
+
+			int coverBlock = 0;
+			switch (cover)
+			{
+				case Cover.Full:
+					coverBlock = 20;
+					break;
+				case Cover.High:
+					coverBlock = 4;
+					break;
+				case Cover.Low:
+					coverBlock = 2;
+					break;
+				case Cover.None:
+					Console.Write("coverless object hit, this shouldnt happen");
+					//this shouldnt happen
+					break;
+			}
+
+			if (p.Dmg > coverBlock)
+			{
+				p.Dmg -= coverBlock;
+			}
+			else
+			{
+				coverBlock = p.Dmg;
+				p.Dmg = 0;
+			}
+
+			var act = new TakeDamage(coverBlock, 0, coverObj!.ID);
+			retrunList.Add(act);
+		}
+
 		if (p.Result.hit)
 		{
 			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId);
 			if (hitObj != null)
 			{
-				if (p.CoverCast.HasValue)
-				{
-					var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId);
-					Cover cover = coverObj!.GetCover();
-					if (coverObj?.UnitComponent != null && coverObj.UnitComponent.Crouching)
-					{
-						if (cover != Cover.Full)
-						{ 
-							cover++;
-						}
-					}
-
-					int coverBlock = 0;
-					switch (cover)
-					{
-						case Cover.Full:
-							coverBlock = 20;
-							break;
-						case Cover.High:
-							coverBlock =4;
-							break;
-						case Cover.Low:
-							coverBlock =2;
-							break;
-						case Cover.None:
-							Console.Write("coverless object hit, this shouldnt happen");
-							//this shouldnt happen
-							break;
-					}
-					if(p.Dmg>coverBlock)
-					{
-						p.Dmg -= coverBlock;
-					}
-					else
-					{
-						coverBlock = p.Dmg;
-						p.Dmg = 0;
-					}
-
-					var act = new TakeDamage(coverBlock, 0, coverObj!.ID);
-					retrunList.Add(act);
-					//coverObj!.TakeDamage(coverBlock,0);
-				}
 
 				if (hitObj.UnitComponent is not null)
 				{
@@ -282,8 +281,6 @@ public class Shootable : Effect
 				}
 				var act2 = new TakeDamage(p.Dmg, detResistance, hitObj.ID);
 				retrunList.Add(act2);
-			
-				
 
 			}
 			else
@@ -293,18 +290,19 @@ public class Shootable : Effect
 		}
 		else
 		{
-			//Console.WriteLine("MISS");
-			//nothing is hit
+			//we missed so add taking damage on this tile as consiquences
+			var act2 = new TakeDamage(p.Dmg, detResistance, p.Result.EndPoint, new List<string>());
+			retrunList.Add(act2);
+			
 		}
 		List<WorldTile> tiles = SupressedTiles(p);
 
 		foreach (var tile in tiles)
 		{
-			if (tile.UnitAtLocation != null && !p.SupressionIgnores.Contains(tile.UnitAtLocation.WorldObject.ID))
-			{
-				var act2 = new Suppress(supressionStrenght, tile.UnitAtLocation.WorldObject.ID);
-				retrunList.Add(act2);
-			}
+
+            var act2 = new Suppress(supressionStrenght, tile.Position);
+            retrunList.Add(act2);
+			
 	
 		}
 
@@ -362,7 +360,7 @@ public class Shootable : Effect
 		spriteBatch.DrawOutline(area, Color.Blue, 5);
 		string targetHeight = "fix this shit";
 /*
-		
+
 		switch (targeting)
 		{
 			case TargetingType.Auto:
@@ -499,8 +497,8 @@ public class Shootable : Effect
 //				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
 //			}
 //
-		//	GameLayout.ScreenData = data;
-		//todo new UI
+			//	GameLayout.ScreenData = data;
+			//todo new UI
 		}
 		
 

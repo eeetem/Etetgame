@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DefconNull.World;
+using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
@@ -9,9 +10,13 @@ namespace DefconNull.SharedSource.Units.ReplaySequence;
 public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 {
 	public override bool CanBatch => true;
-	private int detDmg;
+	public readonly int detDmg;
 
 	public Suppress(int detDmg, int actorID) : base(new TargetingRequirements(actorID), SequenceType.Suppress)
+	{
+		this.detDmg = detDmg;
+	}
+	public Suppress(int detDmg, Vector2Int actorID) : base(new TargetingRequirements(actorID), SequenceType.Suppress)
 	{
 		this.detDmg = detDmg;
 	}
@@ -54,5 +59,6 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 		}
 	}
 #endif
+
 
 }
