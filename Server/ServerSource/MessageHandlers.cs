@@ -10,7 +10,13 @@ namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
-			
+
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.DoAI)]
+	private static void AiFinish(ushort senderID, Message message)
+	{
+		GameManager.FinishTurnWithAI();
+	}
+
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Kick)]
 	private static void KickRequest(ushort senderID, Message message)
 	{
@@ -199,7 +205,7 @@ public static partial class NetworkingManager
 			int ability = int.Parse(packet.Args[0]);
 			UseAbility.AbilityIndex = ability;
 			UseAbility.abilityLock = true;
-			IUnitAbility a = controllable.GetAction(ability);
+			IUnitAbility a = controllable.Abilities[ability];
 			/*if (a.WorldEffect.DeliveryMethods.Find(x => x is Shootable) != null)
 			{
 				string target = packet.Args[1];

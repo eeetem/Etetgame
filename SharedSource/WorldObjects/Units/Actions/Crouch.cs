@@ -46,7 +46,7 @@ public class Crouch : Action
 
 		foreach (var shooter in shooters)
 		{
-			UseAbility.AbilityIndex = -1;
+			UseAbility.AbilityIndex = -0;
 			var res = Actions[ActionType.UseAbility].GetConsiquenes(shooter,actor.WorldObject.TileLocation.Position);
 			foreach (var a in res)
 			{

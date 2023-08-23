@@ -115,7 +115,7 @@ public class Move : Action
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-					UseAbility.AbilityIndex = -1;
+					UseAbility.AbilityIndex = 0;
 					var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
 					foreach (var a in res)
 					{

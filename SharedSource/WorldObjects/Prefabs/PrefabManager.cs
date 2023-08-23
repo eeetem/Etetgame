@@ -172,21 +172,21 @@ public static class PrefabManager
 			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
 			foreach (var act in actions)
 			{ 
-				actionsList.Add(ParseUnitAbility((XmlElement)act));
+				actionsList.Add(ParseUnitAbility((XmlElement)act,actionsList.Count));
 			}
 			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
 			foreach (var act in toggleActions)
 			{
 				//	ExtraToggleAction toggle = new ExtraToggleAction();
 				XmlElement actobj = (XmlElement) act;
-				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException());
-				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException());
+				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException(),actionsList.Count);
+				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException(),actionsList.Count);
 				ToggleAbility toggle = new ToggleAbility(on,off,actionsList.Count);
 				actionsList.Add(toggle);
 			}
 
-			XmlElement defaultact = (XmlElement)xmlObj.GetElementsByTagName("defaultAction")[0]! ?? throw new InvalidOperationException();
-			UnitType unitType = new UnitType(name, ParseUnitAbility(defaultact), actionsList);
+
+			UnitType unitType = new UnitType(name,  actionsList);
 			
 			unitType.Faceable = true;
 			unitType.SolidCover = Cover.Full;
@@ -222,7 +222,7 @@ public static class PrefabManager
         
 	}
 
-	private static UnitAbility ParseUnitAbility(XmlElement actobj)
+	private static UnitAbility ParseUnitAbility(XmlElement actobj, int index)
 	{
 
 		ushort detCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
@@ -234,7 +234,7 @@ public static class PrefabManager
 		List<Effect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation);
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index);
 		return a;
 	}
 
@@ -262,7 +262,7 @@ public static class PrefabManager
 /*
 		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
 		WorldEffect.TargetAid tAid = WorldEffect.TargetAid.None;
-		
+
 		switch (aid)
 		{
 			case "none":

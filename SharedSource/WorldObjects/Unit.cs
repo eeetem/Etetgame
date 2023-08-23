@@ -97,28 +97,9 @@ namespace DefconNull.World.WorldObjects
 			}
 		}
         
-
-
+        
 
 		public List<IUnitAbility> Abilities = new List<IUnitAbility>();
-		public UnitAbility DefaultAttack;
-		public List<IUnitAbility> GetFullAbilityList()
-		{
-			var list = new List<IUnitAbility>();
-			list.AddRange(Abilities);
-			list.Add(DefaultAttack);
-			return list;
-		}
-
-		public IUnitAbility GetAction(int index)
-		{
-			if(index == -1 || index >= Abilities.Count)
-			{
-				return DefaultAttack;
-			}
-			return Abilities[index];
-		}
-
 
 		public bool canTurn { get; set; }
 
@@ -187,11 +168,11 @@ namespace DefconNull.World.WorldObjects
 			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
 			{
-				if (DefaultAttack.CanPerform(this,position).Item1)
+				if (Abilities[0].CanPerform(this,position).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,true));
 				}
-				else if (DefaultAttack.CanPerform(this,position).Item1)
+				else if (Abilities[0].CanPerform(this,position).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,false));
 				}

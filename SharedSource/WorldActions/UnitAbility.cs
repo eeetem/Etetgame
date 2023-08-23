@@ -33,6 +33,8 @@ public class UnitAbility : IUnitAbility
 
 	public string Tooltip => tooltip;
 	public string Name => name;
+	public int Index => index;
+	public int index;
 
 
 	public float GetOptimalRangeAI()
@@ -48,7 +50,7 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
@@ -58,23 +60,32 @@ public class UnitAbility : IUnitAbility
 		Effects = effects;
 		this.immideaateActivation = immideaateActivation;
 #if CLIENT
-		if (name != "")
-		{
-			Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
-		}
+
+		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
+		
 #endif
 	}
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false)
 	{
-
-		var res = HasEnoughPointsToPerform(actor);
+		var res = HasEnoughPointsToPerform(actor,NextTurn);
 		if (!res.Item1)
 		{
 			return res;
 		}
+	
+		res = IsPlausibleToPerform(actor,target);
+		if (!res.Item1)
+		{
+			return res;
+		}
+ 
+		return new Tuple<bool, string>(true, "");
+	
+	}
 
-        
+	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target)
+	{
 		foreach (var effect in Effects)
 		{
 			var result = effect.CanPerform(actor, target);
@@ -84,21 +95,41 @@ public class UnitAbility : IUnitAbility
 			}
 		}
 		return new Tuple<bool, string>(true, "");
-	
 	}
 
-	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
+
+	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor, bool nextTurn = false)
 	{
 		if (DetCost > 0)
 		{
-			if (actor.Determination - DetCost < 0)
+			int determination = actor.Determination.Current;
+			if (nextTurn && !actor.Paniced)
+			{
+				determination++;
+				if (actor.Determination > actor.Determination.Max)
+				{
+					determination = actor.Determination.Max;
+				}
+			}
+
+			if (determination - DetCost < 0)
 			{
 				return new Tuple<bool, string>(false, "Not enough determination");
 			}
+			
 		}
 
+	
+
 		if(MoveCost>0){
-			if (actor.MovePoints - MoveCost < 0)
+			
+			int movePoints = actor.MovePoints.Current;
+			if (nextTurn)
+			{
+				movePoints = actor.MovePoints.Max;
+			}
+
+			if (movePoints- MoveCost < 0)
 			{
 				return new Tuple<bool, string>(false, "Not enough move points");
 			}
@@ -107,7 +138,14 @@ public class UnitAbility : IUnitAbility
 
 		if (ActCost > 0)
 		{
-			if (actor.ActionPoints - ActCost < 0)
+						
+			int actPoints = actor.ActionPoints.Current;
+			if (nextTurn)
+			{
+				actPoints = actor.ActionPoints.Max;
+			}
+			
+			if (actPoints - ActCost < 0)
 			{
 				return new Tuple<bool, string>(false, "Not enough action points");
 			}
@@ -171,7 +209,7 @@ public class UnitAbility : IUnitAbility
 
 	public object Clone()
 	{
-		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation);	
+		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index);	
 	}
     
 

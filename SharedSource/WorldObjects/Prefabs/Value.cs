@@ -79,6 +79,16 @@ public struct Value
 		return a.Current < b;
 	}
 
+	public static bool operator >(Value a, Value b)
+	{
+		return a.Current > b.Current;
+	}
+
+	public static bool operator <(Value a, Value b)
+	{
+		return a.Current < b.Current;
+	}
+
 	public static bool operator >(Value a, int b)
 	{
 		return a.Current > b;

@@ -11,9 +11,8 @@ namespace DefconNull.World.WorldObjects;
 public class UnitType : WorldObjectType
 {
 
-	public UnitType(string name,UnitAbility defAttack, List<IUnitAbility> actions) : base(name)
+	public UnitType(string name, List<IUnitAbility> actions) : base(name)
 	{
-		DefaultAttack = defAttack;
 		Actions = actions;
 	}
 
@@ -30,7 +29,7 @@ public class UnitType : WorldObjectType
 
 	public Texture2D[] CrouchSpriteSheet = null!;
 
-	private UnitAbility DefaultAttack = null!;
+
 	private readonly List<IUnitAbility> Actions = new List<IUnitAbility>();
 
 	public WorldConseqences? SpawnEffect { get; set; }
@@ -41,8 +40,6 @@ public class UnitType : WorldObjectType
 		wo.Face(data.Facing,false);
 		Unit component = new Unit(wo,this,data.UnitData!.Value);
 		Actions.ForEach(extraAction => { component.Abilities.Add((IUnitAbility) extraAction.Clone()); });
-		component.DefaultAttack = (UnitAbility) DefaultAttack.Clone();
-
 #if CLIENT
 		GameLayout.RegisterUnit(component);
 #endif

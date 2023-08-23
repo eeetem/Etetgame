@@ -29,5 +29,6 @@ public class NetMsgIds
 		Kick = 19,
 		AddAI = 20,
 		PracticeMode = 21,
+		DoAI = 22,
 	}
 }

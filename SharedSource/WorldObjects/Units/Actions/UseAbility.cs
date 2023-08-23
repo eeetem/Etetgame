@@ -19,7 +19,7 @@ public class UseAbility : Action
 	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target)
 	{
 			
-		IUnitAbility action = actor.GetAction(AbilityIndex);
+		IUnitAbility action = actor.Abilities[(AbilityIndex)];
 		return action.CanPerform(actor, target);
 
 	}
@@ -44,10 +44,10 @@ public class UseAbility : Action
 	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
 	{
 
-		IUnitAbility action = actor.GetAction(AbilityIndex);
+		IUnitAbility action = actor.Abilities[(AbilityIndex)];
 		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
-		if (AbilityIndex == -1)//hardcode shooter spotting for n
+		if (AbilityIndex == 0)//hardcode shooter spotting for n
 		{
 			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, true, 3);
 			queue.Enqueue(m);
@@ -75,7 +75,7 @@ public class UseAbility : Action
 #if CLIENT
 		public override void SendToServer(Unit actor, Vector2Int target)
 		{
-			IUnitAbility action = actor.GetAction(AbilityIndex);
+			IUnitAbility action = actor.Abilities[AbilityIndex];
 			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
 			packet.Args.Add(AbilityIndex.ToString());
 
@@ -84,7 +84,7 @@ public class UseAbility : Action
 		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
-			IUnitAbility action = actor.GetAction(AbilityIndex);
+			IUnitAbility action = actor.Abilities[AbilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}
 

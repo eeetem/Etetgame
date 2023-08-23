@@ -28,7 +28,7 @@ public static class Program
 		Action.Init();
 		Utility.Init();
 		PathFinding.GenerateNodes();
-		AI.AI.Init();
+			//AI.AI.Init();
 		//	Console.WriteLine("Enter Port:");
 		//string port = Console.ReadLine();
 			

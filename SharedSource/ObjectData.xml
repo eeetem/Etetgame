@@ -81,7 +81,8 @@
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <defaultAction moveCost="1" d="1">
+    <action moveCost="1" d="1">
+      <name>Attack</name>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
@@ -93,7 +94,7 @@
           <sfx name="rifle3"/>
         </consequences>
       </effect>
-    </defaultAction>
+    </action>
     
     <action det ="2" moveCost="1" actCost="1">
       <name>Headshot</name>
@@ -115,8 +116,10 @@
   <unit Health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
-    <defaultAction moveCost="1" actCost="1">
+    <action moveCost="1" actCost="1">
+      <name>Attack</name>
       <targetAid>enemy</targetAid>
+      
       <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
       <effect>
         <consequences>
@@ -125,7 +128,7 @@
           <sfx name="shotgun"/>
         </consequences>
       </effect>
-    </defaultAction>
+    </action>
 
     <action immideate="true" detCost ="3">
       <name>Breach n Clear</name>
@@ -138,157 +141,160 @@
     </action>
 
   </unit>
-
-  <unit Health="16" z="0.1"  moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
-    <name>Heavy</name>
-    
-    <spawneffect>
-      <applystatus status="Holstered"/>
-    </spawneffect>
-
-    <defaultAction moveCost="1" actCost="1">
-      <targetAid>enemy</targetAid>
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="0.5" speed="100"/>
-        <sfx name="mg"/>
-      </effect>
-    </defaultAction>
-
-    <action detCost ="3" moveCost="1" actCost="2">
-      <name>Suppress</name>
-      <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
+  
+  <!--
+    <unit Health="16" z="0.1"  moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
+      <name>Heavy</name>
       
-      <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-      
-      <effect>
-        <consequences>
-          <vfx name="clmagnitude" target="5" speed="50"/>
-          <vfx name="noise" target="0.1" speed="100"/>
+      <spawneffect>
+        <applystatus status="Holstered"/>
+      </spawneffect>
+  
+      <action moveCost="1" actCost="1">
+        <name>Attack</name>
+        <targetAid>enemy</targetAid>
+        <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
           <sfx name="mg"/>
-        </consequences>
-      </effect>
-    </action>
-
-    <toggleaction>
-      <toggleoff  detCost ="1" moveCost="0" actCost="0">
-        <name>Holster</name>
-        <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
+        </effect>
+      </action>
+  
+      <action detCost ="3" moveCost="1" actCost="2">
+        <name>Suppress</name>
+        <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
+        
+        <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        
         <effect>
           <consequences>
-            <applystatus status="Holstered"/>
+            <vfx name="clmagnitude" target="5" speed="50"/>
+            <vfx name="noise" target="0.1" speed="100"/>
+            <sfx name="mg"/>
           </consequences>
         </effect>
-      </toggleoff>
-      <toggleon name="" tip="" detCost ="1" moveCost="2" actCost="0">
-        <name>UnHolster</name>
-        <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
+      </action>
+  
+      <toggleaction>
+        <toggleoff  detCost ="1" moveCost="0" actCost="0">
+          <name>Holster</name>
+          <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
+          <effect>
+            <consequences>
+              <applystatus status="Holstered"/>
+            </consequences>
+          </effect>
+        </toggleoff>
+        <toggleon name="" tip="" detCost ="1" moveCost="2" actCost="0">
+          <name>UnHolster</name>
+          <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
+          <effect>
+            <consequences>
+              <removestatus status="Holstered"/>
+            </consequences>
+          </effect>
+        </toggleon>
+      </toggleaction>
+  
+    </unit>
+  
+    <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
+      <name>Officer</name>
+  
+      <action moveCost="1" actCost="1">
+        <name>Attack</name>
+        <targetAid>enemy</targetAid>
+        <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
         <effect>
-          <consequences>
-            <removestatus status="Holstered"/>
-          </consequences>
-        </effect>
-      </toggleon>
-    </toggleaction>
-
-  </unit>
-
-  <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
-    <name>Officer</name>
-
-    <defaultAction moveCost="1" actCost="1">
-      <targetAid>enemy</targetAid>
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
-      <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="1" speed="100"/>
-        <sfx name="rifle"/>
-      </effect>
-    </defaultAction>
-
-    <action immideate="true" detCost ="2" moveCost="0" actCost="0">
-      <name>Rally</name>
-      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
-      
-      <effect>
-        <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
-          <damage det="-100"/>
-        </consequences>
-      </effect>
-    </action>
-
-    <action detCost ="1" moveCost="1" actCost="0">
-      <name>Command</name>
-      <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
-      
-
-      <effect range="1" visible ="false" target="friend">
-        <delivery>
-          <vissionCast range="22"/>
-        </delivery>
-        <consequences>
-          <applystatus status="Boost" duration="1"/>
-        </consequences>
-      </effect>
-    </action>
-
-
-  </unit>
-<!--
-  <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
-    <name>Specialist</name>
-
-    <defaultAction moveCost="1" actCost="1">
-      
-      <targetAid>enemy</targetAid>
-      
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
-      <effect>
-        <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="1" speed="100"/>
           <sfx name="rifle"/>
-        </consequences>
-      </effect>
-    </defaultAction>
-
-    <action detCost ="1" moveCost="1" actCost="1">
-      <name>Resupply</name>
-      <tip>Give a targeted unit their last used item back</tip>
-      <targetAid>unit</targetAid>
+        </effect>
+      </action>
+  
+      <action immideate="true" detCost ="2" moveCost="0" actCost="0">
+        <name>Rally</name>
+        <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+        
+        <effect>
+          <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+            <damage det="-100"/>
+          </consequences>
+        </effect>
+      </action>
+  
+      <action detCost ="1" moveCost="1" actCost="0">
+        <name>Command</name>
+        <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
+        
+  
+        <effect range="1" visible ="false" target="friend">
+          <delivery>
+            <vissionCast range="22"/>
+          </delivery>
+          <consequences>
+            <applystatus status="Boost" duration="1"/>
+          </consequences>
+        </effect>
+      </action>
+  
+  
+    </unit>
+  
+    <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
+      <name>Specialist</name>
+  
+      <action moveCost="1" actCost="1">
+        
+        <targetAid>enemy</targetAid>
+        
+        <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
+        <effect>
+          <consequences>
+            <vfx name="clmagnitude" target="20" speed="50"/>
+            <vfx name="noise" target="1" speed="100"/>
+            <sfx name="rifle"/>
+          </consequences>
+        </effect>
+      </action>
+  
+      <action detCost ="1" moveCost="1" actCost="1">
+        <name>Resupply</name>
+        <tip>Give a targeted unit their last used item back</tip>
+        <targetAid>unit</targetAid>
+        
+        <effect>
+          <delivery>
+            <throwable throwRange="3"/>
+          </delivery>
+          <consequences>
+            <giveItem item="{target.LastItem.Name}"/>
+          </consequences>
+        </effect>
+      </action>
       
-      <effect>
-        <delivery>
-          <throwable throwRange="3"/>
-        </delivery>
-        <consequences>
-          <giveItem item="{target.LastItem.Name}"/>
-        </consequences>
-      </effect>
-    </action>
-    
-    <action detCost ="1" moveCost="1" actCost="1">
-      <name>Resupply</name>
-      <tip>Give a targeted unit item currently equipped by this unit</tip>
-      <targetAid>unit</targetAid>
-
-      <effect>
-        <delivery>
-          <throwable throwRange="3"/>
-        </delivery>
-        <consequences>
-          <giveItem item="{target.SelectedItem.Name}"/>
-        </consequences>
-      </effect>
-    </action>
-    
-  </unit>
--->
+      <action detCost ="1" moveCost="1" actCost="1">
+        <name>Resupply</name>
+        <tip>Give a targeted unit item currently equipped by this unit</tip>
+        <targetAid>unit</targetAid>
+  
+        <effect>
+          <delivery>
+            <throwable throwRange="3"/>
+          </delivery>
+          <consequences>
+            <giveItem item="{target.SelectedItem.Name}"/>
+          </consequences>
+        </effect>
+      </action>
+      
+    </unit>
+  -->
   <statuseffect>
     <name>Holstered</name>
     <effect>

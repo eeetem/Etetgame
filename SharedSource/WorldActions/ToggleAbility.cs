@@ -12,7 +12,7 @@ public class ToggleAbility : IUnitAbility
 	private readonly UnitAbility on;
 	private readonly UnitAbility off;
 	private bool isOn;
-	private int index;
+	public int index;
 
 	public string Tooltip
 	{
@@ -37,6 +37,8 @@ public class ToggleAbility : IUnitAbility
 		}
 	}
 
+	public int Index => index;
+
 
 	public void Toggle()
 	{
@@ -57,22 +59,31 @@ public class ToggleAbility : IUnitAbility
 	}
 
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false)
 	{
 		if (isOn)
 		{
-			return off.CanPerform(actor, target);
+			return off.CanPerform(actor, target,nextturn);
 		}
-		return on.CanPerform(actor, target);
+		return on.CanPerform(actor, target,nextturn);
 	}
 
-	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor)
+	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor,bool nextTurn = false)
 	{
 		if (isOn)
 		{
-			return off.HasEnoughPointsToPerform(actor);
+			return off.HasEnoughPointsToPerform(actor,nextTurn);
 		}
-		return on.HasEnoughPointsToPerform(actor);
+		return on.HasEnoughPointsToPerform(actor,nextTurn);
+	}
+
+	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target)
+	{
+		if (isOn)
+		{
+			return off.IsPlausibleToPerform(actor,target);
+		}
+		return on.IsPlausibleToPerform(actor,target);
 	}
 
 
@@ -95,8 +106,7 @@ public class ToggleAbility : IUnitAbility
 		{
 			r = on.GetConsequences(actor,target);
 		}
-			
-		//todo make this a world change
+		
 		r.Add(new UnitAbilitToggle(actor.WorldObject.ID,index));
 
 		return r;

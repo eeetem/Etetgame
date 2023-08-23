@@ -14,7 +14,7 @@ public class TakeDamage : SequenceAction
 	public override bool CanBatch => true;
 	public readonly int dmg;
 	public readonly int detResistance;
-	private int objID = -1;
+	public int objID = -1;
 	public Vector2Int position = new Vector2Int(-1,-1);
 	private List<string> Ignores = new List<string>();
 	public TakeDamage(int dmg, int detResistance, int objID) : base(SequenceType.TakeDamage)

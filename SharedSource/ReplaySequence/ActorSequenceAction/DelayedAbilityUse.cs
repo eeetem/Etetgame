@@ -27,7 +27,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 			//clientside execution of ability
 			//really should be avoided since it'll likely cause desyncs
 			//but we'll see
-			Actor.GetAction(abilityIndex).GetConsequences(Actor, target).ForEach(x => x.GenerateTask().RunSynchronously());
+			Actor.Abilities[abilityIndex].GetConsequences(Actor, target).ForEach(x => x.GenerateTask().RunSynchronously());
 		});
 		return t;
 	}

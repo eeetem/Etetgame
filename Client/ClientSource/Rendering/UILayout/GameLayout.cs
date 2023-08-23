@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DefconNull.Networking;
 using DefconNull.Rendering.PostProcessing;
 using DefconNull.World;
 using DefconNull.World.WorldActions;
@@ -68,7 +69,7 @@ public class GameLayout : MenuLayout
 			{
 				if (WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y)).Surface != null)
 				{
-				//ds	AIMoveCache[x, y] = AI.Move.GetTileMovementScore(new Vector2Int(x, y), GameLayout.SelectedUnit, out _);
+					//AIMoveCache[x, y] = AI.Move.GetTileMovementScore(new Vector2Int(x, y), GameLayout.SelectedUnit, out _);
 				}
 			}
 		}
@@ -320,7 +321,22 @@ public class GameLayout : MenuLayout
 			};
 			panel.Widgets.Add(swapTeam);
 		}
-
+		var doAI = new TextButton
+		{
+			Top = (int) (200f * globalScale.Y),
+			Left = (int) (-10f * globalScale.X),
+			Width = (int) (80 * globalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Text = "FinishTurnWithAI",
+			//Scale = globalScale
+		};
+		doAI.Click += (o, a) =>
+		{
+			NetworkingManager.SendAITurn();
+		};
+		panel.Widgets.Add(doAI);
+		
 		if (!GameManager.spectating)
 		{
 			endBtn = new ImageButton()
@@ -468,7 +484,7 @@ public class GameLayout : MenuLayout
 					if (UseAbility.AbilityIndex == index)
 					{
 						Action.SetActiveAction(null);
-						UseAbility.AbilityIndex = -1;
+						UseAbility.AbilityIndex = -0;
 					}
 				};
 				btn.Click += (o, a) =>
@@ -1085,9 +1101,11 @@ public class GameLayout : MenuLayout
 			int res = AI.Move.GetTileMovementScore(TileCoordinate, SelectedUnit, out details);
 
 			string text = $" Total: {res}\n Closest Distance: {details.closestDistance}\n Distance Reward: {details.distanceReward}\n ProtectionPenalty: {details.protectionPentalty}\n";
+			
 			foreach (var attack in details.EnemyAttackScores)
 			{
-				text += $" Attack: {attack.Item1} DMG: {attack.Item2}, SUP: {attack.Item3}\n";
+				if(attack.Ability != null)
+					text += $" Attack: {attack.Ability!.Name} DMG: {attack.Dmg}, SUP: {attack.Supression}\n";
 			}
             text += $" Clumping Penalty: {details.clumpingPenalty}\n Visibility Score: {details.visibilityScore}\n Damage Potential: {details.damagePotential}\n";
 			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
@@ -1145,7 +1163,7 @@ public class GameLayout : MenuLayout
 		{
 			if(Action.ActiveAction == null){
 				Action.SetActiveAction(Action.ActionType.UseAbility);
-				UseAbility.AbilityIndex = -1;
+				UseAbility.AbilityIndex = -0;
 			}
 			
 		}

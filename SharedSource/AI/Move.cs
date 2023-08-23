@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
+using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
@@ -19,20 +20,28 @@ public class Move : AIAction
 {
 	public Move() : base(AIActionType.Move)
 	{
+		
+	}
+
+	private int GetMovesToUse(Unit u)
+	{
+		int movesToUse = 0;
+		if (u.MovePoints.Current > u.ActionPoints.Current)
+		{
+			movesToUse = u.MovePoints.Current - u.ActionPoints.Current;//use our free moves
+		}
+		else
+		{
+			movesToUse = u.MovePoints.Current; // we're out of free moves, use all our moves
+		}
+		
+		return movesToUse;
 	}
 
 	public override void Execute(Unit unit)
 	{
-		int movesToUse = 0;
-		if (unit.MovePoints.Current > unit.ActionPoints.Current)
-		{
-			movesToUse = unit.MovePoints.Current - unit.ActionPoints.Current;//use our free moves
-		}
-		else
-		{
-			movesToUse = unit.MovePoints.Current; // we're out of free moves, use all our moves
-		}
 
+		int movesToUse = GetMovesToUse(unit);
 		var locs = GetMovementLocations(unit,movesToUse);
 
 		int bestOf = Math.Min(locs.Count, 1);
@@ -57,22 +66,76 @@ public class Move : AIAction
 		unit.DoAction(Action.Actions[Action.ActionType.Move], target);
 		Console.WriteLine(" waiting for sequence to clear.....");
 	}
-	
-	
+
+	public override int GetScore(Unit unit)
+	{
+		if(unit.MovePoints.Current <= 0)
+		{
+			return 0;
+		}
+		int movesToUse = GetMovesToUse(unit);
+		var locs = GetMovementLocations(unit,movesToUse);
+		int scoreForCurrentTile = GetTileMovementScore(unit.WorldObject.TileLocation.Position, unit, out _);
+		
+		int totalScore = 0;
+		int countedLocs = 0;
+		foreach (var loc in locs)
+		{
+			if (loc.Item2 != -1000)
+			{
+				countedLocs++;
+				totalScore += loc.Item2;
+			}
+		}
+		if (countedLocs == 0)
+		{
+			return 0;
+		}
+		int averageScore = totalScore / countedLocs;
+
+		int worseThanAverage = (averageScore - scoreForCurrentTile);
+		if(worseThanAverage < 0)
+		{
+			worseThanAverage = 0;
+		}
+		int actionScore = 1 + worseThanAverage;//diffference bwteen current tile and average of all other tiles
+		if (unit.MovePoints > unit.ActionPoints)
+		{
+			actionScore *= 2;
+		}
+
+		return actionScore;
+	}
+
+
 	private static ConcurrentBag<Tuple<Vector2Int, int>> GetMovementLocations(Unit unit,int distance = 1)
 	{
 		List<Vector2Int>[] allLocations = unit.GetPossibleMoveLocations();
 		allLocations[0].Add(unit.WorldObject.TileLocation.Position);
 		var scoredLocations = new ConcurrentBag<Tuple<Vector2Int, int>>();
-
+	//	var normalisedScoredLocations = new ConcurrentBag<Tuple<Vector2Int, int>>();
+		
+		int lowestScore = 1000;
 		for (int i = 0; i < Math.Min(distance,allLocations.Length); i++)
 		{
 			Parallel.ForEach(allLocations[i], l =>
 			{
 				int score = GetTileMovementScore(l, unit, out _);
+				if(score< lowestScore)
+				{
+					lowestScore = score;
+				}
 				scoredLocations.Add(new Tuple<Vector2Int, int>(l, score));
 			});
 		}
+
+		//normalise all socres to be above 0
+	//	foreach (var loc in scoredLocations)
+	//	{
+		//	normalisedScoredLocations.Add(new Tuple<Vector2Int, int>(loc.Item1, loc.Item2 + lowestScore));
+	//}
+		
+		
 
 		return scoredLocations;
 	}
@@ -81,15 +144,25 @@ public class Move : AIAction
 		public float closestDistance;
 		public int distanceReward;
 		public int protectionPentalty;
-		public List<Tuple<string,int,int>> EnemyAttackScores;
+		public List<AbilityUse> EnemyAttackScores =  new List<AbilityUse>();
 		public int visibilityScore;
 		public int clumpingPenalty;
 		public int damagePotential;
+
+		public MoveCalcualtion()
+		{
+			closestDistance = 0;
+			distanceReward = 0;
+			protectionPentalty = 0;
+			visibilityScore = 0;
+			clumpingPenalty = 0;
+			damagePotential = 0;
+		}
 	}
 	
 	public static int GetTileMovementScore(Vector2Int vec, Unit unit, out MoveCalcualtion details)
 	{
-		if(WorldManager.Instance.GetTileAtGrid(vec).UnitAtLocation != null)
+		if(WorldManager.Instance.GetTileAtGrid(vec).UnitAtLocation != null && WorldManager.Instance.GetTileAtGrid(vec).UnitAtLocation != unit)
 		{
 			details = new MoveCalcualtion();
 			return -1000;
@@ -98,28 +171,9 @@ public class Move : AIAction
 		int score = 0;
 		bool team = unit.IsPlayer1Team;
 		var tile = WorldManager.Instance.GetTileAtGrid(vec);
-#if SERVER
-		var myTeamUnitsIds = team ? GameManager.T1Units : GameManager.T2Units;
-		var otherTeamUnitsIds = team ? GameManager.T2Units : GameManager.T1Units;
 
-		List<Unit> myTeamUnits = new List<Unit>();
-		List<Unit> otherTeamUnits = new List<Unit>();
-		foreach (var id in myTeamUnitsIds)
-		{
-			myTeamUnits.Add( WorldManager.Instance.GetObject(id).UnitComponent);
-		}
 
-		foreach (var id in otherTeamUnitsIds)
-		{
-			otherTeamUnits.Add( WorldManager.Instance.GetObject(id).UnitComponent);
-		}
-
-#else
-			var myTeamUnits = GameLayout.MyUnits;//this assumes we're getting movement score for our own units
-			var otherTeamUnits = GameLayout.EnemyUnits;
-#endif
-			
-			
+		var otherTeamUnits = GetOtherTeamUnits(unit.IsPlayer1Team);
 			
 			
 		//add points for being in range of your primiary attack
@@ -135,26 +189,25 @@ public class Move : AIAction
 		}
 			
 
-		closestDistance -= unit.GetAction(-1).GetOptimalRangeAI();
+		closestDistance -= unit.Abilities[0].GetOptimalRangeAI();
         
 		details.closestDistance = closestDistance;
 		closestDistance = Math.Max(0, closestDistance);
-		int distanceReward = 20;
+		int distanceReward = 40;
 		distanceReward -= Math.Min(distanceReward, (int)closestDistance);//if we're futher than our optimal range, we get less points
 
 		score += distanceReward;
 		details.distanceReward = distanceReward;
 			
         
-		List<Tuple<string,int,int>> enemyAttackScores = new List<Tuple<string, int,int>>();
+		List<AbilityUse> enemyAttackScores = new List<AbilityUse>();
 		//add points for being protected
 		int protectionPentalty = 0;
 		foreach (var u in otherTeamUnits)
 		{
 			var res =GetWorstPossibleAttack(u.WorldObject.TileLocation.Position,u,vec,unit);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
-			protectionPentalty -= res.Item2;
-			protectionPentalty -= res.Item3;
-			enemyAttackScores.Add(new Tuple<string, int,int>(res.Item1, res.Item2,res.Item3));
+			protectionPentalty -= res.GetTotalValue();
+			enemyAttackScores.Add(res);
 			
 			
 		}
@@ -183,6 +236,8 @@ public class Move : AIAction
 		score += visibilityScore;
 		details.visibilityScore = visibilityScore;
 
+		
+		var myTeamUnits = GetMyTeamUnits(unit.IsPlayer1Team);
 		int clumpingPenalty = 0;
 		foreach (var u in myTeamUnits)
 		{
@@ -194,19 +249,20 @@ public class Move : AIAction
 		score += clumpingPenalty;
 		details.clumpingPenalty = clumpingPenalty;
 		
-		Tuple<string,int,int> BestAttack = new Tuple<string, int, int>("",0,0);
+		AbilityUse bestAttack = new AbilityUse();
 		int damagePotential = 0;
 		foreach (var enemy in otherTeamUnits)
 		{
 			var res =GetWorstPossibleAttack(vec,unit,enemy.WorldObject.TileLocation.Position,enemy);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
-			if(res.Item2 + res.Item3 > BestAttack.Item2 + BestAttack.Item3)
+			if (res.GetTotalValue() > bestAttack.GetTotalValue()) 
 			{
-				BestAttack = res;
+				bestAttack = res;
 			}
 		}
-		damagePotential = BestAttack.Item2 + BestAttack.Item3;
+
+		damagePotential = bestAttack.GetTotalValue();
 		damagePotential *= 2;//damage is important
-		details.damagePotential = damagePotential;
+		details.damagePotential = damagePotential; 
 	
 		score += damagePotential;
         
@@ -215,88 +271,6 @@ public class Move : AIAction
 		return score;
 	}
 
-	public static readonly object attackLock = new object();
-	private static Tuple<string,int,int> GetWorstPossibleAttack(Vector2Int hypotheticalAttackerPos, Unit Attacker, Vector2Int hypotheticalTargetPosition, Unit HypotheticalTarget)
-	{
-		
-		Tuple<string,int,int> worstAttack = new Tuple<string, int, int>("",0,0);
-		lock (attackLock)
-		{
-			
-		
-			Vector2Int? oldPos =null;
-			if(hypotheticalAttackerPos != Attacker.WorldObject.TileLocation.Position)
-			{
-				oldPos= Attacker.WorldObject.TileLocation.Position;
-				Attacker.WorldObject.Move(hypotheticalAttackerPos);
-			}
 
-		
-			Parallel.ForEach(Attacker.GetFullAbilityList(), ability =>
-			{
-				Parallel.ForEach(WorldManager.Instance.GetTilesAround(hypotheticalTargetPosition, 2), attackTile =>
-				{
-					int Damage = 0;
-					int Supression = 0;
-					bool canPerform = true;
-					foreach (var eff in ability.Effects)
-					{
-						if (!eff.CanPerform(Attacker, attackTile.Position).Item1)
-						{
-							canPerform = false;
-							break;
-						}
-					}
-
-					if (!canPerform) return;
-
-					var cons = ability.GetConsequences(Attacker, attackTile.Position);
-					foreach (var c in cons)
-					{
-						if (c.GetType() == typeof(TakeDamage) && ((TakeDamage) c).position == hypotheticalTargetPosition)
-						{
-							if (HypotheticalTarget.Determination > 0)
-							{
-								Damage += ((TakeDamage) c).dmg - ((TakeDamage) c).detResistance;
-							}
-							else
-							{
-								Damage += ((TakeDamage) c).dmg;
-							}
-
-						}
-						else if (c.GetType() == typeof(Suppress) && ((Suppress) c).Requirements.Position == hypotheticalTargetPosition)
-						{
-							Supression += ((Suppress) c).detDmg;
-						}
-					}
-
-
-
-					if (Damage > HypotheticalTarget.Health)
-					{
-						Damage *= 3;
-					}
-					else if (Supression > HypotheticalTarget.Determination)
-					{
-						Supression *= 2;
-					}
-
-					if (Damage + Supression > worstAttack.Item2 + worstAttack.Item3)
-					{
-						worstAttack = new Tuple<string, int, int>(ability.Name, Damage, Supression);
-					}
-				
-				});
-
-			});
-			
-
-			if (oldPos.HasValue)
-			{
-				Attacker.WorldObject.Move(oldPos.Value);
-			}
-		}
-		return worstAttack;
-	}
+	
 }

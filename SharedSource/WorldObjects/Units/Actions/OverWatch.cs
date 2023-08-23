@@ -69,9 +69,9 @@ public class OverWatch : Action
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
 
-			if (actor.DefaultAttack.Effects[0].GetType() == typeof(Shootable))
+			if (actor.Abilities[0].Effects[0].GetType() == typeof(Shootable))
 			{
-				var shoot = (Shootable) actor.DefaultAttack.Effects[0];
+				var shoot = (Shootable) actor.Abilities[0].Effects[0];
 				var projectile = shoot.GenerateProjectile(actor,shot.Item1,shot.Item2);
 				spriteBatch.DrawText(""+projectile.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
 			}

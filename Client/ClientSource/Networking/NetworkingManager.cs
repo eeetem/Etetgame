@@ -210,4 +210,10 @@ public static partial class NetworkingManager
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.AddAI);
 		client?.Send(msg);
 	}
+
+	public static void SendAITurn()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.DoAI);
+		client?.Send(msg);
+	}
 }

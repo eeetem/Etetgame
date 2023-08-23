@@ -52,6 +52,7 @@ public partial class WorldObject
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+		
 		var r = new Random(tile.Position.X + tile.Position.Y +ID);
 		int roll = (r.Next(1000)) % type.TotalVariationsWeight;
 		for (int i = 0; i < type.Variations.Count; i++)

@@ -120,5 +120,26 @@ public static partial class GameManager
 
 
 	}
+	public static void FinishTurnWithAI()
+	{
+		if (IsPlayer1Turn)
+		{
+			List<Unit> units = new List<Unit>();
+			foreach (var u in T1Units)
+			{
+				units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+			}
+			AI.AI.DoAITurn(units);
+		}
+		else
+		{
+			List<Unit> units = new List<Unit>();
+			foreach (var u in T2Units)
+			{
+				units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+			}
+			AI.AI.DoAITurn(units);
+		}
+	}
 	
 }
