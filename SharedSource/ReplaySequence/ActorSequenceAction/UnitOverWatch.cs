@@ -30,7 +30,7 @@ public class UnitOverWatch : UnitSequenceAction
 			var positions = Actor.GetOverWatchPositions(Target);
 			foreach (var shot in positions)
 			{
-				WorldManager.Instance.GetTileAtGrid(shot.Item1).Watch(Actor);
+				((WorldTile)WorldManager.Instance.GetTileAtGrid(shot.Item1)).Watch(Actor);
 				Actor.overWatchedTiles.Add(shot.Item1);
 			}
 

@@ -17,7 +17,7 @@ public partial class WorldObject
 	
 	
 	public int LifeTime = -100;
-	public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
+	public WorldObject(WorldObjectType? type, IWorldTile tile, WorldObjectData data)
 	{
 		ID = data.ID;
 		
@@ -77,8 +77,8 @@ public partial class WorldObject
 	}
 
 
-	private WorldTile _tileLocation = null!;
-	public WorldTile TileLocation
+	private IWorldTile _tileLocation = null!;
+	public IWorldTile TileLocation
 	{
 		get => _tileLocation;
 
@@ -101,7 +101,7 @@ public partial class WorldObject
 
 	public int Health;
 
-	public void Move(Vector2Int position)
+	public void Move(Vector2Int position, int dimension = -1)
 	{
 		if (Type.Edge || Type.Surface)
 		{
@@ -110,15 +110,18 @@ public partial class WorldObject
 
 		if (UnitComponent != null)
 		{
-			TileLocation.UnitAtLocation = null;
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
+			if (dimension == -1)
+			{//dont fuck with clearing the old tile if we're working with pseudounits
+				TileLocation.UnitAtLocation = null;
+			}
+			var newTile = WorldManager.Instance.GetTileAtGrid(position,dimension);
 			TileLocation = newTile;
 			newTile.UnitAtLocation = UnitComponent;
 		}
 		else
 		{
 			TileLocation.RemoveObject(this);
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
+			IWorldTile newTile = WorldManager.Instance.GetTileAtGrid(position,dimension);
 			TileLocation = newTile;
 			newTile.PlaceObject(this);
 		}
@@ -192,7 +195,7 @@ public partial class WorldObject
 		
 #if CLIENT
 		if(Equals(GameLayout.SelectedUnit, UnitComponent)){
-			GameLayout.SelectUnit(null);
+			//GameLayout.SelectUnit(null);
 		}
 		
 		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
@@ -388,15 +391,10 @@ public partial class WorldObject
 #if SERVER
 		return true;	
 #else
-		if (TileLocation == null)
-		{
-			return true;
-		}
 
-		return GetMinimumVisibility() <= TileLocation.TileVisibility;
+		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).TileVisibility;
 #endif
 	}
 
 
-	
 }

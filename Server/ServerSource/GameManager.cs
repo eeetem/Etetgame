@@ -107,7 +107,7 @@ public static partial class GameManager
 			Console.WriteLine("turn rng: "+rng);
 			if (rng > 50)
 			{
-				NextTurn();
+		//		NextTurn();
 			}
 
 			Thread.Sleep(1000); //just in case

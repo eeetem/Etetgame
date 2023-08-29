@@ -130,22 +130,22 @@ namespace DefconNull.World.WorldObjects
 			return result;
 		}
 
-		public List<Vector2Int>[] GetPossibleMoveLocations()
+		public List<Vector2Int>[] GetPossibleMoveLocations(int moveRange = -1)
 		{
 			if (MovePoints > 0)
 			{
+				if(moveRange==-1) moveRange = GetMoveRange();
 				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
 				for (int i = 0; i < MovePoints; i++)
 				{
-					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1));
 				}
 
 				return possibleMoves;
 			}
 
 			return Array.Empty<List<Vector2Int>>();
-
-
+            
 
 		}
 
@@ -341,7 +341,7 @@ namespace DefconNull.World.WorldObjects
 			overWatch = false;
 			foreach (var tile in overWatchedTiles)
 			{
-				WorldManager.Instance.GetTileAtGrid(tile).UnWatch(this);
+				((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).UnWatch(this);
 			}
 
 			overWatchedTiles.Clear();
@@ -492,6 +492,8 @@ namespace DefconNull.World.WorldObjects
 		}
 
 		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
+		
+
 		public void ApplyStatus(string? effect, int duration)
 		{
 			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration);
@@ -554,5 +556,7 @@ namespace DefconNull.World.WorldObjects
 			return innerValue.ToString();
 
 		}
+
+
 	}
 }

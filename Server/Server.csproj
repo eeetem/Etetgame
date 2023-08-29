@@ -44,6 +44,7 @@
       <None Remove="SharedSource\World\WorldAction\**" />
       <None Remove="SharedSource\World\WorldActions\**" />
       <None Remove="SharedSource\World\**" />
+      <None Remove="obj\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -52,6 +53,7 @@
       <EmbeddedResource Remove="SharedSource\World\WorldAction\**" />
       <EmbeddedResource Remove="SharedSource\World\WorldActions\**" />
       <EmbeddedResource Remove="SharedSource\World\**" />
+      <EmbeddedResource Remove="obj\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -73,11 +75,17 @@
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\IWorldTile.cs">
+        <Link>SharedSource\IWorldTile.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\NetworkingManager.cs">
         <Link>SharedSource\NetworkingManager.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\PseudoTile.cs">
+        <Link>SharedSource\PseudoTile.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs</Link>
@@ -223,6 +231,9 @@
       <Compile Include="..\SharedSource\WorldTile.cs">
         <Link>SharedSource\WorldTile.cs</Link>
       </Compile>
+      <Compile Include="obj\Release\net6.0\linux-x64\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" />
+      <Compile Include="obj\Release\net6.0\linux-x64\Server.AssemblyInfo.cs" />
+      <Compile Remove="obj\**" />
     </ItemGroup>
 
 
@@ -232,6 +243,8 @@
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <Content Include="obj\Release\net6.0\linux-x64\apphost" />
+      <Content Include="obj\Release\net6.0\linux-x64\PublishOutputs.0a901391f4.txt" />
     </ItemGroup>
 
 

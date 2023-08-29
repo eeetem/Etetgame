@@ -38,7 +38,7 @@ public class Throwable : DeliveryMethod
 	}
 
 
-	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target) > throwRange)
 		{

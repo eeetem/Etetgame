@@ -163,9 +163,8 @@ public static partial class GameManager
 		}*/
 	
 	//AI Match
-	/*
-	
-	*/
+
+		FinishTurnWithAI();
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
@@ -272,5 +271,29 @@ public static partial class GameManager
 		}
 
 	}
+
+    
+	public static List<Unit> GetTeamUnits(bool team1)
+	{
+#if SERVER
+		var unitIds = team1 ? T1Units : GameManager.T2Units;
+		List<Unit> units = new List<Unit>();
 		
+		foreach (var id in unitIds)
+		{
+			units.Add( WorldManager.Instance.GetObject(id).UnitComponent);
+		}
+
+		return units;
+		#else
+		
+		if(team1==IsPlayer1)
+		{
+			return GameLayout.MyUnits;
+		}
+
+		return GameLayout.EnemyUnits;
+#endif
+
+	}
 }

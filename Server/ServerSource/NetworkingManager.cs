@@ -133,7 +133,7 @@ public static partial class NetworkingManager
 					{
 						for (int y = 0; y < 100; y++)
 						{
-							var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+							WorldTile tile = (WorldTile)WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
 								//Console.WriteLine("Sending tile at " + x + "," + y);
@@ -286,7 +286,7 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
 		
-		Console.WriteLine("Sending tile update for " + tile.Position);
+		//Console.WriteLine("Sending tile update for " + tile.Position);
 		if(connection == null)
 			server.SendToAll(msg);
 		else

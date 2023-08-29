@@ -79,6 +79,35 @@ public static partial class Utility
 
         throw new Exception("impossible direction");
     }
+
+    public static float CalculatePercentile(List<int> numbers, float percentile)
+    {
+        // Make sure the list is sorted
+        numbers.Sort();
+
+        // Calculate the index corresponding to the desired percentile
+        int index = (int)Math.Ceiling((percentile / 100) * numbers.Count) - 1;
+
+        // Check if the index is valid
+        if (index >= 0 && index < numbers.Count)
+        {
+            // If the index is an integer, return the value at that index
+            return numbers[index];
+        }
+        else
+        {
+            // If the index is not an integer, interpolate between the values
+            int lowerIndex = (int)Math.Floor((percentile / 100) * numbers.Count);
+            int upperIndex = (int)Math.Ceiling((percentile / 100) * numbers.Count);
+            
+            double lowerValue = numbers[lowerIndex];
+            double upperValue = numbers[upperIndex];
+            
+            double interpolationFactor = (percentile / 100 * numbers.Count) - lowerIndex;
+
+            return (float) (lowerValue + interpolationFactor * (upperValue - lowerValue));
+        }
+    }
     public static float Lerp(float firstFloat, float secondFloat, float by)
     {
         by = Math.Clamp(by, 0, 1);
@@ -342,7 +371,7 @@ public static partial class Utility
     {
         if(!WorldManager.IsPositionValid(pos))return false;
                 
-        WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
+        IWorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
         if (tile.NorthEdge == edge || tile.WestEdge == edge)
         {
             return true;

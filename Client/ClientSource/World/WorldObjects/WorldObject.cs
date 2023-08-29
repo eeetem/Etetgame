@@ -64,7 +64,7 @@ public partial class WorldObject : Rendering.IDrawable
 	public Color GetColor()
 	{
 
-		Color color = TileLocation.GetTileColor();
+		Color color = ((WorldTile)TileLocation).GetTileColor();
 				
 		if (UnitComponent != null)
 		{

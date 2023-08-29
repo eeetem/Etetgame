@@ -18,205 +18,165 @@ public abstract class AIAction
 {
 
 	public readonly AIActionType Type;
-
-
+    
 	public AIAction(AIActionType? type)
 	{
 		if(type==null) return;
 		Type = (AIActionType)type;
 	}
 
-
-
+    
 	public enum AIActionType
 	{
 		Attack=1,
 		Move=2,
-		OverWatch = 5,
-		UseAbility = 7,
-
 		
 	}
-	public static readonly object attackLock = new object();
-	protected static AbilityUse GetWorstPossibleAttack(Vector2Int hypotheticalAttackerPos, Unit Attacker, Vector2Int TargetPosition, Unit Target, bool nextTurn =false)
+	
+	protected static AbilityUse GetWorstPossibleAttack(Unit Attacker, Vector2Int TargetPosition, Unit pseudoUnitAtLocation, bool nextTurn =false, int dimension = -1)
 	{
 
 		AbilityUse worstAttack = new AbilityUse();
-		lock (attackLock)
+		Parallel.ForEach(Attacker.Abilities, ability =>
 		{
-			
-		
-			Vector2Int? oldPos =null;
-			if(hypotheticalAttackerPos != Attacker.WorldObject.TileLocation.Position)
+			Parallel.ForEach(WorldManager.Instance.GetTilesAround(TargetPosition, 2, dimension), attackTile =>
 			{
-				oldPos= Attacker.WorldObject.TileLocation.Position;
-				Attacker.WorldObject.Move(hypotheticalAttackerPos);
-			}
+				int damage = 0;
+				int supression = 0;
 
-		
-			Parallel.ForEach(Attacker.Abilities, ability =>
-			{
-				
-				Parallel.ForEach(WorldManager.Instance.GetTilesAround(TargetPosition, 2), attackTile =>
-				{
-					int damage = 0;
-					int supression = 0;
-
-					if(!ability.CanPerform(Attacker, attackTile.Position,nextTurn).Item1) return;
+				if(!ability.CanPerform(Attacker, attackTile.Position,nextTurn,dimension).Item1) return;
                     
-					var cons = ability.GetConsequences(Attacker, attackTile.Position);
-					foreach (var c in cons)
+				var cons = ability.GetConsequences(Attacker, attackTile.Position,dimension);
+				foreach (var c in cons)
+				{
+					if (c.GetType() == typeof(TakeDamage) )
 					{
-						
-						if (c.GetType() == typeof(TakeDamage) )
+						TakeDamage tkdmg =  (TakeDamage)c;
+						Unit? hitUnit = null;
+						if (tkdmg.objID != -1)
 						{
-							TakeDamage tkdmg =  (TakeDamage)c;
-							Unit? hitUnit = null;
-							if (tkdmg.objID != -1)
+							hitUnit = WorldManager.Instance.GetObject(((TakeDamage)c).objID)!.UnitComponent;
+						}
+						else if(tkdmg.position != new Vector2Int(-1, -1))
+						{
+							if(tkdmg.position == pseudoUnitAtLocation.WorldObject.TileLocation.Position)
 							{
-								hitUnit = WorldManager.Instance.GetObject(((TakeDamage)c).objID)!.UnitComponent;
+								hitUnit = pseudoUnitAtLocation;
 							}
-							else if(tkdmg.position != new Vector2Int(-1, -1))
+							else
 							{
 								hitUnit = WorldManager.Instance.GetTileAtGrid(((TakeDamage)c).position).UnitAtLocation;
 							}
-							if (hitUnit != null)
+						}
+						if (hitUnit != null)
+						{
+							int dmgThisAttack = 0;
+							if (hitUnit.Determination > 0)
 							{
-								int dmgThisAttack = 0;
-								if (hitUnit.Determination > 0)
-								{
-									dmgThisAttack += ((TakeDamage) c).dmg - ((TakeDamage) c).detResistance;
-								}
-								else
-								{
-									dmgThisAttack += ((TakeDamage) c).dmg;
-								}
-								
-								if (dmgThisAttack > hitUnit.Health)
-								{
-									dmgThisAttack *= 3;
-								}
-								if(hitUnit.IsPlayer1Team != Attacker.IsPlayer1Team)
-								{
-									damage += dmgThisAttack;
-								}else
-								{
-									damage -= dmgThisAttack;
-								}
+								dmgThisAttack += ((TakeDamage) c).dmg - ((TakeDamage) c).detResistance;
 							}
-
-							
+							else
+							{
+								dmgThisAttack += ((TakeDamage) c).dmg;
+							}
+								
+							if (dmgThisAttack > hitUnit.Health)
+							{
+								dmgThisAttack *= 3;
+							}
+							if(hitUnit.IsPlayer1Team != Attacker.IsPlayer1Team)
+							{
+								damage += dmgThisAttack;
+							}else
+							{
+								damage -= dmgThisAttack;
+							}
+						}
 						
 
-						}
-						else if (c.GetType() == typeof(Suppress))
-						{
-							Suppress sup = (Suppress)c;
+					}
+					else if (c.GetType() == typeof(Suppress))
+					{
+						Suppress sup = (Suppress)c;
 							
-							Unit? hitUnit = null;
-							if (sup.Requirements.ActorID != -1)
+						Unit? hitUnit = null;
+						if (sup.Requirements.ActorID != -1)
+						{
+							hitUnit = WorldManager.Instance.GetObject(((Suppress)c).Requirements.ActorID)!.UnitComponent;
+						}
+						else if(sup.Requirements.Position != new Vector2Int(-1, -1))
+						{
+							if(sup.Requirements.Position  == pseudoUnitAtLocation.WorldObject.TileLocation.Position)
 							{
-								hitUnit = WorldManager.Instance.GetObject(((Suppress)c).Requirements.ActorID)!.UnitComponent;
+								hitUnit = pseudoUnitAtLocation;
 							}
-							else if(sup.Requirements.Position != new Vector2Int(-1, -1))
+							else
 							{
 								hitUnit = WorldManager.Instance.GetTileAtGrid(((Suppress)c).Requirements.Position).UnitAtLocation;
 							}
-                            
-							if (hitUnit != null)
-							{
-								int supressionThisAttack = 0;
-								supressionThisAttack += ((Suppress) c).detDmg;
-								if(supressionThisAttack > hitUnit.Determination)
-								{
-									supressionThisAttack += ((Suppress) c).detDmg*2;
-								}
-								if (hitUnit.IsPlayer1Team != Attacker.IsPlayer1Team)
-								{
-									supression += supressionThisAttack;
-								}
-								else
-								{
-									supression -= supressionThisAttack;
-								}
-							}
 							
 						}
+                            
+						if (hitUnit != null)
+						{
+							int supressionThisAttack = 0;
+							supressionThisAttack += ((Suppress) c).detDmg;
+							if(supressionThisAttack > hitUnit.Determination)
+							{
+								supressionThisAttack += ((Suppress) c).detDmg*2;
+							}
+							if (hitUnit.IsPlayer1Team != Attacker.IsPlayer1Team)
+							{
+								supression += supressionThisAttack;
+							}
+							else
+							{
+								supression -= supressionThisAttack;
+							}
+						}
+							
 					}
+				}
                     
-					AbilityUse attackResult = new AbilityUse();
-					attackResult.Ability = ability;
-					attackResult.target = attackTile.Position;
-					attackResult.Dmg = damage;
-					attackResult.Supression = supression;
+				AbilityUse attackResult = new AbilityUse();
+				attackResult.Ability = ability;
+				attackResult.target = attackTile.Position;
+				attackResult.Dmg = damage;
+				attackResult.Supression = supression;
 					
-					if (attackResult.GetTotalValue() > worstAttack.GetTotalValue())
-					{
-						worstAttack = attackResult;
-					}
+				if (attackResult.GetTotalValue() > worstAttack.GetTotalValue())
+				{
+					worstAttack = attackResult;
+				}
 				
-				});
 			});
+		});
 			
 
-			if (oldPos.HasValue)
-			{
-				Attacker.WorldObject.Move(oldPos.Value);
-			}
-		}
+
 		return worstAttack;
 	}
 
-	protected static List<Unit> GetMyTeamUnits(bool playerOne)
+	protected static bool CanPotentiallyAttack(Unit unit, Unit target, int dimension = -1)
 	{
-#if SERVER
-		var myTeamUnitsIds = playerOne ? GameManager.T1Units : GameManager.T2Units;
-		
-
-		List<Unit> myTeamUnits = new List<Unit>();
-		
-		foreach (var id in myTeamUnitsIds)
-		{
-			myTeamUnits.Add( WorldManager.Instance.GetObject(id).UnitComponent);
-		}
-        
-#else
-		var myTeamUnits = GameLayout.MyUnits;//this assumes we're getting movement score for our own units
-			
-#endif
-
-		return myTeamUnits;
+		var attack = GetWorstPossibleAttack(unit,target.WorldObject.TileLocation.Position,target,true,dimension);
+		return attack.GetTotalValue() > 0;
 	}
-
-	protected static List<Unit> GetOtherTeamUnits(bool playerOne)
+	protected static AbilityUse GetWorstPossibleAttackOnEnemyTeam(Unit attacker, bool nextTurn, bool onlyVisible)
 	{
-		
-#if SERVER
-		var otherTeamUnitsIds = playerOne? GameManager.T2Units : GameManager.T1Units;
-		List<Unit> otherTeamUnits = new List<Unit>();
-		foreach (var id in otherTeamUnitsIds)
-		{
-			otherTeamUnits.Add( WorldManager.Instance.GetObject(id).UnitComponent);
-		}
-		
-#else
-		var otherTeamUnits = GameLayout.EnemyUnits;
-
-#endif
-		return otherTeamUnits;
-	}
-
-	protected static AbilityUse GetWorstPossibleAttackOnEnemyTeam(Unit attacker, bool nextTurn)
-	{
-		var otherTeam = GetOtherTeamUnits(attacker.IsPlayer1Team);
+		var otherTeam = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
 		AbilityUse bestAttack = new AbilityUse();
 		foreach (var enemy in otherTeam)
 		{
-			var res =GetWorstPossibleAttack(attacker.WorldObject.TileLocation.Position,attacker,enemy.WorldObject.TileLocation.Position,enemy, nextTurn);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
-			if(res > bestAttack)
+			if (!onlyVisible || WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility())
 			{
-				bestAttack = res;
+				var res =GetWorstPossibleAttack(attacker,enemy.WorldObject.TileLocation.Position, enemy,nextTurn);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
+				if(res > bestAttack)
+				{
+					bestAttack = res;
+				}
 			}
+
 		}
 
 		return bestAttack;

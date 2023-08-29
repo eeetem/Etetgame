@@ -40,7 +40,7 @@ public class WorldEffect : Effect
 		return DeliveryMethod.GetOptimalRangeAI(Conseqences.Range-1);
 	}
 
-	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
 	{
 		//Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
@@ -65,14 +65,14 @@ public class WorldEffect : Effect
 
 	}
 	
-	public Tuple<Vector2Int?,HashSet<WorldTile>> GetAffectedTiles(Unit actor, Vector2Int target)
+	public Tuple<Vector2Int?,HashSet<IWorldTile>> GetAffectedTiles(Unit actor, Vector2Int target)
 	{
-		var tiles = new HashSet<WorldTile>();
+		var tiles = new HashSet<IWorldTile>();
 
 		Vector2Int? nullTarget = target;
 		if (!CanPerformChild(actor, target).Item1)
 		{
-			return new Tuple<Vector2Int?, HashSet<WorldTile>>(nullTarget,tiles);
+			return new Tuple<Vector2Int?, HashSet<IWorldTile>>(nullTarget,tiles);
 		}
 
 		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref nullTarget);
@@ -87,29 +87,15 @@ public class WorldEffect : Effect
 				
 		}
 		
-		return new Tuple<Vector2Int?, HashSet<WorldTile>>(nullTarget,tiles);
+		return new Tuple<Vector2Int?, HashSet<IWorldTile>>(nullTarget,tiles);
 	}
 
 
 
 
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target)
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target, int dimension = -1)
 	{
-#if CLIENT
-		if (!FreeFire && targetAid != TargetAid.None)
-		{
-			var tile = WorldManager.Instance.GetTileAtGrid(target);
-			if (tile.UnitAtLocation == null || !tile.UnitAtLocation.WorldObject.IsVisible())
-			{
-				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
-			}
-			if (targetAid == TargetAid.Enemy && tile.UnitAtLocation.IsMyTeam())
-			{
-				return new Tuple<bool, string>(false, "Invalid target, hold ctrl for free fire");
-			}
-		}	
-#endif
-		return DeliveryMethod.CanPerform(actor, target);
+		return DeliveryMethod.CanPerform(actor, target,dimension);
 	}
 #if CLIENT
 	public static bool FreeFire = false;
@@ -118,7 +104,7 @@ public class WorldEffect : Effect
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	int perivewActorID = -1;
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
-	private Tuple<Vector2Int?, HashSet<WorldTile>> previewArea = new Tuple<Vector2Int?, HashSet<WorldTile>>(null,new HashSet<WorldTile>());
+	private Tuple<Vector2Int?, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
 
 	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{

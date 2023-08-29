@@ -38,7 +38,7 @@ public class Crouch : Action
 		{
 			vis = Visibility.Partial;
 		}
-		var shooters = WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position).GetOverWatchShooters(actor,vis);
+		var shooters = ((WorldTile)WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position)).GetOverWatchShooters(actor,vis);
 
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0,0));

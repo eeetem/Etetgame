@@ -3,7 +3,7 @@ using Color = Microsoft.Xna.Framework.Color;
 
 namespace DefconNull.World;
 
-public partial class WorldTile
+public partial class WorldTile : IWorldTile
 {
 
 	public Visibility TileVisibility;
@@ -75,7 +75,5 @@ public partial class WorldTile
 
 		}
 	}
-
-
-	
+    
 }

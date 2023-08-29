@@ -62,7 +62,7 @@ public class Move : Action
 		
 		foreach (var tile in result.Path)
 		{
-			var shooters = WorldManager.Instance.GetTileAtGrid(tile).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
+			var shooters = ((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
 			
 			List<Unit> exclude = new List<Unit>();
 			

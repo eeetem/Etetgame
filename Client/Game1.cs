@@ -58,13 +58,9 @@ public class Game1 : Game
 
 		base.Initialize();
 
-			
-
+        
 		DiscordManager.Init();
 		UpdateGameSettings();
-
-
-
 	}
 
 	public static RenderTarget2D GlobalRenderTarget;

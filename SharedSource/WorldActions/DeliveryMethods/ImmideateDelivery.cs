@@ -8,7 +8,7 @@ namespace DefconNull.World.WorldActions;
 
 public class ImmideateDelivery : DeliveryMethod
 {
-	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		return new Tuple<bool, string>(true, "");
 		

@@ -66,7 +66,7 @@ public class UnitAbility : IUnitAbility
 #endif
 	}
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false, int dimension =-1)
 	{
 		var res = HasEnoughPointsToPerform(actor,NextTurn);
 		if (!res.Item1)
@@ -74,7 +74,7 @@ public class UnitAbility : IUnitAbility
 			return res;
 		}
 	
-		res = IsPlausibleToPerform(actor,target);
+		res = IsPlausibleToPerform(actor,target,dimension);
 		if (!res.Item1)
 		{
 			return res;
@@ -84,11 +84,11 @@ public class UnitAbility : IUnitAbility
 	
 	}
 
-	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target)
+	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target,int dimension = -1)
 	{
 		foreach (var effect in Effects)
 		{
-			var result = effect.CanPerform(actor, target);
+			var result = effect.CanPerform(actor, target,dimension);
 			if (!result.Item1)
 			{
 				return result;
@@ -160,7 +160,7 @@ public class UnitAbility : IUnitAbility
 		return new List<string>();
 	}
 
-	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if (immideaateActivation)
 		{
@@ -171,7 +171,7 @@ public class UnitAbility : IUnitAbility
 		
 		foreach (var effect in Effects)
 		{
-			var actConsequences =  effect.GetConsequences( actor,  target);
+			var actConsequences =  effect.GetConsequences( actor,  target,dimension);
 
 			foreach (var c in actConsequences)
 			{

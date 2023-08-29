@@ -16,7 +16,7 @@ public class Attack : AIAction
 	{
 		
 		//todo only waht you see
-		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false);
+		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false,true);
 		UseAbility.AbilityIndex = atk.Ability!.Index;
 		unit.DoAction(Action.Actions[Action.ActionType.UseAbility],atk.target);
 	}
@@ -25,7 +25,7 @@ public class Attack : AIAction
 	{
 		
 		//only what you see
-		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false);
+		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false,true);
 		return atk.GetTotalValue()*2;
 	}	
 }

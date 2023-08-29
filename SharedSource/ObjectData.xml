@@ -81,7 +81,7 @@
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <action moveCost="1" d="1">
+    <action moveCost="1" actCost="1">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 

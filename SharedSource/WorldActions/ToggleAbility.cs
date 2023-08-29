@@ -59,13 +59,13 @@ public class ToggleAbility : IUnitAbility
 	}
 
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false, int dimension=-1)
 	{
 		if (isOn)
 		{
-			return off.CanPerform(actor, target,nextturn);
+			return off.CanPerform(actor, target,nextturn,dimension);
 		}
-		return on.CanPerform(actor, target,nextturn);
+		return on.CanPerform(actor, target,nextturn,dimension);
 	}
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor,bool nextTurn = false)
@@ -77,13 +77,22 @@ public class ToggleAbility : IUnitAbility
 		return on.HasEnoughPointsToPerform(actor,nextTurn);
 	}
 
-	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target)
+	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if (isOn)
 		{
-			return off.IsPlausibleToPerform(actor,target);
+			return off.IsPlausibleToPerform(actor,target,dimension);
 		}
-		return on.IsPlausibleToPerform(actor,target);
+		return on.IsPlausibleToPerform(actor,target,dimension);
+	}
+
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1)
+	{
+		if (isOn)
+		{
+			return off.GetConsequences(actor,target,dimension);
+		}
+		return on.GetConsequences(actor,target,dimension);
 	}
 
 

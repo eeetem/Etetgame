@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DefconNull.Networking;
-
+using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -20,8 +20,12 @@ namespace DefconNull.World
 	public  partial class WorldManager
 	{
 		private readonly WorldTile[,] _gridData;
+		private readonly List<PseudoTile?[,]> _pseudoGrids = new List<PseudoTile?[,]>();
+		private readonly List<bool> _pseudoGridsInUse = new List<bool>();
+		
 
 		public readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
+		public readonly Dictionary<int, Dictionary<int,WorldObject>> PseudoWorldObjects = new ();
 	
 		private int NextId;
 
@@ -52,23 +56,28 @@ namespace DefconNull.World
 				}
 			}
 		}
-		private static readonly List<WorldTile> _allTiles = new List<WorldTile>();
+		private static readonly List<WorldTile> AllTiles = new List<WorldTile>();
 		public List<WorldTile> GetAllTiles()
 		{
-			_allTiles.Clear();
+			AllTiles.Clear();
 
 			foreach (var tile  in Instance._gridData)
 			{
-				_allTiles.Add(tile);
+				AllTiles.Add(tile);
 			}
 
-			return _allTiles;
+			return AllTiles;
 		}
 
-		public WorldObject? GetObject(int id)
+		public WorldObject? GetObject(int id, int dimension = -1)
 		{
 			try
 			{
+				if(dimension != -1)
+				{
+					if(PseudoWorldObjects.TryGetValue(dimension, out var dimDIct) && dimDIct.TryGetValue(id, out var obj))
+						return obj;//return if present, otherwise return the real object since there's no pseudo analogue
+				}
 				return WorldObjects[id];
 			}
 			catch (Exception)
@@ -107,14 +116,16 @@ namespace DefconNull.World
 				tile.NextTurn();
 			}
 		}
-
+		public static readonly object IdAquireLock = new object();
 		public int GetNextId()
 		{
-			
-			NextId++;
-			while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
+			lock (IdAquireLock)
 			{
 				NextId++;
+				while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
+				{
+					NextId++;
+				}
 			}
 
 			return NextId;
@@ -124,7 +135,7 @@ namespace DefconNull.World
 		{
 			//	Console.WriteLine("Loading tile at " + data.position);
 
-			WorldTile tile = GetTileAtGrid(data.position);
+			WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 			tile.Wipe();
 			if (data.Surface != null)
 			{
@@ -166,7 +177,7 @@ namespace DefconNull.World
 			data.ID = id;
 			data.Facing = facing;
 			data.UnitData = unitData;
-			MakeWorldObjectFromData(data, GetTileAtGrid(position));
+			MakeWorldObjectFromData(data, (WorldTile)GetTileAtGrid(position));
 			return;
 		}
 
@@ -193,6 +204,21 @@ namespace DefconNull.World
 				return CanSee(unit.WorldObject.TileLocation.Position, to, 200, unit.Crouching);
 			}
 			return CanSee(unit.WorldObject.TileLocation.Position, to, unit.GetSightRange(), unit.Crouching);
+		}
+
+		public Visibility CanTeamSee(Vector2 Position, bool Team1)
+		{
+			Visibility vis = Visibility.None;
+			foreach (var u in GameManager.GetTeamUnits(Team1))
+			{
+				var tempVis = CanSee(u, Position);
+				if (tempVis > vis)
+				{
+					vis = tempVis;
+				}
+			}
+
+			return vis;
 		}
 
 		public Visibility CanSee(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
@@ -298,7 +324,7 @@ namespace DefconNull.World
 		}
 
 
-		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos,Cover minHitCover,bool visibilityCast = false,bool ignoreControllables = false,Cover? minHtCoverSameTile = null)
+		public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos, Cover minHitCover, bool visibilityCast = false, bool ignoreControllables = false, Cover? minHtCoverSameTile = null, int pseudoLayer = -1)
 		{
 			if (minHtCoverSameTile == null)
 			{
@@ -382,13 +408,13 @@ namespace DefconNull.World
 				}
 
 	
-				WorldTile tile;
+				IWorldTile tile;
 				result.Path.Add(new Vector2Int(checkingSquare.X,checkingSquare.Y));
 				Vector2 collisionPointlong = (totalLenght+0.05f) * dir + startPos;
 				Vector2 collisionPointshort = (totalLenght-0.1f) * dir + startPos;
 				if (IsPositionValid(checkingSquare))
 				{
-					tile = GetTileAtGrid(checkingSquare);
+					tile = GetTileAtGrid(checkingSquare,pseudoLayer);
 				}
 				else
 				{
@@ -401,9 +427,7 @@ namespace DefconNull.World
 
 				if (IsPositionValid(lastCheckingSquare))
 				{
-					WorldTile tilefrom = GetTileAtGrid(lastCheckingSquare);
-
-					WorldObject hitobj = tilefrom.GetCoverObj(Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,lastCheckingSquare == startcell);
+					WorldObject hitobj = GetCoverObj(lastCheckingSquare,Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,lastCheckingSquare == startcell,pseudoLayer);
 
 					if (visibilityCast)
 					{
@@ -520,22 +544,267 @@ namespace DefconNull.World
 			{
 				GameLayout.UnRegisterUnit(Obj.UnitComponent);
 			}
-#endif
-			Obj.TileLocation.Remove(id);
+#endif		
+			(Obj.TileLocation as WorldTile)?.Remove(id);
+	
 			WorldObjects.Remove(id);
-
 		}
+		
+		public Cover GetCover(Vector2Int loc, Direction dir, bool visibilityCover = false, bool ignoreControllables = false, bool ignoreObjectsAtLoc = true,int pseudoLayer = -1)
+		{
+			return GetCoverObj(loc,dir,visibilityCover,ignoreControllables,ignoreObjectsAtLoc,pseudoLayer).GetCover();
+		}
+	
 
-		public  WorldTile GetTileAtGrid(Vector2Int pos)
+		public WorldObject GetCoverObj(Vector2Int loc,Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true, int pseudoLayer = -1)
+		{
+			var data = new WorldObject.WorldObjectData();
+			data.ID = -1;
+			WorldObject biggestCoverObj = new WorldObject(null,null,data);
+			dir = Utility.NormaliseDir(dir);
+
+			IWorldTile tileAtPos = GetTileAtGrid(loc,pseudoLayer);
+			IWorldTile? tileInDir =null;
+			if(IsPositionValid(tileAtPos.Position + Utility.DirToVec2(dir)))
+			{
+				tileInDir = Instance.GetTileAtGrid(tileAtPos.Position + Utility.DirToVec2(dir),pseudoLayer);
+			}
+            
+
+			WorldObject coverObj;
+			switch (dir)
+			{
+				case Direction.East:
+					if(tileInDir?.WestEdge != null && tileInDir.WestEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileInDir.WestEdge;
+					}
+					break;
+				case Direction.North:
+					if(tileAtPos.NorthEdge != null && tileAtPos.NorthEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileAtPos.NorthEdge;
+					}
+					break;
+				
+				case Direction.West:
+					if(tileAtPos.WestEdge != null && tileAtPos.WestEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileAtPos.WestEdge;
+					}
+					break;
+				case Direction.South:
+					if(tileInDir?.NorthEdge != null && tileInDir.NorthEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileInDir.NorthEdge;
+					}
+					break;
+				case Direction.SouthWest:
+					coverObj = GetCoverObj(loc,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					coverObj = GetCoverObj(loc,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+					coverObj = GetCoverObj(tileInDir.Position,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					
+
+					if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					break;
+				case Direction.SouthEast:
+					coverObj = GetCoverObj(loc,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					coverObj = GetCoverObj(loc,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+					coverObj = GetCoverObj(tileInDir.Position,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					
+
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					break;
+				case Direction.NorthWest:
+					coverObj = GetCoverObj(loc,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					coverObj = GetCoverObj(loc,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					
+					break;
+				case Direction.NorthEast:
+					coverObj = GetCoverObj(loc,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					coverObj = GetCoverObj(loc,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+					coverObj = GetCoverObj(tileInDir.Position,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
+					
+
+					if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+					
+					break;
+				
+			}
+
+			if (!ignoreObjectsAtLoc)
+			{
+				if (!ignoreContollables)
+				{
+					if (tileAtPos.UnitAtLocation != null && tileAtPos.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileAtPos.UnitAtLocation.WorldObject.Facing == dir || tileAtPos.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileAtPos.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
+					{
+
+						biggestCoverObj = tileAtPos.UnitAtLocation.WorldObject;
+
+					}
+				}
+
+				foreach (var obj in tileAtPos.ObjectsAtLocation)
+				{
+					if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = obj;
+					}
+				}
+			}
+			
+        
+			//this code is broken but unutill objs at loc can provide cover it doesnt matter
+			if (tileInDir != null)
+			{
+
+				if (!ignoreContollables && tileInDir.UnitAtLocation != null)
+				{
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == dir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
+					{
+
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
+
+					}
+
+					Direction inverseDir = Utility.NormaliseDir(dir - 4);
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == inverseDir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
+					{
+
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
+
+					}
+				}
+				foreach (var obj in tileInDir.ObjectsAtLocation)
+				{
+
+					if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = obj;
+					}
+				}
+            
+
+			}
+        
+			return biggestCoverObj;
+		}
+		public IWorldTile GetTileAtGrid(Vector2Int pos, int pseudoGrid)
+		{
+			if(pseudoGrid != -1)
+			{
+				var grid = _pseudoGrids[pseudoGrid];
+				if(grid[pos.X, pos.Y] == null)
+				{
+					grid[pos.X, pos.Y] = new PseudoTile(GetTileAtGrid(pos));
+				}
+				return grid[pos.X, pos.Y] ?? throw new InvalidOperationException();
+				
+			}
+			return GetTileAtGrid(pos);
+		}
+		public WorldTile GetTileAtGrid(Vector2Int pos)
 		{
 			return _gridData[pos.X, pos.Y];
 		}
 
-		public List<WorldTile> GetTilesAround(Vector2Int pos, int range = 1, Cover? lineOfSight = null)
+		public List<IWorldTile> GetTilesAround(Vector2Int pos, int range = 1, int alternateDimension = -1, Cover? lineOfSight = null)
 		{
 			int x = pos.X;
 			int y = pos.Y;
-			List<WorldTile> tiles = new List<WorldTile>();
+			List<IWorldTile> tiles = new List<IWorldTile>();
 
 			var topLeft = new Vector2Int(x - range, y - range);
 			var bottomRight = new Vector2Int(x + range, y + range);
@@ -546,7 +815,7 @@ namespace DefconNull.World
 					if(Math.Pow(i-x,2) + Math.Pow(j-y,2) < Math.Pow(range,2)){
 						if (IsPositionValid(new Vector2Int(i,j)))
 						{
-							tiles.Add(GetTileAtGrid(new Vector2Int(i,j)));
+							tiles.Add(GetTileAtGrid(new Vector2Int(i,j),alternateDimension));
 						}
 					}
 				}
@@ -554,7 +823,7 @@ namespace DefconNull.World
 
 			if (lineOfSight != null)
 			{
-				foreach (var tile in new List<WorldTile>(tiles))
+				foreach (var tile in new List<IWorldTile>(tiles))
 				{
 					if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, false,true).hit)
 					{
@@ -646,7 +915,7 @@ namespace DefconNull.World
 					{
 						if (WorldObjects.TryGetValue(obj, out var o))
 						{
-							tilesToUpdate.Add(o.TileLocation);
+							tilesToUpdate.Add((WorldTile)o.TileLocation);
 						}
 					}
 #endif
@@ -676,9 +945,9 @@ namespace DefconNull.World
 					{
 						
 #if SERVER
-					//	Task t = new Task(delegate
-					//	{
-							tilesToUpdate.Add(WO.Item2);
+						//	Task t = new Task(delegate
+						//	{
+						tilesToUpdate.Add(WO.Item2);
 						//});
 						//RunNextAfterFrames(t,5);
 #endif
@@ -759,7 +1028,7 @@ namespace DefconNull.World
 				{
 					if (t.Status == TaskStatus.RanToCompletion)
 					{
-						Console.WriteLine("sequence task finished");
+					//	Console.WriteLine("sequence task finished");
 					}
 					else if (t.Status == TaskStatus.Faulted)
 					{
@@ -793,7 +1062,7 @@ namespace DefconNull.World
 				});
 				RunNextAfterFrames(t);
 				return;
-			}	
+			}
 			
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 			WorldObject WO = new WorldObject(type, tile, data);
@@ -927,7 +1196,80 @@ namespace DefconNull.World
 			}
 		}
 
-	
 
+		public static readonly object PseudoGenLock = new object();
+		public int PlaceUnitInPseudoWorld(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit)
+		{
+			lock (PseudoGenLock)
+			{
+			
+				int dimension = GetNextFreePseudoDimension();
+		
+				Console.WriteLine("placing unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
+				WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
+				WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
+				pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData());
+				realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+				pseudoUnit = pseudoObj.UnitComponent;
+
+				if (!PseudoWorldObjects.ContainsKey(dimension))
+				{
+					PseudoWorldObjects.Add(dimension, new Dictionary<int, WorldObject>());
+				}
+				PseudoWorldObjects[dimension].Add(pseudoObj.ID,pseudoObj);
+			
+				((PseudoTile)GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true;//remove old position from world
+
+			
+		
+				return dimension;
+			}
+		}
+
+		private int GetNextFreePseudoDimension()
+		{
+			int dimension = 0;
+			while (true)
+			{
+				if (_pseudoGridsInUse.Count <= dimension)
+				{
+					GenerateGridAtDimension(dimension);
+					return dimension;
+				}
+
+				if (_pseudoGridsInUse[dimension] == false)
+				{
+					GenerateGridAtDimension(dimension);
+					return dimension;
+				}
+				dimension++;
+			}
+		}
+
+		private void GenerateGridAtDimension(int d)
+		{
+			while(_pseudoGridsInUse.Count <= d)
+			{
+				_pseudoGridsInUse.Add(false);
+			}
+			_pseudoGridsInUse[d] = true;
+
+			while(_pseudoGrids.Count <= d)
+			{
+				_pseudoGrids.Add(new PseudoTile?[100,100]);
+			}
+			
+			
+		}
+
+		public void WipePseudoLayer(int dimension)
+		{
+			lock (PseudoGenLock)
+			{
+				_pseudoGridsInUse[dimension] = false;
+				_pseudoGrids[dimension] = new PseudoTile?[100, 100];
+				PseudoWorldObjects[dimension].Clear();
+			}
+		}
 	}
 }

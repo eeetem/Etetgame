@@ -11,18 +11,18 @@ public abstract class Effect
 	public Vector2Int Offset = new Vector2Int(0, 0);
 	public abstract float GetOptimalRangeAI();
     
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, int dimension =-1)
 	{
-		return CanPerformChild(actor, target+Offset);
+		return CanPerformChild(actor, target+Offset,dimension);
 	}
-	protected abstract Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target);
+	protected abstract Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target,int dimension = -1);
 	
-	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target)
+	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target,int dimension = -1)
 	{
-		return GetConsequencesChild(actor, target+Offset);
+		return GetConsequencesChild(actor, target+Offset,dimension);
 	}
 	
-	protected abstract List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target);
+	protected abstract List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1);
 
 #if CLIENT
 	

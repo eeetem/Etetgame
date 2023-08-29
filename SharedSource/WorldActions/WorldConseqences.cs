@@ -121,10 +121,10 @@ public class WorldConseqences : IMessageSerializable
 		
 	}
 
-	public List<WorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
+	public List<IWorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
 	{
-		var hitt = WorldManager.Instance.GetTilesAround(target, Range, Cover.Low);
-		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, Cover.Low);
+		var hitt = WorldManager.Instance.GetTilesAround(target, Range, -1,Cover.Low);
+		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, -1,Cover.Low);
 		var list = hitt.Except(excl).ToList();
 		if (Los)
 		{
@@ -180,7 +180,7 @@ public class WorldConseqences : IMessageSerializable
 
 		return list;
 	}
-	protected List<SequenceAction> ConsequencesOnTile(WorldTile tile,WorldObject? user = null)
+	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile,WorldObject? user = null)
 	{
 		var consequences = new List<SequenceAction>();
 		if (Dmg > 0)

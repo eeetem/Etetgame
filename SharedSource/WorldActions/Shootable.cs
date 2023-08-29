@@ -67,36 +67,44 @@ public class Shootable : Effect
 		}
 	}
 
-	public Projectile GenerateProjectile(Unit actor,Vector2Int target, bool targetLow)
+	public Projectile GenerateProjectile(Unit actor, Vector2Int target, int dimension)
 	{
 		
 		bool shooterLow = actor.Crouching;
-
 		Vector2 shotDir = Vector2.Normalize(target -actor.WorldObject.TileLocation.Position);
 		Vector2 from = actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + shotDir / new Vector2(2.5f, 2.5f);
 		Vector2 to = target + new Vector2(0.5f, 0.5f);
-
+		bool targetLow = false;//move this outside
+		var targetTile = WorldManager.Instance.GetTileAtGrid(target, dimension);
+		if(targetTile.UnitAtLocation!=null&&targetTile.UnitAtLocation.Crouching)
+		{
+			targetLow = true;
+		}
+		else
+		{
+			targetLow = false;
+		}
 
 		WorldManager.RayCastOutcome result;
 		if (shooterLow)
 		{
 			//we are crouched so we hit High cover at all distances
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High, pseudoLayer:dimension);
 		}
 		else if (targetLow)
 		{
 			//we are standing, the target is crouched, point blank we are blocked only by full walls while the rest of the way we'll hit high cover
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full);
+			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full,pseudoLayer:dimension);
 		}
 		else
 		{
 			//we both are standing, only full blocks
-			result = WorldManager.Instance.Raycast(from, to, Cover.Full,false);
+			result = WorldManager.Instance.Raycast(from, to, Cover.Full,false,pseudoLayer:dimension);
 		}
 
 		//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
-		if (result.hit) {
-			var tile = WorldManager.Instance.GetTileAtGrid(to);
+		if (!result.hit) {
+			var tile = WorldManager.Instance.GetTileAtGrid(to,dimension);
 			var obj = tile.UnitAtLocation;
 			if (obj != null) {
 				var controllable = obj;
@@ -107,6 +115,7 @@ public class Shootable : Effect
 						hit = true,
 						HitObjId = obj.WorldObject.ID,
 						CollisionPointLong = to,
+						CollisionPointShort = to,
 					};
 				}
 
@@ -119,14 +128,14 @@ public class Shootable : Effect
 		to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
 		WorldManager.RayCastOutcome cast;
 
-		cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true);
+		cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true,pseudoLayer:dimension);
 		if (cast.hit && result.HitObjId != cast.HitObjId)
 		{
 			coverCast = cast;
 		}
 		else
 		{
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true);
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true,pseudoLayer:dimension);
 			if (cast.hit && result.HitObjId != cast.HitObjId)
 			{
 				coverCast = cast;
@@ -167,19 +176,19 @@ public class Shootable : Effect
 		return p;
 	}
 
-	public static bool targetLow =false;
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target)
+
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if(actor.WorldObject.TileLocation.Position == target)
 		{
 			return new Tuple<bool, string>(false,"You can't shoot yourself!");
 		}
-		var p = GenerateProjectile(actor, target, targetLow);
+		var p = GenerateProjectile(actor, target,dimension);
 
 		if (p.Result.hit)
 		{
-			var hitobj = WorldManager.Instance.GetObject(p.Result.HitObjId);
-			if (hitobj!.Type.Edge || hitobj.TileLocation.Position != target)
+			var hitobj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
+			if (hitobj!.Type.Edge || ((Vector2Int)p.Result.CollisionPointLong != target && (Vector2Int) p.Result.CollisionPointShort != target))
 			{
 				return new Tuple<bool, string>(false,"Can't hit target");
 			}
@@ -189,7 +198,7 @@ public class Shootable : Effect
 		return new Tuple<bool, string>(true,"");
 	}
 
-	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
 	{
 		
 		/*
@@ -218,7 +227,7 @@ public class Shootable : Effect
 			lowShot = false;
 		}
 		 */
-		var p = GenerateProjectile(actor, target, targetLow);
+		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
 		var m = new MoveCamera(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
@@ -226,9 +235,10 @@ public class Shootable : Effect
 		retrunList.Add(turnact);
 		if (p.CoverCast.HasValue)
 		{
-			var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId);
+			var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId,dimension);
+			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
 			Cover cover = coverObj!.GetCover();
-			if (coverObj?.UnitComponent != null && coverObj.UnitComponent.Crouching)
+			if (hitObj?.UnitComponent != null && hitObj.UnitComponent.Crouching)
 			{
 				if (cover != Cover.Full)
 				{
@@ -270,7 +280,7 @@ public class Shootable : Effect
 
 		if (p.Result.hit)
 		{
-			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId);
+			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{
 
@@ -295,7 +305,7 @@ public class Shootable : Effect
 			retrunList.Add(act2);
 			
 		}
-		List<WorldTile> tiles = SupressedTiles(p);
+		List<IWorldTile> tiles = SupressedTiles(p,dimension);
 
 		foreach (var tile in tiles)
 		{
@@ -309,10 +319,10 @@ public class Shootable : Effect
 		return retrunList;
 		
 	}
-	public List<WorldTile> SupressedTiles(Projectile p)
+	public List<IWorldTile> SupressedTiles(Projectile p, int dimension = -1)
 	{
 		var pos = new Vector2Int((int) p.Result.CollisionPointLong.X, (int) p.Result.CollisionPointLong.Y);
-		var worldTile = WorldManager.Instance.GetTileAtGrid(pos);
+	
 		if (p.Result.CollisionPointLong != p.Result.EndPoint)
 		{
 			var dir = Utility.GetDirectionToSideWithPoint(pos, p.Result.CollisionPointLong);
@@ -323,14 +333,14 @@ public class Shootable : Effect
 				passCover = Cover.Low;
 			}
 			
-			if (worldTile.GetCover(dir,true)>passCover)
+			if (WorldManager.Instance.GetCover(pos,dir,true)>passCover)
 			{
 				pos = new Vector2Int((int) p.Result.CollisionPointShort.X, (int) p.Result.CollisionPointShort.Y);
 		
 			}
 			
 		}
-		var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,Cover.High);
+		var tiles = WorldManager.Instance.GetTilesAround(pos,supressionRange,dimension,Cover.High);
 		return tiles;
 	}
 
@@ -343,12 +353,12 @@ public class Shootable : Effect
 	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target).Item1)	
+		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target,-1).Item1)	
 		{
 			previewCache = GetConsequences(actor, target);
 			perivewActorID = actor.WorldObject.ID;
 			previewTarget = target;
-			previewShot = GenerateProjectile(actor, target, true);
+			previewShot = GenerateProjectile(actor, target,-1);
 		}
 		if(previewShot==null)
 		{

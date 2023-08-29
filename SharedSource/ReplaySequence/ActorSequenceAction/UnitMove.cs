@@ -80,9 +80,7 @@ public class UnitMove : UnitSequenceAction
 			}
 
 			Actor.canTurn = true;
-#if CLIENT
-			GameLayout.ReMakeMovePreview();	
-#endif
+
 		});
 
 		return t;

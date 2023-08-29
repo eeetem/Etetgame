@@ -25,7 +25,7 @@ public static partial class Utility
 		DrawOutline(spriteBatch, tiles, c, thickness);
 	}
 
-	public static void DrawOutline(this SpriteBatch spriteBatch, IEnumerable<WorldTile> area, Color c, float thickness)
+	public static void DrawOutline(this SpriteBatch spriteBatch, IEnumerable<IWorldTile> area, Color c, float thickness)
 	{
 		HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
 

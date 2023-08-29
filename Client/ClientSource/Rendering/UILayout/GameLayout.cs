@@ -47,6 +47,7 @@ public class GameLayout : MenuLayout
 		{
 			controllable = MyUnits.FirstOrDefault();
 		}
+		if(controllable is null)return;
 
 		if (!controllable.IsMyTeam())
 		{
@@ -59,20 +60,21 @@ public class GameLayout : MenuLayout
 		Camera.SetPos(controllable.WorldObject.TileLocation.Position);
 	}
 
-	public static int[,] AIMoveCache = new int[100,100];
+	public static readonly int[,,] AIMoveCache = new int[100,100,2];
 	public static void ReMakeMovePreview()
 	{
 		previewMoves = SelectedUnit.GetPossibleMoveLocations();
-		for (int x = 0; x < 100; x++)
-		{
-			for (int y = 0; y < 100; y++)
-			{
-				if (WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y)).Surface != null)
-				{
-					//AIMoveCache[x, y] = AI.Move.GetTileMovementScore(new Vector2Int(x, y), GameLayout.SelectedUnit, out _);
-				}
-			}
-		}
+		//for (int x = 0; x < 100; x++)
+		//{
+		//	for (int y = 0; y < 100; y++)
+		//	{
+		//		if (WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y)).Surface != null)
+		//		{
+		//			AIMoveCache[x, y,1] = AI.Move.GetTileMovementScore(new Vector2Int(x, y),true, GameLayout.SelectedUnit, out _);
+		//			AIMoveCache[x, y,0] = AI.Move.GetTileMovementScore(new Vector2Int(x, y), false, GameLayout.SelectedUnit, out _);
+		//		}
+		//	}
+		//}
 	}
 
 	private static RenderTarget2D? hoverHudRenderTarget;
@@ -701,7 +703,7 @@ public class GameLayout : MenuLayout
 		
 			var indicator = TextureManager.GetSpriteSheet("UI/coverIndicator",3,3)[i];
 			Color c = Color.White;
-			switch (WorldManager.Instance.GetTileAtGrid(TileCoordinate).GetCover((Direction) i))
+			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
 			{
 				case Cover.Full:
 					c = Color.Red;
@@ -1095,11 +1097,15 @@ public class GameLayout : MenuLayout
 
 		if (drawExtra)
 		{
+			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;
-			int res = AI.Move.GetTileMovementScore(TileCoordinate, SelectedUnit, out details);
-
+			Move.MoveCalcualtion details2;
+			int res = AI.Move.GetTileMovementScore(TileCoordinate, false,SelectedUnit, out details);
+			int res2 = AI.Move.GetTileMovementScore(TileCoordinate,true, SelectedUnit, out details2);
+			//details = details2;
+			//var res = res2;
 			string text = $" Total: {res}\n Closest Distance: {details.closestDistance}\n Distance Reward: {details.distanceReward}\n ProtectionPenalty: {details.protectionPentalty}\n";
 			
 			foreach (var attack in details.EnemyAttackScores)
@@ -1107,10 +1113,26 @@ public class GameLayout : MenuLayout
 				if(attack.Ability != null)
 					text += $" Attack: {attack.Ability!.Name} DMG: {attack.Dmg}, SUP: {attack.Supression}\n";
 			}
-            text += $" Clumping Penalty: {details.clumpingPenalty}\n Visibility Score: {details.visibilityScore}\n Damage Potential: {details.damagePotential}\n";
+            text += $" Clumping Penalty: {details.clumpingPenalty}\n Visibility Score: {details.visibilityScore}\n Damage Potential: {details.damagePotential}\n Cover Bonus: {details.coverBonus}\n";
 			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
-			batch.DrawText(text,Vector2.One,  3,100, Color.White);
+			batch.DrawText(text,Vector2.One,  3,100, Color.Green);
 			batch.End();
+			
+			
+			
+			string text2 = $" Total: {res2}\n Closest Distance: {details2.closestDistance}\n Distance Reward: {details2.distanceReward}\n ProtectionPenalty: {details2.protectionPentalty}\n";
+			
+			foreach (var attack in details2.EnemyAttackScores)
+			{
+				if(attack.Ability != null)
+					text2 += $" Attack: {attack.Ability!.Name} DMG: {attack.Dmg}, SUP: {attack.Supression}\n";
+			}
+			text2 += $" Clumping Penalty: {details2.clumpingPenalty}\n Visibility Score: {details2.visibilityScore}\n Damage Potential: {details2.damagePotential}\n Cover Bonus: {details2.coverBonus}\n ";
+			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
+			batch.DrawText(text2,new Vector2(700,0),  3,100, Color.Red);
+			batch.End();
+			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 1] = res2;
+			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;
 		}
 
 	

@@ -83,7 +83,7 @@ public partial class WorldObjectType
 						break;
 				
 					case Direction.East:
-						newTile = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
+						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						newTile.WestEdge = wo;
 						wo.Face(Direction.West, false);
 						wo.fliped = true;
@@ -91,7 +91,7 @@ public partial class WorldObjectType
 						break;
 					
 					case Direction.South:
-						newTile = WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
+						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						newTile.NorthEdge = wo;
 						wo.Face(Direction.North,false);
 						wo.fliped = true;

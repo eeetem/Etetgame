@@ -25,7 +25,7 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="config.txt">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Maps\Custom\oldmap.mapdata">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -281,11 +281,17 @@
       <Compile Include="..\SharedSource\GameManager.cs">
         <Link>SharedSource\GameManager.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\IWorldTile.cs">
+        <Link>SharedSource\IWorldTile.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\NetworkingManager.cs">
         <Link>SharedSource\NetworkingManager.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\PseudoTile.cs">
+        <Link>SharedSource\PseudoTile.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\ChangeUnitValues.cs</Link>

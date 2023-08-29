@@ -72,12 +72,10 @@ public class OverWatch : Action
 			if (actor.Abilities[0].Effects[0].GetType() == typeof(Shootable))
 			{
 				var shoot = (Shootable) actor.Abilities[0].Effects[0];
-				var projectile = shoot.GenerateProjectile(actor,shot.Item1,shot.Item2);
+				var projectile = shoot.GenerateProjectile(actor,shot.Item1,-1);
 				spriteBatch.DrawText(""+projectile.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
 			}
-
-		
-
+            
 		}
 
 	}
