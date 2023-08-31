@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DefconNull.AI;
 using DefconNull.LocalObjects;
@@ -160,6 +161,13 @@ public static class RenderSystem
 			{
 				for (int y = 0; y < 100; y++)
 				{
+					if (PathFinding.PathfindingCache.ContainsKey(new Vector2Int(x, y)))
+					{
+				//		spriteBatch.DrawText($"{PathFinding.PathfindingCache[new Vector2Int(x, y)].Item1:F1}",Utility.GridToWorldPos(new Vector2(x,y) + new Vector2(0.4f,0.4f)),2,Color.Yellow);
+					//	spriteBatch.DrawLine(Utility.GridToWorldPos(new Vector2Int(x, y)+new Vector2(0.5f,0.5f)),Utility.GridToWorldPos( PathFinding.PathfindingCache[new Vector2Int(x, y)].Item2+new Vector2(0.5f,0.5f)), Color.Yellow, 2);
+					}
+
+				
 					if(GameLayout.AIMoveCache.GetLength(2)<2) continue;
 					if(GameLayout.AIMoveCache[x,y,0] == 0 && GameLayout.AIMoveCache[x,y,1] == 0) continue;
 					spriteBatch.DrawText(GameLayout.AIMoveCache[x,y,0].ToString(),Utility.GridToWorldPos(new Vector2(x,y) + new Vector2(0.4f,0.4f)),Color.Green);

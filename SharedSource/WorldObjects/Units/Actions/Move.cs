@@ -135,8 +135,8 @@ public class Move : Action
 
 	
 #if CLIENT
-	
-	private static List<Vector2Int>? previewPath = new List<Vector2Int>();
+
+	private static PathFinding.PathFindResult previewPath = new PathFinding.PathFindResult();
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
@@ -149,15 +149,10 @@ public class Move : Action
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if(WorldManager.Instance.SequenceRunning) return;
+		if (WorldManager.Instance.SequenceRunning) return;
 		if (lastTarget == new Vector2Int(0, 0))
 		{
-			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target).Path;
-			if (previewPath == null)
-			{
-				previewPath = new List<Vector2Int>();
-			}
-
+			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 			lastTarget = target;
 		}
 
@@ -167,44 +162,37 @@ public class Move : Action
 		}
 
 
-		for (int index = 0; index < previewPath.Count-1; index++)
+		for (int index = 0; index < previewPath.Path.Count - 1; index++)
 		{
-			var path = previewPath[index];
+			var path = previewPath.Path[index];
 			if (path.X < 0 || path.Y < 0) break;
 			var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-			var nextpos = Utility.GridToWorldPos((Vector2)  previewPath[index+1] + new Vector2(0.5f, 0.5f));
+			var nextpos = Utility.GridToWorldPos((Vector2) previewPath.Path[index + 1] + new Vector2(0.5f, 0.5f));
 
 			Color c = Color.Green;
-			float mul = (float)WorldManager.Instance.GetTileAtGrid(previewPath[index+1]).TraverseCostFrom(path);
+			float mul = (float) WorldManager.Instance.GetTileAtGrid(previewPath.Path[index + 1]).TraverseCostFrom(path);
 			if (mul > 1.5f)
 			{
 				c = Color.Yellow;
-				
+
 			}
 
 			spriteBatch.DrawLine(pos, nextpos, c, 8f);
 		}
 
-		try
+
+		int moveUse = 1;
+		while (previewPath.Cost > actor.GetMoveRange() * moveUse)
 		{
-			PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
-			int moveUse = 1;
-			while (result.Cost > actor.GetMoveRange() * moveUse)
-			{
-				moveUse++;
-			}
-
-			for (int i = 0; i < moveUse; i++)
-			{
-				spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"), Utility.GridToWorldPos(target) + new Vector2(-20 * moveUse, -30) + new Vector2(45, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
-
-			}
+			moveUse++;
 		}
-		catch (Exception e)
+
+		for (int i = 0; i < moveUse; i++)
 		{
-			Console.WriteLine(e);
+			spriteBatch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"), Utility.GridToWorldPos(target) + new Vector2(-20 * moveUse, -30) + new Vector2(45, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
+
+
 		}
 	}
-
 #endif
-}
+	}

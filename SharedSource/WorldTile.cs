@@ -104,6 +104,7 @@ public partial class WorldTile : IWorldTile
 
 	public bool Traversible(Vector2Int from)
 	{
+		
 		if (Surface == null) return false;
 		if (UnitAtLocation != null) return false;
 		if (Surface != null && Surface.Type.Impassible) return false;
@@ -117,10 +118,12 @@ public partial class WorldTile : IWorldTile
 
 		var dist = Utility.Distance(from, _position);
 		if (dist == 0) return 0;
-		Cover obstacle = WorldManager.Instance.GetCover(from,Utility.Vec2ToDir(new Vector2Int(_position.X - from.X, _position.Y - from.Y)));
+		Cover obstacle = WorldManager.Instance.GetCover(from,Utility.Vec2ToDir(new Vector2Int(_position.X - from.X, _position.Y - from.Y)),ignoreControllables:true);
+		//return dist;
 		if (obstacle == Cover.None) return dist;
 		if (obstacle == Cover.Low) return dist + 1;
 		if (obstacle == Cover.High) return dist + 5;
+		if (obstacle == Cover.Full) return dist + 5;
 		if (obstacle == Cover.Full)
 		{
 			throw new Exception("cannot traverse full cover");

@@ -188,17 +188,14 @@ public class Move : AIAction
 				scoredLocations.Add(new Tuple<Vector2Int, bool,int>(l, unit.Crouching,score));
 			});
 		}
-		
 
 		if (unit.Crouching)
 		{
-		
 			//stand up then move
 			List<Vector2Int>[] standUpLocations = unit.GetPossibleMoveLocations(unit.GetMoveRange()+2);//offset the courch penalty since we're gonna be standing up
 			standUpLocations[0].Add(unit.WorldObject.TileLocation.Position);
 			for (int i = 0; i < Math.Min(distance-1, standUpLocations.Length); i++)
 			{
-			
 				Parallel.ForEach(standUpLocations[i], l =>
 				{
 					int score = GetTileMovementScore(l,false, unit, out _);
@@ -217,7 +214,6 @@ public class Move : AIAction
 			crouchLocations[0].Add(unit.WorldObject.TileLocation.Position);
 			for (int i = 0; i < Math.Min(distance-1, crouchLocations.Length); i++)
 			{
-			
 				Parallel.ForEach(crouchLocations[i], l =>
 				{
 					int score = GetTileMovementScore(l,true, unit, out _);

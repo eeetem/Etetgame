@@ -129,40 +129,7 @@ public static class PathFinding
 					continue;
 				}
 
-				foreach (var connected in current.ConnectedNodes)
-				{
-					if (connected is null) continue;
-
-					if (!connected.Traversable(current) || connected.State == NodeState.Closed)
-					{
-						continue; // Do ignore already checked and not traversable nodes.
-					}
-
-					// Adds a previously not "seen" node into the Queue
-					if (connected.State == NodeState.Unconsidered)
-					{
-						connected.Parent = current;
-						connected.CurrentCost = current.CurrentCost + current.TraversalCost(connected);
-
-						connected.State = NodeState.Open;
-						open.Enqueue(connected,connected.TotalCost);
-					}
-					else if (current != connected)
-					{
-						var newCCost = current.CurrentCost + current.TraversalCost(connected);
-						if (newCCost < connected.CurrentCost)
-						{
-							connected.Parent = current;
-							connected.CurrentCost = newCCost;
-						}
-					}
-					else
-					{
-						// Codacy made me do it.
-						throw new Exception(
-							"Detected the same node twice. Confusion how this could ever happen");
-					}
-				}
+				AddOrUpdateConnected(current, null,open);
 			}
 		}
 
@@ -191,8 +158,7 @@ public static class PathFinding
 
 		lock (syncobj)//just in case
 		{
-				
-			
+            
 			var done = new List<Node>();
 			
 			var open = new PriorityQueue<Node,double>();
@@ -204,7 +170,7 @@ public static class PathFinding
 				{
 					// Calculate the Costs
 					node.CurrentCost = from.CurrentCost + from.TraversalCost(node);
-					node.EstimatedCost = from.CurrentCost + Utility.Distance(node.Position,to.Position);
+					node.EstimatedCost = Utility.Distance(node.Position,to.Position);
 					node.State = NodeState.Open;
 					// Enqueue
 					open.Enqueue(node, node.TotalCost);
@@ -223,8 +189,9 @@ public static class PathFinding
 
 				// Selecting next Element from queue
 				var current = open.Dequeue();
-
+				if (current.Parent != null) PathfindingCache[current.Position] = new Tuple<double, Vector2Int>(current.TotalCost, current.Parent.Position);
 				// Add it to the done list
+				if(current.State == NodeState.Closed) continue;
 				done.Add(current);
 
 				current.State = NodeState.Closed;
@@ -259,8 +226,8 @@ public static class PathFinding
 		ret.Reverse();
 		return ret;
 	}
-
-	private static void AddOrUpdateConnected(Node current, Node to, PriorityQueue<Node,double> queue)
+	public static Dictionary<Vector2Int,Tuple<double,Vector2Int>> PathfindingCache = new Dictionary<Vector2Int, Tuple<double,Vector2Int>>();
+	private static void AddOrUpdateConnected(Node current, Node? to, PriorityQueue<Node,double> queue)
 	{
 		if (current.Parent != null && !current.Traversable(current.Parent))
 		{
@@ -281,9 +248,12 @@ public static class PathFinding
 			if (connected.State == NodeState.Unconsidered)
 			{
 				connected.Parent = current;
-				connected.CurrentCost =
-					current.CurrentCost + current.TraversalCost(connected);
-				connected.EstimatedCost = connected.CurrentCost + Utility.Distance(connected.Position,to.Position);
+				connected.CurrentCost = current.CurrentCost + current.TraversalCost(connected);
+				if (to is not null)
+				{
+					connected.EstimatedCost =  Utility.Distance(connected.Position, to.Position);
+				}
+
 				connected.State = NodeState.Open;
 				queue.Enqueue(connected,connected.TotalCost);
 			}
@@ -294,6 +264,7 @@ public static class PathFinding
 				{
 					connected.Parent = current;
 					connected.CurrentCost = newCCost;
+					queue.Enqueue(connected,connected.TotalCost);
 				}
 			}
 			else
@@ -302,7 +273,10 @@ public static class PathFinding
 				throw new Exception(
 					"Detected the same node twice. Confusion how this could ever happen");
 			}
+
+			if (connected.Parent != null) PathfindingCache[connected.Position] = new Tuple<double, Vector2Int>(connected.TotalCost, connected.Parent.Position);
 		}
+	
 	}
 }
 
