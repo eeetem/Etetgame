@@ -1097,7 +1097,7 @@ public class GameLayout : MenuLayout
 
 		if (drawExtra)
 		{
-			
+		/*	
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;
@@ -1132,7 +1132,7 @@ public class GameLayout : MenuLayout
 			batch.DrawText(text2,new Vector2(700,0),  3,100, Color.Red);
 			batch.End();
 			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 1] = res2;
-			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;
+			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;*/
 		}
 
 	

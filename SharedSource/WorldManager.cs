@@ -71,20 +71,18 @@ namespace DefconNull.World
 
 		public WorldObject? GetObject(int id, int dimension = -1)
 		{
-			try
+			
+			
+			if(dimension != -1)
 			{
-				if(dimension != -1)
-				{
-					if(PseudoWorldObjects.TryGetValue(dimension, out var dimDIct) && dimDIct.TryGetValue(id, out var obj))
-						return obj;//return if present, otherwise return the real object since there's no pseudo analogue
-				}
-				return WorldObjects[id];
+				if(PseudoWorldObjects.TryGetValue(dimension, out var dimDIct) && dimDIct.TryGetValue(id, out var obj))
+					return obj;//return if present, otherwise return the real object since there's no pseudo analogue
+					
 			}
-			catch (Exception)
-			{
-				Console.WriteLine("failed to access object with id:"+id);
-				return null;
-			}
+			if(WorldObjects.TryGetValue(id, out var obj2))
+				return obj2;
+			return null;
+
 
 		}
 
@@ -1028,7 +1026,7 @@ namespace DefconNull.World
 				{
 					if (t.Status == TaskStatus.RanToCompletion)
 					{
-					//	Console.WriteLine("sequence task finished");
+						//	Console.WriteLine("sequence task finished");
 					}
 					else if (t.Status == TaskStatus.Faulted)
 					{
@@ -1205,7 +1203,7 @@ namespace DefconNull.World
 			
 				int dimension = GetNextFreePseudoDimension();
 		
-				Console.WriteLine("placing unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
+				//Console.WriteLine("placing unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
 				WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 				WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
 				pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData());

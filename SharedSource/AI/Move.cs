@@ -26,6 +26,7 @@ public class Move : AIAction
 
 	private static int GetMovesToUse(Unit u)
 	{
+		
 		int movesToUse = 0;
 		if (u.MovePoints.Current > u.ActionPoints.Current)
 		{
@@ -46,7 +47,7 @@ public class Move : AIAction
 	public override void Execute(Unit unit)
 	{
 
-		int movesToUse = GetMovesToUse(unit);
+		int movesToUse = unit.MovePoints.Current;
 
 		var locs = GetMovementLocations(unit,movesToUse);
 
@@ -125,9 +126,9 @@ public class Move : AIAction
 		}
 		
 		float actionScore = 1+worseThanAverage;//diffference bwteen current tile and average of all other tiles
-		if (unit.MovePoints > unit.ActionPoints)
+		if (unit.MovePoints == unit.MovePoints.Max)//we should probably move first then do something
 		{
-			actionScore *= 2f;
+			actionScore *= 1.5f;
 		}
 
 		return (int)actionScore;
@@ -137,7 +138,7 @@ public class Move : AIAction
 	{
 		int movesToUse = GetMovesToUse(unit);
 		var locs = GetMovementLocations(unit, movesToUse);
-		int scoreForCurrentTile = GetTileMovementScore(unit.WorldObject.TileLocation.Position, unit.Crouching,unit, out _);
+		int scoreForCurrentTile = GetTileMovementScore(unit.WorldObject.TileLocation.Position, 0,unit.Crouching,unit, out _);
 
 		int countedLocs = 0;
 		List<int> scores = new List<int>();
@@ -158,15 +159,13 @@ public class Move : AIAction
 
 		//int averageScore = totalScore / countedLocs;
 		float percentile = Utility.CalculatePercentile(scores, 80);
-
 		float worseThanAverage = percentile - scoreForCurrentTile;
-
 
 		return worseThanAverage;
 	}
 
 
-	private static ConcurrentBag<Tuple<Vector2Int,bool, int>> GetMovementLocations(Unit unit,int distance = 1)
+	private static ConcurrentBag<Tuple<Vector2Int, bool, int>> GetMovementLocations(Unit unit, int distance)
 	{
 		List<Vector2Int>[] allLocations = unit.GetPossibleMoveLocations();
 		allLocations[0].Add(unit.WorldObject.TileLocation.Position);
@@ -178,9 +177,10 @@ public class Move : AIAction
 		//move locations where we do not change stance
 		for (int i = 0; i < Math.Min(distance,allLocations.Length); i++)
 		{
+			int i1 = i;
 			Parallel.ForEach(allLocations[i], l =>
 			{
-				int score = GetTileMovementScore(l,unit.Crouching, unit, out _);
+				int score = GetTileMovementScore(l,i1,unit.Crouching, unit, out _);
 				if(score< lowestScore)
 				{
 					lowestScore = score;
@@ -196,9 +196,10 @@ public class Move : AIAction
 			standUpLocations[0].Add(unit.WorldObject.TileLocation.Position);
 			for (int i = 0; i < Math.Min(distance-1, standUpLocations.Length); i++)
 			{
+				int i1 = i;
 				Parallel.ForEach(standUpLocations[i], l =>
 				{
-					int score = GetTileMovementScore(l,false, unit, out _);
+					int score = GetTileMovementScore(l,i1+1,false, unit, out _);
 					if(score< lowestScore)
 					{
 						lowestScore = score;
@@ -214,9 +215,10 @@ public class Move : AIAction
 			crouchLocations[0].Add(unit.WorldObject.TileLocation.Position);
 			for (int i = 0; i < Math.Min(distance-1, crouchLocations.Length); i++)
 			{
+				int i1 = i;
 				Parallel.ForEach(crouchLocations[i], l =>
 				{
-					int score = GetTileMovementScore(l,true, unit, out _);
+					int score = GetTileMovementScore(l,i1+1,true, unit, out _);
 					if(score< lowestScore)
 					{
 						lowestScore = score;
@@ -257,7 +259,7 @@ public class Move : AIAction
 		}
 	}
 
-	public static int GetTileMovementScore(Vector2Int tilePosition, bool crouch, Unit realUnit, out MoveCalcualtion details)
+	public static int GetTileMovementScore(Vector2Int tilePosition, int movesToReach, bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
 		if(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation != null && !Equals(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation, realUnit))
 		{
@@ -271,6 +273,7 @@ public class Move : AIAction
 		Unit hypotheticalUnit;
 		int dimension = WorldManager.Instance.PlaceUnitInPseudoWorld(realUnit,tilePosition, out hypotheticalUnit);
 		hypotheticalUnit.Crouching = crouch;
+		hypotheticalUnit.MovePoints -= movesToReach;
 		
 		
 	
@@ -311,7 +314,7 @@ public class Move : AIAction
 		details.EnemyAttackScores = enemyAttackScores;
 
 
-		int visibilityScore = -70;
+		int visibilityScore = -40;
 		int visibleEnemies = 0;
 		
 		foreach (var u in otherTeamUnits)
@@ -335,7 +338,7 @@ public class Move : AIAction
 		int damagePotential = 0;
 		foreach (var enemy in otherTeamUnits)
 		{
-			var res =GetWorstPossibleAttack(hypotheticalUnit,enemy.WorldObject.TileLocation.Position,enemy,dimension:dimension);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
+			var res =GetWorstPossibleAttack(hypotheticalUnit,enemy.WorldObject.TileLocation.Position,enemy,false,dimension:dimension);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
 			if (res.GetTotalValue() > bestAttack.GetTotalValue()) 
 			{
 				bestAttack = res;

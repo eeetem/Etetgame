@@ -60,8 +60,8 @@ public static class Program
 			TimeSpan ts = stopWatch.Elapsed;
 			if (ts.Milliseconds >= MSperTick)
 			{
-				Console.WriteLine("WARNING: SERVER CAN'T KEEP UP WITH TICK");
-				Console.WriteLine(ts.Milliseconds);
+			//	Console.WriteLine("WARNING: SERVER CAN'T KEEP UP WITH TICK");
+			//	Console.WriteLine(ts.Milliseconds);
 			}
 			else
 			{

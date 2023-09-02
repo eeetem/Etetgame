@@ -82,8 +82,10 @@ public class AI
 	{
 		List<Tuple<AIAction, int>> actions = new();
 		AIAction a = new Attack();
+		Console.WriteLine("Calculating Attack Action..."); 
 		actions.Add(new Tuple<AIAction, int>(a, a.GetScore(u)));
 		a = new Move();
+		Console.WriteLine("Calculating Move Action..."); 
 		actions.Add(new Tuple<AIAction, int>(a, a.GetScore(u)));
 		actions.RemoveAll((x) => x.Item2 <= 0);
 		return actions;
