@@ -273,27 +273,40 @@ public static partial class GameManager
 	}
 
     
-	public static List<Unit> GetTeamUnits(bool team1)
+	public static List<Unit> GetTeamUnits(bool team1, int dimension = -1)
 	{
+		List<int>ids = new List<int>();
 #if SERVER
-		var unitIds = team1 ? T1Units : GameManager.T2Units;
+		ids = team1 ? T1Units : T2Units;
+#else
+		if(team1==IsPlayer1)
+		{
+			foreach (var u in GameLayout.MyUnits)
+			{
+				ids.Add(u.WorldObject.ID);
+			}
+		}
+		else
+		{
+			foreach (var u in GameLayout.EnemyUnits)
+			{
+				ids.Add(u.WorldObject.ID);
+			}
+		}
+
+		
+#endif
 		List<Unit> units = new List<Unit>();
 		
-		foreach (var id in unitIds)
+		foreach (var id in ids)
 		{
-			units.Add( WorldManager.Instance.GetObject(id).UnitComponent);
+			units.Add( WorldManager.Instance.GetObject(id,dimension).UnitComponent);
 		}
 
 		return units;
-		#else
-		
-		if(team1==IsPlayer1)
-		{
-			return GameLayout.MyUnits;
-		}
 
-		return GameLayout.EnemyUnits;
-#endif
+		
+
 
 	}
 }

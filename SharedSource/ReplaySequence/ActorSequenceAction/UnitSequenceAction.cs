@@ -61,6 +61,23 @@ public abstract class UnitSequenceAction : SequenceAction
 		return true;
 	}
 
+	public Unit? GetAffectedActor(int dimension)
+	{
+									
+		Unit? hitUnit = null;
+		if (Requirements.ActorID != -1)
+		{
+			hitUnit = WorldManager.Instance.GetObject(Requirements.ActorID,dimension)!.UnitComponent;
+		}
+		else if(Requirements.Position != new Vector2Int(-1, -1))
+		{
+
+			hitUnit = WorldManager.Instance.GetTileAtGrid(Requirements.Position,dimension).UnitAtLocation;
+		}
+
+		return hitUnit;
+	}
+
 	protected Unit Actor
 	{
 		get

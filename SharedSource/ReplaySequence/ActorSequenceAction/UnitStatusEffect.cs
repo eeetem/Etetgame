@@ -8,9 +8,9 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 
 public class UnitStatusEffect  : UnitSequenceAction
 {
-	bool addNotRemove;
-	string effectName;
-	int duration;
+	public readonly bool addNotRemove;
+	public readonly string effectName;
+	public readonly int duration;
 	public override bool CanBatch => true;
 
 	public UnitStatusEffect(Vector2Int actorID, bool addNotRemove, string effectName, int duration = 0) : base(new TargetingRequirements(actorID), SequenceType.UnitStatusEffect)

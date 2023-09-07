@@ -1097,13 +1097,19 @@ public class GameLayout : MenuLayout
 
 		if (drawExtra)
 		{
-		/*	
+		
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;
 			Move.MoveCalcualtion details2;
-			int res = AI.Move.GetTileMovementScore(TileCoordinate, false,SelectedUnit, out details);
-			int res2 = AI.Move.GetTileMovementScore(TileCoordinate,true, SelectedUnit, out details2);
+			var path = PathFinding.GetPath(SelectedUnit.WorldObject.TileLocation.Position, TileCoordinate);
+			int moveUse = 1;
+			while (path.Cost > SelectedUnit.GetMoveRange()*moveUse)
+			{
+				moveUse++;
+			}
+			int res = AI.Move.GetTileMovementScore(TileCoordinate,moveUse,false,SelectedUnit, out details);
+			int res2 = AI.Move.GetTileMovementScore(TileCoordinate,moveUse,true, SelectedUnit, out details2);
 			//details = details2;
 			//var res = res2;
 			string text = $" Total: {res}\n Closest Distance: {details.closestDistance}\n Distance Reward: {details.distanceReward}\n ProtectionPenalty: {details.protectionPentalty}\n";
@@ -1132,7 +1138,7 @@ public class GameLayout : MenuLayout
 			batch.DrawText(text2,new Vector2(700,0),  3,100, Color.Red);
 			batch.End();
 			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 1] = res2;
-			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;*/
+			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;
 		}
 
 	

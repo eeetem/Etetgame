@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace DefconNull.World
 		
 
 		public readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
-		public readonly Dictionary<int, Dictionary<int,WorldObject>> PseudoWorldObjects = new ();
+		public readonly ConcurrentDictionary<int, ConcurrentDictionary<int,WorldObject>> PseudoWorldObjects = new ();
 	
 		private int NextId;
 
@@ -71,19 +72,15 @@ namespace DefconNull.World
 
 		public WorldObject? GetObject(int id, int dimension = -1)
 		{
-			
-			
 			if(dimension != -1)
 			{
 				if(PseudoWorldObjects.TryGetValue(dimension, out var dimDIct) && dimDIct.TryGetValue(id, out var obj))
 					return obj;//return if present, otherwise return the real object since there's no pseudo analogue
-					
 			}
 			if(WorldObjects.TryGetValue(id, out var obj2))
 				return obj2;
+
 			return null;
-
-
 		}
 
 		public static bool IsPositionValid(Vector2Int pos)
@@ -997,7 +994,7 @@ namespace DefconNull.World
 						}
 						task = SequenceQueue.Dequeue();
 					}
-					Console.WriteLine("runnin sequnce task: "+task.SqcType);
+					//Console.WriteLine("runnin sequnce task: "+task.SqcType);
 					_currentSequenceTasks.Add(task.GenerateTask());
 					_currentSequenceTasks.Last().Start();
 					
@@ -1196,51 +1193,115 @@ namespace DefconNull.World
 
 
 		public static readonly object PseudoGenLock = new object();
-		public int PlaceUnitInPseudoWorld(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit)
-		{
-			lock (PseudoGenLock)
-			{
-			
-				int dimension = GetNextFreePseudoDimension();
 		
-				//Console.WriteLine("placing unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
+		public void AddUnitToPseudoWorld(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int dimension)
+		{
+		
+			//		Console.WriteLine("placing unit at: " + tilePosition + " in dimension: " + dimension + " with ID " + realunit.WorldObject.ID);
+			if (PseudoWorldObjects.ContainsKey(dimension) && PseudoWorldObjects[dimension].ContainsKey(realunit.WorldObject.ID))
+			{
+				//	Console.WriteLine("unit already in pseudo world at " + realunit.WorldObject.TileLocation.Position);
+				pseudoUnit = PseudoWorldObjects[dimension][realunit.WorldObject.ID].UnitComponent!;
+				return;
+			}
+
+			WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
+			WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition, dimension), data);
+			pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData());
+			realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+				
+			pseudoUnit = pseudoObj.UnitComponent;
+				
+
+			if (!PseudoWorldObjects[dimension].TryAdd(pseudoObj.ID, pseudoObj))
+			{
+				throw new Exception("failed to create pseudo object");
+					
+			}
+			GetTileAtGrid(tilePosition, dimension).UnitAtLocation = pseudoUnit;
+		//	Console.WriteLine("adding unit with id: " + realunit.WorldObject.ID + " to dimension: " + dimension);
+				
+			if (realunit.WorldObject.TileLocation.Position != tilePosition)
+			{
+				((PseudoTile) GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true; //remove old position from world
+			}
+			
+		}
+
+		public int CreatePseudoWorldWithUnit(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int copyDimension = -1)
+		{
+
+		
+				int dimension= GetNextFreePseudoDimension();
+		
+				if (!PseudoWorldObjects.ContainsKey(dimension))
+				{
+					PseudoWorldObjects.TryAdd(dimension, new ConcurrentDictionary<int, WorldObject>());
+
+				}
+
+	
+			
+			//	Console.WriteLine("Creating pseudo world with unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
 				WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 				WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
 				pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData());
 				realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+				
 				pseudoUnit = pseudoObj.UnitComponent;
 
-				if (!PseudoWorldObjects.ContainsKey(dimension))
-				{
-					PseudoWorldObjects.Add(dimension, new Dictionary<int, WorldObject>());
-				}
-				PseudoWorldObjects[dimension].Add(pseudoObj.ID,pseudoObj);
-			
-				((PseudoTile)GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true;//remove old position from world
-
-			
+				
+				
 		
+				if (!PseudoWorldObjects[dimension].TryAdd(pseudoObj.ID, pseudoObj))
+				{
+					
+					throw new Exception("failed to create pseudo object");
+					
+				}
+
+				
+				GetTileAtGrid(tilePosition, dimension).UnitAtLocation = pseudoUnit;
+				//Console.WriteLine("adding unit with id: " + realunit.WorldObject.ID + " to dimension: " + dimension);
+				
+				if (realunit.WorldObject.TileLocation.Position != tilePosition)
+				{
+					((PseudoTile) GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true; //remove old position from world
+
+				}
+				if(copyDimension != -1){
+					foreach (var otherdem in PseudoWorldObjects[copyDimension])
+					{
+						AddUnitToPseudoWorld(otherdem.Value.UnitComponent,otherdem.Value.TileLocation.Position,out _,dimension);
+					}
+				}
+				
+
 				return dimension;
-			}
+			
 		}
 
 		private int GetNextFreePseudoDimension()
 		{
-			int dimension = 0;
-			while (true)
+			lock (PseudoGenLock)
 			{
-				if (_pseudoGridsInUse.Count <= dimension)
+				int dimension = 0;
+				while (true)
 				{
-					GenerateGridAtDimension(dimension);
-					return dimension;
-				}
+					if (_pseudoGridsInUse.Count <= dimension)
+					{
+						GenerateGridAtDimension(dimension);
+						return dimension;
+					}
 
-				if (_pseudoGridsInUse[dimension] == false)
-				{
-					GenerateGridAtDimension(dimension);
-					return dimension;
+					if (_pseudoGridsInUse[dimension] == false)
+					{
+						GenerateGridAtDimension(dimension);
+						return dimension;
+					}
+
+					dimension++;
 				}
-				dimension++;
 			}
 		}
 
@@ -1260,10 +1321,21 @@ namespace DefconNull.World
 			
 		}
 
+	/*	public void DeletePseudoUnit(int id, int dimension)
+		{
+			
+			Console.WriteLine("removing unit with id: " + id + " from dimension: " + dimension);
+			if (PseudoWorldObjects.ContainsKey(id) && PseudoWorldObjects[dimension].ContainsKey(id)){
+				PseudoWorldObjects[dimension][id].TileLocation.UnitAtLocation = null;
+				PseudoWorldObjects[dimension].Remove(id);
+			}
+			
+		}*/
 		public void WipePseudoLayer(int dimension)
 		{
 			lock (PseudoGenLock)
 			{
+			//	Console.WriteLine("Wiping grid in " + dimension);
 				_pseudoGridsInUse[dimension] = false;
 				_pseudoGrids[dimension] = new PseudoTile?[100, 100];
 				PseudoWorldObjects[dimension].Clear();

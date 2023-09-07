@@ -61,6 +61,7 @@ public class ToggleAbility : IUnitAbility
 
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false, int dimension=-1)
 	{
+		if(_disabled) return new Tuple<bool, string>(false, "Ability is disabled");
 		if (isOn)
 		{
 			return off.CanPerform(actor, target,nextturn,dimension);
@@ -169,10 +170,25 @@ public class ToggleAbility : IUnitAbility
 			return off.Icon;
 		}
 	}
+	
+
 
 #endif
+	public bool Disabled => _disabled;
+	private bool _disabled = false;
+	public void Disable()
+	{
+		_disabled = true;
+	}
 	public object Clone()
 	{
+		if (_disabled)
+		{
+			var ab = new ToggleAbility((UnitAbility)on.Clone(),(UnitAbility)off.Clone(),index);
+			ab.Disable();
+			return ab;
+		}
+
 		return new ToggleAbility((UnitAbility)on.Clone(),(UnitAbility)off.Clone(),index);
 	}
 }

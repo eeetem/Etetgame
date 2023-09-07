@@ -130,7 +130,7 @@
       </effect>
     </action>
 
-    <action immideate="true" detCost ="3">
+    <action immideate="true" moveCost="0" actCost="0" detCost ="3">
       <name>Breach n Clear</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
       <effect>

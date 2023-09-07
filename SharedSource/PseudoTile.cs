@@ -25,6 +25,11 @@ public class PseudoTile : IWorldTile
 				return null;
 			}
 
+			if (_unitAtLocation == null)
+			{
+				return _realParent.UnitAtLocation;
+			}
+
 			return _unitAtLocation;
 		}
 		set

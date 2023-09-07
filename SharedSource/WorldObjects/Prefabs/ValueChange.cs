@@ -51,7 +51,7 @@ public struct ValueChange : IMessageSerializable
 		Value = int.Parse(input);
 	}
 
-	public int GetChange(Value field)
+	public readonly int GetChange(Value field)
 	{
 		int newValue = field.Current;
 		if (Set)
@@ -88,7 +88,7 @@ public struct ValueChange : IMessageSerializable
 		return newValue - field.Current;
 	}
 
-	public void Apply(ref Value field)
+	public readonly void Apply(ref Value field)
 	{
 		
 		field += GetChange(field);

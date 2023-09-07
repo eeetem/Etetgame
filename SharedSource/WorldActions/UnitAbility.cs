@@ -5,7 +5,6 @@ using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 
-
 #if CLIENT
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.Rendering;
@@ -35,6 +34,7 @@ public class UnitAbility : IUnitAbility
 	public string Name => name;
 	public int Index => index;
 	public int index;
+	public bool Disabled => _disabled;
 
 
 	public float GetOptimalRangeAI()
@@ -59,6 +59,7 @@ public class UnitAbility : IUnitAbility
 		ActCost  = actionPointCost;
 		Effects = effects;
 		this.immideaateActivation = immideaateActivation;
+		this.index = index;
 #if CLIENT
 
 		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
@@ -66,8 +67,15 @@ public class UnitAbility : IUnitAbility
 #endif
 	}
 
+	
+	private bool _disabled = false;
+	public void Disable()
+	{
+		_disabled = true;
+	}
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false, int dimension =-1)
 	{
+		if(_disabled) return new Tuple<bool, string>(false, "Ability is disabled");
 		var res = HasEnoughPointsToPerform(actor,NextTurn);
 		if (!res.Item1)
 		{
@@ -203,13 +211,22 @@ public class UnitAbility : IUnitAbility
 
 
 	public Texture2D Icon { get; set; }
-	
 
 #endif
 
 	public object Clone()
 	{
+		if (_disabled)
+		{
+			var ab = new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index);	
+			ab.Disable();
+			return ab;
+		}
+		
 		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index);	
+		
+
+		
 	}
     
 

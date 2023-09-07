@@ -9,10 +9,11 @@ namespace DefconNull.SharedSource.Units.ReplaySequence;
 
 public class ChangeUnitValues : UnitSequenceAction
 {
-	private ValueChange actChange;
-	private ValueChange moveChange;
-	private ValueChange detChange;
-	private ValueChange moveRangeEffect;
+	public readonly ValueChange ActChange;
+	public readonly ValueChange MoveChange;
+	public readonly ValueChange DetChange;
+	public readonly ValueChange MoveRangeeffectChange;
+	
 
 	public ChangeUnitValues(int actorID, int actChange=0 , int moveChange=0 ,int detChange =0,int moveRangeEffect =0 ) : this(actorID, new ValueChange(actChange), new ValueChange(moveChange), new ValueChange(detChange), new ValueChange(moveRangeEffect))
 	{
@@ -24,53 +25,53 @@ public class ChangeUnitValues : UnitSequenceAction
 	{
 		if (actChange.HasValue)
 		{
-			this.actChange = actChange.Value;
+			ActChange = actChange.Value;
 		}
 		
 		if (moveChange.HasValue)
 		{
-			this.moveChange = moveChange.Value;
+			MoveChange = moveChange.Value;
 		}
 		
 		if (detChange.HasValue)
 		{
-			this.detChange = detChange.Value;
+			DetChange = detChange.Value;
 		}
 		
 		if (moveRangeEffect.HasValue)
 		{
-			this.moveRangeEffect = moveRangeEffect.Value;
+			MoveRangeeffectChange = moveRangeEffect.Value;
 		}
 	}
 	public ChangeUnitValues(TargetingRequirements actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null) : base(actorID,  SequenceType.ChangeUnitValues)
 	{
 		if (actChange.HasValue)
 		{
-			this.actChange = actChange.Value;
+			ActChange = actChange.Value;
 		}
 		
 		if (moveChange.HasValue)
 		{
-			this.moveChange = moveChange.Value;
+			MoveChange = moveChange.Value;
 		}
 		
 		if (detChange.HasValue)
 		{
-			this.detChange = detChange.Value;
+			DetChange = detChange.Value;
 		}
 		
 		if (moveRangeEffect.HasValue)
 		{
-			this.moveRangeEffect = moveRangeEffect.Value;
+			MoveRangeeffectChange = moveRangeEffect.Value;
 		}
 	}
     
 	public ChangeUnitValues(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.ChangeUnitValues)
 	{
-		actChange = msg.GetSerializable<ValueChange>();
-		moveChange = msg.GetSerializable<ValueChange>();
-		detChange = msg.GetSerializable<ValueChange>();
-		moveRangeEffect = msg.GetSerializable<ValueChange>();
+		ActChange = msg.GetSerializable<ValueChange>();
+		MoveChange = msg.GetSerializable<ValueChange>();
+		DetChange = msg.GetSerializable<ValueChange>();
+		MoveRangeeffectChange = msg.GetSerializable<ValueChange>();
 	}
 	
 
@@ -78,11 +79,10 @@ public class ChangeUnitValues : UnitSequenceAction
 	{
 		var t = new Task(delegate
 		{
-			
-			actChange.Apply(ref Actor.ActionPoints);
-			moveChange.Apply(ref Actor.MovePoints);
-			detChange.Apply(ref Actor.Determination);
-			moveRangeEffect.Apply(ref Actor.MoveRangeEffect);
+			ActChange.Apply(ref Actor.ActionPoints);
+			MoveChange.Apply(ref Actor.MovePoints);
+			DetChange.Apply(ref Actor.Determination);
+			MoveRangeeffectChange.Apply(ref Actor.MoveRangeEffect);
 		});
 		return t;
 	}
@@ -90,10 +90,10 @@ public class ChangeUnitValues : UnitSequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		base.SerializeArgs(message);
-		message.Add(actChange);
-		message.Add(moveChange);
-		message.Add(detChange);
-		message.Add(moveRangeEffect);
+		message.Add(ActChange);
+		message.Add(MoveChange);
+		message.Add(DetChange);
+		message.Add(MoveRangeeffectChange);
 	}
 
 

@@ -136,11 +136,8 @@ public class WorldConseqences : IMessageSerializable
 			{
 				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(target, x.Position,99,false));
 			}
-			
 		}
-
 		return list;
-
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
@@ -164,7 +161,6 @@ public class WorldConseqences : IMessageSerializable
 			{
 				list.Add(sqc);
 			}
-
 		}
 
 		if (Sfx != "" && Sfx != null)

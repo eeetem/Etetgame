@@ -8,13 +8,13 @@ public class Attack : AIAction
 {
 	public Attack() : base(AIActionType.Attack)
 	{
+		
 	}
 
 
 
 	public override void Execute(Unit unit)
 	{
-		
 		//todo only waht you see
 		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false,true);
 		UseAbility.AbilityIndex = atk.Ability!.Index;
@@ -23,7 +23,6 @@ public class Attack : AIAction
 
 	public override int GetScore(Unit unit)
 	{
-		
 		//only what you see
 		var atk = GetWorstPossibleAttackOnEnemyTeam(unit,false,true);
 		return atk.GetTotalValue()*2;

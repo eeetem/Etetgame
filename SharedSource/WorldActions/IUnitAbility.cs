@@ -23,7 +23,9 @@ public interface IUnitAbility : ICloneable
 #if CLIENT
 	void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
 	Texture2D Icon { get; }
-	
+
 #endif
 
+	void Disable();
+	bool Disabled { get; }
 }
