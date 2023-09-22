@@ -31,8 +31,7 @@ public class MoveCamera : SequenceAction
 		var t = new Task(delegate
 		{
 #if CLIENT
-			
-			if (WorldManager.Instance.GetTileAtGrid(location).TileVisibility==Visibility.None)
+			if (WorldManager.Instance.GetTileAtGrid(location).GetVisibility()==Visibility.None)
 			{
 				if (doAlways)
 				{

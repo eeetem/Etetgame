@@ -102,6 +102,58 @@ public partial class WorldTile : IWorldTile
 		}	
 	}
 
+
+#if SERVER
+	public Tuple<Visibility,Visibility> TileVisibility {private get; set;} = new Tuple<Visibility, Visibility>(Visibility.None,Visibility.None);
+#else
+	public Visibility TileVisibility {private get; set;} = Visibility.None;
+#endif
+
+	public void SetVisibility(bool unitIsPlayer1Team, Visibility visTupleValue)
+	{
+#if SERVER
+		if (unitIsPlayer1Team)
+		{
+			TileVisibility = new Tuple<Visibility, Visibility>(visTupleValue, TileVisibility.Item2);
+		}
+		else
+		{
+			TileVisibility = new Tuple<Visibility, Visibility>(TileVisibility.Item1, visTupleValue);
+		}
+		#else
+		TileVisibility = visTupleValue;
+	#endif	
+	}
+	
+	public Visibility GetVisibility(bool? team1 = null)
+	{
+		
+		Visibility vis;
+#if SERVER
+		if(team1 is null){
+			throw new Exception("requestted visibility wihtout specifying team");
+		}
+		if (team1.Value)
+		{  
+			vis = TileVisibility.Item1;
+		}else{
+			vis = TileVisibility.Item2;
+		}
+#else
+		vis = TileVisibility;
+#endif
+		return vis;
+	}
+	public bool IsVisible(Visibility minimum = Visibility.Partial, bool? team1 = null)
+	{
+		if (GetVisibility(team1) >= minimum)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	public bool Traversible(Vector2Int from)
 	{
 		
@@ -366,7 +418,7 @@ public partial class WorldTile : IWorldTile
 			message.AddBool(b);
 			if (b) 	message.AddSerializable(UnitAtLocation!.Value);
 			
-            message.AddSerializables(ObjectsAtLocation.ToArray());
+			message.AddSerializables(ObjectsAtLocation.ToArray());
 			
             
 
@@ -488,4 +540,6 @@ public partial class WorldTile : IWorldTile
 		UnitAtLocation?.WorldObject.NextTurn();
 		Surface?.NextTurn();
 	}
+
+	
 }

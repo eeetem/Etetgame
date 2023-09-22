@@ -224,17 +224,17 @@ public static class PrefabManager
 
 	private static UnitAbility ParseUnitAbility(XmlElement actobj, int index)
 	{
-
 		ushort detCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
 		ushort moveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
 		ushort actCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
 		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
+		bool aiExempt =  bool.Parse(actobj.Attributes?["aiExempt"]?.InnerText ?? "false"); 
 
 		List<Effect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index);
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index,aiExempt);
 		return a;
 	}
 

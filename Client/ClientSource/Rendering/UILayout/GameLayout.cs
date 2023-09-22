@@ -300,7 +300,7 @@ public class GameLayout : MenuLayout
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		Init();
-		WorldManager.Instance.MakeFovDirty(false);
+		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
 		if (GameManager.spectating || GameManager.PreGameData.SinglePLayerFeatures)
 		{
@@ -1112,28 +1112,20 @@ public class GameLayout : MenuLayout
 			int res2 = AI.Move.GetTileMovementScore(TileCoordinate,moveUse,true, SelectedUnit, out details2);
 			//details = details2;
 			//var res = res2;
-			string text = $" Total: {res}\n Closest Distance: {details.closestDistance}\n Distance Reward: {details.distanceReward}\n ProtectionPenalty: {details.protectionPentalty}\n";
+			string text = $" Total: {res}\n Closest Distance: {details.ClosestDistance}\n Distance Reward: {details.DistanceReward}\n ProtectionPenalty: {details.ProtectionPentalty}\n";
 			
-			foreach (var attack in details.EnemyAttackScores)
-			{
-				if(attack.Ability != null)
-					text += $" Attack: {attack.Ability!.Name} DMG: {attack.Dmg}, SUP: {attack.Supression}\n";
-			}
-            text += $" Clumping Penalty: {details.clumpingPenalty}\n Visibility Score: {details.visibilityScore}\n Damage Potential: {details.damagePotential}\n Cover Bonus: {details.coverBonus}\n";
+
+            text += $" Clumping Penalty: {details.ClumpingPenalty}\n  Damage Potential: {details.DamagePotential}\n Cover Bonus: {details.CoverBonus}\n";
 			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
 			batch.DrawText(text,Vector2.One,  3,100, Color.Green);
 			batch.End();
 			
 			
 			
-			string text2 = $" Total: {res2}\n Closest Distance: {details2.closestDistance}\n Distance Reward: {details2.distanceReward}\n ProtectionPenalty: {details2.protectionPentalty}\n";
+			string text2 = $" Total: {res2}\n Closest Distance: {details2.ClosestDistance}\n Distance Reward: {details2.DistanceReward}\n ProtectionPenalty: {details2.ProtectionPentalty}\n";
 			
-			foreach (var attack in details2.EnemyAttackScores)
-			{
-				if(attack.Ability != null)
-					text2 += $" Attack: {attack.Ability!.Name} DMG: {attack.Dmg}, SUP: {attack.Supression}\n";
-			}
-			text2 += $" Clumping Penalty: {details2.clumpingPenalty}\n Visibility Score: {details2.visibilityScore}\n Damage Potential: {details2.damagePotential}\n Cover Bonus: {details2.coverBonus}\n ";
+
+			text2 += $" Clumping Penalty: {details2.ClumpingPenalty}\n Damage Potential: {details2.DamagePotential}\n Cover Bonus: {details2.CoverBonus}\n ";
 			batch.Begin(samplerState: SamplerState.AnisotropicClamp);
 			batch.DrawText(text2,new Vector2(700,0),  3,100, Color.Red);
 			batch.End();
@@ -1335,7 +1327,7 @@ public class GameLayout : MenuLayout
 
 		var Tile =WorldManager.Instance.GetTileAtGrid( Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99)));
 
-		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.TileVisibility && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==Action.ActionType.Move)) { 
+		if (Tile.UnitAtLocation != null&& Tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= Tile.GetVisibility() && (Action.GetActiveActionType() == null||Action.GetActiveActionType() ==Action.ActionType.Move)) { 
 			SelectUnit(Tile.UnitAtLocation);
 			return;
 		}
@@ -1474,7 +1466,8 @@ public class GameLayout : MenuLayout
 			foreach (var effect in target.UnitComponent.StatusEffects)
 			{
 				batch.Draw(TextureManager.GetTextureFromPNG("Icons/"+effect.type.name),new Vector2(23*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				i++;
+				batch.DrawText(effect.duration+"", new Vector2(23*i+2,0), 1, 100, Color.White);
+                i++;
 			}
 			batch.End();
 		}

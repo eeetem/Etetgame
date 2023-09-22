@@ -19,7 +19,7 @@ public class PreGameLobbyLayout : MenuLayout
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		swapingMap = false;
-		WorldManager.Instance.MakeFovDirty(true);
+		WorldManager.Instance.MakeFovDirty();
 		var grid1 = new Grid()
 		{
 

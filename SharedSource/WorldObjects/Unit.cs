@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DefconNull.World.WorldActions;
@@ -46,9 +47,8 @@ namespace DefconNull.World.WorldObjects
 			Crouching = data.Crouching;
 			Paniced = data.Panic;
 
-#if CLIENT
 			WorldManager.Instance.MakeFovDirty();
-#endif
+
 
 
 			MovePoints = new Value(0, type.MaxMovePoints);
@@ -69,14 +69,14 @@ namespace DefconNull.World.WorldObjects
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
             
-
-			foreach (var effect in data.StatusEffects)
-			{
-				ApplyStatus(effect.Item1, effect.Item2);
-			}
+	
 
 			if (data.JustSpawned)
 			{
+				foreach (var effect in data.StatusEffects)
+				{
+					ApplyStatus(effect.Item1, effect.Item2);
+				}
 #if SERVER
 				if (type.SpawnEffect != null)
 				{
@@ -141,6 +141,10 @@ namespace DefconNull.World.WorldObjects
 					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1));
 				}
 
+				for (int i = MovePoints.Current - 1; i > 0; i--)
+				{
+					possibleMoves[i].RemoveAll(x => possibleMoves[i - 1].Contains(x));
+				}
 				return possibleMoves;
 			}
 
@@ -155,7 +159,7 @@ namespace DefconNull.World.WorldObjects
 		{
 			var tiles = WorldManager.Instance.GetTilesAround(target,Type.OverWatchSize);
 			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
-			foreach (var endTile in tiles)
+		/*	foreach (var endTile in tiles)
 			{
 				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
 				foreach (var pos in outcome.Path)
@@ -163,7 +167,7 @@ namespace DefconNull.World.WorldObjects
 					positions.Add(pos);
 				}
 
-			}
+			}*/
 
 			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
@@ -526,6 +530,7 @@ namespace DefconNull.World.WorldObjects
 
 
 		public int Health => WorldObject.Health;
+		public ConcurrentDictionary<Vector2Int, Visibility> VisibleTiles = new ConcurrentDictionary<Vector2Int, Visibility>();
 
 
 		public string GetVar(string var,string? param = null)

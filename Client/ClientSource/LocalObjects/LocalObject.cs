@@ -92,7 +92,7 @@ public class LocalObject : Rendering.IDrawable
 		Vector2Int pos = GetGridPos();
 		if (!WorldManager.IsPositionValid(pos)) return false;
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
-		return GetMinimumVisibility() <= tile.TileVisibility;
+		return GetMinimumVisibility() <= tile.GetVisibility();
 	}
 
 

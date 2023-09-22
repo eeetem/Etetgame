@@ -96,7 +96,7 @@
       </effect>
     </action>
     
-    <action det ="2" moveCost="1" actCost="1">
+    <action detCost ="3" moveCost="1" actCost="1">
       <name>Headshot</name>
       <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
@@ -139,10 +139,51 @@
         </consequences>
       </effect>
     </action>
+  </unit>
 
+  <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="3"  sightrange="20">
+    <name>Officer</name>
+
+    <action moveCost="1" actCost="1">
+      <name>Attack</name>
+      <targetAid>enemy</targetAid>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
+      <effect>
+        <vfx name="clmagnitude" target="20" speed="50"/>
+        <vfx name="noise" target="1" speed="100"/>
+        <sfx name="rifle"/>
+      </effect>
+    </action>
+
+    <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
+      <name>Rally</name>
+      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+
+      <effect>
+        <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+          <damage det="-100"/>
+        </consequences>
+      </effect>
+    </action>
+
+    <action detCost ="1" moveCost="1" actCost="0">
+      <name>Command</name>
+      <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
+
+
+      <effect range="1" visible ="false" target="friend">
+        <delivery>
+          <vissionCast range="18"/>
+        </delivery>
+        <consequences>
+          <applystatus status="Boost" duration="1"/>
+        </consequences>
+      </effect>
+    </action>
   </unit>
   
-  <!--
+  
+
     <unit Health="16" z="0.1"  moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
       <name>Heavy</name>
       
@@ -179,129 +220,41 @@
           </consequences>
         </effect>
       </action>
-  
-      <toggleaction>
-        <toggleoff  detCost ="1" moveCost="0" actCost="0">
+      
+        <toggleoff detCost ="1" moveCost="0" actCost="2">
           <name>Holster</name>
-          <tip>Switch to mobility mode. Starts every turn with 4 move points</tip>
+          <tip>Holster heavie's weapon. Removes action points for 2 turns, adds extra move points for this turn.</tip>
           <effect>
             <consequences>
-              <applystatus status="Holstered"/>
+              <applystatus status="Holstered" duration="2"/>
+            </consequences>
+            <consequences>
+              <applystatus status="Sprint" duration="1"/>
             </consequences>
           </effect>
         </toggleoff>
-        <toggleon name="" tip="" detCost ="1" moveCost="2" actCost="0">
-          <name>UnHolster</name>
-          <tip>Switch to attack mode. Starts every turn with 2 move points and 2 action points. Use once in a good position to be able to attack</tip>
-          <effect>
-            <consequences>
-              <removestatus status="Holstered"/>
-            </consequences>
-          </effect>
-        </toggleon>
-      </toggleaction>
-  
     </unit>
   
-    <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="5"  sightrange="20">
-      <name>Officer</name>
-  
-      <action moveCost="1" actCost="1">
-        <name>Attack</name>
-        <targetAid>enemy</targetAid>
-        <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
-        <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="1" speed="100"/>
-          <sfx name="rifle"/>
-        </effect>
-      </action>
-  
-      <action immideate="true" detCost ="2" moveCost="0" actCost="0">
-        <name>Rally</name>
-        <tip>All nearby friendlies stop panicking and gain full determiation</tip>
-        
-        <effect>
-          <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
-            <damage det="-100"/>
-          </consequences>
-        </effect>
-      </action>
-  
-      <action detCost ="1" moveCost="1" actCost="0">
-        <name>Command</name>
-        <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
-        
-  
-        <effect range="1" visible ="false" target="friend">
-          <delivery>
-            <vissionCast range="22"/>
-          </delivery>
-          <consequences>
-            <applystatus status="Boost" duration="1"/>
-          </consequences>
-        </effect>
-      </action>
-  
-  
-    </unit>
-  
-    <unit Health="10" z="0.1" moveRange = "4" inventory="5"  moves="3" actions="1" determination="2">
-      <name>Specialist</name>
-  
-      <action moveCost="1" actCost="1">
-        
-        <targetAid>enemy</targetAid>
-        
-        <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="9"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="20" speed="50"/>
-            <vfx name="noise" target="1" speed="100"/>
-            <sfx name="rifle"/>
-          </consequences>
-        </effect>
-      </action>
-  
-      <action detCost ="1" moveCost="1" actCost="1">
-        <name>Resupply</name>
-        <tip>Give a targeted unit their last used item back</tip>
-        <targetAid>unit</targetAid>
-        
-        <effect>
-          <delivery>
-            <throwable throwRange="3"/>
-          </delivery>
-          <consequences>
-            <giveItem item="{target.LastItem.Name}"/>
-          </consequences>
-        </effect>
-      </action>
-      
-      <action detCost ="1" moveCost="1" actCost="1">
-        <name>Resupply</name>
-        <tip>Give a targeted unit item currently equipped by this unit</tip>
-        <targetAid>unit</targetAid>
-  
-        <effect>
-          <delivery>
-            <throwable throwRange="3"/>
-          </delivery>
-          <consequences>
-            <giveItem item="{target.SelectedItem.Name}"/>
-          </consequences>
-        </effect>
-      </action>
-      
-    </unit>
-  -->
+
+
   <statuseffect>
-    <name>Holstered</name>
+    <name>Sprint</name>
+    
     <effect>
       <consequences>
       <values act ="[set]0" move="2"/>
     </consequences>
   </effect>
+  </statuseffect>
+
+  <statuseffect>
+    <name>Holstered</name>
+
+    <effect>
+      <consequences>
+        <values act ="[set]0" move="0"/>
+      </consequences>
+    </effect>
   </statuseffect>
   
   <statuseffect>

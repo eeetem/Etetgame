@@ -53,7 +53,7 @@ public class WorldEffect : Effect
 			{
 				changes.Add(change);
 			}
-			foreach (var change in Conseqences.GetApplyConsiqunces(nullTarget.Value, actor.WorldObject))
+			foreach (var change in Conseqences.GetApplyConsiqunces(nullTarget.Value))
 			{
 				changes.Add(change);
 			}
@@ -79,7 +79,7 @@ public class WorldEffect : Effect
 
 		if (nullTarget.HasValue)
 		{
-			foreach (var tile in Conseqences.GetAffectedTiles(nullTarget.Value, actor.WorldObject))
+			foreach (var tile in Conseqences.GetAffectedTiles(nullTarget.Value))
 			{
 				tiles.Add(tile);
 			}

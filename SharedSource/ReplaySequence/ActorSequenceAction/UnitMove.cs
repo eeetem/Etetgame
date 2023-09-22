@@ -60,8 +60,10 @@ public class UnitMove : UnitSequenceAction
 					Actor.WorldObject.Move(Path[0]);
 					Path.RemoveAt(0);
 
-#if CLIENT
+
 					WorldManager.Instance.MakeFovDirty();
+
+#if CLIENT
 					if (Actor.WorldObject.IsVisible())
 					{
 						Audio.PlaySound("footstep", Utility.GridToWorldPos(Actor.WorldObject.TileLocation.Position));

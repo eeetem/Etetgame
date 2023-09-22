@@ -140,7 +140,7 @@ public partial class WorldObject
 
 		
 
-	public void Face(Direction dir,bool updateFOV  =true)
+	public void Face(Direction dir,bool updateFov  =true)
 	{
 		if (!Type.Faceable)
 		{
@@ -150,12 +150,12 @@ public partial class WorldObject
 		dir = Utility.ClampFacing(dir);
 
 		Facing = dir;
-#if CLIENT
-		if (updateFOV)
+
+		if (updateFov)
 		{
 			WorldManager.Instance.MakeFovDirty();
 		}
-#endif
+
 			
 	}
 		
@@ -187,7 +187,7 @@ public partial class WorldObject
             
 			Task t = new Task(delegate
 			{
-				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
+				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position));
 			});
 			WorldManager.Instance.RunNextAfterFrames(t,4);
 
@@ -388,12 +388,7 @@ public partial class WorldObject
 		
 	public bool IsVisible()
 	{
-#if SERVER
-		return true;	
-#else
-
-		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).TileVisibility;
-#endif
+		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
 	}
 
 

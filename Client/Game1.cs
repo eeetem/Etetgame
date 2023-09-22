@@ -53,6 +53,7 @@ public class Game1 : Game
 		Action.Init();
 		RenderSystem.Init(GraphicsDevice);
 		Utility.Init();
+		WorldManager.Instance.Init();
 
 		PathFinding.GenerateNodes();
 

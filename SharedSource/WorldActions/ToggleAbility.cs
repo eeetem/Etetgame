@@ -38,6 +38,16 @@ public class ToggleAbility : IUnitAbility
 	}
 
 	public int Index => index;
+	public bool AIExempt {
+		get {
+			if (isOn)
+			{
+				return off.aiExempt;
+			}
+
+			return on.aiExempt;
+		}
+	}
 
 
 	public void Toggle()

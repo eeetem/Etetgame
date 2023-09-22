@@ -36,7 +36,7 @@ public class EditorUiLayout : MenuLayout
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 	
-		WorldManager.Instance.MakeFovDirty(true);
+		WorldManager.Instance.MakeFovDirty();
 		GameManager.GameState = GameState.Editor;
 		var panel = new Panel();
 

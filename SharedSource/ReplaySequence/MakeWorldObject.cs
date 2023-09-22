@@ -55,8 +55,8 @@ public class MakeWorldObject : SequenceAction
 		spriteBatch.DrawPrefab(Utility.GridToWorldPos(Position), prefab, facing);
 		if (PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences != null)
 		{
-			spriteBatch.DrawOutline(PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences.GetAffectedTiles(Position, null), Color.Yellow, 4);
-			PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences!.GetApplyConsiqunces(Position, null).ForEach(x => x.PreviewIfShould(spriteBatch));
+			spriteBatch.DrawOutline(PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences.GetAffectedTiles(Position), Color.Yellow, 4);
+			PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences!.GetApplyConsiqunces(Position).ForEach(x => x.PreviewIfShould(spriteBatch));
 		}
 	}
 #endif

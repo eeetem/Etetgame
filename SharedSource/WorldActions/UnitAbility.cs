@@ -20,6 +20,7 @@ public class UnitAbility : IUnitAbility
 	public readonly ushort MoveCost;
 	public readonly ushort ActCost;
 	public readonly bool immideaateActivation;
+	public readonly bool aiExempt;
 
 	public List<Effect> Effects { get; }
 
@@ -33,9 +34,8 @@ public class UnitAbility : IUnitAbility
 	public string Tooltip => tooltip;
 	public string Name => name;
 	public int Index => index;
+	public bool AIExempt => aiExempt;
 	public int index;
-	public bool Disabled => _disabled;
-
 
 	public float GetOptimalRangeAI()
 	{
@@ -50,7 +50,7 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
@@ -60,6 +60,7 @@ public class UnitAbility : IUnitAbility
 		Effects = effects;
 		this.immideaateActivation = immideaateActivation;
 		this.index = index;
+		this.aiExempt = aiExempt;
 #if CLIENT
 
 		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
@@ -68,14 +69,10 @@ public class UnitAbility : IUnitAbility
 	}
 
 	
-	private bool _disabled = false;
-	public void Disable()
-	{
-		_disabled = true;
-	}
+
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false, int dimension =-1)
 	{
-		if(_disabled) return new Tuple<bool, string>(false, "Ability is disabled");
+		
 		var res = HasEnoughPointsToPerform(actor,NextTurn);
 		if (!res.Item1)
 		{
@@ -180,7 +177,7 @@ public class UnitAbility : IUnitAbility
 		foreach (var effect in Effects)
 		{
 			var actConsequences =  effect.GetConsequences( actor,  target,dimension);
-
+			consequences.EnsureCapacity(actConsequences.Count + consequences.Count);//resiize to not loose performace to memory allocation stuff
 			foreach (var c in actConsequences)
 			{
 				consequences.Add(c);
@@ -216,16 +213,7 @@ public class UnitAbility : IUnitAbility
 
 	public object Clone()
 	{
-		if (_disabled)
-		{
-			var ab = new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index);	
-			ab.Disable();
-			return ab;
-		}
-		
-		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index);	
-		
-
+		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index,aiExempt);	
 		
 	}
     

@@ -6,91 +6,75 @@ using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Collections;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull.AI;
 
 public class AI
 {
-
-	public static Task AItask;
 	public static void DoAITurn(List<Unit> squad)
 	{
 		var t = new Task(delegate
 		{
-            AItask = Task.Run(() =>
-			{
-				foreach (var unit in squad)
-				{	
-					if(unit.IsPlayer1Team != GameManager.IsPlayer1Turn) break;
-					Console.WriteLine("---------AI acting with unit: "+unit!.WorldObject.TileLocation.Position);
+            Task.Run(() =>
+            {
+	            try
+	            {
+		            while (true)
+		            {
+			            List<Tuple<AIAction, Unit, int>> actions = new();
+			            foreach (var unit in squad.Shuffle(Random.Shared))
+			            {
+				            AIAction a = new Attack();
+				            Console.WriteLine("Calculating Attack Action..."); 
+				            actions.Add(new Tuple<AIAction,Unit, int>(a,unit, a.GetScore(unit)));
+				            a = new Move();
+				            Console.WriteLine("Calculating Move Action..."); 
+				            actions.Add(new Tuple<AIAction,Unit, int>(a,unit, a.GetScore(unit)));
+				            actions.RemoveAll((x) => x.Item3 <= 0);
+				            if(actions.Count > 0) break;
+			            }
+			            if(actions.Count == 0) break;
+						
+			            Tuple<AIAction, Unit, int>? actionToDo = null;
+						
+			            foreach (var action in actions)
+			            {
+				            if (actionToDo == null || action.Item3 > actionToDo.Item3)
+				            {
+					            actionToDo = action;
+				            }
+			            }
 
-					while (true)
-					{
-						var actions = CalculateActionList(unit);
-						AIAction actionToDo = null;
-						int totalScore = 0;
-						foreach (var action in actions)
-						{
-							totalScore += action.Item2;
-						}
 
-						if (totalScore == 0) break;
-						int roll = Random.Shared.Next(1000) % totalScore;
-						for (int i = 0; i < actions.Count; i++)
-						{
-							if (roll < actions[i].Item2)
-							{
-								actionToDo = actions[i].Item1;
-								break;
-							}
+			            actionToDo.Item1.Execute(actionToDo.Item2);
+			            Console.WriteLine("Doing AI action");
+			            do
+			            {
+				            Thread.Sleep(100);
+			            } while (WorldManager.Instance.SequenceRunning);
+		            }
 
-							roll -= actions[i].Item2;
+		
+		            Console.WriteLine("AI turn over, ending turn");
+		            do
+		            {
+			            Thread.Sleep(1000);
+		            } while (WorldManager.Instance.SequenceRunning);
 
-						}
-
-						if (actionToDo == null)
-						{
-							throw new Exception("AI failed to pick an actionq");
-						}
-
-						actionToDo.Execute(unit);
-						do
-						{
-							Thread.Sleep(1000);
-						} while (WorldManager.Instance.SequenceRunning);
-					}
-
-					/*while (0>unit!.MovePoints.Current)
-					{
-						AiActions[AIAction.AIActionType.Move].Execute(unit);
-	
-
-					}*/
-					Console.WriteLine("---------AI DONE ---- acting with unit: "+unit!.WorldObject.TileLocation.Position);
-				}
-				Console.WriteLine("AI turn over, ending turn"); 
-				GameManager.NextTurn();
-			});
+		            GameManager.NextTurn();
+	            }
+	            catch (Exception e)
+	            {
+		            Console.WriteLine(e);
+		            throw;
+	            }
+            });
 		});
 		WorldManager.Instance.RunNextAfterFrames(t,2);
 
 	}
-
-
-	public static List<Tuple<AIAction, int>>  CalculateActionList(Unit u)
-	{
-		List<Tuple<AIAction, int>> actions = new();
-		AIAction a = new Attack();
-		Console.WriteLine("Calculating Attack Action..."); 
-		actions.Add(new Tuple<AIAction, int>(a, a.GetScore(u)));
-		a = new Move();
-		Console.WriteLine("Calculating Move Action..."); 
-		actions.Add(new Tuple<AIAction, int>(a, a.GetScore(u)));
-		actions.RemoveAll((x) => x.Item2 <= 0);
-		return actions;
-	}
-
 
 
 }

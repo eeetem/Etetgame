@@ -309,4 +309,11 @@ public static partial class GameManager
 
 
 	}
+
+	public static List<Unit> GetAllUnits(int dimension = -1)
+	{
+		var list = GetTeamUnits(true,dimension);
+		list.AddRange(GetTeamUnits(false,dimension));
+		return list;
+	}
 }

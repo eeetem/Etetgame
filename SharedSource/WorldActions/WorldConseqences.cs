@@ -121,27 +121,20 @@ public class WorldConseqences : IMessageSerializable
 		
 	}
 
-	public List<IWorldTile> GetAffectedTiles(Vector2Int target,WorldObject? user)
+	public List<IWorldTile> GetAffectedTiles(Vector2Int target)
 	{
 		var hitt = WorldManager.Instance.GetTilesAround(target, Range, -1,Cover.Low);
 		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, -1,Cover.Low);
 		var list = hitt.Except(excl).ToList();
 		if (Los)
 		{
-			if (user != null && user.UnitComponent!=null)
-			{
-				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(user.UnitComponent, x.Position, true));
-			}
-			else
-			{
-				list.RemoveAll(x => Visibility.None == WorldManager.Instance.CanSee(target, x.Position,99,false));
-			}
+				list.RemoveAll(x => Visibility.None == WorldManager.Instance.VisibilityCast(target, x.Position,99,false));
 		}
 		return list;
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
-	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target, WorldObject? user = null)
+	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target)
 	{
 		_ignoreList = new List<WorldObject>();
 		
@@ -155,9 +148,9 @@ public class WorldConseqences : IMessageSerializable
 			//	list.Add(new MoveCamera(target,false,0));
 		}
 
-		foreach (var tile in GetAffectedTiles(target,user))
+		foreach (var tile in GetAffectedTiles(target))
 		{
-			foreach (var sqc in ConsequencesOnTile(tile,user))
+			foreach (var sqc in ConsequencesOnTile(tile))
 			{
 				list.Add(sqc);
 			}
@@ -176,7 +169,7 @@ public class WorldConseqences : IMessageSerializable
 
 		return list;
 	}
-	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile,WorldObject? user = null)
+	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile)
 	{
 		var consequences = new List<SequenceAction>();
 		if (Dmg > 0)
@@ -224,8 +217,9 @@ public class WorldConseqences : IMessageSerializable
 
 		if (PlaceItemPrefab!=null)
 		{
-			consequences.Add(new MakeWorldObject(PlaceItemPrefab, tile.Position, user?.Facing ?? Direction.North));
+			consequences.Add(new MakeWorldObject(PlaceItemPrefab, tile.Position, Direction.North)); //fix this
 		}
+		
 
 		/*
 			if (user != null && user.UnitComponent!=null)

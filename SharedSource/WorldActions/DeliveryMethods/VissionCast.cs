@@ -19,7 +19,7 @@ public class VissionCast : DeliveryMethod
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref Vector2Int? target)
 	{
 		Vector2Int vectarget =  target!.Value;
-		if (Visibility.None == WorldManager.Instance.CanSee(actor, vectarget, true))
+		if (Visibility.None == WorldManager.Instance.VisibilityCast(actor.WorldObject.TileLocation.Position, vectarget, 200,actor.Crouching))
 		{
 			target = null;
 			return new List<SequenceAction>();
@@ -39,7 +39,7 @@ public class VissionCast : DeliveryMethod
 		{
 			return new Tuple<bool, string>(false, "Too Far");
 		}
-		if (Visibility.None == WorldManager.Instance.CanSee(actor, target, true))
+		if (Visibility.None == WorldManager.Instance.VisibilityCast(actor.WorldObject.TileLocation.Position, target, range,actor.Crouching))
 		{
 			return new Tuple<bool, string>(false, "No Sight");
 		}

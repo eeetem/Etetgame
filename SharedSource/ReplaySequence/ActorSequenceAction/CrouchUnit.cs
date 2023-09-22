@@ -21,9 +21,9 @@ public class CrouchUnit : UnitSequenceAction
 		{
 			Actor.canTurn = true;
 			Actor.Crouching = !Actor.Crouching;
-#if CLIENT
-					WorldManager.Instance.MakeFovDirty();
-#endif
+
+			WorldManager.Instance.MakeFovDirty();
+
 		});
 		return t;
 	}

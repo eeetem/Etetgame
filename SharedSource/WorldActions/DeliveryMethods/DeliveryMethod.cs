@@ -13,14 +13,7 @@ public abstract class DeliveryMethod
 	//do NOT convert this to old system, keep sequence actions for things like breaking windows with throwables
 	public List<SequenceAction> ExectuteAndProcessLocation(Unit actor,ref Vector2Int? target)
 	{
-
-		var res = CanPerform(actor, target.Value);
-		if (!res.Item1)
-		{
-			throw new Exception("Execution of action that can't be performed: "+res.Item2);
-		}
-
-
+		
 		return ExectuteAndProcessLocationChild(actor, ref target);
 	}
 

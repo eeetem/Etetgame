@@ -99,8 +99,6 @@ public class PseudoTile : IWorldTile
 	{
 		return _realParent.GetAllEdges();
 	}
-#if CLIENT
-	public Visibility TileVisibility => _realParent.TileVisibility;	
-#endif
+
 
 }

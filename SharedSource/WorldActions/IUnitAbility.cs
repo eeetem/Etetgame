@@ -19,6 +19,7 @@ public interface IUnitAbility : ICloneable
 	string Tooltip { get; }
 	string Name { get; }
 	int Index { get;}
+	bool AIExempt { get; }
 	float GetOptimalRangeAI();
 #if CLIENT
 	void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
@@ -26,6 +27,4 @@ public interface IUnitAbility : ICloneable
 
 #endif
 
-	void Disable();
-	bool Disabled { get; }
 }

@@ -25,7 +25,7 @@ public class SquadCompBuilderLayout : UiLayout
 	private bool PracticeDeployMode => GameManager.PreGameData.SinglePLayerFeatures && GameManager.PreGameData.Player2Name == "Practice Opponent";
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		WorldManager.Instance.MakeFovDirty(true);
+		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel();
 		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
 		

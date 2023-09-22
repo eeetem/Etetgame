@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +61,11 @@ public class Move : AIAction
 			
 		//pick random location out of top [bestOf]
 		int r = Random.Shared.Next(bestOf);
+		var bestMove = best[r].Item4;
 		Vector2Int target = best[r].Item1;
+		Console.WriteLine("moving to tile with score: "+best[r].Item3 + "at postion: "+target);
+		File.AppendAllText("aidebug.txt","moving to: "+target+" with: "+  bestMove.ToString()+"\n");
+
 		bool needToDoCrouchAction = best[r].Item2 != unit.Crouching;
 
 		if (unit.Crouching && needToDoCrouchAction)
@@ -71,7 +76,7 @@ public class Move : AIAction
 
 		if (target != unit.WorldObject.TileLocation.Position)
 		{
-			Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item2);
+			Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
 			unit.DoAction(Action.Actions[Action.ActionType.Move], target);
 		}
 		do
@@ -84,7 +89,7 @@ public class Move : AIAction
 			needToDoCrouchAction = false;
 		}
 
-		Console.WriteLine("waiting for sequence to clear.....");
+	
 		
 		var otherTeamUnits = GameManager.GetTeamUnits(!unit.IsPlayer1Team);
 	
@@ -109,7 +114,7 @@ public class Move : AIAction
 
 	public override int GetScore(Unit unit)
 	{
-		if(unit.MovePoints.Current <= 0)
+		if(unit.MovePoints.Current <= 0 || unit.Paniced)
 		{
 			return 0;
 		}
@@ -153,34 +158,32 @@ public class Move : AIAction
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 80);
+		float percentile = Utility.CalculatePercentile(scores, 70);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
 		return worseThanAverage;
 	}
 
 
-	private static ConcurrentBag<Tuple<Vector2Int, bool, int>> GetMovementLocations(Unit unit, int distance)
+	private static ConcurrentBag<Tuple<Vector2Int, bool, int,MoveCalcualtion>> GetMovementLocations(Unit unit, int distance)
 	{
 		List<Vector2Int>[] allLocations = unit.GetPossibleMoveLocations();
-		allLocations[0].Add(unit.WorldObject.TileLocation.Position);
+	
+		var scoredLocations = new ConcurrentBag<Tuple<Vector2Int,bool, int,MoveCalcualtion>>();
 
-		var scoredLocations = new ConcurrentBag<Tuple<Vector2Int,bool, int>>();
-
-		int lowestScore = 1000;
-		
+		MoveCalcualtion m;
+		int score = GetTileMovementScore(unit.WorldObject.TileLocation.Position,0,unit.Crouching, unit, out m);
+		scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(unit.WorldObject.TileLocation.Position, unit.Crouching,score,m));
 		//move locations where we do not change stance
 		for (int i = 0; i < Math.Min(distance,allLocations.Length); i++)
 		{
-			int i1 = i;
-			Parallel.ForEach(allLocations[i], l =>
+			int moveUse = i+1;
+			Parallel.ForEach(allLocations[i],l =>
 			{
-				int score = GetTileMovementScore(l,i1,unit.Crouching, unit, out _);
-				if(score< lowestScore)
-				{
-					lowestScore = score;
-				}
-				scoredLocations.Add(new Tuple<Vector2Int, bool,int>(l, unit.Crouching,score));
+				MoveCalcualtion m;
+				int score = GetTileMovementScore(l,moveUse,unit.Crouching, unit, out m);
+
+				scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, unit.Crouching,score,m));
 			});
 		}
 
@@ -194,12 +197,10 @@ public class Move : AIAction
 				int i1 = i;
 				Parallel.ForEach(standUpLocations[i], l =>
 				{
-					int score = GetTileMovementScore(l,i1+1,false, unit, out _);
-					if(score< lowestScore)
-					{
-						lowestScore = score;
-					}
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int>(l, false,score));
+					MoveCalcualtion m;
+					int score = GetTileMovementScore(l,i1+2,false, unit, out m);
+
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, false,score,m));
 				});
 			}
 		}
@@ -213,22 +214,14 @@ public class Move : AIAction
 				int i1 = i;
 				Parallel.ForEach(crouchLocations[i], l =>
 				{
-					int score = GetTileMovementScore(l,i1+1,true, unit, out _);
-					if(score< lowestScore)
-					{
-						lowestScore = score;
-					}
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int>(l, true,score));
+					MoveCalcualtion m;
+					int score = GetTileMovementScore(l,i1+2,true, unit, out m);
+
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, true,score,m));
 				});
 			}
 		}
-
-
-
-
-
-
-
+		
 
 		return scoredLocations;
 	}

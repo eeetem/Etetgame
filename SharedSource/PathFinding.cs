@@ -84,6 +84,7 @@ public static class PathFinding
 			var inRange = new List<Vector2Int>();
 
 			var open = new PriorityQueue<Node, double>();
+			from.State = NodeState.Closed;
 			foreach (var node in from.ConnectedNodes)
 			{
 				if (node is null) continue;

@@ -35,109 +35,98 @@ public abstract class AIAction
 		Move=2,
 		SupportAbility =3,
 	}
-	protected static AbilityUse IterateAllAbilities(Unit attacker, Vector2Int targetPosition,  bool nextTurn =false, int dimension = -1,bool noRecursion = true)
-	{
 
-		AbilityUse topAttack = new AbilityUse();
-		var res = IterateTargetedAbilities(attacker,targetPosition,nextTurn,dimension,noRecursion);
-		if(res > topAttack)
+	public struct PotentialAbilityActivation
+	{
+		public List<SequenceAction> Consequences;
+		public int abilityIndex;
+		public Vector2Int targetPosition;
+		public string Name;
+		public Unit User;
+		public PotentialAbilityActivation(string name, int abilityIndex, Unit user,List<SequenceAction> consequences, Vector2Int targetPosition)
 		{
-			topAttack = res;
+			this.Name = name;
+			this.User = user;
+			Consequences = consequences;
+			this.abilityIndex = abilityIndex;
+			this.targetPosition = targetPosition;
 		}
-		res = IterateImmideateAbilities(attacker,nextTurn,dimension,noRecursion);
-		if(res > topAttack)
-		{
-			topAttack = res;
-		}
-		
-		return topAttack;
 	}
-	protected static AbilityUse IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition,  bool nextTurn =false, int dimension = -1,bool noRecursion = true)
+
+	protected static List<PotentialAbilityActivation> IterateAllAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1)
+	{
+		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
+		ret.AddRange(IterateTargetedAbilities(attacker,targetPosition,excludeExempt,dimension));
+		ret.AddRange(IterateImmideateAbilities(attacker,excludeExempt,dimension));
+		return ret;
+	}
+	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1)
 	{
 
-		AbilityUse topAttack = new AbilityUse();
-		//Parallel.ForEach(attacker.Abilities, ability =>
-	//		{
+		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
+		
 		foreach (var ability in attacker.Abilities)
 		{
+			if(ability.AIExempt&&excludeExempt) continue; 
 			if (ability.ImmideateActivation) continue;
-			foreach (var attackTile in WorldManager.Instance.GetTilesAround(targetPosition, 1, dimension))
-			{
-				var attackResult = SimulateAbility(attacker, ability, attackTile, nextTurn, dimension,noRecursion);
-
-				if (attackResult.GetTotalValue() > topAttack.GetTotalValue())
-				{
-					topAttack = attackResult;
-				}
+			foreach (var attackTile in WorldManager.Instance.GetTilesAround(targetPosition, 1, dimension)){
+				
+				var cons = ability.GetConsequences(attacker, attackTile.Position,dimension);
+				ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,attackTile.Position));
 			}
-			//	Parallel.ForEach(WorldManager.Instance.GetTilesAround(targetPosition, 2, dimension), attackTile =>
-				//{
-					
-
-			//	});
 		}
-			
-		//	});
-		
-		return topAttack;
+
+		return ret;
 	}
-	protected static AbilityUse IterateImmideateAbilities(Unit attacker,  bool nextTurn =false, int dimension = -1,bool noRecursion = true)
+	protected static List<PotentialAbilityActivation>  IterateImmideateAbilities(Unit attacker, bool excludeExempt, int dimension = -1)
 	{
-
-		AbilityUse topAttack = new AbilityUse();
-		Parallel.ForEach(attacker.Abilities, ability =>
-		{
-		//foreach (var ability in attacker.Abilities)
-		//{
-			if (!ability.ImmideateActivation) return;
-		//	foreach (var attackTile in WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension))
-		//{
-
-			//}
-	//	}
-			Parallel.ForEach(WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension), attackTile =>
-			{
-				var attackResult = SimulateAbility(attacker, ability, attackTile, nextTurn, dimension,noRecursion);
-
-				if (attackResult.GetTotalValue() > topAttack.GetTotalValue())
-				{
-					topAttack = attackResult;
-				}
-
-			});
-		});
+		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
 		
-		return topAttack;
+		
+		foreach (var ability in attacker.Abilities)
+		{
+			if(ability.AIExempt&&excludeExempt) continue; 
+			if (!ability.ImmideateActivation) continue;
+			foreach (var attackTile in WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension))
+			{
+				
+				var cons = ability.GetConsequences(attacker, attackTile.Position,dimension);
+				ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,attackTile.Position));
+			}
+		}
+
+		return ret;
 	}
 
-	public static AbilityUse SimulateAbility(Unit attacker, IUnitAbility ability, IWorldTile attackTile, bool nextTurn, int dimension, bool noRecursion)
+	public static AbilityUse ScoreAbility(PotentialAbilityActivation ability, Unit attacker, int dimension, bool noRecursion, bool nextTurnUse)
 	{
 		int damage = 0;
 		int supression = 0;
 		int totalChangeScore =0;
 
-		if(!ability.CanPerform(attacker, attackTile.Position,nextTurn,dimension).Item1) return new AbilityUse();
-                    
-		var cons = ability.GetConsequences(attacker, attackTile.Position,dimension);
-		Parallel.ForEach(cons, c =>
+		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.targetPosition, nextTurnUse, dimension).Item1)
 		{
-			var consiquence = ScoreConsequence(c,dimension,attacker,ability.Index,noRecursion);
-			damage += consiquence.Item1;
-			supression += consiquence.Item2;
-			totalChangeScore += consiquence.Item3;
-		});
+			foreach(var c in ability.Consequences){
+				var consiquence = ScoreConsequence(c,dimension,attacker,noRecursion);
+				damage += consiquence.Item1;
+				supression += consiquence.Item2;
+				totalChangeScore += consiquence.Item3;
+			}
+		}
+
+
 		
                     
 		AbilityUse attackResult = new AbilityUse();
-		attackResult.Ability = ability;
-		attackResult.target = attackTile.Position;
 		attackResult.Dmg = damage;
 		attackResult.Supression = supression;
-		attackResult.totalChangeScore = totalChangeScore;
+		attackResult.TotalChangeScore = totalChangeScore;
+		attackResult.AbilityIndex = ability.abilityIndex;
+		attackResult.TargetPosition = ability.targetPosition;
 		return attackResult;
 	}
 
-	public static Tuple<int,int,int> ScoreConsequence(SequenceAction c,int dimension, Unit attacker,int abilityIndex, bool noRecursion)
+	public static Tuple<int,int,int> ScoreConsequence(SequenceAction c,int dimension, Unit attacker, bool noRecursion)
 	{
 		int damage = 0;
 		int supression = 0;
@@ -222,16 +211,49 @@ public abstract class AIAction
 				}
 				Unit pseudoUnit;
 				int newDim = WorldManager.Instance.CreatePseudoWorldWithUnit(hitUnit, hitUnit.WorldObject.TileLocation.Position, out pseudoUnit, dimension);
-				var prechangeScore = GetProtectionAndAtackScore(pseudoUnit,newDim, true);
+				var prechangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
+				
+				var aChange =change.ActChange.GetChange(pseudoUnit.ActionPoints);
+				var mchanghe = change.MoveChange.GetChange(pseudoUnit.MovePoints);
+				var dchanghe = change.DetChange.GetChange(pseudoUnit.Determination);
+				var mrchanghe = change.MoveRangeeffectChange.GetChange(pseudoUnit.MoveRangeEffect);
 				
 				change.ActChange.Apply(ref pseudoUnit.ActionPoints);
 				change.MoveChange.Apply(ref pseudoUnit.MovePoints);
 				change.DetChange.Apply(ref pseudoUnit.Determination);
 				change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
 				
-				var postchangeScore = GetProtectionAndAtackScore(pseudoUnit,newDim, true);
+				var postchangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
+				
+
+				
+				var outcome =postchangeScore.GetTotalValue()- prechangeScore.GetTotalValue();
+				int defenceOutcome = 0;
+				if (outcome > 0)//if we get better attack oppotunities only then check if expose ourselves
+				{
+									
+					pseudoUnit.ActionPoints.Current -= aChange;
+					pseudoUnit.MovePoints.Current -= mchanghe;
+					pseudoUnit.Determination.Current -= dchanghe;
+					pseudoUnit.MoveRangeEffect.Current -= mrchanghe;
+					
+					
+					var prechangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
+					
+					change.ActChange.Apply(ref pseudoUnit.ActionPoints);
+					change.MoveChange.Apply(ref pseudoUnit.MovePoints);
+					change.DetChange.Apply(ref pseudoUnit.Determination);
+					change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
+					
+					var postchangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
+
+					defenceOutcome = postchangeDefenceScore - prechangeDefenceScore;
+				}
+
+				outcome *= 3;
+				defenceOutcome *= 2;
+				outcome += defenceOutcome;
 				WorldManager.Instance.WipePseudoLayer(newDim);
-				var outcome = (postchangeScore.Item1+postchangeScore.Item2) - (prechangeScore.Item1+prechangeScore.Item2);
 				if(hitUnit.IsPlayer1Team == attacker.IsPlayer1Team)
 				{
 					totalChangeScore += outcome;
@@ -251,7 +273,7 @@ public abstract class AIAction
 				var consiq =PrefabManager.StatusEffects[status.effectName].Conseqences.GetApplyConsiqunces(hitUnit.WorldObject.TileLocation.Position);
 				foreach (var cact in consiq)
 				{
-					var res= ScoreConsequence(cact, dimension, attacker,abilityIndex,noRecursion);
+					var res= ScoreConsequence(cact, dimension, attacker,noRecursion);
 					damage += res.Item1;
 					supression += res.Item2;
 					totalChangeScore += res.Item3;
@@ -263,46 +285,7 @@ public abstract class AIAction
 		return new Tuple<int, int, int>(damage,supression,totalChangeScore);
 	}
 
-	protected static bool CanPotentiallyAttack(Unit attacker, Unit target, int dimension = -1)
-	{
-	
-		foreach (var ability in attacker.Abilities)
-		{
-			if (ability.ImmideateActivation) continue;
-			foreach (var attackTile in WorldManager.Instance.GetTilesAround(target.WorldObject.TileLocation.Position, 2, dimension))
-			{
-				var attackResult = SimulateAbility(attacker, ability, attackTile, false, dimension,true);
 
-				if (attackResult.GetTotalValue() > 0) return true;
-			}
-	
-		}
-
-		return false;
-	}
-	protected static AbilityUse GetWorstPossibleAttackOnEnemyTeam(Unit attacker, bool nextTurn, bool onlyVisible, int dimension = -1)
-	{
-		var otherTeam = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
-		AbilityUse bestAttack = new AbilityUse();
-		foreach (var enemy in otherTeam)
-		{
-			if (!onlyVisible || WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility())
-			{
-				var res =IterateTargetedAbilities(attacker,enemy.WorldObject.TileLocation.Position,nextTurn,dimension);//potential improvement - consider nearby tiles as grenades/supression dont need direct LOS
-				if(res > bestAttack)
-				{
-					bestAttack = res;
-				}
-			}
-		}
-		var res2 =IterateImmideateAbilities(attacker,nextTurn,dimension);
-		if(res2 > bestAttack)
-		{
-			bestAttack = res2;
-		}
-
-		return bestAttack;
-	}
 
 
 	public abstract void Execute(Unit unit);
@@ -310,33 +293,61 @@ public abstract class AIAction
 	
 	public struct MoveCalcualtion
 	{
-		public float closestDistance;
-		public int distanceReward;
-		public int protectionPentalty;
-		public List<AbilityUse> EnemyAttackScores =  new List<AbilityUse>();
-		public int visibilityScore;
-		public int clumpingPenalty;
-		public int damagePotential;
-		public int coverBonus;
+		public float ClosestDistance;
+		public int DistanceReward;
+		public int ProtectionPentalty;
+		public int StartingMovePoints;
+		public int EndMovePoints = -99;
+		public int ClumpingPenalty;
+		public int DamagePotential;
+		public int CoverBonus;
 
 		public MoveCalcualtion()
 		{
-			closestDistance = 0;
-			distanceReward = 0;
-			protectionPentalty = 0;
-			visibilityScore = 0;
-			clumpingPenalty = 0;
-			damagePotential = 0;
+			ClosestDistance = 0;
+			DistanceReward = 0;
+			ProtectionPentalty = 0;
+			ClumpingPenalty = 0;
+			DamagePotential = 0;
+		}
+
+		public override string ToString()
+		{
+			return "closestDistance: "+ClosestDistance+" distanceReward: "+DistanceReward+" protectionPentalty: "+ProtectionPentalty+" clumpingPenalty: "+ClumpingPenalty+" damagePotential: "+DamagePotential + " coverBonus: "+CoverBonus +" start moves:"+StartingMovePoints+" end moves: "+EndMovePoints +" total: "+GetTotalValue();
+		}
+
+		private float GetTotalValue()
+		{
+			return (ClosestDistance + DistanceReward + ProtectionPentalty + ClumpingPenalty + DamagePotential + CoverBonus);
 		}
 	}
 
 	public static int GetTileMovementScore(Vector2Int tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
+#if DEBUG && !CLIENT
+		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
+		{
+
+			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition);
+
+			int calcMovesToUse = 0;
+			int moveRange = realUnit.GetMoveRange();
+			while (result.Cost > moveRange*calcMovesToUse)
+			{
+				calcMovesToUse++;
+			}
+			
+			if (calcMovesToUse!=movesToUse)
+			{
+				throw new Exception("moves to use not equal to cost of path");
+			}
+		}
+#endif
 		return GetTileMovementScore(tilePosition, new ChangeUnitValues(-1,0,-movesToUse),crouch, realUnit, out details);
 	}
 
 	
-	public static int GetTileMovementScore(Vector2Int tilePosition, ChangeUnitValues? valueMod,  bool crouch, Unit realUnit, out MoveCalcualtion details, int copyDimension = -1)
+	public static int GetTileMovementScore(Vector2Int tilePosition, ChangeUnitValues? valueMod,  bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
 		if(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation != null && !Equals(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation, realUnit))
 		{
@@ -345,33 +356,19 @@ public abstract class AIAction
 		}
 		details = new MoveCalcualtion();
 		int score = 0;
-
+		details.StartingMovePoints = realUnit.MovePoints.Current;
 
 
 		Unit hypotheticalUnit;
-		int dimension = WorldManager.Instance.CreatePseudoWorldWithUnit(realUnit,tilePosition, out hypotheticalUnit, copyDimension);
+		int dimension = WorldManager.Instance.CreatePseudoWorldWithUnit(realUnit,tilePosition, out hypotheticalUnit);
 		
 		var otherTeamUnits = GameManager.GetTeamUnits(!realUnit.IsPlayer1Team,dimension);
 		hypotheticalUnit.Crouching = crouch;
-	
-		/*if (abilityToExclude != null)
-		{
-			if (abilityToExclude.Item1.WorldObject.ID == realUnit.WorldObject.ID)
-			{
-				hypotheticalUnit.Abilities[abilityToExclude.Item2].Disable();
-			}
-			else
-			{
-				Unit unit;
-				WorldManager.Instance.AddUnitToPseudoWorld(abilityToExclude.Item1, tilePosition, out unit, dimension);
-				unit.Abilities[abilityToExclude.Item2].Disable();
-			}
-		}*/
-
 
 		
 		if (valueMod is not null)
 		{
+			details.EndMovePoints = realUnit.MovePoints.Current + valueMod.MoveChange.GetChange(realUnit.MovePoints);
 			valueMod.ActChange.Apply(ref hypotheticalUnit.ActionPoints);
 			valueMod.MoveChange.Apply(ref hypotheticalUnit.MovePoints);
 			valueMod.DetChange.Apply(ref hypotheticalUnit.Determination);
@@ -392,67 +389,45 @@ public abstract class AIAction
 
 		closestDistance -= hypotheticalUnit.Abilities[0].GetOptimalRangeAI();
         
-		details.closestDistance = closestDistance;
+		details.ClosestDistance = closestDistance;
 		closestDistance = Math.Max(0, closestDistance);
 		int distanceReward = 40;
 		distanceReward -= Math.Min(distanceReward, (int)closestDistance);//if we're futher than our optimal range, we get less points
 		score += distanceReward;
-		details.distanceReward = distanceReward;
+		details.DistanceReward = distanceReward;
 		
 
+		int protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
 		
-		int visibilityScore = -40;
-		int visibleEnemies = 0;
+		var bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false,true,dimension);
 		
-		foreach (var u in otherTeamUnits)
-		{
-			if (WorldManager.Instance.CanSee(hypotheticalUnit.WorldObject.TileLocation.Position, u.WorldObject.TileLocation.Position,hypotheticalUnit.GetSightRange(),hypotheticalUnit.Crouching) >= u.WorldObject.GetMinimumVisibility() && CanPotentiallyAttack(hypotheticalUnit, u,dimension))	
-			{
-				visibleEnemies++;
-			}
-		}
-
-		if (visibleEnemies == 1)
-		{
-			visibilityScore = 50;//good to see 1
-		}
-		visibilityScore -= (visibleEnemies-1) * 25;//reduce for more
-		
-		score += visibilityScore;
-		details.visibilityScore = visibilityScore;
+		int damagePotential = bestAttack.GetTotalValue();
 
 
-		(int protectionPentalty, int damagePotential) = GetProtectionAndAtackScore(hypotheticalUnit, dimension, copyDimension != -1);
 		
-		if (copyDimension == -1)//only do this at top layer of recursion
-		{
-			protectionPentalty *=3;//cover is VERY important
-		}
+	
+		protectionPentalty *=2;//cover is VERY important
+		
 
 		score += protectionPentalty;
-		details.protectionPentalty = protectionPentalty;
-	//	details.EnemyAttackScores = enemyAttackScores;
+		details.ProtectionPentalty = protectionPentalty;
+		//	details.EnemyAttackScores = enemyAttackScores;
 	
-		if (copyDimension == -1) //only do this at top layer of recursion
+		
+		damagePotential *= 3; //damage is important
+		
+		if(damagePotential <= 0)
 		{
-			damagePotential *= 3; //damage is important
+			damagePotential = -80;//discourage damageless tiles, we do this instead of vission checks
 		}
 
-		details.damagePotential = damagePotential; 
+		details.DamagePotential = damagePotential; 
 	
 		score += damagePotential;
 
-
-				
-	
-		//	if (copyDimension == -1)//only wwipe if we ourselves picked this dimension
-		//	{
+		
 		WorldManager.Instance.WipePseudoLayer(dimension);
-		//	}
-		//	else
-		//	{
-		//		WorldManager.Instance.DeletePseudoUnit(hypotheticalUnit.WorldObject.ID,dimension);
-		//	}
+
 
 		var myTeamUnits = GameManager.GetTeamUnits(realUnit.IsPlayer1Team,dimension);
 		int clumpingPenalty = 0;
@@ -461,18 +436,18 @@ public abstract class AIAction
 			if(Equals(u, realUnit)) continue;
 			var friendLoc = u.WorldObject.TileLocation.Position;
 			var dist = Vector2.Distance(friendLoc, tilePosition);
-			clumpingPenalty -= (int)(3/dist);
+			clumpingPenalty -= (int)(6/dist);
 		}
 		score += clumpingPenalty;
-		details.clumpingPenalty = clumpingPenalty;
+		details.ClumpingPenalty = clumpingPenalty;
 		
 		int coverBonus = 0;
 		float stackingRatio = 1;
-		Parallel.ForEach(otherTeamUnits, enemy =>
-		{
+		
+		foreach(var enemy in otherTeamUnits){
 			
 			var enemyDirection = Utility.Vec2ToDir( enemy.WorldObject.TileLocation.Position-tilePosition);
-			Cover coverInDirection = WorldManager.Instance.GetCover(tilePosition,enemyDirection, true);
+			Cover coverInDirection = WorldManager.Instance.GetCover(tilePosition,enemyDirection, false);
 			float bonus = 0;
 			if (coverInDirection == Cover.High)
 			{
@@ -483,79 +458,91 @@ public abstract class AIAction
 				bonus += 2;
 			}
 
-			//bonus *= 3 / Vector2.Distance(tilePosition, enemy.WorldObject.TileLocation.Position);
 			coverBonus += (int) (bonus * stackingRatio);
-			stackingRatio *= 0.5f;
-		});
+			stackingRatio *= 0.3f;
+		}
         
 		score += coverBonus;
-		details.coverBonus = coverBonus;
-
+		details.CoverBonus = coverBonus;
         
 		
-//account for good positions on to buff tamemates from
 
 		return score;
 	}
 
-	public static Tuple<int,int> GetProtectionAndAtackScore(Unit unit, int dimension, bool noRecursion)
-	{			
-		var otherTeamUnits = GameManager.GetTeamUnits(!unit.IsPlayer1Team,dimension);
 	
-		//add points for being protected
-		int protectionPentalty = 0;
-		//Parallel.ForEach(otherTeamUnits, u =>
-		//{--
-		foreach (var enemy in otherTeamUnits)
-		{
-			var res = IterateAllAbilities(enemy, unit.WorldObject.TileLocation.Position,true,dimension, noRecursion:noRecursion);
-			if (res.GetTotalValue() > 0)
-			{
-				protectionPentalty -= res.GetTotalValue();
-			}
-			//enemyAttackScores.Add(res);
-		}
-			
-		//});
-		
+	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1)
+	{
+		var allUnits = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
+		allUnits.AddRange(GameManager.GetTeamUnits(attacker.IsPlayer1Team));
 		AbilityUse bestAttack = new AbilityUse();
-		int damagePotential = 0;
-		foreach (var enemy in otherTeamUnits)
+		List<PotentialAbilityActivation> attacks = new List<PotentialAbilityActivation>();
+		foreach (var enemy in allUnits)
 		{
-			var res =IterateTargetedAbilities(unit,enemy.WorldObject.TileLocation.Position,false,dimension:dimension,noRecursion:noRecursion);
-			if (res.GetTotalValue() > bestAttack.GetTotalValue()) 
+			if (!onlyVisible || WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility())
+			{
+				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position,excludeExempt,dimension));
+			}
+		}
+		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension));
+
+		foreach (var a in attacks)
+		{
+			var res = ScoreAbility(a, attacker, dimension, noRecursion,false);
+			if (res.GetTotalValue() > bestAttack.GetTotalValue())
 			{
 				bestAttack = res;
 			}
 		}
-		var res2 =IterateImmideateAbilities(unit,false,dimension:dimension,noRecursion:noRecursion);
-		if (res2.GetTotalValue() > bestAttack.GetTotalValue())
+		
+		return bestAttack;
+	}
+	private static int ProtectionPentalty(Unit unit, int dimension, bool noRecursion)
+	{
+		var otherTeamUnits = GameManager.GetTeamUnits(!unit.IsPlayer1Team,dimension);
+		int protectionPentalty = 0;
+		List<PotentialAbilityActivation> enemyAttacks = new List<PotentialAbilityActivation>();
+
+		bool r = WorldManager.Instance.GetCachedAttacksInDimension(ref enemyAttacks, dimension, false);
+		if (!r)
 		{
-			bestAttack = res2;
+			foreach (var enemy in otherTeamUnits)
+			{
+				enemyAttacks.AddRange(IterateAllAbilities(enemy, unit.WorldObject.TileLocation.Position, true, dimension));
+			}
 		}
 
-		damagePotential = bestAttack.GetTotalValue();
+		WorldManager.Instance.CacheAttacksInDimension(enemyAttacks, dimension, false);
 
-		return new Tuple<int, int>(protectionPentalty, damagePotential);
+		foreach (var a in enemyAttacks)
+		{
+			var res = ScoreAbility(a, a.User, dimension, noRecursion, true);
+			if (res.GetTotalValue() > 0)//dont considere enem attacks that are beneficial to us as the would  never do  them
+			{
+				protectionPentalty -= res.GetTotalValue();
+			}
+		}
+		return protectionPentalty;
 	}
 
+	
 
 
 	public struct AbilityUse
 	{
-		public IUnitAbility? Ability;
-		public Vector2Int target = new Vector2Int();
 		public int Dmg=0;
 		public int Supression=0;
-		public int totalChangeScore;
-
+		public int TotalChangeScore=0;
+		public int AbilityIndex;
+		public Vector2Int TargetPosition;
+		
 		public AbilityUse()
 		{
 		}
 
 		public int GetTotalValue()
 		{
-			return Dmg + Supression + totalChangeScore;
+			return Dmg + Supression + TotalChangeScore;
 		}
 
 		public static bool operator >(AbilityUse a, AbilityUse b)

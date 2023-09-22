@@ -6,17 +6,6 @@ namespace DefconNull.World;
 public partial class WorldTile : IWorldTile
 {
 
-	public Visibility TileVisibility;
-
-	public bool IsVisible(Visibility minimum = Visibility.Partial)
-	{
-		if (TileVisibility >= minimum)
-		{
-			return true;
-		}
-
-		return false;
-	}
 
 	public Color GetTileColor()
 	{

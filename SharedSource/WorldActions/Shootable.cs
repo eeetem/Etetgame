@@ -188,7 +188,7 @@ public class Shootable : Effect
 		if (p.Result.hit)
 		{
 			var hitobj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
-			if (hitobj!.Type.Edge || ((Vector2Int)p.Result.CollisionPointLong != target && (Vector2Int) p.Result.CollisionPointShort != target))
+			if (hitobj!.Type.Edge || ( new Vector2Int((int)float.Round(p.Result.CollisionPointLong.X),(int)float.Round(p.Result.CollisionPointLong.Y)) != target && new Vector2Int((int)float.Round(p.Result.CollisionPointShort.X),(int)float.Round(p.Result.CollisionPointShort.Y)) != target))
 			{
 				return new Tuple<bool, string>(false,"Can't hit target");
 			}
@@ -306,7 +306,7 @@ public class Shootable : Effect
 			
 		}
 		List<IWorldTile> tiles = SupressedTiles(p,dimension);
-
+		retrunList.EnsureCapacity(retrunList.Count+tiles.Count);
 		foreach (var tile in tiles)
 		{
 
