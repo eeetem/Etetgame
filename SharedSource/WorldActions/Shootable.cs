@@ -175,8 +175,7 @@ public class Shootable : Effect
 
 		return p;
 	}
-
-
+	
 	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if(actor.WorldObject.TileLocation.Position == target)
@@ -188,7 +187,7 @@ public class Shootable : Effect
 		if (p.Result.hit)
 		{
 			var hitobj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
-			if (hitobj!.Type.Edge || ( new Vector2Int((int)float.Round(p.Result.CollisionPointLong.X),(int)float.Round(p.Result.CollisionPointLong.Y)) != target && new Vector2Int((int)float.Round(p.Result.CollisionPointShort.X),(int)float.Round(p.Result.CollisionPointShort.Y)) != target))
+			if (hitobj!.Type.Edge || hitobj.TileLocation.Position != (Vector2Int)p.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false,"Can't hit target");
 			}

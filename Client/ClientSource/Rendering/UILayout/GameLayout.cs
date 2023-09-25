@@ -1466,7 +1466,7 @@ public class GameLayout : MenuLayout
 			foreach (var effect in target.UnitComponent.StatusEffects)
 			{
 				batch.Draw(TextureManager.GetTextureFromPNG("Icons/"+effect.type.name),new Vector2(23*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.DrawText(effect.duration+"", new Vector2(23*i+2,0), 1, 100, Color.White);
+				batch.DrawText(effect.duration+"", new Vector2(23*i+10,0), 1, 100, Color.White);
                 i++;
 			}
 			batch.End();

@@ -184,12 +184,9 @@
   
   
 
-    <unit Health="16" z="0.1"  moveRange = "3" moves="2" actions="2"  overwatch="3" determination="5">
+    <unit Health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  overwatch="3" determination="5">
       <name>Heavy</name>
       
-      <spawneffect>
-        <applystatus status="Holstered"/>
-      </spawneffect>
   
       <action moveCost="1" actCost="1">
         <name>Attack</name>
@@ -221,28 +218,31 @@
         </effect>
       </action>
       
-        <toggleoff detCost ="1" moveCost="0" actCost="2">
-          <name>Holster</name>
-          <tip>Holster heavie's weapon. Removes action points for 2 turns, adds extra move points for this turn.</tip>
+        <action immideate="true" detCost ="1" moveCost="0" actCost="2">
+          <name>Reposition</name>
+          <tip>Holster heavy's weapon. Removes action points for 2 turns, adds extra move points for this turn.</tip>
+          
           <effect>
             <consequences>
               <applystatus status="Holstered" duration="2"/>
             </consequences>
+          </effect>
+          <effect>
             <consequences>
-              <applystatus status="Sprint" duration="1"/>
+              <applystatus status="Reposition" duration="1"/>
             </consequences>
           </effect>
-        </toggleoff>
+        </action>
     </unit>
   
 
 
   <statuseffect>
-    <name>Sprint</name>
+    <name>Reposition</name>
     
     <effect>
       <consequences>
-      <values act ="[set]0" move="2"/>
+      <values act ="[set]0" move="3"/>
     </consequences>
   </effect>
   </statuseffect>
