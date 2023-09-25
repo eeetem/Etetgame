@@ -69,14 +69,14 @@ public class ToggleAbility : IUnitAbility
 	}
 
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false, int dimension=-1)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target,bool considerTargetAids, bool nextTurn = false, int dimension=-1)
 	{
 		if(_disabled) return new Tuple<bool, string>(false, "Ability is disabled");
 		if (isOn)
 		{
-			return off.CanPerform(actor, target,nextturn,dimension);
+			return off.CanPerform(actor, target,considerTargetAids,nextTurn,dimension);
 		}
-		return on.CanPerform(actor, target,nextturn,dimension);
+		return on.CanPerform(actor, target,considerTargetAids, nextTurn,dimension);
 	}
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor,bool nextTurn = false)

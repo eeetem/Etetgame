@@ -172,11 +172,11 @@ namespace DefconNull.World.WorldObjects
 			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
 			foreach (var position in positions)
 			{
-				if (Abilities[0].CanPerform(this,position).Item1)
+				if (Abilities[0].CanPerform(this,position,false,false).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,true));
 				}
-				else if (Abilities[0].CanPerform(this,position).Item1)
+				else if (Abilities[0].CanPerform(this,position,false,false).Item1)
 				{
 					result.Add(new Tuple<Vector2Int, bool>(position,false));
 				}

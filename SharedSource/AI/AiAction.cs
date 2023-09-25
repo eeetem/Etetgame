@@ -104,7 +104,7 @@ public abstract class AIAction
 		int supression = 0;
 		int totalChangeScore =0;
 
-		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.targetPosition, nextTurnUse, dimension).Item1)
+		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.targetPosition, true,nextTurnUse, dimension).Item1)
 		{
 			foreach(var c in ability.Consequences){
 				var consiquence = ScoreConsequence(c,dimension,attacker,noRecursion);

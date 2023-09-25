@@ -46,7 +46,7 @@ public partial class WorldTile : IWorldTile
 
 
 			Console.WriteLine("overwatch spotted by " + watcher.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
-			if (!isFriendly && watcher.Abilities[0].CanPerform(watcher,_position).Item1 && vis >= requiredVis)
+			if (!isFriendly && watcher.Abilities[0].CanPerform(watcher,_position,false,false).Item1 && vis >= requiredVis)
 			{
 				shooters.Add(watcher);
 			}

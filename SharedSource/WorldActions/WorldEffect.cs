@@ -17,18 +17,7 @@ public class WorldEffect : Effect
 {
 	public readonly DeliveryMethod DeliveryMethod;
 	public readonly WorldConseqences Conseqences;
-#if CLIENT
-	public TargetAid targetAid;
-#endif
 
-	public enum TargetAid
-	{
-		None,
-		Unit,
-		Enemy
-		
-	}
-	
 	public WorldEffect(DeliveryMethod deliveryMethod, WorldConseqences conseqences)
 	{
 		DeliveryMethod = deliveryMethod;

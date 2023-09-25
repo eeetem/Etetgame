@@ -20,7 +20,7 @@ public class UseAbility : Action
 	{
 			
 		IUnitAbility action = actor.Abilities[(AbilityIndex)];
-		return action.CanPerform(actor, target);
+		return action.CanPerform(actor, target,false,false);
 
 	}
 

@@ -141,7 +141,7 @@
     </action>
   </unit>
 
-  <unit Health="8" z="0.1" moveRange = "4" moves="3" actions="1" determination="3"  sightrange="20">
+  <unit Health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="3"  sightrange="20">
     <name>Officer</name>
 
     <action moveCost="1" actCost="1">
@@ -169,13 +169,13 @@
     <action detCost ="1" moveCost="1" actCost="0">
       <name>Command</name>
       <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
+      <targetAid>friend,!Officer</targetAid>
 
-
-      <effect range="1" visible ="false" target="friend">
+      <effect range="1" visible ="false">
         <delivery>
           <vissionCast range="18"/>
         </delivery>
-        <consequences>
+        <consequences ignore="Officer">
           <applystatus status="Boost" duration="1"/>
         </consequences>
       </effect>
@@ -187,7 +187,6 @@
     <unit Health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  overwatch="3" determination="5">
       <name>Heavy</name>
       
-  
       <action moveCost="1" actCost="1">
         <name>Attack</name>
         <targetAid>enemy</targetAid>

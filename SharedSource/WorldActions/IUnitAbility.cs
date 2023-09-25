@@ -8,7 +8,7 @@ namespace DefconNull.World.WorldActions;
 
 public interface IUnitAbility : ICloneable
 {
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool nextturn = false, int dimension = -1);
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool considerTargetAids, bool nextTurn, int dimension = -1);
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor,bool nextTurn = false);
 	public Tuple<bool,string> IsPlausibleToPerform(Unit actor, Vector2Int target, int dimension = -1);
 

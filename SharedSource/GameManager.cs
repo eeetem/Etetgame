@@ -164,7 +164,7 @@ public static partial class GameManager
 	
 	//AI Match
 
-		FinishTurnWithAI();
+		//FinishTurnWithAI();
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -35,7 +36,8 @@ public class UnitAbility : IUnitAbility
 	public string Name => name;
 	public int Index => index;
 	public bool AIExempt => aiExempt;
-	public int index;
+	public readonly int index;
+	readonly public List<string> TargetAids;
 
 	public float GetOptimalRangeAI()
 	{
@@ -50,7 +52,7 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt,List<string> targetAids)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
@@ -61,17 +63,29 @@ public class UnitAbility : IUnitAbility
 		this.immideaateActivation = immideaateActivation;
 		this.index = index;
 		this.aiExempt = aiExempt;
+		
+		this.TargetAids = targetAids;
 #if CLIENT
 
 		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
 		
 #endif
+		
 	}
 
 	
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn = false, int dimension =-1)
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn, bool consultTargetAids, int dimension =-1)
 	{
+		if (consultTargetAids)
+		{
+			var aids = IsValidTarget(actor, target, dimension);
+			if (!aids.Item1)
+			{
+				return aids;
+			}
+		}
+		
 		
 		var res = HasEnoughPointsToPerform(actor,NextTurn);
 		if (!res.Item1)
@@ -87,6 +101,55 @@ public class UnitAbility : IUnitAbility
  
 		return new Tuple<bool, string>(true, "");
 	
+	}
+
+	private Tuple<bool,string> IsValidTarget(Unit actor, Vector2Int target, int dimension)
+	{
+		if (TargetAids.Count == 0) return new Tuple<bool, string>(true, "");
+		foreach (var t in TargetAids)
+		{
+			var str = t;
+			bool negate = false;
+			if (str.StartsWith("!"))
+			{
+				negate = true;
+				str = str.Substring(1);
+			}
+
+			switch (str)
+			{
+				case "enemy":
+					if (negate)
+					{
+						throw new Exception("Cannot negate enemy target aid");
+					}
+
+					if (WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation?.IsPlayer1Team == actor.IsPlayer1Team)
+					{
+						return new Tuple<bool, string>(false, "Target is not an enemy");
+					}
+					break;
+				case "friend":
+					if (negate)
+					{
+						throw new Exception("Cannot negate friend target aid");
+					}
+
+					if (WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation?.IsPlayer1Team != actor.IsPlayer1Team)
+					{
+						return new Tuple<bool, string>(false, "Target is not an friend");
+					}
+					break;
+				default:
+					var u = WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation;
+					if(u is null && !negate) return new Tuple<bool, string>(false, "Target is not a "+str);
+					bool match = u!.Type.Name == str;
+					if(negate) match = !match;
+					if(!match) return new Tuple<bool, string>(false, "Target is not a "+str);
+					break;
+			}
+		}
+		return new Tuple<bool, string>(true, "");
 	}
 
 	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target,int dimension = -1)
@@ -193,6 +256,7 @@ public class UnitAbility : IUnitAbility
 
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
+		if(!CanPerform(actor,target,false,true).Item1) return;
 		if (immideaateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
@@ -213,7 +277,7 @@ public class UnitAbility : IUnitAbility
 
 	public object Clone()
 	{
-		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index,aiExempt);	
+		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index,aiExempt,TargetAids);	
 		
 	}
     

@@ -229,12 +229,15 @@ public static class PrefabManager
 		ushort actCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
 		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
+		string aids = actobj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "";
+		var aidList =aids.Split(",").ToList();
+		
 		bool aiExempt =  bool.Parse(actobj.Attributes?["aiExempt"]?.InnerText ?? "false"); 
 
 		List<Effect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index,aiExempt);
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index,aiExempt,aidList);
 		return a;
 	}
 
@@ -259,22 +262,7 @@ public static class PrefabManager
 	{
 		DeliveryMethod? dvm = null;
 		WorldConseqences eff = new WorldConseqences();
-/*
-		string aid = xmlObj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "none";
-		WorldEffect.TargetAid tAid = WorldEffect.TargetAid.None;
 
-		switch (aid)
-		{
-			case "none":
-				tAid = WorldEffect.TargetAid.None;
-				break;
-			case "unit":
-				tAid = WorldEffect.TargetAid.Unit;
-				break;
-			case "enemy":
-				tAid = WorldEffect.TargetAid.Enemy;
-				break;
-		}*/
 		//loop through all child nodes of the element
 		if (xmlObj.GetElementsByTagName("delivery")[0] == null)
 		{

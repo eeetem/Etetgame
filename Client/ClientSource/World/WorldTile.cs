@@ -50,13 +50,13 @@ public partial class WorldTile : IWorldTile
 			}
 
 			HighestWatchLevel = 0;
-			if (watcher.Abilities[0].CanPerform(watcher,Position).Item1)
+			if (watcher.Abilities[0].CanPerform(watcher,Position,false,false).Item1)
 			{
 				HighestWatchLevel = 2;
 				return;
 			}
 
-			if (watcher.Abilities[0].CanPerform(watcher,Position).Item1)
+			if (watcher.Abilities[0].CanPerform(watcher,Position,false,false).Item1)
 			{
 				HighestWatchLevel = 1;
 				return;
