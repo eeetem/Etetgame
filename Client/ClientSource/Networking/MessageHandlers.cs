@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Threading;
+using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.ActorSequenceAction;
@@ -20,12 +21,19 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.MapDataInitiate)]
 	private static void StartMapRecive(Message message)
 	{
+		UI.Desktop.Widgets.Remove(mapLoadMsg);
 		mapLoadMsg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
+		var oldname = WorldManager.Instance.CurrentMap.Name;
 		WorldManager.Instance.CurrentMap = new WorldManager.MapData();
 		WorldManager.Instance.CurrentMap.Name = message.GetString();
 		WorldManager.Instance.CurrentMap.Author = message.GetString();
 		WorldManager.Instance.CurrentMap.unitCount = message.GetInt();
-		WorldManager.Instance.WipeGrid();
+		if (WorldManager.Instance.CurrentMap.Name != oldname)
+		{
+			WorldManager.Instance.WipeGrid();
+		}
+
+		
 		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetMsgIds.NetworkMessageID.MapDataInitiateConfirm);
 		client?.Send(msg);
 	}
@@ -39,7 +47,28 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapDataFinish)]
 	private static void FinishMapRecieve(Message message)
 	{
-		UI.Desktop.Widgets.Remove(mapLoadMsg);
+		Task t = new Task(delegate
+		{
+			while (WorldManager.Instance.SequenceRunning)//still loading the map
+			{
+				Thread.Sleep(100);
+			}
+
+			UI.Desktop.Widgets.Remove(mapLoadMsg);
+			string hash = message.GetString();
+			if (WorldManager.Instance.GetMapHash() != hash)
+			{
+				Console.WriteLine("Map Hash Mismatch, resending");
+				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetMsgIds.NetworkMessageID.MapReaload);
+				client?.Send(msg);
+			
+			}
+			
+			
+		});
+		t.Start();
+
+		
 	}
 
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameData)]

@@ -22,7 +22,7 @@ public class UnitAbility : IUnitAbility
 	public readonly ushort ActCost;
 	public readonly bool immideaateActivation;
 	public readonly bool aiExempt;
-
+	public readonly ushort OverWatchRange;
 	public List<Effect> Effects { get; }
 
 	public Tuple<int,int,int> GetCost(Unit c)
@@ -38,6 +38,9 @@ public class UnitAbility : IUnitAbility
 	public bool AIExempt => aiExempt;
 	public readonly int index;
 	readonly public List<string> TargetAids;
+	
+	public bool CanOverWatch => OverWatchRange > 0;
+	
 
 	public float GetOptimalRangeAI()
 	{
@@ -52,7 +55,7 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt,List<string> targetAids)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, ushort overWatchRange, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt, List<string> targetAids)
 	{
 		this.name = name;
 		this.tooltip = tooltip;
@@ -70,12 +73,13 @@ public class UnitAbility : IUnitAbility
 		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);
 		
 #endif
-		
-	}
 
+		OverWatchRange = overWatchRange;
+	}
 	
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool NextTurn, bool consultTargetAids, int dimension =-1)
+
+	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
 		if (consultTargetAids)
 		{
@@ -87,7 +91,7 @@ public class UnitAbility : IUnitAbility
 		}
 		
 		
-		var res = HasEnoughPointsToPerform(actor,NextTurn);
+		var res = HasEnoughPointsToPerform(actor,nextTurn);
 		if (!res.Item1)
 		{
 			return res;
@@ -154,14 +158,13 @@ public class UnitAbility : IUnitAbility
 
 	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target,int dimension = -1)
 	{
-		foreach (var effect in Effects)
+		
+		var result = Effects[0].CanPerform(actor, target,dimension);
+		if (!result.Item1)
 		{
-			var result = effect.CanPerform(actor, target,dimension);
-			if (!result.Item1)
-			{
-				return result;
-			}
+			return result;
 		}
+		
 		return new Tuple<bool, string>(true, "");
 	}
 
@@ -256,7 +259,7 @@ public class UnitAbility : IUnitAbility
 
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if(!CanPerform(actor,target,false,true).Item1) return;
+		if(!CanPerform(actor,target,true,false).Item1) return;
 		if (immideaateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
@@ -277,7 +280,7 @@ public class UnitAbility : IUnitAbility
 
 	public object Clone()
 	{
-		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost,  Effects, immideaateActivation,index,aiExempt,TargetAids);	
+		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost, OverWatchRange, Effects, immideaateActivation,index,aiExempt,TargetAids);	
 		
 	}
     

@@ -227,17 +227,19 @@ public static class PrefabManager
 		ushort detCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
 		ushort moveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");
 		ushort actCost =   ushort.Parse(actobj.Attributes?["actCost"]?.InnerText ?? "0"); 
+		ushort overWatchRange =   ushort.Parse(actobj.Attributes?["overwatch"]?.InnerText ?? "0"); 
 		string name = actobj.GetElementsByTagName("name")[0]?.InnerText ?? "";
 		string tip = actobj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
 		string aids = actobj.GetElementsByTagName("targetAid")[0]?.InnerText ?? "";
 		var aidList =aids.Split(",").ToList();
+		aidList.RemoveAll(x => x == "");
 		
 		bool aiExempt =  bool.Parse(actobj.Attributes?["aiExempt"]?.InnerText ?? "false"); 
 
 		List<Effect> effects = ParseWorldEffects(actobj);
 
 		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, effects,immideaateActivation,index,aiExempt,aidList);
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, overWatchRange,effects,immideaateActivation,index,aiExempt,aidList);
 		return a;
 	}
 

@@ -251,6 +251,7 @@
         <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="MD5" Version="2.0.4" />
         <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
@@ -418,6 +419,9 @@
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Action.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\AbilityAction.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\AbilityAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>

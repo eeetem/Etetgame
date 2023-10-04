@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.World.WorldActions;
@@ -16,38 +17,26 @@ public class UseAbility : Action
 	{
 	}
 
-	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target)
+	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target, List<string> args)
 	{
-			
-		IUnitAbility action = actor.Abilities[(AbilityIndex)];
+		var abilityIndex= int.Parse(args[0]);
+		IUnitAbility action = actor.Abilities[(abilityIndex)];
 		return action.CanPerform(actor, target,false,false);
 
 	}
 
-	public static bool abilityLock = false;
-	private static int _abilityIndex = -1;
 
-	public static int AbilityIndex
-	{
-		get => _abilityIndex;
-		set {
-			if (abilityLock)
-			{
-				return;
-			}
 
-			_abilityIndex = value;
-		}
-	}
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target, List<string> args)
 	{
 
-		IUnitAbility action = actor.Abilities[(AbilityIndex)];
+		var abilityIndex= int.Parse(args[0]);
+		IUnitAbility action = actor.Abilities[(abilityIndex)];
 		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
-		if (AbilityIndex == 0)//hardcode shooter spotting for n
+		if (abilityIndex == 0)//hardcode shooter spotting for n
 		{
 			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, true, 3);
 			queue.Enqueue(m);
@@ -73,18 +62,11 @@ public class UseAbility : Action
 
 
 #if CLIENT
-		public override void SendToServer(Unit actor, Vector2Int target)
-		{
-			IUnitAbility action = actor.Abilities[AbilityIndex];
-			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
-			packet.Args.Add(AbilityIndex.ToString());
 
-			NetworkingManager.SendGameAction(packet);
-		
-		}
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 		{
-			IUnitAbility action = actor.Abilities[AbilityIndex];
+			var abilityIndex= int.Parse(CurrentArgs[0]);
+			IUnitAbility action = actor.Abilities[abilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}
 

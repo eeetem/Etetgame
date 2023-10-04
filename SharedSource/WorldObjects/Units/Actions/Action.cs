@@ -17,7 +17,7 @@ public abstract class Action
 	public static readonly Dictionary<ActionType, Action> Actions = new();
 	public readonly ActionType Type;
 	public static Action? ActiveAction { get; private set; }
-
+	public static List<string> CurrentArgs = new List<string>();
 	public Action(ActionType? type)
 	{
 		if(type==null) return;
@@ -25,8 +25,9 @@ public abstract class Action
 		Actions.Add((ActionType)type, this);
 	}
 
-	public static void SetActiveAction(ActionType? type)
+	public static void SetActiveAction(ActionType? type, List<string>? args=null)
 	{
+		
 		
 		if (type == null)
 		{
@@ -36,10 +37,13 @@ public abstract class Action
 #endif
 			return;
 		}
-		
+
+		if (args == null)
+			args = new List<string>();
+		CurrentArgs = args;
 
 		ActiveAction = Actions[(ActionType)type];
-		ActiveAction.InitAction();
+		
 #if CLIENT
 		GameLayout.UpdateActionButtons();	
 #endif
@@ -73,27 +77,21 @@ public abstract class Action
 		OverWatch = 5,
 		
 		UseAbility = 7,
+		
+		
 
 	}
 
-	public virtual void InitAction()
-	{
-#if CLIENT
-		GameLayout.ScreenData = null;
-#endif
-	
-	}
 
-
-	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target);
+	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args);
 
 #if CLIENT
 	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
 
-	public virtual void SendToServer(Unit actor, Vector2Int target)
+	public void SendToServer(Unit actor, Vector2Int target,  List<string> args)
 	{
 		Console.WriteLine("sending action packet: " + Type + " on " + target + " from " + actor.WorldObject.ID + "");
-		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type);
+		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type,args);
 		NetworkingManager.SendGameAction(packet);
 	}
 #endif
@@ -102,17 +100,17 @@ public abstract class Action
 	
 	
 #if CLIENT
-	public virtual void ExecuteClientSide(Unit actor, Vector2Int target)
+	public virtual void ExecuteClientSide(Unit actor, Vector2Int target, List<string> args)
 	{
 		SetActiveAction(null);
 	}
 #else
 
-	public void PerformServerSide(Unit actor,Vector2Int target)
+	public void PerformServerSide(Unit actor,Vector2Int target, List<string> args)
 	{
 
 		
-		var result = CanPerform(actor, target);
+		var result = CanPerform(actor, target,args);
 		if(!result.Item1)
 		{
 			Console.WriteLine("Client sent an impossible action: "+result.Item2);
@@ -123,7 +121,7 @@ public abstract class Action
 			try
 			{
 				
-				var actions = GetConsiquenes(actor, target);
+				var actions = GetConsiquenes(actor, target,args);
 				WorldManager.Instance.AddSequence(actions);
 				NetworkingManager.SendSequence(actions);
 			}
@@ -137,9 +135,8 @@ public abstract class Action
 		
 		
 	}
-	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target);
+	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target,  List<string> args);
 #endif
-	
 	
 	public class GameActionPacket : IMessageSerializable
 	{
@@ -150,18 +147,19 @@ public abstract class Action
 
 		public List<string> Args { get; set; } = new List<string>();
 
-		public GameActionPacket(int unitId, Vector2Int target, ActionType type)
+		public GameActionPacket(int unitId, Vector2Int target, ActionType type, List<string> args)
 		{
 			UnitId = unitId;
 			Target = target;
 			Type = type;
-			Args = new List<string>();
+			Args = args;
 		}
-
+		
 		public GameActionPacket()
 		{
 			
 		}
+
 
 		public void Serialize(Message message)
 		{

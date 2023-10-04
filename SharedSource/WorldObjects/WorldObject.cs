@@ -392,4 +392,8 @@ public partial class WorldObject
 	}
 
 
+	public string GetHash()
+	{
+		return Type.Name + ID;
+	}
 }

@@ -281,14 +281,18 @@ namespace DefconNull.World.WorldObjects
 
 
 		}
-
-		public void DoAction(Action a, Vector2Int target)
+		public void DoActiveAction(Vector2Int target)
 		{
+			DoAction(Action.ActiveAction, target,Action.CurrentArgs);
+		}
+		public void DoAction(Action a, Vector2Int target, List<string>? args =null)
+		{
+			if (args == null) args = new List<string>();
 #if CLIENT
 			if (!IsMyTeam()) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
-			var result = a.CanPerform(this, target);
+			var result = a.CanPerform(this, target,args);
 			if (!result.Item1)
 			{
 #if CLIENT
@@ -301,10 +305,10 @@ namespace DefconNull.World.WorldObjects
 			}
 			Console.WriteLine("performing actionL " + a.Type + " on " + target);
 #if CLIENT
-			a.SendToServer(this, target);
-			a.ExecuteClientSide(this, target);
+			a.SendToServer(this, target,args);
+			a.ExecuteClientSide(this, target,args);
 #else
-			a.PerformServerSide(this, target);
+			a.PerformServerSide(this, target,args);
 #endif
 
 
@@ -563,5 +567,9 @@ namespace DefconNull.World.WorldObjects
 		}
 
 
+		public string GetHash()
+		{
+			return WorldObject.GetHash();
+		}
 	}
 }

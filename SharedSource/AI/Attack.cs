@@ -20,8 +20,9 @@ public class Attack : AIAction
 	{
 		//todo only waht you see
 		var atk = GetBestPossibleAbility(unit,true,false,false);
-		UseAbility.AbilityIndex = atk.AbilityIndex;
-		unit.DoAction(Action.Actions[Action.ActionType.UseAbility],atk.TargetPosition);
+		var args = new List<string>();
+		args.Add(atk.AbilityIndex.ToString());
+		unit.DoAction(Action.Actions[Action.ActionType.UseAbility],atk.TargetPosition,args);
 		
 	}
 

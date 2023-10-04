@@ -42,7 +42,7 @@ public static partial class NetworkingManager
 		Name = name;
 		
 		client = new Client( new TcpClient());
-		Message.MaxPayloadSize = 2048;
+		Message.MaxPayloadSize = 2048*2;
 
 		client.TimeoutTime = 10000;
 #if DEBUG

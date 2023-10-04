@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
-#if CLIENT
-#endif
+
 namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class Crouch : Action
@@ -14,7 +14,7 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
 	{
 		if (actor.MovePoints <= 0)
 		{
@@ -23,14 +23,9 @@ public class Crouch : Action
 		
 		return new Tuple<bool, string>(true, "");
 	}
-#if CLIENT
-	public override void ExecuteClientSide(Unit actor, Vector2Int target)
-	{
-		base.ExecuteClientSide(actor, target);
-	}
+#if SERVER
 
-#else
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
+public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -44,9 +39,8 @@ public class Crouch : Action
 		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0,0));
 		queue.Enqueue(new CrouchUnit(actor.WorldObject.ID));
 
-		foreach (var shooter in shooters)
+	/*	foreach (var shooter in shooters)
 		{
-			UseAbility.AbilityIndex = -0;
 			var res = Actions[ActionType.UseAbility].GetConsiquenes(shooter,actor.WorldObject.TileLocation.Position);
 			foreach (var a in res)
 			{
@@ -54,10 +48,12 @@ public class Crouch : Action
 			}
 		
 		}
-		
+		*/
 		return queue;
 	}
+
 #endif
+	
 
 
 #if CLIENT
@@ -65,7 +61,6 @@ public class Crouch : Action
 	{
 		throw new NotImplementedException();
 	}
-
-
+	
 #endif
 }

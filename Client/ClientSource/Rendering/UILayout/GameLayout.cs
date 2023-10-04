@@ -477,32 +477,27 @@ public class GameLayout : MenuLayout
 				{
 					if (Action.ActiveAction == null)
 					{
-						UseAbility.AbilityIndex = index;
-						Action.SetActiveAction(Action.ActionType.UseAbility);
+						Action.SetActiveAction(Action.ActionType.UseAbility, new() { index.ToString()});
 					}
 				};
 				btn.MouseLeft += (o, a) =>
 				{
-					if (UseAbility.AbilityIndex == index)
+					if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseAbility && Action.CurrentArgs[0] == index.ToString())
 					{
 						Action.SetActiveAction(null);
-						UseAbility.AbilityIndex = -0;
 					}
 				};
 				btn.Click += (o, a) =>
 				{
-					Console.WriteLine("click");
-					Action.SetActiveAction(Action.ActionType.UseAbility);
-					UseAbility.AbilityIndex = index;
-					SelectedUnit.DoAction(Action.ActiveAction, SelectedUnit.WorldObject.TileLocation.Position);
+					Action.SetActiveAction(Action.ActionType.UseAbility, new() { index.ToString()});
+					SelectedUnit.DoActiveAction(SelectedUnit.WorldObject.TileLocation.Position);
 				};
 			}
 			else
 			{
 				btn.Click += (o, a) =>
 				{
-					UseAbility.AbilityIndex = index;
-					Action.SetActiveAction(Action.ActionType.UseAbility);
+					Action.SetActiveAction(Action.ActionType.UseAbility, new() { index.ToString()});
 				};
 			}
 			panel.Widgets.Add(btn);
@@ -614,7 +609,7 @@ public class GameLayout : MenuLayout
 			actbtn.VerticalAlignment = VerticalAlignment.Bottom;
 			actbtn.Width = (int) (24 * scale);
 			actbtn.Height = (int) (29 * scale);
-			if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseAbility && UseAbility.AbilityIndex == index)
+			if (Action.ActiveAction != null && Action.ActiveAction.Type == Action.ActionType.UseAbility && Action.CurrentArgs[0] == index.ToString())
 			{
 				actbtn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
 				actbtn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
@@ -1176,20 +1171,6 @@ public class GameLayout : MenuLayout
 			
 		}
 
-
-
-		//SHOULD AUTOSWTICH TO ATTACK
-		if (WorldEffect.FreeFire||( tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.IsVisible() &&!tile.UnitAtLocation.IsMyTeam()))
-		{
-			if(Action.ActiveAction == null){
-				Action.SetActiveAction(Action.ActionType.UseAbility);
-				UseAbility.AbilityIndex = -0;
-			}
-			
-		}
-
-
-
 		ProcessKeyboard();
 		
 		//bad
@@ -1230,10 +1211,6 @@ public class GameLayout : MenuLayout
 
 
 		WorldEffect.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
-		if(Action.ActiveAction != null && currentKeyboardState.IsKeyUp(Keys.LeftControl) && lastKeyboardState.IsKeyDown(Keys.LeftControl) && Action.ActiveAction.Type == Action.ActionType.UseAbility && UseAbility.AbilityIndex == -1)
-		{
-			Action.SetActiveAction(null);
-		}
 
 		if(WorldEffect.FreeFire){
 			if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
@@ -1341,7 +1318,7 @@ public class GameLayout : MenuLayout
 					Action.SetActiveAction(Action.ActionType.Face);
 					break;
 				case Action.ActionType.Face:
-					SelectedUnit.DoAction(Action.ActiveAction,position);
+					SelectedUnit.DoActiveAction(position);
 					break;
 				default:
 					Action.SetActiveAction(null);
@@ -1359,7 +1336,7 @@ public class GameLayout : MenuLayout
 					Action.SetActiveAction(Action.ActionType.Move);
 					break;
 				default:
-					SelectedUnit.DoAction(Action.ActiveAction, position);
+					SelectedUnit.DoActiveAction(position);
 					break;
 
 

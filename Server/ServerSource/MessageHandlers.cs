@@ -11,6 +11,13 @@ namespace DefconNull.Networking;
 public static partial class NetworkingManager
 {
 
+	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapReaload)]
+	private static void ResendMap(ushort senderID, Message message)
+	{
+		NetworkingManager.SendMapData(senderID);
+	}
+
+	
 	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.DoAI)]
 	private static void AiFinish(ushort senderID, Message message)
 	{
@@ -200,35 +207,8 @@ public static partial class NetworkingManager
 		}
 
 		Action act = Action.Actions[packet.Type]; //else get controllable specific actions
-		if (act.Type == Action.ActionType.UseAbility)
-		{
-			int ability = int.Parse(packet.Args[0]);
-			UseAbility.AbilityIndex = ability;
-			UseAbility.abilityLock = true;
-			IUnitAbility a = controllable.Abilities[ability];
-			/*if (a.WorldEffect.DeliveryMethods.Find(x => x is Shootable) != null)
-			{
-				string target = packet.Args[1];
-				switch (target)
-				{
-					case "Auto":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.Auto;
-						break;
-					case "High":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.High;
-						break;
-					case "Low":
-						Shootable.targeting = Shootable.targeting = Shootable.TargetingType.Low;
-						break;
-					default:
-						throw new ArgumentException("Invalid target type");
-				}
-			}*/
-		}
+		act.PerformServerSide(controllable, packet.Target,packet.Args);
 
-		act.PerformServerSide(controllable, packet.Target);
-		UseAbility.abilityLock = false;
-			
 	}
 	
 

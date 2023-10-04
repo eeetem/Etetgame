@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
@@ -11,6 +12,7 @@ using DefconNull.World.WorldObjects;
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
+using MD5Hash;
 using Microsoft.Xna.Framework;
 #if CLIENT
 using DefconNull.Rendering.UILayout;
@@ -1203,7 +1205,7 @@ public  partial class WorldManager
 		public string Author = "Unknown";
 		public int unitCount;
 		public List<WorldTile.WorldTileData> Data = new List<WorldTile.WorldTileData>();
-			
+
 
 		public static MapData FromJSON(string json)
 		{
@@ -1535,5 +1537,24 @@ public  partial class WorldManager
 
 		attacks.AddRange(list);
 		return true;
+	}
+
+	public string GetMapHash()
+	{
+		string hash = "";
+		lock (deleteSync)
+		lock (createSync)
+		{
+			
+			foreach (var tile in _gridData)
+			{
+				hash += tile.GetHash();
+			}
+
+			
+		}
+	
+		var md5 = hash.GetMD5();
+		return md5;
 	}
 }

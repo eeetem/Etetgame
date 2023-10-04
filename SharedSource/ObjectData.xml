@@ -81,7 +81,7 @@
 
   <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
-    <action moveCost="1" actCost="1">
+    <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
@@ -96,7 +96,7 @@
       </effect>
     </action>
     
-    <action detCost ="3" moveCost="1" actCost="1">
+    <action detCost ="3" moveCost="1" actCost="1" overwatch="2">
       <name>Headshot</name>
       <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
@@ -116,7 +116,7 @@
   <unit Health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
-    <action moveCost="1" actCost="1">
+    <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
       
@@ -144,15 +144,20 @@
   <unit Health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="3"  sightrange="20">
     <name>Officer</name>
 
-    <action moveCost="1" actCost="1">
+    <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
+      
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
+
       <effect>
-        <vfx name="clmagnitude" target="20" speed="50"/>
-        <vfx name="noise" target="1" speed="100"/>
-        <sfx name="rifle"/>
+        <consequences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="rifle"/>
+        </consequences>
       </effect>
+      
     </action>
 
     <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
@@ -184,10 +189,10 @@
   
   
 
-    <unit Health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  overwatch="3" determination="5">
+    <unit Health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  determination="5">
       <name>Heavy</name>
       
-      <action moveCost="1" actCost="1">
+      <action moveCost="1" actCost="1" overwatch="3">
         <name>Attack</name>
         <targetAid>enemy</targetAid>
         <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>

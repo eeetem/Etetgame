@@ -1,6 +1,5 @@
 ﻿using System;
-
-
+using System.Collections.Generic;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
@@ -18,7 +17,7 @@ public class OverWatch : Action
 	}
 
 	
-	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int position)
+	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int position, List<string>? args)
 	{
 	
 
@@ -35,7 +34,7 @@ public class OverWatch : Action
 		return new Tuple<bool, string>(true, "");
 	}
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string>? args)
 	{
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(new UnitOverWatch(actor.WorldObject.ID,target));

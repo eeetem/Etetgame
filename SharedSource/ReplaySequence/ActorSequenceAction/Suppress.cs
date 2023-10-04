@@ -55,7 +55,7 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 		{
 			Texture2D sprite = Actor.WorldObject.GetTexture();
 			spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Blue * 0.8f);
-			Actor.WorldObject.PreviewData.detDmg = detDmg;
+			Actor.WorldObject.PreviewData.detDmg += detDmg;
 		}
 	}
 #endif

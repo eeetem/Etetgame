@@ -253,9 +253,9 @@ public abstract class AIAction
 				outcome *= 3;
 				defenceOutcome *= 2;
 				outcome += defenceOutcome;
-				if (outcome == 0)
+				if (outcome == 0 && mchanghe>0)
 				{
-					outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
+					outcome += 1 ;//if there is no change in score, we still want to encourage movement buffs
 				}
 
 				WorldManager.Instance.WipePseudoLayer(newDim);

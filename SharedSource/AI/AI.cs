@@ -13,28 +13,48 @@ namespace DefconNull.AI;
 
 public class AI
 {
+	
 	public static void DoAITurn(List<Unit> squad)
 	{
 		var t = new Task(delegate
 		{
             Task.Run(() =>
             {
+				int currentUnitIndex =0;
 	            try
 	            {
 		            while (true)
 		            {
 			            List<Tuple<AIAction, Unit, int>> actions = new();
-			            foreach (var unit in squad.Shuffle(Random.Shared))
+			            
+			            //keep going with current  unit untill depleted
+			            var currentUnit = squad[currentUnitIndex];
+			            AIAction a = new Attack();
+			            Console.WriteLine("Calculating Attack Action..."); 
+			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
+			            a = new Move();
+			            Console.WriteLine("Calculating Move Action..."); 
+			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
+			            actions.RemoveAll((x) => x.Item3 <= 0);
+			            int totalScore = 0;
+			            actions.ForEach((x) => totalScore += x.Item3);
+			            if (actions.Count == 0 || Random.Shared.Next(0, 100) > totalScore)
 			            {
-				            AIAction a = new Attack();
-				            Console.WriteLine("Calculating Attack Action..."); 
-				            actions.Add(new Tuple<AIAction,Unit, int>(a,unit, a.GetScore(unit)));
-				            a = new Move();
-				            Console.WriteLine("Calculating Move Action..."); 
-				            actions.Add(new Tuple<AIAction,Unit, int>(a,unit, a.GetScore(unit)));
-				            actions.RemoveAll((x) => x.Item3 <= 0);
-				            if(actions.Count > 0) break;
+				            foreach (var unit in squad.Shuffle(Random.Shared))
+				            {
+					            currentUnitIndex = squad.IndexOf(unit);
+					            a = new Attack();
+					            Console.WriteLine("Calculating Attack Action...");
+					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
+					            a = new Move();
+					            Console.WriteLine("Calculating Move Action...");
+					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
+					            actions.RemoveAll((x) => x.Item3 <= 0);
+					            if (actions.Count > 0) break;
+				            }
+
 			            }
+
 			            if(actions.Count == 0) break;
 						
 			            Tuple<AIAction, Unit, int>? actionToDo = null;

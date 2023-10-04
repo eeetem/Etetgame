@@ -19,7 +19,7 @@ public class Move : Action
 	{
 	}
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
 	{
 		
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, position);
@@ -47,7 +47,7 @@ public class Move : Action
 
 	
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 		int moveUse = 1;
@@ -115,12 +115,12 @@ public class Move : Action
 				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
 				foreach (var attacker in ShootingSpots[j].Item1)
 				{
-					UseAbility.AbilityIndex = 0;
-					var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
-					foreach (var a in res)
-					{
-						queue.Enqueue(a);
-					}
+				//	UseAbility.AbilityIndex = 0;
+				//	var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
+				//	foreach (var a in res)
+				//	{
+				//		queue.Enqueue(a);
+				//	}
 				//	var act = new DelayedAbilityUse(attacker.WorldObject.ID,-1,ShootingSpots[j].Item2);
 				//	queue.Enqueue(act);
 				}
@@ -140,27 +140,23 @@ public class Move : Action
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
-	public override void InitAction()
-	{
-
-		lastTarget = new Vector2Int(0, 0);
-		base.InitAction();
-	}
 
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (WorldManager.Instance.SequenceRunning) return;
-		if (lastTarget == new Vector2Int(0, 0))
+		if (lastTarget == new Vector2Int(0, 0))	
 		{
 			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 			lastTarget = target;
 		}
-
 		if (lastTarget != target)
 		{
+			lastTarget = new Vector2Int(0, 0);
 			SetActiveAction(null);
 		}
 
+		
+	
 
 		for (int index = 0; index < previewPath.Path.Count - 1; index++)
 		{

@@ -21,7 +21,7 @@ public static partial class NetworkingManager
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		server.TimeoutTime = 10000;
-		Message.MaxPayloadSize = 2048;
+		Message.MaxPayloadSize = 2048*2;
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
 #endif
@@ -100,12 +100,18 @@ public static partial class NetworkingManager
 		Console.WriteLine("Client Register Done");
 		server.Accept(connection);
 		SendGameData();
-		SendPreGameInfo();
+		SendPreGameInfo(); 
 		SendMapData(connection);
 
 	}
 		
 	public static readonly object UpdateLock = new object();
+	private static void SendMapData(ushort senderID)
+	{
+		Connection c;
+		server.TryGetClient(senderID, out c);
+		SendMapData(c);
+	}
 	public static void SendMapData(Connection connection)
 	{
 	
@@ -146,6 +152,7 @@ public static partial class NetworkingManager
 
 					Console.WriteLine("finished sending map data to " + connection.Id);
 					var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.MapDataFinish);
+					msg.AddString(WorldManager.Instance.GetMapHash());
 					server.Send(msg, connection);
 
 				}catch(Exception e)
@@ -349,6 +356,20 @@ public static partial class NetworkingManager
 
 	public static void SendSequence(IEnumerable<SequenceAction> actions)
 	{
+		SendSequence(actions.ToList());
+	}
+
+	public static void SendSequence(List<SequenceAction> actions)
+	{
+		//send in chunks
+		if (actions.Count() > 50)
+		{
+			SendSequence(actions.GetRange(0, 50));
+			actions.RemoveRange(0, 50);
+			SendSequence(actions);
+			return;
+		}
+
 		lock (UpdateLock)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
@@ -369,4 +390,6 @@ public static partial class NetworkingManager
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.EndTurn);
 		server.SendToAll(msg);
 	}
+
+
 }

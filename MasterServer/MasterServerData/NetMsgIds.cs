@@ -30,5 +30,6 @@ public class NetMsgIds
 		AddAI = 20,
 		PracticeMode = 21,
 		DoAI = 22,
+		MapReaload = 23,
 	}
 }

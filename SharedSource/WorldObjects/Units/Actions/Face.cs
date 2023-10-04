@@ -14,7 +14,7 @@ public class Face : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
 	{
 		
 		
@@ -35,7 +35,7 @@ public class Face : Action
 	}
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
 	{
 
 		var queue = new Queue<SequenceAction>();
@@ -49,11 +49,7 @@ public class Face : Action
 
 	private Vector2Int lastTarget;
 	private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
-	public override void InitAction()
-	{
-		lastTarget = new Vector2Int(0, 0);
-		base.InitAction();
-	}
+
 	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		if (lastTarget == new Vector2Int(0, 0))
