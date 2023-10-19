@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
+using Effect = DefconNull.World.WorldActions.Effect;
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions.UnitAbility;
 
 public interface IUnitAbility : ICloneable
 {
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool considerTargetAids, bool nextTurn, int dimension = -1);
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor,bool nextTurn = false);
 	public Tuple<bool,string> IsPlausibleToPerform(Unit actor, Vector2Int target, int dimension = -1);
+	public Tuple<bool, string> IsValidTarget(Unit actor, Vector2Int target, int dimension);
 
 	List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1);
 	List<Effect> Effects { get; }
-	Tuple<int, int, int> GetCost(Unit c);
+	AbilityCost GetCost();
 	bool ImmideateActivation { get; }
 	string Tooltip { get; }
 	string Name { get; }
 	int Index { get;}
+	int OverwatchRange { get;}
 	bool AIExempt { get; }
 	float GetOptimalRangeAI();
 #if CLIENT

@@ -205,6 +205,7 @@
   
       <action detCost ="3" moveCost="1" actCost="2">
         <name>Suppress</name>
+        <targetAid>enemy</targetAid>
         <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
         
         <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>

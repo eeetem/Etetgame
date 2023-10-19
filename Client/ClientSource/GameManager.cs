@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 using DefconNull.World;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
@@ -79,15 +80,12 @@ public static partial class GameManager
 				{
 						
 					NetworkingManager.EndTurn();
-					Action.SetActiveAction(null);
-
 				});
 				return;
 			}
 		}
 
 		NetworkingManager.EndTurn();
-		Action.SetActiveAction(null);
 	
 	}
 

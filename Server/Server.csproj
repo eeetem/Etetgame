@@ -145,6 +145,9 @@
       <Compile Include="..\SharedSource\Utility.cs">
         <Link>SharedSource\Utility.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldActions\AbilityCost.cs">
+        <Link>SharedSource\WorldActions\AbilityCost.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs</Link>
       </Compile>
@@ -157,20 +160,20 @@
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\VissionCast.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\VissionCast.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\IUnitAbility.cs">
-        <Link>SharedSource\WorldActions\IUnitAbility.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\WorldActions\Effect.cs">
         <Link>SharedSource\WorldActions\Effect.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
         <Link>SharedSource\WorldActions\Shootable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\ToggleAbility.cs">
-        <Link>SharedSource\WorldActions\ToggleAbility.cs</Link>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\IUnitAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\IUnitAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\ToggleAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\ToggleAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\UnitAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\UnitAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\WorldConseqences.cs">
         <Link>SharedSource\WorldActions\WorldConseqences.cs</Link>
@@ -247,7 +250,6 @@
       <Content Include="obj\Release\net6.0\linux-x64\apphost" />
       <Content Include="obj\Release\net6.0\linux-x64\PublishOutputs.0a901391f4.txt" />
     </ItemGroup>
-
 
 
 

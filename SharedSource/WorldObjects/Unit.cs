@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units;
+using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework;
 using Riptide;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
@@ -154,37 +155,7 @@ namespace DefconNull.World.WorldObjects
 		}
 
 		public bool IsPlayer1Team { get; private set; }
-
-		public HashSet<Tuple<Vector2Int,bool>> GetOverWatchPositions(Vector2Int target)
-		{
-			var tiles = WorldManager.Instance.GetTilesAround(target,Type.OverWatchSize);
-			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
-		/*	foreach (var endTile in tiles)
-			{
-				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
-				foreach (var pos in outcome.Path)
-				{
-					positions.Add(pos);
-				}
-
-			}*/
-
-			HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
-			foreach (var position in positions)
-			{
-				if (Abilities[0].CanPerform(this,position,false,false).Item1)
-				{
-					result.Add(new Tuple<Vector2Int, bool>(position,true));
-				}
-				else if (Abilities[0].CanPerform(this,position,false,false).Item1)
-				{
-					result.Add(new Tuple<Vector2Int, bool>(position,false));
-				}
-			}
-
-			return result;
-		}
-
+		
 
 		public void TakeDamage(int dmg, int detResis)
 		{
@@ -261,7 +232,7 @@ namespace DefconNull.World.WorldObjects
 #if CLIENT
 				if (WorldObject.IsVisible())
 				{
-					new PopUpText("Recovering From Panic", WorldObject.TileLocation.Position);
+					new PopUpText("Recovering From Panic", WorldObject.TileLocation.Position,Color.White);
 				}
 #endif
 
@@ -281,23 +252,23 @@ namespace DefconNull.World.WorldObjects
 
 
 		}
-		public void DoActiveAction(Vector2Int target)
-		{
-			DoAction(Action.ActiveAction, target,Action.CurrentArgs);
-		}
-		public void DoAction(Action a, Vector2Int target, List<string>? args =null)
+
+		public void DoAction(Action.ActionType atype, Vector2Int target, List<string>? args =null)
 		{
 			if (args == null) args = new List<string>();
+			
 #if CLIENT
+			if(WorldManager.Instance.SequenceRunning) return;
 			if (!IsMyTeam()) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
+			var a = Action.Actions[atype];
 			var result = a.CanPerform(this, target,args);
 			if (!result.Item1)
 			{
 #if CLIENT
-				new PopUpText(result.Item2, WorldObject.TileLocation.Position);
-				new PopUpText(result.Item2, target);
+				new PopUpText(result.Item2, WorldObject.TileLocation.Position,Color.White);
+				new PopUpText(result.Item2, target,Color.White);
 #else
 				Console.WriteLine("tried to do action but failed: " + result.Item2);
 #endif
@@ -322,9 +293,8 @@ namespace DefconNull.World.WorldObjects
 #if CLIENT
 			if (WorldObject.IsVisible())
 			{
-				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position);	
+				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
 				t.scale = 2;
-				t.Color = Color.Red;
 			}
 #endif
 

@@ -50,19 +50,10 @@ public class Face : Action
 	private Vector2Int lastTarget;
 	private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
 	{
-		if (lastTarget == new Vector2Int(0, 0))
-		{
 			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
 			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
-			lastTarget = target;
-		}
-		if (lastTarget != target)
-		{
-			SetActiveAction(null);
-			
-		}
 		
 		foreach (var visTuple in previewTiles)
 		{

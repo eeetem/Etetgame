@@ -16,8 +16,7 @@ public abstract class Action
 
 	public static readonly Dictionary<ActionType, Action> Actions = new();
 	public readonly ActionType Type;
-	public static Action? ActiveAction { get; private set; }
-	public static List<string> CurrentArgs = new List<string>();
+
 	public Action(ActionType? type)
 	{
 		if(type==null) return;
@@ -25,39 +24,6 @@ public abstract class Action
 		Actions.Add((ActionType)type, this);
 	}
 
-	public static void SetActiveAction(ActionType? type, List<string>? args=null)
-	{
-		
-		
-		if (type == null)
-		{
-			ActiveAction = null;
-#if CLIENT
-			GameLayout.UpdateActionButtons();	
-#endif
-			return;
-		}
-
-		if (args == null)
-			args = new List<string>();
-		CurrentArgs = args;
-
-		ActiveAction = Actions[(ActionType)type];
-		
-#if CLIENT
-		GameLayout.UpdateActionButtons();	
-#endif
-
-	}
-	public static ActionType? GetActiveActionType()
-	{
-		if (ActiveAction != null)
-		{
-			return ActiveAction.Type;
-		}
-
-		return null;
-	}
 
 	public static void Init()
 	{
@@ -75,18 +41,16 @@ public abstract class Action
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
-		
 		UseAbility = 7,
 		
 		
-
 	}
 
 
 	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args);
 
 #if CLIENT
-	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
+	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch,List<string>? args = null);
 
 	public void SendToServer(Unit actor, Vector2Int target,  List<string> args)
 	{
@@ -102,7 +66,7 @@ public abstract class Action
 #if CLIENT
 	public virtual void ExecuteClientSide(Unit actor, Vector2Int target, List<string> args)
 	{
-		SetActiveAction(null);
+		
 	}
 #else
 
@@ -177,4 +141,6 @@ public abstract class Action
 			Args = message.GetStrings().ToList();
 		}
 	}
+
+	
 }

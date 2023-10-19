@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,23 +17,7 @@ public class OverWatch : Action
 	{
 	}
 
-	
-	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int position, List<string>? args)
-	{
-	
 
-		if (actor.MovePoints <= 0)
-		{
-			return new Tuple<bool, string>(false, "Not enough move points");
-		}
-		if (actor.ActionPoints <= 0)
-		{
-			return new Tuple<bool, string>(false, "Not enough fire points");
-		}
-	
-
-		return new Tuple<bool, string>(true, "");
-	}
 #if SERVER
 	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string>? args)
 	{
@@ -45,10 +30,39 @@ public class OverWatch : Action
 
 
 #if CLIENT
-	
 
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+
+	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args)
 	{
+		var abilityIndex= int.Parse(args[0]);
+		IUnitAbility action = actor.Abilities[(abilityIndex)];
+		return action.CanPerform(actor, target,false,false);
+	}
+
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
+	{
+		var abilityIndex= int.Parse(args[0]);
+		IUnitAbility action = actor.Abilities[(abilityIndex)];
+		
+		var tiles = WorldManager.Instance.GetTilesAround(target,action.over);
+		HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
+		/*	foreach (var endTile in tiles)
+			{
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
+				foreach (var pos in outcome.Path)
+				{
+					positions.Add(pos);
+				}
+
+			}*/
+
+		HashSet<Tuple<Vector2Int,bool>> result = new HashSet<Tuple<Vector2Int, bool>>();
+		foreach (var position in positions)
+		{
+			if (Abilities[0].CanPerform(this,position,false,false).Item1)
+			{
+				result.Add(new Tuple<Vector2Int, bool>(position,true));
+			}
 		
 		//todo mod support, make this not only for shootables
 		foreach (var shot in actor.GetOverWatchPositions(target))

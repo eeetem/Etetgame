@@ -140,21 +140,13 @@ public class Move : Action
 
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
-
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
 	{
 		if (WorldManager.Instance.SequenceRunning) return;
-		if (lastTarget == new Vector2Int(0, 0))	
-		{
-			previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
-			lastTarget = target;
-		}
-		if (lastTarget != target)
-		{
-			lastTarget = new Vector2Int(0, 0);
-			SetActiveAction(null);
-		}
-
+	
+		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
+	
 		
 	
 

@@ -3,19 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
+
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 using MD5Hash;
 using Microsoft.Xna.Framework;
 #if CLIENT
-using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
@@ -182,12 +182,13 @@ public  partial class WorldManager
 
 	public void MakeWorldObjectFromData(WorldObject.WorldObjectData data, WorldTile tile)
 	{
-		lock (createSync)
-		{
+		
 			if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 			{
 				DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
 			}
+			lock (createSync)
+			{
 			_createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
 		}
 
@@ -1160,6 +1161,12 @@ public  partial class WorldManager
 				}
 			}
 			_currentSequenceTasks.Clear();
+#if CLIENT
+		if(SequenceQueue.Count == 0)
+		{
+			GameLayout.ReMakeMovePreview();
+		}
+#endif
 		}
 	}
 
@@ -1542,15 +1549,13 @@ public  partial class WorldManager
 	public string GetMapHash()
 	{
 		string hash = "";
-		lock (deleteSync)
 		lock (createSync)
+		lock (deleteSync)
 		{
-			
 			foreach (var tile in _gridData)
 			{
 				hash += tile.GetHash();
 			}
-
 			
 		}
 	

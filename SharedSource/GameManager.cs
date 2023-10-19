@@ -7,7 +7,7 @@ using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
 using Riptide;
 #if  CLIENT
-using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 namespace DefconNull;

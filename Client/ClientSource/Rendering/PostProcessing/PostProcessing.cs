@@ -29,11 +29,14 @@ public static class PostProcessing
 		graphicsDevice = g;
 
 
-		crtEffect = content.Load<Effect>("CompressedContent/shaders/CRT");
+		CrtEffect = content.Load<Effect>("CompressedContent/shaders/CRT");
 		UIGlowEffect = content.Load<Effect>("CompressedContent/shaders/Glow");
-		connectionEffect = content.Load<Effect>("CompressedContent/shaders/lc");
-		colorEffect = content.Load<Effect>("CompressedContent/shaders/colorshader");
-		distortEffect = content.Load<Effect>("CompressedContent/shaders/distort");
+		ConnectionEffect = content.Load<Effect>("CompressedContent/shaders/lc");
+		ColorEffect = content.Load<Effect>("CompressedContent/shaders/colorshader");
+		DistortEffect = content.Load<Effect>("CompressedContent/shaders/distort");
+		OutLineEffect = content.Load<Effect>("CompressedContent/shaders/outline");
+		
+		
 		Game1.instance.IsMouseVisible = false;
 		int countx;
 		int county;
@@ -105,6 +108,7 @@ public static class PostProcessing
 		EffectParams["dyamplitude"] = 80f;
 		EffectParams["dyfrequency"] = 80f;
 
+		SetOutlineEffectColor(Color.Black);
 
 
 		foreach (var p in EffectParams)
@@ -155,11 +159,12 @@ public static class PostProcessing
 
 	private static SpriteBatch combinedSpriteBatch;
 
-	public static Effect crtEffect;
-	public static Effect UIGlowEffect;
-	public static Effect connectionEffect;
-	public static Effect colorEffect;
-	public static Effect distortEffect;
+	public static Effect CrtEffect = null!;
+	public static Effect UIGlowEffect = null!;
+	public static Effect ConnectionEffect = null!;
+	public static Effect ColorEffect = null!;
+	public static Effect DistortEffect = null!;
+	public static Effect OutLineEffect = null!;
 
 	private static readonly Dictionary<string, float> EffectParams = new Dictionary<string, float>();
 	private static readonly Dictionary<string, float> DefaultParams = new Dictionary<string, float>();
@@ -171,6 +176,13 @@ public static class PostProcessing
 	private static RenderTarget2D combinedRender;
 	private static RenderTarget2D combinedRender2;
 	//When we need to draw to the screen, it's done here.
+
+
+	public static void SetOutlineEffectColor(Color c)
+	{
+		var vec = new Vector4(c.R, c.G, c.B, c.A);
+		OutLineEffect.Parameters["outlineColor"].SetValue(vec);
+	}
 
 
 	static float GetNoise()
@@ -191,7 +203,7 @@ public static class PostProcessing
 
 	public static void ApplyScreenUICrt(Vector2 textureVector2)
 	{
-		CrtScreenPreset.Apply(crtEffect,textureVector2);
+		CrtScreenPreset.Apply(CrtEffect,textureVector2);
 	}
 
 	public static void ShuffleUIeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
@@ -266,66 +278,66 @@ public static class PostProcessing
 
 			
 
-		crtEffect.Parameters["hardScan"]?.SetValue(EffectParams["hardScan"] + GetNoise());
-		crtEffect.Parameters["hardPix"]?.SetValue(EffectParams["hardPix"] + GetNoise());
-		crtEffect.Parameters["warpX"]?.SetValue(0.05f);
-		crtEffect.Parameters["warpY"]?.SetValue(0.05f);
-		crtEffect.Parameters["maskDark"]?.SetValue(EffectParams["maskDark"] + GetNoise() * 0.1f);
-		crtEffect.Parameters["maskLight"]?.SetValue(EffectParams["maskLight"] + GetNoise() * 0.1f);
-		crtEffect.Parameters["scaleInLinearGamma"]?.SetValue(2);
-		crtEffect.Parameters["shadowMask"]?.SetValue(EffectParams["shadowMask"] + GetNoise() * 1f);
-		crtEffect.Parameters["brightboost"]?.SetValue(EffectParams["brightboost"] + GetNoise() * 0.05f);
-		crtEffect.Parameters["hardBloomScan"]?.SetValue(EffectParams["hardBloomScan"] + GetNoise() * 0.01f);
-		crtEffect.Parameters["hardBloomPix"]?.SetValue(EffectParams["hardBloomPix"] + GetNoise() * 0.01f);
-		crtEffect.Parameters["bloomAmount"]?.SetValue(5);
-		crtEffect.Parameters["shape"]?.SetValue(0f);
+		CrtEffect.Parameters["hardScan"]?.SetValue(EffectParams["hardScan"] + GetNoise());
+		CrtEffect.Parameters["hardPix"]?.SetValue(EffectParams["hardPix"] + GetNoise());
+		CrtEffect.Parameters["warpX"]?.SetValue(0.05f);
+		CrtEffect.Parameters["warpY"]?.SetValue(0.05f);
+		CrtEffect.Parameters["maskDark"]?.SetValue(EffectParams["maskDark"] + GetNoise() * 0.1f);
+		CrtEffect.Parameters["maskLight"]?.SetValue(EffectParams["maskLight"] + GetNoise() * 0.1f);
+		CrtEffect.Parameters["scaleInLinearGamma"]?.SetValue(2);
+		CrtEffect.Parameters["shadowMask"]?.SetValue(EffectParams["shadowMask"] + GetNoise() * 1f);
+		CrtEffect.Parameters["brightboost"]?.SetValue(EffectParams["brightboost"] + GetNoise() * 0.05f);
+		CrtEffect.Parameters["hardBloomScan"]?.SetValue(EffectParams["hardBloomScan"] + GetNoise() * 0.01f);
+		CrtEffect.Parameters["hardBloomPix"]?.SetValue(EffectParams["hardBloomPix"] + GetNoise() * 0.01f);
+		CrtEffect.Parameters["bloomAmount"]?.SetValue(5);
+		CrtEffect.Parameters["shape"]?.SetValue(0f);
 		
-		crtEffect.Parameters["textureSize"]
+		CrtEffect.Parameters["textureSize"]
 			.SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
-		crtEffect.Parameters["videoSize"]
+		CrtEffect.Parameters["videoSize"]
 			.SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
-		crtEffect.Parameters["outputSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width,
+		CrtEffect.Parameters["outputSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width,
 			graphicsDevice.Viewport.Height));
 			
 
 				
 			
 			
-		connectionEffect.Parameters["textureSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
-		connectionEffect.Parameters["videoSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
-		connectionEffect.Parameters["fps"].SetValue(clcounter);
-		connectionEffect.Parameters["staticAlpha"].SetValue(EffectParams["clalpha"] + GetNoise() * 0.01f);
-		connectionEffect.Parameters["magnitude"].SetValue(EffectParams["clmagnitude"] + GetNoise() * 1f);
-		connectionEffect.Parameters["overlayalpha"].SetValue(EffectParams["overlayalpha"] + GetNoise() * 0.05f);
+		ConnectionEffect.Parameters["textureSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
+		ConnectionEffect.Parameters["videoSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
+		ConnectionEffect.Parameters["fps"].SetValue(clcounter);
+		ConnectionEffect.Parameters["staticAlpha"].SetValue(EffectParams["clalpha"] + GetNoise() * 0.01f);
+		ConnectionEffect.Parameters["magnitude"].SetValue(EffectParams["clmagnitude"] + GetNoise() * 1f);
+		ConnectionEffect.Parameters["overlayalpha"].SetValue(EffectParams["overlayalpha"] + GetNoise() * 0.05f);
 		if (overlayTexture != null)
 		{
-			connectionEffect.Parameters["overlay"].SetValue(overlayTexture);
+			ConnectionEffect.Parameters["overlay"].SetValue(overlayTexture);
 		}
 		else
 		{
-			connectionEffect.Parameters["overlay"].SetValue(emptyTexture);
+			ConnectionEffect.Parameters["overlay"].SetValue(emptyTexture);
 		}
 
-		colorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.5f,EffectParams["maxG"]+ GetNoise() *0.5f,EffectParams["maxB"]+ GetNoise() *0.5f,1));
-		colorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.5f,EffectParams["minG"]+ GetNoise() *0.5f,EffectParams["minB"]+ GetNoise() * 0.5f,1));
-		colorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 1f ,EffectParams["tintG"]+ GetNoise() *1f,EffectParams["tintB"]+ GetNoise() * 1f,1));
+		ColorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.5f,EffectParams["maxG"]+ GetNoise() *0.5f,EffectParams["maxB"]+ GetNoise() *0.5f,1));
+		ColorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.5f,EffectParams["minG"]+ GetNoise() *0.5f,EffectParams["minB"]+ GetNoise() * 0.5f,1));
+		ColorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 1f ,EffectParams["tintG"]+ GetNoise() *1f,EffectParams["tintB"]+ GetNoise() * 1f,1));
 			
 
-		distortEffect.Parameters["xfps"].SetValue(dxcounter);
-		distortEffect.Parameters["yfps"].SetValue(dycounter);
-		distortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]+ GetNoise() * 0.1f);
-		distortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]+ GetNoise() * 0.1f);
-		distortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]+ GetNoise() * 0.1f);
-		distortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]+ GetNoise() * 0.1f);
+		DistortEffect.Parameters["xfps"].SetValue(dxcounter);
+		DistortEffect.Parameters["yfps"].SetValue(dycounter);
+		DistortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]+ GetNoise() * 0.1f);
+		DistortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]+ GetNoise() * 0.1f);
+		DistortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]+ GetNoise() * 0.1f);
+		DistortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]+ GetNoise() * 0.1f);
+		
+		
+
+		
+		
 			
 
 	
 		Texture2D cursorTexture2D  = cursorTextures[0];
-		if (Action.ActiveAction is {Type: Action.ActionType.UseAbility})
-		{
-			cursorTexture2D  = cursorTextures[1];
-		}
-	
 
 
 		combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender);
@@ -345,17 +357,17 @@ public static class PostProcessing
 
 
 		combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender2);
-		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,colorEffect);
+		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,ColorEffect);
 		combinedSpriteBatch.Draw(combinedRender, combinedRender.Bounds, Color.White);
 		combinedSpriteBatch.End();
 	
 		combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender);
-		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,distortEffect);
+		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,DistortEffect);
 		combinedSpriteBatch.Draw(combinedRender2, combinedRender2.Bounds, Color.White);
 		combinedSpriteBatch.End();
 		
 		combinedSpriteBatch.GraphicsDevice.SetRenderTarget(combinedRender2);
-		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,connectionEffect);
+		combinedSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone,ConnectionEffect);
 		combinedSpriteBatch.Draw(combinedRender, combinedRender.Bounds, Color.White);
 		combinedSpriteBatch.End();	
 		

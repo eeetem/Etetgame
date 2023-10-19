@@ -98,7 +98,7 @@ public class WorldEffect : Effect
 	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target).Item1)	
+		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) )	
 		{
 			previewCache = GetConsequences(actor, target);
 			perivewActorID = actor.WorldObject.ID;

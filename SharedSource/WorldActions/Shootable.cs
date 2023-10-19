@@ -75,8 +75,14 @@ public class Shootable : Effect
 		Vector2 from = actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + shotDir / new Vector2(2.5f, 2.5f);
 		Vector2 to = target + new Vector2(0.5f, 0.5f);
 		bool targetLow = false;//move this outside
-		var targetTile = WorldManager.Instance.GetTileAtGrid(target, dimension);
-		if(targetTile.UnitAtLocation!=null&&targetTile.UnitAtLocation.Crouching)
+		IWorldTile? targetTile = null;
+		if (target.X >= 0 && target.Y >= 0 && target.X < 100 && target.Y < 100)
+		{
+			targetTile = WorldManager.Instance.GetTileAtGrid(target, dimension);
+		}
+
+ 
+		if(targetTile?.UnitAtLocation!=null&&targetTile.UnitAtLocation.Crouching)
 		{
 			targetLow = true;
 		}
@@ -199,33 +205,7 @@ public class Shootable : Effect
 
 	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
 	{
-		
-		/*
-		 * 		bool lowShot =false;
 
-
-		WorldTile tile = WorldManager.Instance.GetTileAtGrid(target);
-		if (targeting == TargetingType.Auto)
-		{
-			if (tile.UnitAtLocation != null  && tile.UnitAtLocation.Crouching)
-			{
-				lowShot = true;
-
-				if (clientPreview && !tile.UnitAtLocation.WorldObject.IsVisible())
-				{
-					lowShot = false;
-				}
-
-			}
-		}else if(targeting == TargetingType.Low)
-		{
-			lowShot = true;
-		}
-		else if(targeting == TargetingType.High)
-		{
-			lowShot = false;
-		}
-		 */
 		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
 		var m = new MoveCamera(p.Result.CollisionPointLong, true, 3);
@@ -352,7 +332,7 @@ public class Shootable : Effect
 	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) && CanPerform(actor,target,-1).Item1)	
+		if((previewTarget != target || perivewActorID != actor.WorldObject.ID))	
 		{
 			previewCache = GetConsequences(actor, target);
 			perivewActorID = actor.WorldObject.ID;
@@ -488,26 +468,6 @@ public class Shootable : Effect
 		if (hitobj != null)
 		{
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 25f);
-			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-
-//			var data = hitobj.PreviewData;
-//			data.totalDmg = previewShot.OriginalDmg;
-//			data.distanceBlock = previewShot.OriginalDmg - previewShot.Dmg;
-//			data.finalDmg += previewShot.Dmg - coverModifier;
-//			data.coverBlock = coverModifier;
-//			if (hitobj.UnitComponent == null)
-//			{
-//				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
-//				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
-//			}
-//			else if (hitobj.UnitComponent.Determination > 0)
-//			{
-//				data.finalDmg -= previewShot.DeterminationResistanceCoefficient;
-//				data.determinationBlock = previewShot.DeterminationResistanceCoefficient;
-//			}
-//
-			//	GameLayout.ScreenData = data;
-			//todo new UI
 		}
 		
 

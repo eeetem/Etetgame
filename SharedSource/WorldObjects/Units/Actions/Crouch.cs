@@ -57,7 +57,7 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int targe
 
 
 #if CLIENT
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
 	{
 		throw new NotImplementedException();
 	}

@@ -22,7 +22,7 @@ public class Attack : AIAction
 		var atk = GetBestPossibleAbility(unit,true,false,false);
 		var args = new List<string>();
 		args.Add(atk.AbilityIndex.ToString());
-		unit.DoAction(Action.Actions[Action.ActionType.UseAbility],atk.TargetPosition,args);
+		unit.DoAction(Action.ActionType.UseAbility,atk.TargetPosition,args);
 		
 	}
 

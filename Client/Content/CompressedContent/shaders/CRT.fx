@@ -294,7 +294,7 @@ float3 Mask(float2 pos){
   return mask;
 }    
 
-float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, float2 tex, sampler2D s0)
+float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, float2 tex)
 {
   float2 pos=Warp(tex.xy*(texture_size.xy/video_size.xy))*(video_size.xy/texture_size.xy);
   float3 outColor = Tri(pos, texture_size);
@@ -314,7 +314,7 @@ float4 crt_lottes(float2 texture_size, float2 video_size, float2 output_size, fl
 
 float4 main_fragment(VertexShaderOutput VOUT) : COLOR0
 {
-	return crt_lottes(textureSize, videoSize, outputSize, VOUT.texCoord, DecalSampler);
+	return crt_lottes(textureSize, videoSize, outputSize, VOUT.texCoord);
 }
 
 technique

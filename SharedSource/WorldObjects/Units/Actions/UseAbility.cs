@@ -4,6 +4,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,7 +12,6 @@ namespace DefconNull.World.WorldObjects.Units.Actions;
 
 public class UseAbility : Action
 {
-	
 	
 	public UseAbility() : base(ActionType.UseAbility)
 	{
@@ -63,9 +63,9 @@ public class UseAbility : Action
 
 #if CLIENT
 
-		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> Args)
 		{
-			var abilityIndex= int.Parse(CurrentArgs[0]);
+			var abilityIndex= int.Parse(Args[0]);
 			IUnitAbility action = actor.Abilities[abilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}
@@ -73,5 +73,4 @@ public class UseAbility : Action
 
 #endif
 
-	
 }

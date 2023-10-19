@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MonoGame.Extended;
 using Riptide;
 #if CLIENT
-using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 

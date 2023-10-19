@@ -7,6 +7,7 @@ using System.Xml;
 
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldActions.DeliveryMethods;
+using DefconNull.WorldActions.UnitAbility;
 #if CLIENT
 using DefconNull.Rendering;
 #endif
@@ -198,7 +199,6 @@ public static class PrefabManager
 			
 			unitType.MaxMovePoints = int.Parse(xmlObj.Attributes?["moves"]?.InnerText ?? "2");
 			unitType.MaxActionPoints = int.Parse(xmlObj.Attributes?["actions"]?.InnerText ?? "1");
-			unitType.OverWatchSize = int.Parse(xmlObj.Attributes?["overwatch"]?.InnerText ?? "2");
 			unitType.SightRange = int.Parse(xmlObj.Attributes?["sightrange"]?.InnerText ?? "16");
 				
 				

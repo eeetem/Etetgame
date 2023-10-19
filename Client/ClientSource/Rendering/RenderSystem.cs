@@ -6,6 +6,7 @@ using System.Linq;
 using DefconNull.AI;
 using DefconNull.LocalObjects;
 using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 using DefconNull.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -105,10 +106,8 @@ public static class RenderSystem
 		spriteBatch.End();
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
 		count = 0;
-		if (Action.ActiveAction == null || Action.ActiveAction.Type == Action.ActionType.Move)
-		{
 
-			foreach (var moves in GameLayout.previewMoves.Reverse())
+			foreach (var moves in GameLayout.PreviewMoves.Reverse())
 			{
 				Color c = Color.White;
 				switch (count)
@@ -145,17 +144,13 @@ public static class RenderSystem
 					var tile = WorldManager.Instance.GetTileAtGrid(path);
 					if (tile.Surface != null)
 					{
-						Texture2D sprite =tile.Surface.GetTexture();
+						Texture2D sprite = tile.Surface.GetTexture();
 						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
 					}
-
-					
-					
-
 				}
 
 				count++;
-			}
+			
 
 			for (int x = 0; x < 100; x++)
 			{
@@ -178,10 +173,9 @@ public static class RenderSystem
 		spriteBatch.End();
 		
 
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred);
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
 		foreach (var obj in objs)
 		{
-			if(obj == null)continue;
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 

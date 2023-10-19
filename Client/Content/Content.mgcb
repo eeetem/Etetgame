@@ -223,6 +223,12 @@
 /processorParam:DebugMode=Auto
 /build:CompressedContent/shaders/lc.fx
 
+#begin CompressedContent/shaders/outline.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:CompressedContent/shaders/outline.fx
+
 #begin CompressedContent/textures/mouse.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -319,18 +325,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/Fire.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/act.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/act.png
-
 #begin CompressedContent/textures/UI/GameHud/BottomBar/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -343,7 +337,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/button.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/cross.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/confirm.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -353,9 +347,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/cross.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/confirm.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/crouchOff.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/crouch.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -365,19 +359,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/crouchOff.png
-
-#begin CompressedContent/textures/UI/GameHud/BottomBar/crouchOn.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/crouchOn.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/crouch.png
 
 #begin CompressedContent/textures/UI/GameHud/BottomBar/detBarBlank.png
 /importer:TextureImporter
@@ -415,18 +397,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/detBarYellow.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/empty.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/empty.png
-
 #begin CompressedContent/textures/UI/GameHud/BottomBar/hpBar.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -451,7 +421,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/hpBarEmpty.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/Infobox.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/infoBox.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -461,7 +431,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/Infobox.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/infoBox.png
 
 #begin CompressedContent/textures/UI/GameHud/BottomBar/invbtn.png
 /importer:TextureImporter
@@ -475,6 +445,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/invbtn.png
 
+#begin CompressedContent/textures/UI/GameHud/BottomBar/leftq.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/GameHud/BottomBar/leftq.png
+
 #begin CompressedContent/textures/UI/GameHud/BottomBar/mainbuttonbox.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -487,7 +469,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/mainbuttonbox.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/move.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/righte.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -497,19 +479,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/move.png
-
-#begin CompressedContent/textures/UI/GameHud/BottomBar/overwatchbtn.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/overwatchbtn.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/righte.png
 
 #begin CompressedContent/textures/UI/GameHud/BottomBar/screen.png
 /importer:TextureImporter
@@ -523,7 +493,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/GameHud/BottomBar/screen.png
 
-#begin CompressedContent/textures/UI/GameHud/BottomBar/tick.png
+#begin CompressedContent/textures/UI/GameHud/BottomBar/tinyBox.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -533,7 +503,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/UI/GameHud/BottomBar/tick.png
+/build:CompressedContent/textures/UI/GameHud/BottomBar/tinyBox.png
 
 #begin CompressedContent/textures/UI/GameHud/BottomBar/turn.png
 /importer:TextureImporter

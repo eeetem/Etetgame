@@ -207,10 +207,14 @@ public class MainMenuLayout : UiLayout
 	{
 		if (JustPressed(Keys.OemTilde))
 		{
+			var preGameDataStruct = GameManager.PreGameData;
+			preGameDataStruct.SinglePLayerFeatures = true;
+GameManager.PreGameData = preGameDataStruct;			
+			
 			for (int i = 0; i < 8; i++)
 			{
 				var cdata = new Unit.UnitData(false);
-				int r = Random.Shared.Next(5);
+				int r = Random.Shared.Next(4);
 				string unit;
 				switch (r)
 				{
@@ -232,7 +236,34 @@ public class MainMenuLayout : UiLayout
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,0),Direction.North,-1,cdata);
+				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,0),Direction.South,-1,cdata);
+			}
+			for (int i = 0; i < 8; i++)
+			{
+				var cdata = new Unit.UnitData(true);
+				int r = Random.Shared.Next(4);
+				string unit;
+				switch (r)
+				{
+					case 0:
+						unit = "Scout";
+						break;
+					case 1:
+						unit = "Grunt";
+						break;
+					case 2:
+						unit = "Heavy";
+						break;
+					case 3:
+						unit = "Officer";
+						break;
+					case 4:
+						unit = "Specialist";
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,5),Direction.North,-1,cdata);
 			}
 			
 			switchTicker = 0;
@@ -243,7 +274,7 @@ public class MainMenuLayout : UiLayout
 			if (switchTicker > 10)
 			{
 				switchTicker = -1;
-				UI.SetUI(new GameLayout());
+				UI.SetUI(new GameLayout.GameLayout());
 			}
 		}
 

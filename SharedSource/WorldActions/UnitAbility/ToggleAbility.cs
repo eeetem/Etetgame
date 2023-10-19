@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -97,6 +98,15 @@ public class ToggleAbility : IUnitAbility
 		return on.IsPlausibleToPerform(actor,target,dimension);
 	}
 
+	public Tuple<bool, string> IsValidTarget(Unit actor, Vector2Int target, int dimension)
+	{
+		if (isOn)
+		{
+			return off.IsValidTarget(actor,target,dimension);
+		}
+		return on.IsValidTarget(actor,target,dimension);
+	}
+
 	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1)
 	{
 		if (isOn)
@@ -144,14 +154,14 @@ public class ToggleAbility : IUnitAbility
 		}
 	}
 
-	public Tuple<int,int,int> GetCost(Unit c)
+	public AbilityCost GetCost()
 	{
 		if (isOn)
 		{
-			return off.GetCost(c);
+			return off.GetCost();
 		}
 
-		return on.GetCost(c);
+		return on.GetCost();
 	}
 
 	public bool ImmideateActivation => true;

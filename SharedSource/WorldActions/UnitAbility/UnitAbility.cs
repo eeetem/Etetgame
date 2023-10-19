@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 
 
 #if CLIENT
@@ -25,11 +26,14 @@ public class UnitAbility : IUnitAbility
 	public readonly ushort OverWatchRange;
 	public List<Effect> Effects { get; }
 
-	public Tuple<int,int,int> GetCost(Unit c)
+	public AbilityCost GetCost()
 	{
-		return new Tuple<int, int, int>(DetCost,ActCost,MoveCost);
+		return new AbilityCost(DetCost,ActCost,MoveCost);
 	}
 
+	
+	
+	
 	public bool ImmideateActivation => immideaateActivation;
 
 	public string Tooltip => tooltip;
@@ -81,6 +85,7 @@ public class UnitAbility : IUnitAbility
 
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
+		if(immideaateActivation && target != actor.WorldObject.TileLocation.Position) return new Tuple<bool, string>(false, "Target is not self");
 		if (consultTargetAids)
 		{
 			var aids = IsValidTarget(actor, target, dimension);
@@ -107,7 +112,7 @@ public class UnitAbility : IUnitAbility
 	
 	}
 
-	private Tuple<bool,string> IsValidTarget(Unit actor, Vector2Int target, int dimension)
+	public Tuple<bool,string> IsValidTarget(Unit actor, Vector2Int target, int dimension)
 	{
 		if (TargetAids.Count == 0) return new Tuple<bool, string>(true, "");
 		foreach (var t in TargetAids)
@@ -146,10 +151,18 @@ public class UnitAbility : IUnitAbility
 					break;
 				default:
 					var u = WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation;
+					
 					if(u is null && !negate) return new Tuple<bool, string>(false, "Target is not a "+str);
 					bool match = u!.Type.Name == str;
-					if(negate) match = !match;
-					if(!match) return new Tuple<bool, string>(false, "Target is not a "+str);
+
+					if (negate)
+					{
+						if (match)return new Tuple<bool, string>(false, "Target is a "+str);
+					}
+					else
+					{
+						if(!match) return new Tuple<bool, string>(false, "Target is not a "+str);
+					}
 					break;
 			}
 		}
@@ -259,12 +272,10 @@ public class UnitAbility : IUnitAbility
 
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if(!CanPerform(actor,target,true,false).Item1) return;
 		if (immideaateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
 		}
-
 		foreach (var eff in Effects)
 		{
 			eff.Preview(actor, target, spriteBatch);

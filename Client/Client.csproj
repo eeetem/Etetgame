@@ -357,6 +357,9 @@
       <Compile Include="..\SharedSource\Utility.cs">
         <Link>SharedSource\Utility.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldActions\AbilityCost.cs">
+        <Link>SharedSource\WorldActions\AbilityCost.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs</Link>
       </Compile>
@@ -372,17 +375,17 @@
       <Compile Include="..\SharedSource\WorldActions\Effect.cs">
         <Link>SharedSource\WorldActions\Effect.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\IUnitAbility.cs">
-        <Link>SharedSource\WorldActions\IUnitAbility.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
         <Link>SharedSource\WorldActions\Shootable.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\ToggleAbility.cs">
-        <Link>SharedSource\WorldActions\ToggleAbility.cs</Link>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\IUnitAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\IUnitAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\ToggleAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\ToggleAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\UnitAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\UnitAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\WorldConseqences.cs">
         <Link>SharedSource\WorldActions\WorldConseqences.cs</Link>
@@ -419,9 +422,6 @@
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Action.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\AbilityAction.cs">
-        <Link>SharedSource\WorldObjects\Units\Actions\AbilityAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
         <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>
@@ -465,6 +465,9 @@
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ClientSource\Rendering\UILayout\GameLayout\" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using DefconNull.World.WorldActions;
+using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
-using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
@@ -18,8 +19,7 @@ public class UnitType : WorldObjectType
 
 	public int MoveRange = 4;
 	public int SightRange = 16;
-	public int OverWatchSize = 2;
-		
+
 	public int MaxMovePoints = 2;
 	public int MaxActionPoints = 2;
 
