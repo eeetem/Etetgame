@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldActions.UnitAbility;
+
 
 
 #if CLIENT
@@ -14,16 +14,17 @@ using DefconNull.Rendering;
 
 namespace DefconNull.World.WorldActions;
 
-public class UnitAbility : IUnitAbility
+public class UnitAbility 
 {
-	public readonly string name = null!;
-	public readonly string tooltip = null!;
+	public readonly string Name = null!;
+	public readonly string Tooltip = null!;
 	public readonly ushort DetCost;
 	public readonly ushort MoveCost;
 	public readonly ushort ActCost;
-	public readonly bool immideaateActivation;
-	public readonly bool aiExempt;
+	public readonly bool ImmideateActivation;
+	public readonly bool AIExempt;
 	public readonly ushort OverWatchRange;
+	public readonly ushort Index;
 	public List<Effect> Effects { get; }
 
 	public AbilityCost GetCost()
@@ -31,16 +32,7 @@ public class UnitAbility : IUnitAbility
 		return new AbilityCost(DetCost,ActCost,MoveCost);
 	}
 
-	
-	
-	
-	public bool ImmideateActivation => immideaateActivation;
 
-	public string Tooltip => tooltip;
-	public string Name => name;
-	public int Index => index;
-	public bool AIExempt => aiExempt;
-	public readonly int index;
 	readonly public List<string> TargetAids;
 	
 	public bool CanOverWatch => OverWatchRange > 0;
@@ -59,17 +51,17 @@ public class UnitAbility : IUnitAbility
 	}
 
 
-	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, ushort overWatchRange, List<Effect> effects, bool immideaateActivation, int index, bool aiExempt, List<string> targetAids)
+	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, ushort overWatchRange, List<Effect> effects, bool immideaateActivation, ushort index, bool aiExempt, List<string> targetAids)
 	{
-		this.name = name;
-		this.tooltip = tooltip;
+		this.Name = name;
+		this.Tooltip = tooltip;
 		DetCost = determinationCost;
 		MoveCost = movePointCost;
 		ActCost  = actionPointCost;
 		Effects = effects;
-		this.immideaateActivation = immideaateActivation;
-		this.index = index;
-		this.aiExempt = aiExempt;
+		this.ImmideateActivation = immideaateActivation;
+		this.Index = index;
+		this.AIExempt = aiExempt;
 		
 		this.TargetAids = targetAids;
 #if CLIENT
@@ -80,12 +72,12 @@ public class UnitAbility : IUnitAbility
 
 		OverWatchRange = overWatchRange;
 	}
-	
+
 
 
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
-		if(immideaateActivation && target != actor.WorldObject.TileLocation.Position) return new Tuple<bool, string>(false, "Target is not self");
+		if(ImmideateActivation && target != actor.WorldObject.TileLocation.Position) return new Tuple<bool, string>(false, "Target is not self");
 		if (consultTargetAids)
 		{
 			var aids = IsValidTarget(actor, target, dimension);
@@ -239,14 +231,9 @@ public class UnitAbility : IUnitAbility
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public List<string> MakePacketArgs()
-	{
-		return new List<string>();
-	}
-
 	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1)
 	{
-		if (immideaateActivation)
+		if (ImmideateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
 		}
@@ -272,7 +259,7 @@ public class UnitAbility : IUnitAbility
 
 	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		if (immideaateActivation)
+		if (ImmideateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
 		}
@@ -291,7 +278,7 @@ public class UnitAbility : IUnitAbility
 
 	public object Clone()
 	{
-		return new UnitAbility(name, tooltip, DetCost, MoveCost, ActCost, OverWatchRange, Effects, immideaateActivation,index,aiExempt,TargetAids);	
+		return new UnitAbility(Name, Tooltip, DetCost, MoveCost, ActCost, OverWatchRange, Effects, ImmideateActivation,Index,AIExempt,TargetAids);	
 		
 	}
     

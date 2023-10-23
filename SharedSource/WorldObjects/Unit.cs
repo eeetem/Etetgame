@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units;
-using DefconNull.WorldActions.UnitAbility;
+
 using Microsoft.Xna.Framework;
 using Riptide;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
@@ -100,7 +101,7 @@ namespace DefconNull.World.WorldObjects
         
         
 
-		public List<IUnitAbility> Abilities = new List<IUnitAbility>();
+		public List<UnitAbility> Abilities = new List<UnitAbility>();
 
 		public bool canTurn { get; set; }
 
@@ -540,6 +541,36 @@ namespace DefconNull.World.WorldObjects
 		public string GetHash()
 		{
 			return WorldObject.GetHash();
+		}
+
+		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)
+		{
+
+			UnitAbility action = this.Abilities[(abilityIndex)];
+			if(!action.CanOverWatch) return new HashSet<Vector2Int>();
+
+			var tiles = WorldManager.Instance.GetTilesAround(target, action.OverWatchRange);
+			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
+			foreach (var endTile in tiles)
+			{
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
+				foreach (var pos in outcome.Path)
+				{
+					positions.Add(pos);
+				}
+
+			}
+
+			HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+			foreach (var position in positions)
+			{
+				if (action.CanPerform(this, position, false, true).Item1)
+				{
+					result.Add(position);
+				}
+			}
+
+			return result;
 		}
 	}
 }

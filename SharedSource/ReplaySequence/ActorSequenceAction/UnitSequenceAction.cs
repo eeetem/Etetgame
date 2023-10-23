@@ -57,7 +57,7 @@ public abstract class UnitSequenceAction : SequenceAction
 		if(tile.UnitAtLocation == null) return false;
 		var obj = tile.UnitAtLocation;
 		if(Requirements.TypesToIgnore.Contains(obj!.Type.Name )) return false;
-
+		if (Actor.overWatch) return false;
 		return true;
 	}
 

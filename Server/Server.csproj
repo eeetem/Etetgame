@@ -94,6 +94,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\CrouchUnit.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\CrouchUnit.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\DelayedAbilityUse.cs">
+        <Link>SharedSource\ReplaySequence\ActorSequenceAction\DelayedAbilityUse.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\FaceUnit.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\FaceUnit.cs</Link>
       </Compile>
@@ -102,9 +105,6 @@
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\Suppress.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\Suppress.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitAbilitToggle.cs">
-        <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitAbilitToggle.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitMove.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitMove.cs</Link>
@@ -165,12 +165,6 @@
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
         <Link>SharedSource\WorldActions\Shootable.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility\IUnitAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility\IUnitAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility\ToggleAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility\ToggleAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\UnitAbility\UnitAbility.cs">
         <Link>SharedSource\WorldActions\UnitAbility\UnitAbility.cs</Link>
@@ -245,7 +239,7 @@
     <ItemGroup>
       <Content Include="..\SharedSource\ObjectData.xml">
         <Link>ObjectData.xml</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <Content Include="obj\Release\net6.0\linux-x64\apphost" />
       <Content Include="obj\Release\net6.0\linux-x64\PublishOutputs.0a901391f4.txt" />

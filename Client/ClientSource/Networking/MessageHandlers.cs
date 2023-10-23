@@ -168,9 +168,9 @@ public static partial class NetworkingManager
 					case SequenceAction.SequenceType.UnitStatusEffect:
 						sqc = new UnitStatusEffect(req, message);
 						break;
-					case SequenceAction.SequenceType.AbilityToggle:
-						sqc = new UnitAbilitToggle(req, message);
-						break;
+				//	case SequenceAction.SequenceType.AbilityToggle:
+				//		sqc = new UnitAbilitToggle(req, message);
+				//		break;
 					case SequenceAction.SequenceType.DelayedAbilityUse:
 						sqc = new DelayedAbilityUse(req, message);
 						break;

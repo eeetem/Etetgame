@@ -4,7 +4,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldActions.UnitAbility;
+
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,7 +20,7 @@ public class UseAbility : Action
 	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target, List<string> args)
 	{
 		var abilityIndex= int.Parse(args[0]);
-		IUnitAbility action = actor.Abilities[(abilityIndex)];
+		UnitAbility action = actor.Abilities[(abilityIndex)];
 		return action.CanPerform(actor, target,false,false);
 
 	}
@@ -33,19 +33,13 @@ public class UseAbility : Action
 	{
 
 		var abilityIndex= int.Parse(args[0]);
-		IUnitAbility action = actor.Abilities[(abilityIndex)];
+		UnitAbility action = actor.Abilities[(abilityIndex)];
 		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
-		if (abilityIndex == 0)//hardcode shooter spotting for n
-		{
-			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, true, 3);
+
+			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 1);
 			queue.Enqueue(m);
-		}
-		else
-		{
-			var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 0);
-			queue.Enqueue(m);
-		}
+		
 
 		
 		foreach (var sequenceAction in res)
@@ -66,7 +60,7 @@ public class UseAbility : Action
 		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> Args)
 		{
 			var abilityIndex= int.Parse(Args[0]);
-			IUnitAbility action = actor.Abilities[abilityIndex];
+			UnitAbility action = actor.Abilities[abilityIndex];
 			action.Preview(actor, target,spriteBatch);
 		}
 

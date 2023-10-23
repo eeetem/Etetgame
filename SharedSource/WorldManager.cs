@@ -11,7 +11,7 @@ using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldActions.UnitAbility;
+
 using MD5Hash;
 using Microsoft.Xna.Framework;
 #if CLIENT
@@ -372,6 +372,7 @@ public  partial class WorldManager
 		public Vector2 StartPoint;
 		public Vector2 EndPoint;
 		public Vector2 VectorToCenter;
+		public List<Vector2> Path = new List<Vector2>();
 
 		public int HitObjId{ get; set; }
 
@@ -515,7 +516,8 @@ public  partial class WorldManager
 		float totalLenght = 0.05f;
 		int smokeLayers = 0;
 		while (true)
-		{
+		{	
+			result.Path.Add(checkingSquare);
 			lastCheckingSquare = new Vector2Int(checkingSquare.X,checkingSquare.Y);
 			if (lenght.X > lenght.Y)
 			{
@@ -1341,7 +1343,7 @@ public  partial class WorldManager
 		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition, dimension), data);
 		pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData());
-		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
 				
 		pseudoUnit = pseudoObj.UnitComponent;
 				
@@ -1379,7 +1381,7 @@ public  partial class WorldManager
 		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
 		pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData());
-		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
 				
 		pseudoUnit = pseudoObj.UnitComponent;
 

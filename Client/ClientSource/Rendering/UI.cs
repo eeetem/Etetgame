@@ -38,7 +38,7 @@ public static class UI
 	public static void SetUI(UiLayout? newUI)
 	{
 
-		UiLayout.SetScale(new Vector2(Game1.resolution.X / 750f * 1f, Game1.resolution.Y / 750f * 1f));
+		UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
 			
 		
 		if (newUI != null)

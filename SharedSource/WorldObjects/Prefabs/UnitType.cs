@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using DefconNull.World.WorldActions;
-using DefconNull.WorldActions.UnitAbility;
+
 using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
@@ -12,7 +12,7 @@ namespace DefconNull.World.WorldObjects;
 public class UnitType : WorldObjectType
 {
 
-	public UnitType(string name, List<IUnitAbility> actions) : base(name)
+	public UnitType(string name, List<UnitAbility> actions) : base(name)
 	{
 		Actions = actions;
 	}
@@ -30,7 +30,7 @@ public class UnitType : WorldObjectType
 	public Texture2D[] CrouchSpriteSheet = null!;
 
 
-	private readonly List<IUnitAbility> Actions = new List<IUnitAbility>();
+	private readonly List<UnitAbility> Actions = new List<UnitAbility>();
 
 	public WorldConseqences? SpawnEffect { get; set; }
 
@@ -39,7 +39,7 @@ public class UnitType : WorldObjectType
 	{
 		wo.Face(data.Facing,false);
 		Unit component = new Unit(wo,this,data.UnitData!.Value);
-		Actions.ForEach(extraAction => { component.Abilities.Add((IUnitAbility) extraAction.Clone()); });
+		Actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
 #if CLIENT
 		GameLayout.RegisterUnit(component);
 #endif

@@ -315,9 +315,6 @@
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\Suppress.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\Suppress.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitAbilitToggle.cs">
-        <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitAbilitToggle.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitMove.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitMove.cs</Link>
       </Compile>
@@ -377,12 +374,6 @@
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
         <Link>SharedSource\WorldActions\Shootable.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility\IUnitAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility\IUnitAbility.cs</Link>
-      </Compile>
-      <Compile Include="..\SharedSource\WorldActions\UnitAbility\ToggleAbility.cs">
-        <Link>SharedSource\WorldActions\UnitAbility\ToggleAbility.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\WorldActions\UnitAbility\UnitAbility.cs">
         <Link>SharedSource\WorldActions\UnitAbility\UnitAbility.cs</Link>

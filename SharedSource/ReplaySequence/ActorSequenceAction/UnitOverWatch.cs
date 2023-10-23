@@ -9,15 +9,18 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class UnitOverWatch : UnitSequenceAction
 {
 	public Vector2Int Target;
+	public int abilityIndex;
 
-	public UnitOverWatch(int actorID, Vector2Int tg) : base(new TargetingRequirements(actorID), SequenceType.Overwatch)
+	public UnitOverWatch(int actorID, Vector2Int tg, int abilityIndex) : base(new TargetingRequirements(actorID), SequenceType.Overwatch)
 	{
 		Target = tg;
+		this.abilityIndex = abilityIndex;
 	}
 
 	public UnitOverWatch(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.Overwatch)
 	{
 		Target = msg.GetSerializable<Vector2Int>();
+		abilityIndex = msg.GetInt();
 	}
 	
 
@@ -27,14 +30,13 @@ public class UnitOverWatch : UnitSequenceAction
 		{
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
-			var positions = Actor.GetOverWatchPositions(Target);
+			Actor.overWatch = true;
+			var positions = Actor.GetOverWatchPositions(Target,abilityIndex);
 			foreach (var shot in positions)
 			{
-				((WorldTile)WorldManager.Instance.GetTileAtGrid(shot.Item1)).Watch(Actor);
-				Actor.overWatchedTiles.Add(shot.Item1);
+				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor,abilityIndex);
+				Actor.overWatchedTiles.Add(shot);
 			}
-
-			Actor.overWatch = true;
 			Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
 
 		});
@@ -45,6 +47,7 @@ public class UnitOverWatch : UnitSequenceAction
 	{
 		base.SerializeArgs(message);
 		message.Add(Target);
+		message.Add(abilityIndex);
 	}
 	
 #if CLIENT

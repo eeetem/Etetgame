@@ -521,7 +521,7 @@ public class GameLayout : MenuLayout
 		
 		panel.Widgets.Add(targetBarStack);
 		
-			targetBarStack.Visible = false;
+		targetBarStack.Visible = false;
 		
 
 		ConfirmButton = new ImageButton();
@@ -544,23 +544,21 @@ public class GameLayout : MenuLayout
 		OverWatchToggle = new ImageButton();
 		OverWatchToggle.HorizontalAlignment = HorizontalAlignment.Center;
 		OverWatchToggle.VerticalAlignment = VerticalAlignment.Bottom;
-		OverWatchToggle.Top = (int) (-120 * globalScale.X);
-		OverWatchToggle.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchOff"));
-		if (activeAction == ActiveActionType.Overwatch)
-		{
-			OverWatchToggle.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchON"));
-		}
+		OverWatchToggle.Top = (int) (-115 * globalScale.X);
+		OverWatchToggle.Left = (int) (40 * globalScale.X);
+	
 
-		OverWatchToggle.ImageWidth = (int) (80 * globalScale.X);
-		OverWatchToggle.Width = (int) (80 * globalScale.X);
-		OverWatchToggle.ImageHeight = (int) (20 * globalScale.X);
-		OverWatchToggle.Height = (int) (20 * globalScale.X);
+		OverWatchToggle.ImageWidth = (int) (17 * globalScale.X);
+		OverWatchToggle.Width = (int) (17 * globalScale.X);
+		OverWatchToggle.ImageHeight = (int) (17 * globalScale.X);
+		OverWatchToggle.Height = (int) (17 * globalScale.X);
 		OverWatchToggle.Click += (sender, args) =>
 		{
 			ToggleOverWatch();
 		};
-		OverWatchToggle.Visible = (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch);
+		OverWatchToggle.Visible = false;
 		
+
 		panel.Widgets.Add(OverWatchToggle);
 		
 		foreach (var unit in MyUnits)
@@ -604,22 +602,7 @@ public class GameLayout : MenuLayout
 		foreach (var action in SelectedUnit.Abilities)
 		{
 			var btn = new ImageButton();
-			var hudBtn = new HudActionButton(btn, action.Icon,SelectedUnit, delegate(Unit unit, Vector2Int vector2Int)
-				{
-					if(action.ImmideateActivation)
-						vector2Int = unit.WorldObject.TileLocation.Position;
-					unit.DoAction(Action.ActionType.UseAbility, vector2Int,new  List<string> { action.Index.ToString()});
-				}, 
-				delegate(Unit unit, Vector2Int vector2Int)
-				{
-					return action.CanPerform(unit,vector2Int,true,false);
-				}
-				,action.GetCost(),action.Tooltip,
-				delegate(Unit unit, Vector2Int target, SpriteBatch batch)
-				{
-					Action.Actions[Action.ActionType.UseAbility].Preview(unit,target,batch, new List<string> { action.Index.ToString()});
-				
-				});
+			var hudBtn = new HudActionButton(btn,action,SelectedUnit);
 			ActionButtons.Add(hudBtn);
 			
 			panel.Widgets.Add(btn);
@@ -657,17 +640,7 @@ public class GameLayout : MenuLayout
 		return panel;
 	}
 
-	private void ToggleOverWatch()
-	{
-		if (activeAction == ActiveActionType.Action)
-		{
-			activeAction = ActiveActionType.Overwatch;
-		}
-		else
-		{
-			activeAction = ActiveActionType.Action;
-		}
-	}
+
 
 
 	private static readonly List<HudActionButton> ActionButtons = new();
@@ -800,7 +773,11 @@ public class GameLayout : MenuLayout
 				{
 					throw new Exception("Action as active action without selected action button");
 				}
-				HudActionButton.SelectedButton.Preview(SelectedUnit, ActionTarget,batch);
+
+				HudActionButton.SelectedButton.Preview(ActionTarget, batch);
+				break;
+			case ActiveActionType.Overwatch:
+				HudActionButton.SelectedButton.PreviewOverwatch(ActionTarget, batch);
 				break;
 		}
 		
@@ -1038,7 +1015,7 @@ public class GameLayout : MenuLayout
 		batch.Draw(timerRenderTarget, new Vector2(Game1.resolution.X-timerRenderTarget.Width*globalScale.X*0.9f, 0), null, Color.White, 0, Vector2.Zero, globalScale.X*0.9f ,SpriteEffects.None, 0);
 		
 		Texture2D bar = TextureManager.GetTexture("UI/GameHud/BottomBar/mainbuttonbox");
-		if (activeAction == ActiveActionType.Action)
+		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
 			var box = TextureManager.GetTexture("UI/GameHud/BottomBar/Infobox");
 			tooltipPos = new Vector2((Game1.resolution.X - box.Width * globalScale.X) / 2f, Game1.resolution.Y - box.Height * globalScale.X - bar.Height * globalScale.X);
@@ -1102,7 +1079,7 @@ public class GameLayout : MenuLayout
 		}
 		
 		
-		if (activeAction == ActiveActionType.Action)
+		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
 
 			string toolTipText = HudActionButton.SelectedButton!.Tooltip;
@@ -1156,11 +1133,18 @@ public class GameLayout : MenuLayout
 				batch.DrawText(cost.Determination+"", startpos + offset*globalScale.X+new Vector2(30,2)*globalScale.X, globalScale.X*1.5f, 24, c);
 			}
 
-			var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
-			if (!res.Item1)
+			if (activeAction == ActiveActionType.Action)
 			{
-				batch.DrawText(res.Item2, startpos+new Vector2(12,25)*globalScale.X, globalScale.X, 25, Color.DarkRed);
+				var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
+				if (!res.Item1)
+				{
+					batch.DrawText(res.Item2, startpos + new Vector2(12, 25) * globalScale.X, globalScale.X, 25, Color.DarkRed);
 
+				}
+			}
+			else
+			{
+				batch.DrawText("Using overwatch will prevent this unit from  doing any other actions this turn", startpos + new Vector2(12, 25) * globalScale.X, globalScale.X/2f, 50, Color.Yellow);
 			}
 
 		}
@@ -1429,7 +1413,16 @@ public class GameLayout : MenuLayout
 
 		if (JustPressed(Keys.Space))
 		{
-			DoActiveAction();
+			if (currentKeyboardState.IsKeyDown(Keys.LeftControl))
+			{
+				ToggleOverWatch();
+			}
+			else
+			{
+				DoActiveAction();
+			}
+
+			
 		}
 
 	}
@@ -1471,6 +1464,7 @@ public class GameLayout : MenuLayout
 					SelectedUnit.DoAction(Action.ActionType.Face, position);
 					break;
 				case ActiveActionType.Action:
+				case ActiveActionType.Overwatch:
 					SelectHudAction(null);
 					break;
 					
@@ -1493,6 +1487,7 @@ public class GameLayout : MenuLayout
 					SelectedUnit.DoAction(Action.ActionType.Move, position);
 					break;
 				case ActiveActionType.Action:
+				case ActiveActionType.Overwatch:
 					ActionTarget = position;
 					break;
 
@@ -1756,49 +1751,85 @@ public class GameLayout : MenuLayout
 		batch.End();
 	}
 
-
-	public static void SelectHudAction(HudActionButton? hudActionButton)
+	private static void ToggleOverWatch()
 	{
-		if (!inited) return;
-		HudActionButton.SelectedButton = hudActionButton;
+		if (activeAction == ActiveActionType.Action)
+		{
+			if (HudActionButton.SelectedButton!.CanOverwatch)
+			{
+				activeAction = ActiveActionType.Overwatch;
+			}
+			else
+			{
+				activeAction = ActiveActionType.Action;
+			}
 
 
+		}
+		else if(activeAction == ActiveActionType.Overwatch)
+		{
+			activeAction = ActiveActionType.Action;
+		}
 
+		UpdateHudButtons();
+	}
+
+	private static void UpdateHudButtons()
+	{
 		foreach (var act in ActionButtons)
 		{
 			act.UpdateIcon();
 		}
-
 		if (HudActionButton.SelectedButton != null)
 		{
-			List<Vector2Int> potentialTargets = new();
-			MyUnits.ForEach(x => potentialTargets.Add(x.WorldObject.TileLocation.Position));
-			EnemyUnits.ForEach(x => potentialTargets.Add(x.WorldObject.TileLocation.Position));
-			SuggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(SelectedUnit, potentialTargets);
+			
 		}
 
-		activeAction = ActiveActionType.Action;
-		ConfirmButton.Visible = true;
-		targetBarStack.Visible = true;
-		if (hudActionButton == null)
-		{
-			activeAction = ActiveActionType.None;
-			ConfirmButton.Visible = false;
-			targetBarStack.Visible = false;
-		}
-		else
-		{
-			if (!hudActionButton.CanPerformAction(ActionTarget).Item1 && SuggestedTargets.Count > 0)
-			{
-				ActionTarget = SuggestedTargets[0].WorldObject.TileLocation.Position;
 
-			}
+		switch (activeAction)
+		{
+			case ActiveActionType.None:
+				ConfirmButton!.Visible = false;
+				targetBarStack!.Visible = false;
+				OverWatchToggle.Visible = false;
+				return;
+				break;
+			case ActiveActionType.Overwatch:
+				OverWatchToggle.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchON"));
+				ConfirmButton!.Visible = true;
+				targetBarStack!.Visible = false;
+				OverWatchToggle.Visible = true;
+				SuggestedTargets.Clear();
+				break;
+			case ActiveActionType.Action:
+				ConfirmButton!.Visible = true;
+				targetBarStack!.Visible = true;
+				OverWatchToggle.Visible = false;
+				if (HudActionButton.SelectedButton.CanOverwatch)
+				{
+					OverWatchToggle.Image = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/overwatchOFF"));
+					OverWatchToggle.Visible = true;
+				}
+				List<Vector2Int> potentialTargets = new();
+				MyUnits.ForEach(x => potentialTargets.Add(x.WorldObject.TileLocation.Position));
+				EnemyUnits.ForEach(x => potentialTargets.Add(x.WorldObject.TileLocation.Position));
+				SuggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(SelectedUnit, potentialTargets);
+				
+				if (!HudActionButton.SelectedButton.CanPerformAction(ActionTarget).Item1 && SuggestedTargets.Count > 0)
+				{
+					ActionTarget = SuggestedTargets[0].WorldObject.TileLocation.Position;
+
+				}
+				break;
+
+					
+				
 		}
+	
 		
 		
 		if(SuggestedTargets.Count<2) targetBarStack.Visible = false;
-		 
-
+		
 		foreach (var unit in SuggestedTargets)
 		{
 			var unitPanel = new ImageButton();
@@ -1817,6 +1848,17 @@ public class GameLayout : MenuLayout
 		targetBarStack.Proportions.Add(new Proportion(ProportionType.Pixels, 200*SuggestedTargets.Count) );
 		targetBarStack.Proportions.Add(new Proportion(ProportionType.Pixels, 50));
 
-		
+	}
+	public static void SelectHudAction(HudActionButton? hudActionButton)
+	{
+		if (!inited) return;
+		HudActionButton.SelectedButton = hudActionButton;
+		activeAction = ActiveActionType.Action;
+		if (hudActionButton == null)
+		{
+			activeAction = ActiveActionType.None;
+		}
+
+		UpdateHudButtons();
 	}
 }

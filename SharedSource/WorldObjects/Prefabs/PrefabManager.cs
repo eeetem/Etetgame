@@ -7,7 +7,7 @@ using System.Xml;
 
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldActions.DeliveryMethods;
-using DefconNull.WorldActions.UnitAbility;
+
 #if CLIENT
 using DefconNull.Rendering;
 #endif
@@ -168,25 +168,15 @@ public static class PrefabManager
 
 			
 
-			List<IUnitAbility> actionsList = new List<IUnitAbility>();
+			List<UnitAbility> actionsList = new List<UnitAbility>();
 			
 			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
 			foreach (var act in actions)
 			{ 
-				actionsList.Add(ParseUnitAbility((XmlElement)act,actionsList.Count));
+				actionsList.Add(ParseUnitAbility((XmlElement)act,(ushort)actionsList.Count));
 			}
-			var toggleActions = ((XmlElement) xmlObj).GetElementsByTagName("toggleaction");
-			foreach (var act in toggleActions)
-			{
-				//	ExtraToggleAction toggle = new ExtraToggleAction();
-				XmlElement actobj = (XmlElement) act;
-				UnitAbility on = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleon")[0]! ?? throw new InvalidOperationException(),actionsList.Count);
-				UnitAbility off = ParseUnitAbility((XmlElement)actobj.GetElementsByTagName("toggleoff")[0]! ?? throw new InvalidOperationException(),actionsList.Count);
-				ToggleAbility toggle = new ToggleAbility(on,off,actionsList.Count);
-				actionsList.Add(toggle);
-			}
-
-
+		
+			
 			UnitType unitType = new UnitType(name,  actionsList);
 			
 			unitType.Faceable = true;
@@ -222,7 +212,7 @@ public static class PrefabManager
         
 	}
 
-	private static UnitAbility ParseUnitAbility(XmlElement actobj, int index)
+	private static UnitAbility ParseUnitAbility(XmlElement actobj, ushort index)
 	{
 		ushort detCost = ushort.Parse(actobj.Attributes?["detCost"]?.InnerText ?? "0");
 		ushort moveCost =     ushort.Parse(actobj.Attributes?["moveCost"]?.InnerText ?? "0");

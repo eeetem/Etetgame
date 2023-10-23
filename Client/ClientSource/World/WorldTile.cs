@@ -1,12 +1,13 @@
-﻿using DefconNull.World.WorldObjects;
+﻿using System;
+using DefconNull.World.WorldObjects;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace DefconNull.World;
 
 public partial class WorldTile : IWorldTile
 {
-
-
+	private bool enemyWatching;
+	private bool friendlyWatching;
 	public Color GetTileColor()
 	{
 		Color color = Color.White;
@@ -21,15 +22,21 @@ public partial class WorldTile : IWorldTile
 		}
 
 
-		if (HighestWatchLevel == 2)
+		if (Watchers.Count > 0)
 		{
-			var vec = color.ToVector3();
-			return new Color(vec.X/1.5f,vec.Y+0.2f, vec.Z/1.5f, 1);
-		}
-		if (HighestWatchLevel == 1)
-		{
-			var vec = color.ToVector3();
-			return new Color(vec.X+0.1f,vec.Y, vec.Z/1.5f, 1);
+	
+			if (friendlyWatching)
+			{
+				var vec = color.ToVector3();
+				color = new Color(vec.X/2f,vec.Y, vec.Z/2f, 1);
+			}
+			if (enemyWatching)
+			{
+				var vec = color.ToVector3();
+				color = new Color(vec.X*1.2f,vec.Y/2f, vec.Z*1.2f, 1);
+			}
+			
+
 		}
 
 
@@ -41,25 +48,30 @@ public partial class WorldTile : IWorldTile
 	}
 	public void CalcWatchLevel()
 	{
-		HighestWatchLevel = 0;
+		friendlyWatching = false;
+		enemyWatching = false;
 		foreach (var watcher in Watchers)
 		{
-			if (!IsVisible())
+			if (!watcher.Key.WorldObject.IsVisible())
 			{
-				return;
+				continue;
 			}
 
-			HighestWatchLevel = 0;
-			if (watcher.Abilities[0].CanPerform(watcher,Position,false,false).Item1)
+			var res = watcher.Key.Abilities[watcher.Value].CanPerform(watcher.Key, Position, false, true);
+			if (res.Item1)
 			{
-				HighestWatchLevel = 2;
-				return;
+				if (watcher.Key.IsMyTeam())
+				{
+					friendlyWatching = true;
+				}
+				else
+				{
+					enemyWatching = true;
+				} 
 			}
-
-			if (watcher.Abilities[0].CanPerform(watcher,Position,false,false).Item1)
+			else
 			{
-				HighestWatchLevel = 1;
-				return;
+				Console.WriteLine("overwatch canceled because: "+res.Item2);
 			}
 
 		}

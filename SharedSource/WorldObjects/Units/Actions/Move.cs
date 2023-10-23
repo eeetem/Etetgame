@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -58,32 +60,31 @@ public class Move : Action
 
 		List<Unit> alreadyShot = new List<Unit>();
 		
-		List<Tuple<List<Unit>,Vector2Int>> ShootingSpots = new List<Tuple<List<Unit>, Vector2Int>>();
+		List<Tuple<Dictionary<Unit,int>,Vector2Int>> shootingSpots = new List<Tuple<Dictionary<Unit,int>, Vector2Int>>();
 		
 		foreach (var tile in result.Path)
 		{
-			var shooters = ((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
-			
+			var shooters = WorldManager.Instance.GetTileAtGrid(tile).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
+
 			List<Unit> exclude = new List<Unit>();
-			
-			shooters.ForEach((s) =>
+
+			foreach (var shooter in shooters)
 			{
-				if (alreadyShot.Contains(s))
+				if (alreadyShot.Contains(shooter.Key))
 				{
-					exclude.Add(s);
+					exclude.Add(shooter.Key);
 				}
-			});
+			}
 			
 			foreach (var unit in exclude)
 			{
 				shooters.Remove(unit);
 			}
 			
-			
 			if (shooters.Count > 0)
 			{
-				ShootingSpots.Add(new Tuple<List<Unit>, Vector2Int>(shooters,tile));
-				alreadyShot.AddRange(shooters);
+				shootingSpots.Add(new Tuple<Dictionary<Unit,int>, Vector2Int>(shooters,tile));
+				alreadyShot.AddRange(shooters.Keys);
 			}
 		}
 
@@ -91,9 +92,10 @@ public class Move : Action
 		int i = 0;
 		paths.Add(new List<Vector2Int>());
 		
+		//seperate paths between each shot into seperate lists
 		foreach (var tile in result.Path)
 		{
-			if(ShootingSpots.Find((t) => t.Item2 == tile) != null)
+			if(shootingSpots.Find((t) => t.Item2 == tile) != null)
 			{
 				paths[i].Add(tile);
 				paths.Add(new List<Vector2Int>());
@@ -101,7 +103,7 @@ public class Move : Action
 			}
 			paths[i].Add(tile);
 		}
-		Debug.Assert(paths.Count == ShootingSpots.Count + 1);
+		Debug.Assert(paths.Count == shootingSpots.Count + 1);
 
 
 		var queue = new Queue<SequenceAction>();
@@ -110,19 +112,19 @@ public class Move : Action
 		{
 			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
 			queue.Enqueue(new UnitMove(actor.WorldObject.ID,paths[j]));
-			if (j < ShootingSpots.Count)
+			if (j < shootingSpots.Count)
 			{
-				Console.WriteLine("shooting at:" + ShootingSpots[j].Item2);
-				foreach (var attacker in ShootingSpots[j].Item1)
+				Console.WriteLine("shooting at:" + shootingSpots[j].Item2);
+				foreach (var attacker in shootingSpots[j].Item1)
 				{
-				//	UseAbility.AbilityIndex = 0;
-				//	var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,ShootingSpots[j].Item2);
+				//	var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,shootingSpots[j].Item2);
 				//	foreach (var a in res)
 				//	{
 				//		queue.Enqueue(a);
 				//	}
-				//	var act = new DelayedAbilityUse(attacker.WorldObject.ID,-1,ShootingSpots[j].Item2);
-				//	queue.Enqueue(act);
+	
+					var act = new DelayedAbilityUse(attacker.Key.WorldObject.ID,attacker.Value,shootingSpots[j].Item2);
+					queue.Enqueue(act);
 				}
 			}
 			
