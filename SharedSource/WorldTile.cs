@@ -20,24 +20,24 @@ public partial class WorldTile : IWorldTile
 	
 	public static readonly object syncobj = new object();
 
-	private Dictionary<Unit,int> Watchers = new Dictionary<Unit,int>();
+	private List<Unit> Watchers = new List<Unit>();
 	private List<Unit> UnWatchQueue = new List<Unit>();
 #if SERVER
-	public Dictionary<Unit,int> GetOverWatchShooters(Unit target,Visibility requiredVis)
+	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
-		Dictionary<Unit,int> shooters = new Dictionary<Unit,int>();
+		List<Unit> shooters = new List<Unit>();
 		foreach (var watcher in Watchers)
 		{
 			
-			bool isFriendly = watcher.Key.IsPlayer1Team == target.IsPlayer1Team;
+			bool isFriendly = watcher.IsPlayer1Team == target.IsPlayer1Team;
 
-			Visibility vis = WorldManager.Instance.CanTeamSee(this.Position, watcher.Key.IsPlayer1Team);
+			Visibility vis = WorldManager.Instance.CanTeamSee(this.Position, watcher.IsPlayer1Team);
 
 
-			Console.WriteLine("overwatch spotted by " + watcher.Key.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
-			if (!isFriendly && watcher.Key.Abilities[watcher.Value].CanPerform(watcher.Key,_position,false,true).Item1 && vis >= requiredVis)
+			Console.WriteLine("overwatch spotted by " + watcher.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
+			if (!isFriendly && watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher,_position,false,true).Item1 && vis >= requiredVis)
 			{
-				shooters.Add(watcher.Key,watcher.Value);
+				shooters.Add(watcher);
 			}
 		}
 
@@ -46,11 +46,11 @@ public partial class WorldTile : IWorldTile
 #endif
 	
 
-	public void Watch(Unit watcher,int ablIndex)
+	public void Watch(Unit watcher)
 	{
 		lock (syncobj)
 		{
-			Watchers.Add(watcher,ablIndex);
+			Watchers.Add(watcher);
 		}
 #if CLIENT
 		CalcWatchLevel();
@@ -334,6 +334,8 @@ public partial class WorldTile : IWorldTile
 		{
 			WorldManager.Instance.DeleteWorldObject(obj);
 		}
+		Watchers.Clear();
+		
 
 
 	}

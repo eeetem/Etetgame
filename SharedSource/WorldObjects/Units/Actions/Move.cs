@@ -60,7 +60,7 @@ public class Move : Action
 
 		List<Unit> alreadyShot = new List<Unit>();
 		
-		List<Tuple<Dictionary<Unit,int>,Vector2Int>> shootingSpots = new List<Tuple<Dictionary<Unit,int>, Vector2Int>>();
+		List<Tuple<List<Unit>,Vector2Int>> shootingSpots = new List<Tuple<List<Unit>, Vector2Int>>();
 		
 		foreach (var tile in result.Path)
 		{
@@ -70,9 +70,9 @@ public class Move : Action
 
 			foreach (var shooter in shooters)
 			{
-				if (alreadyShot.Contains(shooter.Key))
+				if (alreadyShot.Contains(shooter))
 				{
-					exclude.Add(shooter.Key);
+					exclude.Add(shooter);
 				}
 			}
 			
@@ -83,8 +83,8 @@ public class Move : Action
 			
 			if (shooters.Count > 0)
 			{
-				shootingSpots.Add(new Tuple<Dictionary<Unit,int>, Vector2Int>(shooters,tile));
-				alreadyShot.AddRange(shooters.Keys);
+				shootingSpots.Add(new Tuple<List<Unit>, Vector2Int>(shooters,tile));
+				alreadyShot.AddRange(shooters);
 			}
 		}
 
@@ -123,7 +123,7 @@ public class Move : Action
 				//		queue.Enqueue(a);
 				//	}
 	
-					var act = new DelayedAbilityUse(attacker.Key.WorldObject.ID,attacker.Value,shootingSpots[j].Item2);
+					var act = new DelayedAbilityUse(attacker.WorldObject.ID,attacker.Overwatch.Item2,shootingSpots[j].Item2);
 					queue.Enqueue(act);
 				}
 			}

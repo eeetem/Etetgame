@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,11 +31,11 @@ public class UnitOverWatch : UnitSequenceAction
 		{
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
-			Actor.overWatch = true;
+			Actor.Overwatch = new  Tuple<bool, int>(true,abilityIndex);
 			var positions = Actor.GetOverWatchPositions(Target,abilityIndex);
 			foreach (var shot in positions)
 			{
-				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor,abilityIndex);
+				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor);
 				Actor.overWatchedTiles.Add(shot);
 			}
 			Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));

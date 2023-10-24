@@ -52,15 +52,20 @@ public partial class WorldTile : IWorldTile
 		enemyWatching = false;
 		foreach (var watcher in Watchers)
 		{
-			if (!watcher.Key.WorldObject.IsVisible())
+			if (!watcher.WorldObject.IsVisible())
 			{
 				continue;
 			}
 
-			var res = watcher.Key.Abilities[watcher.Value].CanPerform(watcher.Key, Position, false, true);
+			if (!watcher.Overwatch.Item1)
+			{
+				Console.WriteLine("Watcher not overwatching");	
+			}
+
+			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Position, false, true);
 			if (res.Item1)
 			{
-				if (watcher.Key.IsMyTeam())
+				if (watcher.IsMyTeam())
 				{
 					friendlyWatching = true;
 				}

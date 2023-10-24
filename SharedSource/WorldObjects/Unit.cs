@@ -95,7 +95,16 @@ namespace DefconNull.World.WorldObjects
 #endif
 
 
+
+				
 				StartTurn();
+			}
+
+			Overwatch = data.Overwatch;
+			foreach (var t in data.OverWatchedTiles)
+			{
+				overWatchedTiles.Add(t);
+				WorldManager.Instance.GetTileAtGrid(t).Watch(this);
 			}
 		}
         
@@ -308,7 +317,7 @@ namespace DefconNull.World.WorldObjects
 
 
 
-		public bool overWatch { get; set; }
+		public Tuple<bool, int> Overwatch = new Tuple<bool, int>(false,-1);
 
 
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
@@ -317,7 +326,7 @@ namespace DefconNull.World.WorldObjects
 
 		public void ClearOverWatch()
 		{
-			overWatch = false;
+			Overwatch = new Tuple<bool, int>(false,-1);
 			foreach (var tile in overWatchedTiles)
 			{
 				((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).UnWatch(this);
@@ -352,10 +361,9 @@ namespace DefconNull.World.WorldObjects
 			public bool Crouching;
 			public bool Panic;
 			public bool JustSpawned;
-			public bool Overwatch;
-
+			public Tuple<bool,int> Overwatch;
 			public int MoveRangeEffect;
-
+			public List<Vector2Int> OverWatchedTiles;
 
 			public List<Tuple<string, int>> StatusEffects { get; set; }
 		
@@ -369,11 +377,10 @@ namespace DefconNull.World.WorldObjects
 				Crouching = false;
 				Panic = false;
 				JustSpawned = true;//it's always truea nd only set to false in getData
-				Overwatch = false;
-				
+				Overwatch = new Tuple<bool, int>(false,-1);	
 				StatusEffects = new List<Tuple<string, int>>();
-
 				MoveRangeEffect = 0;
+				OverWatchedTiles = new List<Vector2Int>();
 
 			}
 			public UnitData(Unit u)
@@ -392,7 +399,10 @@ namespace DefconNull.World.WorldObjects
 				{
 					StatusEffects.Add(new Tuple<string, int>(st.type.name,st.duration));
 				}
-				Overwatch = u.overWatch;
+
+				OverWatchedTiles = new List<Vector2Int>();
+				OverWatchedTiles.AddRange(u.overWatchedTiles);
+				Overwatch = u.Overwatch;
 
 				MoveRangeEffect = u.MoveRangeEffect.Current;
 			}
@@ -408,10 +418,13 @@ namespace DefconNull.World.WorldObjects
 				message.Add(Crouching);
 				message.Add(Panic);
 				message.Add(JustSpawned);
-				message.Add(Overwatch);
+				message.Add(Overwatch.Item1);
+				message.Add(Overwatch.Item2);
 
 				message.Add(MoveRangeEffect);
 
+				message.AddSerializables(OverWatchedTiles.ToArray());
+				
 				message.Add(StatusEffects.Count);
 				foreach (var i in StatusEffects)
 				{
@@ -431,11 +444,12 @@ namespace DefconNull.World.WorldObjects
 				Crouching = message.GetBool();
 				Panic = message.GetBool();
 				JustSpawned = message.GetBool();
-				Overwatch = message.GetBool();
+				Overwatch = new Tuple<bool, int>(message.GetBool(),message.GetInt());
 
 				MoveRangeEffect = message.GetInt();
 
-
+				OverWatchedTiles = new List<Vector2Int>(message.GetSerializables<Vector2Int>());
+				
 				StatusEffects = new List<Tuple<string, int>>();
 				int count = message.GetInt();
 				for (int i = 0; i < count; i++)
