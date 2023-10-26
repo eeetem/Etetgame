@@ -136,14 +136,14 @@ public abstract class AIAction
 		{
 			TakeDamage tkdmg =  (TakeDamage)c;
 			Unit? hitUnit = null;
-			if (tkdmg.objID != -1)
+			if (tkdmg.ObjID != -1)
 			{
-				hitUnit = WorldManager.Instance.GetObject(((TakeDamage)c).objID,dimension)!.UnitComponent;
+				hitUnit = WorldManager.Instance.GetObject(((TakeDamage)c).ObjID,dimension)!.UnitComponent;
 			}
-			else if(tkdmg.position != new Vector2Int(-1, -1))
+			else if(tkdmg.Position != new Vector2Int(-1, -1))
 			{
 
-				hitUnit = WorldManager.Instance.GetTileAtGrid(((TakeDamage)c).position,dimension).UnitAtLocation;
+				hitUnit = WorldManager.Instance.GetTileAtGrid(((TakeDamage)c).Position,dimension).UnitAtLocation;
 				
 			}
 			if (hitUnit != null)
@@ -151,11 +151,11 @@ public abstract class AIAction
 				int dmgThisAttack = 0;
 				if (hitUnit.Determination > 0)
 				{
-					dmgThisAttack += ((TakeDamage) c).dmg - ((TakeDamage) c).detResistance;
+					dmgThisAttack += ((TakeDamage) c).Dmg - ((TakeDamage) c).DetResistance;
 				}
 				else
 				{
-					dmgThisAttack += ((TakeDamage) c).dmg;
+					dmgThisAttack += ((TakeDamage) c).Dmg;
 				}
 				if (dmgThisAttack >= hitUnit.Health)
 				{

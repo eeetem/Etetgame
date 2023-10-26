@@ -199,19 +199,19 @@ public class SquadCompBuilderLayout : UiLayout
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		if (_currentlyPlacing != null)
 		{
-			var previewSprite = PrefabManager.UnitPrefabs[_currentlyPlacing.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.UnitPrefabs[_currentlyPlacing.Prefab].GetSprite(0,0,"/Stand");
 			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
 		}
 
 		foreach (var member in MyComposition)
 		{
-			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].GetSprite(0,0,"/Stand");
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
 			
 		}
 		foreach (var member in OtherComposition)
 		{
-			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].spriteSheet[0][0];
+			var previewSprite = PrefabManager.UnitPrefabs[member.Prefab].GetSprite(0,0,"/Stand");
 			batch.Draw(previewSprite, Utility.GridToWorldPos(member.Position+ new Vector2(-1.5f, -0.5f)), Color.White);
 			
 		}

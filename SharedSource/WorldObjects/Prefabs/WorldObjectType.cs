@@ -16,6 +16,7 @@ public partial class WorldObjectType
 	public WorldObjectType(string name)
 	{
 		Name = name;
+
 #if CLIENT
 		Transform = new Transform2();
 		Transform.Position = Utility.GridToWorldPos(new Vector2(-1.5f, -0.5f));

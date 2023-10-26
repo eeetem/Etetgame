@@ -98,11 +98,11 @@ public static partial class Utility
 			}
 			dir = ClampFacing(dir);
 
-			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].spriteSheet[0][(int) dir];
+			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].GetSprite(0, (int) dir);
 		}
 		else
 		{
-			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].spriteSheet[0][0];
+			previewSprite = PrefabManager.WorldObjectPrefabs[prefab].GetSprite(0,0);
 		}
 		spriteBatch.Draw(previewSprite, Pos + PrefabManager.WorldObjectPrefabs[prefab].Transform.Position, c * 0.5f);
 	}
