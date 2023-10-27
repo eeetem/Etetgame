@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+using DefconNull.World.WorldObjects.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -11,7 +12,7 @@ public partial class WorldObject : Rendering.IDrawable
 	private int spriteVariation;
 	private float DrawOrder;
 	public PreviewData PreviewData;
-	public Color? OverRideColor { get; set; }
+
 
 	public Transform2 GetDrawTransform()
 	{
@@ -57,7 +58,20 @@ public partial class WorldObject : Rendering.IDrawable
 		{
 			spriteIndex = (int)Facing;
 		}
-		return Type.GetSprite(spriteVariation, spriteIndex, this);
+
+		string state = "";
+		if (UnitComponent != null)
+		{
+			state = "/Stand";
+			if (UnitComponent!.Crouching)
+			{	
+				state = "/Crouch";	
+			}
+		}
+		
+
+
+		return Type.GetSprite(spriteVariation, spriteIndex,state);
 
 	}
 
@@ -79,15 +93,6 @@ public partial class WorldObject : Rendering.IDrawable
 				
 		}
 
-		if (OverRideColor != null)
-		{
-			Color newcolor = OverRideColor.Value;
-			//	newcolor.R += color.R;
-			//	newcolor.G += color.G;
-			//	newcolor.B += color.B;
-			//		newcolor.A += color.A;
-			color = newcolor;
-		}
 
 
 		if (IsTransparentUnderMouse())
@@ -100,7 +105,27 @@ public partial class WorldObject : Rendering.IDrawable
 
 	}
 
+	private Queue<Animation> animationQueue = new Queue<Animation>();
+	private Animation? _currentAnimation = null;
+	public void AnimationUpdate(float gametime)
+	{
 
+		if (UnitComponent != null)
+		{
+			UnitComponent.Update(gametime);
+		}
+		_currentAnimation?.Process(gametime);
+
+		if (_currentAnimation == null || _currentAnimation.IsOver)
+		{
+			_currentAnimation = null;
+			if (animationQueue.Count > 0)
+			{
+				_currentAnimation = animationQueue.Dequeue();
+			}
+		}
+		
+	}
 
 	public bool IsTransparentUnderMouse()
 	{

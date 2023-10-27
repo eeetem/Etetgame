@@ -27,8 +27,6 @@ public class UnitType : WorldObjectType
 
 
 
-	public Texture2D[] CrouchSpriteSheet = null!;
-
 
 	private readonly List<UnitAbility> Actions = new List<UnitAbility>();
 
@@ -47,17 +45,6 @@ public class UnitType : WorldObjectType
 
 
 	}
-#if CLIENT
-	public override Texture2D GetSprite(int spriteVariation, int spriteIndex, WorldObject worldObject)
-	{
-		if (worldObject.UnitComponent!.Crouching)
-		{
-			return CrouchSpriteSheet[(int) Utility.NormaliseDir(spriteIndex)];
-			
-		}
 
-		return base.GetSprite(spriteVariation, spriteIndex, worldObject);
-	}
-#endif
 	
 }

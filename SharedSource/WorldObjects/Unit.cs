@@ -24,7 +24,6 @@ namespace DefconNull.World.WorldObjects
 		public WorldObject WorldObject { get; private set; }
 		public UnitType Type { get; private set; }
 
-        
 
 		public Unit(WorldObject parent, UnitType type, UnitData data)
 		{
@@ -344,11 +343,10 @@ namespace DefconNull.World.WorldObjects
 
 		}
 		
-		
+
 		public void Update(float gameTime)
 		{
-
-
+		
 		}
 		[Serializable]
 		public struct UnitData : IMessageSerializable

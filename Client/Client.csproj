@@ -387,6 +387,9 @@
       <Compile Include="..\SharedSource\WorldManager.cs">
         <Link>SharedSource\WorldManager.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Animation.cs">
+        <Link>SharedSource\WorldObjects\Animation.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
         <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
       </Compile>

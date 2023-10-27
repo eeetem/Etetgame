@@ -11,7 +11,7 @@ public partial class WorldObjectType
 {
 
 	public Transform2 Transform = new Transform2();
-	public Texture2D[][] spriteSheet;
+	private DirectionSpriteSheet[] variationSheets = null!;
 	public List<Tuple<string, int>> Variations;
 	public int TotalVariationsWeight;
 	public float Zoffset { get; set; }
@@ -26,27 +26,17 @@ public partial class WorldObjectType
 			TotalVariationsWeight += va.Item2;
 		}
 		Variations = variations;
-		spriteSheet = new Texture2D[variations.Count][];
+		variationSheets = new DirectionSpriteSheet[variations.Count];
 		for (int i = 0; i < variations.Count; i++)
 		{
 			string spriteName = name;
 			spriteName += variations[i].Item1;
-			Texture2D tex = TextureManager.GetTextureFromPNG(spriteName);
-
-
-			if (!Faceable)
-			{
-					
-				spriteSheet[i] = new[] {tex};
-				continue;
-			}
-
-			spriteSheet[i] = Utility.MakeSpriteSheet(tex, 3, 3);
+			variationSheets[i] = new DirectionSpriteSheet(spriteName, Faceable);
 		}
 	}
 
-	public virtual Texture2D GetSprite(int spriteVariation, int spriteIndex, WorldObject worldObject)
+	public virtual Texture2D GetSprite(int spriteVariation, int spriteIndex, string extraState = "")
 	{
-		return spriteSheet[spriteVariation][(int) Utility.NormaliseDir(spriteIndex)];
+		return variationSheets[spriteVariation].GetSprite(spriteIndex, extraState);
 	}
 }

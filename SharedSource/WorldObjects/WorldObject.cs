@@ -1,7 +1,8 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using DefconNull.World.WorldObjects.Units;
 using MonoGame.Extended;
 using Riptide;
 #if CLIENT
@@ -258,18 +259,20 @@ public partial class WorldObject
 			}
 		}
 	}
-	
 
 	public void Update(float gametime)
 	{
 #if CLIENT
-		OverRideColor = null;
 		PreviewData = new PreviewData();//probably very bad memory wise
+		AnimationUpdate(gametime);
 #endif 
 		if (UnitComponent != null)
 		{
 			UnitComponent.Update(gametime);
 		}
+
+
+	
 	}
 
 	public readonly WorldObjectType Type;	

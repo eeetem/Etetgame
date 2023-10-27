@@ -203,8 +203,7 @@ public static class PrefabManager
 
 
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name+"/Stand");//this is a bit inconsistent but eeeh
-			unitType.CrouchSpriteSheet = Utility.MakeSpriteSheet(TextureManager.GetTextureFromPNG("Units/"+name + "/Crouch"),3,3);
+			unitType.GenerateSpriteSheet("Units/"+name);//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);
