@@ -48,7 +48,6 @@ public partial class WorldObject : Rendering.IDrawable
 
 	public Texture2D GetTexture()
 	{
-		Texture2D sprite;
 		int spriteIndex;
 		if (fliped&& Type.Faceable)
 		{
@@ -69,8 +68,7 @@ public partial class WorldObject : Rendering.IDrawable
 			}
 		}
 		
-
-
+		state += _currentAnimation?.GetState() ?? "";
 		return Type.GetSprite(spriteVariation, spriteIndex,state);
 
 	}

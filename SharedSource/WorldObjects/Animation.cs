@@ -8,4 +8,9 @@ public class Animation
 	}
 
 	public bool IsOver { get; set; }
+
+	public string GetState()
+	{
+		throw new System.NotImplementedException();
+	}
 }
