@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using DefconNull.World.WorldObjects.Units;
+using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using Riptide;
 #if CLIENT
+using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
@@ -252,6 +255,10 @@ public partial class WorldObject
 		}
 		else
 		{
+			
+#if CLIENT
+			new PopUpText("Damage: " + dmg, _tileLocation.Position, Color.Gray, 0.4f);
+#endif
 			Health-= dmg-detResist;
 			if (Health <= 0)
 			{

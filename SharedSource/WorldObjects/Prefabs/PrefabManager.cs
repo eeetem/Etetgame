@@ -305,14 +305,19 @@ public static class PrefabManager
 	private static List<Effect> ParseWorldEffects(XmlElement xmlObj)
 	{
 		List<Effect> effects = new List<Effect>();
-		foreach (XmlElement shoot in xmlObj.GetElementsByTagName("shoot"))
+		foreach (var elem in xmlObj)
 		{
-			effects.Add(ParseShoot(shoot));
+			XmlElement xmlElement = (XmlElement) elem;
+			if (xmlElement.Name == "shoot")
+			{
+				effects.Add(ParseShoot(xmlElement));
+			}else if (xmlElement.Name == "effect")
+			{
+				effects.Add(ParseWorldEffect(xmlElement));
+			}
+			
 		}
-		foreach (XmlElement effect in xmlObj.GetElementsByTagName("effect"))
-		{
-			effects.Add(ParseWorldEffect(effect));
-		}
+
 		return effects;
 	}
 

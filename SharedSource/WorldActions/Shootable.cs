@@ -20,19 +20,13 @@ namespace DefconNull.World.WorldActions;
 public class Shootable : Effect
 {
 	
-	public enum TargetingType
-	{
-		Auto,
-		High,
-		Low
-	}
 	readonly int preDropOffDmg;
 	readonly int detResistance;
 	readonly int supressionStrenght;
 	readonly int supressionRange;
 	readonly int dropOffRange;
 	
-	public static TargetingType targeting = TargetingType.Auto;
+
 	public Shootable(int preDropOffDmg, int detResistance, int supressionStrenght, int supressionRange, int dropOffRange)
 	{
 		this.preDropOffDmg = preDropOffDmg;
@@ -346,39 +340,19 @@ public class Shootable : Effect
 		
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
 		var area = SupressedTiles(previewShot.Value);
-		spriteBatch.DrawOutline(area, Color.Blue, 5);
-		string targetHeight = "fix this shit";
-/*
-
-		switch (targeting)
+		foreach (var t in area)
 		{
-			case TargetingType.Auto:
-				targetHeight = "Auto(";
-				if (previewShot.targetLow || previewShot.shooterLow)
-				{
-					targetHeight += "Low)";
-				}
-				else
-				{
-					targetHeight+= "High)";
-				}
-
-				break;
-			case TargetingType.High:
-				targetHeight = "High";
-				break;
-			case TargetingType.Low:
-				targetHeight = "Low";
-				break;
+			if (t.Surface != null)
+			{
+				Texture2D sprite = t.Surface.GetTexture();
+				spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
+			}
 		}
+		spriteBatch.DrawOutline(area, Color.Blue, 1);
 
-		if (actor.Crouching)
-		{
-			targetHeight = "Low(Crouching)";
-		}
-*/
 
-		spriteBatch.DrawText("X:"+previewTarget.X+" Y:"+previewTarget.Y+" Target Height: "+targetHeight,  Camera.GetMouseWorldPos(), 2/Camera.GetZoom(),Color.Wheat);
+
+		spriteBatch.DrawText("X:"+previewTarget.X+" Y:"+previewTarget.Y,  Camera.GetMouseWorldPos(), 2/Camera.GetZoom(),Color.Wheat);
 
 
 
@@ -426,7 +400,7 @@ public class Shootable : Effect
 			}
 
 
-			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 25);
+			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 5);
 			spriteBatch.DrawText(""+dmg,   Utility.GridToWorldPos(dropOff),4,Color.White);
 
 			dmg = (int) Math.Ceiling(dmg / 1.8f);
@@ -435,7 +409,7 @@ public class Shootable : Effect
 		}
 
 
-		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 5);
+		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 1);
 		WorldObject? hitobj = null;
 		if (previewShot.Value.Result.HitObjId != -1)
 		{
@@ -458,7 +432,7 @@ public class Shootable : Effect
 
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 5, 10, Color.Yellow, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 5, 10, Color.Yellow, 15f);
 
 
 		}
@@ -467,7 +441,7 @@ public class Shootable : Effect
 
 		if (hitobj != null)
 		{
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 25f);
+			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 15f);
 		}
 		
 

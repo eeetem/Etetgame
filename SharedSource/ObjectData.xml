@@ -106,7 +106,7 @@
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="0.5" speed="100"/>
+          <vfx name="noise" target="0.1" speed="100"/>
           <sfx name="rifle"/>
         </consequences>
       </effect>
@@ -124,7 +124,7 @@
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="1" speed="100"/>
+          <vfx name="noise" target="2" speed="100"/>
           <sfx name="shotgun"/>
         </consequences>
       </effect>
@@ -196,10 +196,13 @@
         <name>Attack</name>
         <targetAid>enemy</targetAid>
         <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+
         <effect>
-          <vfx name="clmagnitude" target="20" speed="50"/>
-          <vfx name="noise" target="0.5" speed="100"/>
-          <sfx name="mg"/>
+          <consequences>
+            <vfx name="clmagnitude" target="20" speed="50"/>
+            <vfx name="noise" target="0.5" speed="100"/>
+            <sfx name="mg"/>
+          </consequences>
         </effect>
       </action>
   
@@ -209,18 +212,51 @@
         <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
         
         <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        
         <effect>
           <consequences>
             <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.1" speed="100"/>
+            <vfx name="noise" target="0.3" speed="100"/>
             <sfx name="mg"/>
           </consequences>
         </effect>
+        
+        <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <consequences>
+            <vfx name="clmagnitude" target="5" speed="50"/>
+            <vfx name="noise" target="0.3" speed="100"/>
+            <sfx name="mg"/>
+          </consequences>
+        </effect>
+        
+        <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <consequences>
+            <vfx name="clmagnitude" target="5" speed="50"/>
+            <vfx name="noise" target="0.3" speed="100"/>
+            <sfx name="mg"/>
+          </consequences>
+        </effect>
+        
+        <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <consequences>
+            <vfx name="clmagnitude" target="5" speed="50"/>
+            <vfx name="noise" target="0.3" speed="100"/>
+            <sfx name="mg"/>
+          </consequences>
+        </effect>
+        
+        <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+        <effect>
+          <consequences>
+            <vfx name="clmagnitude" target="5" speed="50"/>
+            <vfx name="noise" target="0.3" speed="100"/>
+            <sfx name="mg"/>
+          </consequences>
+        </effect>
+        
+
       </action>
       
         <action immideate="true" detCost ="1" moveCost="0" actCost="2">

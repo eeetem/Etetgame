@@ -34,6 +34,7 @@ public abstract class AIAction
 		Attack=1,
 		Move=2,
 		SupportAbility =3,
+		OverWatch
 	}
 
 	public struct PotentialAbilityActivation
@@ -60,14 +61,15 @@ public abstract class AIAction
 		ret.AddRange(IterateImmideateAbilities(attacker,excludeExempt,dimension));
 		return ret;
 	}
-	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1)
-	{
+	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1,bool onlyOverwatch = false){
+	
 
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
 		
 		foreach (var ability in attacker.Abilities)
 		{
 			if(ability.AIExempt&&excludeExempt) continue; 
+			if(!ability.CanOverWatch && onlyOverwatch) continue;
 			if (ability.ImmideateActivation) continue;
 			foreach (var attackTile in WorldManager.Instance.GetTilesAround(targetPosition, 1, dimension)){
 				
@@ -78,7 +80,7 @@ public abstract class AIAction
 
 		return ret;
 	}
-	protected static List<PotentialAbilityActivation>  IterateImmideateAbilities(Unit attacker, bool excludeExempt, int dimension = -1)
+	protected static List<PotentialAbilityActivation>  IterateImmideateAbilities(Unit attacker, bool excludeExempt, int dimension = -1,bool onlyOverwatch = false)
 	{
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
 		
@@ -86,6 +88,7 @@ public abstract class AIAction
 		foreach (var ability in attacker.Abilities)
 		{
 			if(ability.AIExempt&&excludeExempt) continue; 
+			if(!ability.CanOverWatch && onlyOverwatch) continue;
 			if (!ability.ImmideateActivation) continue;
 			foreach (var attackTile in WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension))
 			{
@@ -255,7 +258,7 @@ public abstract class AIAction
 				outcome += defenceOutcome;
 				if (outcome == 0 && mchanghe>0)
 				{
-					outcome += 1 ;//if there is no change in score, we still want to encourage movement buffs
+					outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
 				}
 
 				WorldManager.Instance.WipePseudoLayer(newDim);
@@ -476,7 +479,7 @@ public abstract class AIAction
 	}
 
 	
-	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1)
+	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1, bool onlyOverwatch = false)
 	{
 		var allUnits = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
 		allUnits.AddRange(GameManager.GetTeamUnits(attacker.IsPlayer1Team));
@@ -486,10 +489,10 @@ public abstract class AIAction
 		{
 			if (!onlyVisible || WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility())
 			{
-				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position,excludeExempt,dimension));
+				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position,excludeExempt,dimension,onlyOverwatch));
 			}
 		}
-		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension));
+		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension,onlyOverwatch));
 
 		foreach (var a in attacks)
 		{

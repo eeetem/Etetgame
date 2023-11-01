@@ -206,8 +206,9 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		Action act = Action.Actions[packet.Type]; //else get controllable specific actions
-		act.PerformServerSide(controllable, packet.Target,packet.Args);
+	
+		controllable.DoAction(packet.Type,packet.Target,packet.Args);
+		
 
 	}
 	

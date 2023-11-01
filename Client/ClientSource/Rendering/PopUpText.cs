@@ -19,11 +19,12 @@ public class PopUpText
 
 	public static List<PopUpText> Objects = new List<PopUpText>();
 
-	public PopUpText(string text,Vector2 position, Color c)
+	public PopUpText(string text,Vector2 gridPos, Color c, float scale = 1)
 	{
 		Transform = new Transform2();
-		Transform.Position = Utility.GridToWorldPos(position);
+		Transform.Position = Utility.GridToWorldPos(gridPos);
 		this.text = text;
+		this.scale = scale;
 		Color = c;
 		lock (syncobj)
 		{

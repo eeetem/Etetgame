@@ -650,17 +650,28 @@ public class GameLayout : MenuLayout
 	public static List<Unit> MyUnits = new();
 	public static List<Unit> EnemyUnits = new();
 
-	private static void DoActiveAction()
+	private static void DoActiveAction(bool force = false)
 	{
 		if(activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch) return;
 
-		var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
-		if (!res.Item1)
+		if (force)
 		{
-			new PopUpText(res.Item2,ActionTarget,Color.Red);
-			new PopUpText(res.Item2,SelectedUnit.WorldObject.TileLocation.Position,Color.Red);
-			return;
+			if (!HudActionButton.SelectedButton.HasPoints()) return;//only check for point is we're forcing
 		}
+		else
+		{
+
+			var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
+			if (!res.Item1)
+			{
+				new PopUpText(res.Item2, ActionTarget, Color.Red);
+				new PopUpText(res.Item2, SelectedUnit.WorldObject.TileLocation.Position, Color.Red);
+				return;
+			}
+
+		}
+
+	
 
 		if (activeAction == ActiveActionType.Action)
 		{
@@ -1287,27 +1298,6 @@ public class GameLayout : MenuLayout
 
 		WorldEffect.FreeFire = currentKeyboardState.IsKeyDown(Keys.LeftControl);
 
-		if(WorldEffect.FreeFire){
-			if (currentKeyboardState.IsKeyDown(Keys.Tab) && lastKeyboardState.IsKeyUp(Keys.Tab))
-			{
-				if (Shootable.targeting == Shootable.TargetingType.Auto)
-				{
-					Shootable.targeting = Shootable.TargetingType.High;
-				}
-				else if (Shootable.targeting == Shootable.TargetingType.High)
-				{
-					Shootable.targeting = Shootable.TargetingType.Low;
-				}
-				else if (Shootable.targeting == Shootable.TargetingType.Low)
-				{
-					Shootable.targeting = Shootable.TargetingType.Auto;
-				}
-			}
-		}
-		else
-		{
-			Shootable.targeting = Shootable.TargetingType.Auto;
-		}
 
 		if (SuggestedTargets.Count > 0)
 		{
@@ -1416,6 +1406,10 @@ public class GameLayout : MenuLayout
 			if (currentKeyboardState.IsKeyDown(Keys.LeftControl))
 			{
 				ToggleOverWatch();
+			}
+			else if(currentKeyboardState.IsKeyDown(Keys.LeftShift))
+			{
+				DoActiveAction(true);
 			}
 			else
 			{

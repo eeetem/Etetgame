@@ -364,8 +364,8 @@ public static partial class NetworkingManager
 		//send in chunks
 		if (actions.Count() > 35)
 		{
-			SendSequence(actions.GetRange(0, 50));
-			actions.RemoveRange(0, 50);
+			SendSequence(actions.GetRange(0, 35));
+			actions.RemoveRange(0, 35);
 			SendSequence(actions);
 			return;
 		}

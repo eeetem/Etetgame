@@ -107,7 +107,7 @@ public class Move : AIAction
 		}
 		do
 		{
-			Thread.Sleep(500);
+			Thread.Sleep(250);
 		} while (WorldManager.Instance.SequenceRunning);
 		unit.DoAction(Action.ActionType.Face, vec);//face the enemy closesy to you
 	}

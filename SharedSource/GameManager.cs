@@ -87,7 +87,7 @@ public static partial class GameManager
 #endif
 	}
 
-	public static void NextTurn(bool aiHackyBypass = false)
+	public static void NextTurn()
 	{
 	
 		playedWarning = false;
@@ -149,22 +149,12 @@ public static partial class GameManager
 #if SERVER
 		Console.WriteLine("turn: "+IsPlayer1Turn);
 		NetworkingManager.SendEndTurn();
-	/*	if (!aiHackyBypass)
-		{
-			if (!IsPlayer1Turn && Player2.IsAI)
-			{
-				List<Unit> units = new List<Unit>();
-				foreach (var u in T2Units)
-				{
-					units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
-				}
-				AI.AI.DoAITurn(units);
-			}
-		}*/
-	
-	//AI Match
 
-		//FinishTurnWithAI();
+		if (Player2.IsAI && !IsPlayer1Turn)
+		{
+			FinishTurnWithAI();
+		}
+
 #endif
 
 		TimeTillNextTurn = PreGameData.TurnTime*1000;

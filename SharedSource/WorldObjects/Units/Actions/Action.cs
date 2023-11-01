@@ -72,14 +72,7 @@ public abstract class Action
 
 	public void PerformServerSide(Unit actor,Vector2Int target, List<string> args)
 	{
-
 		
-		var result = CanPerform(actor, target,args);
-		if(!result.Item1)
-		{
-			Console.WriteLine("Client sent an impossible action: "+result.Item2);
-			return;
-		}
 		Task.Run(() =>
 		{
 			try

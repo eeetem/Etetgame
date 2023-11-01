@@ -67,7 +67,7 @@ public static partial class GameManager
 			for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount; j++)
 			{
 				var sq = new SquadMember();
-				sq.Prefab = "Grunt";
+				sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[Random.Shared.Next(PrefabManager.UnitPrefabs.Count)];
 				Vector2Int pos = new Vector2Int(0, 0);
 				do
 				{
@@ -103,11 +103,11 @@ public static partial class GameManager
 		
 		
 			var rng = Random.Shared.Next(100);
-			NextTurn(true);
+			NextTurn();
 			Console.WriteLine("turn rng: "+rng);
-			if (rng > 50)
+			if (rng > 50 || Player2!.IsAI)
 			{
-		//		NextTurn();
+				NextTurn();
 			}
 
 			Thread.Sleep(1000); //just in case

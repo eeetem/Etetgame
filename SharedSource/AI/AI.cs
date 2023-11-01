@@ -25,6 +25,7 @@ public class AI
 	            {
 		            while (true)
 		            {
+			            if(GameManager.IsPlayer1Turn) break;
 			            List<Tuple<AIAction, Unit, int>> actions = new();
 			            
 			            //keep going with current  unit untill depleted
@@ -32,6 +33,9 @@ public class AI
 			            AIAction a = new Attack();
 			            Console.WriteLine("Calculating Attack Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
+			            a = new Overwatch();
+			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
+			            
 			            a = new Move();
 			            Console.WriteLine("Calculating Move Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
@@ -46,6 +50,9 @@ public class AI
 					            a = new Attack();
 					            Console.WriteLine("Calculating Attack Action...");
 					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
+					            a = new Overwatch();
+					            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
+
 					            a = new Move();
 					            Console.WriteLine("Calculating Move Action...");
 					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));

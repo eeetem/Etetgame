@@ -168,10 +168,6 @@ namespace DefconNull.World.WorldObjects
 
 		public void TakeDamage(int dmg, int detResis)
 		{
-			if (dmg != 0) //log spam prevention
-			{
-				Console.WriteLine(this + "(health:" + WorldObject.Health + ") hit for " + dmg);
-			}
 
 			if (Determination > 0)
 			{
@@ -188,7 +184,10 @@ namespace DefconNull.World.WorldObjects
 
 
 			WorldObject.Health -= dmg;
-
+			
+#if CLIENT
+			new PopUpText("Damage: " + dmg, WorldObject.TileLocation.Position, Color.Red, 0.8f);
+#endif
 			Console.WriteLine("unit hit for: " + dmg);
 			Console.WriteLine("outcome: health=" + WorldObject.Health);
 			if (WorldObject.Health <= 0)
@@ -268,11 +267,14 @@ namespace DefconNull.World.WorldObjects
 			
 #if CLIENT
 			if(WorldManager.Instance.SequenceRunning) return;
-			if (!IsMyTeam()) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
+			
+			if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
+			
 			var a = Action.Actions[atype];
-			var result = a.CanPerform(this, target,args);
+			var result = a.CanPerform(this, target, args);
+			
 			if (!result.Item1)
 			{
 #if CLIENT
@@ -283,6 +285,7 @@ namespace DefconNull.World.WorldObjects
 #endif
 				return;
 			}
+			
 			Console.WriteLine("performing actionL " + a.Type + " on " + target);
 #if CLIENT
 			a.SendToServer(this, target,args);
@@ -299,12 +302,16 @@ namespace DefconNull.World.WorldObjects
 		public void Panic()
 		{
 
+			
 #if CLIENT
+if(!Paniced){
 			if (WorldObject.IsVisible())
 			{
 				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
 				t.scale = 2;
 			}
+
+}
 #endif
 
 			Crouching = true;
@@ -500,7 +507,11 @@ namespace DefconNull.World.WorldObjects
 		public void Suppress(int supression)
 		{
 			if(supression==0) return;
-			
+
+#if CLIENT
+		
+			new PopUpText("\nSupression: " + supression, WorldObject.TileLocation.Position, Color.Blue, 0.8f);
+#endif
 			Determination-= supression;
 			if (Determination <= 0)
 			{
@@ -513,6 +524,8 @@ namespace DefconNull.World.WorldObjects
 			}
 			if(Determination>Type.Maxdetermination) Determination.Current = Type.Maxdetermination;
 			if(Determination<0) Determination.Current = 0;
+			
+
 		}
 
 
