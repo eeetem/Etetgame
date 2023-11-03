@@ -10,6 +10,11 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
 public class MakeWorldObject : SequenceAction
 {
+	public override SequenceType GetSequenceType()
+	{
+		return SequenceType.MakeWorldObject;
+	}
+
 	public override bool CanBatch => true;
 	
 	string prefab;
@@ -17,20 +22,16 @@ public class MakeWorldObject : SequenceAction
 	Direction facing;
 	int id;
 	
-	public MakeWorldObject(string prefab, Vector2Int Position, Direction facing) : base(SequenceType.MakeWorldObject)
+	public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing)
 	{
-		this.prefab = prefab;
-		this.Position = Position;
-		this.facing = facing;
-		id = WorldManager.Instance.GetNextId();//could cause issues if an object is deleted while IDs of a batch are being generated
+		var t = GetAction(SequenceType.MakeWorldObject) as MakeWorldObject;
+		t.prefab = prefab;
+		t.Position = Position;
+		t.facing = facing;
+		t.id = WorldManager.Instance.GetNextId();//could cause issues if an object is deleted while IDs of a batch are being generated
+		return t;
 	}
-	public MakeWorldObject(Message msg) : base(SequenceType.MakeWorldObject)
-	{
-		prefab = msg.GetString();
-		Position = msg.GetSerializable<Vector2Int>();
-		facing = (Direction)msg.GetInt();
-		id = msg.GetInt();
-	}
+	
 
 
 	public override Task GenerateTask()
@@ -48,6 +49,14 @@ public class MakeWorldObject : SequenceAction
 		message.Add(Position);
 		message.Add((int)facing);
 		message.Add(id);
+	}
+
+	protected override void DeserializeArgs(Message msg)
+	{
+		prefab = msg.GetString();
+		Position = msg.GetSerializable<Vector2Int>();
+		facing = (Direction)msg.GetInt();
+		id = msg.GetInt();
 	}
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)

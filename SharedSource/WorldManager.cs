@@ -1315,7 +1315,7 @@ public  partial class WorldManager
 	{
 		if(action==null) throw new ArgumentNullException(nameof(action));
 		SequenceQueue.Enqueue(action);
-		Console.WriteLine("adding action "+action.SqcType+" to sequence");
+		Console.WriteLine("adding action "+action.GetSequenceType()+" to sequence");
 	}
 
 	public void AddSequence(IEnumerable<SequenceAction> actions)

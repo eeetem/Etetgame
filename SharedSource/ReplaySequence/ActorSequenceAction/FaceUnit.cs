@@ -9,13 +9,18 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int target;
-	public FaceUnit(int actorID, Vector2Int target) : base(new TargetingRequirements(actorID), SequenceType.Face)
+	
+	public static FaceUnit Make(int actorID, Vector2Int target) 
 	{
-		this.target = target;
+		FaceUnit t = GetAction(SequenceType.Face) as FaceUnit;
+		t.target = target;
+		t.Requirements = new TargetingRequirements(actorID);
+		return t;
 	}
-	public FaceUnit(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.Face)
+
+	public override SequenceType GetSequenceType()
 	{
-		target = args.GetSerializable<Vector2Int>();
+		return SequenceType.Face;
 	}
 
 	public override Task GenerateTask()
@@ -35,6 +40,12 @@ public class FaceUnit : UnitSequenceAction
 	{
 		base.SerializeArgs(message);
 		message.AddSerializable(target);
+	}
+
+	protected override void DeserializeArgs(Message message)
+	{
+		base.DeserializeArgs(message);
+		target = message.GetSerializable<Vector2Int>();
 	}
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)

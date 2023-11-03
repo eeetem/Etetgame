@@ -8,16 +8,21 @@ public class DelayedAbilityUse  : UnitSequenceAction
 {
 	int abilityIndex;
 	Vector2Int target;
-	public DelayedAbilityUse(int actorID, int abilityIndex, Vector2Int target) : base(new TargetingRequirements(actorID), SequenceType.DelayedAbilityUse)
+	
+	public static DelayedAbilityUse Make(int actorID, int abilityIndex, Vector2Int target) 
 	{
-		this.abilityIndex = abilityIndex;
-		this.target = target;
+		DelayedAbilityUse t = GetAction(SequenceType.DelayedAbilityUse) as DelayedAbilityUse;
+		t.abilityIndex = abilityIndex;
+		t.target = target;
+		t.Requirements = new TargetingRequirements(actorID);
+		return t;
 	}
 	
-	public DelayedAbilityUse(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.DelayedAbilityUse)
+
+
+	public override SequenceType GetSequenceType()
 	{
-		abilityIndex = msg.GetInt();
-		target = msg.GetSerializable<Vector2Int>();
+		return SequenceType.DelayedAbilityUse;
 	}
 
 	public override Task GenerateTask()
@@ -37,5 +42,12 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		base.SerializeArgs(message);
 		message.Add(abilityIndex);
 		message.Add(target);
+	}
+
+	protected override void DeserializeArgs(Message message)
+	{
+		base.DeserializeArgs(message);
+		abilityIndex = message.GetInt();
+		target = message.GetSerializable<Vector2Int>();
 	}
 }

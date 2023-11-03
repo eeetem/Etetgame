@@ -8,28 +8,24 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 
 public class UnitStatusEffect  : UnitSequenceAction
 {
-	public readonly bool addNotRemove;
-	public readonly string effectName;
-	public readonly int duration;
+	public bool addNotRemove;
+	public string effectName;
+	public int duration;
+	public override SequenceType GetSequenceType()
+	{
+		return SequenceType.UnitStatusEffect;
+	}
+
 	public override bool CanBatch => true;
 
-	public UnitStatusEffect(Vector2Int actorID, bool addNotRemove, string effectName, int duration = 0) : base(new TargetingRequirements(actorID), SequenceType.UnitStatusEffect)
+	public static UnitStatusEffect Make(TargetingRequirements actorID, bool addNotRemove, string effectName, int duration = 0)
 	{
-		this.addNotRemove = addNotRemove;
-		this.effectName = effectName;
-		this.duration = duration;
-	}
-	public UnitStatusEffect(TargetingRequirements actorID, bool addNotRemove, string effectName, int duration = 0) : base(actorID, SequenceType.UnitStatusEffect)
-	{
-		this.addNotRemove = addNotRemove;
-		this.effectName = effectName;
-		this.duration = duration;
-	}
-	public UnitStatusEffect(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.UnitStatusEffect)
-	{
-		addNotRemove = msg.GetBool();
-		effectName = msg.GetString();
-		duration = msg.GetInt();
+		UnitStatusEffect t = GetAction(SequenceType.UnitStatusEffect) as UnitStatusEffect;
+		t.addNotRemove = addNotRemove;
+		t.effectName = effectName;
+		t.duration = duration;
+		t.Requirements = actorID;
+		return t;
 	}
 
 	public override Task GenerateTask()
@@ -55,7 +51,15 @@ public class UnitStatusEffect  : UnitSequenceAction
 		message.Add(effectName);
 		message.Add(duration);
 	}
-	
+
+	protected override void DeserializeArgs(Message msg)
+	{
+		base.DeserializeArgs(msg);
+		addNotRemove = msg.GetBool();
+		effectName = msg.GetString();
+		duration = msg.GetInt();
+	}
+
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{

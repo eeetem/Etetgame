@@ -39,7 +39,7 @@ public class Face : Action
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new FaceUnit(actor.WorldObject.ID,target));
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,target));
 		return queue;
 
 	}

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
-
+using DefconNull.WorldObjects.Units.ReplaySequence;
 
 
 #if CLIENT
@@ -241,7 +241,13 @@ public class UnitAbility
 			target = actor.WorldObject.TileLocation.Position;
 		}
 		var consequences = new List<SequenceAction>();
-		consequences.Add(new ChangeUnitValues(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost));
+		ChangeUnitValues ch = (ChangeUnitValues) SequenceAction.GetAction(SequenceAction.SequenceType.ChangeUnitValues);
+		ch.Requirements = new UnitSequenceAction.TargetingRequirements(actor.WorldObject.ID);
+		ch.MoveChange = new ValueChange(-MoveCost);
+		ch.ActChange = new ValueChange(-ActCost);
+		ch.DetChange = new ValueChange(-DetCost);
+		
+		consequences.Add(ch);
 		
 		foreach (var effect in Effects)
 		{

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DefconNull.World;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
@@ -12,18 +13,18 @@ public class UnitOverWatch : UnitSequenceAction
 	public Vector2Int Target;
 	public int abilityIndex;
 
-	public UnitOverWatch(int actorID, Vector2Int tg, int abilityIndex) : base(new TargetingRequirements(actorID), SequenceType.Overwatch)
+	public static UnitOverWatch Make(int actorID, Vector2Int tg, int abilityIndex)
 	{
-		Target = tg;
-		this.abilityIndex = abilityIndex;
+		UnitOverWatch t = GetAction(SequenceType.Overwatch) as UnitOverWatch;
+		t.Target = tg;
+		t.abilityIndex = abilityIndex;
+		t.Requirements = new TargetingRequirements(actorID);
+		return t;
 	}
-
-	public UnitOverWatch(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.Overwatch)
+	public override SequenceType GetSequenceType()
 	{
-		Target = msg.GetSerializable<Vector2Int>();
-		abilityIndex = msg.GetInt();
+		return SequenceType.Overwatch;
 	}
-	
 
 	public override Task GenerateTask()
 	{
@@ -50,11 +51,19 @@ public class UnitOverWatch : UnitSequenceAction
 		message.Add(Target);
 		message.Add(abilityIndex);
 	}
-	
+
+	protected override void DeserializeArgs(Message message)
+	{
+		base.DeserializeArgs(message);
+		Target = message.GetSerializable<Vector2Int>();
+		abilityIndex = message.GetInt();
+	}
+
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}
 #endif
+
 }

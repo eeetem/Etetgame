@@ -117,69 +117,9 @@ public static partial class NetworkingManager
 		{
 			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
 			SequenceAction sqc;
-			if ((int) type >= 100) //over 100 is a non unit action
-			{
-				switch (type)
-				{
-					case SequenceAction.SequenceType.PlaySound:
-						sqc = new PlaySound(message);
-						break;
-					case SequenceAction.SequenceType.PostProcessingEffect:
-						sqc = new PostProcessingEffect(message);
-						break;
-					case SequenceAction.SequenceType.TakeDamage:
-						sqc = new TakeDamage(message);
-						break;
-					case SequenceAction.SequenceType.MakeWorldObject:
-						sqc = new MakeWorldObject(message);
-						break;
-					case SequenceAction.SequenceType.MoveCamera:
-						sqc = new MoveCamera(message);
-						break;
-					default:
-						throw new Exception("Unknown Sequence Type Recived: " + type);
-
-				}
-			}
-			else
-			{
-				UnitSequenceAction.TargetingRequirements req = message.GetSerializable<UnitSequenceAction.TargetingRequirements>();
-				switch (type)
-				{
-					
-					case SequenceAction.SequenceType.Face:
-						sqc = new FaceUnit(req, message);
-						break;
-					case SequenceAction.SequenceType.Move:
-						sqc = new UnitMove(req, message);
-						break;
-					case SequenceAction.SequenceType.Crouch:
-						sqc = new CrouchUnit(req, message);
-						break;
-					case SequenceAction.SequenceType.Overwatch:
-						sqc = new UnitOverWatch(req, message);
-						break;
-					case SequenceAction.SequenceType.ChangeUnitValues:
-						sqc = new ChangeUnitValues(req, message);
-						break;
-					case SequenceAction.SequenceType.Suppress:
-						sqc = new Suppress(req, message);
-						break;
-					case SequenceAction.SequenceType.UnitStatusEffect:
-						sqc = new UnitStatusEffect(req, message);
-						break;
-				//	case SequenceAction.SequenceType.AbilityToggle:
-				//		sqc = new UnitAbilitToggle(req, message);
-				//		break;
-					case SequenceAction.SequenceType.DelayedAbilityUse:
-						sqc = new DelayedAbilityUse(req, message);
-						break;
-					default:
-						throw new Exception("Unknown Unit Sequence Type Recived: "+type);
+		
+			sqc = SequenceAction.GetAction(type, message);
 			
-				}
-			}
-
 			
 			actions.Enqueue(sqc);
 		}

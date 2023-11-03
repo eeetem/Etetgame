@@ -17,13 +17,18 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class UnitMove : UnitSequenceAction
 {
 	private List<Vector2Int> Path;
-	public UnitMove(int actorID,List<Vector2Int> path) : base(new TargetingRequirements(actorID),SequenceType.Move)
+
+	public static UnitMove Make(int actorID,List<Vector2Int> path)
 	{
-		Path = path;
+		UnitMove t = (GetAction(SequenceType.Move) as UnitMove)!;
+		t.Path = path;
+		t.Requirements = new TargetingRequirements(actorID);
+		return t;
 	}
-	public UnitMove(TargetingRequirements actorID, Message args) : base(actorID,SequenceType.Move)
+
+	public override SequenceType GetSequenceType()
 	{
-		Path = args.GetSerializables<Vector2Int>().ToList();
+		return SequenceType.Move;
 	}
 
 	public override bool ShouldDo()
@@ -93,6 +98,12 @@ public class UnitMove : UnitSequenceAction
 	{
 		base.SerializeArgs(message);
 		message.AddSerializables(Path.ToArray());
+	}
+
+	protected override void DeserializeArgs(Message message)
+	{
+		base.DeserializeArgs(message);
+		Path = message.GetSerializables<Vector2Int>().ToList();
 	}
 
 #if CLIENT

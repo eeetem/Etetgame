@@ -36,8 +36,14 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int targe
 		var shooters = ((WorldTile)WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position)).GetOverWatchShooters(actor,vis);
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-1,0,0));
-		queue.Enqueue(new CrouchUnit(actor.WorldObject.ID));
+		ChangeUnitValues c = (ChangeUnitValues) SequenceAction.GetAction(SequenceAction.SequenceType.ChangeUnitValues);
+		c.Requirements = new UnitSequenceAction.TargetingRequirements(actor.WorldObject.ID);
+		c.MoveChange = new ValueChange(-1);
+		queue.Enqueue(c);
+		
+		CrouchUnit crouch = (CrouchUnit) SequenceAction.GetAction(SequenceAction.SequenceType.Crouch);
+		c.Requirements = new UnitSequenceAction.TargetingRequirements(actor.WorldObject.ID);
+		queue.Enqueue(crouch);
 
 	/*	foreach (var shooter in shooters)
 		{

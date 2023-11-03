@@ -6,26 +6,30 @@ namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class PlaySound : SequenceAction
 {
+	
 	public override bool CanBatch => true;
-	private string sfx;
-	private Vector2Int location;
-	public PlaySound(string sfx,Vector2Int location) : base(SequenceType.PlaySound)
+	public override SequenceType GetSequenceType()
+	{
+		return SequenceType.PlaySound;
+	}
+
+	public string SFX;
+	public Vector2Int Location;
+	/*
+	public PlaySound(string sfx,Vector2Int location)
 	{
 		this.sfx = sfx;
 		this.location = location;
 	}
-	public PlaySound(Message msg) : base(SequenceType.PlaySound)
-	{
-		sfx = msg.GetString();
-		location = msg.GetSerializable<Vector2Int>();
-	}
+	*/
+
 
 	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
 #if CLIENT
-			Audio.PlaySound(sfx, location);
+			Audio.PlaySound(SFX, Location);
 #endif
 		});
 		return t;
@@ -33,15 +37,22 @@ public class PlaySound : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
-		message.Add(sfx);
-		message.Add(location);
+		message.Add(SFX);
+		message.Add(Location);
 	}
-	
-	
+
+	protected override void DeserializeArgs(Message msg)
+	{
+		SFX = msg.GetString();
+		Location = msg.GetSerializable<Vector2Int>();
+	}
+
+
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}
 #endif
+
 }

@@ -26,7 +26,7 @@ public class OverWatch : Action
 		var queue = new Queue<SequenceAction>();
 	//	var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 1);
 	//		queue.Enqueue(m);
-		queue.Enqueue(new UnitOverWatch(actor.WorldObject.ID,target,int.Parse(args![0])));
+		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,target,int.Parse(args![0])));
 		return queue;
 	}
 #endif

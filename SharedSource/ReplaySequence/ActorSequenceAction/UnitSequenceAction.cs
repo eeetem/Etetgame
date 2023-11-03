@@ -43,12 +43,7 @@ public abstract class UnitSequenceAction : SequenceAction
 			TypesToIgnore.AddRange(message.GetStrings());
 		}
 	}
-	public UnitSequenceAction(TargetingRequirements actorID, SequenceAction.SequenceType type) : base(type)
-	{
-		Requirements = actorID;
-	}
-
-
+	
 	public override bool ShouldDo()
 	{
 		if (Requirements.ActorID != -1) return true;
@@ -108,9 +103,11 @@ public abstract class UnitSequenceAction : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
-		message.Add(Requirements.ActorID);
-		message.Add(Requirements.Position);
-		message.Add(Requirements.TypesToIgnore.ToArray());
+		message.Add(Requirements);
 	}
 
+	protected override void DeserializeArgs(Message message)
+	{
+		Requirements = message.GetSerializable<TargetingRequirements>();
+	}
 }

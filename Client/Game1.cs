@@ -7,6 +7,7 @@ using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Salaros.Configuration;
@@ -49,6 +50,7 @@ public class Game1 : Game
 		Camera.Init(GraphicsDevice,Window);
 		//WorldEditSystem.Init();
 
+		SequenceAction.InitialisePools();
 		WorldManager.Instance.Init();
 		Action.Init();
 		RenderSystem.Init(GraphicsDevice);

@@ -2,6 +2,7 @@
 using DefconNull.Networking;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull; // Note: actual namespace depends on the project name.
@@ -24,6 +25,7 @@ public static class Program
 			allowSinglePlayer = args[1] == "true";
 		}
 			
+		SequenceAction.InitialisePools();
 		PrefabManager.MakePrefabs();
 		Action.Init();
 		Utility.Init();

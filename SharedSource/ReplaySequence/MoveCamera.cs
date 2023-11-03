@@ -10,20 +10,25 @@ namespace DefconNull.ReplaySequence;
 public class MoveCamera : SequenceAction
 {
 	
-	Vector2Int location;
-	bool doAlways;
-	int scatter;
-	public MoveCamera(Vector2Int location,bool doAlways, int scatter) : base(SequenceType.MoveCamera)
+	public Vector2Int location;
+	public bool doAlways;
+	public int scatter;
+
+	public static MoveCamera Make(Vector2Int location,bool doAlways, int scatter) 
 	{
-		this.location = location;
-		this.doAlways = doAlways;
-		this.scatter = scatter;
+		MoveCamera t = (GetAction(SequenceType.MoveCamera) as MoveCamera)!;
+		t.location = location;
+		t.doAlways = doAlways;
+		t.scatter = scatter;
+		return t;
 	}
-	public MoveCamera(Message msg) : base(SequenceType.MoveCamera)
+
+	
+
+
+	public override SequenceType GetSequenceType()
 	{
-		location = msg.GetSerializable<Vector2Int>();
-		doAlways = msg.GetBool();
-		scatter = msg.GetInt();
+		return SequenceType.MoveCamera;
 	}
 
 	public override Task GenerateTask()
@@ -58,5 +63,12 @@ public class MoveCamera : SequenceAction
 		message.Add(location);
 		message.Add(doAlways);
 		message.Add(scatter);
+	}
+
+	protected override void DeserializeArgs(Message message)
+	{
+		location = message.GetSerializable<Vector2Int>();
+		doAlways = message.GetBool();
+		scatter = message.GetInt();
 	}
 }

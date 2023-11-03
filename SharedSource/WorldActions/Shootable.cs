@@ -202,9 +202,9 @@ public class Shootable : Effect
 
 		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
-		var m = new MoveCamera(p.Result.CollisionPointLong, true, 3);
+		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
-		var turnact = new FaceUnit(actor.WorldObject.ID, target);
+		var turnact = FaceUnit.Make(actor.WorldObject.ID, target);
 		retrunList.Add(turnact);
 		if (p.CoverCast.HasValue)
 		{
@@ -247,7 +247,7 @@ public class Shootable : Effect
 				p.Dmg = 0;
 			}
 
-			var act = new TakeDamage(coverBlock, 0, coverObj!.ID);
+			var act = TakeDamage.Make(coverBlock, 0, coverObj!.ID);
 			retrunList.Add(act);
 		}
 
@@ -259,10 +259,10 @@ public class Shootable : Effect
 
 				if (hitObj.UnitComponent is not null)
 				{
-					var act = new FaceUnit(hitObj.ID, p.Result.StartPoint);
+					var act = FaceUnit.Make(hitObj.ID, p.Result.StartPoint);
 					retrunList.Add(act);
 				}
-				var act2 = new TakeDamage(p.Dmg, detResistance, hitObj.ID);
+				var act2 = TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);
 				retrunList.Add(act2);
 
 			}
@@ -274,7 +274,7 @@ public class Shootable : Effect
 		else
 		{
 			//we missed so add taking damage on this tile as consiquences
-			var act2 = new TakeDamage(p.Dmg, detResistance, p.Result.EndPoint, new List<string>());
+			var act2 = TakeDamage.Make(p.Dmg, detResistance, p.Result.EndPoint, new List<string>());
 			retrunList.Add(act2);
 			
 		}
@@ -282,10 +282,8 @@ public class Shootable : Effect
 		retrunList.EnsureCapacity(retrunList.Count+tiles.Count);
 		foreach (var tile in tiles)
 		{
-
-            var act2 = new Suppress(supressionStrenght, tile.Position);
+            var act2 = Suppress.Make(supressionStrenght, tile.Position);
             retrunList.Add(act2);
-			
 	
 		}
 

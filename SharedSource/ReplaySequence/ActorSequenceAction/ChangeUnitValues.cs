@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
@@ -9,71 +10,54 @@ namespace DefconNull.SharedSource.Units.ReplaySequence;
 
 public class ChangeUnitValues : UnitSequenceAction
 {
-	public readonly ValueChange ActChange;
-	public readonly ValueChange MoveChange;
-	public readonly ValueChange DetChange;
-	public readonly ValueChange MoveRangeeffectChange;
-	
+	public ValueChange ActChange;
+	public ValueChange MoveChange;
+	public ValueChange DetChange;
+	public ValueChange MoveRangeeffectChange;
 
-	public ChangeUnitValues(int actorID, int actChange=0 , int moveChange=0 ,int detChange =0,int moveRangeEffect =0 ) : this(actorID, new ValueChange(actChange), new ValueChange(moveChange), new ValueChange(detChange), new ValueChange(moveRangeEffect))
+
+	public static ChangeUnitValues Make(int actorID, int actChange = 0, int moveChange = 0, int detChange = 0, int moveRangeEffect = 0)
 	{
-		
+		return Make(actorID, new ValueChange(actChange), new ValueChange(moveChange), new ValueChange(detChange), new ValueChange(moveRangeEffect));
 	}
 
 
-	public ChangeUnitValues(int actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null) : base(new TargetingRequirements(actorID),  SequenceType.ChangeUnitValues)
+	public static ChangeUnitValues Make(int actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null) 
 	{
+		return Make(new TargetingRequirements(actorID), actChange, moveChange, detChange, moveRangeEffect);
+		
+	}
+	
+	public static ChangeUnitValues Make(TargetingRequirements actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null)
+	{
+		var t = GetAction(SequenceType.ChangeUnitValues) as ChangeUnitValues;
+		t.Requirements = actorID;
 		if (actChange.HasValue)
 		{
-			ActChange = actChange.Value;
+			t.ActChange = actChange.Value;
 		}
 		
 		if (moveChange.HasValue)
 		{
-			MoveChange = moveChange.Value;
+			t.MoveChange = moveChange.Value;
 		}
 		
 		if (detChange.HasValue)
 		{
-			DetChange = detChange.Value;
+			t.DetChange = detChange.Value;
 		}
 		
 		if (moveRangeEffect.HasValue)
 		{
-			MoveRangeeffectChange = moveRangeEffect.Value;
+			t.MoveRangeeffectChange = moveRangeEffect.Value;
 		}
+		return t;
 	}
-	public ChangeUnitValues(TargetingRequirements actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null) : base(actorID,  SequenceType.ChangeUnitValues)
+
+	public override SequenceType GetSequenceType()
 	{
-		if (actChange.HasValue)
-		{
-			ActChange = actChange.Value;
-		}
-		
-		if (moveChange.HasValue)
-		{
-			MoveChange = moveChange.Value;
-		}
-		
-		if (detChange.HasValue)
-		{
-			DetChange = detChange.Value;
-		}
-		
-		if (moveRangeEffect.HasValue)
-		{
-			MoveRangeeffectChange = moveRangeEffect.Value;
-		}
+		return SequenceType.ChangeUnitValues;
 	}
-    
-	public ChangeUnitValues(TargetingRequirements actorID, Message msg) : base(actorID, SequenceType.ChangeUnitValues)
-	{
-		ActChange = msg.GetSerializable<ValueChange>();
-		MoveChange = msg.GetSerializable<ValueChange>();
-		DetChange = msg.GetSerializable<ValueChange>();
-		MoveRangeeffectChange = msg.GetSerializable<ValueChange>();
-	}
-	
 
 	public override Task GenerateTask()
 	{
@@ -96,7 +80,14 @@ public class ChangeUnitValues : UnitSequenceAction
 		message.Add(MoveRangeeffectChange);
 	}
 
-
+	protected override void DeserializeArgs(Message msg)
+	{
+		base.DeserializeArgs(msg);
+		ActChange = msg.GetSerializable<ValueChange>();
+		MoveChange = msg.GetSerializable<ValueChange>();
+		DetChange = msg.GetSerializable<ValueChange>();
+		MoveRangeeffectChange = msg.GetSerializable<ValueChange>();
+	}
 
 #if CLIENT
 
@@ -104,5 +95,8 @@ public class ChangeUnitValues : UnitSequenceAction
 	{
 		//todo UI rework
 	}
+
+
 #endif
+
 }

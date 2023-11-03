@@ -11,31 +11,37 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
 public class TakeDamage : SequenceAction
 {
-	public override bool CanBatch => true;
-	public readonly int Dmg;
-	public readonly int DetResistance;
-	public readonly int ObjID = -1;
-	public Vector2Int Position = new Vector2Int(-1,-1);
-	private readonly List<string> Ignores = new List<string>();
-	public TakeDamage(int dmg, int detResistance, int objID) : base(SequenceType.TakeDamage)
+	public override SequenceType GetSequenceType()
 	{
-		this.Dmg = dmg;
-		this.DetResistance = detResistance;
-		this.ObjID = objID;
+		return	SequenceType.TakeDamage;
 	}
-	public TakeDamage(int dmg, int detResistance,Vector2Int position, List<string> ignores) : base(SequenceType.TakeDamage)
+
+	public override bool CanBatch => true;
+	public int Dmg;
+	public int DetResistance;
+	public int ObjID = -1;
+	public Vector2Int Position = new Vector2Int(-1,-1);
+	private List<string> Ignores = new List<string>();
+
+	public static TakeDamage Make(int dmg, int detResistance,Vector2Int position, List<string> ignores) 
 	{
-		this.Dmg = dmg;
-		this.DetResistance = detResistance;
-		this.Position = position;
-		this.Ignores = ignores;
+		var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
+		t.Dmg = dmg;
+		t.DetResistance = detResistance;
+		t.Position = position;
+		t.Ignores = ignores;
+		return t;
 	}
 	
-	public TakeDamage(Message args) : base(SequenceType.TakeDamage)
+
+
+	public static TakeDamage Make(int dmg, int detResistance, int objID)
 	{
-		Dmg = args.GetInt();
-		DetResistance = args.GetInt();
-		ObjID = args.GetInt();
+		var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
+		t.Dmg = dmg;
+		t.DetResistance = detResistance;
+		t.ObjID = objID;
+		return t;
 	}
 
 	public override bool ShouldDo()
@@ -62,7 +68,7 @@ public class TakeDamage : SequenceAction
 			else
 			{
 				var u =WorldManager.Instance.GetTileAtGrid(Position).UnitAtLocation!;
-                if(Ignores.Contains(u.Type.Name)) return ;
+				if(Ignores.Contains(u.Type.Name)) return ;
 				u.TakeDamage(Dmg, DetResistance);
 			}
 		});
@@ -75,7 +81,14 @@ public class TakeDamage : SequenceAction
 		message.Add(DetResistance);
 		message.Add(ObjID);
 	}
-	
+
+	protected override void DeserializeArgs(Message args)
+	{
+		Dmg = args.GetInt();
+		DetResistance = args.GetInt();
+		ObjID = args.GetInt();
+	}
+
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{

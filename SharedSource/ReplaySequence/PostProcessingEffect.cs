@@ -10,14 +10,19 @@ namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 public class PostProcessingEffect : SequenceAction
 {
-	public override bool CanBatch => true;
-	private string parameter;
-	private float target;
-	private float speed;
-	private bool wipeQueue;
-	private float returnSpeed;
+	public override SequenceType GetSequenceType()
+	{
+		return SequenceType.PostProcessingEffect;
+	}
 
-	public PostProcessingEffect(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f) : base(SequenceType.PostProcessingEffect)
+	public override bool CanBatch => true;
+	public string Parameter = "";
+	public float Target;
+	public float Speed;
+	public bool WipeQueue;
+	public float ReturnSpeed;
+/*
+	public PostProcessingEffect(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f)
 	{
 		this.parameter = parameter;
 		this.target = target;
@@ -26,22 +31,15 @@ public class PostProcessingEffect : SequenceAction
 		this.returnSpeed = returnSpeed;
 	}
 	
-	public PostProcessingEffect(Message msg) : base(SequenceType.PostProcessingEffect)
-	{
-		parameter = msg.GetString();
-		target = msg.GetFloat();
-		speed = msg.GetFloat();
-		wipeQueue = msg.GetBool();
-		returnSpeed = msg.GetFloat();
-	}
-
+	
+	*/
 
 	public override Task GenerateTask()
 	{
 		var t = new Task(delegate
 		{
 #if CLIENT
-			PostProcessing.AddTweenReturnTask(parameter, target, speed, wipeQueue, returnSpeed);
+			PostProcessing.AddTweenReturnTask(Parameter, Target, Speed, WipeQueue, ReturnSpeed);
 #endif
 		});
 		return t;
@@ -49,13 +47,22 @@ public class PostProcessingEffect : SequenceAction
 
 	protected override void SerializeArgs(Message message)
 	{
-		message.Add(parameter);
-		message.Add(target);
-		message.Add(speed);
-		message.Add(wipeQueue);
-		message.Add(returnSpeed);
+		message.Add(Parameter);
+		message.Add(Target);
+		message.Add(Speed);
+		message.Add(WipeQueue);
+		message.Add(ReturnSpeed);
 	}
-	
+
+	protected override void DeserializeArgs(Message msg)
+	{
+		Parameter = msg.GetString();
+		Target = msg.GetFloat();
+		Speed = msg.GetFloat();
+		WipeQueue = msg.GetBool();
+		ReturnSpeed = msg.GetFloat();
+	}
+
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{

@@ -141,7 +141,11 @@ public class WorldConseqences : IMessageSerializable
 		var list = new List<SequenceAction>();
 		if (FogOfWarSpot)
 		{
-			list.Add(new MoveCamera(target,true,FogOfWarSpotScatter));
+			MoveCamera m = (MoveCamera) SequenceAction.GetAction(SequenceAction.SequenceType.MoveCamera);
+			m.location = target;
+			m.doAlways = true;
+			m.scatter = FogOfWarSpotScatter;
+			list.Add(m);
 		}
 		else
 		{
@@ -158,13 +162,22 @@ public class WorldConseqences : IMessageSerializable
 
 		if (Sfx != "" && Sfx != null)
 		{
-			list.Add(new PlaySound(Sfx, target));
+			PlaySound playSound = (PlaySound) SequenceAction.GetAction(SequenceAction.SequenceType.PlaySound);
+			playSound.SFX = Sfx;
+			playSound.Location = target;
+			list.Add(playSound);
 			//Audio.PlaySound(Sfx, target);
 		}
+
 		foreach (var effect in Effects)
 		{
-			list.Add(new PostProcessingEffect(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f));
-			//		PostPorcessing.AddTweenReturnTask(effect.Item1, float.Parse(effect.Item2, CultureInfo.InvariantCulture), float.Parse(effect.Item3), true, 10f);
+			PostProcessingEffect peffect = (PostProcessingEffect) SequenceAction.GetAction(SequenceAction.SequenceType.PostProcessingEffect);
+			peffect.Parameter = effect.Item1;
+			peffect.Target = float.Parse(effect.Item2, CultureInfo.InvariantCulture);
+			peffect.Speed = float.Parse(effect.Item3, CultureInfo.InvariantCulture);
+			peffect.WipeQueue = true;
+			peffect.ReturnSpeed = 10f;
+			list.Add(peffect);
 		}
 
 		return list;
@@ -178,14 +191,14 @@ public class WorldConseqences : IMessageSerializable
 			{
 				//tile.EastEdge?.TakeDamage(Dmg, 0);
 
-				consequences.Add(new TakeDamage(Dmg, 0, tile.EastEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, 0, tile.EastEdge!.ID));
 				_ignoreList.Add(tile.EastEdge!);
 			}
 
 			if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 			{
 
-				consequences.Add(new TakeDamage(Dmg, 0, tile.WestEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, 0, tile.WestEdge!.ID));
 				_ignoreList.Add(tile.WestEdge!);
 
 
@@ -195,14 +208,14 @@ public class WorldConseqences : IMessageSerializable
 			if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
 			{
 				//tile.NorthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(new TakeDamage(Dmg, 0, tile.NorthEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, 0, tile.NorthEdge!.ID));
 				_ignoreList.Add(tile.NorthEdge!);
 			}
 
 			if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
 			{
 				//tile.SouthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(new TakeDamage(Dmg, 0, tile.SouthEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, 0, tile.SouthEdge!.ID));
 				_ignoreList.Add(tile.SouthEdge!);
 			}
 
@@ -210,14 +223,14 @@ public class WorldConseqences : IMessageSerializable
 			foreach (var item in tile.ObjectsAtLocation)
 			{
 				item.TakeDamage(Dmg, 0);
-				consequences.Add(new TakeDamage(Dmg, 0, item!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, 0, item!.ID));
 			}
 		}
 		
 
 		if (PlaceItemPrefab!=null)
 		{
-			consequences.Add(new MakeWorldObject(PlaceItemPrefab, tile.Position, Direction.North)); //fix this
+			consequences.Add(MakeWorldObject.Make(PlaceItemPrefab, tile.Position, Direction.North)); //fix this
 		}
 		
 
@@ -242,24 +255,24 @@ public class WorldConseqences : IMessageSerializable
 		req.TypesToIgnore.AddRange(Ignores);
 		if (Dmg > 0)
 		{
-			consequences.Add(new TakeDamage(Dmg,0,tile.Position,Ignores));
+			consequences.Add(TakeDamage.Make(Dmg,0,tile.Position,Ignores));
 		}
 
 		if (Det > 0)
 		{
-			consequences.Add(new Suppress(Det, req));
+			consequences.Add(Suppress.Make(Det, req));
 		}
 
-		consequences.Add(new ChangeUnitValues(req,Act,Move,null, MoveRange));
+		consequences.Add(ChangeUnitValues.Make(req,Act,Move,null, MoveRange));
 
 		foreach (var status in RemoveStatus)
 		{
-			consequences.Add(new UnitStatusEffect(req,false,status));
+			consequences.Add(UnitStatusEffect.Make(req,false,status));
 			//	tile.UnitAtLocation?.RemoveStatus(status);
 		}
 		foreach (var status in AddStatus)
 		{
-			consequences.Add(new UnitStatusEffect(req,true,status.Item1,status.Item2));
+			consequences.Add(UnitStatusEffect.Make(req,true,status.Item1,status.Item2));
 			//tile.UnitAtLocation?.ApplyStatus(status.Item1,status.Item2);
 		}
 

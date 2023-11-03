@@ -347,7 +347,7 @@ public static partial class NetworkingManager
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
 
-			msg.Add((int) a.SqcType);
+			msg.Add((int) a.GetSequenceType());
 			msg.AddSerializable(a);
 			server.SendToAll(msg);
 		}
@@ -375,7 +375,7 @@ public static partial class NetworkingManager
 			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
 			foreach (var a in actions)
 			{
-				msg.Add((int) a.SqcType);
+				msg.Add((int) a.GetSequenceType());
 				msg.AddSerializable(a);
 			}
 

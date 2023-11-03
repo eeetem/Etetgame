@@ -8,6 +8,10 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
 public class PlayAnimation : UnitSequenceAction
 {
+	public override SequenceType GetSequenceType()
+	{
+		return SequenceType.PlayAnimation;
+	}
 
 	public override Task GenerateTask()
 	{
@@ -19,9 +23,6 @@ public class PlayAnimation : UnitSequenceAction
 		throw new NotImplementedException();
 	}
 
-	public PlayAnimation(int actorID) : base(new TargetingRequirements(actorID), SequenceType.PlayAnimation)
-	{
-	}
 #if CLIENT
 	protected override void Preview(SpriteBatch spriteBatch)
 	{

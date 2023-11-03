@@ -7,12 +7,10 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 
 public class CrouchUnit : UnitSequenceAction
 {
-	
-	public CrouchUnit(int actorID) : base(new TargetingRequirements(actorID), SequenceType.Crouch)
+
+	public override SequenceType GetSequenceType()
 	{
-	}
-	public CrouchUnit(TargetingRequirements actorID, Message args) : base(actorID, SequenceType.Crouch)
-	{
+		return SequenceType.Crouch;
 	}
 
 	public override Task GenerateTask()
@@ -27,13 +25,7 @@ public class CrouchUnit : UnitSequenceAction
 		});
 		return t;
 	}
-
-	protected override void SerializeArgs(Message message)
-	{
-		base.SerializeArgs(message);
-		return;
-	}
-
+	
 
 
 #if CLIENT

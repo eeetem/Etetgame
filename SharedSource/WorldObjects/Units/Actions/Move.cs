@@ -109,11 +109,11 @@ public class Move : Action
 
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ChangeUnitValues(actor.WorldObject.ID,0,-moveUse,0,0));
+		queue.Enqueue(ChangeUnitValues.Make(actor.WorldObject.ID,0,-moveUse,0,0));
 		for (int j = 0; j < paths.Count; j++)
 		{
 			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
-			queue.Enqueue(new UnitMove(actor.WorldObject.ID,paths[j]));
+			queue.Enqueue(UnitMove.Make(actor.WorldObject.ID,paths[j]));
 			if (j < shootingSpots.Count)
 			{
 				Console.WriteLine("shooting at:" + shootingSpots[j].Item2);
@@ -125,7 +125,7 @@ public class Move : Action
 				//		queue.Enqueue(a);
 				//	}
 	
-					var act = new DelayedAbilityUse(attacker.WorldObject.ID,attacker.Overwatch.Item2,shootingSpots[j].Item2);
+					var act = DelayedAbilityUse.Make(attacker.WorldObject.ID,attacker.Overwatch.Item2,shootingSpots[j].Item2);
 					queue.Enqueue(act);
 				}
 			}
