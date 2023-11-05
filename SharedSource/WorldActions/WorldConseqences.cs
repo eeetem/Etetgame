@@ -252,6 +252,7 @@ public class WorldConseqences : IMessageSerializable
 */
 		
 		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);
+		req.TypesToIgnore = new List<string>();
 		req.TypesToIgnore.AddRange(Ignores);
 		if (Dmg > 0)
 		{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,7 @@ using DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 using MD5Hash;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Collections;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
@@ -183,12 +185,12 @@ public  partial class WorldManager
 	public void MakeWorldObjectFromData(WorldObject.WorldObjectData data, WorldTile tile)
 	{
 		
-			if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
-			{
-				DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
-			}
-			lock (createSync)
-			{
+		if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
+		{
+			DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
+		}
+		lock (createSync)
+		{
 			_createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
 		}
 
@@ -232,7 +234,7 @@ public  partial class WorldManager
 #if CLIENT
 			tile.TileVisibility = Visibility.None;
 #else
-			tile.TileVisibility = new Tuple<Visibility, Visibility>(Visibility.None, Visibility.None);
+			tile.TileVisibility = new ValueTuple<Visibility, Visibility>(Visibility.None, Visibility.None);
 #endif
 		}
 
@@ -312,73 +314,86 @@ public  partial class WorldManager
 			itteration++;
 		}
 
-		Parallel.ForEach(positionsToCheck, position =>
-		{
-			var vis = VisibilityCast(initialpos, position, range, crouched);
-			if(vis != Visibility.None)
-				resullt.AddOrUpdate(position,(Visibility) vis,(key,old) => vis);
-		});
+		Parallel.ForEach(positionsToCheck, (position) => VisibleTileCheck(range, crouched, initialpos, position, resullt));
 		
 		return resullt;
 	}
-	
+
+	private void VisibleTileCheck(int range, bool crouched, Vector2Int initialpos, Vector2Int position, ConcurrentDictionary<Vector2Int, Visibility> resullt)
+	{
+		var vis = VisibilityCast(initialpos, position, range, crouched);
+		if (vis != Visibility.None)
+			resullt.AddOrUpdate(position, (Visibility) vis, (key, old) => vis);
+	}
+
 	public Visibility VisibilityCast(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
 	{
 		if(Vector2.Distance(From, to) > sightRange)
 		{
 			return Visibility.None;
 		}
-		RayCastOutcome[] FullCasts;
-		RayCastOutcome[] PartalCasts;
+		RayCastOutcome?[] fullCasts;
+		RayCastOutcome?[] partalCasts;
 		if (crouched)
 		{
-			FullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
-			PartalCasts = Array.Empty<RayCastOutcome>();
+			fullCasts = MultiCornerCast(From, to, Cover.High, true);//full vsson does not go past high cover and no partial sigh
+			partalCasts = Array.Empty<RayCastOutcome?>();
 		}
 		else
 		{
-			FullCasts = MultiCornerCast(From, to, Cover.High,  true,Cover.Full);//full vission does not go past high cover
-			PartalCasts  = MultiCornerCast(From, to, Cover.Full,  true);//partial visson over high cover
+			fullCasts = MultiCornerCast(From, to, Cover.High,  true,Cover.Full);//full vission does not go past high cover
+			partalCasts  = MultiCornerCast(From, to, Cover.Full,  true);//partial visson over high cover
 							
 		}
 
-		foreach (var cast in FullCasts)
+		try
 		{
-			if (!cast.hit)
+			foreach (var cast in fullCasts)
 			{
-				return Visibility.Full;
+				if (!cast.HasValue) continue;
+				if (!cast.Value.hit)
+				{
+					return Visibility.Full;
+				}
+
+				//i think this is for seeing over distant cover while crouched, dont quote me on that tho
+				if (Vector2.Floor(cast.Value.CollisionPointLong) == Vector2.Floor(cast.Value.EndPoint) && cast.Value.HitObjId != -1 && GetObject(cast.Value.HitObjId).GetCover(true) != Cover.Full)
+				{
+					return Visibility.Partial;
+				}
 			}
-			//i think this is for seeing over distant cover while crouched, dont quote me on that tho
-			if (Vector2.Floor(cast.CollisionPointLong) == Vector2.Floor(cast.EndPoint) && cast.HitObjId != -1 && GetObject(cast.HitObjId).GetCover(true) != Cover.Full)
+
+			foreach (var cast in partalCasts)
 			{
-				return Visibility.Partial;
+				if (!cast.HasValue) continue;
+				if (!cast.Value.hit)
+				{
+					return Visibility.Partial;
+				}
 			}
 		}
-		foreach (var cast in PartalCasts)
+		finally
 		{
-			if (!cast.hit)
-			{
-				return Visibility.Partial;
-			}
+			ArrayPool<RayCastOutcome?>.Shared.Return(fullCasts);
+			ArrayPool<RayCastOutcome?>.Shared.Return(partalCasts);
 		}
 
 		return Visibility.None;
 	}
 
-	public struct RayCastOutcome//fuck the network library holy moly
+	public struct RayCastOutcome
 	{
 		public Vector2 CollisionPointLong= new Vector2(0, 0);
 		public Vector2 CollisionPointShort= new Vector2(0, 0);
 		public Vector2 StartPoint;
 		public Vector2 EndPoint;
-		public Vector2 VectorToCenter;
-		public List<Vector2> Path = new List<Vector2>();
+		public List<Vector2Int>? Path;
 
 		public int HitObjId{ get; set; }
 
 		public bool hit{ get; set; }
 
-		public RayCastOutcome(Vector2 start, Vector2 end)
+		public RayCastOutcome(Vector2 start, Vector2 end, bool MakePath = false)
 		{
 			CollisionPointLong = new Vector2(0, 0);
 			CollisionPointShort = new Vector2(0, 0);
@@ -386,51 +401,25 @@ public  partial class WorldManager
 			EndPoint = end;
 			HitObjId = -1;
 			StartPoint = start;
-	
+			if (MakePath)
+			{
+				Path = new List<Vector2Int>(Math.Max(2, (int) (Vector2.Distance(start, end) * 32)));
+			}
 		}
 	}
 	
-	public RayCastOutcome[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover , bool visibilityCast = false,Cover? minHitCoverSameTile = null)
+	public RayCastOutcome?[] MultiCornerCast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover , bool visibilityCast = false,Cover? minHitCoverSameTile = null)
 	{
-		RayCastOutcome[] result = new RayCastOutcome[4];
+
+		RayCastOutcome?[] result = ArrayPool<RayCastOutcome?>.Shared.Rent(4);
 		Vector2 startPos =startcell+new Vector2(0.5f,0.5f);
 		Vector2 Dir = Vector2.Normalize(startcell - endcell);
 		startPos += Dir / new Vector2(2.5f, 2.5f);
-/*
-		Task t1 = new Task(delegate
+		
+		for (int i = 0; i < result.Length; i++)
 		{
-			result[0] = Raycast(startPos, endcell, minHitCover, visibilityCast, false, minHitCoverSameTile);
-		});
-		var t2 = new Task(delegate
-		{
-			result[1] = Raycast(startPos, endcell+ new Vector2(0f, 0.99f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
-		});
-		var t3 = new Task(delegate
-		{
-			result[2] = Raycast(startPos,  endcell + new Vector2(0.99f, 0f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
-		});
-		var t4 = new Task(delegate
-		{
-			result[3] = Raycast(startPos, endcell + new Vector2(0.99f, 0.99f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
-		});
-
-		/*if (multiThread)
-		{
-			t1.Start();
-			t2.Start();
-			t3.Start();
-			t4.Start();
-			Task.WaitAll(t1, t2, t3, t4);
+			result[i] = null;
 		}
-		else
-		{
-			t1.RunSynchronously();
-			t2.RunSynchronously();
-			t3.RunSynchronously();
-			t4.RunSynchronously();
-		//}
-*/
-	
 		result[0] = Raycast(startPos, endcell, minHitCover, visibilityCast, false, minHitCoverSameTile);
 		result[1] = Raycast(startPos, endcell+ new Vector2(0f, 0.99f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
 		result[2] = Raycast(startPos,  endcell + new Vector2(0.99f, 0f), minHitCover,visibilityCast ,false,minHitCoverSameTile);
@@ -441,15 +430,15 @@ public  partial class WorldManager
 	}
 
 
-	public RayCastOutcome CenterToCenterRaycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover, bool visibilityCast = false, bool ignoreControllables = false)
+	public RayCastOutcome CenterToCenterRaycast(Vector2Int startcell, Vector2Int endcell, Cover minHitCover,  bool visibilityCast = false, bool ignoreControllables = false,bool makePath = false)
 	{
 		Vector2 startPos = (Vector2) startcell + new Vector2(0.5f, 0.5f);
 		Vector2 endPos = (Vector2) endcell + new Vector2(0.5f, 0.5f);
-		return Raycast(startPos, endPos, minHitCover, visibilityCast,ignoreControllables);
+		return Raycast(startPos, endPos, minHitCover, visibilityCast,ignoreControllables,makePath:makePath);
 	}
 
 
-	public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos, Cover minHitCover, bool visibilityCast = false, bool ignoreControllables = false, Cover? minHtCoverSameTile = null, int pseudoLayer = -1)
+	public RayCastOutcome Raycast(Vector2 startPos, Vector2 endPos, Cover minHitCover, bool visibilityCast = false, bool ignoreControllables = false, Cover? minHtCoverSameTile = null, int pseudoLayer = -1, bool makePath = false)
 	{
 		if (minHtCoverSameTile == null)
 		{
@@ -460,7 +449,7 @@ public  partial class WorldManager
 		Vector2Int endcell = new Vector2Int((int)Math.Floor(endPos.X), (int)Math.Floor(endPos.Y));
 
 
-		RayCastOutcome result = new RayCastOutcome(startPos, endPos);
+		RayCastOutcome result = new RayCastOutcome(startPos, endPos, makePath);
 		if (startPos == endPos)
 		{
 			result.hit = false;
@@ -516,8 +505,12 @@ public  partial class WorldManager
 		float totalLenght = 0.05f;
 		int smokeLayers = 0;
 		while (true)
-		{	
-			result.Path.Add(checkingSquare);
+		{
+			if (makePath)
+			{
+				result.Path!.Add(checkingSquare);
+			}
+
 			lastCheckingSquare = new Vector2Int(checkingSquare.X,checkingSquare.Y);
 			if (lenght.X > lenght.Y)
 			{
@@ -566,7 +559,6 @@ public  partial class WorldManager
 					{
 						result.CollisionPointLong = collisionPointlong;
 						result.CollisionPointShort = collisionPointshort;
-						result.VectorToCenter = collisionVector;
 						result.hit = true;
 						result.HitObjId = hitobj.ID;
 						//if this is true then we're hitting a controllable form behind
@@ -590,7 +582,6 @@ public  partial class WorldManager
 						{
 							result.CollisionPointLong = collisionPointlong;
 							result.CollisionPointShort = collisionPointshort;
-							result.VectorToCenter = collisionVector;
 							result.hit = true;
 							result.HitObjId = hitobj.ID;
 							//if this is true then we're hitting a controllable form behind
@@ -610,7 +601,6 @@ public  partial class WorldManager
 						{
 							result.CollisionPointLong = collisionPointlong;
 							result.CollisionPointShort = collisionPointshort;
-							result.VectorToCenter = collisionVector;
 							result.hit = true;
 							result.HitObjId = hitobj.ID;
 							if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
@@ -950,7 +940,7 @@ public  partial class WorldManager
 		{
 			foreach (var tile in new List<IWorldTile>(tiles))
 			{
-				if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, false,true).hit)
+				if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, visibilityCast: false,ignoreControllables: true).hit)
 				{
 					tiles.Remove(tile);
 				}
@@ -1114,17 +1104,19 @@ public  partial class WorldManager
 		{
 			if (SequenceQueue.Count > 0)
 			{
-				var task = SequenceQueue.Dequeue();
-				while (!task.ShouldDo())
+				var act = SequenceQueue.Dequeue();
+				while (!act.ShouldDo())
 				{
+					act.Return();
 					if(SequenceQueue.Count == 0){
 						return;
 					}
-					task = SequenceQueue.Dequeue();
+					act = SequenceQueue.Dequeue();
 				}
 				//Console.WriteLine("runnin sequnce task: "+task.SqcType);
-				_currentSequenceTasks.Add(task.GenerateTask());
+				_currentSequenceTasks.Add(act.GenerateTask());
 				_currentSequenceTasks.Last().Start();
+		
 					
 
 					
@@ -1161,13 +1153,14 @@ public  partial class WorldManager
 				}else{
 					Console.WriteLine("undefined sequence task state");
 				}
+				
 			}
 			_currentSequenceTasks.Clear();
 #if CLIENT
-		if(SequenceQueue.Count == 0)
-		{
-			GameLayout.ReMakeMovePreview();
-		}
+			if(SequenceQueue.Count == 0)
+			{
+				GameLayout.ReMakeMovePreview();
+			}
 #endif
 		}
 	}
@@ -1366,9 +1359,9 @@ public  partial class WorldManager
 	public int CreatePseudoWorldWithUnit(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int copyDimension = -1)
 	{
 
-		
 		int dimension= GetNextFreePseudoDimension();
 		
+	
 		if (!PseudoWorldObjects.ContainsKey(dimension))
 		{
 			PseudoWorldObjects.TryAdd(dimension, new ConcurrentDictionary<int, WorldObject>());
@@ -1409,7 +1402,7 @@ public  partial class WorldManager
 			{
 				if (otherdem.Value.UnitComponent != null) AddUnitToPseudoWorld(otherdem.Value.UnitComponent, otherdem.Value.TileLocation.Position, out _, dimension);
 			}
-	
+			
 			CacheAttacksInDimension(CachedAttacks[copyDimension].Item2,dimension,true);
 			CacheAttacksInDimension(CachedAttacks[copyDimension].Item1,dimension,false);
 		}
@@ -1474,16 +1467,26 @@ public  partial class WorldManager
 			}
 
 		}*/
-	public void WipePseudoLayer(int dimension)
+	public void WipePseudoLayer(int dimension, bool NoAttackWipe = false)
 	{
 		lock (PseudoGenLock)
 		{
 			//	Console.WriteLine("Wiping grid in " + dimension);
-			_pseudoGridsInUse[dimension] = false;
+		
 			Array.Clear(_pseudoGrids[dimension]);
 			PseudoWorldObjects[dimension].Clear();
+			///Console.WriteLine("Wiping grid in " + dimension);
+
+			if (!NoAttackWipe)
+			{
+				CachedAttacks[dimension].Item1.ForEach(y => y.Consequences.ForEach(z => z.Return()));
+				CachedAttacks[dimension].Item2.ForEach(y => y.Consequences.ForEach(z => z.Return()));
+			}
+			
+			
 			CachedAttacks[dimension].Item1.Clear();
 			CachedAttacks[dimension].Item2.Clear();
+			_pseudoGridsInUse[dimension] = false;
 		}
 	}
 
@@ -1496,6 +1499,7 @@ public  partial class WorldManager
 
 	public void CacheAttacksInDimension(List<AIAction.PotentialAbilityActivation> attacks, int dimension, bool mainUnit)
 	{
+		//Console.WriteLine("Cashing attacks in " + dimension);
 		if (!CachedAttacks.ContainsKey(dimension))
 		{
 			List<AIAction.PotentialAbilityActivation> enemyAttacks;

@@ -28,7 +28,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 		return t;
 	}
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{

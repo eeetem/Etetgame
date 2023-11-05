@@ -241,18 +241,12 @@ public class UnitAbility
 			target = actor.WorldObject.TileLocation.Position;
 		}
 		var consequences = new List<SequenceAction>();
-		ChangeUnitValues ch = (ChangeUnitValues) SequenceAction.GetAction(SequenceAction.SequenceType.ChangeUnitValues);
-		ch.Requirements = new UnitSequenceAction.TargetingRequirements(actor.WorldObject.ID);
-		ch.MoveChange = new ValueChange(-MoveCost);
-		ch.ActChange = new ValueChange(-ActCost);
-		ch.DetChange = new ValueChange(-DetCost);
-		
+		ChangeUnitValues ch = ChangeUnitValues.Make(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost);
 		consequences.Add(ch);
 		
 		foreach (var effect in Effects)
 		{
 			var actConsequences =  effect.GetConsequences( actor,  target,dimension);
-			consequences.EnsureCapacity(actConsequences.Count + consequences.Count);//resiize to not loose performace to memory allocation stuff
 			foreach (var c in actConsequences)
 			{
 				consequences.Add(c);

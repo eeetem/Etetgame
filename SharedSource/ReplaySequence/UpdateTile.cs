@@ -21,7 +21,7 @@ public class UpdateTile : SequenceAction
 	}
 
 	
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{

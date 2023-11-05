@@ -59,7 +59,7 @@ public class ChangeUnitValues : UnitSequenceAction
 		return SequenceType.ChangeUnitValues;
 	}
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{

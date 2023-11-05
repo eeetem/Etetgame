@@ -29,15 +29,6 @@ public class Overwatch : AIAction
 
 	public override int GetScore(Unit unit)
 	{
-		var owr = GetBestPossibleAbility(unit,true,false,false,-1,true);
-		if(owr.GetTotalValue()<=0) return 0;//no good overwatch oportunities
-		
-		var atk = GetBestPossibleAbility(unit,true,false,false);
-		if (atk.Dmg == 0 && atk.Supression == 0)//passive ability, maybe best to overwatch
-		{
-			return Random.Shared.Next(5, 20);
-		}
-
 		return 5;
 	}	
 	

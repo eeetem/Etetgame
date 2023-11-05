@@ -34,6 +34,7 @@ public class AI
 			            Console.WriteLine("Calculating Attack Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
 			            a = new Overwatch();
+			            Console.WriteLine("Calculating Overwatch Action...");
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
 			            
 			            a = new Move();
@@ -51,6 +52,7 @@ public class AI
 					            Console.WriteLine("Calculating Attack Action...");
 					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
 					            a = new Overwatch();
+					            Console.WriteLine("Calculating Overwatch Action...");
 					            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
 
 					            a = new Move();

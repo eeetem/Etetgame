@@ -31,13 +31,12 @@ public abstract class AIAction
     
 	public enum AIActionType
 	{
-		Attack=1,
-		Move=2,
-		SupportAbility =3,
+		Attack,
+		Move,
 		OverWatch
 	}
 
-	public struct PotentialAbilityActivation
+	public struct PotentialAbilityActivation : IDisposable
 	{
 		public List<SequenceAction> Consequences;
 		public int abilityIndex;
@@ -51,6 +50,14 @@ public abstract class AIAction
 			Consequences = consequences;
 			this.abilityIndex = abilityIndex;
 			this.targetPosition = targetPosition;
+		}
+
+		public void Dispose()
+		{
+			foreach (var c in Consequences)
+			{
+				c.Return();
+			}
 		}
 	}
 
@@ -261,7 +268,7 @@ public abstract class AIAction
 					outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
 				}
 
-				WorldManager.Instance.WipePseudoLayer(newDim);
+				WorldManager.Instance.WipePseudoLayer(newDim,true);
 				if(hitUnit.IsPlayer1Team == attacker.IsPlayer1Team)
 				{
 					totalChangeScore += outcome;
@@ -383,7 +390,9 @@ public abstract class AIAction
 			valueMod.MoveChange.Apply(ref hypotheticalUnit.MovePoints);
 			valueMod.DetChange.Apply(ref hypotheticalUnit.Determination);
 			valueMod.MoveRangeeffectChange.Apply(ref hypotheticalUnit.MoveRangeEffect);
+		//	valueMod.Return();
 		}
+	
 
 	
 		//add points for being in range of your primiary attack
@@ -507,6 +516,11 @@ public abstract class AIAction
 			{
 				bestAttack = res;
 			}
+
+			//foreach (var c in a.Consequences)
+			//{
+			//	c.Return();
+		//	}
 		}
 		
 		return bestAttack;

@@ -17,7 +17,7 @@ public abstract class UnitSequenceAction : SequenceAction
 	{
 		public int ActorID = -1;
 		public Vector2Int Position = new Vector2Int(-1, -1);
-		public List<string> TypesToIgnore = new List<string>();
+		public List<string>? TypesToIgnore;
 
 		public TargetingRequirements(int id)
 		{
@@ -32,7 +32,17 @@ public abstract class UnitSequenceAction : SequenceAction
 		{
 			message.Add(ActorID);
 			message.Add(Position);
-			message.Add(TypesToIgnore.ToArray());
+			if (TypesToIgnore == null)
+			{
+				//send empty array
+				message.Add(Array.Empty<string>());
+			}
+			else
+			{
+				message.Add(TypesToIgnore.ToArray());
+			}
+
+			
 		}
 
 		public void Deserialize(Message message)

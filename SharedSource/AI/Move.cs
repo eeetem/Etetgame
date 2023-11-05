@@ -158,7 +158,7 @@ public class Move : AIAction
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 70);
+		float percentile = Utility.CalculatePercentile(scores, 80);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
 		return worseThanAverage;

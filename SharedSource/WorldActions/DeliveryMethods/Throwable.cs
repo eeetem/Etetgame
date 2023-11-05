@@ -27,7 +27,7 @@ public class Throwable : DeliveryMethod
 			return new List<SequenceAction>();
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target!.Value, Cover.Full,false,true);
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target!.Value, Cover.Full,visibilityCast: false,ignoreControllables: true);
 		target= outcome.CollisionPointShort;
 		return new List<SequenceAction>();
 	}

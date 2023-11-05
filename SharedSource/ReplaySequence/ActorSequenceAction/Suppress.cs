@@ -57,7 +57,7 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 	}
 
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{

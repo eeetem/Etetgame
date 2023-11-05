@@ -26,7 +26,7 @@ public class UnitOverWatch : UnitSequenceAction
 		return SequenceType.Overwatch;
 	}
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{

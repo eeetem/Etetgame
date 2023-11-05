@@ -36,7 +36,7 @@ public class UnitMove : UnitSequenceAction
 		return !Actor.Paniced;
 	}
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 #if CLIENT
 		//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));

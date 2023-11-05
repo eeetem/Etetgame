@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.ActorSequenceAction;
@@ -10,12 +8,13 @@ using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Collections;
 using Riptide;
+using Kotz.ObjectPool;
+
 
 namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
 
-public abstract class SequenceAction : IMessageSerializable, IPoolable
+public abstract class SequenceAction :  IMessageSerializable
 {
 	public enum SequenceType
 	{
@@ -37,7 +36,7 @@ public abstract class SequenceAction : IMessageSerializable, IPoolable
 		PlayAnimation =8,
 		Overwatch = 9,
 		UnitStatusEffect =10,
-	//	AbilityToggle = 11,
+		//	AbilityToggle = 11,
 		DelayedAbilityUse =12,
 		
 		
@@ -46,8 +45,7 @@ public abstract class SequenceAction : IMessageSerializable, IPoolable
 		
 	}
 
-	private readonly static Dictionary<SequenceType,ObjectPool<SequenceAction>> ActionPools = new Dictionary<SequenceType, ObjectPool<SequenceAction>>();
-
+	private readonly static Dictionary<SequenceType, FluentObjectPool<SequenceAction>> ActionPools = new();
 
 	public static SequenceType TypeToEnum(Type t)
 	{
@@ -172,8 +170,17 @@ public abstract class SequenceAction : IMessageSerializable, IPoolable
 		return true;
 	}
 
-
-	public abstract Task GenerateTask();
+	public Task GenerateTask()
+	{
+		Task t = new Task(delegate
+		{
+			GenerateSpecificTask().RunSynchronously();
+			Return();
+		});
+		return t;
+	
+	}
+	protected abstract Task GenerateSpecificTask();
 
 
 	protected abstract void SerializeArgs(Message message);	
@@ -203,12 +210,17 @@ public abstract class SequenceAction : IMessageSerializable, IPoolable
 
 
 	protected abstract void DeserializeArgs(Message message);
+
+	public static readonly object poolLock = new object();
 	public static SequenceAction GetAction(SequenceType type, Message? msg = null)
 	{
-		var act = ActionPools[type].New();
+	//	Console.WriteLine("Getting action of type "+type );
+		var act = ActionPools[type].Get();
 		if(act == null) throw new Exception("SequenceAction pool is returned null");
 		if(msg != null) act.DeserializeArgs(msg);
+		act._active = true;
 		return act;
+		
 	}
 	
 	public static void InitialisePools()
@@ -227,30 +239,51 @@ public abstract class SequenceAction : IMessageSerializable, IPoolable
 		{
 			if(TypeToEnum(subValidatorType) == SequenceType.UpdateTile) continue;//excluded from pooling
 			if(TypeToEnum(subValidatorType) == SequenceType.Undefined) continue;//excluded from pooling
-			ActionPools[TypeToEnum(subValidatorType)] = new ObjectPool<SequenceAction>(() => ((SequenceAction) Activator.CreateInstance(subValidatorType)!)!,8,ObjectPoolIsFullPolicy.IncreaseSize);
+			//ActionPools[TypeToEnum(subValidatorType)] = new ObjectPool<SequenceAction>(() => ((SequenceAction) Activator.CreateInstance(subValidatorType)!)!,8,ObjectPoolIsFullPolicy.IncreaseSize);
+			ActionPools[TypeToEnum(subValidatorType)] = new FluentObjectPool<SequenceAction>( () =>
+			{
+			//	Console.WriteLine("CALLING CONSTRUTOR");
+				return (SequenceAction) Activator.CreateInstance(subValidatorType)!;
+			});
 		}
 	}
-
-	private ReturnToPoolDelegate? _returnAction;
-
-	void IPoolable.Initialize(ReturnToPoolDelegate returnAction)
+	/*
+	public class SequencePolicy<T> : PooledObjectPolicy<T> where T : notnull
 	{
-		// copy the instance reference of the return function so we can call it later
-		_returnAction = returnAction;
-	}
+		private Func<T> creationFunc;
+		public SequencePolicy (Func<T> creationFunc) {
+
+			this.creationFunc = creationFunc;
+		}
+
+		/// <inheritdoc />
+		public override T Create()
+		{
+				Console.WriteLine("CALLING CONSTRUTOR");
+			return creationFunc();
+		}
+
+		/// <inheritdoc />
+		public override bool Return(T obj)
+		{
+			// DefaultObjectPool<T> doesn't call 'Return' for the default policy.
+			// So take care adding any logic to this method, as it might require changes elsewhere.
+			return true;
+		}
+	}*/
+
+	private bool _active = true;
+
+
 	public void Return()
 	{
-		// check if this instance has already been returned
-		if (_returnAction != null)
-		{
-			// not yet returned, return it now
-			_returnAction.Invoke(this);
-			// set the delegate instance reference to null, so we don't accidentally return it again
-			_returnAction = null;
-		}
+		if(GetSequenceType()==SequenceType.UpdateTile)return;
+
+		Console.WriteLine("Returning action of type "+GetSequenceType() );
+		_active = false;
+		ActionPools[GetSequenceType()].Return(this);
+			
 	}
 
-	public IPoolable NextNode { get; set; }
-	public IPoolable PreviousNode { get; set; }
 
 }

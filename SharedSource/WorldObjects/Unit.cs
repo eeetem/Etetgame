@@ -578,11 +578,13 @@ if(!Paniced){
 			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
 			foreach (var endTile in tiles)
 			{
-				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
-				foreach (var pos in outcome.Path)
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full,visibilityCast: true);
+
+				foreach (var p in outcome.Path)
 				{
-					positions.Add(pos);
+					positions.Add(p);
 				}
+	
 
 			}
 

@@ -93,7 +93,7 @@ public partial class WorldTile : IWorldTile
 
 
 #if SERVER
-	public Tuple<Visibility,Visibility> TileVisibility {private get; set;} = new Tuple<Visibility, Visibility>(Visibility.None,Visibility.None);
+	public (Visibility, Visibility) TileVisibility {private get; set;} = new ValueTuple<Visibility, Visibility>(Visibility.None,Visibility.None);
 #else
 	public Visibility TileVisibility {private get; set;} = Visibility.None;
 #endif
@@ -103,11 +103,11 @@ public partial class WorldTile : IWorldTile
 #if SERVER
 		if (unitIsPlayer1Team)
 		{
-			TileVisibility = new Tuple<Visibility, Visibility>(visTupleValue, TileVisibility.Item2);
+			TileVisibility = new ValueTuple<Visibility, Visibility>(visTupleValue, TileVisibility.Item2);
 		}
 		else
 		{
-			TileVisibility = new Tuple<Visibility, Visibility>(TileVisibility.Item1, visTupleValue);
+			TileVisibility = new ValueTuple<Visibility, Visibility>(TileVisibility.Item1, visTupleValue);
 		}
 		#else
 		TileVisibility = visTupleValue;

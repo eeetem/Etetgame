@@ -12,7 +12,7 @@ public class FaceUnit : UnitSequenceAction
 	
 	public static FaceUnit Make(int actorID, Vector2Int target) 
 	{
-		FaceUnit t = GetAction(SequenceType.Face) as FaceUnit;
+		FaceUnit t = (GetAction(SequenceType.Face) as FaceUnit)!;
 		t.target = target;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
@@ -23,7 +23,7 @@ public class FaceUnit : UnitSequenceAction
 		return SequenceType.Face;
 	}
 
-	public override Task GenerateTask()
+	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{
