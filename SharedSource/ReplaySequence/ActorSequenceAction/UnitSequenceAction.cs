@@ -22,10 +22,12 @@ public abstract class UnitSequenceAction : SequenceAction
 		public TargetingRequirements(int id)
 		{
 			ActorID = id;
+			Position = new Vector2Int(-1, -1);
 		}
 		public TargetingRequirements(Vector2Int id)
 		{
 			Position = id;
+			ActorID = -1;
 		}
 
 		public void Serialize(Message message)
@@ -61,7 +63,7 @@ public abstract class UnitSequenceAction : SequenceAction
 		var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 		if(tile.UnitAtLocation == null) return false;
 		var obj = tile.UnitAtLocation;
-		if(Requirements.TypesToIgnore.Contains(obj!.Type.Name )) return false;
+		if(Requirements.TypesToIgnore != null && Requirements.TypesToIgnore.Contains(obj!.Type.Name )) return false;
 		if (Actor.Overwatch.Item1) return false;
 		return true;
 	}

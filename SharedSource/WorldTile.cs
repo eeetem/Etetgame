@@ -303,6 +303,7 @@ public partial class WorldTile : IWorldTile
 
 
 	private WorldObject? _surface;
+	public bool IsOverwatched => Watchers.Count > 0;
 
 
 	public WorldObject? Surface{

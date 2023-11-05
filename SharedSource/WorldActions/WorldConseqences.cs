@@ -141,10 +141,7 @@ public class WorldConseqences : IMessageSerializable
 		var list = new List<SequenceAction>();
 		if (FogOfWarSpot)
 		{
-			MoveCamera m = (MoveCamera) SequenceAction.GetAction(SequenceAction.SequenceType.MoveCamera);
-			m.location = target;
-			m.doAlways = true;
-			m.scatter = FogOfWarSpotScatter;
+			MoveCamera m = MoveCamera.Make(target,true,FogOfWarSpotScatter);
 			list.Add(m);
 		}
 		else
@@ -162,21 +159,14 @@ public class WorldConseqences : IMessageSerializable
 
 		if (Sfx != "" && Sfx != null)
 		{
-			PlaySound playSound = (PlaySound) SequenceAction.GetAction(SequenceAction.SequenceType.PlaySound);
-			playSound.SFX = Sfx;
-			playSound.Location = target;
+			PlaySound playSound = PlaySound.Make(Sfx, target);
 			list.Add(playSound);
 			//Audio.PlaySound(Sfx, target);
 		}
 
 		foreach (var effect in Effects)
 		{
-			PostProcessingEffect peffect = (PostProcessingEffect) SequenceAction.GetAction(SequenceAction.SequenceType.PostProcessingEffect);
-			peffect.Parameter = effect.Item1;
-			peffect.Target = float.Parse(effect.Item2, CultureInfo.InvariantCulture);
-			peffect.Speed = float.Parse(effect.Item3, CultureInfo.InvariantCulture);
-			peffect.WipeQueue = true;
-			peffect.ReturnSpeed = 10f;
+			PostProcessingEffect peffect = PostProcessingEffect.Make(effect.Item1,float.Parse(effect.Item2, CultureInfo.InvariantCulture),float.Parse(effect.Item3, CultureInfo.InvariantCulture),true);
 			list.Add(peffect);
 		}
 

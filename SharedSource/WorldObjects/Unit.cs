@@ -140,18 +140,20 @@ namespace DefconNull.World.WorldObjects
 			return result;
 		}
 
-		public List<Vector2Int>[] GetPossibleMoveLocations(int moveRange = -1)
+		public List<Vector2Int>[] GetPossibleMoveLocations(int moveRange = -1, int moveOverride = -1)
 		{
-			if (MovePoints > 0)
+			int mp = MovePoints.Current;
+			if(moveOverride!=-1) mp = moveOverride;
+			if (mp > 0)
 			{
 				if(moveRange==-1) moveRange = GetMoveRange();
-				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
-				for (int i = 0; i < MovePoints; i++)
+				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[mp];
+				for (int i = 0; i < mp; i++)
 				{
 					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1));
 				}
 
-				for (int i = MovePoints.Current - 1; i > 0; i--)
+				for (int i = mp - 1; i > 0; i--)
 				{
 					possibleMoves[i].RemoveAll(x => possibleMoves[i - 1].Contains(x));
 				}
@@ -578,7 +580,7 @@ if(!Paniced){
 			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
 			foreach (var endTile in tiles)
 			{
-				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full,visibilityCast: true);
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full,makePath: true);
 
 				foreach (var p in outcome.Path)
 				{

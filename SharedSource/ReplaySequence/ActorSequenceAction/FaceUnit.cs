@@ -27,6 +27,7 @@ public class FaceUnit : UnitSequenceAction
 	{
 		var t = new Task(delegate
 		{
+			if(Actor.WorldObject.TileLocation.Position == target) return;
 			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, target);
 			Actor.canTurn = false;
 			Actor.WorldObject.Face(targetDir);

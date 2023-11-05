@@ -212,7 +212,7 @@ public abstract class SequenceAction :  IMessageSerializable
 	protected abstract void DeserializeArgs(Message message);
 
 	public static readonly object poolLock = new object();
-	public static SequenceAction GetAction(SequenceType type, Message? msg = null)
+	protected internal static SequenceAction GetAction(SequenceType type, Message? msg = null)
 	{
 	//	Console.WriteLine("Getting action of type "+type );
 		var act = ActionPools[type].Get();
@@ -279,7 +279,7 @@ public abstract class SequenceAction :  IMessageSerializable
 	{
 		if(GetSequenceType()==SequenceType.UpdateTile)return;
 
-		Console.WriteLine("Returning action of type "+GetSequenceType() );
+		//Console.WriteLine("Returning action of type "+GetSequenceType() );
 		_active = false;
 		ActionPools[GetSequenceType()].Return(this);
 			

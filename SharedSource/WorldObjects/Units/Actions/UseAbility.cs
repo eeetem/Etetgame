@@ -37,10 +37,7 @@ public class UseAbility : Action
 		var res = action.GetConsequences(actor, target);
 		var queue = new Queue<SequenceAction>();
 		
-		MoveCamera m = (MoveCamera) SequenceAction.GetAction(SequenceAction.SequenceType.MoveCamera);
-		m.location = actor.WorldObject.TileLocation.Position;
-		m.doAlways = false;
-		m.scatter = 1;
+		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
 		queue.Enqueue(m);
 		
 

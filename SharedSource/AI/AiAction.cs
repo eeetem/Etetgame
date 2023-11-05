@@ -68,7 +68,7 @@ public abstract class AIAction
 		ret.AddRange(IterateImmideateAbilities(attacker,excludeExempt,dimension));
 		return ret;
 	}
-	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1,bool onlyOverwatch = false){
+	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1){
 	
 
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
@@ -76,7 +76,7 @@ public abstract class AIAction
 		foreach (var ability in attacker.Abilities)
 		{
 			if(ability.AIExempt&&excludeExempt) continue; 
-			if(!ability.CanOverWatch && onlyOverwatch) continue;
+			
 			if (ability.ImmideateActivation) continue;
 			foreach (var attackTile in WorldManager.Instance.GetTilesAround(targetPosition, 1, dimension)){
 				
@@ -87,7 +87,7 @@ public abstract class AIAction
 
 		return ret;
 	}
-	protected static List<PotentialAbilityActivation>  IterateImmideateAbilities(Unit attacker, bool excludeExempt, int dimension = -1,bool onlyOverwatch = false)
+	protected static List<PotentialAbilityActivation>  IterateImmideateAbilities(Unit attacker, bool excludeExempt, int dimension = -1)
 	{
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
 		
@@ -95,7 +95,6 @@ public abstract class AIAction
 		foreach (var ability in attacker.Abilities)
 		{
 			if(ability.AIExempt&&excludeExempt) continue; 
-			if(!ability.CanOverWatch && onlyOverwatch) continue;
 			if (!ability.ImmideateActivation) continue;
 			foreach (var attackTile in WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension))
 			{
@@ -358,8 +357,7 @@ public abstract class AIAction
 			}
 		}
 #endif
-		var u = (ChangeUnitValues)SequenceAction.GetAction(SequenceAction.SequenceType.ChangeUnitValues);
-		u.MoveChange = new ValueChange(-movesToUse);
+		var u = ChangeUnitValues.Make(-1,0,-movesToUse);
 		return GetTileMovementScore(tilePosition, u,crouch, realUnit, out details);
 	}
 
@@ -390,7 +388,7 @@ public abstract class AIAction
 			valueMod.MoveChange.Apply(ref hypotheticalUnit.MovePoints);
 			valueMod.DetChange.Apply(ref hypotheticalUnit.Determination);
 			valueMod.MoveRangeeffectChange.Apply(ref hypotheticalUnit.MoveRangeEffect);
-		//	valueMod.Return();
+			valueMod.Return();
 		}
 	
 
@@ -460,13 +458,30 @@ public abstract class AIAction
 		score += clumpingPenalty;
 		details.ClumpingPenalty = clumpingPenalty;
 		
+		int coverBonus = CoverScore(tilePosition, otherTeamUnits);
+
+		score += coverBonus;
+		details.CoverBonus = coverBonus;
+
+		var t = WorldManager.Instance.GetTileAtGrid(tilePosition);
+        if(t.IsOverwatched)//dont block friedly overwatch lines and dont move into enemy overwatch
+		{
+	        score -= 20;
+		}
+		
+
+		return score;
+	}
+
+	protected static int CoverScore(Vector2Int tilePosition, List<Unit> otherTeamUnits)
+	{
 		int coverBonus = 0;
 		float stackingRatio = 1;
-		
-		foreach(var enemy in otherTeamUnits){
-			
-			var enemyDirection = Utility.Vec2ToDir( enemy.WorldObject.TileLocation.Position-tilePosition);
-			Cover coverInDirection = WorldManager.Instance.GetCover(tilePosition,enemyDirection, false);
+
+		foreach (var enemy in otherTeamUnits)
+		{
+			var enemyDirection = Utility.Vec2ToDir(enemy.WorldObject.TileLocation.Position - tilePosition);
+			Cover coverInDirection = WorldManager.Instance.GetCover(tilePosition, enemyDirection, false);
 			float bonus = 0;
 			if (coverInDirection == Cover.High)
 			{
@@ -480,17 +495,12 @@ public abstract class AIAction
 			coverBonus += (int) (bonus * stackingRatio);
 			stackingRatio *= 0.3f;
 		}
-        
-		score += coverBonus;
-		details.CoverBonus = coverBonus;
-        
-		
 
-		return score;
+		return coverBonus;
 	}
 
-	
-	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1, bool onlyOverwatch = false)
+
+	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1)
 	{
 		var allUnits = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
 		allUnits.AddRange(GameManager.GetTeamUnits(attacker.IsPlayer1Team));
@@ -503,11 +513,11 @@ public abstract class AIAction
 				//even if we're allowing wallhacks no point in doing ability calculations if there is no direct line of sight to the enemy
 				if (WorldManager.Instance.VisibilityCast(attacker.WorldObject.TileLocation.Position, enemy.WorldObject.TileLocation.Position, 9999, attacker.Crouching) >= enemy.WorldObject.GetMinimumVisibility())
 				{
-					attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position, excludeExempt, dimension, onlyOverwatch));
+					attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position, excludeExempt, dimension));
 				}
 			}
 		}
-		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension,onlyOverwatch));
+		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension));
 
 		foreach (var a in attacks)
 		{

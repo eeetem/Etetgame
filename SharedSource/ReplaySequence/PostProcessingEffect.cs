@@ -21,18 +21,17 @@ public class PostProcessingEffect : SequenceAction
 	public float Speed;
 	public bool WipeQueue;
 	public float ReturnSpeed;
-/*
-	public PostProcessingEffect(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f)
+	public static PostProcessingEffect Make(string parameter,float target, float speed, bool wipeQueue = false, float returnSpeed = 10f)
 	{
-		this.parameter = parameter;
-		this.target = target;
-		this.speed = speed;
-		this.wipeQueue = wipeQueue;
-		this.returnSpeed = returnSpeed;
+		PostProcessingEffect t = (GetAction(SequenceType.PostProcessingEffect) as PostProcessingEffect)!;
+		t.Parameter = parameter;
+		t.Target = target;
+		t.Speed = speed;
+		t.WipeQueue = wipeQueue;
+		t.ReturnSpeed = returnSpeed;
+		return t;
 	}
-	
-	
-	*/
+
 
 	protected override Task GenerateSpecificTask()
 	{
@@ -69,4 +68,5 @@ public class PostProcessingEffect : SequenceAction
 		//no need to preview
 	}
 #endif
+
 }

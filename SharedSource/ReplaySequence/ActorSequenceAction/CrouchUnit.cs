@@ -8,6 +8,7 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class CrouchUnit : UnitSequenceAction
 {
 
+	
 	public override SequenceType GetSequenceType()
 	{
 		return SequenceType.Crouch;
@@ -34,4 +35,10 @@ public class CrouchUnit : UnitSequenceAction
 		//no need to preview
 	}
 #endif
+	public static CrouchUnit Make(int actorID)
+	{
+		CrouchUnit t = (GetAction(SequenceType.Crouch) as CrouchUnit)!;
+		t.Requirements = new TargetingRequirements(actorID);
+		return t;
+	}
 }

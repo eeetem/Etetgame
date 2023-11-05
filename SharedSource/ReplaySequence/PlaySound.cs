@@ -15,13 +15,15 @@ public class PlaySound : SequenceAction
 
 	public string SFX;
 	public Vector2Int Location;
-	/*
-	public PlaySound(string sfx,Vector2Int location)
+	public static PlaySound Make(string sfx, Vector2Int target)
 	{
-		this.sfx = sfx;
-		this.location = location;
+		PlaySound t = (GetAction(SequenceType.PlaySound) as PlaySound)!;
+		t.SFX = sfx;
+		t.Location = target;
+		return t;
+	
 	}
-	*/
+
 
 
 	protected override Task GenerateSpecificTask()
@@ -54,5 +56,6 @@ public class PlaySound : SequenceAction
 		//no need to preview
 	}
 #endif
+
 
 }

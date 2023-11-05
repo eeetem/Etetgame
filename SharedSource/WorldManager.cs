@@ -313,18 +313,21 @@ public  partial class WorldManager
 			pos += Utility.DirToVec2(dir);
 			itteration++;
 		}
-
-		Parallel.ForEach(positionsToCheck, (position) => VisibleTileCheck(range, crouched, initialpos, position, resullt));
+		
+		Parallel.ForEach(positionsToCheck, (position) =>
+		{
+			var vis = VisibilityCast(initialpos, position, range, crouched);
+			if (vis != Visibility.None)
+				resullt.AddOrUpdate(position, vis, (a, b) =>
+				{
+					if (vis > b) return vis;
+					return b;
+				});
+		});
 		
 		return resullt;
 	}
-
-	private void VisibleTileCheck(int range, bool crouched, Vector2Int initialpos, Vector2Int position, ConcurrentDictionary<Vector2Int, Visibility> resullt)
-	{
-		var vis = VisibilityCast(initialpos, position, range, crouched);
-		if (vis != Visibility.None)
-			resullt.AddOrUpdate(position, (Visibility) vis, (key, old) => vis);
-	}
+	
 
 	public Visibility VisibilityCast(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
 	{
