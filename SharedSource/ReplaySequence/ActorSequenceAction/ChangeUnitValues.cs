@@ -35,22 +35,37 @@ public class ChangeUnitValues : UnitSequenceAction
 		if (actChange.HasValue)
 		{
 			t.ActChange = actChange.Value;
+		}else
+		{
+			t.ActChange = new ValueChange(0);
 		}
 		
 		if (moveChange.HasValue)
 		{
 			t.MoveChange = moveChange.Value;
+		}else
+		{
+			t.MoveChange = new ValueChange(0);
 		}
 		
 		if (detChange.HasValue)
 		{
+		
 			t.DetChange = detChange.Value;
+		}else
+		{
+			t.DetChange = new ValueChange(0);
 		}
 		
 		if (moveRangeEffect.HasValue)
 		{
 			t.MoveRangeeffectChange = moveRangeEffect.Value;
 		}
+		else
+		{
+			t.MoveRangeeffectChange = new ValueChange(0);
+		}
+
 		return t;
 	}
 

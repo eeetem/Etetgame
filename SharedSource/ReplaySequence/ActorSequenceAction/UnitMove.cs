@@ -58,7 +58,12 @@ public class UnitMove : UnitSequenceAction
 
 				});
 				WorldManager.Instance.RunNextAfterFrames(frametask1);
+				#if CLIENT
 				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
+			#else
+					Thread.Sleep(50);
+
+			#endif
 				var frametask2 = new Task(delegate
 				{
 					//	Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);

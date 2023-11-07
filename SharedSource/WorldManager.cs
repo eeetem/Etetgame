@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
@@ -240,7 +241,7 @@ public  partial class WorldManager
 
 		List<Unit> units;
 #if SERVER
-			units = GameManager.GetAllUnits();
+		units = GameManager.GetAllUnits();
 #else
 		units = GameManager.GetTeamUnits(GameManager.IsPlayer1);
 #endif
@@ -675,9 +676,14 @@ public  partial class WorldManager
 	}
 
 	private static WorldObject nullWorldObject;
-
+	
 	public WorldObject GetCoverObj(Vector2Int loc,Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true, int pseudoLayer = -1)
 	{
+		while (instance.SequenceRunningRightNow)
+		{
+			Thread.Sleep(100);
+		}
+
 
 		dir = Utility.NormaliseDir(dir);
 		WorldObject biggestCoverObj = nullWorldObject;
@@ -898,7 +904,11 @@ public  partial class WorldManager
 		}
         
 		return biggestCoverObj;
+		
 	}
+
+	public bool SequenceRunningRightNow;
+
 	public IWorldTile GetTileAtGrid(Vector2Int pos, int pseudoGrid)
 	{
 		if(pseudoGrid != -1)
@@ -975,6 +985,7 @@ public  partial class WorldManager
 	}
 
 	public static readonly object deleteSync = new object();
+
 	public static readonly object createSync = new object();
 	public static readonly object TaskSync = new object();
 
@@ -994,7 +1005,7 @@ public  partial class WorldManager
 	HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
 	public void Update(float gameTime)
 	{
-
+		SequenceRunningRightNow = false;
 		lock (TaskSync)
 		{
 			List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
@@ -1097,12 +1108,14 @@ public  partial class WorldManager
 			obj.Update(gameTime);
 		}
 
-		if(fovDirty){
+		if (fovDirty)
+		{
 			CalculateFov();
 		}
 
 		
-
+			SequenceRunningRightNow = true;
+		
 		if (_currentSequenceTasks.Count == 0)
 		{
 			if (SequenceQueue.Count > 0)
@@ -1112,6 +1125,7 @@ public  partial class WorldManager
 				{
 					act.Return();
 					if(SequenceQueue.Count == 0){
+						SequenceRunningRightNow = false;
 						return;
 					}
 					act = SequenceQueue.Dequeue();
@@ -1159,13 +1173,15 @@ public  partial class WorldManager
 				
 			}
 			_currentSequenceTasks.Clear();
+			SequenceRunningRightNow = false;
 #if CLIENT
 			if(SequenceQueue.Count == 0)
 			{
 				GameLayout.ReMakeMovePreview();
 			}
 #endif
-		}
+		}	
+		SequenceRunningRightNow = false;
 	}
 
 

@@ -150,10 +150,10 @@ public static partial class GameManager
 		Console.WriteLine("turn: "+IsPlayer1Turn);
 		NetworkingManager.SendEndTurn();
 
-		if (Player2.IsAI && !IsPlayer1Turn)
-		{
+	//	if (Player2.IsAI && !IsPlayer1Turn)
+		//{
 			FinishTurnWithAI();
-		}
+		//}
 
 #endif
 

@@ -6,8 +6,9 @@ namespace DefconNull.Rendering.PostProcessing;
 
 public class UIElementShader : ShaderPreset
 {
-	public UIElementShader()
+	public UIElementShader(bool dissapation)
 	{
+		this.dissapation = dissapation;
 	}
 
 	private float counter;
@@ -34,7 +35,7 @@ public class UIElementShader : ShaderPreset
 
 		if (dissapation)
 		{
-			range = 100;
+			range = 45;
 			min = 0f;
 		}
 

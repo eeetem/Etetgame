@@ -48,7 +48,6 @@ namespace DefconNull.World.WorldObjects
 			Crouching = data.Crouching;
 			Paniced = data.Panic;
 
-			WorldManager.Instance.MakeFovDirty();
 
 
 

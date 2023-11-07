@@ -19,7 +19,7 @@ public static class PostProcessing
 	private static ContentManager content;
 	private static GraphicsDevice graphicsDevice;
 		
-	public static UIElementShader[] CrtLightShaderPresets;
+	public static UIElementShader CrtLightShaderPreset;
 	public static UIElementShader Crtdissapation;
 	public static CrtScreenShaderPreset CrtScreenPreset;
 
@@ -45,12 +45,8 @@ public static class PostProcessing
 
 		combinedSpriteBatch = new SpriteBatch(g);
 		emptyTexture = new Texture2D(g, 1, 1);
-		CrtLightShaderPresets = new UIElementShader[50];
-		for (int i = 0; i < 50; i++)
-		{
-			CrtLightShaderPresets[i] = new UIElementShader();
-		}
-		Crtdissapation = new UIElementShader();
+		CrtLightShaderPreset = new UIElementShader(false);
+		Crtdissapation = new UIElementShader(true);
 		CrtScreenPreset = new CrtScreenShaderPreset();
 		Crtdissapation.dissapation = true;
 			
@@ -206,21 +202,15 @@ public static class PostProcessing
 		CrtScreenPreset.Apply(CrtEffect,textureVector2);
 	}
 
-	public static void ShuffleUIeffect(int seed, Vector2 textureVector2, bool canFlicker = false,bool disapate = false)
+	public static void ApplyUIEffect(Vector2 textureVector2,bool disapate = false)
 	{
 		if (disapate)
 		{
 			Crtdissapation.Apply(UIGlowEffect,textureVector2);
 			return;
 		}
-
-		seed %= CrtLightShaderPresets.Length;
-		if (!canFlicker && seed == flickerIndex)
-		{
-			seed = (seed + 1) % CrtLightShaderPresets.Length;
-		}
-
-		CrtLightShaderPresets[seed].Apply(UIGlowEffect,textureVector2);
+		
+		CrtLightShaderPreset.Apply(UIGlowEffect,textureVector2);
 	}
 
 
@@ -233,34 +223,10 @@ public static class PostProcessing
 		clcounter += deltaTime/1000 * EffectParams["clspeed"];
 		dxcounter += deltaTime/1000 * EffectParams["dxspeed"];
 		dycounter += deltaTime/1000 * EffectParams["dyspeed"];
-		timeToFlicker -= deltaTime;
-		if (timeToFlicker < 0)
-		{
-			timeToFlicker = 1000;
-			if (Random.Shared.NextSingle() > 0.4f)
-			{
-				flickerIndex = Random.Shared.Next(0, CrtLightShaderPresets.Length-1);
-			}
-			else
-			{
-				flickerIndex = -1;
-			}
-		}
 
-		for (int i = 0; i < CrtLightShaderPresets.Length; i++)
-		{
-			if (i == flickerIndex)
-			{
-				CrtLightShaderPresets[i].Update(deltaTime*50);
-				CrtLightShaderPresets[i].flicker = true;
-			}
-			else
-			{
-				CrtLightShaderPresets[i].Update(deltaTime);
-				CrtLightShaderPresets[i].flicker = false;
-			}
-				
-		}
+		CrtLightShaderPreset.Update(deltaTime);
+
+		
 		Crtdissapation.Update(deltaTime*4f);
 		CrtScreenPreset.Update(deltaTime);
 

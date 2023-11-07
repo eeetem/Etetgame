@@ -25,11 +25,12 @@ public class AI
 	            {
 		            while (true)
 		            {
-			            if(GameManager.IsPlayer1Turn) break;
+			          //  if(GameManager.IsPlayer1Turn) break;
 			            List<Tuple<AIAction, Unit, int>> actions = new();
 			            
 			            //keep going with current  unit untill depleted
 			            var currentUnit = squad[currentUnitIndex];
+			            if(currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 			            AIAction a = new Attack();
 			            Console.WriteLine("Calculating Attack Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
@@ -78,7 +79,7 @@ public class AI
 
 
 			            actionToDo.Item1.Execute(actionToDo.Item2);
-			            Console.WriteLine("Doing AI action");
+			            Console.WriteLine("Doing AI action with score: "+actionToDo.Item3);
 			            do
 			            {
 				            Thread.Sleep(100);
@@ -92,10 +93,10 @@ public class AI
 			            Thread.Sleep(1000);
 		            } while (WorldManager.Instance.SequenceRunning);
 
-		            if (!GameManager.IsPlayer1Turn)
-		            {
+		          //  if (!GameManager.IsPlayer1Turn)
+		          //  {
 			            GameManager.NextTurn();
-		            }
+		          //  }
 	            }
 	            catch (Exception e)
 	            {

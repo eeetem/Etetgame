@@ -72,7 +72,8 @@ public class Overwatch : AIAction
 
 	private UnitAbility? GetRandomOverWatchAbility(Unit unit)
 	{
-		var randomList = new List<UnitAbility>(unit.Abilities.Shuffle(Random.Shared));
+		var randomList = new List<UnitAbility>(unit.Abilities);
+		randomList.Shuffle(Random.Shared);
 		foreach (var ability in randomList)
 		{
 			if(ability.AIExempt) continue; 

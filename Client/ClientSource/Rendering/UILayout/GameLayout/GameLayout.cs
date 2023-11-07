@@ -81,7 +81,7 @@ public class GameLayout : MenuLayout
 		inited = true;
 		//rightCornerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/RightScreen/frames").Width,TextureManager.GetTexture("UI/GameHud/frames").Height);
 		//leftCornerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/LeftPanel/base").Width,TextureManager.GetTexture("UI/GameHud/LeftPanel/base").Height);
-		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/HoverHud/base").Width,TextureManager.GetTexture("UI/HoverHud/base").Height);
+		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,115,40);
 		//statScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/RightScreen/statScreen").Width,TextureManager.GetTexture("UI/GameHud/statScreen").Height);
 		dmgScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Width,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Height);
 		infoScreenRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Width,TextureManager.GetTexture("UI/GameHud/BottomBar/screen").Height);
@@ -116,32 +116,31 @@ public class GameLayout : MenuLayout
 			if (unit.ActionPoints > 0 || unit.MovePoints > 0)
 			{
 				batch.End();
-				PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(unitBarRenderTargets[unit].Width, unitBarRenderTargets[unit].Height));
+				PostProcessing.PostProcessing.ApplyUIEffect( new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/screen").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/screen").Height));
 				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 				batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
 				batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
 				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
 				batch.End();
 
+				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(5,5));
+				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
+
 				int notchpos = 0;
 				for (i = 0; i < unit.MovePoints; i++)
 				{
-					PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch").Height));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
+					
 					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/moveNotch"), new Vector2(6 * notchpos, 0), Color.White);
-					batch.End();
 					notchpos++;
 				}
 
 				for (i = 0; i < unit.ActionPoints; i++)
 				{
-					PostProcessing.PostProcessing.ShuffleUIeffect(columCounter + 123, new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Width, TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch").Height));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/fireNotch"), new Vector2(6 * notchpos, 0), Color.White);
-					batch.End();
+					
 					notchpos++;
 				}
-
+				batch.End();
 			}
 			else
 			{
@@ -159,7 +158,6 @@ public class GameLayout : MenuLayout
 			float healthWidth = healthTexture.Width;
 			float healthHeight = healthTexture.Height;
 			int baseWidth = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Width;
-			_ = TextureManager.GetTexture("UI/GameHud/UnitBar/Background").Height;
 			float healthBarWidth = (healthWidth + 1) * unit.WorldObject.Type.MaxHealth;
 			float emtpySpace = baseWidth - healthBarWidth;
 			Vector2 healthBarPos = new Vector2(emtpySpace / 2f, 22);
@@ -171,7 +169,7 @@ public class GameLayout : MenuLayout
 				bool health = !(y >= unit.WorldObject.Health);
 				if (health)
 				{
-					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
+					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					indicator = healthTexture;
 				}
@@ -200,7 +198,7 @@ public class GameLayout : MenuLayout
 				bool health = !(y >= unit.Determination);
 				if (health)
 				{
-					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID, new Vector2(healthWidth, healthHeight));
+					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
 					indicator = healthTexture;
 				}
@@ -692,12 +690,7 @@ public class GameLayout : MenuLayout
 		Controllables.Add(c);
 		if (c.IsMyTeam())
 		{
-			if (SelectedUnit == null)
-			{
-				SelectUnit(c);
-			}
-
-			
+			if(SelectedUnit == null) SelectUnit(c);
 			MyUnits.Add(c);
 		}
 		else
@@ -834,10 +827,10 @@ public class GameLayout : MenuLayout
 
 			}
 
-			foreach (var edge in tile.GetAllEdges())
-			{
-				DrawHoverHud(batch, edge, deltatime);
-			}
+			//foreach (var edge in tile.GetAllEdges())
+			//{
+			//	DrawHoverHud(batch, edge, deltatime);
+			//}
 
 
 		}
@@ -845,20 +838,20 @@ public class GameLayout : MenuLayout
 		{
 			if (controllable.WorldObject.IsVisible())
 			{
-				DrawHoverHud(batch, controllable.WorldObject, deltatime);
+				DrawHoverHud(batch, controllable, deltatime);
 			}
 		}
 		var tiles = WorldManager.Instance.GetTilesAround(TileCoordinate, 10);
-		foreach (var t in tiles)
-		{
-			foreach (var edge in t.GetAllEdges())
-			{ 
-				if (!Equals(edge.PreviewData, new PreviewData()))
-				{ 
-					DrawHoverHud(batch, edge, deltatime);
-				}
-			}
-		}
+		//foreach (var t in tiles)
+		//{
+		//	foreach (var edge in t.GetAllEdges())
+		//	{ 
+		//		if (!Equals(edge.PreviewData, new PreviewData()))
+		//		{ 
+		//			DrawHoverHud(batch, edge, deltatime);
+		//		}
+		//	}
+		//}
 		
 		
 		graphicsDevice.SetRenderTarget(dmgScreenRenderTarget);
@@ -1005,7 +998,7 @@ public class GameLayout : MenuLayout
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/Timer"), Vector2.Zero, null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
 		batch.Draw(TextureManager.GetTexture("UI/GameHud/UnitBar/Timer"), Vector2.Zero, new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
 		batch.End();
-		PostProcessing.PostProcessing.ShuffleUIeffect(595,new Vector2(10,10),true);
+		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("UI/GameHud/UnitBar/enemyTurn").Width,TextureManager.GetTexture("UI/GameHud/UnitBar/enemyTurn").Height),false);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostProcessing.PostProcessing.UIGlowEffect);
 		var turn = TextureManager.GetTexture("UI/GameHud/UnitBar/enemyTurn");
 		if (GameManager.IsMyTurn())
@@ -1036,7 +1029,7 @@ public class GameLayout : MenuLayout
 		if (drawPreviewDmg)
 		{
 			batch.End();
-			PostProcessing.PostProcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
+			PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(dmgScreenRenderTarget.Width,dmgScreenRenderTarget.Height), false);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 			batch.End();
@@ -1047,7 +1040,7 @@ public class GameLayout : MenuLayout
 			batch.Draw(dmgScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width * globalScale.X) / 2f + bar.Width * globalScale.X, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		}
 		batch.End();
-		PostProcessing.PostProcessing.ShuffleUIeffect(100, new Vector2(dmgScreenRenderTarget.Width, dmgScreenRenderTarget.Height), false);
+		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(infoScreenRenderTarget.Width,infoScreenRenderTarget.Height), false);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
 		batch.Draw(infoScreenRenderTarget, new Vector2((Game1.resolution.X - bar.Width*globalScale.X)/2f - infoScreenRenderTarget.Width*globalScale.X/2f, Game1.resolution.Y - dmgScreenRenderTarget.Height * globalScale.X / 2f), null, Color.White, 0, Vector2.Zero, globalScale.X / 2f, SpriteEffects.None, 0);
 		batch.End();
@@ -1495,7 +1488,7 @@ public class GameLayout : MenuLayout
 	private static float animopacity;
 	private static TextBox? inputBox;
 
-	public static void DrawHoverHud(SpriteBatch batch, WorldObject target,float deltaTime)
+	public static void DrawHoverHud(SpriteBatch batch, Unit target,float deltaTime)
 	{
 		counter += deltaTime/3000f;
 		if (counter > 2)
@@ -1514,20 +1507,19 @@ public class GameLayout : MenuLayout
 		bool highlighted = false;
 
 		
-		if (Equals(SelectedUnit, target.UnitComponent) || MousePos == target.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target,MousePos)))
+		if (Equals(SelectedUnit, target) || MousePos == target.WorldObject.TileLocation.Position || (target.Type.Edge && Utility.IsClose(target.WorldObject,MousePos)))
 		{
 			opacity = 1;
 			highlighted = true;
 		}
-		
-		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		
+
 		float healthWidth = TextureManager.GetTexture("UI/HoverHud/nohealth").Width;
 		float healthHeight = TextureManager.GetTexture("UI/HoverHud/nohealth").Height;
-		float baseWidth = TextureManager.GetTexture("UI/HoverHud/base").Width;
+		float baseWidth = hoverHudRenderTarget.Width;
 		float healthBarWidth = healthWidth*target.Type.MaxHealth;
 		float emtpySpace = baseWidth - healthBarWidth;
-		Vector2 healthBarPos = new Vector2(emtpySpace/2f,36);
+		//Vector2 healthBarPos = new Vector2(emtpySpace/2f,36);
+		Vector2 healthBarPos = new Vector2(5f,25);
 
 		float detWidth = 0;
 		float detHeight = 0;
@@ -1535,213 +1527,141 @@ public class GameLayout : MenuLayout
 		float detEmtpySpace;
 		Vector2 DetPos = default;
 		
-		
-		if (target.UnitComponent == null)
-		{
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/baseCompact"), new Vector2(healthBarPos.X,0), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White);
-		}
-		else
-		{
-			detWidth = TextureManager.GetTexture("UI/HoverHud/detGreen").Width;
-			detHeight = TextureManager.GetTexture("UI/HoverHud/detGreen").Height;
-			detbarWidht = detWidth * target.UnitComponent.Type.Maxdetermination;
-			detEmtpySpace = baseWidth - detbarWidht;
-			DetPos = new Vector2(detEmtpySpace / 2f, 28);
-			if (detbarWidht > healthBarWidth)
-			{
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), new Vector2(DetPos.X-5, 0), new Rectangle((int) DetPos.X-5, 0, (int) detbarWidht+10, TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White);
 
-			}
-			else
-			{
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/base"), new Vector2(healthBarPos.X-5, 0), new Rectangle((int) healthBarPos.X-5, 0, (int) healthBarWidth+10, TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White);
-			}
-		}
+		detWidth = TextureManager.GetTexture("UI/HoverHud/detGreen").Width;
+		detHeight = TextureManager.GetTexture("UI/HoverHud/detGreen").Height;
+		detbarWidht = detWidth * target.Type.Maxdetermination;
+		detEmtpySpace = baseWidth - detbarWidht;
+		//DetPos = new Vector2(detEmtpySpace / 2f, 28);
+		DetPos = new Vector2(5f, 20);
 
-		batch.End();
 
 		int dmgDone = 0; 
 		int i = 0;
 		var healthTexture = TextureManager.GetTexture("UI/HoverHud/health");
 		var nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealth");
 		Vector2 offset = new Vector2(0,0);
-		if (target.UnitComponent == null)
-		{
-			healthTexture = TextureManager.GetTexture("UI/HoverHud/healthenv");
-			nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealthenv");
-			if (target.Type.Edge && MousePos == target.TileLocation.Position)
+		/*	if (target.UnitComponent == null)
 			{
-				if (Equals(target.TileLocation.NorthEdge, target)){
-					offset = new Vector2(0, -1);
+				healthTexture = TextureManager.GetTexture("UI/HoverHud/healthenv");
+				nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealthenv");
+				if (target.Type.Edge && MousePos == target.TileLocation.Position)
+				{
+					if (Equals(target.TileLocation.NorthEdge, target)){
+						offset = new Vector2(0, -1);
+					}
+					else if (Equals(target.TileLocation.WestEdge, target)){
+						offset = new Vector2(-1, 0);
+					}
 				}
-				else if (Equals(target.TileLocation.WestEdge, target)){
-					offset = new Vector2(-1, 0);
-				}
+				offset = new Vector2(1, 1);
+
 			}
-			offset = new Vector2(1, 1);
+			else
+			{*/
 	
-		}
-		else
+		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+		batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+		i = 0;
+		foreach (var effect in target.StatusEffects)
 		{
-			batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-			i = 0;
-			foreach (var effect in target.UnitComponent.StatusEffects)
-			{
-				batch.Draw(TextureManager.GetTextureFromPNG("Icons/"+effect.type.name),new Vector2(23*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.DrawText(effect.duration+"", new Vector2(23*i+10,0), 1, 100, Color.White);
-				i++;
-			}
-			batch.End();
+			batch.Draw(TextureManager.GetTextureFromPNG("Icons/"+effect.type.name),new Vector2(23*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
+			batch.DrawText(effect.duration+"", new Vector2(23*i+10,0), 0.9f, 100, Color.White);
+			i++;
 		}
 
+
+		batch.End();
 		for (int y = 0; y < target.Type.MaxHealth; y++)
 		{
-			bool health = true;
-				
-			if (y>= target.Health)
+			if (y >= target.Health)
 			{
-				health = false;
-			}
-			else if ( target.PreviewData.finalDmg >= target.Health-y)
-			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				batch.Draw(nohealthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.End();
-				i = y;
-				PostProcessing.PostProcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted,true);
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-				batch.Draw(healthTexture,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				//batch.Draw(TextureManager.GetTexture("UI/HoverHud/dmgdone"),new Vector2(184,400)+new Vector2(healthWidth*i,0),null,Color.White,0,Vector2.Zero,new Vector2(healthXScale,1),SpriteEffects.None,0);
-				batch.End();
-				dmgDone++;
-				continue;
 
-			}
-			Texture2D indicator;
-			if (health)
-			{
-				PostProcessing.PostProcessing.ShuffleUIeffect(y + target.ID,new Vector2(healthWidth,healthHeight),highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.LinearClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-				indicator = healthTexture;
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				batch.Draw(nohealthTexture, healthBarPos + new Vector2(healthWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
 			}
 			else
 			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-				indicator= nohealthTexture;
-			}
+				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect:PostProcessing.PostProcessing.UIGlowEffect);
+				batch.Draw(healthTexture, healthBarPos + new Vector2(healthWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
+				if (target.WorldObject.PreviewData.finalDmg >= target.Health - y)
+				{
+					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("UI/HoverHud/detGreen").Width,TextureManager.GetTexture("UI/HoverHud/detGreen").Height), true);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
+					batch.Draw(healthTexture, healthBarPos + new Vector2(healthWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.End();
+				
+				}
 
-				
-				
-			batch.Draw(indicator,healthBarPos+new Vector2(healthWidth*y,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-			batch.End();
+			}
 		}
 
-		if (target.UnitComponent != null)
+
+		for (int y = 0; y < target.Type.Maxdetermination; y++)
 		{
-			Unit unit = target.UnitComponent;
-
-			i = 0;
-
-
-
-			for (int y = 0; y < unit.Type.Maxdetermination; y++)
+			if (y == target.Determination && !target.Paniced)
 			{
-				Texture2D indicator;
-				bool litup = true;
-				bool dissapate = false;
-				bool pulse = false;
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detYellow"), DetPos + new Vector2(detWidth * y, 0), null, Color.White * (animopacity+0.1f), 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
+			}
+			else if (y >= target.Determination)
+			{
 
-				if (y == unit.Determination && !unit.Paniced)
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
+			}
+			else
+			{
+				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect:PostProcessing.PostProcessing.UIGlowEffect);
+				batch.Draw(TextureManager.GetTexture("UI/HoverHud/detGreen"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+				batch.End();
+				if (target.WorldObject.PreviewData.detDmg >= target.Determination - y)
 				{
-					indicator = TextureManager.GetTexture("UI/HoverHud/detYellow");
-					pulse = true;
-					litup = false;
-				}
-				else if (y >= unit.Determination)
-				{
-					indicator = TextureManager.GetTexture("UI/HoverHud/detBlank");
-					litup = false;
-				}
-				else
-				{
-					indicator = TextureManager.GetTexture("UI/HoverHud/detGreen");
-					if (target.PreviewData.detDmg >= unit.Determination - y)
-					{
-						dissapate = true;
-					}
-
-				}
-				
-				
-				if (dissapate)
-				{
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-					batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-					batch.End();
-					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted, true);
+					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("UI/HoverHud/detGreen").Width,TextureManager.GetTexture("UI/HoverHud/detGreen").Height), true);
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
+					batch.Draw(TextureManager.GetTexture("UI/HoverHud/detGreen"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
-				}
-				else if (litup)
-				{
-
-					PostProcessing.PostProcessing.ShuffleUIeffect(y + unit.WorldObject.ID + 10, new Vector2(detWidth, detHeight), highlighted);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.AnisotropicClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, new Color(0,0,0), 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-					batch.End();
-				}
-				else
-				{
-					float op = 1;
-					if (pulse)
-					{
-						op = animopacity+0.1f;
-						batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-						batch.Draw(TextureManager.GetTexture("UI/HoverHud/detBlank"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-						batch.End();
-					}
-
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-					batch.Draw(indicator, DetPos + new Vector2(detWidth * y, 0), null, Color.White*op, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-					batch.End();
+				
 				}
 
 			}
-			if (unit.Paniced)
-			{
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/panic"), new Vector2(healthBarPos.X,18), new Rectangle((int) healthBarPos.X,0,(int) healthBarWidth,TextureManager.GetTexture("UI/HoverHud/baseCompact").Height), Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
-				batch.End();
-			}
-
-			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 51);
-			int o = 8;
-			i = 0;
-			for (int j = 0; j < target.UnitComponent.MovePoints; j++)
-			{	
-				PostProcessing.PostProcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState: SamplerState.PointClamp, effect:PostProcessing.PostProcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),pointPos+new Vector2(o*i,0),Color.White);
-				batch.End();
-				i++;
-			}
-
-			i++;
 			
-			for (int j = 0; j < target.UnitComponent.ActionPoints; j++)
-			{	
-				PostProcessing.PostProcessing.ShuffleUIeffect(i + unit.WorldObject.ID + 6, new Vector2(detWidth, detHeight), highlighted);
-				batch.Begin(sortMode: SpriteSortMode.Texture, samplerState:  SamplerState.PointClamp, effect:PostProcessing.PostProcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*i,0),null, Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
-				batch.End();
-				i++;
-			}
+			
+
+		}
+		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+
+		batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+
+
+		Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 33);
+		int o = 5;
+		i = 0;
+		for (int j = 0; j < target.MovePoints; j++)
+		{	
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),pointPos+new Vector2(o*i,0),Color.White);
+			i++;
+		}
+
+		i++;
+			
+		for (int j = 0; j < target.ActionPoints; j++)
+		{	
+			batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*i,0),null, Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+			i++;
 		}
 		
+		batch.End();
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.TileLocation.Position+offset)+new Vector2(-70,-120),null,Color.White*opacity,0,Vector2.Zero,1.2f,SpriteEffects.None,0);
+		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.WorldObject.TileLocation.Position+offset)+new Vector2(-15,-120),null,Color.White*opacity,0,Vector2.Zero,2f,SpriteEffects.None,0);
 		batch.End();
 	}
 
