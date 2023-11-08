@@ -14,24 +14,17 @@ public static class PathFinding
 		foreach (var idkstfu in nodes)
 		{
 			var node = idkstfu.Element;
-			Node cached = NodeCache[node.Position.X, node.Position.Y];
-			cached.CurrentCost = node.CurrentCost;
 			node.CurrentCost = 0;
-			cached.EstimatedCost = node.EstimatedCost;
 			node.EstimatedCost = 0;
 			node.Parent = null;
 			node.State = NodeState.Unconsidered;
 		}
 	}
-	public static Node[,] NodeCache = new Node[100, 100];
 	public static void ResetNodes(List<Node> nodes)
 	{
 		foreach (var node in nodes)
 		{
-			Node cached = NodeCache[node.Position.X, node.Position.Y];
-			cached.CurrentCost = node.CurrentCost;
 			node.CurrentCost = 0;
-			cached.EstimatedCost = node.EstimatedCost;
 			node.EstimatedCost = 0;
 			node.Parent = null;
 			node.State = NodeState.Unconsidered;
@@ -44,7 +37,6 @@ public static class PathFinding
 			for (int y = 0; y < 100; y++)
 			{
 				Nodes[x, y] = new Node(new Vector2Int(x,y));
-				NodeCache[x, y] = new Node(new Vector2Int(x,y));
 			}
 		}
 		for (int x = 0; x < 100; x++)
@@ -84,7 +76,6 @@ public static class PathFinding
 			var inRange = new List<Vector2Int>();
 
 			var open = new PriorityQueue<Node, double>();
-			from.State = NodeState.Closed;
 			foreach (var node in from.ConnectedNodes)
 			{
 				if (node is null) continue;

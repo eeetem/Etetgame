@@ -508,18 +508,18 @@ public abstract class AIAction
 		List<PotentialAbilityActivation> attacks = new List<PotentialAbilityActivation>();
 		foreach (var enemy in allUnits)
 		{
-			bool ShouldAttack = false;
+			bool shouldAttack = false;
 			if (onlyVisible)
 			{
-				ShouldAttack = WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility();//even if we're allowing wallhacks no point in doing ability calculations if there is no direct line of sight to the enemy
+				shouldAttack = WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, attacker.IsPlayer1Team) >= enemy.WorldObject.GetMinimumVisibility();//even if we're allowing wallhacks no point in doing ability calculations if there is no direct line of sight to the enemy
 				
 			}
 			else
 			{
-				ShouldAttack = WorldManager.Instance.VisibilityCast(attacker.WorldObject.TileLocation.Position, enemy.WorldObject.TileLocation.Position, 9999, attacker.Crouching) >= enemy.WorldObject.GetMinimumVisibility();
+				shouldAttack = WorldManager.Instance.VisibilityCast(attacker.WorldObject.TileLocation.Position, enemy.WorldObject.TileLocation.Position, 9999, attacker.Crouching) >= enemy.WorldObject.GetMinimumVisibility();
 			}
 
-			if (ShouldAttack)
+			if (shouldAttack)
 			{
 				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position, excludeExempt, dimension));
 			}

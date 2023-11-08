@@ -741,23 +741,32 @@ public class GameLayout : MenuLayout
 		
 		var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
+	
 		var mousepos = Utility.GridToWorldPos(TileCoordinate+new Vector2(-1.5f,-0.5f));
 		for (int i = 0; i < 8; i++)
 		{
 		
 			var indicator = TextureManager.GetSpriteSheet("UI/coverIndicator",3,3)[i];
 			Color c = Color.White;
-			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
+			//switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
+			//{
+			//	case Cover.Full:
+			//		c = Color.Red;
+			//		break;
+			//	case Cover.High:
+			//		c = Color.Yellow;
+			//		break;
+			//	case Cover.Low:
+			//		c = Color.Green;
+			//		break;
+			//}
+			if(WorldManager.Instance.GetTileAtGrid(TileCoordinate).Traversible(TileCoordinate+new Vector2(1f,0f)))
 			{
-				case Cover.Full:
-					c = Color.Red;
-					break;
-				case Cover.High:
-					c = Color.Yellow;
-					break;
-				case Cover.Low:
-					c = Color.Green;
-					break;
+				c = Color.Green;
+			}
+			else
+			{
+				c = Color.Red;
 			}
 
 
@@ -1658,29 +1667,55 @@ public class GameLayout : MenuLayout
 			
 
 		}
-		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
-
-		batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
 
 
 		Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 33);
 		int o = 5;
 		i = 0;
-		for (int j = 0; j < target.MovePoints; j++)
-		{	
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/movepoint"),pointPos+new Vector2(o*i,0),Color.White);
+		var nextT = target.GetPointsNextTurn();
+		for (int j = 0; j < Math.Max(nextT.Item1,target.MovePoints.Current); j++)
+		{
+			Texture2D t;
+			if (j < target.MovePoints)
+			{
+				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+				t = TextureManager.GetTexture("UI/HoverHud/movepoint");
+				
+			}
+			else
+			{
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				t = TextureManager.GetTexture("UI/HoverHud/nomovepoint");
+			}
+
+			batch.Draw(t, pointPos + new Vector2(o * i, 0), Color.White);
+			batch.End();
 			i++;
 		}
 
 		i++;
 			
-		for (int j = 0; j < target.ActionPoints; j++)
+		for (int j = 0; j < Math.Max(nextT.Item2,target.ActionPoints.Current); j++)
 		{	
-			batch.Draw(TextureManager.GetTexture("UI/HoverHud/actionpoint"),pointPos+new Vector2(o*i,0),null, Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+			Texture2D t;
+			if (j < target.ActionPoints)
+			{
+				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+				t = TextureManager.GetTexture("UI/HoverHud/actionpoint");
+				
+			}
+			else
+			{
+				batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+				t = TextureManager.GetTexture("UI/HoverHud/noactionpoint");
+			}
+			batch.Draw(t, pointPos + new Vector2(o * i, 0), Color.White);
+			batch.End();
 			i++;
 		}
-		
-		batch.End();
+
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2)target.WorldObject.TileLocation.Position+offset)+new Vector2(-10,-100),null,Color.White*opacity,0,Vector2.Zero,2f,SpriteEffects.None,0);

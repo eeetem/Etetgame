@@ -179,16 +179,13 @@ public class UnitAbility
 
 	public Tuple<bool, string> HasEnoughPointsToPerform(Unit actor, bool nextTurn = false)
 	{
+		var nextTurnPoints = actor.GetPointsNextTurn();
 		if (DetCost > 0)
 		{
 			int determination = actor.Determination.Current;
-			if (nextTurn && !actor.Paniced)
+			if (nextTurn)
 			{
-				determination++;
-				if (actor.Determination > actor.Determination.Max)
-				{
-					determination = actor.Determination.Max;
-				}
+				determination = nextTurnPoints.Item3;
 			}
 
 			if (determination - DetCost < 0)
@@ -205,7 +202,7 @@ public class UnitAbility
 			int movePoints = actor.MovePoints.Current;
 			if (nextTurn)
 			{
-				movePoints = actor.MovePoints.Max;
+				movePoints = nextTurnPoints.Item1;
 			}
 
 			if (movePoints- MoveCost < 0)
@@ -221,7 +218,7 @@ public class UnitAbility
 			int actPoints = actor.ActionPoints.Current;
 			if (nextTurn)
 			{
-				actPoints = actor.ActionPoints.Max;
+				actPoints = nextTurnPoints.Item2;
 			}
 			
 			if (actPoints - ActCost < 0)

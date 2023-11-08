@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units;
 
@@ -218,7 +219,33 @@ namespace DefconNull.World.WorldObjects
 			return Type.SightRange;
 		}
 
+		public (int, int, int) GetPointsNextTurn()
+		{
+			Value mp = MovePoints;
+			mp.SetToMax();
+			Value ap = ActionPoints;
+			ap.SetToMax();
+			Value det = Determination;
+			
+			if(Paniced) mp--;
+			else det.Current++;
+			
+			foreach (var st in StatusEffects)
+			{
+				if(st.duration<=0) continue;
+				//incorrect if status effect doesnt actually affect this unit but whatever
+				var cons = st.type.Conseqences.GetApplyConsiqunces(this.WorldObject.TileLocation.Position);
+				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
+				foreach (var v in vals)
+				{
+					v.MoveChange.Apply(ref mp);
+					v.ActChange.Apply(ref ap);
+					v.DetChange.Apply(ref det);
+				}
+			}
 
+			return (mp.Current, ap.Current,det.Current);
+		}
 
 		public void StartTurn()
 		{
