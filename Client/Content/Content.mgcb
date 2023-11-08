@@ -709,6 +709,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/actionpoint.png
 
+#begin CompressedContent/textures/UI/HoverHud/actionpoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/actionpoint.png
+
 #begin CompressedContent/textures/UI/HoverHud/detBlank.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -720,6 +732,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/detBlank.png
+
+#begin CompressedContent/textures/UI/HoverHud/detBlank.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/detBlank.png
+
+#begin CompressedContent/textures/UI/HoverHud/detGreen.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/detGreen.png
 
 #begin CompressedContent/textures/UI/HoverHud/detGreen.png
 /importer:TextureImporter
@@ -745,6 +781,30 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/detYellow.png
 
+#begin CompressedContent/textures/UI/HoverHud/detYellow.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/detYellow.png
+
+#begin CompressedContent/textures/UI/HoverHud/frame.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/frame.png
+
 #begin CompressedContent/textures/UI/HoverHud/health.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -756,6 +816,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/health.png
+
+#begin CompressedContent/textures/UI/HoverHud/health.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/health.png
+
+#begin CompressedContent/textures/UI/HoverHud/healthenv.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/healthenv.png
 
 #begin CompressedContent/textures/UI/HoverHud/healthenv.png
 /importer:TextureImporter
@@ -781,6 +865,42 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/movepoint.png
 
+#begin CompressedContent/textures/UI/HoverHud/movepoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/movepoint.png
+
+#begin CompressedContent/textures/UI/HoverHud/noactionpoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/noactionpoint.png
+
+#begin CompressedContent/textures/UI/HoverHud/nohealth.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/nohealth.png
+
 #begin CompressedContent/textures/UI/HoverHud/nohealth.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -804,6 +924,42 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/UI/HoverHud/nohealthenv.png
+
+#begin CompressedContent/textures/UI/HoverHud/nohealthenv.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/nohealthenv.png
+
+#begin CompressedContent/textures/UI/HoverHud/nomovepoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/nomovepoint.png
+
+#begin CompressedContent/textures/UI/HoverHud/panicSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/UI/HoverHud/panicSheet.png
 
 #begin CompressedContent/textures/UI/kick.png
 /importer:TextureImporter
