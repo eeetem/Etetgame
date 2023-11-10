@@ -26,7 +26,7 @@ namespace DefconNull.World.WorldObjects
 		public UnitType Type { get; private set; }
 
 
-		public Unit(WorldObject parent, UnitType type, UnitData data)
+		public Unit(WorldObject parent, UnitType type, UnitData data, bool justSpawned)
 		{
 
 			WorldObject = parent;
@@ -72,7 +72,7 @@ namespace DefconNull.World.WorldObjects
             
 	
 
-			if (data.JustSpawned)
+			if (justSpawned)
 			{
 				foreach (var effect in data.StatusEffects)
 				{
@@ -393,7 +393,6 @@ if(!Paniced){
 			public int Determination;
 			public bool Crouching;
 			public bool Panic;
-			public bool JustSpawned;
 			public Tuple<bool,int> Overwatch;
 			public int MoveRangeEffect;
 			public List<Vector2Int> OverWatchedTiles;
@@ -409,7 +408,6 @@ if(!Paniced){
 				Determination = -100;
 				Crouching = false;
 				Panic = false;
-				JustSpawned = true;//it's always truea nd only set to false in getData
 				Overwatch = new Tuple<bool, int>(false,-1);	
 				StatusEffects = new List<Tuple<string, int>>();
 				MoveRangeEffect = 0;
@@ -424,7 +422,6 @@ if(!Paniced){
 				CanTurn = u.canTurn;
 				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
-				JustSpawned = true;
 				Panic = u.Paniced;
 				
 				StatusEffects = new List<Tuple<string, int>>();
@@ -450,7 +447,6 @@ if(!Paniced){
 				message.Add(Determination);
 				message.Add(Crouching);
 				message.Add(Panic);
-				message.Add(JustSpawned);
 				message.Add(Overwatch.Item1);
 				message.Add(Overwatch.Item2);
 
@@ -476,7 +472,6 @@ if(!Paniced){
 				Determination = message.GetInt();
 				Crouching = message.GetBool();
 				Panic = message.GetBool();
-				JustSpawned = message.GetBool();
 				Overwatch = new Tuple<bool, int>(message.GetBool(),message.GetInt());
 
 				MoveRangeEffect = message.GetInt();
@@ -493,10 +488,8 @@ if(!Paniced){
 		}
 		public UnitData GetData()
 		{
-			
-			var data = new UnitData(this);
-			data.JustSpawned = false;
-			return data;
+			return new UnitData(this);
+		
 		}
 
 		protected bool Equals(Unit other)

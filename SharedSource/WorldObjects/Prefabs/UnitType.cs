@@ -36,7 +36,7 @@ public class UnitType : WorldObjectType
 	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
 	{
 		wo.Face(data.Facing,false);
-		Unit component = new Unit(wo,this,data.UnitData!.Value);
+		Unit component = new Unit(wo,this,data.UnitData!.Value,data.JustSpawned);
 		Actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
 #if CLIENT
 		GameLayout.RegisterUnit(component);

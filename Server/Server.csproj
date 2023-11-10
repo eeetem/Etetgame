@@ -29,13 +29,7 @@
       <None Update="Maps\g.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="Maps\Not One Step Back.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="Maps\Custom\gggg.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Maps\Circus.mapdata">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />

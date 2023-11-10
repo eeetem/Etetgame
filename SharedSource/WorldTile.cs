@@ -459,26 +459,26 @@ public partial class WorldTile : IWorldTile
 			ObjectsAtLocation = message.GetSerializables<WorldObject.WorldObjectData>().ToList();
 		}
 	}
-	public WorldTileData GetData()
+	public WorldTileData GetData(bool forceJustSpawned = false)
 	{
 		var data = new WorldTileData(_position);
 		if (Surface != null)
 		{
-			data.Surface = Surface.GetData();
+			data.Surface = Surface.GetData(forceJustSpawned);
 		}
 		if (NorthEdge != null)
 		{
-			data.NorthEdge = NorthEdge.GetData();
+			data.NorthEdge = NorthEdge.GetData(forceJustSpawned);
 		}
 		if (WestEdge != null)
 		{
-			data.WestEdge = WestEdge.GetData();
+			data.WestEdge = WestEdge.GetData(forceJustSpawned);
 		}
 		if (UnitAtLocation != null)
 		{
-			data.UnitAtLocation = UnitAtLocation.WorldObject.GetData();
+			data.UnitAtLocation = UnitAtLocation.WorldObject.GetData(forceJustSpawned);
 		}
-		data.ObjectsAtLocation = ObjectsAtLocation.Select(x => x.GetData()).ToList();
+		data.ObjectsAtLocation = ObjectsAtLocation.Select(x => x.GetData(forceJustSpawned)).ToList();
 
 		return data;
 	}

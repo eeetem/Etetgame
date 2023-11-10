@@ -380,7 +380,7 @@ public static class PrefabManager
 			string? innerText = placeItem.Attributes?["name"]?.InnerText;
 			if (innerText != null)
 			{
-				eff.PlaceItemPrefab = innerText;
+				eff.PLaceItemConsequence = innerText;
 			}
 		}
 

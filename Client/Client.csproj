@@ -447,16 +447,8 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\Server\Maps\Circus.mapdata">
-        <Link>Maps\Circus.mapdata</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <Content Include="..\Server\Maps\Ground Zero.mapdata">
         <Link>Maps\Ground Zero.mapdata</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <Content Include="..\Server\Maps\Not One Step Back.mapdata">
-        <Link>Maps\Not One Step Back.mapdata</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include="..\SharedSource\ObjectData.xml">

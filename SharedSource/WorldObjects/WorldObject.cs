@@ -34,7 +34,7 @@ public partial class WorldObject
 		Type = type;
 
 		TileLocation = tile;
-		if (data.Health == 0 || data.Health == -100)
+		if (data.JustSpawned)
 		{
 			Health = type.MaxHealth;
 		}
@@ -42,7 +42,7 @@ public partial class WorldObject
 		{
 			Health = data.Health;
 		}
-		if (data.Lifetime == -100 || data.Lifetime == 0)//this will cause issues
+		if (data.JustSpawned)//this will cause issues
 		{
 			LifeTime = type.lifetime;
 		}
@@ -191,7 +191,7 @@ public partial class WorldObject
             
 			Task t = new Task(delegate
 			{
-				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position));
+				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
 			});
 			WorldManager.Instance.RunNextAfterFrames(t,4);
 
@@ -234,6 +234,15 @@ public partial class WorldObject
 
 	public void TakeDamage(int dmg, int detResist)
 	{
+	
+		
+
+		if (dmg < 0)
+		{
+			return;
+		}
+		int dmgNoResist = dmg - detResist;
+		
 		if (LifeTime != -100)
 		{
 			LifeTime -= dmg;
@@ -243,11 +252,6 @@ public partial class WorldObject
 			}
 		}
 		
-
-		if (dmg < 0)
-		{
-			return;
-		}
 		Console.WriteLine(this + " got hit " + TileLocation.Position);
 		if (UnitComponent != null)
 		{//let controlable handle it
@@ -257,9 +261,9 @@ public partial class WorldObject
 		{
 			
 #if CLIENT
-			new PopUpText("Damage: " + dmg, _tileLocation.Position, Color.Gray, 0.4f);
+			new PopUpText("Damage: " + dmgNoResist, _tileLocation.Position, Color.Gray, 0.4f);
 #endif
-			Health-= dmg-detResist;
+			Health-= dmgNoResist;
 			if (Health <= 0)
 			{
 				Destroy();
@@ -315,6 +319,7 @@ public partial class WorldObject
 		public Unit.UnitData? UnitData;
 		public int Health;
 		public int Lifetime;
+		public bool JustSpawned;
 		public WorldObjectData(string prefab)
 		{
 			Prefab = prefab;
@@ -324,6 +329,7 @@ public partial class WorldObject
 			Fliped = false;
 			Health = -100;
 			Lifetime = -100;
+			JustSpawned = true;
 		}
 
 		public void Serialize(Message message)
@@ -334,6 +340,7 @@ public partial class WorldObject
 			message.AddBool(Fliped);
 			message.Add(Health);
 			message.Add(Lifetime);
+			message.AddBool(JustSpawned);
 			message.AddBool(UnitData != null);
 			if (UnitData != null)
 			{
@@ -349,6 +356,7 @@ public partial class WorldObject
 			Fliped = message.GetBool();
 			Health = message.GetInt();
 			Lifetime = message.GetInt();
+			JustSpawned = message.GetBool();
 			bool hasUnit = message.GetBool();
 			if (hasUnit)
 			{
@@ -361,14 +369,15 @@ public partial class WorldObject
 		}
 	}
 
-	public WorldObjectData GetData()
+	public WorldObjectData GetData(bool forceJustSpawned = false)
 	{
 		WorldObjectData data = new WorldObjectData(Type.Name);
 		data.Facing = Facing;
 		data.ID = ID;
 		data.Fliped = fliped;
 		data.Health = Health;
-
+		data.Lifetime = LifeTime;
+		data.JustSpawned = forceJustSpawned;
 		if (UnitComponent != null)
 		{
 			Unit.UnitData cdata = UnitComponent.GetData();

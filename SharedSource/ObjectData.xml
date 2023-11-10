@@ -34,13 +34,7 @@
     <sprite name="Environment/Surfaces/spawnPoint2"  offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
-  <object SCover = "3" Edge = "true" Health="15">
-    <sprite  name="Environment/basicWall"  offset= "0,0"/>
-    <name>basicWall</name>
-    <destroyConsequences range = "1" >
-      <place name="basicWallDebris"/>
-    </destroyConsequences>
-  </object>
+
   <object SCover = "3" Edge = "true" Health="1000">
     <sprite  name="Environment/borderWall"  offset= "0,0"/>
     <name>borderWall</name>
@@ -64,15 +58,22 @@
     <sprite  name="Environment/paperMache"  offset= "0,0"/>
     <name>paperMache</name>
   </object>
+  <object SCover = "3" Edge = "true" Health="8">
+    <sprite  name="Environment/basicWall"  offset= "0,0"/>
+    <name>basicWall</name>
+    <destroyConsequences range = "1" >
+      <place name="basicHalfWall"/>
+    </destroyConsequences>
+  </object>
   <object SCover = "2" Edge = "true">
-    <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="10"/>
+    <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="8"/>
     <name>basicHalfWall</name>
     <destroyConsequences range = "1" >
-      <place name="basicWallDebris"/>
+      <place name="basicHalfWallLight"/>
     </destroyConsequences>
   </object>
   <object SCover = "1" Edge = "true">
-    <sprite name="Environment/basicHalfWallLight" Health="6" offset= "0,0"/>
+    <sprite name="Environment/basicHalfWallLight" Health="8" offset= "0,0"/>
     <name>basicHalfWallLight</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>

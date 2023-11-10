@@ -26,7 +26,7 @@ public class WorldConseqences : IMessageSerializable
 	public ValueChange Act ;
 	public int Range = 1;
 	public string? Sfx = "";
-	public string? PlaceItemPrefab = null;
+	public string? PLaceItemConsequence = null;
 	public readonly List<Tuple<string, int>> AddStatus = new List<Tuple<string?, int>>();
 	public readonly List<string> RemoveStatus = new List<string>();
 
@@ -51,7 +51,7 @@ public class WorldConseqences : IMessageSerializable
 		message.AddSerializable(Act);
 		message.Add(Range);
 		message.AddNullableString(Sfx);
-		message.AddNullableString(PlaceItemPrefab);
+		message.AddNullableString(PLaceItemConsequence);
 
 		message.Add(AddStatus.Count);
 		foreach (var tuple in AddStatus)
@@ -92,7 +92,7 @@ public class WorldConseqences : IMessageSerializable
 		Act = message.GetSerializable<ValueChange>();
 		Range = message.GetInt();
 		Sfx = message.GetNullableString();
-		PlaceItemPrefab = message.GetNullableString();
+		PLaceItemConsequence = message.GetNullableString();
 
 		AddStatus.Clear();
 		for (int i = 0; i < message.GetInt(); i++)
@@ -134,7 +134,7 @@ public class WorldConseqences : IMessageSerializable
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
-	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target)
+	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target, WorldObject? user = null)//rn only for placing prefabs
 	{
 		_ignoreList = new List<WorldObject>();
 		
@@ -144,14 +144,10 @@ public class WorldConseqences : IMessageSerializable
 			MoveCamera m = MoveCamera.Make(target,true,FogOfWarSpotScatter);
 			list.Add(m);
 		}
-		else
-		{
-			//	list.Add(new MoveCamera(target,false,0));
-		}
 
 		foreach (var tile in GetAffectedTiles(target))
 		{
-			foreach (var sqc in ConsequencesOnTile(tile))
+			foreach (var sqc in ConsequencesOnTile(tile,user))
 			{
 				list.Add(sqc);
 			}
@@ -172,7 +168,7 @@ public class WorldConseqences : IMessageSerializable
 
 		return list;
 	}
-	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile)
+	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile, WorldObject? user = null)
 	{
 		var consequences = new List<SequenceAction>();
 		if (Dmg > 0)
@@ -218,9 +214,9 @@ public class WorldConseqences : IMessageSerializable
 		}
 		
 
-		if (PlaceItemPrefab!=null)
+		if (PLaceItemConsequence!=null)
 		{
-			consequences.Add(MakeWorldObject.Make(PlaceItemPrefab, tile.Position, Direction.North)); //fix this
+			consequences.Add(MakeWorldObject.Make(PLaceItemConsequence, tile.Position, user.Facing)); //fix this
 		}
 		
 

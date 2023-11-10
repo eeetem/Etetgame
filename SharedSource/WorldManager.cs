@@ -1061,9 +1061,7 @@ public  partial class WorldManager
 			
 			foreach (var WO in _createdObjects)
 			{
-				//	Console.WriteLine("creating: " + WO.Item2 + " at " + WO.Item1);
 				CreateWorldObj(WO);
-
 				if (GameManager.GameState == GameState.Playing)
 				{
 					MakeFovDirty();
@@ -1270,7 +1268,8 @@ public  partial class WorldManager
 		{
 			for (int y = smallestPos.Y; y <= biggestPos.Y; y++)
 			{
-				prefabData.Add(_gridData[x, y].GetData());
+	
+				prefabData.Add(_gridData[x, y].GetData(true));
 			}
 		}
 
@@ -1354,7 +1353,7 @@ public  partial class WorldManager
 
 		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition, dimension), data);
-		pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData());
+		pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData(),false);
 		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
 				
 		pseudoUnit = pseudoObj.UnitComponent;
@@ -1392,7 +1391,7 @@ public  partial class WorldManager
 		//	Console.WriteLine("Creating pseudo world with unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
 		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
-		pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData());
+		pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData(),false);
 		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
 				
 		pseudoUnit = pseudoObj.UnitComponent;
