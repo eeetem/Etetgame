@@ -24,9 +24,9 @@ public abstract class UnitSequenceAction : SequenceAction
 			ActorID = id;
 			Position = new Vector2Int(-1, -1);
 		}
-		public TargetingRequirements(Vector2Int id)
+		public TargetingRequirements(Vector2Int pos)
 		{
-			Position = id;
+			Position = pos;
 			ActorID = -1;
 		}
 
@@ -64,7 +64,7 @@ public abstract class UnitSequenceAction : SequenceAction
 		if(tile.UnitAtLocation == null) return false;
 		var obj = tile.UnitAtLocation;
 		if(Requirements.TypesToIgnore != null && Requirements.TypesToIgnore.Contains(obj!.Type.Name )) return false;
-		if (Actor.Overwatch.Item1) return false;
+		
 		return true;
 	}
 

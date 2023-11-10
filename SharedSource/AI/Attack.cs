@@ -31,6 +31,7 @@ public class Attack : AIAction
 
 	public override int GetScore(Unit unit)
 	{
+		if(base.GetScore(unit) <= 0) return -100;
 		//only what you see
 		var atk = GetBestPossibleAbility(unit,true,false,false);
 		return atk.GetTotalValue()*2;

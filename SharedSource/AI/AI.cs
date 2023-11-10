@@ -13,7 +13,22 @@ namespace DefconNull.AI;
 
 public class AI
 {
-	
+
+
+	public static bool passiveMode = false;
+	protected static bool CanSeeAnyEnemy(bool team1)
+	{
+		var enemyUnits = GameManager.GetTeamUnits(!team1);
+		foreach (var enemy in enemyUnits)
+		{
+			if (WorldManager.Instance.CanTeamSee(enemy.WorldObject.TileLocation.Position, team1) >= enemy.WorldObject.GetMinimumVisibility())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 	public static void DoAITurn(List<Unit> squad)
 	{
 		var t = new Task(delegate
@@ -25,12 +40,14 @@ public class AI
 	            {
 		            while (true)
 		            {
+			            
 			          //  if(GameManager.IsPlayer1Turn) break;
 			            List<Tuple<AIAction, Unit, int>> actions = new();
 			            
 			            //keep going with current  unit untill depleted
 			            var currentUnit = squad[currentUnitIndex];
 			            if(currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
+			            passiveMode =  !CanSeeAnyEnemy(currentUnit.IsPlayer1Team); 
 			            AIAction a = new Attack();
 			            Console.WriteLine("Calculating Attack Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
@@ -41,7 +58,7 @@ public class AI
 			            a = new Move();
 			            Console.WriteLine("Calculating Move Action..."); 
 			            actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
-			            actions.RemoveAll((x) => x.Item3 <= 0);
+			            actions.RemoveAll((x) => x.Item3 <= 1);
 			            int totalScore = 0;
 			            actions.ForEach((x) => totalScore += x.Item3);
 			            if (actions.Count == 0 || Random.Shared.Next(0, 100) > totalScore)
@@ -59,7 +76,7 @@ public class AI
 					            a = new Move();
 					            Console.WriteLine("Calculating Move Action...");
 					            actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
-					            actions.RemoveAll((x) => x.Item3 <= 0);
+					            actions.RemoveAll((x) => x.Item3 <= 1);
 					            if (actions.Count > 0) break;
 				            }
 

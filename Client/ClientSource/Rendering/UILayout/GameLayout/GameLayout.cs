@@ -748,25 +748,17 @@ public class GameLayout : MenuLayout
 		
 			var indicator = TextureManager.GetSpriteSheet("UI/coverIndicator",3,3)[i];
 			Color c = Color.White;
-			//switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
-			//{
-			//	case Cover.Full:
-			//		c = Color.Red;
-			//		break;
-			//	case Cover.High:
-			//		c = Color.Yellow;
-			//		break;
-			//	case Cover.Low:
-			//		c = Color.Green;
-			//		break;
-			//}
-			if(WorldManager.Instance.GetTileAtGrid(TileCoordinate).Traversible(TileCoordinate+new Vector2(1f,0f)))
+			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
 			{
-				c = Color.Green;
-			}
-			else
-			{
-				c = Color.Red;
+				case Cover.Full:
+					c = Color.Red;
+					break;
+				case Cover.High:
+					c = Color.Yellow;
+					break;
+				case Cover.Low:
+					c = Color.Green;
+					break;
 			}
 
 
@@ -1786,7 +1778,7 @@ public class GameLayout : MenuLayout
 				EnemyUnits.ForEach(x => potentialTargets.Add(x.WorldObject.TileLocation.Position));
 				SuggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(SelectedUnit, potentialTargets);
 				
-				if (!HudActionButton.SelectedButton.CanPerformAction(ActionTarget).Item1 && SuggestedTargets.Count > 0)
+				if (SuggestedTargets.Count > 0)
 				{
 					ActionTarget = SuggestedTargets[0].WorldObject.TileLocation.Position;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using DefconNull.WorldObjects.Units.ReplaySequence;
@@ -42,16 +43,13 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int targe
 		CrouchUnit crouch = CrouchUnit.Make(actor.WorldObject.ID);
 		queue.Enqueue(crouch);
 
-	/*	foreach (var shooter in shooters)
+		foreach (var shooter in shooters)
 		{
-			var res = Actions[ActionType.UseAbility].GetConsiquenes(shooter,actor.WorldObject.TileLocation.Position);
-			foreach (var a in res)
-			{
-				queue.Enqueue(a);
-			}
+			var act = DelayedAbilityUse.Make(shooter.WorldObject.ID,shooter.Overwatch.Item2,actor.WorldObject.TileLocation.Position);
+			queue.Enqueue(act);
 		
 		}
-		*/
+		
 		return queue;
 	}
 

@@ -65,7 +65,11 @@ public class Move : AIAction
 		Vector2Int target = best[r].Item1;
 		Console.WriteLine("moving to tile with score: "+best[r].Item3 + "at postion: "+target);
 		File.AppendAllText("aidebug.txt","moving to: "+target+" with: "+  bestMove.ToString()+"\n");
-
+		if(best[r].Item1 == unit.WorldObject.TileLocation.Position)
+		{
+			Console.WriteLine("already at best tile");
+			return;
+		}
 		bool needToDoCrouchAction = best[r].Item2 != unit.Crouching;
 
 		if (unit.Crouching && needToDoCrouchAction)
@@ -114,6 +118,7 @@ public class Move : AIAction
 
 	public override int GetScore(Unit unit)
 	{
+		if(base.GetScore(unit) <= 0) return -100;
 		if(unit.MovePoints.Current <= 0 || unit.Paniced)
 		{
 			return 0;
@@ -158,7 +163,7 @@ public class Move : AIAction
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 80);
+		float percentile = Utility.CalculatePercentile(scores, 70);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
 		return worseThanAverage;

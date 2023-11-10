@@ -11,7 +11,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 	
 	public static DelayedAbilityUse Make(int actorID, int abilityIndex, Vector2Int target) 
 	{
-		DelayedAbilityUse t = GetAction(SequenceType.DelayedAbilityUse) as DelayedAbilityUse;
+		DelayedAbilityUse t = (GetAction(SequenceType.DelayedAbilityUse) as DelayedAbilityUse)!;
 		t.abilityIndex = abilityIndex;
 		t.target = target;
 		t.Requirements = new TargetingRequirements(actorID);
@@ -32,7 +32,10 @@ public class DelayedAbilityUse  : UnitSequenceAction
 			//clientside execution of ability
 			//really should be avoided since it'll likely cause desyncs
 			//but we'll see
-			Actor.Abilities[abilityIndex].GetConsequences(Actor, target).ForEach(x => x.GenerateTask().RunSynchronously());
+			Actor.Abilities[abilityIndex].GetConsequences(Actor, target).ForEach(x =>
+			{
+				if(x.ShouldDo()){x.GenerateTask().RunSynchronously();}
+			});
 		});
 		return t;
 	}

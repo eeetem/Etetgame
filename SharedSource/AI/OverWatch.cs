@@ -64,8 +64,10 @@ public class Overwatch : AIAction
 
 	public override int GetScore(Unit unit)
 	{
+		if(base.GetScore(unit) <= 0) return -100;
 		var abl = GetRandomOverWatchAbility(unit);
 		if(abl is null) return -100;
+		if(CanSeeAnyEnemy(unit)) return -100;//no overwatch when there's someone right in front of us
 		return GetBestOverWatchTile(unit).Item2;
 	}
 

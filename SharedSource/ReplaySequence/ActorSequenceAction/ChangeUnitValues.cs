@@ -78,6 +78,7 @@ public class ChangeUnitValues : UnitSequenceAction
 	{
 		var t = new Task(delegate
 		{
+			
 			ActChange.Apply(ref Actor.ActionPoints);
 			MoveChange.Apply(ref Actor.MovePoints);
 			DetChange.Apply(ref Actor.Determination);

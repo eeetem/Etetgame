@@ -361,6 +361,8 @@ public static partial class NetworkingManager
 
 	public static void SendSequence(List<SequenceAction> actions)
 	{
+
+		actions.RemoveAll(x => !x.ShouldDo());
 		//send in chunks
 		if (actions.Count() > 25)
 		{

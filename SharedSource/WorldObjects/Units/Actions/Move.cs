@@ -67,21 +67,8 @@ public class Move : Action
 		foreach (var tile in result.Path)
 		{
 			var shooters = WorldManager.Instance.GetTileAtGrid(tile).GetOverWatchShooters(actor,actor.WorldObject.GetMinimumVisibility());
-
-			List<Unit> exclude = new List<Unit>();
-
-			foreach (var shooter in shooters)
-			{
-				if (alreadyShot.Contains(shooter))
-				{
-					exclude.Add(shooter);
-				}
-			}
 			
-			foreach (var unit in exclude)
-			{
-				shooters.Remove(unit);
-			}
+			shooters.RemoveAll(u => alreadyShot.Contains(u));
 			
 			if (shooters.Count > 0)
 			{
@@ -116,14 +103,10 @@ public class Move : Action
 			queue.Enqueue(UnitMove.Make(actor.WorldObject.ID,paths[j]));
 			if (j < shootingSpots.Count)
 			{
-				Console.WriteLine("shooting at:" + shootingSpots[j].Item2);
+				Console.WriteLine("shooting at:" + shootingSpots[j].Item2 +" with: "+ shootingSpots[j].Item1.Count+" units");
 				foreach (var attacker in shootingSpots[j].Item1)
 				{
-				//	var res = Actions[ActionType.UseAbility].GetConsiquenes(attacker,shootingSpots[j].Item2);
-				//	foreach (var a in res)
-				//	{
-				//		queue.Enqueue(a);
-				//	}
+					
 	
 					var act = DelayedAbilityUse.Make(attacker.WorldObject.ID,attacker.Overwatch.Item2,shootingSpots[j].Item2);
 					queue.Enqueue(act);

@@ -297,7 +297,7 @@ namespace DefconNull.World.WorldObjects
 			if(WorldManager.Instance.SequenceRunning) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
-			
+			if (Overwatch.Item1) return;
 			if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 			
 			var a = Action.Actions[atype];

@@ -22,21 +22,21 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 
 	public static Suppress Make(int detDmg, int actorID) 
 	{
-		Suppress t = GetAction(SequenceType.Suppress) as Suppress;
+		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.detDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
 	public static Suppress Make(int detDmg, Vector2Int actorID)
 	{
-		Suppress t = GetAction(SequenceType.Suppress) as Suppress;
+		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.detDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
 	public static Suppress Make(int detDmg, TargetingRequirements req) 
 	{
-		Suppress t = GetAction(SequenceType.Suppress) as Suppress;
+		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.detDmg = detDmg;
 		t.Requirements = req;
 		return t;

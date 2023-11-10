@@ -61,7 +61,7 @@ public class UnitMove : UnitSequenceAction
 				#if CLIENT
 				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
 			#else
-					Thread.Sleep(50);
+					Thread.Sleep(10);
 
 			#endif
 				var frametask2 = new Task(delegate

@@ -204,79 +204,81 @@ public abstract class AIAction
 		}
 		else if (c.GetType() == typeof(ChangeUnitValues))
 		{
-			if (noRecursion)
+			
+			ChangeUnitValues change = (ChangeUnitValues)c;
+			var hitUnit = change.GetAffectedActor(dimension);
+			
+			if (hitUnit== null || noRecursion ||hitUnit.Overwatch.Item1)
 			{
 				return new Tuple<int, int, int>(0,0,0);
 			}
 
-			ChangeUnitValues change = (ChangeUnitValues)c;
-			var hitUnit = change.GetAffectedActor(dimension);
-			if (hitUnit != null)
+		
+			
+			if(hitUnit.WorldObject.ID == attacker.WorldObject.ID && change.ActChange.GetChange(attacker.ActionPoints) <= 0 && change.MoveChange.GetChange(attacker.MovePoints) <= 0 && change.DetChange.GetChange(attacker.Determination) == 0 && change.MoveRangeeffectChange.GetChange(attacker.MoveRangeEffect) == 0)
 			{
-				if(hitUnit.WorldObject.ID == attacker.WorldObject.ID && change.ActChange.GetChange(attacker.ActionPoints) <= 0 && change.MoveChange.GetChange(attacker.MovePoints) <= 0 && change.DetChange.GetChange(attacker.Determination) == 0 && change.MoveRangeeffectChange.GetChange(attacker.MoveRangeEffect) == 0)
-				{
-					//we're just using points for an ability, no need to do extensive calculations
-					return new Tuple<int, int, int>(0,0,0);
-				}
-				Unit pseudoUnit;
-				int newDim = WorldManager.Instance.CreatePseudoWorldWithUnit(hitUnit, hitUnit.WorldObject.TileLocation.Position, out pseudoUnit, dimension);
-				var prechangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
+				//we're just using points for an ability, no need to do extensive calculations
+				return new Tuple<int, int, int>(0,0,0);
+			}
+			Unit pseudoUnit;
+			int newDim = WorldManager.Instance.CreatePseudoWorldWithUnit(hitUnit, hitUnit.WorldObject.TileLocation.Position, out pseudoUnit, dimension);
+			var prechangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
 				
-				var aChange =change.ActChange.GetChange(pseudoUnit.ActionPoints);
-				var mchanghe = change.MoveChange.GetChange(pseudoUnit.MovePoints);
-				var dchanghe = change.DetChange.GetChange(pseudoUnit.Determination);
-				var mrchanghe = change.MoveRangeeffectChange.GetChange(pseudoUnit.MoveRangeEffect);
+			var aChange =change.ActChange.GetChange(pseudoUnit.ActionPoints);
+			var mchanghe = change.MoveChange.GetChange(pseudoUnit.MovePoints);
+			var dchanghe = change.DetChange.GetChange(pseudoUnit.Determination);
+			var mrchanghe = change.MoveRangeeffectChange.GetChange(pseudoUnit.MoveRangeEffect);
 				
+			change.ActChange.Apply(ref pseudoUnit.ActionPoints);
+			change.MoveChange.Apply(ref pseudoUnit.MovePoints);
+			change.DetChange.Apply(ref pseudoUnit.Determination);
+			change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
+				
+			var postchangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
+				
+
+				
+			var outcome =postchangeScore.GetTotalValue()- prechangeScore.GetTotalValue();
+			int defenceOutcome = 0;
+			if (outcome > 0)//if we get better attack oppotunities only then check if expose ourselves
+			{
+									
+				pseudoUnit.ActionPoints.Current -= aChange;
+				pseudoUnit.MovePoints.Current -= mchanghe;
+				pseudoUnit.Determination.Current -= dchanghe;
+				pseudoUnit.MoveRangeEffect.Current -= mrchanghe;
+					
+					
+				var prechangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
+					
 				change.ActChange.Apply(ref pseudoUnit.ActionPoints);
 				change.MoveChange.Apply(ref pseudoUnit.MovePoints);
 				change.DetChange.Apply(ref pseudoUnit.Determination);
 				change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
-				
-				var postchangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
-				
-
-				
-				var outcome =postchangeScore.GetTotalValue()- prechangeScore.GetTotalValue();
-				int defenceOutcome = 0;
-				if (outcome > 0)//if we get better attack oppotunities only then check if expose ourselves
-				{
-									
-					pseudoUnit.ActionPoints.Current -= aChange;
-					pseudoUnit.MovePoints.Current -= mchanghe;
-					pseudoUnit.Determination.Current -= dchanghe;
-					pseudoUnit.MoveRangeEffect.Current -= mrchanghe;
 					
-					
-					var prechangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
-					
-					change.ActChange.Apply(ref pseudoUnit.ActionPoints);
-					change.MoveChange.Apply(ref pseudoUnit.MovePoints);
-					change.DetChange.Apply(ref pseudoUnit.Determination);
-					change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
-					
-					var postchangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
+				var postchangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
 
-					defenceOutcome = postchangeDefenceScore - prechangeDefenceScore;
-				}
-
-				outcome *= 3;
-				defenceOutcome *= 2;
-				outcome += defenceOutcome;
-				if (outcome == 0 && mchanghe>0)
-				{
-					outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
-				}
-
-				WorldManager.Instance.WipePseudoLayer(newDim,true);
-				if(hitUnit.IsPlayer1Team == attacker.IsPlayer1Team)
-				{
-					totalChangeScore += outcome;
-				}
-				else
-				{
-					totalChangeScore -= outcome;
-				}
+				defenceOutcome = postchangeDefenceScore - prechangeDefenceScore;
 			}
+
+			outcome *= 3;
+			defenceOutcome *= 2;
+			outcome += defenceOutcome;
+			if (AI.passiveMode && outcome == 0 && mchanghe>0)//we only do movement abilities in passive mode
+			{
+				outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
+			}
+
+			WorldManager.Instance.WipePseudoLayer(newDim,true);
+			if(hitUnit.IsPlayer1Team == attacker.IsPlayer1Team)
+			{
+				totalChangeScore += outcome;
+			}
+			else
+			{
+				totalChangeScore -= outcome;
+			}
+			
 		}else if (c.GetType() == typeof(UnitStatusEffect))
 		{
 			UnitStatusEffect status = (UnitStatusEffect)c;
@@ -303,8 +305,13 @@ public abstract class AIAction
 
 
 	public abstract void Execute(Unit unit);
-	public abstract int GetScore(Unit unit);
-	
+
+	public virtual int GetScore(Unit unit)
+	{
+		if (unit.Overwatch.Item1) return -1000;
+		return 1;
+	}
+
 	public struct MoveCalcualtion
 	{
 		public float ClosestDistance;
@@ -408,21 +415,32 @@ public abstract class AIAction
         
 		details.ClosestDistance = closestDistance;
 		closestDistance = Math.Max(0, closestDistance);
-		int distanceReward = 40;
+		int distanceReward = 50;
+		if (AI.passiveMode)
+		{
+			distanceReward += 50;
+		}
 		distanceReward -= Math.Min(distanceReward, (int)closestDistance);//if we're futher than our optimal range, we get less points
 		score += distanceReward;
+		if (AI.passiveMode && tilePosition==realUnit.WorldObject.TileLocation.Position)
+		{
+			distanceReward /= 2;//dont stya in same spot in passive mode
+		}
 		details.DistanceReward = distanceReward;
 		
+		int protectionPentalty = 0;
+		int damagePotential = 0;
+		if (!AI.passiveMode)
+		{
+			protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
 
-		int protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
-		
-		var bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false,true,dimension);
-		
-		int damagePotential = bestAttack.GetTotalValue();
+			var bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false, true, dimension);
+
+			damagePotential = bestAttack.GetTotalValue();
+		}
 
 
-		
-	
+
 		protectionPentalty *=2;//cover is VERY important
 		
 
@@ -453,7 +471,7 @@ public abstract class AIAction
 			if(Equals(u, realUnit)) continue;
 			var friendLoc = u.WorldObject.TileLocation.Position;
 			var dist = Vector2.Distance(friendLoc, tilePosition);
-			clumpingPenalty -= (int)(6/dist);
+			clumpingPenalty -= (int)(5/dist);
 		}
 		score += clumpingPenalty;
 		details.ClumpingPenalty = clumpingPenalty;
@@ -464,9 +482,9 @@ public abstract class AIAction
 		details.CoverBonus = coverBonus;
 
 		var t = WorldManager.Instance.GetTileAtGrid(tilePosition);
-        if(t.IsOverwatched)//dont block friedly overwatch lines and dont move into enemy overwatch
+		if(t.IsOverwatched)//dont block friedly overwatch lines and dont move into enemy overwatch
 		{
-	        score -= 20;
+			score -= 20;
 		}
 		
 
@@ -485,11 +503,11 @@ public abstract class AIAction
 			float bonus = 0;
 			if (coverInDirection == Cover.High)
 			{
-				bonus += 5;
+				bonus += 10;
 			}
 			else if (coverInDirection == Cover.Low)
 			{
-				bonus += 2;
+				bonus += 4;
 			}
 
 			coverBonus += (int) (bonus * stackingRatio);
@@ -499,6 +517,20 @@ public abstract class AIAction
 		return coverBonus;
 	}
 
+	
+	protected bool CanSeeAnyEnemy(Unit u)
+	{
+		var enemyUnits = GameManager.GetTeamUnits(!u.IsPlayer1Team);
+		foreach (var enemy in enemyUnits)
+		{
+			if (WorldManager.Instance.CanSee(u,enemy.WorldObject.TileLocation.Position) >= enemy.WorldObject.GetMinimumVisibility())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1)
 	{
@@ -534,10 +566,6 @@ public abstract class AIAction
 				bestAttack = res;
 			}
 
-			//foreach (var c in a.Consequences)
-			//{
-			//	c.Return();
-		//	}
 		}
 		
 		return bestAttack;
