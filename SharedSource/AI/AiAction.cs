@@ -360,7 +360,7 @@ public abstract class AIAction
 			
 			if (calcMovesToUse!=movesToUse)
 			{
-				throw new Exception("moves to use not equal to cost of path");
+				Console.WriteLine("WARNING: moves to use not equal to cost of path");
 			}
 		}
 #endif
@@ -401,31 +401,33 @@ public abstract class AIAction
 
 	
 		//add points for being in range of your primiary attack
-		float closestDistance = 1000;
-		foreach (var u in otherTeamUnits)
+		float closestDesiredDistance = 1000;
+		Vector2Int closestDesiredTile = new Vector2Int(-1,-1);
+		List<Vector2Int> locationsToCheck = new List<Vector2Int>();
+		otherTeamUnits.ForEach(x=>locationsToCheck.Add(x.WorldObject.TileLocation.Position));
+		GameManager.CapturePoints.ForEach(x=>locationsToCheck.Add(x.TileLocation.Position));
+		foreach (var l in locationsToCheck)
 		{
-			var enemyLoc = u.WorldObject.TileLocation.Position;
-			var dist = Vector2.Distance(enemyLoc, tilePosition);
-			if(dist< closestDistance){
-				closestDistance = dist;
+			var dist = Vector2.Distance(l, tilePosition);
+			if(dist< closestDesiredDistance){
+				closestDesiredDistance = dist;
+				closestDesiredTile = l;
 			}
 		}
-
-		closestDistance -= hypotheticalUnit.Abilities[0].GetOptimalRangeAI();
-        
-		details.ClosestDistance = closestDistance;
-		closestDistance = Math.Max(0, closestDistance);
-		int distanceReward = 50;
+		var p = PathFinding.GetPath(tilePosition, closestDesiredTile);
+		var actualDistance = p.Cost;
+		
+		actualDistance -= hypotheticalUnit.Abilities[0].GetOptimalRangeAI();
+		actualDistance = Math.Max(0, actualDistance);
+		details.ClosestDistance = (float) actualDistance;
+		
+		int distanceReward = 25;
 		if (AI.passiveMode)
 		{
-			distanceReward += 50;
+			distanceReward += 45;
 		}
-		distanceReward -= Math.Min(distanceReward, (int)closestDistance);//if we're futher than our optimal range, we get less points
+		distanceReward -= Math.Min(distanceReward, (int)actualDistance);//if we're futher than our optimal range, we get less points
 		score += distanceReward;
-		if (AI.passiveMode && tilePosition==realUnit.WorldObject.TileLocation.Position)
-		{
-			distanceReward /= 2;//dont stya in same spot in passive mode
-		}
 		details.DistanceReward = distanceReward;
 		
 		int protectionPentalty = 0;
@@ -453,7 +455,7 @@ public abstract class AIAction
 		
 		if(damagePotential <= 0)
 		{
-			damagePotential = -80;//discourage damageless tiles, we do this instead of vission checks
+			damagePotential = -100;//discourage damageless tiles, we do this instead of vission checks
 		}
 
 		details.DamagePotential = damagePotential; 
@@ -471,12 +473,16 @@ public abstract class AIAction
 			if(Equals(u, realUnit)) continue;
 			var friendLoc = u.WorldObject.TileLocation.Position;
 			var dist = Vector2.Distance(friendLoc, tilePosition);
-			clumpingPenalty -= (int)(5/dist);
+			clumpingPenalty -= (int)(4/dist);
 		}
 		score += clumpingPenalty;
 		details.ClumpingPenalty = clumpingPenalty;
 		
 		int coverBonus = CoverScore(tilePosition, otherTeamUnits);
+		if (AI.passiveMode)
+		{
+			coverBonus /= 2;//dont care about cover in passive mode
+		}
 
 		score += coverBonus;
 		details.CoverBonus = coverBonus;
@@ -503,15 +509,15 @@ public abstract class AIAction
 			float bonus = 0;
 			if (coverInDirection == Cover.High)
 			{
-				bonus += 10;
+				bonus += 5;
 			}
 			else if (coverInDirection == Cover.Low)
 			{
-				bonus += 4;
+				bonus += 2;
 			}
 
 			coverBonus += (int) (bonus * stackingRatio);
-			stackingRatio *= 0.3f;
+			stackingRatio *= 0.2f;
 		}
 
 		return coverBonus;

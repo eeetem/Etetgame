@@ -123,32 +123,33 @@ public class Shootable : Effect
 			}
 		}
 		WorldManager.RayCastOutcome? coverCast = null;
-
-		Vector2 dir = Vector2.Normalize(from - to);
-		to = result.CollisionPointLong + Vector2.Normalize(to - from)/5f;
-		WorldManager.RayCastOutcome cast;
-
-		cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false,true,pseudoLayer:dimension);
-		if (cast.hit && result.HitObjId != cast.HitObjId)
+		if (result.hit)
 		{
-			coverCast = cast;
-		}
-		else
-		{
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false,true,pseudoLayer:dimension);
+			Vector2 dir = Vector2.Normalize(from - to);
+			to = result.CollisionPointLong + Vector2.Normalize(to - from) / 5f;
+			WorldManager.RayCastOutcome cast;
+
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false, true, pseudoLayer: dimension);
 			if (cast.hit && result.HitObjId != cast.HitObjId)
 			{
 				coverCast = cast;
 			}
 			else
 			{
-				coverCast = null;
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false, true, pseudoLayer: dimension);
+				if (cast.hit && result.HitObjId != cast.HitObjId)
+				{
+					coverCast = cast;
+				}
+				else
+				{
+					coverCast = null;
+				}
 			}
+
+
 		}
 
-
-
-		
 		Projectile p = new Projectile(result,coverCast);
 		p.targetLow = targetLow;
 		p.SupressionIgnores.Add(actor.WorldObject.ID);
@@ -282,8 +283,8 @@ public class Shootable : Effect
 		retrunList.EnsureCapacity(retrunList.Count+tiles.Count);
 		foreach (var tile in tiles)
 		{
-            var act2 = Suppress.Make(supressionStrenght, tile.Position);
-            retrunList.Add(act2);
+			var act2 = Suppress.Make(supressionStrenght, tile.Position);
+			retrunList.Add(act2);
 	
 		}
 
@@ -321,7 +322,7 @@ public class Shootable : Effect
 	int perivewActorID = -1;
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	private Projectile? previewShot;
-	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override List<OwnedPreviewData>  PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		if((previewTarget != target || perivewActorID != actor.WorldObject.ID))	
@@ -333,7 +334,7 @@ public class Shootable : Effect
 		}
 		if(previewShot==null)
 		{
-			return;
+			return new List<OwnedPreviewData>();
 		}
 		
 		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
@@ -441,8 +442,8 @@ public class Shootable : Effect
 		{
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 15f);
 		}
-		
 
+		return new List<OwnedPreviewData>();
 	}
 #endif
 	

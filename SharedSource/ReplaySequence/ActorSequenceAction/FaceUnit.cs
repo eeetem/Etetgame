@@ -9,12 +9,13 @@ namespace DefconNull.WorldObjects.Units.ReplaySequence;
 public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int target;
-	
+
 	public static FaceUnit Make(int actorID, Vector2Int target) 
 	{
 		FaceUnit t = (GetAction(SequenceType.Face) as FaceUnit)!;
 		t.target = target;
 		t.Requirements = new TargetingRequirements(actorID);
+
 		return t;
 	}
 

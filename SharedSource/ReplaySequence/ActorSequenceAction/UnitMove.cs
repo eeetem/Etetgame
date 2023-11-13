@@ -33,7 +33,7 @@ public class UnitMove : UnitSequenceAction
 
 	public override bool ShouldDo()
 	{
-		return !Actor.Paniced;
+		return Actor != null && !Actor.Paniced;
 	}
 
 	protected override Task GenerateSpecificTask()

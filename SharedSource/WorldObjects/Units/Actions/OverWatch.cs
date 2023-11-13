@@ -38,15 +38,14 @@ public class OverWatch : Action
 	{
 		var abilityIndex= int.Parse(args[0]);
 		UnitAbility action = actor.Abilities[(abilityIndex)];
-		return action.CanPerform(actor, target,false,false);
+		return action.HasEnoughPointsToPerform(actor, false);
 	}
 
 #if CLIENT
 
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> args)
+	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> args)
 	{
 		
-
 		foreach (var loc in actor.GetOverWatchPositions(target,int.Parse(args[0])))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(loc);
@@ -56,9 +55,9 @@ public class OverWatch : Action
 			Texture2D texture = tile.Surface.GetTexture();
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, c);
-			
-			
 		}
+
+		return "";
 	}
 
 #endif

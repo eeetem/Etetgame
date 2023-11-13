@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
@@ -50,7 +51,7 @@ public abstract class Action
 	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args);
 
 #if CLIENT
-	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch,List<string>? args = null);
+	public abstract string Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch,List<string>? args = null);
 
 	public void SendToServer(Unit actor, Vector2Int target,  List<string> args)
 	{
@@ -79,7 +80,7 @@ public abstract class Action
 			{
 				
 				var actions = GetConsiquenes(actor, target,args);
-				WorldManager.Instance.AddSequence(actions);
+				SequenceManager.AddSequence(actions);
 				NetworkingManager.SendSequence(actions);
 			}
 			catch (Exception e)

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DefconNull.ReplaySequence;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldActions;
@@ -86,7 +87,7 @@ public class Move : AIAction
 		do
 		{
 			Thread.Sleep(500);
-		} while (WorldManager.Instance.SequenceRunning);
+		} while (SequenceManager.SequenceRunning);
 		if (!unit.Crouching && needToDoCrouchAction)
 		{
 			unit.DoAction(Action.ActionType.Crouch, new Vector2Int(0,0));
@@ -112,7 +113,7 @@ public class Move : AIAction
 		do
 		{
 			Thread.Sleep(250);
-		} while (WorldManager.Instance.SequenceRunning);
+		} while (SequenceManager.SequenceRunning);
 		unit.DoAction(Action.ActionType.Face, vec);//face the enemy closesy to you
 	}
 
@@ -130,8 +131,8 @@ public class Move : AIAction
 			return 1;
 		}
 		
-		float actionScore = 1+worseThanAverage;//diffference bwteen current tile and average of all other tiles
-		if (unit.MovePoints == unit.MovePoints.Max)//we should probably move first then do something
+		float actionScore = 2+worseThanAverage;//diffference bwteen current tile and average of all other tiles
+		if (unit.MovePoints >= unit.MovePoints.Max)//we should probably move first then do something
 		{
 			actionScore *= 1.5f;
 		}
@@ -163,7 +164,7 @@ public class Move : AIAction
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 70);
+		float percentile = Utility.CalculatePercentile(scores, 90);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
 		return worseThanAverage;

@@ -5,6 +5,7 @@ using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
+using DefconNull.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -57,7 +58,7 @@ public class Game1 : Game
 		Utility.Init();
 		WorldManager.Instance.Init();
 
-		PathFinding.GenerateNodes();
+		
 
 		base.Initialize();
 
@@ -127,6 +128,7 @@ public class Game1 : Game
 		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
+		SequenceManager.Update();
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);
 		LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);

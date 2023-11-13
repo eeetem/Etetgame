@@ -174,7 +174,7 @@
 
     <action detCost ="1" moveCost="1" actCost="0">
       <name>Command</name>
-      <tip>Give a targeted unit 2 determination, 1 action point and 1 move point</tip>
+      <tip>Give a targeted 1 action point and 1 move point</tip>
       <targetAid>friend,!Officer</targetAid>
 
       <effect range="1" visible ="false">
@@ -207,7 +207,7 @@
         </effect>
       </action>
   
-      <action detCost ="3" moveCost="1" actCost="2">
+      <action detCost ="3" moveCost="1" actCost="2" overwatch="3">
         <name>Suppress</name>
         <targetAid>enemy</targetAid>
         <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>

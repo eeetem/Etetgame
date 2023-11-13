@@ -57,9 +57,10 @@ public class GameLayout : MenuLayout
 	public static readonly int[,,] AIMoveCache = new int[100,100,2];
 	public static void ReMakeMovePreview()
 	{
+		if(!inited) return;
 		if(SelectedUnit == null) return;
 		PreviewMoves = SelectedUnit.GetPossibleMoveLocations();
-
+		UpdateHudButtons();
 	}
 
 	private static RenderTarget2D? hoverHudRenderTarget;
@@ -650,9 +651,9 @@ public class GameLayout : MenuLayout
 
 	private static void DoActiveAction(bool force = false)
 	{
-		if(activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch) return;
+		if (activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch) return;
 
-		if (force)
+		if (force||activeAction == ActiveActionType.Overwatch)
 		{
 			if (!HudActionButton.SelectedButton.HasPoints()) return;//only check for point is we're forcing
 		}
@@ -850,17 +851,10 @@ public class GameLayout : MenuLayout
 
 			foreach (var edge in tile.GetAllEdges())
 			{
-				DrawUnitHoverHud(batch, edge, deltatime);
+				DrawHoverHud(batch, edge);
 			}
 
 
-		}
-		foreach (var controllable in Controllables)
-		{
-			if (controllable.WorldObject.IsVisible())
-			{
-				DrawUnitHoverHud(batch, controllable.WorldObject, deltatime);
-			}
 		}
 		var tiles = WorldManager.Instance.GetTilesAround(TileCoordinate, 10);
 		foreach (var t in tiles)
@@ -869,10 +863,18 @@ public class GameLayout : MenuLayout
 			{ 
 				if (!Equals(edge.PreviewData, new PreviewData()))
 				{ 
-					DrawUnitHoverHud(batch, edge, deltatime);
+					DrawHoverHud(batch, edge);
 				}
 			}
 		}
+		foreach (var controllable in Controllables)
+		{
+			if (controllable.WorldObject.IsVisible())
+			{
+				DrawHoverHud(batch, controllable.WorldObject);
+			}
+		}
+		
 		
 		
 		graphicsDevice.SetRenderTarget(dmgScreenRenderTarget);
@@ -1512,7 +1514,7 @@ public class GameLayout : MenuLayout
 
 	
 	
-	public static void DrawUnitHoverHud(SpriteBatch batch, WorldObject obj,float deltaTime)
+	public static void DrawHoverHud(SpriteBatch batch, WorldObject obj)
 	{
 
 		Unit? unit = obj.UnitComponent;
@@ -1536,7 +1538,6 @@ public class GameLayout : MenuLayout
 			nohealthTexture = TextureManager.GetTexture("UI/HoverHud/nohealthenv");
 		}
 		float healthWidth = healthTexture.Width;
-		float healthHeight = healthTexture.Height;
 		float baseWidth = hoverHudRenderTarget.Width;
 		float healthBarWidth = healthWidth*obj.Type.MaxHealth;
 		float emtpySpace = baseWidth - healthBarWidth;
@@ -1576,9 +1577,15 @@ public class GameLayout : MenuLayout
 
 		if (unit != null)
 		{
-			int i = 0;
 			batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 
+			if (unit.Overwatch.Item1)
+			{
+				batch.Draw(unit.Abilities[unit.Overwatch.Item2].Icon,new Vector2(0,0),null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+			}
+
+			int i = 0;
+			
 			foreach (var effect in unit.StatusEffects)
 			{
 				batch.Draw(TextureManager.GetTextureFromPNG("Icons/"+effect.type.name),new Vector2(23*i,0),null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
@@ -1743,11 +1750,6 @@ public class GameLayout : MenuLayout
 		{
 			act.UpdateIcon();
 		}
-		if (HudActionButton.SelectedButton != null)
-		{
-			
-		}
-
 
 		switch (activeAction)
 		{

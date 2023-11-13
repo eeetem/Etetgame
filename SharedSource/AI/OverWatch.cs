@@ -6,6 +6,7 @@ using DefconNull.World;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.Actions;
+using Microsoft.Xna.Framework;
 using MonoGame.Extended.Collections;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
@@ -25,14 +26,14 @@ public class Overwatch : AIAction
 
 		var abl = GetRandomOverWatchAbility(unit);
 		if (abl is null) throw new Exception("No Overwatch Abilities Found!");
-		var highestTile = GetBestOverWatchTile(unit);
+		var highestTile = GetBestOverWatchTile(unit,abl);
 
 		unit.DoAction(Action.ActionType.OverWatch,highestTile.Item1,new List<string> {abl.Index.ToString()});
 		
 		
 	}
 
-	private static (Vector2Int, int) GetBestOverWatchTile(Unit unit)
+	private static (Vector2Int, int) GetBestOverWatchTile(Unit unit, UnitAbility unitAbility)
 	{
 		ConcurrentDictionary<Vector2Int, int> tileScores = new();
 		var units = GameManager.GetTeamUnits(!unit.IsPlayer1Team);
@@ -49,8 +50,17 @@ public class Overwatch : AIAction
 		Parallel.ForEach(tilesList, (tile) =>
 		{
 			if (WorldManager.Instance.VisibilityCast(unit.WorldObject.TileLocation.Position, tile, 99, unit.Crouching) == Visibility.None) return;
-			int score = CoverScore(tile, myTeam);
-			tileScores.AddOrUpdate(tile, score, (key, oldValue) => oldValue + score);
+			float score = CoverScore(tile, myTeam);
+			float distance = Vector2.Distance(tile, unit.WorldObject.TileLocation.Position);
+			float range = unitAbility.GetOptimalRangeAI();
+			while (distance > range)
+			{
+				score /= 1.5f;
+				distance -= range;
+			}
+			
+
+			tileScores.AddOrUpdate(tile, (int)score, (key, oldValue) => (int) (oldValue + score));
 		});
 		ValueTuple<Vector2Int, int> highestTile = new ValueTuple<Vector2Int, int>(new Vector2Int(-1, -1), -100);
 		foreach (var s in tileScores)
@@ -68,7 +78,7 @@ public class Overwatch : AIAction
 		var abl = GetRandomOverWatchAbility(unit);
 		if(abl is null) return -100;
 		if(CanSeeAnyEnemy(unit)) return -100;//no overwatch when there's someone right in front of us
-		return GetBestOverWatchTile(unit).Item2;
+		return GetBestOverWatchTile(unit,abl).Item2;
 	}
 
 

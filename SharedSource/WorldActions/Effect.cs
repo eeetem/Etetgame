@@ -26,12 +26,12 @@ public abstract class Effect
 
 #if CLIENT
 	
-	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public List<OwnedPreviewData>  Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
-		PreviewChild(actor, target+Offset, spriteBatch);
+		return PreviewChild(actor, target+Offset, spriteBatch);
 	}
 	
-	protected abstract void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
+	protected abstract List<OwnedPreviewData>  PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch);
 #endif
 
 

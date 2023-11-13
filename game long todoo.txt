@@ -8,13 +8,22 @@ server ui -> dont show custom map list on local server
 apply shader to every obj in effect area rather than whole screen
 
 
-gradual destrution
+display shoot breakdown
+headshot and overwatch?
+face unit force?
 
-  
-AI
+new det icon?
+shooting without using points -> too quick follow up action?
 
-tiles not loading
-
+click enemy to see their view
+reset chache on move
+fix rally
+forced camera moves
+more transparent move
+cover healthbar visibility
+auto lockon for odd angles
+targeting cover
+slightly reduce cover range
 
 UI Rework:
 crouch indicator

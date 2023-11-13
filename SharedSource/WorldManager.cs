@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
-
+using DefconNull.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
 
@@ -679,7 +679,7 @@ public  partial class WorldManager
 	
 	public WorldObject GetCoverObj(Vector2Int loc,Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true, int pseudoLayer = -1)
 	{
-		while (instance.SequenceRunningRightNow)
+		while (SequenceManager.SequenceRunningRightNow)
 		{
 			Thread.Sleep(100);
 		}
@@ -907,7 +907,7 @@ public  partial class WorldManager
 		
 	}
 
-	public bool SequenceRunningRightNow;
+
 
 	public IWorldTile GetTileAtGrid(Vector2Int pos, int pseudoGrid)
 	{
@@ -932,7 +932,7 @@ public  partial class WorldManager
 	{
 		int x = pos.X;
 		int y = pos.Y;
-		List<IWorldTile> tiles = new List<IWorldTile>();
+		List<IWorldTile> tiles = new List<IWorldTile>(range*range);
 
 		var topLeft = new Vector2Int(x - range, y - range);
 		var bottomRight = new Vector2Int(x + range, y + range);
@@ -1005,7 +1005,7 @@ public  partial class WorldManager
 	HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
 	public void Update(float gameTime)
 	{
-		SequenceRunningRightNow = false;
+		
 		lock (TaskSync)
 		{
 			List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
@@ -1111,81 +1111,12 @@ public  partial class WorldManager
 			CalculateFov();
 		}
 
-		
-			SequenceRunningRightNow = true;
-		
-		if (_currentSequenceTasks.Count == 0)
-		{
-			if (SequenceQueue.Count > 0)
-			{
-				var act = SequenceQueue.Dequeue();
-				while (!act.ShouldDo())
-				{
-					act.Return();
-					if(SequenceQueue.Count == 0){
-						SequenceRunningRightNow = false;
-						return;
-					}
-					act = SequenceQueue.Dequeue();
-				}
-				//Console.WriteLine("runnin sequnce task: "+task.SqcType);
-				_currentSequenceTasks.Add(act.GenerateTask());
-				_currentSequenceTasks.Last().Start();
-		
-					
 
-					
-				//batch tile updates and other things
-				while (true)
-				{
-					if (SequenceQueue.Count == 0)
-					{
-						break;
-					}
-				
-					if(!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
-						
-                        
-					_currentSequenceTasks.Add(SequenceQueue.Dequeue().GenerateTask());
-					_currentSequenceTasks.Last().Start();
-				} 
-
-			}
-		}
-		else if (_currentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
-		{
-			foreach (var t in _currentSequenceTasks)
-			{
-				if (t.Status == TaskStatus.RanToCompletion)
-				{
-					//	Console.WriteLine("sequence task finished");
-				}
-				else if (t.Status == TaskStatus.Faulted)
-				{
-					Console.WriteLine("Sequence task failed");
-					Console.WriteLine(t.Status);
-					throw t.Exception!;
-				}else{
-					Console.WriteLine("undefined sequence task state");
-				}
-				
-			}
-			_currentSequenceTasks.Clear();
-			SequenceRunningRightNow = false;
-#if CLIENT
-			if(SequenceQueue.Count == 0)
-			{
-				GameLayout.ReMakeMovePreview();
-			}
-#endif
-		}	
-		SequenceRunningRightNow = false;
 	}
 
 
 
 
-	private List<Task> _currentSequenceTasks = new List<Task>();
 	private void CreateWorldObj(Tuple<WorldObject.WorldObjectData, WorldTile> obj)
 	{
 		var data = obj.Item1;
@@ -1319,23 +1250,6 @@ public  partial class WorldManager
 	}
 
 
-	private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
-
-	public bool SequenceRunning => SequenceQueue.Count > 0 || _currentSequenceTasks.Count > 0;
-	public void AddSequence(SequenceAction action)
-	{
-		if(action==null) throw new ArgumentNullException(nameof(action));
-		SequenceQueue.Enqueue(action);
-		Console.WriteLine("adding action "+action.GetSequenceType()+" to sequence");
-	}
-
-	public void AddSequence(IEnumerable<SequenceAction> actions)
-	{
-		foreach (var a in actions)
-		{
-			AddSequence(a);
-		}
-	}
 
 
 	public static readonly object PseudoGenLock = new object();

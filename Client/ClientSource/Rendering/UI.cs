@@ -118,9 +118,9 @@ public static class UI
 	public static Dialog OptionMessage(string title, string content, string option1text, EventHandler? option1,string option2text, EventHandler? option2)
 	{
 		var messageBox = Dialog.CreateMessageBox(title,content);
-		messageBox.ButtonCancel.Text = option1text;
+		messageBox.ButtonCancel.Content = new Label() {Text = option1text};
 		messageBox.ButtonCancel.Click += option1;
-		messageBox.ButtonOk.Text = option2text;
+		messageBox.ButtonOk.Content = new Label() {Text = option2text};
 		messageBox.ButtonOk.Click += option2;
 		messageBox.ShowModal(Desktop);
 		return messageBox;

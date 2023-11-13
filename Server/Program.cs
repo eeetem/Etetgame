@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -29,7 +30,6 @@ public static class Program
 		PrefabManager.MakePrefabs();
 		Action.Init();
 		Utility.Init();
-		PathFinding.GenerateNodes();
 		WorldManager.Instance.Init();
 			//AI.AI.Init();
 		//	Console.WriteLine("Enter Port:");
@@ -56,6 +56,7 @@ public static class Program
 			NetworkingManager.Update();
 			GameManager.Update(MSperTick);
 			WorldManager.Instance.Update(MSperTick);
+			SequenceManager.Update();
 				
 
 			stopWatch.Stop();

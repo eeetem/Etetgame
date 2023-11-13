@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DefconNull.ReplaySequence;
 using DefconNull.World;
 using DefconNull.World.WorldObjects;
 using Microsoft.Xna.Framework;
@@ -33,13 +34,16 @@ public class AI
 	{
 		var t = new Task(delegate
 		{
-            Task.Run(() =>
-            {
+       
 				int currentUnitIndex =0;
 	            try
 	            {
 		            while (true)
 		            {
+			            do
+			            {
+				            Thread.Sleep(100);
+			            } while (SequenceManager.SequenceRunning);
 			            
 			          //  if(GameManager.IsPlayer1Turn) break;
 			            List<Tuple<AIAction, Unit, int>> actions = new();
@@ -97,10 +101,7 @@ public class AI
 
 			            actionToDo.Item1.Execute(actionToDo.Item2);
 			            Console.WriteLine("Doing AI action with score: "+actionToDo.Item3);
-			            do
-			            {
-				            Thread.Sleep(100);
-			            } while (WorldManager.Instance.SequenceRunning);
+			          
 		            }
 
 		
@@ -108,21 +109,22 @@ public class AI
 		            do
 		            {
 			            Thread.Sleep(1000);
-		            } while (WorldManager.Instance.SequenceRunning);
+		            } while (SequenceManager.SequenceRunning);
 
-		          //  if (!GameManager.IsPlayer1Turn)
-		          //  {
+		            if (!GameManager.IsPlayer1Turn)
+		            {
 			            GameManager.NextTurn();
-		          //  }
+		            }
 	            }
 	            catch (Exception e)
 	            {
 		            Console.WriteLine(e);
 		            throw;
 	            }
-            });
+          
 		});
-		WorldManager.Instance.RunNextAfterFrames(t,2);
+		
+		t.Start();
 
 	}
 

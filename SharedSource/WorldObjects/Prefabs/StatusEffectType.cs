@@ -1,4 +1,5 @@
-﻿using DefconNull.World.WorldActions;
+﻿using DefconNull.ReplaySequence;
+using DefconNull.World.WorldActions;
 
 namespace DefconNull.World.WorldObjects;
 
@@ -15,6 +16,6 @@ public class StatusEffectType
 
 	public void Apply(Unit actor)
 	{
-		WorldManager.Instance.AddSequence(Conseqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
+		SequenceManager.AddSequence(Conseqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
 	}
 }

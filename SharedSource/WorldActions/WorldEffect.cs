@@ -95,7 +95,7 @@ public class WorldEffect : Effect
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
 	private Tuple<Vector2Int?, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
 
-	protected override void PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override List<OwnedPreviewData> PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
 		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) )	
@@ -121,7 +121,7 @@ public class WorldEffect : Effect
 
 		}
 
-	
+		return new List<OwnedPreviewData>();
 	}
 #endif
 }

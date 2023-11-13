@@ -77,7 +77,11 @@ public class UnitAbility
 
 	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
-		if(ImmideateActivation && target != actor.WorldObject.TileLocation.Position) return new Tuple<bool, string>(false, "Target is not self");
+		if (ImmideateActivation && target != actor.WorldObject.TileLocation.Position)
+		{
+			return new Tuple<bool, string>(false, "Ability must be used on self");
+		}
+
 		Tuple<bool, string>? res;
 		if (consultTargetAids)
 		{
@@ -86,15 +90,13 @@ public class UnitAbility
 			{
 				return aids;
 			}
-				
-			res = IsPlausibleToPerform(actor,target,dimension);
-			if (!res.Item1)
-			{
-				return res;
-			}
-
+			
 		}
-
+		res = IsPlausibleToPerform(actor,target,dimension);
+		if (!res.Item1)
+		{
+			return res;
+		}
 		
 		
 		res = HasEnoughPointsToPerform(actor,nextTurn);
@@ -257,16 +259,18 @@ public class UnitAbility
 #if CLIENT
 	
 
-	public void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
+		string ret = "";
 		if (ImmideateActivation)
 		{
 			target = actor.WorldObject.TileLocation.Position;
 		}
 		foreach (var eff in Effects)
 		{
-			eff.Preview(actor, target, spriteBatch);
+			ret += eff.Preview(actor, target, spriteBatch);
 		}
+		return ret;
 		
 		
 	}

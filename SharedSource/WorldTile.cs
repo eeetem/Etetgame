@@ -145,13 +145,13 @@ public partial class WorldTile : IWorldTile
 		return false;
 	}
 
-	public bool Traversible(Vector2Int from)
+	public bool Traversible(Vector2Int from, bool ignoreControllables = false)
 	{
 		
 		if (Surface == null) return false;
-		if (UnitAtLocation != null) return false;
+		if (!ignoreControllables && UnitAtLocation != null) return false;
 		if (Surface != null && Surface.Type.Impassible) return false;
-		Cover obstacle =WorldManager.Instance.GetCover(from,Utility.Vec2ToDir(new Vector2Int(_position.X - from.X, _position.Y - from.Y)));
+		Cover obstacle =WorldManager.Instance.GetCover(from,Utility.Vec2ToDir(new Vector2Int(_position.X - from.X, _position.Y - from.Y)),ignoreControllables:ignoreControllables);
 		if (obstacle > Cover.High) return false;
 		return true;
 
@@ -482,10 +482,10 @@ public partial class WorldTile : IWorldTile
 
 		return data;
 	}
-    
+	List<WorldObject> edges = new List<WorldObject>();
 	public IEnumerable<WorldObject> GetAllEdges()
 	{
-		List<WorldObject> edges = new List<WorldObject>();
+		edges.Clear();
 		if (NorthEdge != null)
 		{
 			edges.Add(NorthEdge);

@@ -60,6 +60,7 @@ public partial class WorldTile : IWorldTile
 			if (!watcher.Overwatch.Item1)
 			{
 				Console.WriteLine("Watcher not overwatching");	
+				continue;
 			}
 
 			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Position, false, true);

@@ -49,7 +49,7 @@ public static partial class NetworkingManager
 	{
 		Task t = new Task(delegate
 		{
-			while (WorldManager.Instance.SequenceRunning)//still loading the map
+			while (SequenceManager.SequenceRunning)//still loading the map
 			{
 				Thread.Sleep(100);
 			}
@@ -83,7 +83,7 @@ public static partial class NetworkingManager
 	{
 
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		WorldManager.Instance.AddSequence(new UpdateTile(data));
+		SequenceManager.AddSequence(new UpdateTile(data));
 
 	}
 	
@@ -123,7 +123,7 @@ public static partial class NetworkingManager
 			
 			actions.Enqueue(sqc);
 		}
-		WorldManager.Instance.AddSequence(actions);
+		SequenceManager.AddSequence(actions);
 	
 	}
 }

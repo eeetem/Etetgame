@@ -86,9 +86,12 @@ public class PseudoTile : IWorldTile
 	{
 		throw new InvalidOperationException("cannot add objects to a PseudoTile");
 	}
-	public bool Traversible(Vector2Int fromPosition)
+
+
+
+	public bool Traversible(Vector2Int fromPosition,bool ignoreControllables = false)
 	{
-		return _realParent.Traversible(fromPosition);
+		return _realParent.Traversible(fromPosition,ignoreControllables);
 	}
 	public double TraverseCostFrom(Vector2Int tileLocationPosition)
 	{

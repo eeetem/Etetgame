@@ -85,15 +85,15 @@ public abstract class UnitSequenceAction : SequenceAction
 		return hitUnit;
 	}
 
-	protected Unit Actor
+	protected Unit? Actor
 	{
 		get
 		{
 			if (Requirements.ActorID!= -1)
 			{
 				var obj = WorldManager.Instance.GetObject(Requirements.ActorID);
-				if(obj == null) throw new Exception("Sequence Actor not found");
-				return obj!.UnitComponent!;
+				if(obj == null) Console.WriteLine("Sequence Actor not found");
+				return obj?.UnitComponent;
 			}
 
 			if (Requirements.Position != new Vector2Int(-1, -1))
@@ -101,7 +101,7 @@ public abstract class UnitSequenceAction : SequenceAction
 				var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 				var obj = tile.UnitAtLocation;
 				if(obj == null) throw new Exception("Sequence Actor not found");
-				return obj!;
+				return obj;
 			}
 
 			throw new Exception("Sequence Actor not specified for search");

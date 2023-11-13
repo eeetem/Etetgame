@@ -90,17 +90,17 @@ public class HudActionButton
 
 	public List<Unit> GetSuggestedTargets(Unit user, List<Vector2Int> targetsToCheck)
 	{
-		List<Unit> SuggestedTargets = new();
+		List<Unit> suggestedTargets = new();
 
 		foreach (var target in targetsToCheck)
 		{
-			if (_performCheckTask(Owner,target).Item1)
+			if (_performCheckTask(Owner,target).Item1 && WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation != null && WorldManager.Instance.CanTeamSee(target, Owner.IsPlayer1Team) >= WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation!.WorldObject.GetMinimumVisibility())
 			{
-				SuggestedTargets.Add(WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation);
+				suggestedTargets.Add(WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation!);
 			}
 		}
 	
-		return SuggestedTargets;
+		return suggestedTargets;
 	}
 
 	public void Preview(Vector2Int actionTarget, SpriteBatch batch)

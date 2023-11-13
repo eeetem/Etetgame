@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DefconNull.ReplaySequence;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects.Units;
@@ -85,7 +86,7 @@ namespace DefconNull.World.WorldObjects
 					{
 						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject.TileLocation.Position))
 						{
-							WorldManager.Instance.AddSequence(c);
+							SequenceManager.AddSequence(c);
 							Networking.NetworkingManager.SendSequence(c);
 						}
 					});
@@ -294,7 +295,7 @@ namespace DefconNull.World.WorldObjects
 			if (args == null) args = new List<string>();
 			
 #if CLIENT
-			if(WorldManager.Instance.SequenceRunning) return;
+			if(SequenceManager.SequenceRunning) return;
 			if (!GameManager.IsMyTurn()) return;
 #endif
 			if (Overwatch.Item1) return;

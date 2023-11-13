@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using DefconNull.World;
+using Microsoft.Xna.Framework;
 
 namespace DefconNull;
 
 public static class PathFinding
 {
-	public static Node[,] Nodes = new Node[100, 100];
+	public static List<Node[,]> Nodes = new List<Node[,]>();
+	public static List<bool> InUse = new List<bool>();
 
 	public static void ResetNodes(PriorityQueue<Node, double>.UnorderedItemsCollection nodes)
 	{
@@ -30,13 +32,31 @@ public static class PathFinding
 			node.State = NodeState.Unconsidered;
 		}
 	}
-	public static void GenerateNodes()
+
+	private static int GetNextFreeLayer()
 	{
+		for (int i = 0; i < InUse.Count; i++)
+		{
+			if (!InUse[i]) return i;
+		}
+		return GenerateNewLayer();
+	}
+
+	private static int GenerateNewLayer()
+	{
+		int layer = Nodes.Count;
+	
+		Nodes.Add(new Node[100,100]);
+	
+		InUse.Add(false);
+		
+
+
 		for (int x = 0; x < 100; x++)
 		{
 			for (int y = 0; y < 100; y++)
 			{
-				Nodes[x, y] = new Node(new Vector2Int(x,y));
+				Nodes[layer][x, y] = new Node(new Vector2Int(x,y));
 			}
 		}
 		for (int x = 0; x < 100; x++)
@@ -45,33 +65,40 @@ public static class PathFinding
 			{
 
 				Node[] connections = new Node[8];
-				if(x-1 > 0 && y-1 > 0)    connections[0] = Nodes[x - 1, y - 1];
-				if(y-1 > 0)               connections[1] = Nodes[x    , y - 1];
-				if(x+1 < 99 && y-1 > 0)   connections[2] = Nodes[x + 1, y - 1];
-				if(x+1 < 99)              connections[3] = Nodes[x + 1, y];
-				if(x-1 > 0)               connections[4] = Nodes[x - 1, y];
-				if(x-1 > 0 && y+1 < 99)   connections[5] = Nodes[x - 1, y + 1];
-				if(y+1 < 99)              connections[6] = Nodes[x    , y + 1];
-				if(x+1 < 99 && y+1 < 99)  connections[7] = Nodes[x + 1, y + 1];
+				if(x-1 > 0 && y-1 > 0)    connections[0] = Nodes[layer][x - 1, y - 1];
+				if(y-1 > 0)               connections[1] = Nodes[layer][x    , y - 1];
+				if(x+1 < 99 && y-1 > 0)   connections[2] = Nodes[layer][x + 1, y - 1];
+				if(x+1 < 99)              connections[3] = Nodes[layer][x + 1, y];
+				if(x-1 > 0)               connections[4] = Nodes[layer][x - 1, y];
+				if(x-1 > 0 && y+1 < 99)   connections[5] = Nodes[layer][x - 1, y + 1];
+				if(y+1 < 99)              connections[6] = Nodes[layer][x    , y + 1];
+				if(x+1 < 99 && y+1 < 99)  connections[7] = Nodes[layer][x + 1, y + 1];
 					
 
-				Nodes[x, y].ConnectedNodes = connections;
+				Nodes[layer][x, y].ConnectedNodes = connections;
 			}
 		}
 
+		return layer;
 	}
 
 	public static readonly object syncobj = new object();
 
 	public static List<Vector2Int> GetAllPaths(Vector2Int from, int range)
 	{
-		return GetAllPaths(Nodes[from.X, from.Y], range);
+		int layer = -1;
+		lock (syncobj)
+		{
+			layer = GetNextFreeLayer();
+			InUse[layer] = true;
+		}
+		var p = GetAllPaths(Nodes[layer][from.X, from.Y], range);
+		InUse[layer] = false;
+		return p;
 	}
 	public static List<Vector2Int> GetAllPaths(Node from, int range)
 	{
-		lock (syncobj) //just in case
-		{
-
+		
 			var done = new List<Node>();
 			var inRange = new List<Vector2Int>();
 
@@ -123,7 +150,7 @@ public static class PathFinding
 
 				AddOrUpdateConnected(current, null,open);
 			}
-		}
+		
 
 	}
 	public struct PathFindResult
@@ -141,17 +168,23 @@ public static class PathFinding
 
 	public static PathFindResult GetPath(Vector2Int from, Vector2Int to)
 	{
+		if(from == to) return new PathFindResult(new List<Vector2Int>(),0	);
 		if (!WorldManager.IsPositionValid(from) || !WorldManager.IsPositionValid(to)) return new PathFindResult(new List<Vector2Int>(),0);
-		return GetPath(Nodes[from.X, from.Y], Nodes[to.X, to.Y]);
+		int layer = -1;
+		lock (syncobj)
+		{
+			layer = GetNextFreeLayer();
+			InUse[layer] = true;
+		}
+		var p = GetPath(Nodes[layer][from.X, from.Y], Nodes[layer][to.X, to.Y]);
+		InUse[layer] = false;
+		return p;
 	}
 
 	public static PathFindResult GetPath(Node from, Node to)
 	{
 
-		lock (syncobj)//just in case
-		{
-            
-			var done = new List<Node>();
+			var done = new List<Node>((int) (Vector2.Distance(from.Position,to.Position)*2f));
 			
 			var open = new PriorityQueue<Node,double>();
 			foreach (var node in from.ConnectedNodes)
@@ -181,7 +214,6 @@ public static class PathFinding
 
 				// Selecting next Element from queue
 				var current = open.Dequeue();
-				if (current.Parent != null) PathfindingCache[current.Position] = new Tuple<double, Vector2Int>(current.TotalCost, current.Parent.Position);
 				// Add it to the done list
 				if(current.State == NodeState.Closed) continue;
 				done.Add(current);
@@ -194,7 +226,7 @@ public static class PathFinding
 					var ret = GeneratePath(to); // Create the Path
 
 					// Reset all Nodes that were used.
-					double cost = Nodes[ret.Last().X, ret.Last().Y].CurrentCost;
+					double cost = to.CurrentCost;
 					ResetNodes(done);
 					ResetNodes(open.UnorderedItems);
 						
@@ -203,7 +235,7 @@ public static class PathFinding
 
 				AddOrUpdateConnected(current, to, open);
 			}
-		}
+		
 	}
 	private static List<Vector2Int> GeneratePath(Node target)
 	{
@@ -218,7 +250,7 @@ public static class PathFinding
 		ret.Reverse();
 		return ret;
 	}
-	public static Dictionary<Vector2Int,Tuple<double,Vector2Int>> PathfindingCache = new Dictionary<Vector2Int, Tuple<double,Vector2Int>>();
+	
 	private static void AddOrUpdateConnected(Node current, Node? to, PriorityQueue<Node,double> queue)
 	{
 		if (current.Parent != null && !current.Traversable(current.Parent))
@@ -230,7 +262,8 @@ public static class PathFinding
 		{
 			if (connected is null) return;
 
-			if (!connected.Traversable(current) ||
+			//ignore controllables for last step to prevent ghosting and aid AI
+			if (!connected.Traversable(current,connected==to) ||
 			    connected.State == NodeState.Closed)
 			{
 				continue; // Do ignore already checked and not traversable nodes.
@@ -264,9 +297,7 @@ public static class PathFinding
 				// Codacy made me do it.
 				throw new Exception(
 					"Detected the same node twice. Confusion how this could ever happen");
-			}
-
-			if (connected.Parent != null) PathfindingCache[connected.Position] = new Tuple<double, Vector2Int>(connected.TotalCost, connected.Parent.Position);
+			} 
 		}
 	
 	}
@@ -309,10 +340,10 @@ public class Node : IComparable<Node>, IEquatable<Node>
 	/// <summary>
 	///     Gets a value indicating whether the node is traversable.
 	/// </summary>
-	public bool Traversable(Node from)
+	public bool Traversable(Node from, bool ignoreControllables = false)
 	{
 		var tile = WorldManager.Instance.GetTileAtGrid(Position);
-		return tile.Traversible(from.Position);
+		return tile.Traversible(from.Position,ignoreControllables);
 	}
 
 

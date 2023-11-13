@@ -131,6 +131,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\ReplaySequence\SequenceAction.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
+        <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\TakeDamage.cs">
         <Link>SharedSource\ReplaySequence\TakeDamage.cs</Link>
       </Compile>

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using DefconNull.ReplaySequence;
 using DefconNull.World.WorldObjects.Units;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -191,7 +191,7 @@ public partial class WorldObject
             
 			Task t = new Task(delegate
 			{
-				WorldManager.Instance.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
+				SequenceManager.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
 			});
 			WorldManager.Instance.RunNextAfterFrames(t,4);
 

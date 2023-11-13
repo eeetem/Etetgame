@@ -44,8 +44,11 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Cannot Move while Paniced");
 		}
 
+		if (WorldManager.Instance.GetTileAtGrid(position).UnitAtLocation != null)
+		{
+			return new Tuple<bool, string>(false, "Tile is occupied");
+		}
 
-		
 		return new Tuple<bool, string>(true, "");
 	}
 
@@ -128,9 +131,9 @@ public class Move : Action
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
 	
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
+	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
 	{
-		if (WorldManager.Instance.SequenceRunning) return;
+		if (SequenceManager.SequenceRunning) return "";
 	
 		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
 	
@@ -168,6 +171,8 @@ public class Move : Action
 
 
 		}
+
+		return "";
 	}
 #endif
-	}
+}

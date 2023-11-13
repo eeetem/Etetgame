@@ -21,7 +21,7 @@ public class UseAbility : Action
 	{
 		var abilityIndex= int.Parse(args[0]);
 		UnitAbility action = actor.Abilities[(abilityIndex)];
-		return action.CanPerform(actor, target,false,false);
+		return action.HasEnoughPointsToPerform(actor,false);
 
 	}
 
@@ -57,11 +57,11 @@ public class UseAbility : Action
 
 #if CLIENT
 
-		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> Args)
+		public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> Args)
 		{
 			var abilityIndex= int.Parse(Args[0]);
 			UnitAbility action = actor.Abilities[abilityIndex];
-			action.Preview(actor, target,spriteBatch);
+			return action.Preview(actor, target,spriteBatch);
 		}
 
 
