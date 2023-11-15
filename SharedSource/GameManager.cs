@@ -37,7 +37,7 @@ public static partial class GameManager
 			if(TimeTillNextTurn/1000f < PreGameData.TurnTime*0.15f && !playedWarning && IsMyTurn())
 			{
 				playedWarning = true;
-				Audio.PlaySound("UI/alert");
+				Audio.PlaySound("alert");
 			}
 #endif
 				
@@ -135,7 +135,7 @@ public static partial class GameManager
 		}
 #if CLIENT
 		GameLayout.SetScore(score);
-		Audio.PlaySound("UI/turn");
+		Audio.PlaySound("turn");
 #endif
 			
 		if(score > 8)EndGame(true);

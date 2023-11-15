@@ -51,15 +51,15 @@ public static class Camera
 
 	static Vector2 MoveTarget;
 	public static bool ForceMoving { get; private set; }
-
-	public static void SetPos(Vector2Int vec)
+	public static bool noCancel = false;
+	public static void SetPos(Vector2Int vec, bool force = false)
 	{
 
 		vec = Utility.GridToWorldPos(vec);
 		//vec.X -= Cam.BoundingRectangle.Width / 2;
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
 		MoveTarget = vec-(Vector2Int)Cam.Origin;
-		
+		noCancel = force;
 		ForceMoving = true;
 	}
 
@@ -69,7 +69,7 @@ public static class Camera
 	{
 		var state = Keyboard.GetState();
 		var mouseState = Mouse.GetState();
-		if (mouseState.MiddleButton == ButtonState.Pressed)
+		if (mouseState.MiddleButton == ButtonState.Pressed && !noCancel)
 		{
 			var lastpos = lastMousePos;
 			lastMousePos = new Vector2(mouseState.Position.X,mouseState.Position.Y);
@@ -114,6 +114,7 @@ public static class Camera
 			if (difference.Length() < 25)
 			{
 				ForceMoving = false;
+				noCancel = false;
 			}
 
 	

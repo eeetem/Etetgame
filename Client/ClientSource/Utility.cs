@@ -235,10 +235,10 @@ public static partial class Utility
 			}
 
 			Texture2D t;
-			if(TextureManager.HasTexture("UI/text/" + texId)){
-				t= TextureManager.GetTexture("UI/text/" + texId);
+			if(TextureManager.HasTexture("text/" + texId)){
+				t= TextureManager.GetTexture("text/" + texId);
 			}else{
-				t = TextureManager.GetTexture("UI/text/broken");
+				t = TextureManager.GetTexture("text/broken");
 			
 			}
 		

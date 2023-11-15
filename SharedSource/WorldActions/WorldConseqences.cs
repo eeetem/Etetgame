@@ -171,7 +171,7 @@ public class WorldConseqences : IMessageSerializable
 	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile, WorldObject? user = null)
 	{
 		var consequences = new List<SequenceAction>();
-		if (Dmg > 0)
+		if (Dmg != 0)
 		{
 			if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
 			{
@@ -211,6 +211,7 @@ public class WorldConseqences : IMessageSerializable
 				item.TakeDamage(Dmg, 0);
 				consequences.Add(TakeDamage.Make(Dmg, 0, item!.ID));
 			}
+			consequences.Add(TakeDamage.Make(Dmg,0,tile.Position,Ignores));
 		}
 		
 
@@ -218,34 +219,13 @@ public class WorldConseqences : IMessageSerializable
 		{
 			consequences.Add(MakeWorldObject.Make(PLaceItemConsequence, tile.Position, user.Facing)); //fix this
 		}
-		
 
-		/*
-			if (user != null && user.UnitComponent!=null)
-			{
-
-				if (Equals(tile.UnitAtLocation, user.UnitComponent))
-				{
-					if(!TargetSelf) return consequences;
-				}
-				else
-				{
-					if (ctr.IsPlayerOneTeam == user.UnitComponent.IsPlayerOneTeam && !TargetFriend) return consequences;
-					if (ctr.IsPlayerOneTeam != user.UnitComponent.IsPlayerOneTeam && !TargetFoe) return consequences;
-				}
-
-			}
-*/
-		
 		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);
 		req.TypesToIgnore = new List<string>();
 		req.TypesToIgnore.AddRange(Ignores);
-		if (Dmg > 0)
-		{
-			consequences.Add(TakeDamage.Make(Dmg,0,tile.Position,Ignores));
-		}
 
-		if (Det > 0)
+
+		if (Det != 0)
 		{
 			consequences.Add(Suppress.Make(Det, req));
 		}

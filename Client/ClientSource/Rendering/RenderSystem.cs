@@ -149,7 +149,7 @@ public static class RenderSystem
 					if (tile.Surface != null)
 					{
 						Texture2D sprite = tile.Surface.GetTexture();
-						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.3f);
+						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.2f);
 					}
 				}
 

@@ -91,17 +91,17 @@ public class WorldEffect : Effect
 
 
 	List<SequenceAction> previewCache = new List<SequenceAction>();
-	int perivewActorID = -1;
+	Vector2Int previewActor = new Vector2Int(-1,-1);
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
 	private Tuple<Vector2Int?, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
 
 	protected override List<OwnedPreviewData> PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || perivewActorID != actor.WorldObject.ID) )	
+		if((previewTarget != target || previewActor != actor.WorldObject.TileLocation.Position) )	
 		{
 			previewCache = GetConsequences(actor, target);
-			perivewActorID = actor.WorldObject.ID;
+			previewActor = actor.WorldObject.TileLocation.Position;
 			previewTarget = target;
 			previewArea = GetAffectedTiles(actor, target);
 		}
@@ -115,7 +115,7 @@ public class WorldEffect : Effect
 
 		if (previewArea.Item1.HasValue)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"), Utility.GridToWorldPos(previewArea.Item1.Value + new Vector2(-1.5f, -0.5f)), Color.Red);
+			spriteBatch.Draw(TextureManager.GetTexture("targetingCursor"), Utility.GridToWorldPos(previewArea.Item1.Value + new Vector2(-1.5f, -0.5f)), Color.Red);
 			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(previewArea.Item1.Value + new Vector2(0.5f, 0.5f)), Color.Red, 2);
 
 

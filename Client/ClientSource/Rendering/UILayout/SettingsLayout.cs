@@ -14,7 +14,7 @@ public class SettingsLayout : UiLayout
 	{
 		var grid = new Grid()
 		{
-			Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
+			Background = new TextureRegion(TextureManager.GetTexture("background")),
 			Padding =new Thickness(35),
 			GridColumnSpan = 10,
 			GridRowSpan = 10

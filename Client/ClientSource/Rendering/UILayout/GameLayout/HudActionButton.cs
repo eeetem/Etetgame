@@ -141,20 +141,20 @@ public class HudActionButton
 	{
 		if (this ==SelectedButton)
 		{
-			UIButton.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
-			UIButton.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), new Color(255, 140, 140));
+			UIButton.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button")), new Color(255, 140, 140));
+			UIButton.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button")), new Color(255, 140, 140));
 			UIButton.Image = new ColoredRegion(_icon, Color.Red);
 		}
 		else if(HasPoints())
 		{
-			UIButton.Background = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));
-			UIButton.OverBackground = new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button"));
+			UIButton.Background = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button"));
+			UIButton.OverBackground = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button"));
 			UIButton.Image = _icon;
 		}
 		else
 		{
-			UIButton.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")), Color.Gray);
-			UIButton.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/GameHud/BottomBar/button")),  Color.Gray);
+			UIButton.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button")), Color.Gray);
+			UIButton.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/button")),  Color.Gray);
 			UIButton.Image = new ColoredRegion(_icon, Color.Gray);
 		}
 

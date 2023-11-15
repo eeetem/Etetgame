@@ -20,7 +20,7 @@ public class MainMenuLayout : UiLayout
 		MasterServerNetworking.Disconnect();
 		var panel = new Panel()
 		{
-			Background = new TextureRegion(TextureManager.GetTexture("UI/background")),
+			Background = new TextureRegion(TextureManager.GetTexture("background")),
 		};
 
 		var menustack = new HorizontalStackPanel()
@@ -172,7 +172,7 @@ public class MainMenuLayout : UiLayout
 
 
 		var discord = new ImageButton();
-		discord.Image = new TextureRegion(TextureManager.GetTexture("UI/discord"));
+		discord.Image = new TextureRegion(TextureManager.GetTexture("discord"));
 		discord.Background = new SolidBrush(Color.Transparent);
 		discord.OverBackground = new SolidBrush(Color.Transparent);
 		discord.VerticalAlignment = VerticalAlignment.Top;

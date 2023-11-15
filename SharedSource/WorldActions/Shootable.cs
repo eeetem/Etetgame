@@ -61,13 +61,21 @@ public class Shootable : Effect
 		}
 	}
 
-	public Projectile GenerateProjectile(Unit actor, Vector2Int target, int dimension)
+	public Projectile GenerateProjectile(Unit actor, Vector2Int fallbackTarget, WorldObject? targetObj, int dimension)
 	{
+
+		Vector2Int target = fallbackTarget;
+		int targetId = -1;
+		if(targetObj != null)
+		{
+			target = targetObj.TileLocation.Position;
+			targetId = targetObj.ID;
+		}
 		
 		bool shooterLow = actor.Crouching;
-		Vector2 shotDir = Vector2.Normalize(target -actor.WorldObject.TileLocation.Position);
-		Vector2 from = actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + shotDir / new Vector2(2.5f, 2.5f);
-		Vector2 to = target + new Vector2(0.5f, 0.5f);
+		Vector2 shotDir = Vector2.Normalize(target - actor.WorldObject.TileLocation.Position);
+		Vector2 from = actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) ;
+		
 		bool targetLow = false;//move this outside
 		IWorldTile? targetTile = null;
 		if (target.X >= 0 && target.Y >= 0 && target.X < 100 && target.Y < 100)
@@ -84,60 +92,74 @@ public class Shootable : Effect
 		{
 			targetLow = false;
 		}
+		WorldManager.RayCastOutcome? result = null;
 
-		WorldManager.RayCastOutcome result;
-		if (shooterLow)
+		
+		//we insert target + new Vector2(0.5f, 0.5f) twice since it's the fisrt thing we should try but also last thing to return if we dont hit anything
+		Vector2[] potentialTargets = {target + new Vector2(0.5f, 0.5f),target+new Vector2(0.25f,0.25f), target+new Vector2(0.25f, 0.75f),target+new Vector2(0.75f, 0.25f),target+new Vector2(0.75f, 0.75f),target + new Vector2(0.5f, 0.5f)};
+		int j = 0;
+		Vector2 to = default;
+		while (!result.HasValue || !result.Value.hit || result.Value.HitObjId != targetId)
 		{
-			//we are crouched so we hit High cover at all distances
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High, pseudoLayer:dimension);
-		}
-		else if (targetLow)
-		{
-			//we are standing, the target is crouched, point blank we are blocked only by full walls while the rest of the way we'll hit high cover
-			result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full,pseudoLayer:dimension);
-		}
-		else
-		{
-			//we both are standing, only full blocks
-			result = WorldManager.Instance.Raycast(from, to, Cover.Full,false,pseudoLayer:dimension);
-		}
+			if(j>=potentialTargets.Length) break;
+			to = potentialTargets[j];
+			j++;
+			
+			if (shooterLow)
+			{
+				//we are crouched so we hit High cover at all distances
+				result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.High, pseudoLayer:dimension);
+			}
+			else if (targetLow)
+			{
+				//we are standing, the target is crouched, point blank we are blocked only by full walls while the rest of the way we'll hit high cover
+				result = WorldManager.Instance.Raycast(from, to, Cover.High, false,false,Cover.Full,pseudoLayer:dimension);
+			}
+			else
+			{
+				//we both are standing, only full blocks
+				result = WorldManager.Instance.Raycast(from, to, Cover.Full,false,pseudoLayer:dimension);
+			}
 
-		//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
-		if (!result.hit) {
-			var tile = WorldManager.Instance.GetTileAtGrid(to,dimension);
-			var obj = tile.UnitAtLocation;
-			if (obj != null) {
-				var controllable = obj;
-				if (controllable.Crouching && targetLow == false) {
-					// Do nothing if targetLow is false
-				} else {
-					result = new WorldManager.RayCastOutcome(from, to) {
-						hit = true,
-						HitObjId = obj.WorldObject.ID,
-						CollisionPointLong = to,
-						CollisionPointShort = to,
-					};
-				}
+			//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
+			if (!result.Value.hit) {
+				var tile = WorldManager.Instance.GetTileAtGrid(to,dimension);
+				var obj = tile.UnitAtLocation;
+				if (obj != null) {
+					var controllable = obj;
+					if (controllable.Crouching && targetLow == false) {
+						// Do nothing if targetLow is false
+					} else {
+						result = new WorldManager.RayCastOutcome(from, to) {
+							hit = true,
+							HitObjId = obj.WorldObject.ID,
+							CollisionPointLong = to,
+							CollisionPointShort = to,
+						};
+					}
 
 				
+				}
 			}
+
+		
 		}
 		WorldManager.RayCastOutcome? coverCast = null;
-		if (result.hit)
+		if (result.Value.hit)
 		{
 			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.CollisionPointLong + Vector2.Normalize(to - from) / 5f;
+			to = result.Value.CollisionPointLong + Vector2.Normalize(to - from) / 5f;
 			WorldManager.RayCastOutcome cast;
 
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.High, false, true, pseudoLayer: dimension);
-			if (cast.hit && result.HitObjId != cast.HitObjId)
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, false, true, pseudoLayer: dimension);
+			if (cast.hit && result.Value.HitObjId != cast.HitObjId)
 			{
 				coverCast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.4f, to, Cover.Low, false, true, pseudoLayer: dimension);
-				if (cast.hit && result.HitObjId != cast.HitObjId)
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, false, true, pseudoLayer: dimension);
+				if (cast.hit && result.Value.HitObjId != cast.HitObjId)
 				{
 					coverCast = cast;
 				}
@@ -150,7 +172,7 @@ public class Shootable : Effect
 
 		}
 
-		Projectile p = new Projectile(result,coverCast);
+		Projectile p = new Projectile(result.Value,coverCast);
 		p.targetLow = targetLow;
 		p.SupressionIgnores.Add(actor.WorldObject.ID);
 
@@ -183,7 +205,7 @@ public class Shootable : Effect
 		{
 			return new Tuple<bool, string>(false,"You can't shoot yourself!");
 		}
-		var p = GenerateProjectile(actor, target,dimension);
+		var p = GenerateProjectile(actor, target, WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,dimension);
 
 		if (p.Result.hit)
 		{
@@ -201,7 +223,7 @@ public class Shootable : Effect
 	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
 	{
 
-		var p = GenerateProjectile(actor, target,dimension);
+		var p = GenerateProjectile(actor, target,WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,dimension);
 		var retrunList = new List<SequenceAction>();
 		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
@@ -319,25 +341,25 @@ public class Shootable : Effect
 #if CLIENT
 	
 	Vector2Int previewTarget = new Vector2Int(-1,-1);
-	int perivewActorID = -1;
+	Vector2Int previewActor = new Vector2Int(-1,-1);
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	private Projectile? previewShot;
 	protected override List<OwnedPreviewData>  PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || perivewActorID != actor.WorldObject.ID))	
+		if((previewTarget != target || previewActor != actor.WorldObject.TileLocation.Position))	
 		{
 			previewCache = GetConsequences(actor, target);
-			perivewActorID = actor.WorldObject.ID;
+			previewActor = actor.WorldObject.TileLocation.Position;
 			previewTarget = target;
-			previewShot = GenerateProjectile(actor, target,-1);
+			previewShot = GenerateProjectile(actor, target,WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,-1);
 		}
 		if(previewShot==null)
 		{
 			return new List<OwnedPreviewData>();
 		}
 		
-		spriteBatch.Draw(TextureManager.GetTexture("UI/targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
+		spriteBatch.Draw(TextureManager.GetTexture("targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
 		var area = SupressedTiles(previewShot.Value);
 		foreach (var t in area)
 		{

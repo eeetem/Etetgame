@@ -81,15 +81,15 @@ public class PreGameLobbyLayout : MenuLayout
 			Top = 0,
 			Width = (int) (200 * globalScale.X),
 			Height = (int) (100 * globalScale.Y),
-			Background = new TextureRegion(TextureManager.GetTexture("UI/button")),
-			OverBackground = new TextureRegion(TextureManager.GetTexture("UI/button")),
+			Background = new TextureRegion(TextureManager.GetTexture("button")),
+			OverBackground = new TextureRegion(TextureManager.GetTexture("button")),
 			//	Font =DefaultFont.GetFont(50)
 
 		};
 		if (!GameManager.IsPlayer1)
 		{
-			btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
-			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/button")), Color.DimGray);
+			btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("button")), Color.DimGray);
+			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("button")), Color.DimGray);
 		}
 
 		btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
@@ -198,7 +198,7 @@ public class PreGameLobbyLayout : MenuLayout
 				Left = -10,
 				Width = 50,
 				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/kick")), Color.White),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("kick")), Color.White),
 			};
 			kick.Click += (s, a) => { NetworkingManager.KickRequest(); };
 			lablekick.Widgets.Add(kick);
@@ -212,7 +212,7 @@ public class PreGameLobbyLayout : MenuLayout
 				Left = -10,
 				Width = 50,
 				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/AI")), Color.White),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("AI")), Color.White),
 			};
 			addAI.Click += (s, a) => { NetworkingManager.AddAI(); };
 			var addPractice = new ImageButton()
@@ -222,7 +222,7 @@ public class PreGameLobbyLayout : MenuLayout
 				Left = -10,
 				Width = 50,
 				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("UI/pract")), Color.White),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("pract")), Color.White),
 			};
 			addPractice.Click += (s, a) => { NetworkingManager.PracticeMode();};
 			lablekick.Widgets.Add(addAI);

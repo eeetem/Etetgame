@@ -40,12 +40,12 @@ public class MoveCamera : SequenceAction
 			{
 				if (doAlways)
 				{
-					Camera.SetPos(location + new Vector2Int(Random.Shared.Next(-scatter, scatter), Random.Shared.Next(-scatter, scatter)));
+					Camera.SetPos(location + new Vector2Int(Random.Shared.Next(-scatter, scatter), Random.Shared.Next(-scatter, scatter)),true);
 				}
 			}
 			else
 			{
-				Camera.SetPos(location);
+				Camera.SetPos(location,true);
 			}
 
 			while (Camera.ForceMoving)
