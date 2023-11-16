@@ -61,16 +61,13 @@ public class Shootable : Effect
 		}
 	}
 
-	public Projectile GenerateProjectile(Unit actor, Vector2Int fallbackTarget, WorldObject? targetObj, int dimension)
+	public Projectile GenerateProjectile(Unit actor, WorldObject targetObj, int dimension)
 	{
 
-		Vector2Int target = fallbackTarget;
-		int targetId = -1;
-		if(targetObj != null)
-		{
-			target = targetObj.TileLocation.Position;
-			targetId = targetObj.ID;
-		}
+
+			Vector2Int target = targetObj.TileLocation.Position;
+			int targetId = targetObj.ID;
+		
 		
 		bool shooterLow = actor.Crouching;
 		Vector2 shotDir = Vector2.Normalize(target - actor.WorldObject.TileLocation.Position);
@@ -199,13 +196,13 @@ public class Shootable : Effect
 		return p;
 	}
 	
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target, int dimension = -1)
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
 	{
-		if(actor.WorldObject.TileLocation.Position == target)
+		if(Equals(actor.WorldObject, target))
 		{
 			return new Tuple<bool, string>(false,"You can't shoot yourself!");
 		}
-		var p = GenerateProjectile(actor, target, WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,dimension);
+		var p = GenerateProjectile(actor, target,dimension);
 
 		if (p.Result.hit)
 		{
@@ -220,14 +217,14 @@ public class Shootable : Effect
 		return new Tuple<bool, string>(true,"");
 	}
 
-	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1)
 	{
 
-		var p = GenerateProjectile(actor, target,WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,dimension);
+		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
 		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
-		var turnact = FaceUnit.Make(actor.WorldObject.ID, target);
+		var turnact = FaceUnit.Make(actor.WorldObject.ID, target.TileLocation.Position);
 		retrunList.Add(turnact);
 		if (p.CoverCast.HasValue)
 		{
@@ -339,27 +336,26 @@ public class Shootable : Effect
 	}
 
 #if CLIENT
-	
-	Vector2Int previewTarget = new Vector2Int(-1,-1);
+
+	private WorldObject? previewTarget;
 	Vector2Int previewActor = new Vector2Int(-1,-1);
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	private Projectile? previewShot;
-	protected override List<OwnedPreviewData>  PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override List<OwnedPreviewData>  PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || previewActor != actor.WorldObject.TileLocation.Position))	
+		if((!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position))	
 		{
 			previewCache = GetConsequences(actor, target);
 			previewActor = actor.WorldObject.TileLocation.Position;
 			previewTarget = target;
-			previewShot = GenerateProjectile(actor, target,WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation?.WorldObject,-1);
+			previewShot = GenerateProjectile(actor, target,-1);
 		}
 		if(previewShot==null)
 		{
 			return new List<OwnedPreviewData>();
 		}
 		
-		spriteBatch.Draw(TextureManager.GetTexture("targetingCursor"),  Utility.GridToWorldPos(previewTarget+new Vector2(-1.5f,-0.5f)), Color.Red);
 		var area = SupressedTiles(previewShot.Value);
 		foreach (var t in area)
 		{
@@ -370,10 +366,6 @@ public class Shootable : Effect
 			}
 		}
 		spriteBatch.DrawOutline(area, Color.Blue, 1);
-
-
-
-		spriteBatch.DrawText("X:"+previewTarget.X+" Y:"+previewTarget.Y,  Camera.GetMouseWorldPos(), 2/Camera.GetZoom(),Color.Wheat);
 
 
 

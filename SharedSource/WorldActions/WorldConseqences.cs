@@ -134,20 +134,20 @@ public class WorldConseqences : IMessageSerializable
 	}
 
 	List<WorldObject> _ignoreList = new List<WorldObject>();
-	public List<SequenceAction> GetApplyConsiqunces(Vector2Int target, WorldObject? user = null)//rn only for placing prefabs
+	public List<SequenceAction> GetApplyConsiqunces(WorldObject target)//rn only for placing prefabs
 	{
 		_ignoreList = new List<WorldObject>();
 		
 		var list = new List<SequenceAction>();
 		if (FogOfWarSpot)
 		{
-			MoveCamera m = MoveCamera.Make(target,true,FogOfWarSpotScatter);
+			MoveCamera m = MoveCamera.Make(target.TileLocation.Position,true,FogOfWarSpotScatter);
 			list.Add(m);
 		}
 
-		foreach (var tile in GetAffectedTiles(target))
+		foreach (var tile in GetAffectedTiles(target.TileLocation.Position))
 		{
-			foreach (var sqc in ConsequencesOnTile(tile,user))
+			foreach (var sqc in ConsequencesOnTile(tile,target))
 			{
 				list.Add(sqc);
 			}
@@ -155,7 +155,7 @@ public class WorldConseqences : IMessageSerializable
 
 		if (Sfx != "" && Sfx != null)
 		{
-			PlaySound playSound = PlaySound.Make(Sfx, target);
+			PlaySound playSound = PlaySound.Make(Sfx, target.TileLocation.Position);
 			list.Add(playSound);
 			//Audio.PlaySound(Sfx, target);
 		}
@@ -168,7 +168,7 @@ public class WorldConseqences : IMessageSerializable
 
 		return list;
 	}
-	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile, WorldObject? user = null)
+	protected List<SequenceAction> ConsequencesOnTile(IWorldTile tile, WorldObject originalTarget)
 	{
 		var consequences = new List<SequenceAction>();
 		if (Dmg != 0)
@@ -217,7 +217,7 @@ public class WorldConseqences : IMessageSerializable
 
 		if (PLaceItemConsequence!=null)
 		{
-			consequences.Add(MakeWorldObject.Make(PLaceItemConsequence, tile.Position, user.Facing)); //fix this
+			consequences.Add(MakeWorldObject.Make(PLaceItemConsequence, tile.Position, originalTarget.Facing)); //fix this
 		}
 
 		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);

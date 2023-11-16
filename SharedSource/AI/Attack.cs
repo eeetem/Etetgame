@@ -21,12 +21,9 @@ public class Attack : AIAction
 	{
 		//todo only waht you see
 		var atk = GetBestPossibleAbility(unit,true,false,false);
-		File.AppendAllText("aidebug.txt","attacking with: "+atk.AbilityIndex+" at: "+atk.TargetPosition+ "with score: "+atk.GetTotalValue()+" damage: "+atk.Dmg+" Suppression: "+atk.Supression+" scorechange: "+atk.TotalChangeScore+"\n");
-
-		var args = new List<string>();
-		args.Add(atk.AbilityIndex.ToString());
-		unit.DoAction(Action.ActionType.UseAbility,atk.TargetPosition,args);
+		File.AppendAllText("aidebug.txt","attacking with: "+atk.AbilityIndex+" at: "+atk.Target+ "with score: "+atk.GetTotalValue()+" damage: "+atk.Dmg+" Suppression: "+atk.Supression+" scorechange: "+atk.TotalChangeScore+"\n");
 		
+		unit.DoAbility(atk.Target,atk.AbilityIndex);
 	}
 
 	public override int GetScore(Unit unit)

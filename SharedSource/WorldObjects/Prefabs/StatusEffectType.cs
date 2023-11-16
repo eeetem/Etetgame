@@ -16,6 +16,6 @@ public class StatusEffectType
 
 	public void Apply(Unit actor)
 	{
-		SequenceManager.AddSequence(Conseqences.GetApplyConsiqunces(actor.WorldObject.TileLocation.Position));
+		SequenceManager.AddSequence(Conseqences.GetApplyConsiqunces(actor.WorldObject));
 	}
 }

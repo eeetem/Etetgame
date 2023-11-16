@@ -14,11 +14,11 @@ public class Face : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
+	public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
 		
 		
-		var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, position);
+		var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		if (targetDir == actor.WorldObject.Facing)
 		{
 			return new Tuple<bool, string>(false, "Already facing that direction");
@@ -35,11 +35,11 @@ public class Face : Action
 	}
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,target));
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value));
 		return queue;
 
 	}
@@ -50,9 +50,9 @@ public class Face : Action
 	private Vector2Int lastTarget;
 	private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 
-	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
+			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
 		
 		foreach (var visTuple in previewTiles)
@@ -74,7 +74,6 @@ public class Face : Action
 			
 		}
 
-		return "";
 	}
 
 #endif

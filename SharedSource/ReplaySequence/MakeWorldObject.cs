@@ -62,10 +62,11 @@ public class MakeWorldObject : SequenceAction
 	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		spriteBatch.DrawPrefab(Utility.GridToWorldPos(Position), prefab, facing);
-		if (PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences != null)
+		var loadedPrefab = PrefabManager.WorldObjectPrefabs[prefab];
+		if (loadedPrefab.DestructionConseqences != null)
 		{
-			spriteBatch.DrawOutline(PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences.GetAffectedTiles(Position), Color.Yellow, 4);
-			PrefabManager.WorldObjectPrefabs[prefab].DestructionConseqences!.GetApplyConsiqunces(Position).ForEach(x => x.PreviewIfShould(spriteBatch));
+			spriteBatch.DrawOutline(loadedPrefab.DestructionConseqences!.GetAffectedTiles(Position), Color.Yellow, 4);
+			loadedPrefab.DestructionConseqences!.GetApplyConsiqunces(WorldManager.Instance.GetTileAtGrid(Position).Surface!).ForEach(x => x.PreviewIfShould(spriteBatch));
 		}
 	}
 #endif

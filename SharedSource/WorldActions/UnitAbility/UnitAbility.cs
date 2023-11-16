@@ -75,9 +75,9 @@ public class UnitAbility
 
 
 
-	public Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, bool consultTargetAids, bool nextTurn, int dimension =-1)
+	public Tuple<bool, string> CanPerform(Unit actor, WorldObject target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
-		if (ImmideateActivation && target != actor.WorldObject.TileLocation.Position)
+		if (ImmideateActivation && !Equals(target, actor.WorldObject))
 		{
 			return new Tuple<bool, string>(false, "Ability must be used on self");
 		}
@@ -85,7 +85,7 @@ public class UnitAbility
 		Tuple<bool, string>? res;
 		if (consultTargetAids)
 		{
-			var aids = IsValidTarget(actor, target, dimension);
+			var aids = IsValidTarget(actor, target);
 			if (!aids.Item1)
 			{
 				return aids;
@@ -109,7 +109,7 @@ public class UnitAbility
 	
 	}
 
-	public Tuple<bool,string> IsValidTarget(Unit actor, Vector2Int target, int dimension)
+	public Tuple<bool,string> IsValidTarget(Unit actor, WorldObject target)
 	{
 		if (TargetAids.Count == 0) return new Tuple<bool, string>(true, "");
 		foreach (var t in TargetAids)
@@ -130,7 +130,7 @@ public class UnitAbility
 						throw new Exception("Cannot negate enemy target aid");
 					}
 
-					if (WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation?.IsPlayer1Team == actor.IsPlayer1Team)
+					if (target.UnitComponent?.IsPlayer1Team == actor.IsPlayer1Team)
 					{
 						return new Tuple<bool, string>(false, "Target is not an enemy");
 					}
@@ -141,13 +141,13 @@ public class UnitAbility
 						throw new Exception("Cannot negate friend target aid");
 					}
 
-					if (WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation?.IsPlayer1Team != actor.IsPlayer1Team)
+					if (target.UnitComponent?.IsPlayer1Team != actor.IsPlayer1Team)
 					{
 						return new Tuple<bool, string>(false, "Target is not an friend");
 					}
 					break;
 				default:
-					var u = WorldManager.Instance.GetTileAtGrid(target,dimension).UnitAtLocation;
+					var u = target.UnitComponent;
 					
 					if(u is null && !negate) return new Tuple<bool, string>(false, "Target is not a "+str);
 					bool match = u!.Type.Name == str;
@@ -166,7 +166,7 @@ public class UnitAbility
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, Vector2Int target,int dimension = -1)
+	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, WorldObject target,int dimension = -1)
 	{
 		
 		var result = Effects[0].CanPerform(actor, target,dimension);
@@ -233,11 +233,11 @@ public class UnitAbility
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public List<SequenceAction> GetConsequences(Unit actor, Vector2Int target, int dimension = -1)
+	public List<SequenceAction> GetConsequences(Unit actor, WorldObject target, int dimension = -1)
 	{
 		if (ImmideateActivation)
 		{
-			target = actor.WorldObject.TileLocation.Position;
+			target = actor.WorldObject;
 		}
 		var consequences = new List<SequenceAction>();
 		ChangeUnitValues ch = ChangeUnitValues.Make(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost);
@@ -259,19 +259,17 @@ public class UnitAbility
 #if CLIENT
 	
 
-	public string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public void Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
 	{
-		string ret = "";
+
 		if (ImmideateActivation)
 		{
-			target = actor.WorldObject.TileLocation.Position;
+			target = actor.WorldObject;
 		}
 		foreach (var eff in Effects)
 		{
-			ret += eff.Preview(actor, target, spriteBatch);
+			eff.Preview(actor, target, spriteBatch);
 		}
-		return ret;
-		
 		
 	}
 

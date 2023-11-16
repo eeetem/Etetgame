@@ -21,12 +21,12 @@ public class OverWatch : Action
 
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string>? args)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
 	//	var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 1);
 	//		queue.Enqueue(m);
-		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,target,int.Parse(args![0])));
+		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target!.Value,args.AbilityIndex));
 		return queue;
 	}
 #endif
@@ -34,19 +34,19 @@ public class OverWatch : Action
 
 
 
-	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args)
+	public override Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
-		var abilityIndex= int.Parse(args[0]);
-		UnitAbility action = actor.Abilities[(abilityIndex)];
+	
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
 		return action.HasEnoughPointsToPerform(actor, false);
 	}
 
 #if CLIENT
 
-	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> args)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
 		
-		foreach (var loc in actor.GetOverWatchPositions(target,int.Parse(args[0])))
+		foreach (var loc in actor.GetOverWatchPositions(args.Target!.Value,args.AbilityIndex))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(loc);
 			if (tile.Surface == null) continue;
@@ -56,8 +56,7 @@ public class OverWatch : Action
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, c);
 		}
-
-		return "";
+		
 	}
 
 #endif

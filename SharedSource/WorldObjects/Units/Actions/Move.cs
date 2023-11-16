@@ -21,10 +21,10 @@ public class Move : Action
 	{
 	}
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
+	public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
 		
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, position);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		if (result.Cost == 0)
 		{
 			return new Tuple<bool, string>(false, "No path found");
@@ -44,7 +44,7 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Cannot Move while Paniced");
 		}
 
-		if (WorldManager.Instance.GetTileAtGrid(position).UnitAtLocation != null)
+		if (WorldManager.Instance.GetTileAtGrid(args.Target!.Value).UnitAtLocation != null)
 		{
 			return new Tuple<bool, string>(false, "Tile is occupied");
 		}
@@ -54,9 +54,9 @@ public class Move : Action
 
 	
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		int moveUse = 1;
 		while (result.Cost > actor.GetMoveRange()*moveUse)
 		{
@@ -131,11 +131,11 @@ public class Move : Action
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
 	
-	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		if (SequenceManager.SequenceRunning) return "";
+		if (SequenceManager.SequenceRunning) return;
 	
-		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, target);
+		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 	
 		
 	
@@ -167,12 +167,9 @@ public class Move : Action
 
 		for (int i = 0; i < moveUse; i++)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(target) + new Vector2(-20 * moveUse, -30) + new Vector2(45, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
-
-
+			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(args.Target.Value) + new Vector2(-20 * moveUse, -30) + new Vector2(50, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
 		}
 
-		return "";
 	}
 #endif
 }

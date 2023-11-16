@@ -28,9 +28,9 @@ public class Overwatch : AIAction
 		if (abl is null) throw new Exception("No Overwatch Abilities Found!");
 		var highestTile = GetBestOverWatchTile(unit,abl);
 
-		unit.DoAction(Action.ActionType.OverWatch,highestTile.Item1,new List<string> {abl.Index.ToString()});
-		
-		
+
+		unit.DoOverwatch(highestTile.Item1, abl.Index);
+
 	}
 
 	private static (Vector2Int, int) GetBestOverWatchTile(Unit unit, UnitAbility unitAbility)

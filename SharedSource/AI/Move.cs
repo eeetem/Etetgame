@@ -75,14 +75,14 @@ public class Move : AIAction
 
 		if (unit.Crouching && needToDoCrouchAction)
 		{
-			unit.DoAction(Action.ActionType.Crouch, new Vector2Int(0,0));
+			unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
 			needToDoCrouchAction = false;
 		}
 
 		if (target != unit.WorldObject.TileLocation.Position)
 		{
 			Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
-			unit.DoAction(Action.ActionType.Move, target);
+			unit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(target));
 		}
 		do
 		{
@@ -90,7 +90,7 @@ public class Move : AIAction
 		} while (SequenceManager.SequenceRunning);
 		if (!unit.Crouching && needToDoCrouchAction)
 		{
-			unit.DoAction(Action.ActionType.Crouch, new Vector2Int(0,0));
+			unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
 			needToDoCrouchAction = false;
 		}
 
@@ -114,7 +114,7 @@ public class Move : AIAction
 		{
 			Thread.Sleep(250);
 		} while (SequenceManager.SequenceRunning);
-		unit.DoAction(Action.ActionType.Face, vec);//face the enemy closesy to you
+		unit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(vec));
 	}
 
 	public override int GetScore(Unit unit)

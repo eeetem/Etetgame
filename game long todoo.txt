@@ -15,8 +15,6 @@ face unit force?
 new det icon?
 shooting without using points -> too quick follow up action?
 
-click enemy to see their view
-
 
 
 targeting cover

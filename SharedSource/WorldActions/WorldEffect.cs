@@ -29,60 +29,53 @@ public class WorldEffect : Effect
 		return DeliveryMethod.GetOptimalRangeAI(Conseqences.Range-1);
 	}
 
-	protected override List<SequenceAction> GetConsequencesChild(Unit actor, Vector2Int target,int dimension = -1)
+	protected override List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1)
 	{
 		//Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
 
-		Vector2Int? nullTarget = target;
-		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref nullTarget);
-		if (nullTarget.HasValue)
+	
+		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref target);
+	
+		foreach (var change in t)
 		{
-			foreach (var change in t)
-			{
-				changes.Add(change);
-			}
-			foreach (var change in Conseqences.GetApplyConsiqunces(nullTarget.Value))
-			{
-				changes.Add(change);
-			}
-
-				
+			changes.Add(change);
 		}
+		foreach (var change in Conseqences.GetApplyConsiqunces(target))
+		{
+			changes.Add(change);
+		}
+
+	
 		
 		return changes;
 
 	}
 	
-	public Tuple<Vector2Int?,HashSet<IWorldTile>> GetAffectedTiles(Unit actor, Vector2Int target)
+	public Tuple<WorldObject,HashSet<IWorldTile>> GetAffectedTiles(Unit actor, WorldObject target)
 	{
 		var tiles = new HashSet<IWorldTile>();
 
-		Vector2Int? nullTarget = target;
+	
 		if (!CanPerformChild(actor, target).Item1)
 		{
-			return new Tuple<Vector2Int?, HashSet<IWorldTile>>(nullTarget,tiles);
+			return new Tuple<WorldObject, HashSet<IWorldTile>>(target,tiles);
 		}
 
-		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref nullTarget);
 
-		if (nullTarget.HasValue)
+		foreach (var tile in Conseqences.GetAffectedTiles(target.TileLocation.Position))
 		{
-			foreach (var tile in Conseqences.GetAffectedTiles(nullTarget.Value))
-			{
-				tiles.Add(tile);
-			}
-
-				
+			tiles.Add(tile);
 		}
+			
 		
-		return new Tuple<Vector2Int?, HashSet<IWorldTile>>(nullTarget,tiles);
+		return new Tuple<WorldObject, HashSet<IWorldTile>>(target,tiles);
 	}
 
 
 
 
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, Vector2Int target, int dimension = -1)
+	protected override Tuple<bool, string> CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
 	{
 		return DeliveryMethod.CanPerform(actor, target,dimension);
 	}
@@ -92,13 +85,13 @@ public class WorldEffect : Effect
 
 	List<SequenceAction> previewCache = new List<SequenceAction>();
 	Vector2Int previewActor = new Vector2Int(-1,-1);
-	Vector2Int previewTarget = new Vector2Int(-1,-1);
-	private Tuple<Vector2Int?, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
+	private WorldObject? previewTarget;
+	private Tuple<WorldObject, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
 
-	protected override List<OwnedPreviewData> PreviewChild(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	protected override List<OwnedPreviewData> PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch)
 	{
 		
-		if((previewTarget != target || previewActor != actor.WorldObject.TileLocation.Position) )	
+		if((!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position) )	
 		{
 			previewCache = GetConsequences(actor, target);
 			previewActor = actor.WorldObject.TileLocation.Position;
@@ -113,13 +106,9 @@ public class WorldEffect : Effect
 			act.PreviewIfShould(spriteBatch);
 		}
 
-		if (previewArea.Item1.HasValue)
-		{
-			spriteBatch.Draw(TextureManager.GetTexture("targetingCursor"), Utility.GridToWorldPos(previewArea.Item1.Value + new Vector2(-1.5f, -0.5f)), Color.Red);
-			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(previewArea.Item1.Value + new Vector2(0.5f, 0.5f)), Color.Red, 2);
+		
+			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(previewArea.Item1.TileLocation.Position + new Vector2(0.5f, 0.5f)), Color.Red, 2);
 
-
-		}
 
 		return new List<OwnedPreviewData>();
 	}

@@ -17,24 +17,20 @@ public class UseAbility : Action
 	{
 	}
 
-	public override Tuple<bool, string> CanPerform(Unit actor,  Vector2Int target, List<string> args)
+	public override Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
-		var abilityIndex= int.Parse(args[0]);
-		UnitAbility action = actor.Abilities[(abilityIndex)];
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
 		return action.HasEnoughPointsToPerform(actor,false);
-
 	}
 
 
 
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target, List<string> args)
+	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
-
-		var abilityIndex= int.Parse(args[0]);
-		UnitAbility action = actor.Abilities[(abilityIndex)];
-		var res = action.GetConsequences(actor, target);
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
+		var res = action.GetConsequences(actor, args.TargetObj!);
 		var queue = new Queue<SequenceAction>();
 		
 		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
@@ -57,11 +53,10 @@ public class UseAbility : Action
 
 #if CLIENT
 
-		public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch, List<string> Args)
+		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
-			var abilityIndex= int.Parse(Args[0]);
-			UnitAbility action = actor.Abilities[abilityIndex];
-			return action.Preview(actor, target,spriteBatch);
+			UnitAbility action = actor.Abilities[args.AbilityIndex];
+			action.Preview(actor, args.TargetObj!,spriteBatch);
 		}
 
 

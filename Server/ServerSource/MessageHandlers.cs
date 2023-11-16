@@ -186,8 +186,7 @@ public static partial class NetworkingManager
 
 
 		Action.GameActionPacket packet = message.GetSerializable<Action.GameActionPacket>();
-		Console.WriteLine("recived action packet: " + packet.Type + " " + packet.UnitId + " " + packet.Target);
-			
+
 		if (WorldManager.Instance.GetObject(packet.UnitId) == null)
 		{
 			Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
@@ -207,7 +206,7 @@ public static partial class NetworkingManager
 		}
 
 	
-		controllable.DoAction(packet.Type,packet.Target,packet.Args);
+		controllable.DoAction(packet.Type,packet.Args);
 		
 
 	}

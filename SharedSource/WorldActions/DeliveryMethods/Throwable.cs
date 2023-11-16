@@ -20,15 +20,15 @@ public class Throwable : DeliveryMethod
 	{
 		this.throwRange = throwRange;
 	}
-	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  Vector2Int? target)
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
 	{
-		if (target!.Value == actor.WorldObject.TileLocation.Position)
+		if (target.TileLocation.Position == actor.WorldObject.TileLocation.Position)
 		{
 			return new List<SequenceAction>();
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target!.Value, Cover.Full,visibilityCast: false,ignoreControllables: true);
-		target= outcome.CollisionPointShort;
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false,ignoreControllables: true);
+		target = WorldManager.Instance.GetTileAtGrid(outcome.CollisionPointShort).Surface!;
 		return new List<SequenceAction>();
 	}
 
@@ -38,9 +38,9 @@ public class Throwable : DeliveryMethod
 	}
 
 
-	public override Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, int dimension = -1)
+	public override Tuple<bool, string> CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
-		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target) > throwRange)
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > throwRange)
 		{
 			return new Tuple<bool, string>(false, "Too Far");
 		}

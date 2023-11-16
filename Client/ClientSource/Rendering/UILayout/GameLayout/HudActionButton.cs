@@ -18,16 +18,16 @@ public class HudActionButton
 	public static HudActionButton? SelectedButton;
 	public readonly ImageButton UIButton;
 	public readonly Unit Owner;
-	private readonly Action<Unit,Vector2Int> _executeTask;
+	private readonly Action<Unit,WorldObject> _executeTask;
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
-	private readonly Func<Unit,Vector2Int,Tuple<bool,string>> _performCheckTask;
-	private readonly Action<Unit,Vector2Int,SpriteBatch>? _previewTask;
+	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _performCheckTask;
+	private readonly Action<Unit,WorldObject,SpriteBatch>? _previewTask;
 	private readonly Action<Unit,Vector2Int,SpriteBatch>? _previewOverwatchTask;
 	public readonly AbilityCost Cost;
 	readonly TextureRegion _icon;
 	public string Tooltip;
 	public readonly bool CanOverwatch;
-	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,Vector2Int> executeTask, Func<Unit,Vector2Int,Tuple<bool,string>> performCheckTask, AbilityCost cost, string tooltip)
+	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> performCheckTask, AbilityCost cost, string tooltip)
 	{
 		UIButton = imageButton;
 		Cost = cost;
@@ -56,26 +56,31 @@ public class HudActionButton
 		CanOverwatch = abl.CanOverWatch;
 		Owner = owner;
 		_icon = new TextureRegion(abl.Icon);
-		_executeTask = (unit, vector2Int) =>
+		_executeTask = (unit, target) =>
 		{
 			if(abl.ImmideateActivation)
-				vector2Int = unit.WorldObject.TileLocation.Position;
-			unit.DoAction(Action.ActionType.UseAbility, vector2Int,new  List<string> { abl.Index.ToString()});
+				target = unit.WorldObject;
+			unit.DoAbility(target, abl.Index);
 		};
 		_previewTask = (unit, target, batch) =>
 		{
-			Action.Actions[Action.ActionType.UseAbility].Preview(unit, target, batch, new List<string> {abl.Index.ToString()});
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
+			args.TargetObj = target;
+			args.AbilityIndex = abl.Index;
+			Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
 		};
 		_performCheckTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, true, false);
 		if (CanOverwatch)
 		{
 			_previewOverwatchTask = (unit, target, batch) =>
 			{
-				Action.Actions[Action.ActionType.OverWatch].Preview(unit, target, batch, new List<string> {abl.Index.ToString()});
+				Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
+				args.AbilityIndex = abl.Index;
+				Action.Actions[Action.ActionType.OverWatch].Preview(unit, args,batch);
 			};
-			_executeOverWatchTask = (unit, vector2Int) =>
+			_executeOverWatchTask = (unit, target) =>
 			{
-				unit.DoAction(Action.ActionType.OverWatch, vector2Int, new List<string> {abl.Index.ToString()});
+				unit.DoOverwatch(target, abl.Index);
 			};
 		}
 		UIButton.Click += (o, a) =>
@@ -88,22 +93,23 @@ public class HudActionButton
 
 
 
-	public List<Unit> GetSuggestedTargets(Unit user, List<Vector2Int> targetsToCheck)
+	public List<WorldObject> GetSuggestedTargets(List<Unit> targetsToCheck)
 	{
-		List<Unit> suggestedTargets = new();
+		List<WorldObject> suggestedTargets = new();
 
 		foreach (var target in targetsToCheck)
 		{
-			if (_performCheckTask(Owner,target).Item1 && WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation != null && WorldManager.Instance.CanTeamSee(target, Owner.IsPlayer1Team) >= WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation!.WorldObject.GetMinimumVisibility())
+			if (_performCheckTask(Owner,target.WorldObject).Item1
+			    && WorldManager.Instance.CanTeamSee(target.WorldObject.TileLocation.Position, Owner.IsPlayer1Team) >= target.WorldObject.GetMinimumVisibility())
 			{
-				suggestedTargets.Add(WorldManager.Instance.GetTileAtGrid(target).UnitAtLocation!);
+				suggestedTargets.Add(target.WorldObject);
 			}
 		}
 	
 		return suggestedTargets;
 	}
 
-	public void Preview(Vector2Int actionTarget, SpriteBatch batch)
+	public void Preview(WorldObject actionTarget, SpriteBatch batch)
 	{
 		_previewTask?.Invoke(Owner,actionTarget,batch);
 	}
@@ -161,11 +167,11 @@ public class HudActionButton
 	
 	}
 
-	public void PerformAction(Vector2Int target)
+	public void PerformAction(WorldObject target)
 	{
 		_executeTask(Owner,target);
 	}
-	public Tuple<bool,string> CanPerformAction(Vector2Int target)
+	public Tuple<bool,string> CanPerformAction(WorldObject target)
 	{
 		return _performCheckTask(Owner,target);
 	}

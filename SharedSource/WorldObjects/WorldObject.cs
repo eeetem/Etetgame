@@ -191,7 +191,7 @@ public partial class WorldObject
             
 			Task t = new Task(delegate
 			{
-				SequenceManager.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(TileLocation.Position,this));
+				SequenceManager.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(this));
 			});
 			WorldManager.Instance.RunNextAfterFrames(t,4);
 

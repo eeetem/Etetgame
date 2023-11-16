@@ -63,7 +63,7 @@ public partial class WorldTile : IWorldTile
 				continue;
 			}
 
-			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Position, false, true);
+			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Surface!, false, true);
 			if (res.Item1)
 			{
 				if (watcher.IsMyTeam())

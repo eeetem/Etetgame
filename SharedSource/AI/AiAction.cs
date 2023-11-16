@@ -40,16 +40,16 @@ public abstract class AIAction
 	{
 		public List<SequenceAction> Consequences;
 		public int abilityIndex;
-		public Vector2Int targetPosition;
+		public WorldObject target;
 		public string Name;
 		public Unit User;
-		public PotentialAbilityActivation(string name, int abilityIndex, Unit user,List<SequenceAction> consequences, Vector2Int targetPosition)
+		public PotentialAbilityActivation(string name, int abilityIndex, Unit user,List<SequenceAction> consequences, WorldObject target)
 		{
 			this.Name = name;
 			this.User = user;
 			Consequences = consequences;
 			this.abilityIndex = abilityIndex;
-			this.targetPosition = targetPosition;
+			this.target = target;
 		}
 
 		public void Dispose()
@@ -61,14 +61,14 @@ public abstract class AIAction
 		}
 	}
 
-	protected static List<PotentialAbilityActivation> IterateAllAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1)
+	protected static List<PotentialAbilityActivation> IterateAllAbilities(Unit attacker, WorldObject target, bool excludeExempt, int dimension = -1)
 	{
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
-		ret.AddRange(IterateTargetedAbilities(attacker,targetPosition,excludeExempt,dimension));
+		ret.AddRange(IterateTargetedAbilities(attacker,target,excludeExempt,dimension));
 		ret.AddRange(IterateImmideateAbilities(attacker,excludeExempt,dimension));
 		return ret;
 	}
-	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, Vector2Int targetPosition, bool excludeExempt, int dimension = -1){
+	protected static List<PotentialAbilityActivation>  IterateTargetedAbilities(Unit attacker, WorldObject target, bool excludeExempt, int dimension = -1){
 	
 
 		List<PotentialAbilityActivation> ret = new List<PotentialAbilityActivation>();
@@ -78,11 +78,10 @@ public abstract class AIAction
 			if(ability.AIExempt&&excludeExempt) continue; 
 			
 			if (ability.ImmideateActivation) continue;
-			foreach (var attackTile in WorldManager.Instance.GetTilesAround(targetPosition, 1, dimension)){
-				
-				var cons = ability.GetConsequences(attacker, attackTile.Position,dimension);
-				ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,attackTile.Position));
-			}
+
+			var cons = ability.GetConsequences(attacker, target,dimension);
+			ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,target));
+			
 		}
 
 		return ret;
@@ -96,12 +95,10 @@ public abstract class AIAction
 		{
 			if(ability.AIExempt&&excludeExempt) continue; 
 			if (!ability.ImmideateActivation) continue;
-			foreach (var attackTile in WorldManager.Instance.GetTilesAround(attacker.WorldObject.TileLocation.Position, 1, dimension))
-			{
-				
-				var cons = ability.GetConsequences(attacker, attackTile.Position,dimension);
-				ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,attackTile.Position));
-			}
+
+			var cons = ability.GetConsequences(attacker, attacker.WorldObject,dimension);
+			ret.Add(new PotentialAbilityActivation(ability.Name,ability.Index,attacker,cons,attacker.WorldObject));
+			
 		}
 
 		return ret;
@@ -113,7 +110,7 @@ public abstract class AIAction
 		int supression = 0;
 		int totalChangeScore =0;
 
-		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.targetPosition, true,nextTurnUse, dimension).Item1)
+		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.target, true,nextTurnUse, dimension).Item1)
 		{
 			foreach(var c in ability.Consequences){
 				var consiquence = ScoreConsequence(c,dimension,attacker,noRecursion);
@@ -131,7 +128,7 @@ public abstract class AIAction
 		attackResult.Supression = supression;
 		attackResult.TotalChangeScore = totalChangeScore;
 		attackResult.AbilityIndex = ability.abilityIndex;
-		attackResult.TargetPosition = ability.targetPosition;
+		attackResult.Target = ability.target;
 		return attackResult;
 	}
 
@@ -286,7 +283,7 @@ public abstract class AIAction
 			var hitUnit = status.GetAffectedActor(dimension);
 			if (hitUnit != null)
 			{
-				var consiq =PrefabManager.StatusEffects[status.effectName].Conseqences.GetApplyConsiqunces(hitUnit.WorldObject.TileLocation.Position);
+				var consiq =PrefabManager.StatusEffects[status.effectName].Conseqences.GetApplyConsiqunces(hitUnit.WorldObject);
 				foreach (var cact in consiq)
 				{
 					var res= ScoreConsequence(cact, dimension, attacker,noRecursion);
@@ -559,7 +556,7 @@ public abstract class AIAction
 
 			if (shouldAttack)
 			{
-				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject.TileLocation.Position, excludeExempt, dimension));
+				attacks.AddRange(IterateTargetedAbilities(attacker, enemy.WorldObject, excludeExempt, dimension));
 			}
 		}
 		attacks.AddRange( IterateImmideateAbilities(attacker,excludeExempt,dimension));
@@ -587,7 +584,7 @@ public abstract class AIAction
 		{
 			foreach (var enemy in otherTeamUnits)
 			{
-				enemyAttacks.AddRange(IterateAllAbilities(enemy, unit.WorldObject.TileLocation.Position, true, dimension));
+				enemyAttacks.AddRange(IterateAllAbilities(enemy, unit.WorldObject, true, dimension));
 			}
 		}
 
@@ -613,7 +610,7 @@ public abstract class AIAction
 		public int Supression=0;
 		public int TotalChangeScore=0;
 		public int AbilityIndex;
-		public Vector2Int TargetPosition;
+		public WorldObject Target;
 		
 		public AbilityUse()
 		{

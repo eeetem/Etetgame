@@ -48,30 +48,22 @@ public abstract class Action
 	}
 
 
-	public abstract Tuple<bool, string> CanPerform(Unit actor, Vector2Int target, List<string> args);
+	public abstract Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args);
 
 #if CLIENT
-	public abstract string Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch,List<string>? args = null);
+	public abstract void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch);
 
-	public void SendToServer(Unit actor, Vector2Int target,  List<string> args)
+	public void SendToServer(Unit actor, ActionExecutionParamters args)
 	{
-		Console.WriteLine("sending action packet: " + Type + " on " + target + " from " + actor.WorldObject.ID + "");
-		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type,args);
+		var packet = new GameActionPacket(actor.WorldObject.ID, Type, args);
 		NetworkingManager.SendGameAction(packet);
 	}
 #endif
-	
 
-	
-	
-#if CLIENT
-	public virtual void ExecuteClientSide(Unit actor, Vector2Int target, List<string> args)
-	{
-		
-	}
-#else
 
-	public void PerformServerSide(Unit actor,Vector2Int target, List<string> args)
+#if SERVER
+
+	public void PerformServerSide(Unit actor, ActionExecutionParamters args)
 	{
 		
 		Task.Run(() =>
@@ -79,60 +71,88 @@ public abstract class Action
 			try
 			{
 				
-				var actions = GetConsiquenes(actor, target,args);
+				var actions = GetConsiquenes(actor,args);
 				SequenceManager.AddSequence(actions);
 				NetworkingManager.SendSequence(actions);
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
-				throw;
-			}
+                throw;
+            }
 
 		});
 		
 		
 	}
-	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, Vector2Int target,  List<string> args);
+	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args);
 #endif
 	
 	public class GameActionPacket : IMessageSerializable
 	{
-		public ActionType Type { get; set; }
+		public ActionExecutionParamters Args { get; set; }
 		public int UnitId { get; set; }
-		
-		public Vector2Int Target { get; set; }
+		public ActionType Type;
 
-		public List<string> Args { get; set; } = new List<string>();
-
-		public GameActionPacket(int unitId, Vector2Int target, ActionType type, List<string> args)
+		public GameActionPacket(int unitId, ActionType actionType, ActionExecutionParamters args)
 		{
 			UnitId = unitId;
-			Target = target;
-			Type = type;
+			Type = actionType;
 			Args = args;
 		}
 		
 		public GameActionPacket()
 		{
-			
 		}
 
 
 		public void Serialize(Message message)
 		{
-			message.Add(UnitId);
-			message.Add(Target);
 			message.Add((int)Type);
-			message.AddStrings(Args.ToArray());
+			message.Add(UnitId);
+			message.Add(Args);
 		}
 
 		public void Deserialize(Message message)
 		{
-			UnitId = message.GetInt();
-			Target = message.GetSerializable<Vector2Int>();
 			Type = (ActionType)message.GetInt();
-			Args = message.GetStrings().ToList();
+			UnitId = message.GetInt();
+			Args = message.GetSerializable<ActionExecutionParamters>();
+		}
+	}
+	
+	
+	public struct ActionExecutionParamters : IMessageSerializable
+	{
+		
+		public Vector2Int? Target;
+		public WorldObject? TargetObj = null;
+		public int AbilityIndex = -1;
+
+		public ActionExecutionParamters(Vector2Int target)
+		{
+	
+			Target = target;
+		}
+
+		public ActionExecutionParamters()
+		{
+			
+		}
+
+		public void Serialize(Message message)
+		{
+			message.Add(Target ?? new Vector2Int(-1,-1));
+			message.Add(TargetObj?.ID ?? -1);
+			message.Add(AbilityIndex);
+		}
+
+		public void Deserialize(Message message)
+		{
+			
+			Target = message.GetSerializable<Vector2Int>();
+			TargetObj = WorldManager.Instance.GetObject(message.GetInt());
+			AbilityIndex = message.GetInt();
 		}
 	}
 

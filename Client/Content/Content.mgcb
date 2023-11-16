@@ -137,7 +137,7 @@
 /importer:OggImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/tresspassing.ogg;CompressedContent/audio/music/Tresspassing.ogg
+/build:CompressedContent/audio/music/tresspassing.ogg
 
 #begin CompressedContent/audio/rifle.wav
 /importer:WavImporter
@@ -852,18 +852,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/kick.png
-
-#begin CompressedContent/textures/mouse.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/mouse.png
 
 #begin CompressedContent/textures/mouse.png
 /importer:TextureImporter

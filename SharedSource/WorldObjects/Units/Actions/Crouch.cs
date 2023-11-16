@@ -15,7 +15,7 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, Vector2Int position, List<string> args)
+	public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
 		if (actor.MovePoints <= 0)
 		{
@@ -26,7 +26,7 @@ public class Crouch : Action
 	}
 #if SERVER
 
-public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int target, List<string> args)
+public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -58,9 +58,9 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor,Vector2Int targe
 
 
 #if CLIENT
-	public override string Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch,List<string> args)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		return "";
+
 	}
 	
 #endif

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using DefconNull.World;
 using DefconNull.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
@@ -32,7 +33,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 			//clientside execution of ability
 			//really should be avoided since it'll likely cause desyncs
 			//but we'll see
-			Actor.Abilities[abilityIndex].GetConsequences(Actor, target).ForEach(x =>
+			Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
 			{
 				if(x.ShouldDo()){x.GenerateTask().RunSynchronously();}
 			});

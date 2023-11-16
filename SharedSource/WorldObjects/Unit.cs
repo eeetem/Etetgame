@@ -84,7 +84,7 @@ namespace DefconNull.World.WorldObjects
 				{
 					Task t = new Task(delegate
 					{
-						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject.TileLocation.Position))
+						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
 							SequenceManager.AddSequence(c);
 							Networking.NetworkingManager.SendSequence(c);
@@ -235,7 +235,7 @@ namespace DefconNull.World.WorldObjects
 			{
 				if(st.duration<=0) continue;
 				//incorrect if status effect doesnt actually affect this unit but whatever
-				var cons = st.type.Conseqences.GetApplyConsiqunces(this.WorldObject.TileLocation.Position);
+				var cons = st.type.Conseqences.GetApplyConsiqunces(this.WorldObject);
 				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
 				foreach (var v in vals)
 				{
@@ -290,9 +290,22 @@ namespace DefconNull.World.WorldObjects
 
 		}
 
-		public void DoAction(Action.ActionType atype, Vector2Int target, List<string>? args =null)
+		public void DoOverwatch(Vector2Int tile, int ability)
 		{
-			if (args == null) args = new List<string>();
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(tile);
+			args.AbilityIndex = ability;
+			DoAction(Action.ActionType.OverWatch,args);
+		}
+		public void DoAbility(WorldObject target, int ability)
+		{
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
+			args.TargetObj = target;
+			args.AbilityIndex = ability;
+			DoAction(Action.ActionType.UseAbility,args);
+		}
+		
+		public void DoAction(Action.ActionType type, Action.ActionExecutionParamters args)
+		{
 			
 #if CLIENT
 			if(SequenceManager.SequenceRunning) return;
@@ -301,26 +314,27 @@ namespace DefconNull.World.WorldObjects
 			if (Overwatch.Item1) return;
 			if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 			
-			var a = Action.Actions[atype];
-			var result = a.CanPerform(this, target, args);
+			var a = Action.Actions[type];
+			var result = a.CanPerform(this, args);
 			
 			if (!result.Item1)
 			{
 #if CLIENT
 				new PopUpText(result.Item2, WorldObject.TileLocation.Position,Color.White);
-				new PopUpText(result.Item2, target,Color.White);
+if(args.Target.HasValue){
+				new PopUpText(result.Item2, args.Target.Value,Color.White);
+				}
 #else
 				Console.WriteLine("tried to do action but failed: " + result.Item2);
 #endif
 				return;
 			}
 			
-			Console.WriteLine("performing actionL " + a.Type + " on " + target);
+			Console.WriteLine("performing actionL " + a.Type);
 #if CLIENT
-			a.SendToServer(this, target,args);
-			a.ExecuteClientSide(this, target,args);
+			a.SendToServer(this,args);
 #else
-			a.PerformServerSide(this, target,args);
+			a.PerformServerSide(this,args);
 #endif
 
 
@@ -613,7 +627,7 @@ if(!Paniced){
 			HashSet<Vector2Int> result = new HashSet<Vector2Int>();
 			foreach (var position in positions)
 			{
-				if (action.CanPerform(this, position, false, true).Item1)
+				if (action.CanPerform(this, WorldManager.Instance.GetTileAtGrid(position).Surface!, false, true).Item1)
 				{
 					result.Add(position);
 				}
