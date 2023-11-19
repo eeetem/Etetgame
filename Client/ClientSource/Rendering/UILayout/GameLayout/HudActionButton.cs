@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DefconNull.World;
 using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
+using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
@@ -21,7 +22,7 @@ public class HudActionButton
 	private readonly Action<Unit,WorldObject> _executeTask;
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _performCheckTask;
-	private readonly Action<Unit,WorldObject,SpriteBatch>? _previewTask;
+	private readonly Func<Unit,WorldObject,SpriteBatch,List<SequenceAction>>? _previewTask;
 	private readonly Action<Unit,Vector2Int,SpriteBatch>? _previewOverwatchTask;
 	public readonly AbilityCost Cost;
 	readonly TextureRegion _icon;
@@ -67,7 +68,7 @@ public class HudActionButton
 			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
 			args.TargetObj = target;
 			args.AbilityIndex = abl.Index;
-			Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
+			return Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
 		};
 		_performCheckTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, true, false);
 		if (CanOverwatch)
@@ -109,9 +110,9 @@ public class HudActionButton
 		return suggestedTargets;
 	}
 
-	public void Preview(WorldObject actionTarget, SpriteBatch batch)
+	public List<SequenceAction> Preview(WorldObject actionTarget, SpriteBatch batch)
 	{
-		_previewTask?.Invoke(Owner,actionTarget,batch);
+		return _previewTask?.Invoke(Owner,actionTarget,batch) ?? new List<SequenceAction>();
 	}
 
 	public bool HasPoints()

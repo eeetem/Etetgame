@@ -10,6 +10,7 @@ using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 using Kotz.ObjectPool;
+using Microsoft.Xna.Framework;
 
 
 namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -38,10 +39,11 @@ public abstract class SequenceAction :  IMessageSerializable
 		UnitStatusEffect =10,
 		//	AbilityToggle = 11,
 		DelayedAbilityUse =12,
-		
+		UnitShoot =13,
 		
 		
 		Undefined = -1,
+
 		
 	}
 
@@ -113,6 +115,10 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.Undefined;
 		}
+		if(t== typeof(UnitShoot))
+		{
+			return SequenceType.UnitShoot;
+		}
 		throw new ArgumentOutOfRangeException(nameof(t), t, null);
 	}
 	public static Type EnumToType(SequenceType t)
@@ -149,6 +155,8 @@ public abstract class SequenceAction :  IMessageSerializable
 				return typeof(UnitStatusEffect);
 			case SequenceType.DelayedAbilityUse:
 				return typeof(DelayedAbilityUse);
+			case SequenceType.UnitShoot:
+				return typeof(UnitShoot);
 			default:
 				throw new ArgumentOutOfRangeException(nameof(t), t, null);
 		}
@@ -285,5 +293,11 @@ public abstract class SequenceAction :  IMessageSerializable
 			
 	}
 
-
+#if CLIENT
+	public virtual void DrawDesc(Vector2 pos, SpriteBatch batch)
+	{
+		batch.DrawText(GetSequenceType().ToString(), pos, Color.White);
+	}
+#endif
+	
 }

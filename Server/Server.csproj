@@ -113,6 +113,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitSequenceAction.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitSequenceAction.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitShoot.cs">
+        <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitShoot.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\ActorSequenceAction\UnitStatusEffect.cs">
         <Link>SharedSource\ReplaySequence\ActorSequenceAction\UnitStatusEffect.cs</Link>
       </Compile>

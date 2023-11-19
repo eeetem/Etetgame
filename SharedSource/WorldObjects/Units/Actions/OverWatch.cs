@@ -43,7 +43,7 @@ public class OverWatch : Action
 
 #if CLIENT
 
-	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
 		
 		foreach (var loc in actor.GetOverWatchPositions(args.Target!.Value,args.AbilityIndex))
@@ -56,7 +56,7 @@ public class OverWatch : Action
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, c);
 		}
-		
+		return new List<SequenceAction>();
 	}
 
 #endif

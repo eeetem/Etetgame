@@ -63,29 +63,6 @@ public struct PreviewData
 	}
 
 }
-public struct OwnedPreviewData
-{
-	public int totalDmg;
-	public int finalDmg;
-	public int coverBlock;
-	public int distanceBlock;
-	public int determinationBlock;
-	public int detDmg;
-	public int ownerID;
-
-	public OwnedPreviewData(int ownerID)
-	{
-		this.ownerID = ownerID;
-		this.totalDmg = 0;
-		finalDmg = 0;
-		coverBlock = 0;
-		distanceBlock = 0;
-		determinationBlock = 0;
-		this.detDmg = 0;
-	}
-
-}
-
 
 public struct Vector2Int : IMessageSerializable
 {

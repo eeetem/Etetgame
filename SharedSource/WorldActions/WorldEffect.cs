@@ -79,38 +79,6 @@ public class WorldEffect : Effect
 	{
 		return DeliveryMethod.CanPerform(actor, target,dimension);
 	}
-#if CLIENT
-	public static bool FreeFire = false;
 
 
-	List<SequenceAction> previewCache = new List<SequenceAction>();
-	Vector2Int previewActor = new Vector2Int(-1,-1);
-	private WorldObject? previewTarget;
-	private Tuple<WorldObject, HashSet<IWorldTile>> previewArea = new(null,new HashSet<IWorldTile>());
-
-	protected override List<OwnedPreviewData> PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch)
-	{
-		
-		if((!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position) )	
-		{
-			previewCache = GetConsequences(actor, target);
-			previewActor = actor.WorldObject.TileLocation.Position;
-			previewTarget = target;
-			previewArea = GetAffectedTiles(actor, target);
-		}
-        
-		spriteBatch.DrawOutline(previewArea.Item2, Color.Red, 5);
-		
-		foreach (var act in previewCache)
-		{
-			act.PreviewIfShould(spriteBatch);
-		}
-
-		
-			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(previewArea.Item1.TileLocation.Position + new Vector2(0.5f, 0.5f)), Color.Red, 2);
-
-
-		return new List<OwnedPreviewData>();
-	}
-#endif
 }

@@ -98,7 +98,7 @@ public class PseudoTile : IWorldTile
 		return _realParent.TraverseCostFrom(tileLocationPosition);
 	}
 
-	public IEnumerable<WorldObject> GetAllEdges()
+	public List<WorldObject> GetAllEdges()
 	{
 		return _realParent.GetAllEdges();
 	}

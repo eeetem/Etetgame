@@ -57,20 +57,30 @@ public class TakeDamage : SequenceAction
 		return true;
 	}
 
+	public WorldObject? GetTargetObject()
+	{
+		if (ObjID != -1)
+		{
+			return WorldManager.Instance.GetObject(ObjID);
+		}
+		else
+		{
+			var u = WorldManager.Instance.GetTileAtGrid(Position).UnitAtLocation;
+			if (u is null) return null;
+			if (Ignores.Contains(u.Type.Name)) return null;
+			return u.WorldObject;
+		}
+
+		return null;
+	}
+
 	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate
 		{
-			if (ObjID != -1)
-			{
-				WorldManager.Instance.GetObject(ObjID)!.TakeDamage(Dmg, DetResistance);
-			}
-			else
-			{
-				var u =WorldManager.Instance.GetTileAtGrid(Position).UnitAtLocation!;
-				if(Ignores.Contains(u.Type.Name)) return ;
-				u.TakeDamage(Dmg, DetResistance);
-			}
+	
+			GetTargetObject()?.TakeDamage(Dmg, DetResistance);
+			
 		});
 		return t;
 	}
@@ -90,6 +100,16 @@ public class TakeDamage : SequenceAction
 	}
 
 #if CLIENT
+	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	{
+		if (GetTargetObject().UnitComponent == null || GetTargetObject().UnitComponent.Determination > 0)
+		{
+			batch.DrawText("DMG :" + Dmg+"("+(Dmg-DetResistance)+")", pos, Color.White);
+			return;
+		}
+		batch.DrawText("DMG : " + Dmg, pos, Color.White);
+	}
+
 	protected override void Preview(SpriteBatch spriteBatch)
 	{
 		if(Dmg == 0 || ObjID == -1)

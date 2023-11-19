@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.ActorSequenceAction;
 using DefconNull.SharedSource.Units.ReplaySequence;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
@@ -65,8 +66,8 @@ public class Shootable : Effect
 	{
 
 
-			Vector2Int target = targetObj.TileLocation.Position;
-			int targetId = targetObj.ID;
+		Vector2Int target = targetObj.TileLocation.Position;
+		int targetId = targetObj.ID;
 		
 		
 		bool shooterLow = actor.Crouching;
@@ -74,14 +75,8 @@ public class Shootable : Effect
 		Vector2 from = actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) ;
 		
 		bool targetLow = false;//move this outside
-		IWorldTile? targetTile = null;
-		if (target.X >= 0 && target.Y >= 0 && target.X < 100 && target.Y < 100)
-		{
-			targetTile = WorldManager.Instance.GetTileAtGrid(target, dimension);
-		}
 
- 
-		if(targetTile?.UnitAtLocation!=null&&targetTile.UnitAtLocation.Crouching)
+		if((targetObj.UnitComponent!= null && targetObj.UnitComponent.Crouching) )
 		{
 			targetLow = true;
 		}
@@ -89,16 +84,41 @@ public class Shootable : Effect
 		{
 			targetLow = false;
 		}
-		WorldManager.RayCastOutcome? result = null;
-
 		
+		
+		WorldManager.RayCastOutcome? result = null;
+		Vector2 baseShot = target + new Vector2(0.5f, 0.5f);
+		List<Vector2> potentialTargets = new List<Vector2>(){};
+		if (targetObj.Type.Edge)
+		{
+			switch (targetObj.Facing)
+			{
+				case Direction.North:
+					baseShot = target + new Vector2(0.5f, 0.00f);
+					break;
+				case Direction.West:
+					baseShot = target + new Vector2(0.00f, 0.5f);
+					break;
+			}
+			potentialTargets.Add(baseShot);
+		}
+		else
+		{
+			potentialTargets.Add(baseShot);
+			potentialTargets.Add(target + new Vector2(0.25f, 0.25f));
+			potentialTargets.Add(target + new Vector2(0.25f, 0.75f));
+			potentialTargets.Add(target + new Vector2(0.75f, 0.25f));
+			potentialTargets.Add(target + new Vector2(0.75f, 0.75f));
+			potentialTargets.Add(baseShot);
+		}
+
 		//we insert target + new Vector2(0.5f, 0.5f) twice since it's the fisrt thing we should try but also last thing to return if we dont hit anything
-		Vector2[] potentialTargets = {target + new Vector2(0.5f, 0.5f),target+new Vector2(0.25f,0.25f), target+new Vector2(0.25f, 0.75f),target+new Vector2(0.75f, 0.25f),target+new Vector2(0.75f, 0.75f),target + new Vector2(0.5f, 0.5f)};
+		
 		int j = 0;
 		Vector2 to = default;
 		while (!result.HasValue || !result.Value.hit || result.Value.HitObjId != targetId)
 		{
-			if(j>=potentialTargets.Length) break;
+			if(j>=potentialTargets.Count) break;
 			to = potentialTargets[j];
 			j++;
 			
@@ -121,21 +141,31 @@ public class Shootable : Effect
 			//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
 			if (!result.Value.hit) {
 				var tile = WorldManager.Instance.GetTileAtGrid(to,dimension);
-				var obj = tile.UnitAtLocation;
-				if (obj != null) {
-					var controllable = obj;
-					if (controllable.Crouching && targetLow == false) {
-						// Do nothing if targetLow is false
-					} else {
-						result = new WorldManager.RayCastOutcome(from, to) {
-							hit = true,
-							HitObjId = obj.WorldObject.ID,
-							CollisionPointLong = to,
-							CollisionPointShort = to,
-						};
+				if (targetObj.TileLocation == tile && !targetObj.Type.Surface)
+				{
+					result = new WorldManager.RayCastOutcome(from, to) {
+						hit = true,
+						HitObjId = targetObj.ID,
+						CollisionPointLong = to,
+						CollisionPointShort = to,
+					};
+				}
+				else
+				{
+					var obj = tile.UnitAtLocation;
+					if (obj != null) {
+						var controllable = obj;
+						if (controllable.Crouching && targetLow == false) {
+							// Do nothing if targetLow is false
+						} else {
+							result = new WorldManager.RayCastOutcome(from, to) {
+								hit = true,
+								HitObjId = obj.WorldObject.ID,
+								CollisionPointLong = to,
+								CollisionPointShort = to,
+							};
+						}
 					}
-
-				
 				}
 			}
 
@@ -226,6 +256,9 @@ public class Shootable : Effect
 		retrunList.Add(m);
 		var turnact = FaceUnit.Make(actor.WorldObject.ID, target.TileLocation.Position);
 		retrunList.Add(turnact);
+
+		int rangeBlock = preDropOffDmg - p.Dmg;
+		int coverBlock = 0;
 		if (p.CoverCast.HasValue)
 		{
 			var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId,dimension);
@@ -239,7 +272,7 @@ public class Shootable : Effect
 				}
 			}
 
-			int coverBlock = 0;
+			
 			switch (cover)
 			{
 				case Cover.Full:
@@ -271,8 +304,13 @@ public class Shootable : Effect
 			retrunList.Add(act);
 		}
 
+		
+		
+		
 		if (p.Result.hit)
 		{
+			var shoot = UnitShoot.Make(p.Result.HitObjId,p, preDropOffDmg, coverBlock, rangeBlock);
+			retrunList.Add(shoot);
 			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{
@@ -335,130 +373,5 @@ public class Shootable : Effect
 		return tiles;
 	}
 
-#if CLIENT
-
-	private WorldObject? previewTarget;
-	Vector2Int previewActor = new Vector2Int(-1,-1);
-	List<SequenceAction> previewCache = new List<SequenceAction>();
-	private Projectile? previewShot;
-	protected override List<OwnedPreviewData>  PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch)
-	{
-		
-		if((!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position))	
-		{
-			previewCache = GetConsequences(actor, target);
-			previewActor = actor.WorldObject.TileLocation.Position;
-			previewTarget = target;
-			previewShot = GenerateProjectile(actor, target,-1);
-		}
-		if(previewShot==null)
-		{
-			return new List<OwnedPreviewData>();
-		}
-		
-		var area = SupressedTiles(previewShot.Value);
-		foreach (var t in area)
-		{
-			if (t.Surface != null)
-			{
-				Texture2D sprite = t.Surface.GetTexture();
-				spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
-			}
-		}
-		spriteBatch.DrawOutline(area, Color.Blue, 1);
-
-
-
-		foreach (var act in previewCache)
-		{
-			act.PreviewIfShould(spriteBatch);
-		}
-
-
-		var startPoint = Utility.GridToWorldPos(previewShot.Value.Result.StartPoint);
-		var endPoint = Utility.GridToWorldPos(previewShot.Value.Result.EndPoint);
-
-		Vector2 point1 = startPoint;
-		Vector2 point2;
-		int k = 0;
-		var dmg = preDropOffDmg;
-		foreach (var dropOff in previewShot.Value.DropOffPoints)
-		{
-			if (dropOff == previewShot.Value.DropOffPoints.Last())
-			{
-				point2 = Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong);
-
-			}
-			else
-			{
-				point2 = Utility.GridToWorldPos(dropOff);
-			}
-
-			Color c;
-			switch (k)
-			{
-				case 0:
-					c = Color.DarkGreen;
-					break;
-				case 1:
-					c = Color.Orange;
-					break;
-				case 2:
-					c = Color.DarkRed;
-					break;
-				default:
-					c = Color.Purple;
-					break;
-
-			}
-
-
-			spriteBatch.DrawLine(point1.X, point1.Y, point2.X, point2.Y, c, 5);
-			spriteBatch.DrawText(""+dmg,   Utility.GridToWorldPos(dropOff),4,Color.White);
-
-			dmg = (int) Math.Ceiling(dmg / 1.8f);
-			k++;
-			point1 = point2;
-		}
-
-
-		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 1);
-		WorldObject? hitobj = null;
-		if (previewShot.Value.Result.HitObjId != -1)
-		{
-			hitobj = WorldManager.Instance.GetObject(previewShot.Value.Result.HitObjId);
-		}
-
-		WorldObject? coverObj = null;
-		if (previewShot.Value.CoverCast.HasValue && previewShot.Value.CoverCast.Value.hit)
-		{
-			coverObj = WorldManager.Instance.GetObject(previewShot.Value.CoverCast.Value.HitObjId);
-		}
-		if(coverObj!= null){
-			//crash here?
-			var coverCast = previewShot.Value.CoverCast!.Value;
-			
-
-			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
-			var coverobjtransform = coverObj.Type.Transform;
-			Texture2D yellowsprite = coverObj.GetTexture();
-
-			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position), Color.Yellow);
-			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 5, 10, Color.Yellow, 15f);
-
-
-		}
-
-
-
-		if (hitobj != null)
-		{
-			spriteBatch.DrawCircle(Utility.GridToWorldPos(previewShot.Value.Result.CollisionPointLong), 5, 10, Color.Red, 15f);
-		}
-
-		return new List<OwnedPreviewData>();
-	}
-#endif
 	
 }

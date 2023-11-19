@@ -53,10 +53,11 @@ public class UseAbility : Action
 
 #if CLIENT
 
-		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
+		public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
 			UnitAbility action = actor.Abilities[args.AbilityIndex];
-			action.Preview(actor, args.TargetObj!,spriteBatch);
+			return action.Preview(actor, args.TargetObj!,spriteBatch);
+			
 		}
 
 

@@ -58,9 +58,9 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecution
 
 
 #if CLIENT
-	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-
+return new List<SequenceAction>();
 	}
 	
 #endif

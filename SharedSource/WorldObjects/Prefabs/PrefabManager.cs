@@ -261,7 +261,7 @@ public static class PrefabManager
 		}
 		else
 		{
-			XmlNode node = (XmlNode) xmlObj.GetElementsByTagName("delivery")[0]!.ChildNodes[0]!;
+			XmlNode node = xmlObj.GetElementsByTagName("delivery")[0]!.ChildNodes[0]!;
 			if (node.Name == "throwable")
 			{	
 				
@@ -325,7 +325,7 @@ public static class PrefabManager
 	{
 		WorldConseqences eff = new WorldConseqences();
 				
-		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "1");
+		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "0");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
 		eff.Visible = bool.Parse(effect.Attributes?["visible"]?.InnerText ?? "true");
 		eff.Los = bool.Parse(effect.Attributes?["los"]?.InnerText ?? "false");

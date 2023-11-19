@@ -131,14 +131,12 @@ public class Move : Action
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
 	
-	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		if (SequenceManager.SequenceRunning) return;
+		if (SequenceManager.SequenceRunning) return new List<SequenceAction>();
 	
 		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
-	
 		
-	
 
 		for (int index = 0; index < previewPath.Path.Count - 1; index++)
 		{
@@ -169,7 +167,8 @@ public class Move : Action
 		{
 			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(args.Target.Value) + new Vector2(-20 * moveUse, -30) + new Vector2(50, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
 		}
-
+		
+		return new List<SequenceAction>();
 	}
 #endif
 }

@@ -33,9 +33,7 @@ public static class RenderSystem
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		objs.Clear();
 		unsortedObjs.Clear();
-
-
-
+		
 		foreach (var tile in allTiles)
 		{
 			if (tile.Surface != null)

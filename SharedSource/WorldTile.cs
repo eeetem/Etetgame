@@ -483,7 +483,7 @@ public partial class WorldTile : IWorldTile
 		return data;
 	}
 	List<WorldObject> edges = new List<WorldObject>();
-	public IEnumerable<WorldObject> GetAllEdges()
+	public List<WorldObject> GetAllEdges()
 	{
 		edges.Clear();
 		if (NorthEdge != null)

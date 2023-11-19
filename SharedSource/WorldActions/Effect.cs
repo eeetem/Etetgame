@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using DefconNull.World.WorldObjects;
 using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 
 namespace DefconNull.World.WorldActions;
 
@@ -36,17 +38,40 @@ public abstract class Effect
 
 #if CLIENT
 	
-	public List<OwnedPreviewData>  Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
+	List<SequenceAction> previewCache = new List<SequenceAction>();
+	Vector2Int previewActor = new Vector2Int(-1,-1);
+	private WorldObject? previewTarget;
+
+	public List<SequenceAction>  Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
 	{
-		if (Offset != new Vector2Int(0,0))
+		if (!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position)
 		{
-			return PreviewChild(actor, WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position+Offset).Surface,spriteBatch);
+		//	if (CanPerform(actor, target).Item1)
+			//{
+				previewCache = GetConsequences(actor, target);
+				previewActor = actor.WorldObject.TileLocation.Position;
+				previewTarget = target;
+			//}
 		}
 
-		return PreviewChild(actor,target,spriteBatch);
+		foreach (var act in previewCache)
+		{
+			act.PreviewIfShould(spriteBatch);
+		}
+		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(target.TileLocation.Position+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
+
+		
+		if (Offset != new Vector2Int(0,0))
+		{
+		//	PreviewChild(actor, WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position+Offset).Surface,spriteBatch);
+			return previewCache;
+		}
+
+	//	PreviewChild(actor,target,spriteBatch);
+		return previewCache;
 	}
 	
-	protected abstract List<OwnedPreviewData>  PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch);
+	//protected abstract void  PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch);
 #endif
 
 

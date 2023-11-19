@@ -17,8 +17,6 @@ shooting without using points -> too quick follow up action?
 
 
 
-targeting cover
-
 UI Rework:
 crouch indicator
 

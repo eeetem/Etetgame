@@ -50,7 +50,7 @@ public class Face : Action
 	private Vector2Int lastTarget;
 	private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 
-	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
 			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
@@ -73,6 +73,7 @@ public class Face : Action
 			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
 			
 		}
+return new List<SequenceAction>();
 
 	}
 

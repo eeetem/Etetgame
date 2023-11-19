@@ -51,7 +51,7 @@ public abstract class Action
 	public abstract Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args);
 
 #if CLIENT
-	public abstract void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch);
+	public abstract List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch);
 
 	public void SendToServer(Unit actor, ActionExecutionParamters args)
 	{

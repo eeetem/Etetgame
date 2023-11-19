@@ -259,18 +259,19 @@ public class UnitAbility
 #if CLIENT
 	
 
-	public void Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
+	public List<SequenceAction> Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
 	{
-
+		List<SequenceAction> actions = new List<SequenceAction>();
 		if (ImmideateActivation)
 		{
 			target = actor.WorldObject;
 		}
 		foreach (var eff in Effects)
 		{
-			eff.Preview(actor, target, spriteBatch);
+			actions.AddRange( eff.Preview(actor, target, spriteBatch));
 		}
-		
+
+		return actions;
 	}
 
 
