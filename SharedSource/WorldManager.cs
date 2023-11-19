@@ -17,6 +17,7 @@ using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using MD5Hash;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Collections;
+using Riptide;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
@@ -385,7 +386,7 @@ public  partial class WorldManager
 		return Visibility.None;
 	}
 
-	public struct RayCastOutcome
+	public struct RayCastOutcome : IMessageSerializable
 	{
 		public Vector2 CollisionPointLong= new Vector2(0, 0);
 		public Vector2 CollisionPointShort= new Vector2(0, 0);
@@ -409,6 +410,43 @@ public  partial class WorldManager
 			{
 				Path = new List<Vector2Int>(Math.Max(2, (int) (Vector2.Distance(start, end) * 32)));
 			}
+		}
+
+		public void Serialize(Message message)
+		{
+			message.Add(CollisionPointLong.X);
+			message.Add(CollisionPointLong.Y);
+			message.Add(CollisionPointShort.X);
+			message.Add(CollisionPointShort.Y);
+			message.Add(EndPoint.X);
+			message.Add(EndPoint.Y);
+			message.Add(StartPoint.X);
+			message.Add(StartPoint.Y);
+			message.Add(HitObjId);
+			message.Add(hit);
+			if (Path != null)
+			{
+				message.Add(Path.ToArray());
+			}
+			else
+			{
+				message.Add(Array.Empty<Vector2Int>());
+			}
+		}
+
+		public void Deserialize(Message message)
+		{
+			CollisionPointLong.X = message.GetFloat();
+			CollisionPointLong.Y = message.GetFloat();
+			CollisionPointShort.X = message.GetFloat();
+			CollisionPointShort.Y = message.GetFloat();
+			EndPoint.X = message.GetFloat();
+			EndPoint.Y = message.GetFloat();
+			StartPoint.X = message.GetFloat();
+			StartPoint.Y = message.GetFloat();
+			HitObjId = message.GetInt();
+			hit = message.GetBool();
+			Path = message.GetSerializables<Vector2Int>().ToList();
 		}
 	}
 	

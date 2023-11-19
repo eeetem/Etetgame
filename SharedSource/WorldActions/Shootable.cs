@@ -10,6 +10,7 @@ using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using Riptide;
 #if CLIENT
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
@@ -45,20 +46,38 @@ public class Shootable : Effect
 		return dropOffRange + supressionRange;
 	}
 
-	public struct Projectile
+	public struct Projectile : IMessageSerializable
 	{
 		public WorldManager.RayCastOutcome Result { get; set; }
 		public WorldManager.RayCastOutcome? CoverCast { get; set; } = null; //tallest cover on the way
 		public int Dmg = 0;
-		public Vector2[] DropOffPoints = new Vector2[0];
-		public readonly List<int> SupressionIgnores = new List<int>();
-		public bool shooterLow;
-		public bool targetLow;
+		public Vector2[] DropOffPoints = new Vector2[0];//NOT SERIALISED WARNING
+		public readonly List<int> SuppressionIgnores = new List<int>();
+		public bool ShooterLow;
+		public bool TargetLow;
 
 		public Projectile(WorldManager.RayCastOutcome result, WorldManager.RayCastOutcome? coverCast)
 		{
 			Result = result;
 			CoverCast = coverCast;
+		}
+
+		public void Serialize(Message message)
+		{
+			message.Add(Result);
+			message.Add(Dmg);
+			message.AddInts(SuppressionIgnores.ToArray());
+			message.Add(ShooterLow);
+			message.Add(TargetLow);
+		}
+
+		public void Deserialize(Message message)
+		{
+			Result = message.GetSerializable<WorldManager.RayCastOutcome>();
+			Dmg = message.GetInt();
+			SuppressionIgnores.AddRange(message.GetInts());
+			ShooterLow = message.GetBool();
+			TargetLow = message.GetBool();
 		}
 	}
 
@@ -200,8 +219,8 @@ public class Shootable : Effect
 		}
 
 		Projectile p = new Projectile(result.Value,coverCast);
-		p.targetLow = targetLow;
-		p.SupressionIgnores.Add(actor.WorldObject.ID);
+		p.TargetLow = targetLow;
+		p.SuppressionIgnores.Add(actor.WorldObject.ID);
 
 		float range = Math.Min( Vector2.Distance(p.Result.StartPoint, p.Result.CollisionPointLong), Vector2.Distance(p.Result.StartPoint, p.Result.EndPoint));
 		int dropOffs = 0;
@@ -357,7 +376,7 @@ public class Shootable : Effect
 			var dir = Utility.GetDirectionToSideWithPoint(pos, p.Result.CollisionPointLong);
 			
 			Cover passCover = Cover.High;//i dont remember why this is here
-			if (p.shooterLow)
+			if (p.ShooterLow)
 			{
 				passCover = Cover.Low;
 			}

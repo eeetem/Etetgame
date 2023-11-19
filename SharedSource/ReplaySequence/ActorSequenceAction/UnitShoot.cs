@@ -8,6 +8,7 @@ using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using Riptide;
 
 namespace DefconNull.ReplaySequence.ActorSequenceAction;
 
@@ -136,4 +137,22 @@ public class UnitShoot : UnitSequenceAction
 		}
 	}
 #endif
+
+	protected override void DeserializeArgs(Message message)
+	{
+		base.DeserializeArgs(message);
+		OriginalDamage = message.GetInt();
+		CoverBlock = message.GetInt();
+		RangeBlock = message.GetInt();
+		Projectile = message.GetSerializable<Shootable.Projectile>();
+	}
+
+	protected override void SerializeArgs(Message message)
+	{
+		base.SerializeArgs(message);
+		message.Add(OriginalDamage);
+		message.Add(CoverBlock);
+		message.Add(RangeBlock);
+		message.Add(Projectile);
+	}
 }
