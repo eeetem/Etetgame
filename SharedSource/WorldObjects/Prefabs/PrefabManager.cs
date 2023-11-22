@@ -29,7 +29,7 @@ public static class PrefabManager
 		{
 
 			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? string.Empty;
-			var effectelement = xmlObj.GetElementsByTagName("effect")[0];
+			var effectelement = xmlObj.GetElementsByTagName("consequences")[0];
 			if (effectelement != null)
 			{
 				var itm = ParseConsequences(effectelement);
@@ -50,7 +50,6 @@ public static class PrefabManager
 			bool edge = false;
 			bool surface = false;
 			bool impassible = false;
-			int maxHealth = 10;
 			Cover vcover = Cover.None;
 			Cover scover = Cover.None;
 			if (xmlObj.HasAttributes && xmlObj.Attributes["Faceable"] != null)
@@ -106,7 +105,7 @@ public static class PrefabManager
 			type.Edge = edge;
 			type.Surface = surface;
 			type.Impassible = impassible;
-			type.MaxHealth = maxHealth;
+			type.MaxHealth = int.Parse(xmlObj?.Attributes?["health"]?.InnerText ?? "8");
 			
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				type.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
@@ -183,7 +182,7 @@ public static class PrefabManager
 			unitType.SolidCover = Cover.Full;
 			unitType.VisibilityCover = Cover.None;
 
-			unitType.MaxHealth = int.Parse(xmlObj?.Attributes?["Health"]!.InnerText ?? "10");
+			unitType.MaxHealth = int.Parse(xmlObj?.Attributes?["health"]!.InnerText ?? "10");
 			unitType.MoveRange = int.Parse(xmlObj.Attributes?["moveRange"]?.InnerText ?? "4");
 			unitType.Maxdetermination = int.Parse(xmlObj.Attributes?["determination"]?.InnerText ?? "2");
 			
@@ -226,9 +225,19 @@ public static class PrefabManager
 		bool aiExempt =  bool.Parse(actobj.Attributes?["aiExempt"]?.InnerText ?? "false"); 
 
 		List<Effect> effects = ParseWorldEffects(actobj);
+		var immideateActivation = false;
+		//total fucking shitcode
+		if (effects[0].GetType() == typeof(WorldEffect))
+		{
+			WorldEffect e = (WorldEffect) effects[0];
+			if (e.DeliveryMethod.GetType() == typeof(ImmideateDelivery))
+			{
+				immideateActivation = true;
+			}
+		}
 
-		var immideaateActivation = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? "false");
-		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, overWatchRange,effects,immideaateActivation,index,aiExempt,aidList);
+		var immideaateActivationOverride = bool.Parse(actobj.Attributes?["immideate"]?.InnerText ?? immideateActivation.ToString());
+		UnitAbility a = new UnitAbility(name, tip, detCost, moveCost, actCost, overWatchRange,effects,immideaateActivationOverride,index,aiExempt,aidList);
 		return a;
 	}
 
@@ -327,7 +336,7 @@ public static class PrefabManager
 				
 		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "0");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
-		eff.Visible = bool.Parse(effect.Attributes?["visible"]?.InnerText ?? "true");
+
 		eff.Los = bool.Parse(effect.Attributes?["los"]?.InnerText ?? "false");
 		string ignores = effect.Attributes?["ignore"]?.InnerText ?? "";
 		eff.Ignores = ignores.Split(',').ToList();
@@ -358,6 +367,8 @@ public static class PrefabManager
 		if (dmgitm != null)
 		{
 			eff.Dmg =  int.Parse(dmgitm.Attributes?["dmg"]?.InnerText ?? "0");
+			eff.DetRes =  int.Parse(dmgitm.Attributes?["detRes"]?.InnerText ?? "0");
+			eff.EnvRes =  int.Parse(dmgitm.Attributes?["envRes"]?.InnerText ?? "0");
 			eff.Det = int.Parse(dmgitm.Attributes?["det"]?.InnerText ?? "0");
 		}
 		XmlNode? fowSpot = ((XmlElement) effect).GetElementsByTagName("fowSpot")[0];

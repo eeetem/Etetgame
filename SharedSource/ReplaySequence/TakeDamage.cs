@@ -19,14 +19,16 @@ public class TakeDamage : SequenceAction
 	public override bool CanBatch => true;
 	public int Dmg;
 	public int DetResistance;
+	public int EnvResistance;
 	public int ObjID = -1;
 	public Vector2Int Position = new Vector2Int(-1,-1);
 	private List<string> Ignores = new List<string>();
 
-	public static TakeDamage Make(int dmg, int detResistance,Vector2Int position, List<string> ignores) 
+	public static TakeDamage Make(int dmg, int detResistance, int envRes, Vector2Int position, List<string> ignores) 
 	{
 		var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
 		t.Dmg = dmg;
+		t.EnvResistance = envRes;
 		t.DetResistance = detResistance;
 		t.Position = position;
 		t.Ignores = ignores;
@@ -35,11 +37,14 @@ public class TakeDamage : SequenceAction
 	
 
 
-	public static TakeDamage Make(int dmg, int detResistance, int objID)
+	public static TakeDamage Make(int dmg, int detResistance, int objID, int envRes = -999)
 	{
 		var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
 		t.Dmg = dmg;
 		t.DetResistance = detResistance;
+		t.EnvResistance = detResistance;
+		if(envRes != -999)
+			t.EnvResistance = envRes;
 		t.ObjID = objID;
 		return t;
 	}
@@ -79,7 +84,7 @@ public class TakeDamage : SequenceAction
 		var t = new Task(delegate
 		{
 	
-			GetTargetObject()?.TakeDamage(Dmg, DetResistance);
+			GetTargetObject()?.TakeDamage(Dmg, DetResistance,EnvResistance);
 			
 		});
 		return t;
@@ -102,21 +107,30 @@ public class TakeDamage : SequenceAction
 #if CLIENT
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
-		if (GetTargetObject().UnitComponent == null || GetTargetObject().UnitComponent.Determination > 0)
+		if (GetTargetObject().UnitComponent == null)
+		{
+			if (EnvResistance != 0)
+			{
+				batch.DrawText("DMG :" + Dmg + "(" + (Dmg - EnvResistance) + ")", pos, Color.White);
+				return;
+			}
+
+			batch.DrawText("DMG : " + Dmg, pos, Color.White);
+			return;
+		}else if ( GetTargetObject().UnitComponent.Determination > 0)
 		{
 			batch.DrawText("DMG :" + Dmg+"("+(Dmg-DetResistance)+")", pos, Color.White);
 			return;
 		}
+
 		batch.DrawText("DMG : " + Dmg, pos, Color.White);
 	}
 
 	protected override void Preview(SpriteBatch spriteBatch)
 	{
-		if(Dmg == 0 || ObjID == -1)
-			return;
 
 		
-		var obj = WorldManager.Instance.GetObject(ObjID);
+		var obj = GetTargetObject();
 
 		if (obj !=null && obj!.IsVisible())
 		{
@@ -128,14 +142,18 @@ public class TakeDamage : SequenceAction
 
 
 			//this is scuffed
-			if (obj.UnitComponent == null || obj.UnitComponent.Determination > 0)
+			if (obj.UnitComponent == null )
 			{
-				WorldManager.Instance.GetObject(ObjID)!.PreviewData.finalDmg += Dmg - DetResistance;
-				WorldManager.Instance.GetObject(ObjID)!.PreviewData.determinationBlock += DetResistance;
+				obj!.PreviewData.finalDmg += Dmg - EnvResistance;
+				obj!.PreviewData.determinationBlock += EnvResistance;
+			}else if (obj.UnitComponent.Determination > 0)
+			{
+				obj!.PreviewData.finalDmg += Dmg - DetResistance;
+				obj!.PreviewData.determinationBlock += DetResistance;
 			}
 			else
 			{
-				WorldManager.Instance.GetObject(ObjID)!.PreviewData.finalDmg += Dmg;
+				obj!.PreviewData.finalDmg += Dmg;
 			}
 		}
 

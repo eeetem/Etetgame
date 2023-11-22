@@ -232,26 +232,16 @@ public partial class WorldObject
 
 	
 
-	public void TakeDamage(int dmg, int detResist)
+	public void TakeDamage(int dmg, int detResist, int envResist)
 	{
-	
+		
 		
 
 		if (dmg < 0)
 		{
 			return;
 		}
-		int dmgNoResist = dmg - detResist;
-		
-		if (LifeTime != -100)
-		{
-			LifeTime -= dmg;
-			if (LifeTime <= 0)
-			{
-				Destroy();
-			}
-		}
-		
+
 		Console.WriteLine(this + " got hit " + TileLocation.Position);
 		if (UnitComponent != null)
 		{//let controlable handle it
@@ -259,7 +249,17 @@ public partial class WorldObject
 		}
 		else
 		{
-			
+			int dmgNoResist = dmg - envResist;
+		
+			if (LifeTime != -100)
+			{
+				LifeTime -= dmg;
+				if (LifeTime <= 0)
+				{
+					Destroy();
+				}
+			}
+
 #if CLIENT
 			new PopUpText("Damage: " + dmgNoResist, _tileLocation.Position, Color.Gray, 0.4f);
 #endif

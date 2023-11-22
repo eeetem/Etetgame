@@ -6,7 +6,7 @@
       <variation id="1" weight="10"/>
       <variation id="2" weight="5"/>
       <variation id="5" weight="10"/>
-	  <variation id="6" weight="30"/>
+      <variation id="6" weight="30"/>
       <variation id="7" weight="30"/>
       <variation id="3" weight="1"/>
       <variation id="4" weight="1"/>
@@ -35,30 +35,30 @@
     <name>spawnPointT2</name>
   </object>
 
-  <object SCover = "3" Edge = "true" Health="1000">
+  <object SCover = "3" Edge = "true" health="1000">
     <sprite  name="Environment/borderWall"  offset= "0,0"/>
     <name>borderWall</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
     </destroyConsequences>
   </object>
-  <object SCover = "0" Edge = "true" Health="5">
+  <object SCover = "0" Edge = "true" health="5">
     <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
     <name>basicWallDebris</name>
   </object>
-  <object VCover = "0" SCover = "3" Edge = "true" Health="3">
+  <object VCover = "0" SCover = "3" Edge = "true" health="3">
     <sprite  name="Environment/glassWall"  offset= "0,0"/>
     <name>glassWall</name>
   </object>
-  <object VCover="3" SCover = "0" Edge = "true" Health="6">
+  <object VCover="3" SCover = "0" Edge = "true" health="6">
     <sprite  name="Environment/strawWall"  offset= "0,0"/>
     <name>strawWall</name>
   </object>
-  <object VCover = "0" SCover = "3" Edge = "true" Health="1">
+  <object VCover = "0" SCover = "3" Edge = "true" health="1">
     <sprite  name="Environment/paperMache"  offset= "0,0"/>
     <name>paperMache</name>
   </object>
-  <object SCover = "3" Edge = "true" Health="8">
+  <object SCover = "3" Edge = "true" health="8">
     <sprite  name="Environment/basicWall"  offset= "0,0"/>
     <name>basicWall</name>
     <destroyConsequences range = "1" >
@@ -66,28 +66,28 @@
     </destroyConsequences>
   </object>
   <object SCover = "2" Edge = "true">
-    <sprite  name="Environment/basicHalfWall" offset= "0,0"  Health="8"/>
+    <sprite  name="Environment/basicHalfWall" offset= "0,0"  health="8"/>
     <name>basicHalfWall</name>
     <destroyConsequences range = "1" >
       <place name="basicHalfWallLight"/>
     </destroyConsequences>
   </object>
   <object SCover = "1" Edge = "true">
-    <sprite name="Environment/basicHalfWallLight" Health="8" offset= "0,0"/>
+    <sprite name="Environment/basicHalfWallLight" health="8" offset= "0,0"/>
     <name>basicHalfWallLight</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
     </destroyConsequences>
   </object>
 
-  <unit Health="13" moveRange = "6" moves="2" determination="3" z="0.1">
+  <unit health="13" moveRange = "6" moves="2" determination="3" z="0.1">
     <name>Grunt</name>
     <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
-      
+
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -96,14 +96,14 @@
         </consequences>
       </effect>
     </action>
-    
+
     <action detCost ="3" moveCost="1" actCost="1" overwatch="2">
       <name>Headshot</name>
       <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
-      
+
       <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
-      
+
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -114,13 +114,13 @@
     </action>
   </unit>
 
-  <unit Health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
+  <unit health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
     <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
-      
+
       <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
       <effect>
         <consequences>
@@ -132,23 +132,23 @@
     </action>
 
     <action immideate="true" moveCost="0" actCost="0" detCost ="3">
-      <name>Breach n Clear</name>
+      <name>Rapid Manouvers</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
       <effect>
-        <consequences>
-          <applystatus status="BreachnClear" duration="1"/>
+        <consequences  range="1">
+          <applystatus status="Rapid Manouvers" duration="1"/>
         </consequences>
       </effect>
     </action>
   </unit>
 
-  <unit Health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="3"  sightrange="20">
+  <unit health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="3"  sightrange="20">
     <name>Officer</name>
 
     <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
-      
+
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
 
       <effect>
@@ -158,7 +158,7 @@
           <sfx name="rifle"/>
         </consequences>
       </effect>
-      
+
     </action>
 
     <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
@@ -181,157 +181,236 @@
         <delivery>
           <vissionCast range="18"/>
         </delivery>
-        <consequences ignore="Officer">
+        <consequences ignore="Officer"  range="1">
           <applystatus status="Boost" duration="1"/>
         </consequences>
       </effect>
     </action>
+
+    <action detCost ="0" moveCost="0" actCost="1">
+      <name>Smoke Launcher</name>
+      <tip>Launches a smoke grenade to block lines of sight</tip>
+
+      <effect>
+        <delivery>
+          <throwable throwRange="12"/>
+        </delivery>
+        <consequences range="3">
+          <place name="Smoke"/>
+          <vfx name="clmagnitude" target="100" speed="40"/>
+          <vfx name="noise" target="0.5" speed="50"/>
+          <sfx name="smoke"/>
+        </consequences>
+      </effect>
+    </action>
   </unit>
-  
-  
 
-    <unit Health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  determination="5">
-      <name>Heavy</name>
-      
-      <action moveCost="1" actCost="1" overwatch="3">
-        <name>Attack</name>
-        <targetAid>enemy</targetAid>
-        <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
 
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="20" speed="50"/>
-            <vfx name="noise" target="0.5" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-      </action>
-  
-      <action detCost ="3" moveCost="1" actCost="2" overwatch="3">
-        <name>Suppress</name>
-        <targetAid>enemy</targetAid>
-        <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
-        
-        <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.3" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-        
-        <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.3" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-        
-        <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.3" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-        
-        <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.3" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-        
-        <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-        <effect>
-          <consequences>
-            <vfx name="clmagnitude" target="5" speed="50"/>
-            <vfx name="noise" target="0.3" speed="100"/>
-            <sfx name="mg"/>
-          </consequences>
-        </effect>
-        
 
-      </action>
-      
-        <action immideate="true" detCost ="1" moveCost="0" actCost="2">
-          <name>Reposition</name>
-          <tip>Holster heavy's weapon. Removes action points for 2 turns, adds extra move points for this turn.</tip>
-          
-          <effect>
-            <consequences>
-              <applystatus status="Holstered" duration="2"/>
-            </consequences>
-          </effect>
-          <effect>
-            <consequences>
-              <applystatus status="Reposition" duration="1"/>
-            </consequences>
-          </effect>
-        </action>
-    </unit>
-  
+  <unit health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  determination="5">
+    <name>Heavy</name>
 
+    <action moveCost="1" actCost="1" overwatch="3">
+      <name>Attack</name>
+      <targetAid>enemy</targetAid>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="20" speed="50"/>
+          <vfx name="noise" target="0.5" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+    </action>
+
+    <action detCost ="3" moveCost="1" actCost="2" overwatch="3">
+      <name>Suppress</name>
+      <targetAid>enemy</targetAid>
+      <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
+
+      <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.3" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+
+      <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.3" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+
+      <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.3" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+
+      <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.3" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+
+      <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <effect>
+        <consequences>
+          <vfx name="clmagnitude" target="5" speed="50"/>
+          <vfx name="noise" target="0.3" speed="100"/>
+          <sfx name="mg"/>
+        </consequences>
+      </effect>
+
+
+    </action>
+
+    <action immideate="true" detCost ="1" moveCost="0" actCost="2">
+      <name>Reposition</name>
+      <tip>Holster heavy's weapon. Removes action points for 2 turns, adds extra move points for this turn</tip>
+
+      <effect>
+        <consequences  range="1">
+          <applystatus status="Holstered" duration="2"/>
+        </consequences>
+      </effect>
+      <effect>
+        <consequences  range="1">
+          <applystatus status="Reposition" duration="1"/>
+        </consequences>
+      </effect>
+    </action>
+  </unit>
+
+  <unit health="10" moveRange = "6" moves="2" determination="2" z="0.1">
+    <name>Specialist</name>
+    <action moveCost="1" actCost="1">
+      <name>RPG</name>
+      <targetAid>enemy</targetAid>
+      <tip>Depite looking quite scary the main use of the rpg involves destruction of environment and supression as any determined unit will duck out of the blast wave</tip>
+
+      <effect>
+        <delivery>
+          <throwable throwRange="24"/>
+        </delivery>
+        <consequences range="2">
+          <damage det="2" dmg="8" detRes="6" envRes="0"/>
+          <vfx name="tintR" target="5" speed="50"/>
+          <vfx name="clmagnitude" target="100" speed="50"/>
+          <vfx name="noise" target="1" speed="50"/>
+          <sfx name="grenade"/>
+          <place name="Crater"/>
+          <fowSpot scatter="4"/>
+        </consequences>
+      </effect>
+
+      <effect>
+        <consequences  range="1">
+          <applystatus status="Holstered" duration="3"/>
+        </consequences>
+      </effect>
+    </action>
+    <action moveCost="1" detCost="2" immideate="true">
+      <name>Rapid Reload</name>
+      <tip>Expend extra effort to do a quick reckless reload.</tip>
+
+      <effect>
+        <consequences range="1">
+          <removestatus status="Holstered"/>
+        </consequences>
+      </effect>
+    </action>
+
+    <action actCost="1">
+      <name>Grenade</name>
+      <targetAid>enemy</targetAid>
+      <tip>Throws a grenade. Doesnt require move points.</tip>
+
+      <effect>
+        <delivery>
+          <throwable throwRange="7"/>
+        </delivery>
+        <consequences range="3">
+          <damage det="2" dmg="6" detRes="2" envRes="0"/>
+          <vfx name="tintR" target="5" speed="50"/>
+          <vfx name="tintG" target="5" speed="50"/>
+          <vfx name="clmagnitude" target="100" speed="50"/>
+          <vfx name="noise" target="1" speed="50"/>
+          <sfx name="grenade"/>
+          <place name="Crater"/>
+          <fowSpot scatter="4"/>
+        </consequences>
+      </effect>
+
+    </action>
+
+  </unit>
 
   <statuseffect>
     <name>Reposition</name>
-    
-    <effect>
-      <consequences>
-      <values act ="[set]0" move="3"/>
-    </consequences>
-  </effect>
+
+  
+      <consequences range="1">
+        <values act ="0" move="3"/>
+      </consequences>
+ 
   </statuseffect>
 
   <statuseffect>
     <name>Holstered</name>
 
-    <effect>
-      <consequences>
+
+      <consequences range="1">
         <values act ="[set]0" move="0"/>
       </consequences>
-    </effect>
-  </statuseffect>
   
+  </statuseffect>
+
   <statuseffect>
-    <name>BreachnClear</name>
-    
-    <effect>
-      <consequences>
-       <values act ="1[set]" move="5[set]" moveRange="-3"/>
+    <name>Rapid Manouvers</name>
+
+
+      <consequences range="1">
+        <values act ="1[set]" move="5[set]" moveRange="-3"/>
       </consequences>
-    </effect>
+
   </statuseffect>
-  
+
   <statuseffect>
     <name>Boost</name>
-    
-    <effect>
-      <consequences>
+
+
+      <consequences  range="1">
         <values act ="1[cap]" move="1[cap]" moveRange="0"/>
       </consequences>
-    </effect>
+
   </statuseffect>
-  
-  
+
+
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
     <sprite name="Environment/satchel"  offset= "0,0"/>
     <name>Satchel</name>
-    
+
     <destroyConsequences range="2">
-        <damage det="1" dmg="15"/>
-        <vfx name="tintR" target="5" speed="50"/>
-        <vfx name="clmagnitude" target="100" speed="50"/>
-        <vfx name="noise" target="3" speed="60"/>
-        <sfx name="grenade"/>
-        <place name="Crater"/>
-        <fowSpot scatter="4"/>
+      <damage det="1" dmg="15"/>
+      <vfx name="tintR" target="5" speed="50"/>
+      <vfx name="clmagnitude" target="100" speed="50"/>
+      <vfx name="noise" target="3" speed="60"/>
+      <sfx name="grenade"/>
+      <place name="Crater"/>
+      <fowSpot scatter="4"/>
     </destroyConsequences>
   </object>
 
@@ -366,7 +445,7 @@
     <name>Frag</name>
     <tip>Damages units in effect area</tip>
     <availability>Specialist</availability>
-   
+
     <effect>
       <delivery>
         <throwable throwRange="6"/>
@@ -388,7 +467,7 @@
     <name>Flash</name>
     <tip>Immideately panics units in effect radius</tip>
 
-    
+
     <effect range="3">
       <delivery>
         <throwable throwRange="6"/>

@@ -18,7 +18,7 @@ using DefconNull.Rendering.UILayout;
 
 namespace DefconNull.World.WorldActions;
 
-public class WorldConseqences : IMessageSerializable
+public class WorldConseqences 
 {
 	public int Dmg;
 	public int Det ;
@@ -31,7 +31,6 @@ public class WorldConseqences : IMessageSerializable
 	public readonly List<string> RemoveStatus = new List<string>();
 
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
-	public bool Visible;
 	public ValueChange MoveRange ;
 	public bool Los;
 	public int ExRange;
@@ -42,84 +41,9 @@ public class WorldConseqences : IMessageSerializable
 
 	public bool FogOfWarSpot { get; set; }
 	public int FogOfWarSpotScatter { get; set; }
+	public int DetRes { get; set; }
+	public int EnvRes { get; set; }
 
-	public void Serialize(Message message)
-	{
-		message.AddInt(Dmg);
-		message.AddInt(Det);
-		message.AddSerializable(Move);
-		message.AddSerializable(Act);
-		message.Add(Range);
-		message.AddNullableString(Sfx);
-		message.AddNullableString(PLaceItemConsequence);
-
-		message.Add(AddStatus.Count);
-		foreach (var tuple in AddStatus)
-		{
-			message.Add(tuple.Item1);
-			message.Add(tuple.Item2);
-		}
-
-		message.AddStrings(RemoveStatus.ToArray());
-		
-		message.Add(Effects.Count);
-		foreach (var tuple in Effects)
-		{
-			message.Add(tuple.Item1);
-			message.Add(tuple.Item2);
-			message.Add(tuple.Item3);
-		}
-
-		
-
-		message.Add(Visible);
-		message.Add(MoveRange);
-		message.Add(Los);
-		message.Add(ExRange);
-		message.Add(TargetFoe);
-		message.Add(TargetFriend);
-		message.Add(TargetSelf);
-		message.AddStrings(Ignores.ToArray());
-
-
-	}
-
-	public void Deserialize(Message message)
-	{
-		Dmg = message.GetInt();
-		Det = message.GetInt();
-		Move = message.GetSerializable<ValueChange>();
-		Act = message.GetSerializable<ValueChange>();
-		Range = message.GetInt();
-		Sfx = message.GetNullableString();
-		PLaceItemConsequence = message.GetNullableString();
-
-		AddStatus.Clear();
-		for (int i = 0; i < message.GetInt(); i++)
-		{
-			AddStatus.Add(new Tuple<string, int>(message.GetString(), message.GetInt()));
-		}
-		RemoveStatus.Clear();
-		RemoveStatus.AddRange(message.GetStrings());
-		
-		Effects.Clear();
-		for (int i = 0; i < message.GetInt(); i++)
-		{
-			Effects.Add(new Tuple<string, string,string>(message.GetString(), message.GetString(), message.GetString()));
-		}
-		
-
-		Visible = message.GetBool();
-		MoveRange = message.GetSerializable<ValueChange>();
-		Los = message.GetBool();
-		ExRange = message.GetInt();
-		TargetFoe = message.GetBool();
-		TargetFriend = message.GetBool();
-		TargetSelf = message.GetBool();
-		Ignores = message.GetStrings().ToList();
-
-		
-	}
 
 	public List<IWorldTile> GetAffectedTiles(Vector2Int target)
 	{
@@ -177,14 +101,14 @@ public class WorldConseqences : IMessageSerializable
 			{
 				//tile.EastEdge?.TakeDamage(Dmg, 0);
 
-				consequences.Add(TakeDamage.Make(Dmg, 0, tile.EastEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.EastEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.EastEdge!);
 			}
 
 			if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 			{
 
-				consequences.Add(TakeDamage.Make(Dmg, 0, tile.WestEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.WestEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.WestEdge!);
 
 
@@ -194,24 +118,23 @@ public class WorldConseqences : IMessageSerializable
 			if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
 			{
 				//tile.NorthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(TakeDamage.Make(Dmg, 0, tile.NorthEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.NorthEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.NorthEdge!);
 			}
 
 			if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
 			{
 				//tile.SouthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(TakeDamage.Make(Dmg, 0, tile.SouthEdge!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, DetRes, tile.SouthEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.SouthEdge!);
 			}
 
 
 			foreach (var item in tile.ObjectsAtLocation)
 			{
-				item.TakeDamage(Dmg, 0);
-				consequences.Add(TakeDamage.Make(Dmg, 0, item!.ID));
+				consequences.Add(TakeDamage.Make(Dmg, DetRes,item!.ID,EnvRes));
 			}
-			consequences.Add(TakeDamage.Make(Dmg,0,tile.Position,Ignores));
+			consequences.Add(TakeDamage.Make(Dmg,DetRes, EnvRes,tile.Position,Ignores));
 		}
 		
 

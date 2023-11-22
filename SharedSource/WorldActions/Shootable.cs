@@ -52,7 +52,7 @@ public class Shootable : Effect
 		public WorldManager.RayCastOutcome? CoverCast { get; set; } = null; //tallest cover on the way
 		public int Dmg = 0;
 		public Vector2[] DropOffPoints = new Vector2[0];//NOT SERIALISED WARNING
-		public readonly List<int> SuppressionIgnores = new List<int>();
+		public readonly List<int> SuppressionIgnores;
 		public bool ShooterLow;
 		public bool TargetLow;
 
@@ -60,8 +60,13 @@ public class Shootable : Effect
 		{
 			Result = result;
 			CoverCast = coverCast;
+			SuppressionIgnores = new List<int>();
 		}
 
+		public Projectile()
+		{
+			SuppressionIgnores = new List<int>();
+		}
 		public void Serialize(Message message)
 		{
 			message.Add(Result);
@@ -268,7 +273,7 @@ public class Shootable : Effect
 
 	protected override List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1)
 	{
-
+		if (actor.WorldObject.TileLocation.Position == target.TileLocation.Position) return new List<SequenceAction>();
 		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
 		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
@@ -351,7 +356,7 @@ public class Shootable : Effect
 		else
 		{
 			//we missed so add taking damage on this tile as consiquences
-			var act2 = TakeDamage.Make(p.Dmg, detResistance, p.Result.EndPoint, new List<string>());
+			var act2 = TakeDamage.Make(p.Dmg, detResistance, detResistance,p.Result.EndPoint, new List<string>());
 			retrunList.Add(act2);
 			
 		}

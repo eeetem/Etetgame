@@ -385,42 +385,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/GameHud/BottomBar/detBarGreen.png
 
-#begin CompressedContent/textures/GameHud/BottomBar/detBarYellow.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/GameHud/BottomBar/detBarYellow.png
-
-#begin CompressedContent/textures/GameHud/BottomBar/hpBar.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/GameHud/BottomBar/hpBar.png
-
-#begin CompressedContent/textures/GameHud/BottomBar/hpBarEmpty.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/GameHud/BottomBar/hpBarEmpty.png
-
 #begin CompressedContent/textures/GameHud/BottomBar/infoBox.png
 /importer:TextureImporter
 /processor:TextureProcessor

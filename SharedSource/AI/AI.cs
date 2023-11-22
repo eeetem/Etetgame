@@ -111,10 +111,10 @@ public class AI
 			            Thread.Sleep(1000);
 		            } while (SequenceManager.SequenceRunning);
 
-		            if (!GameManager.IsPlayer1Turn)
-		            {
+		          //  if (!GameManager.IsPlayer1Turn)
+		           // {
 			            GameManager.NextTurn();
-		            }
+		           // }
 	            }
 	            catch (Exception e)
 	            {

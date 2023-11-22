@@ -34,7 +34,7 @@ public class WorldEffect : Effect
 		//Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
 
-	
+		if(!DeliveryMethod.CanPerform(actor, target,dimension).Item1) return changes;
 		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref target);
 	
 		foreach (var change in t)

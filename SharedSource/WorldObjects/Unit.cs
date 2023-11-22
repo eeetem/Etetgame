@@ -94,8 +94,7 @@ namespace DefconNull.World.WorldObjects
 				}
 #endif
 
-
-
+				
 				
 				StartTurn();
 			}
@@ -330,7 +329,7 @@ if(args.Target.HasValue){
 				return;
 			}
 			
-			Console.WriteLine("performing actionL " + a.Type);
+			Console.WriteLine("performing action " + a.Type);
 #if CLIENT
 			a.SendToServer(this,args);
 #else

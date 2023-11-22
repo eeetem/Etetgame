@@ -64,7 +64,19 @@ public static partial class GameManager
 		var newComcp = new List<SquadMember>();
 		if (Player2!.IsAI)
 		{
-			for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount; j++)
+			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
+			{
+				var sq = new SquadMember();
+				sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[j];
+				Vector2Int pos = new Vector2Int(0, 0);
+				do
+				{
+					pos = T2SpawnPoints[Random.Shared.Next(T2SpawnPoints.Count)];
+				}while(newComcp.Find((s) => s.Position == pos) != null);
+				sq.Position = pos;
+				newComcp.Add(sq);
+			}
+			for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount-PrefabManager.UnitPrefabs.Keys.Count; j++)
 			{
 				var sq = new SquadMember();
 				sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[Random.Shared.Next(PrefabManager.UnitPrefabs.Count)];

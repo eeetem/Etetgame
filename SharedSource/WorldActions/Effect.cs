@@ -17,7 +17,13 @@ public abstract class Effect
 	{
 		if (Offset != new Vector2Int(0,0))
 		{
-			return CanPerformChild(actor, WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position+Offset).Surface,dimension);
+			var sfc = WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position + Offset).Surface;
+			if (sfc != null)
+			{
+				return CanPerformChild(actor,sfc, dimension);
+			}
+
+			return new Tuple<bool, string>(false,"Can't target empty tile");
 		}
 
 		return CanPerformChild(actor,target,dimension);
@@ -28,7 +34,13 @@ public abstract class Effect
 	{
 		if (Offset != new Vector2Int(0,0))
 		{
-			return GetConsequencesChild(actor, WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position+Offset).Surface,dimension);
+			var sfc = WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position + Offset).Surface;
+			if (sfc != null)
+			{
+				return GetConsequencesChild(actor,sfc, dimension);
+			}
+
+			return new List<SequenceAction>();
 		}
 
 		return GetConsequencesChild(actor,target,dimension);
