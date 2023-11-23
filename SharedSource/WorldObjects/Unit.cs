@@ -170,7 +170,7 @@ namespace DefconNull.World.WorldObjects
 
 		public void TakeDamage(int dmg, int detResis)
 		{
-
+			Console.WriteLine("Taking damage: " + dmg + " with det resis: " + detResis);
 			if (Determination > 0)
 			{
 				Console.WriteLine("blocked by determination");

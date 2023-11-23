@@ -19,9 +19,8 @@ public class Attack : AIAction
 
 	public override void Execute(Unit unit)
 	{
-		//todo only waht you see
 		var atk = GetBestPossibleAbility(unit,true,false,false);
-		File.AppendAllText("aidebug.txt","attacking with: "+atk.AbilityIndex+" at: "+atk.Target+ "with score: "+atk.GetTotalValue()+" damage: "+atk.Dmg+" Suppression: "+atk.Supression+" scorechange: "+atk.TotalChangeScore+"\n");
+		File.AppendAllText("aidebug.txt","attacking with: "+atk.AbilityIndex+" at: "+atk.Target.TileLocation.Position+ "with score: "+atk.GetTotalValue()+" damage: "+atk.Dmg+" Suppression: "+atk.Supression+" scorechange: "+atk.TotalChangeScore+"\n");
 		
 		unit.DoAbility(atk.Target,atk.AbilityIndex);
 	}

@@ -158,6 +158,7 @@ public abstract class AIAction
 				if (hitUnit.Determination > 0)
 				{
 					dmgThisAttack += ((TakeDamage) c).Dmg - ((TakeDamage) c).DetResistance;
+					if(dmgThisAttack<0) dmgThisAttack = 0;
 				}
 				else
 				{
@@ -427,38 +428,40 @@ public abstract class AIAction
 		score += distanceReward;
 		details.DistanceReward = distanceReward;
 		
-		int protectionPentalty = 0;
-		int damagePotential = 0;
+		
 		if (!AI.passiveMode)
 		{
-			protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
+			int protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
 
 			var bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false, true, dimension);
 
-			damagePotential = bestAttack.GetTotalValue();
-		}
+			int damagePotential = bestAttack.GetTotalValue();
 
 
-
-		protectionPentalty *=2;//cover is VERY important
+			protectionPentalty *=2;//cover is VERY important
 		
 
-		score += protectionPentalty;
-		details.ProtectionPentalty = protectionPentalty;
-		//	details.EnemyAttackScores = enemyAttackScores;
+			score += protectionPentalty;
+			details.ProtectionPentalty = protectionPentalty;
+			//	details.EnemyAttackScores = enemyAttackScores;
 	
 		
-		damagePotential *= 3; //damage is important
+			damagePotential *= 3; //damage is important
 		
-		if(damagePotential <= 0)
-		{
-			damagePotential = -100;//discourage damageless tiles, we do this instead of vission checks
-		}
+			if(damagePotential <= 0)
+			{
+				damagePotential = -100;//discourage damageless tiles, we do this instead of vission checks
+			
+				//if we cant do any damage this turn atleast priorities tiles where we will be able to damage next turn
+				bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false, true, dimension,true);
 
-		details.DamagePotential = damagePotential; 
+				damagePotential = bestAttack.GetTotalValue()/10;
+			}
+
+			details.DamagePotential = damagePotential; 
 	
-		score += damagePotential;
-
+			score += damagePotential;
+		}
 		
 		WorldManager.Instance.WipePseudoLayer(dimension);
 
@@ -535,7 +538,7 @@ public abstract class AIAction
 		return false;
 	}
 
-	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1)
+	protected static AbilityUse GetBestPossibleAbility(Unit attacker, bool onlyVisible, bool noRecursion, bool excludeExempt, int dimension = -1, bool allowNextTurn = false)
 	{
 		var allUnits = GameManager.GetTeamUnits(!attacker.IsPlayer1Team);
 		allUnits.AddRange(GameManager.GetTeamUnits(attacker.IsPlayer1Team));
@@ -563,7 +566,7 @@ public abstract class AIAction
 
 		foreach (var a in attacks)
 		{
-			var res = ScoreAbility(a, attacker, dimension, noRecursion,false);
+			var res = ScoreAbility(a, attacker, dimension, noRecursion,allowNextTurn);
 			if (res.GetTotalValue() > bestAttack.GetTotalValue())
 			{
 				bestAttack = res;

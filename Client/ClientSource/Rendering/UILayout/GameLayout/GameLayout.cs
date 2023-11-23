@@ -1093,8 +1093,6 @@ public class GameLayout : MenuLayout
 		batch.End();
 	
 
-
-		return;
 		if (drawExtra)
 		{
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());

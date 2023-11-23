@@ -36,7 +36,7 @@ public class SequenceManager
 					}
 					act = SequenceQueue.Dequeue();
 				}
-				//Console.WriteLine("runnin sequnce task: "+task.SqcType);
+				Console.WriteLine("runnin sequnce task: "+act.GetSequenceType());
 				CurrentSequenceTasks.Add(act.GenerateTask());
 				CurrentSequenceTasks.Last().Start();
 		
@@ -52,9 +52,9 @@ public class SequenceManager
 					}
 				
 					if(!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
-						
-                        
-					CurrentSequenceTasks.Add(SequenceQueue.Dequeue().GenerateTask());
+					act = SequenceQueue.Dequeue();
+					Console.WriteLine("batching sequnce task: "+act.GetSequenceType());
+					CurrentSequenceTasks.Add(act.GenerateTask());
 					CurrentSequenceTasks.Last().Start();
 				} 
 

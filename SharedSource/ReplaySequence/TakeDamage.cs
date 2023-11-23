@@ -95,6 +95,7 @@ public class TakeDamage : SequenceAction
 		message.Add(Dmg);
 		message.Add(DetResistance);
 		message.Add(ObjID);
+		message.Add(Position);
 	}
 
 	protected override void DeserializeArgs(Message args)
@@ -102,6 +103,7 @@ public class TakeDamage : SequenceAction
 		Dmg = args.GetInt();
 		DetResistance = args.GetInt();
 		ObjID = args.GetInt();
+		Position = args.GetSerializable<Vector2Int>();
 	}
 
 #if CLIENT

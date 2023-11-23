@@ -72,8 +72,9 @@ public abstract class Action
 			{
 				
 				var actions = GetConsiquenes(actor,args);
-				SequenceManager.AddSequence(actions);
 				NetworkingManager.SendSequence(actions);
+				SequenceManager.AddSequence(actions);
+				
 			}
 			catch (Exception e)
 			{

@@ -35,7 +35,7 @@
         </None>
         <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
         <None Update="Content\Icons\Boost.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Content\Icons\breach N clear.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -74,7 +74,7 @@
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Update="Content\Icons\Suppress.png">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Content\Icons\UnHolster.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -251,6 +251,9 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Content\Icons\Suppress.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Repositioning.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

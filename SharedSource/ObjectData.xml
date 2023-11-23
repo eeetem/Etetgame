@@ -288,7 +288,7 @@
       </effect>
       <effect>
         <consequences  range="1">
-          <applystatus status="Reposition" duration="1"/>
+          <applystatus status="Repositioning" duration="1"/>
         </consequences>
       </effect>
     </action>
@@ -359,13 +359,11 @@
   </unit>
 
   <statuseffect>
-    <name>Reposition</name>
-
-  
+    <name>Repositioning</name>
+    
       <consequences range="1">
         <values act ="0" move="3"/>
       </consequences>
- 
   </statuseffect>
 
   <statuseffect>

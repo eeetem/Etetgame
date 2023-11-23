@@ -6,11 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.ReplaySequence;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
 using DefconNull.World.WorldObjects;
-using DefconNull.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 #if CLIENT
@@ -128,7 +124,7 @@ public class Move : AIAction
 		float worseThanAverage = GetWorseThanAverage(unit);
 		if(worseThanAverage <= 0)
 		{
-			return 1;
+			return (int)worseThanAverage;
 		}
 		
 		float actionScore = 2+worseThanAverage;//diffference bwteen current tile and average of all other tiles
@@ -205,8 +201,8 @@ public class Move : AIAction
 				{
 					MoveCalcualtion m;
 					int score = GetTileMovementScore(l,i1+2,false, unit, out m);
-
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, false,score,m));
+					//discourage changing stance by doing -1 if the scores are equal
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, false,score-1,m));
 				});
 			}
 		}
@@ -222,8 +218,8 @@ public class Move : AIAction
 				{
 					MoveCalcualtion m;
 					int score = GetTileMovementScore(l,i1+2,true, unit, out m);
-
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, true,score,m));
+					//discourage changing stance by doing -1 if the scores are equal
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, true,score-1,m));
 				});
 			}
 		}
