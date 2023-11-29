@@ -330,11 +330,11 @@ public class Shootable : Effect
 
 		
 		
-		
+		var shoot = UnitShoot.Make(p.Result.HitObjId,p, preDropOffDmg, coverBlock, rangeBlock);
+		retrunList.Add(shoot);
 		if (p.Result.hit)
 		{
-			var shoot = UnitShoot.Make(p.Result.HitObjId,p, preDropOffDmg, coverBlock, rangeBlock);
-			retrunList.Add(shoot);
+
 			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{

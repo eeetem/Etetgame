@@ -61,7 +61,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 	}
 
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 
 		Texture2D sprite = Actor.WorldObject.GetTexture();

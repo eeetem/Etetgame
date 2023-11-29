@@ -39,7 +39,7 @@ public class UpdateTile : SequenceAction
 		throw new Exception("This sequence action does not support serialization, it is generated from tile updates");
 	}
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

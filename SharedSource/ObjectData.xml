@@ -343,7 +343,7 @@
           <throwable throwRange="7"/>
         </delivery>
         <consequences range="3">
-          <damage det="2" dmg="6" detRes="2" envRes="0"/>
+          <damage det="1" dmg="6" detRes="2" envRes="0"/>
           <vfx name="tintR" target="5" speed="50"/>
           <vfx name="tintG" target="5" speed="50"/>
           <vfx name="clmagnitude" target="100" speed="50"/>
@@ -352,6 +352,7 @@
           <place name="Crater"/>
           <fowSpot scatter="4"/>
         </consequences>
+        
       </effect>
 
     </action>

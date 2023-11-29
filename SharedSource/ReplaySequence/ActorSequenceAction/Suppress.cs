@@ -68,8 +68,15 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 	}
 	
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
+		if (Requirements.Position != new Vector2Int(-1, -1))
+		{
+			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
+			Texture2D sprite = t.Surface.GetTexture();
+			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
+			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Blue, 0.5f);
+		}
 		if(!ShouldDo())return;
 		if (Actor.WorldObject.IsVisible())
 		{
@@ -78,13 +85,7 @@ public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
 			Actor.WorldObject.PreviewData.detDmg += detDmg;
 		}
 
-		if (Requirements.Position != new Vector2Int(-1, -1))
-		{
-			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
-			Texture2D sprite = t.Surface.GetTexture();
-			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
-			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Blue, 0.5f);
-		}
+		
 
 		
 	}

@@ -14,7 +14,7 @@ public static class Chat
 		{
 			Messages.Dequeue();
 		}
-		Audio.PlaySound("chat");
+		Audio.PlaySound("UI/chat");
 		deleteLoop = true;
 
 	}

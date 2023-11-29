@@ -736,7 +736,7 @@ public class GameLayout : MenuLayout
 		base.RenderBehindHud(batch, deltatime);
 		MakeUnitBarRenders(batch);
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
-		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Immediate, samplerState: SamplerState.PointClamp);
 		
 		
 		var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
@@ -968,7 +968,7 @@ public class GameLayout : MenuLayout
 		var box = TextureManager.GetTexture("GameHud/BottomBar/Infobox");
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
-			tooltipPos = new Vector2((Game1.resolution.X - box.Width * globalScale.X) / 2f, Game1.resolution.Y - box.Height * globalScale.X - bar.Height * globalScale.X);
+			tooltipPos = new Vector2((Game1.resolution.X - box.Width * globalScale.X) / 2f, Game1.resolution.Y - (box.Height+2) * globalScale.X);
 		}
 		else
 		{

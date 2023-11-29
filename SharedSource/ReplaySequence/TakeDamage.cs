@@ -128,7 +128,7 @@ public class TakeDamage : SequenceAction
 		batch.DrawText("DMG : " + Dmg, pos, Color.White);
 	}
 
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 
 		

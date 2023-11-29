@@ -107,7 +107,7 @@ public class ChangeUnitValues : UnitSequenceAction
 
 #if CLIENT
 
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//todo UI rework
 	}

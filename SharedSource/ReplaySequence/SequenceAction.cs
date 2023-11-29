@@ -204,15 +204,11 @@ public abstract class SequenceAction :  IMessageSerializable
 	}
 #if CLIENT
 
-	public void PreviewIfShould(SpriteBatch spriteBatch)
+
+	public virtual void Preview(SpriteBatch spriteBatch)
 	{
-		if(!ShouldDo()) return;
-		Preview(spriteBatch);
 	}
 
-	protected virtual void Preview(SpriteBatch spriteBatch)
-	{
-	}
 
 #endif
 

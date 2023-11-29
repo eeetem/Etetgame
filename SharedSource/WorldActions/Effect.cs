@@ -65,12 +65,12 @@ public abstract class Effect
 				previewTarget = target;
 			//}
 		}
+		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(target.TileLocation.Position+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
 
 		foreach (var act in previewCache)
 		{
-			act.PreviewIfShould(spriteBatch);
+			act.Preview(spriteBatch);
 		}
-		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(target.TileLocation.Position+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
 
 		
 		if (Offset != new Vector2Int(0,0))

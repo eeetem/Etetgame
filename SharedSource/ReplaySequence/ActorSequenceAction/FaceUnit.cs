@@ -50,7 +50,7 @@ public class FaceUnit : UnitSequenceAction
 		target = message.GetSerializable<Vector2Int>();
 	}
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

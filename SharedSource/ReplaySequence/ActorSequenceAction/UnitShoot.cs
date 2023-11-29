@@ -51,8 +51,7 @@ public class UnitShoot : UnitSequenceAction
 	}
 
 
-
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		base.Preview(spriteBatch);
 
@@ -101,7 +100,7 @@ public class UnitShoot : UnitSequenceAction
 		}
 
 
-		spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 1);
+		//spriteBatch.DrawLine(startPoint.X, startPoint.Y, endPoint.X, endPoint.Y, Color.White, 1);
 		WorldObject? hitobj = null;
 		if (Projectile.Result.HitObjId != -1)
 		{
@@ -131,7 +130,7 @@ public class UnitShoot : UnitSequenceAction
 
 
 
-		if (hitobj != null)
+		if (hitobj != null && hitobj.IsVisible())
 		{
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(Projectile.Result.CollisionPointLong), 5, 10, Color.Red, 15f);
 		}

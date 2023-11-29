@@ -59,7 +59,7 @@ public class MakeWorldObject : SequenceAction
 		id = msg.GetInt();
 	}
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		spriteBatch.DrawPrefab(Utility.GridToWorldPos(Position), prefab, facing);
 		//var loadedPrefab = PrefabManager.WorldObjectPrefabs[prefab];

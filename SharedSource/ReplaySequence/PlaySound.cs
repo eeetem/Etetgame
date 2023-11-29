@@ -51,7 +51,7 @@ public class PlaySound : SequenceAction
 
 
 #if CLIENT
-	protected override void Preview(SpriteBatch spriteBatch)
+	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
 	}

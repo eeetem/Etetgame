@@ -11,7 +11,7 @@ public static class Camera
 {
 
 	private static OrthographicCamera Cam { get; set; } = null!;
-	public static AudioListener AudioListener{ get; private set; } = null!;
+	public readonly static AudioListener AudioListener = new AudioListener();
 
 	private static Vector2 velocity = new Vector2();
 	private static float zoomVelocity = 0;
@@ -23,7 +23,6 @@ public static class Camera
 		Cam = new OrthographicCamera(viewportAdapter);
 		Cam.MinimumZoom = window.ClientBounds.Width / 50000f;
 		Cam.MaximumZoom =  window.ClientBounds.Width/1000f;
-		AudioListener = new AudioListener();
 		Cam.Position = MoveTarget;
 	}
 
