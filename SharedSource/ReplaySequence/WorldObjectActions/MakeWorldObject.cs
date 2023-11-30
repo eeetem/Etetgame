@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DefconNull.WorldObjects;
 using Riptide;
 
@@ -20,7 +21,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override bool CanBatch => true;
+		public override BatchingMode Batching => BatchingMode.OnlySameType;
 		
 		Vector2Int position;
 		private WorldObject.WorldObjectData data;
@@ -49,24 +50,24 @@ public static partial class WorldObjectManager
 		{
 			var t = new Task(delegate
 			{
-				if (data.ID != -1) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
+				if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
-					DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
+					DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
 				}
 				else
 				{
-					data.ID = WorldObjectManager.GetNextId();
+					data.ID = GetNextId();
 				}
 
 				WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 				var tile = WorldManager.Instance.GetTileAtGrid(position);
-				WorldObject WO = new WorldObject(type, tile, data);
-				WO.fliped = data.Fliped;
+				WorldObject wo = new WorldObject(type, tile, data);
+				wo.fliped = data.Fliped;
 
-				type.Place(WO, tile, data);
+				type.Place(wo, tile, data);
 
-				WorldObjects.EnsureCapacity(WO.ID + 1);
-				WorldObjects[WO.ID] = WO;
+				if(wo is null) throw new Exception("Created a null worldobject");
+				WorldObjects.Add(wo.ID,wo);
 			});
 			return t;
 		}

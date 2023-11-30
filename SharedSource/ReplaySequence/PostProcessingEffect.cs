@@ -21,7 +21,7 @@ public class PostProcessingEffect : SequenceAction
 	}
 #endif
 
-	public override bool CanBatch => true;
+	public override BatchingMode Batching => BatchingMode.Always;
 	public string Parameter = "";
 	public float Target;
 	public float Speed;

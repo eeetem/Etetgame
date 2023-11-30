@@ -20,14 +20,11 @@ public static partial class WorldObjectManager
 		if(obj.destroyed)return;
 		obj.destroyed = true;
 		
-		
+		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
 		if(obj.Type.DestructionConseqences != null)
 		{
 			SequenceManager.AddSequence(obj.Type.DestructionConseqences.GetApplyConsiqunces(obj));
 		}
-
-		
-		DeleteWorldObject(obj.ID);
 
 
 		Console.WriteLine("Destroyed "+obj.ID +" "+obj.Type.Name);
@@ -40,43 +37,7 @@ public static partial class WorldObjectManager
 			return obj2;
 		return null;
 	}
-
-	public static void DeleteWorldObject(WorldObject obj)
-	{
-		DeleteWorldObject(obj.ID);
-	}
-
-	public static void Update(float gameTime)
-	{
-		foreach (var obj in WorldObjects.Values)
-		{
-			obj.Update(gameTime);
-		}
-	}
-
-	public static void DeleteWorldObject(int id)
-	{
-		if (!WorldObjects.ContainsKey(id)) return;
-
-		if (id < NextId)
-		{
-			NextId = id; //reuse IDs
-		}
-
-		WorldObject Obj = WorldObjects[id];
-			
-		GameManager.Forget(Obj);
-
-#if  CLIENT
-		if (Obj.UnitComponent != null)
-		{
-			GameLayout.UnRegisterUnit(Obj.UnitComponent);
-		}
-#endif		
-		(Obj.TileLocation as WorldTile)?.Remove(id);
 	
-		WorldObjects.Remove(id);
-	}
 	
 	private static readonly object IdAquireLock = new object();
 	private static int NextId;

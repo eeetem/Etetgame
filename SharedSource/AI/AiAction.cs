@@ -181,10 +181,10 @@ public abstract class AIAction
 			if (hitUnit != null)
 			{
 				int supressionThisAttack = 0;
-				supressionThisAttack += Math.Min(((Suppress) c).detDmg, hitUnit.Determination.Current);
+				supressionThisAttack += Math.Min(((Suppress) c).DetDmg, hitUnit.Determination.Current);
 				if(supressionThisAttack >= hitUnit.Determination && !hitUnit.Paniced)
 				{
-					supressionThisAttack += ((Suppress) c).detDmg*2;
+					supressionThisAttack += ((Suppress) c).DetDmg*2;
 				}
 				if (hitUnit.IsPlayer1Team != attacker.IsPlayer1Team)
 				{

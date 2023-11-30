@@ -327,6 +327,10 @@ public partial class WorldObject
 	{
 		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
 	}
+	public bool IsVisible(bool team1)
+	{
+		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility(team1);
+	}
 
 
 	public string GetHash()

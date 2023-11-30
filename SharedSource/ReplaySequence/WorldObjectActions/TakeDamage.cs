@@ -21,7 +21,7 @@ public static partial class WorldObjectManager
 			return SequenceType.TakeDamage;
 		}
 
-		public override bool CanBatch => true;
+		public override BatchingMode Batching => BatchingMode.Always;
 		public int Dmg;
 		public int DetResistance;
 		public int EnvResistance;

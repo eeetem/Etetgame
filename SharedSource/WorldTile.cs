@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Riptide;
@@ -90,7 +91,15 @@ public partial class WorldTile : IWorldTile
 				CalcWatchLevel();
 			}
 #endif
-
+			NorthEdge?.Update(delta);
+			WestEdge?.Update(delta);
+			UnitAtLocation?.WorldObject.Update(delta);
+			Surface?.Update(delta);
+			foreach (var obj  in ObjectsAtLocation)
+			{
+				obj.Update(delta);
+			}
+		
 		}	
 	}
 
@@ -329,13 +338,13 @@ public partial class WorldTile : IWorldTile
 		
 	public void Wipe()
 	{
-		if (NorthEdge != null) WorldObjectManager.DeleteWorldObject(NorthEdge);
-		if (WestEdge != null) WorldObjectManager.DeleteWorldObject(WestEdge);
-		if (UnitAtLocation != null) WorldObjectManager.DeleteWorldObject(UnitAtLocation.WorldObject);
-		if (Surface != null) WorldObjectManager.DeleteWorldObject(Surface);
+		if (NorthEdge != null) 	SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(NorthEdge.ID));
+		if (WestEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(WestEdge.ID));
+		if (UnitAtLocation != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(UnitAtLocation.WorldObject.ID));
+		if (Surface != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(Surface.ID));
 		foreach (var obj in ObjectsAtLocation)
 		{
-			WorldObjectManager.DeleteWorldObject(obj);
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
 		}
 		Watchers.Clear();
 		

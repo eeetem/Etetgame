@@ -77,8 +77,7 @@ public static partial class NetworkingManager
 	{
 
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		SequenceManager.AddSequence(new UpdateTile(data));
-
+		WorldManager.Instance.LoadWorldTile(data);
 	}
 	
 	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Notify)]

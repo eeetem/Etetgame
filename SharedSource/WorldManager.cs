@@ -84,7 +84,7 @@ public  partial class WorldManager
 
 	public void LoadWorldTile(WorldTile.WorldTileData data)
 	{
-		//	Console.WriteLine("Loading tile at " + data.position);
+			Console.WriteLine("Loading tile at " + data.position);
 
 		WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 		tile.Wipe();
@@ -903,7 +903,7 @@ public  partial class WorldManager
 			}
 		});
 	}
-	HashSet<WorldTile> tilesToUpdate = new HashSet<WorldTile>();
+
 	public void Update(float gameTime)
 	{
 		
@@ -925,19 +925,7 @@ public  partial class WorldManager
 			NextFrameTasks = updatedList;
 		}
 
-		
-#if SERVER
-				
-			
-			foreach (var tile in tilesToUpdate)
-			{
-				NetworkingManager.SendTileUpdate(tile);
-			}
-				
 
-			tilesToUpdate.Clear();
-#endif
-		
 		foreach (var tile in _gridData)
 		{
 			tile.Update(gameTime);

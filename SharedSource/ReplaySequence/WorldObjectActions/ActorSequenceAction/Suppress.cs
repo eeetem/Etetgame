@@ -13,29 +13,29 @@ public class Suppress : UnitSequenceAction
 		return SequenceType.Suppress;
 	}
 
-	public override bool CanBatch => true;
-	public int detDmg;
+	public override BatchingMode Batching => BatchingMode.OnlySameType;
+	public int DetDmg;
 	
 
 
 	public static Suppress Make(int detDmg, int actorID) 
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
-		t.detDmg = detDmg;
+		t.DetDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
 	public static Suppress Make(int detDmg, Vector2Int actorID)
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
-		t.detDmg = detDmg;
+		t.DetDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
 	public static Suppress Make(int detDmg, TargetingRequirements req) 
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
-		t.detDmg = detDmg;
+		t.DetDmg = detDmg;
 		t.Requirements = req;
 		return t;
 	}
@@ -45,13 +45,13 @@ public class Suppress : UnitSequenceAction
 	{
 		
 		base.SerializeArgs(message);
-		message.Add(detDmg);
+		message.Add(DetDmg);
 	}
 
 	protected override void DeserializeArgs(Message msg)
 	{
 		base.DeserializeArgs(msg);
-		detDmg = msg.GetInt();
+		DetDmg = msg.GetInt();
 	}
 
 
@@ -59,7 +59,7 @@ public class Suppress : UnitSequenceAction
 	{
 		var t = new Task(delegate
 		{
-			Actor.Suppress(detDmg);
+			Actor.Suppress(DetDmg);
 		});
 		return t;
 	}
@@ -79,7 +79,7 @@ public class Suppress : UnitSequenceAction
 		{
 			Texture2D sprite = Actor.WorldObject.GetTexture();
 			spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Blue * 0.8f);
-			Actor.WorldObject.PreviewData.detDmg += detDmg;
+			Actor.WorldObject.PreviewData.detDmg += DetDmg;
 		}
 
 		

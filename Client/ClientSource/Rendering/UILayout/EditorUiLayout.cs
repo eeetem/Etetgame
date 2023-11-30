@@ -673,24 +673,24 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.UnitAtLocation != null)
 		{
-			WorldObjectManager.DeleteWorldObject(tile.UnitAtLocation.WorldObject);
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.UnitAtLocation.WorldObject.ID));
 			return;
 		}
 		if (tile.NorthEdge != null)
 		{
-			WorldObjectManager.DeleteWorldObject(tile.NorthEdge);
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.NorthEdge));
 			return;
 		}
 		if (tile.WestEdge != null)
 		{
-			WorldObjectManager.DeleteWorldObject(tile.WestEdge);
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.WestEdge));
 			return;
 		}
 		if(Pos.Y != 99){
 			WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
 			if (southTile.NorthEdge != null)
 			{
-				WorldObjectManager.DeleteWorldObject(southTile.NorthEdge);
+				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(southTile.NorthEdge));
 				return;
 			}
 		}
@@ -700,7 +700,7 @@ public class EditorUiLayout : MenuLayout
 			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
 			if (eastTile.WestEdge != null)
 			{
-				WorldObjectManager.DeleteWorldObject(eastTile.WestEdge);
+				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make((eastTile.WestEdge)));
 				return;
 			}
 		}
@@ -710,7 +710,7 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.Surface != null)
 		{
-			WorldObjectManager.DeleteWorldObject(tile.Surface);
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.Surface));
 			return;
 		}
 

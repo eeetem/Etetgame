@@ -21,6 +21,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		UpdateTile =103,
 		MakeWorldObject =104,
 		MoveCamera=105,
+		DeleteWorldObject=106,
 		
 		ChangeUnitValues =0,
 		//GiveItem =1,
@@ -40,6 +41,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		
 		Undefined = -1,
 
+
 		
 	}
 
@@ -58,10 +60,6 @@ public abstract class SequenceAction :  IMessageSerializable
 		if (t == typeof(WorldObjectManager.TakeDamage))
 		{
 			return SequenceType.TakeDamage;
-		}
-		if (t == typeof(UpdateTile))
-		{
-			return SequenceType.UpdateTile;
 		}
 		if (t == typeof(WorldObjectManager.MakeWorldObject))
 		{
@@ -115,6 +113,10 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.UnitShoot;
 		}
+		if(t== typeof(WorldObjectManager.DeleteWorldObject))
+		{
+			return SequenceType.DeleteWorldObject;
+		}
 		throw new ArgumentOutOfRangeException(nameof(t), t, null);
 	}
 	public static Type EnumToType(SequenceType t)
@@ -127,8 +129,6 @@ public abstract class SequenceAction :  IMessageSerializable
 				return typeof(PostProcessingEffect);
 			case SequenceType.TakeDamage:
 				return typeof(WorldObjectManager.TakeDamage);
-			case SequenceType.UpdateTile:
-				return typeof(UpdateTile);
 			case SequenceType.MakeWorldObject:
 				return typeof(WorldObjectManager.MakeWorldObject);
 			case SequenceType.MoveCamera:
@@ -153,6 +153,8 @@ public abstract class SequenceAction :  IMessageSerializable
 				return typeof(DelayedAbilityUse);
 			case SequenceType.UnitShoot:
 				return typeof(UnitShoot);
+			case SequenceType.DeleteWorldObject:
+				return typeof(WorldObjectManager.DeleteWorldObject);
 			default:
 				throw new ArgumentOutOfRangeException(nameof(t), t, null);
 		}
@@ -160,7 +162,13 @@ public abstract class SequenceAction :  IMessageSerializable
         			
 	}
 
-	public virtual bool CanBatch => false;
+	public enum BatchingMode
+	{
+		Never,
+		OnlySameType,
+		Always
+	}
+	public virtual BatchingMode Batching => BatchingMode.Never;
 	public abstract SequenceType GetSequenceType();
 	public bool IsUnitAction => (int) GetSequenceType() < 100;
 
@@ -277,9 +285,7 @@ public abstract class SequenceAction :  IMessageSerializable
 
 	public void Return()
 	{
-		if(GetSequenceType()==SequenceType.UpdateTile)return;
 
-		//Console.WriteLine("Returning action of type "+GetSequenceType() );
 		_active = false;
 		ActionPools[GetSequenceType()].Return(this);
 			

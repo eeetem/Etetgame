@@ -139,7 +139,7 @@ public static partial class NetworkingManager
 							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
-								//Console.WriteLine("Sending tile at " + x + "," + y);
+								
 								ForceSendTileUpdate(tile, connection); //only send updates about tiles that have something on them
 							}
 
@@ -285,7 +285,8 @@ public static partial class NetworkingManager
 
 	public static void ForceSendTileUpdate(WorldTile tile, Connection con)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.TileUpdate);
+		Console.WriteLine("force Sending tile at " + tile.Position.X + "," + tile.Position.Y);
+		var msg = Message.Create(MessageSendMode.Unreliable, NetMsgIds.NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
 		server.Send(msg,con);

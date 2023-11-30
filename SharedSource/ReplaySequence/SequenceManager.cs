@@ -48,6 +48,7 @@ public class SequenceManager
 
 
 					//batch tile updates and other things
+					int i = 0;
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
@@ -55,9 +56,26 @@ public class SequenceManager
 							break;
 						}
 
-						if (!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
+						var peeked = SequenceQueue.Peek();
+						bool shouldBatch = false;
+						switch (peeked.Batching)
+						{
+							case SequenceAction.BatchingMode.Always:
+								shouldBatch = true;
+								break;
+							case SequenceAction.BatchingMode.OnlySameType:
+								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
+								break;
+							case SequenceAction.BatchingMode.Never:
+								shouldBatch = false;
+								break;
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
+						if(!shouldBatch) break;
 						act = SequenceQueue.Dequeue();
-						Console.WriteLine("batching sequnce task: " + act.GetSequenceType());
+						//Console.WriteLine($"batching sequnce task: {i}{act.GetSequenceType()}");
+						i++;
 						CurrentSequenceTasks.Add(act.GenerateTask());
 						CurrentSequenceTasks.Last().Start();
 					}
@@ -103,10 +121,10 @@ public class SequenceManager
 	public static void AddSequence(SequenceAction action)
 	{
 		if(action==null) throw new ArgumentNullException(nameof(action));
+
 		lock (lockObj)
 		{
 			SequenceQueue.Enqueue(action);
-			Console.WriteLine("adding action "+action.GetSequenceType()+" to sequence");
 		}
 	
 	}

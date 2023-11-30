@@ -343,9 +343,6 @@
       <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
         <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\ReplaySequence\UpdateTile.cs">
-        <Link>SharedSource\ReplaySequence\UpdateTile.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs</Link>
       </Compile>
@@ -378,6 +375,9 @@
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\DeleteWorldObject.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\DeleteWorldObject.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs</Link>
