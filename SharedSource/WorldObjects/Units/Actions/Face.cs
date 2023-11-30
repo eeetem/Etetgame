@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DefconNull.World.WorldObjects.Units.Actions;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class Face : Action
 {

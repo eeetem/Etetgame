@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 #if CLIENT
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
 #endif
-using DefconNull.World;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using Microsoft.Xna.Framework.Graphics;
-using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitMove : UnitSequenceAction
 {

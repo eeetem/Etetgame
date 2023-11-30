@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitStatusEffect  : UnitSequenceAction
 {

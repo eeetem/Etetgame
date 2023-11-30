@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
+using DefconNull.WorldObjects;
 
 namespace DefconNull;
 

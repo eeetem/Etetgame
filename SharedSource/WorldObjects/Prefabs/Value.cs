@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public struct Value
 {

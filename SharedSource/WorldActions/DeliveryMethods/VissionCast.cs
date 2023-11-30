@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 
-namespace DefconNull.World.WorldActions.DeliveryMethods;
+namespace DefconNull.WorldActions.DeliveryMethods;
 
 public class VissionCast : DeliveryMethod
 {

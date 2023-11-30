@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
-using DefconNull.World;
 using Riptide;
 using Riptide.Transports.Tcp;
 

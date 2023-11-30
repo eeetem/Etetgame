@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DefconNull.ReplaySequence;
-using DefconNull.ReplaySequence.ActorSequenceAction;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 using Riptide;
 #if CLIENT
 using DefconNull.Rendering;
@@ -17,7 +12,7 @@ using DefconNull.Rendering.UILayout;
 #endif
 
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions;
 
 public class Shootable : Effect
 {
@@ -164,7 +159,7 @@ public class Shootable : Effect
 
 			//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
 			if (!result.Value.hit) {
-				var tile = WorldManager.Instance.GetTileAtGrid(to,dimension);
+				var tile = PseudoWorldManager.GetTileAtGrid(to,dimension);
 				if (targetObj.TileLocation == tile && !targetObj.Type.Surface)
 				{
 					result = new WorldManager.RayCastOutcome(from, to) {
@@ -260,7 +255,7 @@ public class Shootable : Effect
 
 		if (p.Result.hit)
 		{
-			var hitobj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
+			var hitobj = PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			if (hitobj!.Type.Edge || hitobj.TileLocation.Position != (Vector2Int)p.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false,"Can't hit target");
@@ -285,8 +280,8 @@ public class Shootable : Effect
 		int coverBlock = 0;
 		if (p.CoverCast.HasValue)
 		{
-			var coverObj = WorldManager.Instance.GetObject(p.CoverCast.Value.HitObjId,dimension);
-			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
+			var coverObj =PseudoWorldManager.GetObject(p.CoverCast.Value.HitObjId,dimension);
+			var hitObj =PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			Cover cover = coverObj!.GetCover();
 			if (hitObj?.UnitComponent != null && hitObj.UnitComponent.Crouching)
 			{
@@ -324,7 +319,7 @@ public class Shootable : Effect
 				p.Dmg = 0;
 			}
 
-			var act = TakeDamage.Make(coverBlock, 0, coverObj!.ID);
+			var act = WorldObjectManager.TakeDamage.Make(coverBlock, 0, coverObj!.ID);
 			retrunList.Add(act);
 		}
 
@@ -335,7 +330,7 @@ public class Shootable : Effect
 		if (p.Result.hit)
 		{
 
-			var hitObj = WorldManager.Instance.GetObject(p.Result.HitObjId,dimension);
+			var hitObj =PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{
 
@@ -344,7 +339,7 @@ public class Shootable : Effect
 					var act = FaceUnit.Make(hitObj.ID, p.Result.StartPoint);
 					retrunList.Add(act);
 				}
-				var act2 = TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);
+				var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);
 				retrunList.Add(act2);
 
 			}
@@ -356,7 +351,7 @@ public class Shootable : Effect
 		else
 		{
 			//we missed so add taking damage on this tile as consiquences
-			var act2 = TakeDamage.Make(p.Dmg, detResistance, detResistance,p.Result.EndPoint, new List<string>());
+			var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, detResistance,p.Result.EndPoint, new List<string>());
 			retrunList.Add(act2);
 			
 		}

@@ -1,18 +1,15 @@
-﻿
-using System;
-using DefconNull.LocalObjects;
+﻿using DefconNull.LocalObjects;
 using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
 using DefconNull.ReplaySequence;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Salaros.Configuration;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull;
 
@@ -128,6 +125,7 @@ public class Game1 : Game
 		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
+		WorldObjectManager.Update(gameTime.ElapsedGameTime.Milliseconds);
 		SequenceManager.Update();
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);

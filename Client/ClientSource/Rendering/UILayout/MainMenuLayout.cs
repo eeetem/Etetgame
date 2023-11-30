@@ -2,13 +2,14 @@
 using System.Diagnostics;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Unit = DefconNull.WorldObjects.Unit;
 
 namespace DefconNull.Rendering.UILayout;
 
@@ -236,7 +237,7 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,0),Direction.South,-1,cdata);
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),Direction.South,cdata));
 			}
 			for (int i = 0; i < 8; i++)
 			{
@@ -263,7 +264,7 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				WorldManager.Instance.MakeWorldObject(unit,new Vector2Int(i,5),Direction.North,-1,cdata);
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),Direction.North,cdata));
 			}
 			
 			switchTicker = 0;

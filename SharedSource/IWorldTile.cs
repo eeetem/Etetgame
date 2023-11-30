@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
+using DefconNull.WorldObjects;
 
 namespace DefconNull;
 

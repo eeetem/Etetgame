@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using Microsoft.Xna.Framework.Graphics;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions.DeliveryMethods;
 
 public abstract class DeliveryMethod
 {

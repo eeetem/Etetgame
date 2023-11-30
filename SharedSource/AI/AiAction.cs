@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 
 #if CLIENT
@@ -138,18 +134,18 @@ public abstract class AIAction
 		int supression = 0;
 		int totalChangeScore = 0;
 		
-		if (c.GetType() == typeof(TakeDamage) )
+		if (c.GetType() == typeof(WorldObjectManager.TakeDamage) )
 		{
-			TakeDamage tkdmg =  (TakeDamage)c;
+			WorldObjectManager.TakeDamage tkdmg =  (WorldObjectManager.TakeDamage)c;
 			Unit? hitUnit = null;
 			if (tkdmg.ObjID != -1)
 			{
-				hitUnit = WorldManager.Instance.GetObject(((TakeDamage)c).ObjID,dimension)!.UnitComponent;
+				hitUnit = PseudoWorldManager.GetObject(((WorldObjectManager.TakeDamage)c).ObjID,dimension)!.UnitComponent;
 			}
 			else if(tkdmg.Position != new Vector2Int(-1, -1))
 			{
 
-				hitUnit = WorldManager.Instance.GetTileAtGrid(((TakeDamage)c).Position,dimension).UnitAtLocation;
+				hitUnit = PseudoWorldManager.GetTileAtGrid(((WorldObjectManager.TakeDamage)c).Position,dimension).UnitAtLocation;
 				
 			}
 			if (hitUnit != null)
@@ -157,12 +153,12 @@ public abstract class AIAction
 				int dmgThisAttack = 0;
 				if (hitUnit.Determination > 0)
 				{
-					dmgThisAttack += ((TakeDamage) c).Dmg - ((TakeDamage) c).DetResistance;
+					dmgThisAttack += ((WorldObjectManager.TakeDamage) c).Dmg - ((WorldObjectManager.TakeDamage) c).DetResistance;
 					if(dmgThisAttack<0) dmgThisAttack = 0;
 				}
 				else
 				{
-					dmgThisAttack += ((TakeDamage) c).Dmg;
+					dmgThisAttack += ((WorldObjectManager.TakeDamage) c).Dmg;
 				}
 				if (dmgThisAttack >= hitUnit.Health)
 				{
@@ -219,7 +215,7 @@ public abstract class AIAction
 				return new Tuple<int, int, int>(0,0,0);
 			}
 			Unit pseudoUnit;
-			int newDim = WorldManager.Instance.CreatePseudoWorldWithUnit(hitUnit, hitUnit.WorldObject.TileLocation.Position, out pseudoUnit, dimension);
+			int newDim = PseudoWorldManager.CreatePseudoWorldWithUnit(hitUnit, hitUnit.WorldObject.TileLocation.Position, out pseudoUnit, dimension);
 			var prechangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
 				
 			var aChange =change.ActChange.GetChange(pseudoUnit.ActionPoints);
@@ -267,7 +263,7 @@ public abstract class AIAction
 				outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
 			}
 
-			WorldManager.Instance.WipePseudoLayer(newDim,true);
+			PseudoWorldManager.WipePseudoLayer(newDim,true);
 			if(hitUnit.IsPlayer1Team == attacker.IsPlayer1Team)
 			{
 				totalChangeScore += outcome;
@@ -380,7 +376,7 @@ public abstract class AIAction
 
 
 		Unit hypotheticalUnit;
-		int dimension = WorldManager.Instance.CreatePseudoWorldWithUnit(realUnit,tilePosition, out hypotheticalUnit);
+		int dimension = PseudoWorldManager.CreatePseudoWorldWithUnit(realUnit,tilePosition, out hypotheticalUnit);
 		
 		var otherTeamUnits = GameManager.GetTeamUnits(!realUnit.IsPlayer1Team,dimension);
 		hypotheticalUnit.Crouching = crouch;
@@ -463,7 +459,7 @@ public abstract class AIAction
 			score += damagePotential;
 		}
 		
-		WorldManager.Instance.WipePseudoLayer(dimension);
+		PseudoWorldManager.WipePseudoLayer(dimension);
 
 
 		var myTeamUnits = GameManager.GetTeamUnits(realUnit.IsPlayer1Team,dimension);
@@ -582,7 +578,7 @@ public abstract class AIAction
 		int protectionPentalty = 0;
 		List<PotentialAbilityActivation> enemyAttacks = new List<PotentialAbilityActivation>();
 
-		bool r = WorldManager.Instance.GetCachedAttacksInDimension(ref enemyAttacks, dimension, false);
+		bool r = PseudoWorldManager.GetCachedAttacksInDimension(ref enemyAttacks, dimension, false);
 		if (!r)
 		{
 			foreach (var enemy in otherTeamUnits)
@@ -591,7 +587,7 @@ public abstract class AIAction
 			}
 		}
 
-		WorldManager.Instance.CacheAttacksInDimension(enemyAttacks, dimension, false);
+		PseudoWorldManager.CacheAttacksInDimension(enemyAttacks, dimension, false);
 
 		foreach (var a in enemyAttacks)
 		{

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 #if CLIENT
 using DefconNull.Rendering.UILayout;
 #endif
 
-namespace DefconNull.World.WorldObjects.Units.Actions;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public abstract class Action
 {
@@ -152,7 +151,7 @@ public abstract class Action
 		{
 			
 			Target = message.GetSerializable<Vector2Int>();
-			TargetObj = WorldManager.Instance.GetObject(message.GetInt());
+			TargetObj =WorldObjectManager.GetObject(message.GetInt());
 			AbilityIndex = message.GetInt();
 		}
 	}

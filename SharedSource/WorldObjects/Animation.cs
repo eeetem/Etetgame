@@ -1,4 +1,4 @@
-﻿namespace DefconNull.World.WorldObjects.Units;
+﻿namespace DefconNull.WorldObjects;
 
 public class Animation
 {

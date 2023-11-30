@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using Myra.Graphics2D.UI;
-using Riptide;
+using WorldObject = DefconNull.WorldObjects.WorldObject;
 
 namespace DefconNull.Rendering.UILayout;
 
@@ -27,8 +27,8 @@ public class EditorUiLayout : MenuLayout
 		for (int x = 0; x < 100; x++)
 		{
 			for (int y = 0; y < 100; y++)
-			{
-				WorldManager.Instance.MakeWorldObject("basicFloor",new Vector2Int(x,y),ActiveDir);
+			{ 
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make("basicFloor",new Vector2Int(x,y),ActiveDir));
 			}	
 		}
 	}
@@ -518,7 +518,7 @@ public class EditorUiLayout : MenuLayout
 			case Brush.Point:
 				if (leftMouseDown && IsValidPlacement(mousePos,ActivePrefab,ActiveDir))
 				{
-					WorldManager.Instance.MakeWorldObject(ActivePrefab,mousePos,ActiveDir);
+					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(ActivePrefab,mousePos,ActiveDir));
 				}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
 				{
 					DeletePrefab(mousePos);
@@ -586,7 +586,7 @@ public class EditorUiLayout : MenuLayout
 							{
 								if (IsValidPlacement(new Vector2Int(x, y),ActivePrefab,ActiveDir))
 								{
-									WorldManager.Instance.MakeWorldObject(ActivePrefab, new Vector2Int(x, y), ActiveDir);
+									SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(ActivePrefab, new Vector2Int(x, y), ActiveDir));
 								}
 							}else if (ActiveBrush == Brush.Copy)
 							{
@@ -644,7 +644,7 @@ public class EditorUiLayout : MenuLayout
 								
 								foreach (var data in tileData)
 								{
-									WorldManager.Instance.MakeWorldObjectFromData(data,	WorldManager.Instance.GetTileAtGrid(pos));
+									SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data,	WorldManager.Instance.GetTileAtGrid(pos)));
 								}
 
 							}
@@ -673,24 +673,24 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.UnitAtLocation != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.UnitAtLocation.WorldObject);
+			WorldObjectManager.DeleteWorldObject(tile.UnitAtLocation.WorldObject);
 			return;
 		}
 		if (tile.NorthEdge != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.NorthEdge);
+			WorldObjectManager.DeleteWorldObject(tile.NorthEdge);
 			return;
 		}
 		if (tile.WestEdge != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.WestEdge);
+			WorldObjectManager.DeleteWorldObject(tile.WestEdge);
 			return;
 		}
 		if(Pos.Y != 99){
 			WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
 			if (southTile.NorthEdge != null)
 			{
-				WorldManager.Instance.DeleteWorldObject(southTile.NorthEdge);
+				WorldObjectManager.DeleteWorldObject(southTile.NorthEdge);
 				return;
 			}
 		}
@@ -700,7 +700,7 @@ public class EditorUiLayout : MenuLayout
 			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
 			if (eastTile.WestEdge != null)
 			{
-				WorldManager.Instance.DeleteWorldObject(eastTile.WestEdge);
+				WorldObjectManager.DeleteWorldObject(eastTile.WestEdge);
 				return;
 			}
 		}
@@ -710,7 +710,7 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.Surface != null)
 		{
-			WorldManager.Instance.DeleteWorldObject(tile.Surface);
+			WorldObjectManager.DeleteWorldObject(tile.Surface);
 			return;
 		}
 

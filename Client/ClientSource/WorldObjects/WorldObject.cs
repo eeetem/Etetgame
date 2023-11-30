@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using DefconNull.World.WorldObjects.Units;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using IDrawable = DefconNull.Rendering.IDrawable;
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
-public partial class WorldObject : Rendering.IDrawable
+public partial class WorldObject : IDrawable
 {
 	private Transform2 DrawTransform = null!;
 	private int spriteVariation;
@@ -76,19 +76,19 @@ public partial class WorldObject : Rendering.IDrawable
 	public Color GetColor()
 	{
 
-		Color color = ((WorldTile)TileLocation).GetTileColor();
-				
+		Color color = ((DefconNull.WorldTile) TileLocation).GetTileColor();
+
 		if (UnitComponent != null)
 		{
 			if (UnitComponent.IsMyTeam())
 			{
-				color = new Color(200,255,200);
+				color = new Color(200, 255, 200);
 			}
 			else
 			{
-				color = new Color(255,200,200);
+				color = new Color(255, 200, 200);
 			}
-				
+
 		}
 
 

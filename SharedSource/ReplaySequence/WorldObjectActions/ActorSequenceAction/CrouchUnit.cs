@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
-using DefconNull.World;
 using Microsoft.Xna.Framework.Graphics;
-using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class CrouchUnit : UnitSequenceAction
 {

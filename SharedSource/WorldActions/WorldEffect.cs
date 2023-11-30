@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldActions.DeliveryMethods;
+using DefconNull.WorldObjects;
 #if CLIENT
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
@@ -11,7 +10,7 @@ using Microsoft.Xna.Framework;
 #endif
 
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions;
 
 public class WorldEffect : Effect
 {

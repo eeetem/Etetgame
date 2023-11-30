@@ -1,11 +1,11 @@
 ﻿using System;
-using DefconNull.World.WorldActions;
+using DefconNull.WorldActions;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 #if CLIENT
 using Myra.Graphics2D;
 #endif
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public partial class WorldObjectType
 {

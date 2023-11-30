@@ -4,12 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.ReplaySequence;
-using DefconNull.ReplaySequence.ActorSequenceAction;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Myra.Graphics2D.UI;
 using Riptide;
 

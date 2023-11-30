@@ -2,13 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.Actions;
+using DefconNull.WorldActions.UnitAbility;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Collections;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull.AI;
 

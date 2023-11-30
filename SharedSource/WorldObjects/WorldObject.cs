@@ -1,10 +1,6 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using DefconNull.ReplaySequence;
-using DefconNull.World.WorldObjects.Units;
-using Microsoft.Xna.Framework;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using MonoGame.Extended;
 using Riptide;
 #if CLIENT
@@ -13,13 +9,11 @@ using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public partial class WorldObject
 {
 
-	
-	
 	public int LifeTime = -100;
 	public WorldObject(WorldObjectType? type, IWorldTile tile, WorldObjectData data)
 	{
@@ -105,7 +99,7 @@ public partial class WorldObject
 
 	public int Health;
 
-	public void Move(Vector2Int position, int dimension = -1)
+	public void Move(Vector2Int position)
 	{
 		if (Type.Edge || Type.Surface)
 		{
@@ -114,18 +108,14 @@ public partial class WorldObject
 
 		if (UnitComponent != null)
 		{
-			if (dimension == -1)
-			{//dont fuck with clearing the old tile if we're working with pseudounits
-				TileLocation.UnitAtLocation = null;
-			}
-			var newTile = WorldManager.Instance.GetTileAtGrid(position,dimension);
+			var newTile = WorldManager.Instance.GetTileAtGrid(position);
 			TileLocation = newTile;
 			newTile.UnitAtLocation = UnitComponent;
 		}
 		else
 		{
 			TileLocation.RemoveObject(this);
-			IWorldTile newTile = WorldManager.Instance.GetTileAtGrid(position,dimension);
+			IWorldTile newTile = WorldManager.Instance.GetTileAtGrid(position);
 			TileLocation = newTile;
 			newTile.PlaceObject(this);
 		}
@@ -170,7 +160,7 @@ public partial class WorldObject
 			LifeTime--;
 			if (LifeTime <= 0)
 			{
-				Destroy();
+				WorldObjectManager.Destroy(this);
 					
 			}
 		}
@@ -178,43 +168,9 @@ public partial class WorldObject
 
 
 
-	public bool destroyed { get; private set; } = false;
+	public bool destroyed { get; set; } = false;
 
-	public void Destroy()
-	{
-		if(destroyed)return;
-		destroyed = true;
-		
-		
-		if(Type.DestructionConseqences != null)
-		{
-            
-			Task t = new Task(delegate
-			{
-				SequenceManager.AddSequence(Type.DestructionConseqences.GetApplyConsiqunces(this));
-			});
-			WorldManager.Instance.RunNextAfterFrames(t,4);
-
-		}
-		
-#if CLIENT
-		if(Equals(GameLayout.SelectedUnit, UnitComponent)){
-			//GameLayout.SelectUnit(null);
-		}
-		
-		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
-#else
-		
-
-#endif
-
-		
-		WorldManager.Instance.DeleteWorldObject(this);
-
-
-		Console.WriteLine("Destroyed "+ID +" "+Type.Name);
-
-	}
+	
 	public Visibility GetMinimumVisibility()
 	{
 		if (Type.Surface || Type.Edge)
@@ -232,44 +188,6 @@ public partial class WorldObject
 
 	
 
-	public void TakeDamage(int dmg, int detResist, int envResist)
-	{
-		
-		
-
-		if (dmg < 0)
-		{
-			return;
-		}
-
-		Console.WriteLine(this + " got hit " + TileLocation.Position);
-		if (UnitComponent != null)
-		{//let controlable handle it
-			UnitComponent.TakeDamage(dmg, detResist);
-		}
-		else
-		{
-			int dmgNoResist = dmg - envResist;
-		
-			if (LifeTime != -100)
-			{
-				LifeTime -= dmg;
-				if (LifeTime <= 0)
-				{
-					Destroy();
-				}
-			}
-
-#if CLIENT
-			new PopUpText("Damage: " + dmgNoResist, _tileLocation.Position, Color.Gray, 0.4f);
-#endif
-			Health-= dmgNoResist;
-			if (Health <= 0)
-			{
-				Destroy();
-			}
-		}
-	}
 
 	public void Update(float gametime)
 	{

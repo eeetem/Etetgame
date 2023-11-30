@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
-namespace DefconNull.ReplaySequence.ActorSequenceAction;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class DelayedAbilityUse  : UnitSequenceAction
 {

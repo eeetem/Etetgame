@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DefconNull.World.WorldObjects;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 using Riptide;
 
-namespace DefconNull.World;
+namespace DefconNull;
 
 public partial class WorldTile : IWorldTile
 {
@@ -111,9 +112,9 @@ public partial class WorldTile : IWorldTile
 		{
 			TileVisibility = new ValueTuple<Visibility, Visibility>(TileVisibility.Item1, visTupleValue);
 		}
-		#else
+#else
 		TileVisibility = visTupleValue;
-	#endif	
+#endif	
 	}
 	
 	public Visibility GetVisibility(bool? team1 = null)
@@ -328,14 +329,13 @@ public partial class WorldTile : IWorldTile
 		
 	public void Wipe()
 	{
-
-		WorldManager.Instance.DeleteWorldObject(NorthEdge);
-		WorldManager.Instance.DeleteWorldObject(WestEdge);
-		WorldManager.Instance.DeleteWorldObject(UnitAtLocation?.WorldObject);
-		WorldManager.Instance.DeleteWorldObject(Surface);
+		if (NorthEdge != null) WorldObjectManager.DeleteWorldObject(NorthEdge);
+		if (WestEdge != null) WorldObjectManager.DeleteWorldObject(WestEdge);
+		if (UnitAtLocation != null) WorldObjectManager.DeleteWorldObject(UnitAtLocation.WorldObject);
+		if (Surface != null) WorldObjectManager.DeleteWorldObject(Surface);
 		foreach (var obj in ObjectsAtLocation)
 		{
-			WorldManager.Instance.DeleteWorldObject(obj);
+			WorldObjectManager.DeleteWorldObject(obj);
 		}
 		Watchers.Clear();
 		
@@ -523,7 +523,7 @@ public partial class WorldTile : IWorldTile
 		Console.WriteLine("TILE DELETED!: "+_position);
 	}
 
-	public void NextTurn()
+	public void NextTurn(bool team1Turn)
 	{
 		foreach (var item in ObjectsAtLocation)
 		{
@@ -531,6 +531,16 @@ public partial class WorldTile : IWorldTile
 		}
 		WestEdge?.NextTurn();
 		NorthEdge?.NextTurn();
+
+		if (UnitAtLocation != null && UnitAtLocation.IsPlayer1Team == team1Turn)
+		{
+			UnitAtLocation.StartTurn();
+		}
+		if (UnitAtLocation != null && UnitAtLocation.IsPlayer1Team != team1Turn)
+		{
+			UnitAtLocation.EndTurn();
+		}
+
 		UnitAtLocation?.WorldObject.NextTurn();
 		Surface?.NextTurn();
 	}

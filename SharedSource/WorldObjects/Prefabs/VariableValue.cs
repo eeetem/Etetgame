@@ -1,7 +1,7 @@
 ﻿using System;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public class VariableValue : IMessageSerializable
 {

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence;
 
 public class PlaySound : SequenceAction
 {
@@ -15,6 +15,8 @@ public class PlaySound : SequenceAction
 
 	public string SFX;
 	public Vector2Int Location;
+	
+	//TODO always play some sounds and hide others
 	public static PlaySound Make(string sfx, Vector2Int target)
 	{
 		PlaySound t = (GetAction(SequenceType.PlaySound) as PlaySound)!;
@@ -23,6 +25,14 @@ public class PlaySound : SequenceAction
 		return t;
 	
 	}
+
+#if SERVER
+	public override bool ShouldDoServerCheck(bool player1)
+	{
+		return true;
+	}
+#endif
+
 
 
 

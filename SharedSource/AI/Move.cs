@@ -6,9 +6,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.ReplaySequence;
-using DefconNull.World.WorldObjects;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
 using DefconNull.Rendering.UILayout;
 #endif

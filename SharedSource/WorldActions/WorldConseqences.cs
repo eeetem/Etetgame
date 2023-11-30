@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DefconNull.ReplaySequence;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Riptide;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldObjects;
 #if CLIENT
 using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
 #endif
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions;
 
 public class WorldConseqences 
 {
@@ -101,14 +96,14 @@ public class WorldConseqences
 			{
 				//tile.EastEdge?.TakeDamage(Dmg, 0);
 
-				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.EastEdge!.ID,EnvRes));
+				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.EastEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.EastEdge!);
 			}
 
 			if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 			{
 
-				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.WestEdge!.ID,EnvRes));
+				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.WestEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.WestEdge!);
 
 
@@ -118,29 +113,29 @@ public class WorldConseqences
 			if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
 			{
 				//tile.NorthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(TakeDamage.Make(Dmg, DetRes,  tile.NorthEdge!.ID,EnvRes));
+				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.NorthEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.NorthEdge!);
 			}
 
 			if (tile.SouthEdge != null && !_ignoreList.Contains(tile.SouthEdge))
 			{
 				//tile.SouthEdge?.TakeDamage(Dmg, 0);
-				consequences.Add(TakeDamage.Make(Dmg, DetRes, tile.SouthEdge!.ID,EnvRes));
+				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes, tile.SouthEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.SouthEdge!);
 			}
 
 
 			foreach (var item in tile.ObjectsAtLocation)
 			{
-				consequences.Add(TakeDamage.Make(Dmg, DetRes,item!.ID,EnvRes));
+				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,item!.ID,EnvRes));
 			}
-			consequences.Add(TakeDamage.Make(Dmg,DetRes, EnvRes,tile.Position,Ignores));
+			consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg,DetRes, EnvRes,tile.Position,Ignores));
 		}
 		
 
 		if (PLaceItemConsequence!=null)
 		{
-			consequences.Add(MakeWorldObject.Make(PLaceItemConsequence, tile.Position, originalTarget.Facing)); //fix this
+			consequences.Add(WorldObjectManager.MakeWorldObject.Make(PLaceItemConsequence, tile.Position, originalTarget.Facing)); //fix this
 		}
 
 		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);

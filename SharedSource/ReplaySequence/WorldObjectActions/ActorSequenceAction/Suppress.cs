@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.SharedSource.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
-public class Suppress : WorldObjects.Units.ReplaySequence.UnitSequenceAction
+public class Suppress : UnitSequenceAction
 {
 	public override SequenceType GetSequenceType()
 	{

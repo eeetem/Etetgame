@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using DefconNull;
 using DefconNull.Networking;
 using Riptide;
 using Riptide.Transports.Tcp;

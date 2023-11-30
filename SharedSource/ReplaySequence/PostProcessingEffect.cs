@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Riptide;
-
 #if CLIENT
 using DefconNull.Rendering.PostProcessing;
 using Microsoft.Xna.Framework.Graphics;
 #endif
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence;
 
 public class PostProcessingEffect : SequenceAction
 {
@@ -14,6 +13,13 @@ public class PostProcessingEffect : SequenceAction
 	{
 		return SequenceType.PostProcessingEffect;
 	}
+	
+#if SERVER
+	public override bool ShouldDoServerCheck(bool player1)
+	{
+		return true;
+	}
+#endif
 
 	public override bool CanBatch => true;
 	public string Parameter = "";

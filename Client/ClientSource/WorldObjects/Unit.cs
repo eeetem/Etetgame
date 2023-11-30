@@ -1,6 +1,6 @@
 ﻿
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public partial class Unit
 {

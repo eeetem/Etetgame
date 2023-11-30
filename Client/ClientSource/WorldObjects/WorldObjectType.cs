@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using DefconNull.Rendering;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using Riptide;
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public partial class WorldObjectType
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Riptide;
 
 namespace DefconNull.ReplaySequence;
@@ -22,7 +20,12 @@ public class MoveCamera : SequenceAction
 		t.scatter = scatter;
 		return t;
 	}
-
+#if SERVER
+	public override bool ShouldDoServerCheck(bool player1)
+	{
+		return true;
+	}
+#endif
 	
 
 
@@ -31,6 +34,8 @@ public class MoveCamera : SequenceAction
 		return SequenceType.MoveCamera;
 	}
 
+	
+	//todo serverside scattering
 	protected override Task GenerateSpecificTask()
 	{
 		var t = new Task(delegate

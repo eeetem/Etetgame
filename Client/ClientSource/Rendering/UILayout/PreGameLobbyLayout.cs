@@ -1,7 +1,6 @@
 ﻿using System;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
-using DefconNull.World;
 using Microsoft.Xna.Framework;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;

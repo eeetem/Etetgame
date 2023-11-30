@@ -5,9 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
-using DefconNull.World;
 using Riptide;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 using TcpClient = Riptide.Transports.Tcp.TcpClient;
 
 namespace DefconNull.Networking;

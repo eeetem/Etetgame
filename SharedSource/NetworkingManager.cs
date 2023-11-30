@@ -1,8 +1,6 @@
 ﻿using Riptide;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace DefconNull.Networking;
+namespace DefconNull;
 
 
 public class SquadMember : IMessageSerializable

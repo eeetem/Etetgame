@@ -1,16 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Riptide;
 
-namespace DefconNull.ReplaySequence.ActorSequenceAction;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitShoot : UnitSequenceAction
 {
@@ -104,13 +101,13 @@ public class UnitShoot : UnitSequenceAction
 		WorldObject? hitobj = null;
 		if (Projectile.Result.HitObjId != -1)
 		{
-			hitobj = WorldManager.Instance.GetObject(Projectile.Result.HitObjId);
+			hitobj =WorldObjectManager.GetObject(Projectile.Result.HitObjId);
 		}
 
 		WorldObject? coverObj = null;
 		if (Projectile.CoverCast.HasValue && Projectile.CoverCast.Value.hit)
 		{
-			coverObj = WorldManager.Instance.GetObject(Projectile.CoverCast.Value.HitObjId);
+			coverObj =WorldObjectManager.GetObject(Projectile.CoverCast.Value.HitObjId);
 		}
 		if(coverObj!= null){
 			//crash here?

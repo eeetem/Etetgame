@@ -1,16 +1,16 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldActions;
+using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Sprites;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
+using Unit = DefconNull.WorldObjects.Unit;
+using WorldObject = DefconNull.WorldObjects.WorldObject;
 
 namespace DefconNull.Rendering.UILayout.GameLayout;
 

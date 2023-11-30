@@ -1,12 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+﻿using System.Threading.Tasks;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.SharedSource.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class ChangeUnitValues : UnitSequenceAction
 {

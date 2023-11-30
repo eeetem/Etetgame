@@ -1,10 +1,7 @@
-﻿
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.Actions;
+﻿using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 using Riptide;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull.Networking;
 
@@ -187,13 +184,13 @@ public static partial class NetworkingManager
 
 		Action.GameActionPacket packet = message.GetSerializable<Action.GameActionPacket>();
 
-		if (WorldManager.Instance.GetObject(packet.UnitId) == null)
+		if (WorldObjectManager.GetObject(packet.UnitId) == null)
 		{
 			Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
 			return;
 		}
 
-		Unit? controllable = WorldManager.Instance.GetObject(packet.UnitId)?.UnitComponent;
+		Unit? controllable = WorldObjectManager.GetObject(packet.UnitId)?.UnitComponent;
 		if(controllable == null)
 		{
 			Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);

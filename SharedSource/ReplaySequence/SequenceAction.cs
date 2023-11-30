@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DefconNull.ReplaySequence;
-using DefconNull.ReplaySequence.ActorSequenceAction;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
-using Microsoft.Xna.Framework.Graphics;
-using Riptide;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using Kotz.ObjectPool;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 
-
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence;
 
 public abstract class SequenceAction :  IMessageSerializable
 {
@@ -59,7 +55,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.PostProcessingEffect;
 		}
-		if (t == typeof(TakeDamage))
+		if (t == typeof(WorldObjectManager.TakeDamage))
 		{
 			return SequenceType.TakeDamage;
 		}
@@ -67,7 +63,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.UpdateTile;
 		}
-		if (t == typeof(MakeWorldObject))
+		if (t == typeof(WorldObjectManager.MakeWorldObject))
 		{
 			return SequenceType.MakeWorldObject;
 		}
@@ -130,11 +126,11 @@ public abstract class SequenceAction :  IMessageSerializable
 			case SequenceType.PostProcessingEffect:
 				return typeof(PostProcessingEffect);
 			case SequenceType.TakeDamage:
-				return typeof(TakeDamage);
+				return typeof(WorldObjectManager.TakeDamage);
 			case SequenceType.UpdateTile:
 				return typeof(UpdateTile);
 			case SequenceType.MakeWorldObject:
-				return typeof(MakeWorldObject);
+				return typeof(WorldObjectManager.MakeWorldObject);
 			case SequenceType.MoveCamera:
 				return typeof(MoveCamera);
 			case SequenceType.ChangeUnitValues:
@@ -295,5 +291,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		batch.DrawText(GetSequenceType().ToString(), pos, Color.White);
 	}
 #endif
-	
+#if SERVER
+	public abstract bool ShouldDoServerCheck(bool player1);
+	#endif
 }

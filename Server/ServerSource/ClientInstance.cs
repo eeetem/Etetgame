@@ -1,6 +1,6 @@
 ﻿using Riptide;
 
-namespace DefconNull.Networking;
+namespace DefconNull;
 
 public class ClientInstance
 {

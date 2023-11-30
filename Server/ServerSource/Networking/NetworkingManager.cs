@@ -1,8 +1,5 @@
 ﻿using System.Reflection;
-
-
-using DefconNull.World;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Utils;
@@ -139,11 +136,11 @@ public static partial class NetworkingManager
 					{
 						for (int y = 0; y < 100; y++)
 						{
-							WorldTile tile = (WorldTile)WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
 								//Console.WriteLine("Sending tile at " + x + "," + y);
-								SendTileUpdate(tile, connection); //only send updates about tiles that have something on them
+								ForceSendTileUpdate(tile, connection); //only send updates about tiles that have something on them
 							}
 
 							
@@ -286,18 +283,52 @@ public static partial class NetworkingManager
 	}
 
 
-	public static void SendTileUpdate(WorldTile tile, Connection? connection = null)
+	public static void ForceSendTileUpdate(WorldTile tile, Connection con)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.TileUpdate);
+		WorldTile.WorldTileData worldTileData = tile.GetData();
+		msg.Add(worldTileData);
+		server.Send(msg,con);
+	}
+
+	static Dictionary<Vector2Int,ValueTuple<string,string>> tileUpdateLog = new Dictionary<Vector2Int, (string, string)>();
+	public static void SendTileUpdate(WorldTile tile)
 	{
 
 		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		msg.Add(worldTileData);
 		
-		//Console.WriteLine("Sending tile update for " + tile.Position);
-		if(connection == null)
-			server.SendToAll(msg);
-		else
-			server.Send(msg,connection);
+
+
+		//add the entry if it's missing
+		tileUpdateLog.TryAdd(tile.Position, (string.Empty,string.Empty));
+
+		bool sent = false;
+		if (tile.IsVisible(team1:true)&& GameManager.Player1 != null && tileUpdateLog[tile.Position].Item1 != tile.GetHash())
+		{
+			tileUpdateLog[tile.Position] = (tile.GetHash(), tileUpdateLog[tile.Position].Item2);
+			server.Send(msg,GameManager.Player1.Connection,false);
+			sent = true;
+		}
+		if (tile.IsVisible(team1:false) && GameManager.Player2 != null &&  tileUpdateLog[tile.Position].Item2 != tile.GetHash())
+		{
+			tileUpdateLog[tile.Position] = (tileUpdateLog[tile.Position].Item1,tile.GetHash());
+			server.Send(msg,GameManager.Player2.Connection,false);
+			sent = true;
+		}
+
+		//if we sent atleast to 1 player also update the spectators
+		if (sent)
+		{
+			foreach (var spectator in GameManager.Spectators)
+			{
+				server.Send(msg, spectator.Connection, false);
+			}
+		}
+
+		msg.Release();
+		
 	}
 
 	public static void Update()
@@ -372,6 +403,8 @@ public static partial class NetworkingManager
 			return;
 		}
 
+		
+		
 		lock (UpdateLock)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
@@ -381,10 +414,44 @@ public static partial class NetworkingManager
 				msg.AddSerializable(a);
 			}
 
-		
-			server.SendToAll(msg);
+			foreach (var spec in GameManager.Spectators)
+			{
+				server.Send(msg,spec.Connection,false);
+			}
+			msg.Release();
+			
 		}
 		
+	}
+
+	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
+	{
+		actions.RemoveAll(x => !x.ShouldDoServerCheck(player1));
+		lock (UpdateLock)
+		{
+			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
+			foreach (var a in actions)
+			{
+				msg.Add((int) a.GetSequenceType());
+				msg.AddSerializable(a);
+			}
+
+			if (player1 && GameManager.Player1 != null && GameManager.Player1.Connection != null)
+			{
+				server.Send(msg,GameManager.Player1.Connection);
+			}
+			else if (!player1 && GameManager.Player2 != null && GameManager.Player2.Connection != null)
+			{
+				server.Send(msg,GameManager.Player2.Connection);
+			}
+			else
+			{
+				return;
+			}
+
+
+			
+		}
 	}
 
 	public static void SendEndTurn()

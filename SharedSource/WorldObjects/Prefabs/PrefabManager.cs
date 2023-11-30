@@ -4,14 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldActions.DeliveryMethods;
-
+using DefconNull.WorldActions;
+using DefconNull.WorldActions.DeliveryMethods;
+using DefconNull.WorldActions.UnitAbility;
 #if CLIENT
 using DefconNull.Rendering;
 #endif
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public static class PrefabManager
 {

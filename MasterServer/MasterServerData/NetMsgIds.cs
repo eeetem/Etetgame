@@ -1,4 +1,4 @@
-﻿namespace DefconNull.Networking;
+﻿namespace DefconNull;
 
 public class NetMsgIds
 {

@@ -9,35 +9,22 @@ using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldActions.UnitAbility;
+using DefconNull.WorldObjects;
 using MD5Hash;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Collections;
 using Riptide;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
-namespace DefconNull.World;
+namespace DefconNull;
 
 public  partial class WorldManager
 {
 	private readonly WorldTile[,] _gridData;
-	private readonly List<PseudoTile?[,]> _pseudoGrids = new List<PseudoTile?[,]>();
-	private readonly List<bool> _pseudoGridsInUse = new List<bool>();
-		
-
-	public readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
-	public readonly ConcurrentDictionary<int, ConcurrentDictionary<int,WorldObject>> PseudoWorldObjects = new ();
-	public readonly ConcurrentDictionary<int,Tuple<List<AIAction.PotentialAbilityActivation>,List<AIAction.PotentialAbilityActivation>>> CachedAttacks = new ();
-	
-	private int NextId;
-
 	private static WorldManager instance;
 	public static WorldManager Instance
 	{
@@ -78,18 +65,7 @@ public  partial class WorldManager
 		return AllTiles;
 	}
 
-	public WorldObject? GetObject(int id, int dimension = -1)
-	{
-		if(dimension != -1)
-		{
-			if(PseudoWorldObjects.TryGetValue(dimension, out var dimDIct) && dimDIct.TryGetValue(id, out var obj))
-				return obj;//return if present, otherwise return the real object since there's no pseudo analogue
-		}
-		if(WorldObjects.TryGetValue(id, out var obj2))
-			return obj2;
 
-		return null;
-	}
 
 	public static bool IsPositionValid(Vector2Int pos)
 	{
@@ -98,41 +74,13 @@ public  partial class WorldManager
 
 	public void NextTurn(bool teamOneTurn)
 	{
-		foreach (var obj in WorldObjects.Values)
-		{
-			if (obj.UnitComponent != null && obj.UnitComponent.IsPlayer1Team == teamOneTurn)
-			{
-				obj.UnitComponent.StartTurn();
-			}
-		}
-
-		foreach (var obj in WorldObjects.Values)
-		{
-			if (obj.UnitComponent != null && obj.UnitComponent.IsPlayer1Team != teamOneTurn)
-			{
-				obj.UnitComponent.EndTurn();
-			}
-		}
 
 		foreach (var tile in _gridData)
 		{
-			tile.NextTurn();
+			tile.NextTurn(teamOneTurn);
 		}
 	}
-	public static readonly object IdAquireLock = new object();
-	public int GetNextId()
-	{
-		lock (IdAquireLock)
-		{
-			NextId++;
-			while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
-			{
-				NextId++;
-			}
-		}
 
-		return NextId;
-	}
 
 	public void LoadWorldTile(WorldTile.WorldTileData data)
 	{
@@ -140,64 +88,33 @@ public  partial class WorldManager
 
 		WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 		tile.Wipe();
-		if (data.Surface != null)
+		if (data.Surface.HasValue)
 		{
-			MakeWorldObjectFromData((WorldObject.WorldObjectData) data.Surface, tile);
+			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Surface.Value, tile));
+		}
+		if (data.NorthEdge.HasValue)
+		{
+			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.NorthEdge.Value, tile));
+		}
+		if (data.WestEdge.HasValue)
+		{
+			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.WestEdge.Value, tile));
+		}
+		if (data.UnitAtLocation.HasValue)
+		{
+			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.UnitAtLocation.Value, tile));
 		}
 
-		if (data.NorthEdge != null)
+		foreach (var obj in data.ObjectsAtLocation)
 		{
-			MakeWorldObjectFromData((WorldObject.WorldObjectData) data.NorthEdge, tile);
+			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(obj, tile));
 		}
 
 
-		if (data.WestEdge != null)
-		{
-			MakeWorldObjectFromData((WorldObject.WorldObjectData) data.WestEdge, tile);
-		}
-
-		if (data.UnitAtLocation != null)
-		{
-
-			MakeWorldObjectFromData((WorldObject.WorldObjectData) data.UnitAtLocation, tile);
-
-		}
-
-		if (data.ObjectsAtLocation != null)
-		{
-			foreach (var itm in data.ObjectsAtLocation)
-			{
-				MakeWorldObjectFromData(itm, tile);
-			}
-		}
 
 	}
 		
 
-	public void MakeWorldObject(string? prefabName, Vector2Int position, Direction facing = Direction.North, int id = -1, Unit.UnitData? unitData = null)
-	{
-		WorldObject.WorldObjectData data = new WorldObject.WorldObjectData(prefabName);
-		data.ID = id;
-		data.Facing = facing;
-		data.UnitData = unitData;
-		MakeWorldObjectFromData(data, (WorldTile)GetTileAtGrid(position));
-		return;
-	}
-
-	public void MakeWorldObjectFromData(WorldObject.WorldObjectData data, WorldTile tile)
-	{
-		
-		if (data.ID != -1)//if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
-		{
-			DeleteWorldObject(data.ID); //delete existing object with same id, most likely caused by server updateing a specific entity
-		}
-		lock (createSync)
-		{
-			_createdObjects.Add(new Tuple<WorldObject.WorldObjectData, WorldTile>(data,tile));
-		}
-
-		return;
-	}
 
 	private readonly List<Tuple<WorldObject.WorldObjectData, WorldTile>> _createdObjects = new List<Tuple<WorldObject.WorldObjectData, WorldTile>>();
 
@@ -262,6 +179,13 @@ public  partial class WorldManager
 			}
 			unit.VisibleTiles = unitSee;
 		});
+		
+#if SERVER
+		foreach (var tile in _gridData)
+		{
+			NetworkingManager.SendTileUpdate(tile);
+		}
+#endif
 		
 	}
 			
@@ -362,7 +286,7 @@ public  partial class WorldManager
 				}
 
 				//i think this is for seeing over distant cover while crouched, dont quote me on that tho
-				if (Vector2.Floor(cast.Value.CollisionPointLong) == Vector2.Floor(cast.Value.EndPoint) && cast.Value.HitObjId != -1 && GetObject(cast.Value.HitObjId).GetCover(true) != Cover.Full)
+				if (Vector2.Floor(cast.Value.CollisionPointLong) == Vector2.Floor(cast.Value.EndPoint) && cast.Value.HitObjId != -1 && WorldObjectManager.GetObject(cast.Value.HitObjId).GetCover(true) != Cover.Full)
 				{
 					return Visibility.Partial;
 				}
@@ -575,7 +499,7 @@ public  partial class WorldManager
 			Vector2 collisionPointshort = (totalLenght-0.1f) * dir + startPos;
 			if (IsPositionValid(checkingSquare))
 			{
-				tile = GetTileAtGrid(checkingSquare,pseudoLayer);
+				tile = PseudoWorldManager.GetTileAtGrid(checkingSquare,pseudoLayer);
 			}
 			else
 			{
@@ -667,46 +591,8 @@ public  partial class WorldManager
 		}
 	}
 
-	private List<int> objsToDel = new List<int>();
-	public void DeleteWorldObject(WorldObject? obj)
-	{
-		if (obj == null) return;
-
-		DeleteWorldObject(obj.ID);
-			
-	}
-	public void DeleteWorldObject(int id)
-	{
-		lock (deleteSync)
-		{
-			objsToDel.Add(id);
-		}
-	}
 
 
-	private void DestroyWorldObject(int id)
-	{
-		if (!WorldObjects.ContainsKey(id)) return;
-
-		if (id < NextId)
-		{
-			NextId = id; //reuse IDs
-		}
-
-		WorldObject Obj = WorldObjects[id];
-			
-		GameManager.Forget(Obj);
-
-#if  CLIENT
-		if (Obj.UnitComponent != null)
-		{
-			GameLayout.UnRegisterUnit(Obj.UnitComponent);
-		}
-#endif		
-		(Obj.TileLocation as WorldTile)?.Remove(id);
-	
-		WorldObjects.Remove(id);
-	}
 		
 	public Cover GetCover(Vector2Int loc, Direction dir, bool visibilityCover = false, bool ignoreControllables = false, bool ignoreObjectsAtLoc = true,int pseudoLayer = -1)
 	{
@@ -725,11 +611,11 @@ public  partial class WorldManager
 
 		dir = Utility.NormaliseDir(dir);
 		WorldObject biggestCoverObj = nullWorldObject;
-		IWorldTile tileAtPos = GetTileAtGrid(loc,pseudoLayer);
+		IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc,pseudoLayer);
 		IWorldTile? tileInDir =null;
 		if(IsPositionValid(tileAtPos.Position + Utility.DirToVec2(dir)))
 		{
-			tileInDir = Instance.GetTileAtGrid(tileAtPos.Position + Utility.DirToVec2(dir),pseudoLayer);
+			tileInDir = PseudoWorldManager.GetTileAtGrid(tileAtPos.Position + Utility.DirToVec2(dir),pseudoLayer);
 		}
             
 
@@ -947,20 +833,7 @@ public  partial class WorldManager
 
 
 
-	public IWorldTile GetTileAtGrid(Vector2Int pos, int pseudoGrid)
-	{
-		if(pseudoGrid != -1)
-		{
-			var grid = _pseudoGrids[pseudoGrid];
-			if(grid[pos.X, pos.Y] == null)
-			{
-				grid[pos.X, pos.Y] = new PseudoTile(GetTileAtGrid(pos));
-			}
-			return grid[pos.X, pos.Y] ?? throw new InvalidOperationException();
-				
-		}
-		return GetTileAtGrid(pos);
-	}
+	
 	public WorldTile GetTileAtGrid(Vector2Int pos)
 	{
 		return _gridData[pos.X, pos.Y];
@@ -981,7 +854,7 @@ public  partial class WorldManager
 				if(Math.Pow(i-x,2) + Math.Pow(j-y,2) < Math.Pow(range,2)){
 					if (IsPositionValid(new Vector2Int(i,j)))
 					{
-						tiles.Add(GetTileAtGrid(new Vector2Int(i,j),alternateDimension));
+						tiles.Add(PseudoWorldManager.GetTileAtGrid(new Vector2Int(i,j),alternateDimension));
 					}
 				}
 			}
@@ -1003,27 +876,17 @@ public  partial class WorldManager
 
 	public void WipeGrid()
 	{
-		lock (deleteSync)
-		{
-				
-			
-			foreach (var worldObject in WorldObjects.Values)
-			{
-				DeleteWorldObject(worldObject);
-			}
 
-			for (int x = 0; x < 100; x++)
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
 			{
-				for (int y = 0; y < 100; y++)
-				{
-					_gridData[x, y].Wipe();
-				}
+				_gridData[x, y].Wipe();
 			}
 		}
+		
 	}
-
-	public static readonly object deleteSync = new object();
-
+	
 	public static readonly object createSync = new object();
 	public static readonly object TaskSync = new object();
 
@@ -1062,65 +925,7 @@ public  partial class WorldManager
 			NextFrameTasks = updatedList;
 		}
 
-			
-
-		lock (deleteSync)
-		{
-
-
-			foreach (var obj in objsToDel)
-			{
-
-				if (GameManager.GameState == GameState.Playing)
-				{
-					MakeFovDirty();
-				}
-
-#if SERVER
-				if (GameManager.GameState != GameState.Playing)
-				{
-					if (WorldObjects.TryGetValue(obj, out var o))
-					{
-						tilesToUpdate.Add((WorldTile)o.TileLocation);
-					}
-				}
-#endif
-				DestroyWorldObject(obj);
-				//	Console.WriteLine("deleting: "+obj);
-			}
-
-			objsToDel.Clear();
-
-		}
-
-		lock (createSync)
-		{
-				
-			
-			foreach (var WO in _createdObjects)
-			{
-				CreateWorldObj(WO);
-				if (GameManager.GameState == GameState.Playing)
-				{
-					MakeFovDirty();
-				}
-
-				if (GameManager.GameState != GameState.Playing)
-				{
-						
-#if SERVER
-					//	Task t = new Task(delegate
-					//	{
-					tilesToUpdate.Add(WO.Item2);
-					//});
-					//RunNextAfterFrames(t,5);
-#endif
-						
-				}
-			}
-
-				
-			_createdObjects.Clear();
+		
 #if SERVER
 				
 			
@@ -1132,17 +937,14 @@ public  partial class WorldManager
 
 			tilesToUpdate.Clear();
 #endif
-		}
+		
 		foreach (var tile in _gridData)
 		{
 			tile.Update(gameTime);
 					
 		}
 
-		foreach (var obj in WorldObjects.Values)
-		{
-			obj.Update(gameTime);
-		}
+
 
 		if (fovDirty)
 		{
@@ -1154,35 +956,7 @@ public  partial class WorldManager
 
 
 
-
-	private void CreateWorldObj(Tuple<WorldObject.WorldObjectData, WorldTile> obj)
-	{
-		var data = obj.Item1;
-		var tile = obj.Item2;
-		if(data.ID == -1){
-			data.ID = GetNextId();
-		}
-		if(WorldObjects.ContainsKey(data.ID)){ 
-			DeleteWorldObject(WorldObjects[data.ID]);
-			Task t = new Task(delegate
-			{
-				MakeWorldObjectFromData(obj.Item1, obj.Item2);
-			});
-			RunNextAfterFrames(t);
-			return;
-		}
-			
-		WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
-		WorldObject WO = new WorldObject(type, tile, data);
-		WO.fliped = data.Fliped;
-			
-		type.Place(WO,tile,data);
-			
-		WorldObjects.EnsureCapacity(WO.ID + 1);
-		WorldObjects[WO.ID] = WO;
-
-		return;
-	}
+	
 
 	public MapData CurrentMap { get; set; }
 	[Serializable]
@@ -1290,176 +1064,7 @@ public  partial class WorldManager
 
 
 
-	public static readonly object PseudoGenLock = new object();
-		
-	public void AddUnitToPseudoWorld(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int dimension)
-	{
-		
-		//		Console.WriteLine("placing unit at: " + tilePosition + " in dimension: " + dimension + " with ID " + realunit.WorldObject.ID);
-		if (PseudoWorldObjects.ContainsKey(dimension) && PseudoWorldObjects[dimension].ContainsKey(realunit.WorldObject.ID))
-		{
-			//	Console.WriteLine("unit already in pseudo world at " + realunit.WorldObject.TileLocation.Position);
-			pseudoUnit = PseudoWorldObjects[dimension][realunit.WorldObject.ID].UnitComponent!;
-			return;
-		}
-
-		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
-		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition, dimension), data);
-		pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData(),false);
-		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
-				
-		pseudoUnit = pseudoObj.UnitComponent;
-				
-
-		if (!PseudoWorldObjects[dimension].TryAdd(pseudoObj.ID, pseudoObj))
-		{
-			throw new Exception("failed to create pseudo object");
-					
-		}
-		GetTileAtGrid(tilePosition, dimension).UnitAtLocation = pseudoUnit;
-		//	Console.WriteLine("adding unit with id: " + realunit.WorldObject.ID + " to dimension: " + dimension);
-				
-		if (realunit.WorldObject.TileLocation.Position != tilePosition)
-		{
-			((PseudoTile) GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true; //remove old position from world
-		}
-			
-	}
-
-	public int CreatePseudoWorldWithUnit(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int copyDimension = -1)
-	{
-
-		int dimension= GetNextFreePseudoDimension();
-		
 	
-		if (!PseudoWorldObjects.ContainsKey(dimension))
-		{
-			PseudoWorldObjects.TryAdd(dimension, new ConcurrentDictionary<int, WorldObject>());
-
-		}
-
-	
-			
-		//	Console.WriteLine("Creating pseudo world with unit at: "+tilePosition+" in dimension: "+dimension +" with ID "+realunit.WorldObject.ID);
-		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
-		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition,dimension), data);
-		pseudoObj.UnitComponent = new Unit(pseudoObj,realunit.Type,realunit.GetData(),false);
-		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
-				
-		pseudoUnit = pseudoObj.UnitComponent;
-
-				
-				
-		
-		if (!PseudoWorldObjects[dimension].TryAdd(pseudoObj.ID, pseudoObj))
-		{
-					
-			throw new Exception("failed to create pseudo object");
-					
-		}
-
-				
-		GetTileAtGrid(tilePosition, dimension).UnitAtLocation = pseudoUnit;
-		//Console.WriteLine("adding unit with id: " + realunit.WorldObject.ID + " to dimension: " + dimension);
-				
-		if (realunit.WorldObject.TileLocation.Position != tilePosition)
-		{
-			((PseudoTile) GetTileAtGrid(realunit.WorldObject.TileLocation.Position, dimension)).ForceNoUnit = true; //remove old position from world
-
-		}
-		if(copyDimension != -1){
-			foreach (var otherdem in PseudoWorldObjects[copyDimension])
-			{
-				if (otherdem.Value.UnitComponent != null) AddUnitToPseudoWorld(otherdem.Value.UnitComponent, otherdem.Value.TileLocation.Position, out _, dimension);
-			}
-			
-			CacheAttacksInDimension(CachedAttacks[copyDimension].Item2,dimension,true);
-			CacheAttacksInDimension(CachedAttacks[copyDimension].Item1,dimension,false);
-		}
-		else
-		{
-			CacheAttacksInDimension(new List<AIAction.PotentialAbilityActivation>(),dimension,true);
-			CacheAttacksInDimension(new List<AIAction.PotentialAbilityActivation>(),dimension,false);
-		}
-
-
-		return dimension;
-			
-	}
-
-	private int GetNextFreePseudoDimension()
-	{
-		lock (PseudoGenLock)
-		{
-			int dimension = 0;
-			while (true)
-			{
-				if (_pseudoGridsInUse.Count <= dimension)
-				{
-					GenerateGridAtDimension(dimension);
-					return dimension;
-				}
-
-				if (_pseudoGridsInUse[dimension] == false)
-				{
-					GenerateGridAtDimension(dimension);
-					return dimension;
-				}
-
-				dimension++;
-			}
-		}
-	}
-
-	private void GenerateGridAtDimension(int d)
-	{
-		while(_pseudoGridsInUse.Count <= d)
-		{
-			_pseudoGridsInUse.Add(false);
-		}
-		_pseudoGridsInUse[d] = true;
-
-		while(_pseudoGrids.Count <= d)
-		{
-			_pseudoGrids.Add(new PseudoTile?[100,100]);
-		}
-			
-			
-	}
-
-	/*	public void DeletePseudoUnit(int id, int dimension)
-		{
-
-			Console.WriteLine("removing unit with id: " + id + " from dimension: " + dimension);
-			if (PseudoWorldObjects.ContainsKey(id) && PseudoWorldObjects[dimension].ContainsKey(id)){
-				PseudoWorldObjects[dimension][id].TileLocation.UnitAtLocation = null;
-				PseudoWorldObjects[dimension].Remove(id);
-			}
-
-		}*/
-	public void WipePseudoLayer(int dimension, bool NoAttackWipe = false)
-	{
-		lock (PseudoGenLock)
-		{
-			//	Console.WriteLine("Wiping grid in " + dimension);
-		
-			Array.Clear(_pseudoGrids[dimension]);
-			PseudoWorldObjects[dimension].Clear();
-			///Console.WriteLine("Wiping grid in " + dimension);
-
-			if (!NoAttackWipe)
-			{
-				CachedAttacks[dimension].Item1.ForEach(y => y.Consequences.ForEach(z => z.Return()));
-				CachedAttacks[dimension].Item2.ForEach(y => y.Consequences.ForEach(z => z.Return()));
-			}
-			
-			
-			CachedAttacks[dimension].Item1.Clear();
-			CachedAttacks[dimension].Item2.Clear();
-			_pseudoGridsInUse[dimension] = false;
-		}
-	}
-
 	public void Init()
 	{
 		var data = new WorldObject.WorldObjectData();
@@ -1467,66 +1072,10 @@ public  partial class WorldManager
 		nullWorldObject = new WorldObject(null,null,data);
 	}
 
-	public void CacheAttacksInDimension(List<AIAction.PotentialAbilityActivation> attacks, int dimension, bool mainUnit)
-	{
-		//Console.WriteLine("Cashing attacks in " + dimension);
-		if (!CachedAttacks.ContainsKey(dimension))
-		{
-			List<AIAction.PotentialAbilityActivation> enemyAttacks;
-			List<AIAction.PotentialAbilityActivation> mainAttacks;
-			if (mainUnit)
-			{
-				mainAttacks = new List<AIAction.PotentialAbilityActivation>(attacks);
-				enemyAttacks = new List<AIAction.PotentialAbilityActivation>();
-			}
-			else
-			{
-				enemyAttacks = new List<AIAction.PotentialAbilityActivation>(attacks);
-				mainAttacks = new List<AIAction.PotentialAbilityActivation>();
-			}
-
-			CachedAttacks.TryAdd(dimension, new Tuple<List<AIAction.PotentialAbilityActivation>, List<AIAction.PotentialAbilityActivation>>(enemyAttacks,mainAttacks));
-			return;
-		}
-
-		if (mainUnit)
-		{
-			CachedAttacks[dimension].Item2.AddRange(attacks);
-		}
-		else
-		{
-			CachedAttacks[dimension].Item1.AddRange(attacks);
-		}
-
-
-	}
-
-	public bool GetCachedAttacksInDimension(ref List<AIAction.PotentialAbilityActivation> attacks, int dimension, bool mainUnit)
-	{
-		if(!CachedAttacks.ContainsKey(dimension)) return false;
-
-		List<AIAction.PotentialAbilityActivation> list;
-		if (mainUnit)
-		{
-			list = CachedAttacks[dimension].Item2;
-		}
-		else
-		{
-			list = CachedAttacks[dimension].Item1;
-		}
-
-		if (list.Count == 0) return false;
-	
-
-		attacks.AddRange(list);
-		return true;
-	}
-
 	public string GetMapHash()
 	{
 		string hash = "";
 		lock (createSync)
-		lock (deleteSync)
 		{
 			foreach (var tile in _gridData)
 			{

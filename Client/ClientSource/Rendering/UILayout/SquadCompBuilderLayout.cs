@@ -2,8 +2,7 @@
 
 using System.Collections.Generic;
 using DefconNull.Networking;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;

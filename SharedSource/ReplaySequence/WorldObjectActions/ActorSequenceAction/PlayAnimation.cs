@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class PlayAnimation : UnitSequenceAction
 {

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.Actions;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+﻿using System.IO;
+using DefconNull.WorldObjects;
 
 namespace DefconNull.AI;
 

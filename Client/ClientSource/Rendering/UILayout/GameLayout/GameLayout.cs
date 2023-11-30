@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DefconNull.Networking;
-using DefconNull.World;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldActions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 using Move = DefconNull.AI.Move;
 using Thickness = Myra.Graphics2D.Thickness;
+using Unit = DefconNull.WorldObjects.Unit;
+using WorldObject = DefconNull.WorldObjects.WorldObject;
 
 namespace DefconNull.Rendering.UILayout.GameLayout;
 
@@ -792,9 +792,9 @@ public class GameLayout : MenuLayout
 		foreach (var act in previewConsequences)
 		{
 			if(act.GetType() == typeof(FaceUnit)) continue;
-			if (act.GetType() == typeof(TakeDamage))
+			if (act.GetType() == typeof(WorldObjectManager.TakeDamage))
 			{
-				var tkDmg = (TakeDamage) act;
+				var tkDmg = (WorldObjectManager.TakeDamage) act;
 				WorldObject? obj = tkDmg.GetTargetObject();
 				if(obj == null) continue;
 				if (!SortedConsequences.ContainsKey(obj))

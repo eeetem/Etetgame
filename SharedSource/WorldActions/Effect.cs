@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions;
 
 public abstract class Effect
 {

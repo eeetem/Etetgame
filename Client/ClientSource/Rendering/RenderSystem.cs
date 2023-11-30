@@ -1,18 +1,12 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using DefconNull.AI;
 using DefconNull.LocalObjects;
-using DefconNull.Rendering.UILayout;
 using DefconNull.Rendering.UILayout.GameLayout;
-using DefconNull.World;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.Shapes;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
 
 namespace DefconNull.Rendering;
 

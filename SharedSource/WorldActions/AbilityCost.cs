@@ -1,4 +1,4 @@
-﻿namespace DefconNull.World.WorldActions;
+﻿namespace DefconNull.WorldActions;
 
 public struct AbilityCost
 {

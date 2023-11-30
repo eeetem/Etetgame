@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence;
-
-
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldObjects;
 #if CLIENT
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.Rendering;
 #endif
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions.UnitAbility;
 
 public class UnitAbility 
 {

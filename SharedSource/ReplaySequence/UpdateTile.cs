@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.World.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence;
 
 public class UpdateTile : SequenceAction
 {
@@ -19,6 +19,12 @@ public class UpdateTile : SequenceAction
 	{
 		Data = data;
 	}
+#if SERVER
+	public override bool ShouldDoServerCheck(bool player1)
+	{
+		return true;
+	}
+#endif
 
 	
 	protected override Task GenerateSpecificTask()

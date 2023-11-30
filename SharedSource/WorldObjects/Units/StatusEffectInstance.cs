@@ -1,6 +1,6 @@
 ﻿
 
-namespace DefconNull.World.WorldObjects.Units;
+namespace DefconNull.WorldObjects.Units;
 
 public class StatusEffectInstance
 {

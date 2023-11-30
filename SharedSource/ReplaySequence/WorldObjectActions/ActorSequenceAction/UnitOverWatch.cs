@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-using DefconNull.WorldObjects.Units.ReplaySequence.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitOverWatch : UnitSequenceAction
 {

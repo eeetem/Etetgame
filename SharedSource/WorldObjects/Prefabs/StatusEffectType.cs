@@ -1,7 +1,7 @@
 ﻿using DefconNull.ReplaySequence;
-using DefconNull.World.WorldActions;
+using DefconNull.WorldActions;
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public class StatusEffectType
 {

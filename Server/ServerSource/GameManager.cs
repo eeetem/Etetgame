@@ -1,9 +1,6 @@
-﻿using System.Collections.Concurrent;
-using DefconNull.Networking;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.Actions;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+﻿using DefconNull.Networking;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 
 
 namespace DefconNull;
@@ -53,9 +50,9 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
-				int id = WorldManager.Instance.GetNextId();
-				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-				T1Units.Add(id);
+			//	int id = WorldManager.Instance.GetNextId();
+				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
+			//	T1Units.Add(id);
 				i++;
 
 			}
@@ -98,9 +95,9 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
-				int id = WorldManager.Instance.GetNextId();
-				WorldManager.Instance.MakeWorldObject(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-				T2Units.Add(id);
+				//int id = WorldManager.Instance.GetNextId();
+				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
+			//	T2Units.Add(id);
 				i++;
 
 			}
@@ -139,7 +136,7 @@ public static partial class GameManager
 			List<Unit> units = new List<Unit>();
 			foreach (var u in T1Units)
 			{
-				units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+				units.Add(WorldObjectManager.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
 			}
 			AI.AI.DoAITurn(units);
 		}
@@ -148,7 +145,7 @@ public static partial class GameManager
 			List<Unit> units = new List<Unit>();
 			foreach (var u in T2Units)
 			{
-				units.Add(WorldManager.Instance.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
+				units.Add(WorldObjectManager.GetObject(u)!.UnitComponent ?? throw new Exception("team unit ids are not actual units"));
 			}
 			AI.AI.DoAITurn(units);
 		}

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading;
 using DefconNull.Networking;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Riptide;
 #if  CLIENT
@@ -289,7 +289,7 @@ public static partial class GameManager
 		
 		foreach (var id in ids)
 		{
-			units.Add( WorldManager.Instance.GetObject(id,dimension).UnitComponent);
+			units.Add(PseudoWorldManager.GetObject(id,dimension).UnitComponent);
 		}
 
 		return units;

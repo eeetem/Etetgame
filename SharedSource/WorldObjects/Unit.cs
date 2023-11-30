@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using DefconNull.Networking;
 using DefconNull.ReplaySequence;
-using DefconNull.SharedSource.Units.ReplaySequence;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects.Units;
-
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldActions.UnitAbility;
+using DefconNull.WorldObjects.Units;
 using Microsoft.Xna.Framework;
 using Riptide;
-using Action = DefconNull.World.WorldObjects.Units.Actions.Action;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
 
 using DefconNull.Rendering;
@@ -19,7 +17,7 @@ using DefconNull.Rendering;
 #nullable enable
 
 
-namespace DefconNull.World.WorldObjects
+namespace DefconNull.WorldObjects
 {
 	public partial class Unit
 	{
@@ -87,7 +85,7 @@ namespace DefconNull.World.WorldObjects
 						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
 							SequenceManager.AddSequence(c);
-							Networking.NetworkingManager.SendSequence(c);
+							NetworkingManager.SendSequence(c);
 						}
 					});
 					WorldManager.Instance.RunNextAfterFrames(t);
@@ -167,51 +165,7 @@ namespace DefconNull.World.WorldObjects
 
 		public bool IsPlayer1Team { get; private set; }
 		
-
-		public void TakeDamage(int dmg, int detResis)
-		{
-			Console.WriteLine("Taking damage: " + dmg + " with det resis: " + detResis);
-			if (Determination > 0)
-			{
-				Console.WriteLine("blocked by determination");
-				dmg = dmg - detResis;
-
-			}
-
-			if (dmg <= 0)
-			{
-				Console.WriteLine("0 damage");
-				return;
-			}
-
-
-			WorldObject.Health -= dmg;
-			
-#if CLIENT
-			new PopUpText("Damage: " + dmg, WorldObject.TileLocation.Position, Color.Red, 0.8f);
-#endif
-			Console.WriteLine("unit hit for: " + dmg);
-			Console.WriteLine("outcome: health=" + WorldObject.Health);
-			if (WorldObject.Health <= 0)
-			{
-				Console.WriteLine("dead");
-				ClearOverWatch();
-	
-				WorldManager.Instance.DeleteWorldObject(WorldObject); //dead
-				
-#if CLIENT
-				Audio.PlaySound("death",WorldObject.TileLocation.Position);
-#endif
-
-			}
-			else
-			{
-#if CLIENT
-				Audio.PlaySound("grunt",WorldObject.TileLocation.Position);
-#endif
-			}
-
-		}
+		
 
 		public int GetSightRange()
 		{

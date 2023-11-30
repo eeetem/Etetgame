@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.Networking;
 using DefconNull.ReplaySequence;
-using DefconNull.World.WorldActions;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
-
-using DefconNull.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DefconNull.World.WorldObjects.Units.Actions;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class UseAbility : Action
 {

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using DefconNull.World;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.WorldObjects;
 using Riptide;
 
-namespace DefconNull.WorldObjects.Units.ReplaySequence;
+namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public abstract class UnitSequenceAction : SequenceAction
 {
@@ -67,6 +63,16 @@ public abstract class UnitSequenceAction : SequenceAction
 		
 		return true;
 	}
+#if SERVER
+		public override bool ShouldDoServerCheck(bool player1)
+	{
+		if (Actor == null) return false;
+
+		var wtile = (WorldTile) (Actor.WorldObject.TileLocation);
+		return wtile.IsVisible(team1: player1);
+	}
+#endif
+
 
 	public Unit? GetAffectedActor(int dimension)
 	{
@@ -74,12 +80,12 @@ public abstract class UnitSequenceAction : SequenceAction
 		Unit? hitUnit = null;
 		if (Requirements.ActorID != -1)
 		{
-			hitUnit = WorldManager.Instance.GetObject(Requirements.ActorID,dimension)!.UnitComponent;
+			hitUnit = PseudoWorldManager.GetObject(Requirements.ActorID,dimension)!.UnitComponent;
 		}
 		else if(Requirements.Position != new Vector2Int(-1, -1))
 		{
 
-			hitUnit = WorldManager.Instance.GetTileAtGrid(Requirements.Position,dimension).UnitAtLocation;
+			hitUnit = PseudoWorldManager.GetTileAtGrid(Requirements.Position,dimension).UnitAtLocation;
 		}
 
 		return hitUnit;
@@ -91,7 +97,7 @@ public abstract class UnitSequenceAction : SequenceAction
 		{
 			if (Requirements.ActorID!= -1)
 			{
-				var obj = WorldManager.Instance.GetObject(Requirements.ActorID);
+				var obj =WorldObjectManager.GetObject(Requirements.ActorID);
 				if(obj == null) Console.WriteLine("Sequence Actor not found");
 				return obj?.UnitComponent;
 			}

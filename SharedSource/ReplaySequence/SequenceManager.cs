@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
 
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
@@ -17,76 +16,86 @@ public class SequenceManager
 	private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
 	public static bool SequenceRunningRightNow;
 	
+	private static object lockObj = new object();
 	public static void Update()
 	{
 				
 		SequenceRunningRightNow = true;
-		
-		if (CurrentSequenceTasks.Count == 0)
+		lock (lockObj)
 		{
-			if (SequenceQueue.Count > 0)
+			if (CurrentSequenceTasks.Count == 0)
 			{
-				var act = SequenceQueue.Dequeue();
-				while (!act.ShouldDo())
+				if (SequenceQueue.Count > 0)
 				{
-					act.Return();
-					if(SequenceQueue.Count == 0){
-						SequenceRunningRightNow = false;
-						return;
-					}
-					act = SequenceQueue.Dequeue();
-				}
-				Console.WriteLine("runnin sequnce task: "+act.GetSequenceType());
-				CurrentSequenceTasks.Add(act.GenerateTask());
-				CurrentSequenceTasks.Last().Start();
-		
-					
-
-					
-				//batch tile updates and other things
-				while (true)
-				{
-					if (SequenceQueue.Count == 0)
+					var act = SequenceQueue.Dequeue();
+					while (!act.ShouldDo())
 					{
-						break;
+						act.Return();
+						if (SequenceQueue.Count == 0)
+						{
+							SequenceRunningRightNow = false;
+							return;
+						}
+
+						act = SequenceQueue.Dequeue();
 					}
-				
-					if(!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
-					act = SequenceQueue.Dequeue();
-					Console.WriteLine("batching sequnce task: "+act.GetSequenceType());
+
+					Console.WriteLine("runnin sequnce task: " + act.GetSequenceType());
 					CurrentSequenceTasks.Add(act.GenerateTask());
 					CurrentSequenceTasks.Last().Start();
-				} 
 
+
+
+
+					//batch tile updates and other things
+					while (true)
+					{
+						if (SequenceQueue.Count == 0)
+						{
+							break;
+						}
+
+						if (!SequenceQueue.Peek().CanBatch || !SequenceQueue.Peek().ShouldDo()) break;
+						act = SequenceQueue.Dequeue();
+						Console.WriteLine("batching sequnce task: " + act.GetSequenceType());
+						CurrentSequenceTasks.Add(act.GenerateTask());
+						CurrentSequenceTasks.Last().Start();
+					}
+
+				}
 			}
-		}
-		else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
-		{
-			foreach (var t in CurrentSequenceTasks)
+			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
 			{
-				if (t.Status == TaskStatus.RanToCompletion)
+				foreach (var t in CurrentSequenceTasks)
 				{
-					//	Console.WriteLine("sequence task finished");
+					if (t.Status == TaskStatus.RanToCompletion)
+					{
+						//	Console.WriteLine("sequence task finished");
+					}
+					else if (t.Status == TaskStatus.Faulted)
+					{
+						Console.WriteLine("Sequence task failed");
+						Console.WriteLine(t.Status);
+						throw t.Exception!;
+					}
+					else
+					{
+						Console.WriteLine("undefined sequence task state");
+					}
+
 				}
-				else if (t.Status == TaskStatus.Faulted)
-				{
-					Console.WriteLine("Sequence task failed");
-					Console.WriteLine(t.Status);
-					throw t.Exception!;
-				}else{
-					Console.WriteLine("undefined sequence task state");
-				}
-				
-			}
-			CurrentSequenceTasks.Clear();
-			SequenceRunningRightNow = false;
+
+				CurrentSequenceTasks.Clear();
+				SequenceRunningRightNow = false;
 #if CLIENT
 			if(SequenceQueue.Count == 0)
 			{
 				GameLayout.ReMakeMovePreview();
 			}
 #endif
-		}	
+			}
+		}
+
 		SequenceRunningRightNow = false;
 	}
 
@@ -94,8 +103,12 @@ public class SequenceManager
 	public static void AddSequence(SequenceAction action)
 	{
 		if(action==null) throw new ArgumentNullException(nameof(action));
-		SequenceQueue.Enqueue(action);
-		Console.WriteLine("adding action "+action.GetSequenceType()+" to sequence");
+		lock (lockObj)
+		{
+			SequenceQueue.Enqueue(action);
+			Console.WriteLine("adding action "+action.GetSequenceType()+" to sequence");
+		}
+	
 	}
 
 	public static void AddSequence(IEnumerable<SequenceAction> actions)

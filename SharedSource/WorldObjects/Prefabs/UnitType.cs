@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using DefconNull.World.WorldActions;
-
-using Microsoft.Xna.Framework.Graphics;
+using DefconNull.WorldActions;
+using DefconNull.WorldActions.UnitAbility;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
-namespace DefconNull.World.WorldObjects;
+namespace DefconNull.WorldObjects;
 
 public class UnitType : WorldObjectType
 {

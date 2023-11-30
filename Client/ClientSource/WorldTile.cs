@@ -1,8 +1,7 @@
 ﻿using System;
-using DefconNull.World.WorldObjects;
 using Color = Microsoft.Xna.Framework.Color;
 
-namespace DefconNull.World;
+namespace DefconNull;
 
 public partial class WorldTile : IWorldTile
 {

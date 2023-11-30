@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using DefconNull.World.WorldObjects;
-using DefconNull.World.WorldObjects.Units.ReplaySequence;
+using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-
 #if CLIENT
 using DefconNull.Rendering;
 #endif
 
-namespace DefconNull.World.WorldActions;
+namespace DefconNull.WorldActions.DeliveryMethods;
 
 public class Throwable : DeliveryMethod
 {
