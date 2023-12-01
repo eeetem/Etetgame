@@ -1,4 +1,6 @@
-﻿using DefconNull.LocalObjects;
+﻿using System;
+using System.IO;
+using DefconNull.LocalObjects;
 using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.PostProcessing;
@@ -32,7 +34,11 @@ public class Game1 : Game
 		GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 
 		Window.AllowUserResizing = false;
-
+		FileStream filestream = new FileStream("out"+DateTime.Now.ToFileTime()+".txt", FileMode.Create);
+		var streamwriter = new StreamWriter(filestream);
+		streamwriter.AutoFlush = true;
+		Console.SetOut(streamwriter);
+		Console.SetError(streamwriter);
 
 	}
 

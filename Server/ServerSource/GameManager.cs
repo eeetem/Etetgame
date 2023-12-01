@@ -1,4 +1,5 @@
 ﻿using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 
@@ -50,9 +51,10 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
-			//	int id = WorldManager.Instance.GetNextId();
-				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-			//	T1Units.Add(id);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				SequenceManager.AddSequence(objMake);
+				NetworkingManager.SendSequence(objMake,true);
+				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}
@@ -95,9 +97,10 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
-				//int id = WorldManager.Instance.GetNextId();
-				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-			//	T2Units.Add(id);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				SequenceManager.AddSequence(objMake);
+				NetworkingManager.SendSequence(objMake,true);
+				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}

@@ -91,8 +91,6 @@ namespace DefconNull.WorldObjects
 					WorldManager.Instance.RunNextAfterFrames(t);
 				}
 #endif
-
-				
 				
 				StartTurn();
 			}

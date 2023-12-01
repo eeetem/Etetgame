@@ -12,17 +12,15 @@ public class CrouchUnit : UnitSequenceAction
 		return SequenceType.Crouch;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			Actor.canTurn = true;
 			Actor.Crouching = !Actor.Crouching;
 
 			WorldManager.Instance.MakeFovDirty();
 
-		});
-		return t;
+
 	}
 	
 

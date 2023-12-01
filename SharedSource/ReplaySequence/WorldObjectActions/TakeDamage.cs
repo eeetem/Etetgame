@@ -94,10 +94,9 @@ public static partial class WorldObjectManager
 			return null;
 		}
 
-		protected override Task GenerateSpecificTask()
+		protected override void RunSequenceAction()
 		{
-			var t = new Task(delegate
-			{
+
 				var dmg = Dmg;
 				var obj = GetTargetObject();
 				if (obj == null) return;
@@ -169,8 +168,7 @@ public static partial class WorldObjectManager
 				{
 					Destroy(obj);
 				}
-			});
-			return t;
+
 		}
 	
 	

@@ -51,7 +51,7 @@ public class SequenceManager
 					int i = 0;
 					while (true)
 					{
-						if (SequenceQueue.Count == 0)
+						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
 						{
 							break;
 						}
@@ -74,7 +74,7 @@ public class SequenceManager
 						}
 						if(!shouldBatch) break;
 						act = SequenceQueue.Dequeue();
-						//Console.WriteLine($"batching sequnce task: {i}{act.GetSequenceType()}");
+						Console.WriteLine($"batching sequnce task: {i}{act.GetSequenceType()}");
 						i++;
 						CurrentSequenceTasks.Add(act.GenerateTask());
 						CurrentSequenceTasks.Last().Start();
@@ -99,6 +99,7 @@ public class SequenceManager
 					else
 					{
 						Console.WriteLine("undefined sequence task state");
+						throw new Exception("undefined sequence task state");
 					}
 
 				}

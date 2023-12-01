@@ -285,6 +285,11 @@ public partial class WorldObject
 				UnitData = null;
 			}
 		}
+
+		public string GetHash()
+		{
+			return Prefab + ID + Health;
+		}
 	}
 
 	public WorldObjectData GetData(bool forceJustSpawned = false)
@@ -335,6 +340,6 @@ public partial class WorldObject
 
 	public string GetHash()
 	{
-		return Type.Name + ID;
+		return Type.Name + ID + Health;
 	}
 }

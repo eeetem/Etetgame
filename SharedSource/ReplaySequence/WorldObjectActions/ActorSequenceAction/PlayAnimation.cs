@@ -12,7 +12,7 @@ public class PlayAnimation : UnitSequenceAction
 		return SequenceType.PlayAnimation;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
 		throw new NotImplementedException();
 	}

@@ -121,7 +121,7 @@ public static partial class NetworkingManager
 		server.Send(packet,connection);
 		
 		Task.Run(() => {
-			while (!ClientsReadyForMap.Contains(connection.Id))
+			while (!ClientsReadyForMap.Contains(connection.Id) || SequenceManager.SequenceRunning)
 			{
 				Thread.Sleep(100);
 			}
@@ -373,17 +373,9 @@ public static partial class NetworkingManager
 			
 	}
 
-	public static void SendSequence(SequenceAction a)
+	public static void SendSequence(SequenceAction action, bool force = false)
 	{
-		lock (UpdateLock)
-		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
-
-			msg.Add((int) a.GetSequenceType());
-			msg.AddSerializable(a);
-			server.SendToAll(msg);
-		}
-		
+		SendSequence(new List<SequenceAction>(){action},force);
 	}
 
 	public static void SendSequence(IEnumerable<SequenceAction> actions)
@@ -391,7 +383,7 @@ public static partial class NetworkingManager
 		SendSequence(actions.ToList());
 	}
 
-	public static void SendSequence(List<SequenceAction> actions)
+	public static void SendSequence(List<SequenceAction> actions, bool force = false)
 	{
 
 		actions.RemoveAll(x => !x.ShouldDo());
@@ -404,8 +396,7 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		
-		
+
 		lock (UpdateLock)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.ReplaySequence);
@@ -414,15 +405,26 @@ public static partial class NetworkingManager
 				msg.Add((int) a.GetSequenceType());
 				msg.AddSerializable(a);
 			}
-
-			foreach (var spec in GameManager.Spectators)
+            
+			if (force)
 			{
-				server.Send(msg,spec.Connection,false);
-			}
-			msg.Release();
-			
-		}
 		
+				server.SendToAll(msg);
+			}
+			else
+			{
+
+				foreach (var spec in GameManager.Spectators)
+				{
+					server.Send(msg, spec.Connection);
+				}
+
+				SendSequenceToPlayer(actions, true);
+				SendSequenceToPlayer(actions, false);
+			}
+
+		}
+
 	}
 
 	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)

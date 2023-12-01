@@ -55,13 +55,11 @@ public class Suppress : UnitSequenceAction
 	}
 
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			Actor.Suppress(DetDmg);
-		});
-		return t;
+
 	}
 	
 #if CLIENT

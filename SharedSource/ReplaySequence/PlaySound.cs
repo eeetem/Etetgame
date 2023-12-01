@@ -36,15 +36,13 @@ public class PlaySound : SequenceAction
 
 
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 #if CLIENT
 			Audio.PlaySound(SFX, Location);
 #endif
-		});
-		return t;
+
 	}
 
 	protected override void SerializeArgs(Message message)

@@ -41,7 +41,7 @@ public static partial class WorldObjectManager
 	
 	private static readonly object IdAquireLock = new object();
 	private static int NextId;
-
+	private static readonly object WoLock = new object();
 	private static readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
 	private static int GetNextId()
 	{

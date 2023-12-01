@@ -24,10 +24,9 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		return SequenceType.DelayedAbilityUse;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			//clientside execution of ability
 			//really should be avoided since it'll likely cause desyncs
 			//but we'll see
@@ -35,8 +34,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 			{
 				if(x.ShouldDo()){x.GenerateTask().RunSynchronously();}
 			});
-		});
-		return t;
+
 	}
 	
 	protected override void SerializeArgs(Message message)

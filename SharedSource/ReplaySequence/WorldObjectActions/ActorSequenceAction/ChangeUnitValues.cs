@@ -71,17 +71,15 @@ public class ChangeUnitValues : UnitSequenceAction
 		return SequenceType.ChangeUnitValues;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			
 			ActChange.Apply(ref Actor.ActionPoints);
 			MoveChange.Apply(ref Actor.MovePoints);
 			DetChange.Apply(ref Actor.Determination);
 			MoveRangeeffectChange.Apply(ref Actor.MoveRangeEffect);
-		});
-		return t;
+
 	}
 
 	protected override void SerializeArgs(Message message)

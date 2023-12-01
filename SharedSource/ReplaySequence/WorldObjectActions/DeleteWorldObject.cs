@@ -42,10 +42,9 @@ public static partial class WorldObjectManager
 			return t;
 		}
 
-		protected override Task GenerateSpecificTask()
+		protected override void RunSequenceAction()
 		{
-			var t = new Task(delegate
-			{
+
 				if (!WorldObjects.ContainsKey(id)) return;
 
 				if (id < NextId)
@@ -64,10 +63,10 @@ public static partial class WorldObjectManager
 		}
 #endif		
 				(Obj.TileLocation as WorldTile)?.Remove(id);
-	
-				WorldObjects.Remove(id);
-			});
-			return t;
+				lock (WoLock)
+				{
+					WorldObjects.Remove(id);
+				}
 		}
 
 
