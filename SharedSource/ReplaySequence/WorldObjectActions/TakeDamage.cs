@@ -21,7 +21,7 @@ public static partial class WorldObjectManager
 			return SequenceType.TakeDamage;
 		}
 
-		public override BatchingMode Batching => BatchingMode.Always;
+		public override BatchingMode Batching => BatchingMode.Sequential;
 		public int Dmg;
 		public int DetResistance;
 		public int EnvResistance;
@@ -32,6 +32,7 @@ public static partial class WorldObjectManager
 		public static TakeDamage Make(int dmg, int detResistance, int envRes, Vector2Int position, List<string> ignores)
 		{
 			var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
+			t.ObjID = -1;
 			t.Dmg = dmg;
 			t.EnvResistance = envRes;
 			t.DetResistance = detResistance;
@@ -51,6 +52,7 @@ public static partial class WorldObjectManager
 			if (envRes != -999)
 				t.EnvResistance = envRes;
 			t.ObjID = objID;
+			t.Position = new Vector2Int(-1, -1);
 			return t;
 		}
 
@@ -98,14 +100,12 @@ public static partial class WorldObjectManager
 		{
 
 				var dmg = Dmg;
+				
 				var obj = GetTargetObject();
-				if (obj == null) return;
-				if (Dmg < 0)
-				{
-					return;
-				}
-
-				Console.WriteLine(this + " got hit " + obj.TileLocation.Position);
+				if (obj == null) throw new Exception("object not found for damage");
+	
+				Console.WriteLine(obj + " got hit " + obj.TileLocation.Position);
+				
 				if (obj.UnitComponent != null)
 				{
 					var unit = obj.UnitComponent;
@@ -156,6 +156,8 @@ public static partial class WorldObjectManager
 			new PopUpText("Damage: " + dmgNoResist, obj.TileLocation.Position, Color.Gray, 0.4f);
 #endif
 					obj.Health -= dmgNoResist;
+					Console.WriteLine("object hit for: " + dmgNoResist);
+					Console.WriteLine("outcome: health=" + obj.Health);
 			
 				}
 
@@ -164,7 +166,7 @@ public static partial class WorldObjectManager
 				{
 					obj.LifeTime -= dmg;
 				}
-				if (obj.Health <= 0 || obj.LifeTime <= 0)
+				if (obj.Health <= 0 || (obj.LifeTime <= 0 && obj.LifeTime != -100))
 				{
 					Destroy(obj);
 				}
@@ -177,6 +179,7 @@ public static partial class WorldObjectManager
 		{
 			message.Add(Dmg);
 			message.Add(DetResistance);
+			message.Add(EnvResistance);
 			message.Add(ObjID);
 			message.Add(Position);
 		}
@@ -185,6 +188,7 @@ public static partial class WorldObjectManager
 		{
 			Dmg = args.GetInt();
 			DetResistance = args.GetInt();
+			EnvResistance = args.GetInt();
 			ObjID = args.GetInt();
 			Position = args.GetSerializable<Vector2Int>();
 		}
@@ -245,7 +249,9 @@ public static partial class WorldObjectManager
 	}
 #endif
 
-
-
+		public override string ToString()
+		{
+			return "TakeDamage: " + Dmg + " to " + ObjID +" at "+Position;
+		}
 	}
 }

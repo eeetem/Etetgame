@@ -54,7 +54,7 @@
 
     <ItemGroup>
       <Compile Include="..\MasterServer\MasterServerData\NetMsgIds.cs">
-        <Link>ServerSource\NetMsgIds.cs</Link>
+        <Link>ServerSource\Networking\NetMsgIds.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\AI\AI.cs">
         <Link>SharedSource\AI\AI.cs</Link>

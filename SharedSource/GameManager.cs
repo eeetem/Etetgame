@@ -289,7 +289,8 @@ public static partial class GameManager
 		
 		foreach (var id in ids)
 		{
-			units.Add(PseudoWorldManager.GetObject(id,dimension).UnitComponent);
+			var unitComponent = PseudoWorldManager.GetObject(id, dimension)?.UnitComponent;
+			if (unitComponent != null) units.Add(unitComponent);
 		}
 
 		return units;

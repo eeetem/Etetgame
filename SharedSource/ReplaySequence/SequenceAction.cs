@@ -166,6 +166,7 @@ public abstract class SequenceAction :  IMessageSerializable
 	{
 		Never,
 		OnlySameType,
+		Sequential,
 		Always
 	}
 	public virtual BatchingMode Batching => BatchingMode.Never;
@@ -189,6 +190,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			if(ran) throw new Exception("SequenceAction was run twice");
 			ran = true;
+			Console.WriteLine("Running task of sequence action: "+this);
 			RunSequenceAction();
 			Return();
 		});

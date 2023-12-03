@@ -26,8 +26,9 @@ public class MoveCamera : SequenceAction
 		return true;
 	}
 #endif
-	
 
+
+	public override BatchingMode Batching => BatchingMode.Always;
 
 	public override SequenceType GetSequenceType()
 	{

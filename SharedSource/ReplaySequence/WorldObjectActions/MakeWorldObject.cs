@@ -21,7 +21,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override BatchingMode Batching => BatchingMode.Always;
+		public override BatchingMode Batching => BatchingMode.Sequential;
 		
 		Vector2Int position;
 		public WorldObject.WorldObjectData data;
@@ -49,6 +49,7 @@ public static partial class WorldObjectManager
 		protected override void RunSequenceAction()
 		{
 
+			Console.WriteLine("Making world object: " + data.ID);
 				if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
 					DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
@@ -76,10 +77,9 @@ public static partial class WorldObjectManager
 					{
 						WorldObjects.Add(wo.ID,wo);
 					}
-
 					
 				}
-				
+				WorldManager.Instance.MakeFovDirty();
 
 		}
 

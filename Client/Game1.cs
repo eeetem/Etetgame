@@ -5,6 +5,7 @@ using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.PostProcessing;
 using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
@@ -34,11 +35,11 @@ public class Game1 : Game
 		GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
 
 		Window.AllowUserResizing = false;
-		FileStream filestream = new FileStream("out"+DateTime.Now.ToFileTime()+".txt", FileMode.Create);
-		var streamwriter = new StreamWriter(filestream);
-		streamwriter.AutoFlush = true;
-		Console.SetOut(streamwriter);
-		Console.SetError(streamwriter);
+		//FileStream filestream = new FileStream("out"+DateTime.Now.ToFileTime()+".txt", FileMode.Create);
+		//var streamwriter = new StreamWriter(filestream);
+		//streamwriter.AutoFlush = true;
+		//Console.SetOut(streamwriter);
+		//Console.SetError(streamwriter);
 
 	}
 
@@ -60,7 +61,7 @@ public class Game1 : Game
 		RenderSystem.Init(GraphicsDevice);
 		Utility.Init();
 		WorldManager.Instance.Init();
-
+		
 		
 
 		base.Initialize();
@@ -81,6 +82,8 @@ public class Game1 : Game
 		TextureManager.Init(Content);
 		UI.Init(GraphicsDevice);
 		UiLayout.Init(GraphicsDevice);
+		GameLayout.Init();
+
 		UI.SetUI(new MainMenuLayout());
 		Audio.Init(Content);
 		

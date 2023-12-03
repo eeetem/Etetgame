@@ -1,6 +1,6 @@
-﻿namespace DefconNull;
+﻿namespace DefconNull.Networking;
 
-public class NetMsgIds
+public static partial class NetworkingManager
 {
 	public enum NetworkMessageID : ushort
 	{
@@ -32,4 +32,12 @@ public class NetMsgIds
 		DoAI = 22,
 		MapReaload = 23,
 	}
+
+	public enum ReplaySequenceTarget : ushort
+	{
+		Player1 = 0,
+		Player2 = 1,
+		All =2,
+	}
+
 }
