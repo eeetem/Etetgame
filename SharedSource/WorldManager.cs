@@ -91,32 +91,9 @@ public  partial class WorldManager
 		LoadTileObject(data.Surface,tile.Surface, tile);
 		LoadTileObject(data.NorthEdge,tile.NorthEdge, tile);
 		LoadTileObject(data.WestEdge,tile.WestEdge, tile);
+		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)));
+		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)));
 		LoadTileObject(data.UnitAtLocation,tile.UnitAtLocation?.WorldObject, tile);
-
-		
-		//if (data.EastEdge.HasValue )
-		//{
-		//	if(tile.EastEdge is null || tile.EastEdge.GetHash() != data.EastEdge.Value.GetHash())
-		//	{
-		//		SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.EastEdge.Value, GetTileAtGrid(data.position + new Vector2Int(1, 0))));
-		//	}
-		//}
-		//else if (tile.EastEdge != null && data.forceRebuild)
-		//{
-		//	SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.EastEdge.ID));
-		//}
-//
-		//if (data.SouthEdge.HasValue )
-		//{
-		//	if(tile.SouthEdge is null || tile.SouthEdge.GetHash() != data.SouthEdge.Value.GetHash())
-		//	{
-		//		SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.SouthEdge.Value, GetTileAtGrid(data.position + new Vector2Int(0, 1))));
-		//	}
-		//}
-		//else if (tile.SouthEdge != null && data.forceRebuild)
-		//{
-		//	SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tile.SouthEdge.ID));
-		//}
 
 
 

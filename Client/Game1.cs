@@ -151,7 +151,7 @@ public class Game1 : Game
 	{
 		GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 
-		GraphicsDevice.Clear(Color.Gray);
+		GraphicsDevice.Clear(Color.Black);
 			
 		RenderSystem.Draw(spriteBatch);
 		UI.Render(gameTime.ElapsedGameTime.Milliseconds,spriteBatch);//potentially move this into the render system!	Long live Forg!
