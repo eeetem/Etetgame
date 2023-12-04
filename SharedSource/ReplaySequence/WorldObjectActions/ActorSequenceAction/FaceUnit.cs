@@ -22,16 +22,14 @@ public class FaceUnit : UnitSequenceAction
 		return SequenceType.Face;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			if(Actor.WorldObject.TileLocation.Position == target) return;
 			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, target);
 			Actor.canTurn = false;
 			Actor.WorldObject.Face(targetDir);
-		});
-		return t;
+
 
 	}
 	

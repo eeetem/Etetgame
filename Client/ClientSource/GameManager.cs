@@ -62,7 +62,11 @@ public static partial class GameManager
 		intated = true;
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
 		WorldManager.Instance.MakeFovDirty();
-		UI.SetUI(new GameLayout());
+		Task.Run(delegate
+		{
+			UI.SetUI(new GameLayout());
+		});
+		
 	}
 
 
@@ -128,16 +132,17 @@ public static partial class GameManager
 				Task.Run(delegate
 				{
 					var mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
+					UI.SetUI(new SquadCompBuilderLayout());
 					do
 					{
 						mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
 						Thread.Sleep(1000);
 
 					} while (mySpawnPoints.Count == 0);
-					UI.SetUI(new SquadCompBuilderLayout());
+					//UI.SetUI(new SquadCompBuilderLayout());
 
 				});
-		
+
 				break;
 			case GameState.Playing:
 				StartGame();

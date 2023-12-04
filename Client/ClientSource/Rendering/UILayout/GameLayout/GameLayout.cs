@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
@@ -54,14 +55,15 @@ public class GameLayout : MenuLayout
 
 		SelectedUnit = controllable;
 		ReMakeMovePreview();
-		UI.SetUI( new GameLayout());
+	
+			UI.SetUI( new GameLayout());
+		
 		Camera.SetPos(controllable.WorldObject.TileLocation.Position);
 	}
 
 	public static readonly int[,,] AIMoveCache = new int[100,100,2];
 	public static void ReMakeMovePreview()
 	{
-		if(!inited) return;
 		if(SelectedUnit == null) return;
 		PreviewMoves = SelectedUnit.GetPossibleMoveLocations();
 		UpdateHudButtons();
@@ -76,13 +78,9 @@ public class GameLayout : MenuLayout
 	private static Dictionary<Unit, RenderTarget2D> unitBarRenderTargets;
 	private static Dictionary<WorldObject, RenderTarget2D>?targetBarRenderTargets;
 		
-	private static bool inited = false;
 
 	public static void Init()
 	{
-		if (inited) return;
-		inited = true;
-	
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,100);
 		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("HoverHud/consequenceFrame").Width,200);
 	
@@ -346,7 +344,7 @@ public class GameLayout : MenuLayout
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		Init();
+
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
 		if (GameManager.spectating || GameManager.PreGameData.SinglePLayerFeatures)
@@ -559,7 +557,7 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(OverWatchToggle);
 		
-		foreach (var unit in MyUnits)
+		foreach (var unit in new List<Unit>(MyUnits))
 		{
 			var unitPanel = new ImageButton();
 
@@ -689,8 +687,8 @@ public class GameLayout : MenuLayout
 		Controllables.Add(c);
 		if (c.IsMyTeam())
 		{
-			if(SelectedUnit == null) SelectUnit(c);
 			MyUnits.Add(c);
+			if(SelectedUnit == null) SelectUnit(c);
 		}
 		else
 		{
@@ -1721,6 +1719,7 @@ public class GameLayout : MenuLayout
 
 	private static void UpdateHudButtons()
 	{
+		if(ConfirmButton is null) return;
 		foreach (var act in ActionButtons)
 		{
 			act.UpdateIcon();
@@ -1729,7 +1728,7 @@ public class GameLayout : MenuLayout
 		switch (activeAction)
 		{
 			case ActiveActionType.None:
-				ConfirmButton!.Visible = false;
+				ConfirmButton.Visible = false;
 				targetBarStack!.Visible = false;
 				OverWatchToggle.Visible = false;
 				return;
@@ -1793,7 +1792,6 @@ public class GameLayout : MenuLayout
 
 	public static void SelectHudAction(HudActionButton? hudActionButton)
 	{
-		if (!inited) return;
 		HudActionButton.SelectedButton = hudActionButton;
 		activeAction = ActiveActionType.Action;
 		if (hudActionButton == null)

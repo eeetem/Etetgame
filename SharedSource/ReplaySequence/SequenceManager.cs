@@ -44,14 +44,36 @@ public class SequenceManager
 					CurrentSequenceTasks.Add(act.GenerateTask());
 					CurrentSequenceTasks.Last().Start();
 
-
-
-
-					//batch tile updates and other things
 					int i = 0;
+					//do sequential tasks in queue
 					while (true)
 					{
-						if (SequenceQueue.Count == 0)
+						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
+						{
+							break;
+						}
+						var peeked = SequenceQueue.Peek();
+						if (peeked.Batching != SequenceAction.BatchingMode.Sequential || !peeked.ShouldDo())
+						{
+							break;
+						}
+
+						CurrentSequenceTasks.Last().Wait(300);
+						if(CurrentSequenceTasks.Last().Status != TaskStatus.RanToCompletion)
+						{
+							break;//most likely cause by the task waiting for UI Thread
+						}
+						
+						Console.WriteLine($"sequnceing a  task: {i}{peeked.GetSequenceType()}");
+						i++;
+						StartNextTask();
+					}
+					//then do parralel tasks in queue
+					//batch tile updates and other things
+					
+					while (true)
+					{
+						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
 						{
 							break;
 						}
@@ -67,22 +89,23 @@ public class SequenceManager
 								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
 								break;
 							case SequenceAction.BatchingMode.Never:
+							case SequenceAction.BatchingMode.Sequential:
 								shouldBatch = false;
 								break;
 							default:
 								throw new ArgumentOutOfRangeException();
 						}
-						if(!shouldBatch) break;
-						act = SequenceQueue.Dequeue();
-						//Console.WriteLine($"batching sequnce task: {i}{act.GetSequenceType()}");
+						if(!shouldBatch || !peeked.ShouldDo()) break;
+						
+						Console.WriteLine($"batching sequnce task: {i}{peeked.GetSequenceType()}");
 						i++;
-						CurrentSequenceTasks.Add(act.GenerateTask());
-						CurrentSequenceTasks.Last().Start();
+						StartNextTask();
+
 					}
 
 				}
 			}
-			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running))
+			else if (CurrentSequenceTasks.TrueForAll((t) => (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun)))
 			{
 				foreach (var t in CurrentSequenceTasks)
 				{
@@ -98,7 +121,8 @@ public class SequenceManager
 					}
 					else
 					{
-						Console.WriteLine("undefined sequence task state");
+						Console.WriteLine("undefined sequence task state: "+t.Status);
+						throw new Exception("undefined sequence task state: "+t.Status);
 					}
 
 				}
@@ -117,6 +141,12 @@ public class SequenceManager
 		SequenceRunningRightNow = false;
 	}
 
+	private static void StartNextTask()
+	{
+		var act = SequenceQueue.Dequeue();
+		CurrentSequenceTasks.Add(act.GenerateTask());
+		CurrentSequenceTasks.Last().Start();
+	}
 
 	public static void AddSequence(SequenceAction action)
 	{
@@ -124,6 +154,7 @@ public class SequenceManager
 
 		lock (lockObj)
 		{
+			Console.WriteLine("adding sequnce task: " + action.GetSequenceType());
 			SequenceQueue.Enqueue(action);
 		}
 	

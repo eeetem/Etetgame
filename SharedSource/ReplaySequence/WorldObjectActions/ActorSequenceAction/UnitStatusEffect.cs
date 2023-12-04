@@ -27,10 +27,9 @@ public class UnitStatusEffect  : UnitSequenceAction
 		return t;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			if (addNotRemove)
 			{
 				Actor.ApplyStatus(effectName, duration);
@@ -39,8 +38,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 			{
 				Actor.RemoveStatus(effectName);
 			}
-		});
-		return t;
+
 	}
 	
 	protected override void SerializeArgs(Message message)

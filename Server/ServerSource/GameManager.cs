@@ -1,4 +1,5 @@
 ﻿using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 
@@ -43,24 +44,54 @@ public static partial class GameManager
 		
 
 		int i = 0;
-
+	//debug
+	var newComp = new List<SquadMember>();
+		for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
+		{
+			var sq = new SquadMember();
+			sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[j];
+			Vector2Int pos = new Vector2Int(0, 0);
+			do
+			{
+				pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
+			}while(newComp.Find((s) => s.Position == pos) != null);
+			sq.Position = pos;
+			newComp.Add(sq);
+		}
+		for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount-PrefabManager.UnitPrefabs.Keys.Count; j++)
+		{
+			var sq = new SquadMember();
+			sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[Random.Shared.Next(PrefabManager.UnitPrefabs.Count)];
+			Vector2Int pos = new Vector2Int(0, 0);
+			do
+			{
+				pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
+			}while(newComp.Find((s) => s.Position == pos) != null);
+			sq.Position = pos;
+			newComp.Add(sq);
+		}
+		Player1.SetSquadComp(newComp);
+		
+		
 		foreach (var spawn in Player1!.SquadComp!)
 		{
 			Unit.UnitData cdata = new Unit.UnitData(true);
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
-			//	int id = WorldManager.Instance.GetNextId();
-				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-			//	T1Units.Add(id);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				SequenceManager.AddSequence(objMake);
+				NetworkingManager.SendSequence(objMake,true);
+				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}
 		}
 
-		var newComcp = new List<SquadMember>();
+		
 		if (Player2!.IsAI)
 		{
+			var newComcp = new List<SquadMember>();
 			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
 			{
 				var sq = new SquadMember();
@@ -95,9 +126,10 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
-				//int id = WorldManager.Instance.GetNextId();
-				//SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, id, unitData: cdata);
-			//	T2Units.Add(id);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				SequenceManager.AddSequence(objMake);
+				NetworkingManager.SendSequence(objMake,true);
+				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}

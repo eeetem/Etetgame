@@ -33,13 +33,12 @@ public class UnitMove : UnitSequenceAction
 		return Actor != null && !Actor.Paniced;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
 #if CLIENT
 		//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
 #endif
-		var t = new Task(delegate
-		{
+		
 			//	int tick = 0;
 			
 			while (Path.Count >0)
@@ -90,9 +89,7 @@ public class UnitMove : UnitSequenceAction
 
 			Actor.canTurn = true;
 
-		});
 
-		return t;
 	}
 	
 

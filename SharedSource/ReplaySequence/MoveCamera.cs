@@ -26,8 +26,9 @@ public class MoveCamera : SequenceAction
 		return true;
 	}
 #endif
-	
 
+
+	public override BatchingMode Batching => BatchingMode.Always;
 
 	public override SequenceType GetSequenceType()
 	{
@@ -36,10 +37,9 @@ public class MoveCamera : SequenceAction
 
 	
 	//todo serverside scattering
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+
 #if CLIENT
 			if (WorldManager.Instance.GetTileAtGrid(location).GetVisibility()==Visibility.None)
 			{
@@ -59,8 +59,7 @@ public class MoveCamera : SequenceAction
 			}
 #endif
 			
-		});
-		return t;
+
 	}
 
 	protected override void SerializeArgs(Message message)

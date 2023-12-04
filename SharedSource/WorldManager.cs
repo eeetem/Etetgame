@@ -84,27 +84,24 @@ public  partial class WorldManager
 
 	public void LoadWorldTile(WorldTile.WorldTileData data)
 	{
-			Console.WriteLine("Loading tile at " + data.position);
+		Console.WriteLine("Loading tile at " + data.position);
 
 		WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
-		tile.Wipe();
-		if (data.Surface.HasValue)
-		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Surface.Value, tile));
-		}
-		if (data.NorthEdge.HasValue)
-		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.NorthEdge.Value, tile));
-		}
-		if (data.WestEdge.HasValue)
-		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.WestEdge.Value, tile));
-		}
-		if (data.UnitAtLocation.HasValue)
-		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.UnitAtLocation.Value, tile));
-		}
+		
+		LoadTileObject(data.Surface,tile.Surface, tile);
+		LoadTileObject(data.NorthEdge,tile.NorthEdge, tile);
+		LoadTileObject(data.WestEdge,tile.WestEdge, tile);
+		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)));
+		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)));
+		LoadTileObject(data.UnitAtLocation,tile.UnitAtLocation?.WorldObject, tile);
 
+
+
+		foreach (var obj in tile.ObjectsAtLocation)
+		{
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
+		}
+	
 		foreach (var obj in data.ObjectsAtLocation)
 		{
 			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(obj, tile));
@@ -113,7 +110,30 @@ public  partial class WorldManager
 
 
 	}
-		
+
+	private static void LoadTileObject(WorldObject.WorldObjectData? data, WorldObject? tileObject, WorldTile tile)
+	{
+		if (data.HasValue)
+		{
+			if (tileObject is null)
+			{
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
+			}
+			else if (tileObject.ID != data.Value.ID)
+			{
+				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tileObject.ID));
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
+			}
+			else if (tileObject.GetHash() != data.Value.GetHash())
+			{
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile)); //if id is same we dont need to delete
+			}
+		}
+		else if (tileObject is not null)
+		{
+			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tileObject.ID));
+		}
+	}
 
 
 	private readonly List<Tuple<WorldObject.WorldObjectData, WorldTile>> _createdObjects = new List<Tuple<WorldObject.WorldObjectData, WorldTile>>();
@@ -181,10 +201,12 @@ public  partial class WorldManager
 		});
 		
 #if SERVER
-		foreach (var tile in _gridData)
-		{
-			NetworkingManager.SendTileUpdate(tile);
-		}
+	
+			foreach (var tile in _gridData)
+			{
+				NetworkingManager.SendTileUpdate(tile);
+			}
+		
 #endif
 		
 	}
@@ -938,7 +960,16 @@ public  partial class WorldManager
 		{
 			CalculateFov();
 		}
-
+#if CLIENT
+		if(!SequenceManager.SequenceRunning && NetworkingManager.recivedTiles.Count>0){
+			foreach (var tile in new List<WorldTile.WorldTileData>(NetworkingManager.recivedTiles.Values))
+			{
+				LoadWorldTile(tile);
+			}
+			NetworkingManager.recivedTiles.Clear();
+		}
+#endif
+		
 
 	}
 

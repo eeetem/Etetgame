@@ -23,10 +23,9 @@ public class UnitOverWatch : UnitSequenceAction
 		return SequenceType.Overwatch;
 	}
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
 			Actor.Overwatch = new  Tuple<bool, int>(true,abilityIndex);
@@ -38,8 +37,7 @@ public class UnitOverWatch : UnitSequenceAction
 			}
 			Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
 
-		});
-		return t;
+
 	}
 
 	protected override void SerializeArgs(Message message)

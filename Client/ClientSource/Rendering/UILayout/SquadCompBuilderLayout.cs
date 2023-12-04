@@ -35,7 +35,7 @@ public class SquadCompBuilderLayout : UiLayout
 			_otherSpawnPoints = GameManager.T2SpawnPoints;
 		}
 
-		Camera.SetPos(_mySpawnPoints[0]);
+		//Camera.SetPos(_mySpawnPoints[0]);
 		freeslots = new Label()
 		{
 			Text = "Free Units: "+(WorldManager.Instance.CurrentMap.unitCount-MyComposition.Count),

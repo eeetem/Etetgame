@@ -17,7 +17,7 @@ public static class UI
 	{
 		graphicsDevice = graphicsdevice;
 		MyraEnvironment.Game = Game1.instance;
-	//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+		//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
 
 		Desktop = new Desktop();
@@ -37,29 +37,32 @@ public static class UI
 	private static Widget root = null!;
 	public static void SetUI(UiLayout? newUI)
 	{
-
-		UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
-			
-		
-		if (newUI != null)
+		lock (currentUi)
 		{
 			
-			if (currentUi.GetType() != newUI.GetType())
+		
+			UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
+			
+		
+			if (newUI != null)
 			{
-				lastDifferentUI = currentUi;
-				root = newUI.Generate(Desktop, lastDifferentUI);
-				currentUi = newUI;
+			
+				if (currentUi.GetType() != newUI.GetType())
+				{
+					lastDifferentUI = currentUi;
+					root = newUI.Generate(Desktop, lastDifferentUI);
+					currentUi = newUI;
+				}
+				else
+				{
+					root = currentUi.Generate(Desktop,lastDifferentUI);
+				}
 			}
 			else
 			{
-				root = currentUi.Generate(Desktop,lastDifferentUI);
+				root = currentUi.Generate(Desktop, lastDifferentUI);
 			}
 		}
-		else
-		{
-			root = currentUi.Generate(Desktop, lastDifferentUI);
-		}
-
 		Console.WriteLine("Changing UI to: "+currentUi);
 	}
 	private static MouseState lastMouseState;

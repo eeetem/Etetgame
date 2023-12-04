@@ -105,8 +105,7 @@ public class WorldConseqences
 
 				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.WestEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.WestEdge!);
-
-
+				
 
 			}
 

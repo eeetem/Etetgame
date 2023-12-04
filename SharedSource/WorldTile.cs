@@ -381,10 +381,12 @@ public partial class WorldTile : IWorldTile
 		}
 	}
 	[Serializable]
-	public struct WorldTileData : IMessageSerializable
-	{
+	public struct WorldTileData : IMessageSerializable{
+	
 		public WorldObject.WorldObjectData? NorthEdge;
 		public WorldObject.WorldObjectData? WestEdge;
+		public WorldObject.WorldObjectData? EastEdge;
+		public WorldObject.WorldObjectData? SouthEdge;
 		public WorldObject.WorldObjectData? Surface;
 		public WorldObject.WorldObjectData? UnitAtLocation;
 		public Vector2Int position;
@@ -398,13 +400,13 @@ public partial class WorldTile : IWorldTile
 			UnitAtLocation = null;
 			ObjectsAtLocation = new List<WorldObject.WorldObjectData>();
 		}
+		
 
 		public void Serialize(Message message)
 		{
 			
 			//cast to non-nullables before serialising
 			message.AddSerializable(position);
-			
 			bool b = NorthEdge != null;
 			message.AddBool(b);
 			if (b) 	message.AddSerializable(NorthEdge!.Value);
@@ -412,6 +414,14 @@ public partial class WorldTile : IWorldTile
 			b = WestEdge != null;
 			message.AddBool(b);
 			if (b) 	message.AddSerializable(WestEdge!.Value);
+			
+			b = EastEdge != null;
+			message.AddBool(b);
+			if (b) 	message.AddSerializable(EastEdge!.Value);
+			
+			b = SouthEdge != null;
+			message.AddBool(b);
+			if (b) 	message.AddSerializable(SouthEdge!.Value);
 			
 			b = Surface != null;
 			message.AddBool(b);
@@ -431,39 +441,25 @@ public partial class WorldTile : IWorldTile
 		{
 			
 			position = message.GetSerializable<Vector2Int>();
-			if (message.GetBool())
-			{
-				NorthEdge = message.GetSerializable<WorldObject.WorldObjectData>();
-			}
-			else
-			{
-				NorthEdge = null;
-			}
-			if (message.GetBool())
-			{
-				WestEdge = message.GetSerializable<WorldObject.WorldObjectData>();
-			}
-			else
-			{
-				WestEdge = null;
-			}
 			
-			if (message.GetBool())
-			{
-				Surface = message.GetSerializable<WorldObject.WorldObjectData>();
-			}
-			else
-			{
-				Surface = null;
-			}
-			if (message.GetBool())
-			{
-				UnitAtLocation = message.GetSerializable<WorldObject.WorldObjectData>();
-			}
-			else
-			{
-				UnitAtLocation = null;
-			}
+			if (message.GetBool()) NorthEdge = message.GetSerializable<WorldObject.WorldObjectData>();
+			else NorthEdge = null;
+			
+			if (message.GetBool()) WestEdge = message.GetSerializable<WorldObject.WorldObjectData>();
+			else WestEdge = null;
+			
+			if (message.GetBool()) EastEdge = message.GetSerializable<WorldObject.WorldObjectData>();
+			else EastEdge = null;
+			
+			if (message.GetBool()) SouthEdge = message.GetSerializable<WorldObject.WorldObjectData>();
+			else SouthEdge = null;
+
+			if (message.GetBool()) Surface = message.GetSerializable<WorldObject.WorldObjectData>();
+			else Surface = null;
+			
+			if (message.GetBool()) UnitAtLocation = message.GetSerializable<WorldObject.WorldObjectData>();
+			else UnitAtLocation = null;
+			
 
 			ObjectsAtLocation = message.GetSerializables<WorldObject.WorldObjectData>().ToList();
 		}
@@ -482,6 +478,14 @@ public partial class WorldTile : IWorldTile
 		if (WestEdge != null)
 		{
 			data.WestEdge = WestEdge.GetData(forceJustSpawned);
+		}
+		if (EastEdge != null)
+		{
+			data.EastEdge = EastEdge.GetData(forceJustSpawned);
+		}
+		if (SouthEdge != null)
+		{
+			data.SouthEdge = SouthEdge.GetData(forceJustSpawned);
 		}
 		if (UnitAtLocation != null)
 		{

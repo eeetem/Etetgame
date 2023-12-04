@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 using DefconNull.WorldObjects;
 using Riptide;
@@ -25,7 +26,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override BatchingMode Batching => BatchingMode.OnlySameType;
+		public override BatchingMode Batching => BatchingMode.Sequential;
 
 		private int id;
 		public static DeleteWorldObject Make(int id)
@@ -42,10 +43,9 @@ public static partial class WorldObjectManager
 			return t;
 		}
 
-		protected override Task GenerateSpecificTask()
+		protected override void RunSequenceAction()
 		{
-			var t = new Task(delegate
-			{
+			Console.WriteLine("Deleting world object: " + id);
 				if (!WorldObjects.ContainsKey(id)) return;
 
 				if (id < NextId)
@@ -63,11 +63,12 @@ public static partial class WorldObjectManager
 			GameLayout.UnRegisterUnit(Obj.UnitComponent);
 		}
 #endif		
-				(Obj.TileLocation as WorldTile)?.Remove(id);
-	
-				WorldObjects.Remove(id);
-			});
-			return t;
+				WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
+				tile.Remove(id);
+				lock (WoLock)
+				{
+					WorldObjects.Remove(id);
+				}
 		}
 
 

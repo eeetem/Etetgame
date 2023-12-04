@@ -293,7 +293,7 @@
         <Link>ClientSource\MasterServerData\LobbyData.cs</Link>
       </Compile>
       <Compile Include="..\MasterServer\MasterServerData\NetMsgIds.cs">
-        <Link>ClientSource\MasterServerData\NetMsgIds.cs</Link>
+        <Link>ClientSource\Networking\NetMsgIds.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\AI\AI.cs">
         <Link>SharedSource\AI\AI.cs</Link>

@@ -96,7 +96,7 @@ public static partial class NetworkingManager
 		};
 		client.MessageReceived += (a, b) =>
 		{
-			Console.WriteLine("Recived Message: " + (NetMsgIds.NetworkMessageID)b.MessageId);
+			Console.WriteLine("Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
 
@@ -107,7 +107,7 @@ public static partial class NetworkingManager
 	}
 	public static void SendStartGame(bool singleplayer = false)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.StartGame);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.StartGame);
 		msg.AddBool(singleplayer);
 		client?.Send(msg);
 	}
@@ -148,27 +148,27 @@ public static partial class NetworkingManager
 
 	public static void ChatMSG(string message)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Chat);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Chat);
 		msg.AddString(message);
 		client?.Send(msg);
 	}
 
 	public static void EndTurn()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.EndTurn);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.EndTurn);
 		client?.Send(msg);
 	}
 
 	public static void SendSquadComp(List<SquadMember> composition)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.SquadComp);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SquadComp);
 		msg.Add(false);
 		msg.AddSerializables(composition.ToArray());
 		client?.Send(msg);
 	}
 	public static void SendDualSquadComp(List<SquadMember> composition1,List<SquadMember> composition2)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.SquadComp);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SquadComp);
 		msg.Add(true);
 		msg.AddSerializables(composition1.ToArray());
 		msg.AddSerializables(composition2.ToArray());
@@ -177,7 +177,7 @@ public static partial class NetworkingManager
 		
 	public static void SendPreGameUpdate()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.PreGameData);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);
 		msg.AddSerializable(GameManager.PreGameData);
 		client?.Send(msg);
 	}
@@ -185,14 +185,14 @@ public static partial class NetworkingManager
 
 	public static void KickRequest()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.Kick);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Kick);
 		client?.Send(msg);
 	}
 
 
 	public static void SendGameAction(Action.GameActionPacket act)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.GameAction);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameAction);
 		msg.AddSerializable(act);
 		client?.Send(msg);
 	}
@@ -200,19 +200,19 @@ public static partial class NetworkingManager
 
 	public static void PracticeMode()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.PracticeMode);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PracticeMode);
 		client?.Send(msg);
 	}
 
 	public static void AddAI()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.AddAI);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.AddAI);
 		client?.Send(msg);
 	}
 
 	public static void SendAITurn()
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetMsgIds.NetworkMessageID.DoAI);
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.DoAI);
 		client?.Send(msg);
 	}
 }

@@ -55,13 +55,11 @@ public class Suppress : UnitSequenceAction
 	}
 
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 			Actor.Suppress(DetDmg);
-		});
-		return t;
+
 	}
 	
 #if CLIENT
@@ -70,6 +68,7 @@ public class Suppress : UnitSequenceAction
 		if (Requirements.Position != new Vector2Int(-1, -1))
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
+			if(t.Surface is null)return;
 			Texture2D sprite = t.Surface.GetTexture();
 			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
 			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Blue, 0.5f);

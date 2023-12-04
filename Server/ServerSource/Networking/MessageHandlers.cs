@@ -8,20 +8,20 @@ namespace DefconNull.Networking;
 public static partial class NetworkingManager
 {
 
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapReaload)]
+	[MessageHandler((ushort) NetworkMessageID.MapReaload)]
 	private static void ResendMap(ushort senderID, Message message)
 	{
 		NetworkingManager.SendMapData(senderID);
 	}
 
 	
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.DoAI)]
+	[MessageHandler((ushort) NetworkMessageID.DoAI)]
 	private static void AiFinish(ushort senderID, Message message)
 	{
 		GameManager.FinishTurnWithAI();
 	}
 
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Kick)]
+	[MessageHandler((ushort)NetworkMessageID.Kick)]
 	private static void KickRequest(ushort senderID, Message message)
 	{
 		if (senderID != GameManager.Player1?.Connection?.Id)return;
@@ -35,7 +35,7 @@ public static partial class NetworkingManager
 
 		SendPreGameInfo();
 	}
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.EndTurn)]
+	[MessageHandler((ushort)NetworkMessageID.EndTurn)]
 	private static void HandleEndTurn(ushort senderID,Message message)
 	{
 		ClientInstance? currentPlayer;
@@ -58,13 +58,13 @@ public static partial class NetworkingManager
 		GameManager.SetEndTurn();
 	}
 		
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.StartGame)]
+	[MessageHandler((ushort)NetworkMessageID.StartGame)]
 	private static void StartGameHandler(ushort senderID,Message message)
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id || GameManager.GameState != GameState.Lobby) return;
 		GameManager.StartSetup();
 	}
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.SquadComp)]
+	[MessageHandler((ushort)NetworkMessageID.SquadComp)]
 	private static void ReciveSquadComp(ushort senderID,Message message)
 	{
 		
@@ -99,7 +99,7 @@ public static partial class NetworkingManager
 		}
 	}
 		
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.PreGameData)]
+	[MessageHandler((ushort)NetworkMessageID.PreGameData)]
 	private static void RecivePreGameUpdate(ushort senderID,Message message)
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
@@ -108,7 +108,7 @@ public static partial class NetworkingManager
 		GameManager.PreGameData.TurnTime = data.TurnTime;
 		SendPreGameInfo();
 	}
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.Chat)]
+	[MessageHandler((ushort)NetworkMessageID.Chat)]
 	private static void ReciveChatMsg(ushort senderID,Message message)
 	{
 		string text = message.GetString();
@@ -133,7 +133,7 @@ public static partial class NetworkingManager
 		SendChatMessage(text);
 	}
 
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapUpload)]
+	[MessageHandler((ushort) NetworkMessageID.MapUpload)]
 	private static void ReciveMapUpload(ushort senderID, Message message)
 	{
 		//var data = message.GetSerializable<WorldManager.MapData>();
@@ -143,14 +143,14 @@ public static partial class NetworkingManager
 	}
 
 	private static List<ushort> ClientsReadyForMap = new List<ushort>();
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.MapDataInitiateConfirm)]
+	[MessageHandler((ushort) NetworkMessageID.MapDataInitiateConfirm)]
 	private static void MapRecivedConfirm(ushort senderID, Message message)
 	{
 		Console.WriteLine("Recived map confirm from: " + senderID);
 		ClientsReadyForMap.Add(senderID);
 	}
 
-	[MessageHandler((ushort)NetMsgIds.NetworkMessageID.GameAction)]
+	[MessageHandler((ushort)NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
 		if (!GameManager.Player2!.IsPracticeOpponent)
@@ -209,7 +209,7 @@ public static partial class NetworkingManager
 	}
 	
 
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.AddAI)]
+	[MessageHandler((ushort) NetworkMessageID.AddAI)]
 	private static void AddAI(ushort senderID, Message message)
 	{
 		if(!SinglePlayerFeatures) return;
@@ -221,7 +221,7 @@ public static partial class NetworkingManager
 		SendPreGameInfo();
 	}
 
-	[MessageHandler((ushort) NetMsgIds.NetworkMessageID.PracticeMode)]
+	[MessageHandler((ushort) NetworkMessageID.PracticeMode)]
 	private static void PracticeMode(ushort senderID, Message message)
 	{
 		if(!SinglePlayerFeatures) return;

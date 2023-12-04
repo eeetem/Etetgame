@@ -21,10 +21,10 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override BatchingMode Batching => BatchingMode.OnlySameType;
+		public override BatchingMode Batching => BatchingMode.Sequential;
 		
 		Vector2Int position;
-		private WorldObject.WorldObjectData data;
+		public WorldObject.WorldObjectData data;
 		public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing, Unit.UnitData? unitData = null)
 		{
 			var data = new WorldObject.WorldObjectData(prefab);
@@ -37,7 +37,7 @@ public static partial class WorldObjectManager
 			t.position = Position;
 			return t;
 		}
-		public static SequenceAction Make(WorldObject.WorldObjectData data, WorldTile position)
+		public static MakeWorldObject Make(WorldObject.WorldObjectData data, WorldTile position)
 		{
 			var t = GetAction(SequenceType.MakeWorldObject) as MakeWorldObject;
 			t.data = data;
@@ -46,10 +46,10 @@ public static partial class WorldObjectManager
 		}
 
 
-		protected override Task GenerateSpecificTask()
+		protected override void RunSequenceAction()
 		{
-			var t = new Task(delegate
-			{
+
+			Console.WriteLine("Making world object: " + data.ID);
 				if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
 					DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
@@ -67,9 +67,20 @@ public static partial class WorldObjectManager
 				type.Place(wo, tile, data);
 
 				if(wo is null) throw new Exception("Created a null worldobject");
-				WorldObjects.Add(wo.ID,wo);
-			});
-			return t;
+				lock (WoLock)
+				{
+					if (!WorldObjects.ContainsKey(wo.ID))
+					{
+						WorldObjects[wo.ID] = wo;
+					}
+					else
+					{
+						WorldObjects.Add(wo.ID,wo);
+					}
+					
+				}
+				WorldManager.Instance.MakeFovDirty();
+
 		}
 
 

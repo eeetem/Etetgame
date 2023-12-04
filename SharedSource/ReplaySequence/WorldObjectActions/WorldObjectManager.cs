@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using DefconNull.Networking;
 using DefconNull.WorldObjects;
 
 #if CLIENT
@@ -19,13 +20,18 @@ public static partial class WorldObjectManager
 	{
 		if(obj.destroyed)return;
 		obj.destroyed = true;
-		
-		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
+
+		DeleteWorldObject.Make(obj.ID).GenerateTask().RunSynchronously();
+#if SERVER
 		if(obj.Type.DestructionConseqences != null)
 		{
-			SequenceManager.AddSequence(obj.Type.DestructionConseqences.GetApplyConsiqunces(obj));
+			var cons = obj.Type.DestructionConseqences.GetApplyConsiqunces(obj);
+			NetworkingManager.SendSequence(cons);
+			SequenceManager.AddSequence(cons);
 		}
 
+#endif
+	
 
 		Console.WriteLine("Destroyed "+obj.ID +" "+obj.Type.Name);
 
@@ -41,7 +47,7 @@ public static partial class WorldObjectManager
 	
 	private static readonly object IdAquireLock = new object();
 	private static int NextId;
-
+	private static readonly object WoLock = new object();
 	private static readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
 	private static int GetNextId()
 	{

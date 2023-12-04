@@ -33,13 +33,11 @@ public class UnitShoot : UnitSequenceAction
 	}
 
 
-	protected override Task GenerateSpecificTask()
+	protected override void RunSequenceAction()
 	{
-		var t = new Task(delegate
-		{
+		
 
-		});
-		return t;
+
 	}
 #if CLIENT
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)

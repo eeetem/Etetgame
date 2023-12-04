@@ -166,6 +166,7 @@ public abstract class SequenceAction :  IMessageSerializable
 	{
 		Never,
 		OnlySameType,
+		Sequential,
 		Always
 	}
 	public virtual BatchingMode Batching => BatchingMode.Never;
@@ -182,17 +183,20 @@ public abstract class SequenceAction :  IMessageSerializable
 		return true;
 	}
 
+	private bool ran = false;
 	public Task GenerateTask()
 	{
 		Task t = new Task(delegate
 		{
-			GenerateSpecificTask().RunSynchronously();
+			if(ran) throw new Exception("SequenceAction was run twice");
+			ran = true;
+			Console.WriteLine("Running task of sequence action: "+this);
+			RunSequenceAction();
 			Return();
 		});
 		return t;
-	
 	}
-	protected abstract Task GenerateSpecificTask();
+	protected abstract void RunSequenceAction();
 
 
 	protected abstract void SerializeArgs(Message message);	
@@ -227,6 +231,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		if(act == null) throw new Exception("SequenceAction pool is returned null");
 		if(msg != null) act.DeserializeArgs(msg);
 		act._active = true;
+		act.ran = false;
 		return act;
 		
 	}

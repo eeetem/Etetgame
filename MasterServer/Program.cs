@@ -91,16 +91,16 @@ public static class Program
 
 	private static void SendPlayerList(Connection connection)
 	{
-		var msg = Message.Create(MessageSendMode.Unreliable,  NetMsgIds.NetworkMessageID.PlayerList);
+		var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.NetworkMessageID.PlayerList);
 		msg.AddString(String.Join(";", Players.Keys));
 		server.Send(msg,connection);
 	}
 
-	[MessageHandler((ushort)  NetMsgIds.NetworkMessageID.Refresh)]
+	[MessageHandler((ushort)  NetworkingManager.NetworkMessageID.Refresh)]
 	private static void RefreshRequest(ushort senderID, Message message)
 	{
 		Console.WriteLine("RequestLobbies");
-		var msg = Message.Create(MessageSendMode.Reliable,  NetMsgIds.NetworkMessageID.LobbyList);
+		var msg = Message.Create(MessageSendMode.Reliable,  NetworkingManager.NetworkMessageID.LobbyList);
 		msg.Add(Lobbies.Count);
 		foreach (var lobby in Lobbies)
 		{
@@ -116,7 +116,7 @@ public static class Program
 	}
 
 
-	[MessageHandler((ushort)  NetMsgIds.NetworkMessageID.LobbyStart)]
+	[MessageHandler((ushort)  NetworkingManager.NetworkMessageID.LobbyStart)]
 	private static void StartLobby(ushort senderID,Message message)
 	{
 		Console.WriteLine("StartLobby Requested");
@@ -198,7 +198,7 @@ public static class Program
 				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
 				Thread.Sleep(1000);
 				
-				var msg = Message.Create(MessageSendMode.Unreliable,  NetMsgIds.NetworkMessageID.LobbyCreated);
+				var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.NetworkMessageID.LobbyCreated);
 				msg.Add(lobbyData);
 				server.Send(msg, senderID);
 
