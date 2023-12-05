@@ -18,7 +18,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		PlaySound = 100,
 		PostProcessingEffect =101,
 		TakeDamage = 102,
-		UpdateTile =103,
+	//	UpdateTile =103,
 		MakeWorldObject =104,
 		MoveCamera=105,
 		DeleteWorldObject=106,
@@ -31,7 +31,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		//UseItem = 5,
 		//SelectItem = 6,
 		Suppress = 7,
-		PlayAnimation =8,
+		//PlayAnimation =8,
 		Overwatch = 9,
 		UnitStatusEffect =10,
 		//	AbilityToggle = 11,
@@ -46,6 +46,11 @@ public abstract class SequenceAction :  IMessageSerializable
 	}
 
 	private readonly static Dictionary<SequenceType, FluentObjectPool<SequenceAction>> ActionPools = new();
+
+	public virtual Message? MakeTestingMessage()
+	{
+		return null;
+	}
 
 	public static SequenceType TypeToEnum(Type t)
 	{
@@ -89,10 +94,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.Suppress;
 		}
-		if (t == typeof(PlayAnimation))
-		{
-			return SequenceType.PlayAnimation;
-		}
+
 		if (t == typeof(UnitOverWatch))
 		{
 			return SequenceType.Overwatch;
@@ -143,8 +145,6 @@ public abstract class SequenceAction :  IMessageSerializable
 				return typeof(CrouchUnit);
 			case SequenceType.Suppress:
 				return typeof(Suppress);
-			case SequenceType.PlayAnimation:
-				return typeof(PlayAnimation);
 			case SequenceType.Overwatch:
 				return typeof(UnitOverWatch);
 			case SequenceType.UnitStatusEffect:
@@ -190,7 +190,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			if(ran) throw new Exception("SequenceAction was run twice");
 			ran = true;
-			Console.WriteLine("Running task of sequence action: "+this);
+			//Console.WriteLine("Running task of sequence action: "+this);
 			RunSequenceAction();
 			Return();
 		});
@@ -250,7 +250,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		
 		foreach (var subValidatorType in sub_validator_types)
 		{
-			if(TypeToEnum(subValidatorType) == SequenceType.UpdateTile) continue;//excluded from pooling
+		
 			if(TypeToEnum(subValidatorType) == SequenceType.Undefined) continue;//excluded from pooling
 			//ActionPools[TypeToEnum(subValidatorType)] = new ObjectPool<SequenceAction>(() => ((SequenceAction) Activator.CreateInstance(subValidatorType)!)!,8,ObjectPoolIsFullPolicy.IncreaseSize);
 			ActionPools[TypeToEnum(subValidatorType)] = new FluentObjectPool<SequenceAction>( () =>

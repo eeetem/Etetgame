@@ -20,6 +20,31 @@ public class PostProcessingEffect : SequenceAction
 		return true;
 	}
 #endif
+	protected bool Equals(PostProcessingEffect other)
+	{
+		return Parameter == other.Parameter && Target.Equals(other.Target) && Speed.Equals(other.Speed) && WipeQueue == other.WipeQueue && ReturnSpeed.Equals(other.ReturnSpeed);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((PostProcessingEffect) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = Parameter.GetHashCode();
+			hashCode = (hashCode * 397) ^ Target.GetHashCode();
+			hashCode = (hashCode * 397) ^ Speed.GetHashCode();
+			hashCode = (hashCode * 397) ^ WipeQueue.GetHashCode();
+			hashCode = (hashCode * 397) ^ ReturnSpeed.GetHashCode();
+			return hashCode;
+		}
+	}
 
 	public override BatchingMode Batching => BatchingMode.Always;
 	public string Parameter = "";

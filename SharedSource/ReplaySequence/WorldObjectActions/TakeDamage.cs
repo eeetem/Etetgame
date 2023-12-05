@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,33 @@ public static partial class WorldObjectManager
 
 	public class TakeDamage : SequenceAction
 	{
+		protected bool Equals(TakeDamage other)
+		{
+			return Dmg == other.Dmg && DetResistance == other.DetResistance && EnvResistance == other.EnvResistance && ObjID == other.ObjID && Position.Equals(other.Position) && Ignores.SequenceEqual(other.Ignores);
+		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((TakeDamage) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = Dmg;
+				hashCode = (hashCode * 397) ^ DetResistance;
+				hashCode = (hashCode * 397) ^ EnvResistance;
+				hashCode = (hashCode * 397) ^ ObjID;
+				hashCode = (hashCode * 397) ^ Position.GetHashCode();
+				hashCode = (hashCode * 397) ^ Ignores.GetHashCode();
+				return hashCode;
+			}
+		}
+
 		public override SequenceType GetSequenceType()
 		{
 			return SequenceType.TakeDamage;

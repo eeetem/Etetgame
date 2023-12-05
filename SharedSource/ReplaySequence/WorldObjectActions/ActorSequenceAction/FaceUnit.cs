@@ -8,6 +8,27 @@ public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int target;
 
+	protected bool Equals(FaceUnit other)
+	{
+		return base.Equals(other) && target.Equals(other.target);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((FaceUnit) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			return (base.GetHashCode() * 397) ^ target.GetHashCode();
+		}
+	}
+
 	public static FaceUnit Make(int actorID, Vector2Int target) 
 	{
 		FaceUnit t = (GetAction(SequenceType.Face) as FaceUnit)!;

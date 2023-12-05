@@ -19,6 +19,31 @@ public class VariableValue : IMessageSerializable
 		message.AddNullableString(value);
 	}
 
+	protected bool Equals(VariableValue other)
+	{
+		return value == other.value && var == other.var && varParam == other.varParam && _targetSelfNotOther == other._targetSelfNotOther;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((VariableValue) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = (value != null ? value.GetHashCode() : 0);
+			hashCode = (hashCode * 397) ^ (var != null ? var.GetHashCode() : 0);
+			hashCode = (hashCode * 397) ^ (varParam != null ? varParam.GetHashCode() : 0);
+			hashCode = (hashCode * 397) ^ _targetSelfNotOther.GetHashCode();
+			return hashCode;
+		}
+	}
+
 	public void Deserialize(Message message)
 	{
 		_targetSelfNotOther = message.GetBool();

@@ -10,6 +10,30 @@ public class UnitOverWatch : UnitSequenceAction
 	public Vector2Int Target;
 	public int abilityIndex;
 
+	protected bool Equals(UnitOverWatch other)
+	{
+		return base.Equals(other) && Target.Equals(other.Target) && abilityIndex == other.abilityIndex;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((UnitOverWatch) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = base.GetHashCode();
+			hashCode = (hashCode * 397) ^ Target.GetHashCode();
+			hashCode = (hashCode * 397) ^ abilityIndex;
+			return hashCode;
+		}
+	}
+
 	public static UnitOverWatch Make(int actorID, Vector2Int tg, int abilityIndex)
 	{
 		UnitOverWatch t = GetAction(SequenceType.Overwatch) as UnitOverWatch;

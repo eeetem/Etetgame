@@ -8,7 +8,7 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 public class UnitStatusEffect  : UnitSequenceAction
 {
 	public bool addNotRemove;
-	public string effectName;
+	public string effectName = "";
 	public int duration;
 	public override SequenceType GetSequenceType()
 	{

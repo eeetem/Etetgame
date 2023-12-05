@@ -202,10 +202,13 @@ public partial class WorldObject
 	{
 		public Direction Facing;
 		public int ID;
-
-		public bool Fliped;
-		//health
-		public string Prefab;
+		public string Prefab ="";
+		
+		
+		
+        public bool Fliped;
+		
+		
 		public Unit.UnitData? UnitData;
 		public int Health;
 		public int Lifetime;
@@ -226,41 +229,46 @@ public partial class WorldObject
 		{
 			message.AddString(Prefab);
 			message.AddInt(ID);
-			message.AddInt((int)Facing);
-			message.AddBool(Fliped);
-			message.Add(Health);
-			message.Add(Lifetime);
-			message.AddBool(JustSpawned);
-			message.AddBool(UnitData != null);
-			if (UnitData != null)
-			{
-				message.AddSerializable(UnitData.Value);
-			}
+			//message.AddInt((int)Facing);
+			//message.AddBool(Fliped);
+			//message.Add(Health);
+			//message.Add(Lifetime);
+			//message.AddBool(JustSpawned);
+			//message.AddBool(UnitData != null);
+			//if (UnitData != null)
+			//{
+			//	message.AddSerializable(UnitData.Value);
+			//}
 		}
 
 		public void Deserialize(Message message)
 		{
 			Prefab = message.GetString();
 			ID = message.GetInt();
-			Facing = (Direction)message.GetInt();
-			Fliped = message.GetBool();
-			Health = message.GetInt();
-			Lifetime = message.GetInt();
-			JustSpawned = message.GetBool();
-			bool hasUnit = message.GetBool();
-			if (hasUnit)
-			{
-				UnitData = message.GetSerializable<Unit.UnitData>();
-			}
-			else
-			{
-				UnitData = null;
-			}
+		//Facing = (Direction)message.GetInt();
+		//Fliped = message.GetBool();
+		//Health = message.GetInt();
+		//Lifetime = message.GetInt();
+		//JustSpawned = message.GetBool();
+		//bool hasUnit = message.GetBool();
+		//if (hasUnit)
+		//{
+		//	UnitData = message.GetSerializable<Unit.UnitData>();
+		//}
+		//else
+		//{
+		//	UnitData = null;
+		//}
 		}
 
 		public string GetHash()
 		{
 			return Prefab + ID + Health;
+		}
+
+		public override string ToString()
+		{
+			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Fliped)}: {Fliped}, {nameof(Prefab)}: {Prefab}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(Lifetime)}: {Lifetime}, {nameof(JustSpawned)}: {JustSpawned}";
 		}
 	}
 
@@ -282,24 +290,37 @@ public partial class WorldObject
 		return data;
 
 	}
+
 	protected bool Equals(WorldObject other)
 	{
-		return ID == other.ID;
+		return LifeTime == other.LifeTime && _tileLocation.Equals(other._tileLocation) && ID == other.ID && Health == other.Health && Fliped == other.Fliped && Type.Equals(other.Type) && Equals(UnitComponent, other.UnitComponent) && destroyed == other.destroyed && Facing == other.Facing;
 	}
 
 	public override bool Equals(object? obj)
 	{
 		if (ReferenceEquals(null, obj)) return false;
 		if (ReferenceEquals(this, obj)) return true;
-		if (obj.GetType() != GetType()) return false;
+		if (obj.GetType() != this.GetType()) return false;
 		return Equals((WorldObject) obj);
 	}
 
 	public override int GetHashCode()
 	{
-		return ID;
+		unchecked
+		{
+			int hashCode = LifeTime;
+			hashCode = (hashCode * 397) ^ _tileLocation.GetHashCode();
+			hashCode = (hashCode * 397) ^ ID;
+			hashCode = (hashCode * 397) ^ Health;
+			hashCode = (hashCode * 397) ^ Fliped.GetHashCode();
+			hashCode = (hashCode * 397) ^ Type.GetHashCode();
+			hashCode = (hashCode * 397) ^ (UnitComponent != null ? UnitComponent.GetHashCode() : 0);
+			hashCode = (hashCode * 397) ^ destroyed.GetHashCode();
+			hashCode = (hashCode * 397) ^ (int) Facing;
+			return hashCode;
+		}
 	}
-		
+
 	public bool IsVisible()
 	{
 		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();

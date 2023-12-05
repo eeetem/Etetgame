@@ -15,11 +15,37 @@ public class UnitShoot : UnitSequenceAction
 	{
 		return SequenceType.UnitShoot;
 	}
-	
+
+	protected bool Equals(UnitShoot other)
+	{
+		return base.Equals(other) && OriginalDamage == other.OriginalDamage && CoverBlock == other.CoverBlock && RangeBlock == other.RangeBlock && Projectile.Equals(other.Projectile);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((UnitShoot) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = base.GetHashCode();
+			hashCode = (hashCode * 397) ^ OriginalDamage;
+			hashCode = (hashCode * 397) ^ CoverBlock;
+			hashCode = (hashCode * 397) ^ RangeBlock;
+			hashCode = (hashCode * 397) ^ Projectile.GetHashCode();
+			return hashCode;
+		}
+	}
+
 	public int OriginalDamage;
 	public int CoverBlock;
 	public int RangeBlock;
-	public Shootable.Projectile Projectile;
+	public Shootable.Projectile Projectile = new Shootable.Projectile();
 
 	public static UnitShoot Make(int actorID, Shootable.Projectile p, int originalDamage, int coverBlock, int rangeBlock) 
 	{

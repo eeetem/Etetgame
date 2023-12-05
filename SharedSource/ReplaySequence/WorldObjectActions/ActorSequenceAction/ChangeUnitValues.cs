@@ -12,6 +12,31 @@ public class ChangeUnitValues : UnitSequenceAction
 	public ValueChange DetChange;
 	public ValueChange MoveRangeeffectChange;
 
+	protected bool Equals(ChangeUnitValues other)
+	{
+		return base.Equals(other) && ActChange.Equals(other.ActChange) && MoveChange.Equals(other.MoveChange) && DetChange.Equals(other.DetChange) && MoveRangeeffectChange.Equals(other.MoveRangeeffectChange);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((ChangeUnitValues) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = base.GetHashCode();
+			hashCode = (hashCode * 397) ^ ActChange.GetHashCode();
+			hashCode = (hashCode * 397) ^ MoveChange.GetHashCode();
+			hashCode = (hashCode * 397) ^ DetChange.GetHashCode();
+			hashCode = (hashCode * 397) ^ MoveRangeeffectChange.GetHashCode();
+			return hashCode;
+		}
+	}
 
 	public static ChangeUnitValues Make(int actorID, int actChange = 0, int moveChange = 0, int detChange = 0, int moveRangeEffect = 0)
 	{

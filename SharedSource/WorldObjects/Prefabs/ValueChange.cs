@@ -8,6 +8,27 @@ public struct ValueChange : IMessageSerializable
 	public bool Cap = false;
 	public int Value;
 
+	public bool Equals(ValueChange other)
+	{
+		return Set == other.Set && Cap == other.Cap && Value == other.Value;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is ValueChange other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = Set.GetHashCode();
+			hashCode = (hashCode * 397) ^ Cap.GetHashCode();
+			hashCode = (hashCode * 397) ^ Value;
+			return hashCode;
+		}
+	}
+
 	public ValueChange()
 	{
 		Set = false;

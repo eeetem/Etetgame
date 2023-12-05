@@ -175,15 +175,15 @@ public  partial class WorldManager
 		{
 #if CLIENT
 			tile.TileVisibility = Visibility.None;
-#else
+#elif SERVER
 			tile.TileVisibility = new ValueTuple<Visibility, Visibility>(Visibility.None, Visibility.None);
 #endif
 		}
 
-		List<Unit> units;
+		List<Unit> units = new List<Unit>();
 #if SERVER
 		units = GameManager.GetAllUnits();
-#else
+#elif CLIENT
 		units = GameManager.GetTeamUnits(GameManager.IsPlayer1);
 #endif
 		Parallel.ForEach(units, unit =>
@@ -337,6 +337,31 @@ public  partial class WorldManager
 
 	public struct RayCastOutcome : IMessageSerializable
 	{
+		public bool Equals(RayCastOutcome other)
+		{
+			return CollisionPointLong.Equals(other.CollisionPointLong) && CollisionPointShort.Equals(other.CollisionPointShort) && StartPoint.Equals(other.StartPoint) && EndPoint.Equals(other.EndPoint) &&(Path is null) == (other.Path is null)&& ( (Path is null && other.Path is null) ||Enumerable.SequenceEqual(Path!, other.Path!)) && HitObjId == other.HitObjId && hit == other.hit;
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is RayCastOutcome other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = CollisionPointLong.GetHashCode();
+				hashCode = (hashCode * 397) ^ CollisionPointShort.GetHashCode();
+				hashCode = (hashCode * 397) ^ StartPoint.GetHashCode();
+				hashCode = (hashCode * 397) ^ EndPoint.GetHashCode();
+				hashCode = (hashCode * 397) ^ (Path != null ? Path.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ HitObjId;
+				hashCode = (hashCode * 397) ^ hit.GetHashCode();
+				return hashCode;
+			}
+		}
+
 		public Vector2 CollisionPointLong= new Vector2(0, 0);
 		public Vector2 CollisionPointShort= new Vector2(0, 0);
 		public Vector2 StartPoint;
@@ -396,6 +421,10 @@ public  partial class WorldManager
 			HitObjId = message.GetInt();
 			hit = message.GetBool();
 			Path = message.GetSerializables<Vector2Int>().ToList();
+			if(Path.Count() == 0)
+			{
+				Path = null;
+			}
 		}
 	}
 	

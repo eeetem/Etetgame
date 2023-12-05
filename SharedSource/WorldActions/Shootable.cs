@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -47,9 +48,34 @@ public class Shootable : Effect
 		public WorldManager.RayCastOutcome? CoverCast { get; set; } = null; //tallest cover on the way
 		public int Dmg = 0;
 		public Vector2[] DropOffPoints = new Vector2[0];//NOT SERIALISED WARNING
-		public readonly List<int> SuppressionIgnores;
+		public readonly List<int> SuppressionIgnores = new List<int>();
 		public bool ShooterLow;
 		public bool TargetLow;
+
+		public bool Equals(Projectile other)
+		{
+			return Dmg == other.Dmg && DropOffPoints.SequenceEqual(other.DropOffPoints) && SuppressionIgnores.SequenceEqual(other.SuppressionIgnores) && ShooterLow == other.ShooterLow && TargetLow == other.TargetLow && Result.Equals(other.Result) && Nullable.Equals(CoverCast, other.CoverCast);
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is Projectile other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = Dmg;
+				hashCode = (hashCode * 397) ^ DropOffPoints.GetHashCode();
+				hashCode = (hashCode * 397) ^ SuppressionIgnores.GetHashCode();
+				hashCode = (hashCode * 397) ^ ShooterLow.GetHashCode();
+				hashCode = (hashCode * 397) ^ TargetLow.GetHashCode();
+				hashCode = (hashCode * 397) ^ Result.GetHashCode();
+				hashCode = (hashCode * 397) ^ CoverCast.GetHashCode();
+				return hashCode;
+			}
+		}
 
 		public Projectile(WorldManager.RayCastOutcome result, WorldManager.RayCastOutcome? coverCast)
 		{

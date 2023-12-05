@@ -76,14 +76,17 @@ public partial class WorldObjectType
 				switch (data.Facing)
 				{
 					case Direction.North:
+						Console.WriteLine("placing edge on north");
 						tile.NorthEdge = wo;
 						break;
 				
 					case Direction.West:
+						Console.WriteLine("placing edge on west");
 						tile.WestEdge = wo;
 						break;
 				
 					case Direction.East:
+						Console.WriteLine("placing edge on west");
 						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						newTile.WestEdge = wo;
 						wo.Face(Direction.West, false);
@@ -92,6 +95,7 @@ public partial class WorldObjectType
 						break;
 					
 					case Direction.South:
+						Console.WriteLine("placing edge on south");
 						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						newTile.NorthEdge = wo;
 						wo.Face(Direction.North,false);

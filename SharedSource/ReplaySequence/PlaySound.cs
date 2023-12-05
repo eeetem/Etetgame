@@ -13,7 +13,28 @@ public class PlaySound : SequenceAction
 		return SequenceType.PlaySound;
 	}
 
-	public string SFX;
+	protected bool Equals(PlaySound other)
+	{
+		return SFX == other.SFX && Location.Equals(other.Location);
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((PlaySound) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			return (SFX.GetHashCode() * 397) ^ Location.GetHashCode();
+		}
+	}
+
+	public string SFX ="";
 	public Vector2Int Location;
 	
 	//TODO always play some sounds and hide others

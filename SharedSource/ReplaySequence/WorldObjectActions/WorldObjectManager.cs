@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using DefconNull.Networking;
 using DefconNull.WorldObjects;
+using DefconNull.Networking;
 
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;

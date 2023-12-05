@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DefconNull.WorldObjects;
 using Riptide;
 
@@ -7,10 +8,47 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public abstract class UnitSequenceAction : SequenceAction
 {
+	protected bool Equals(UnitSequenceAction other)
+	{
+		return Requirements.Equals(other.Requirements);
+	}
+
+
+
+	public override bool Equals(object? obj)
+	{
+		return ReferenceEquals(this, obj) || obj is UnitSequenceAction other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		return Requirements.GetHashCode();
+	}
 
 	public TargetingRequirements Requirements;
 	public struct TargetingRequirements : IMessageSerializable
 	{
+		public bool Equals(TargetingRequirements other)
+		{
+			return ActorID == other.ActorID && Position.Equals(other.Position) && (TypesToIgnore is null == other.TypesToIgnore is null) && (TypesToIgnore is null || Enumerable.SequenceEqual(TypesToIgnore, other.TypesToIgnore!));
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is TargetingRequirements other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = ActorID;
+				hashCode = (hashCode * 397) ^ Position.GetHashCode();
+				hashCode = (hashCode * 397) ^ (TypesToIgnore != null ? TypesToIgnore.GetHashCode() : 0);
+				return hashCode;
+			}
+		}
+
 		public int ActorID = -1;
 		public Vector2Int Position = new Vector2Int(-1, -1);
 		public List<string>? TypesToIgnore;
@@ -49,6 +87,7 @@ public abstract class UnitSequenceAction : SequenceAction
 			Position = message.GetSerializable<Vector2Int>();
 			TypesToIgnore = new List<string>();
 			TypesToIgnore.AddRange(message.GetStrings());
+			if(TypesToIgnore.Count == 0) TypesToIgnore = null;
 		}
 	}
 	

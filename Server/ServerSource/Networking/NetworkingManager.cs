@@ -27,7 +27,8 @@ public static partial class NetworkingManager
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
 
-		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
+	///	selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
+		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
 		WorldManager.Instance.LoadMap(selectedMap);
 		server.Start(port, 10);
 			

@@ -17,6 +17,24 @@ public static partial class WorldObjectManager
 		{
 			return SequenceType.DeleteWorldObject;
 		}
+
+		protected bool Equals(DeleteWorldObject other)
+		{
+			return id == other.id;
+		}
+
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((DeleteWorldObject) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return id;
+		}
 #if SERVER
 		public override bool ShouldDoServerCheck(bool player1)
 		{

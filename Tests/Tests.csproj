@@ -1,64 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
+
+        <IsPackable>false</IsPackable>
+
+        <AssemblyName>DefconNull</AssemblyName>
+
         <RootNamespace>DefconNull</RootNamespace>
-    </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Kotz.ObjectPool" Version="2.1.1" />
-      <PackageReference Include="MD5" Version="2.0.4" />
-      <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
-      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-      <PackageReference Include="RiptideNetworking.Riptide" Version="2.0.0" />
+        <PackageReference Include="Kotz.ObjectPool" Version="2.1.1" />
+        <PackageReference Include="MD5" Version="2.0.4" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0"/>
+        <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="NUnit" Version="3.13.3"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="4.2.1"/>
+        <PackageReference Include="NUnit.Analyzers" Version="3.3.0"/>
+        <PackageReference Include="coverlet.collector" Version="3.1.2"/>
+        <PackageReference Include="RiptideNetworking.Riptide" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Maps\g.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Maps\Custom\gggg.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
-      <None Update="Maps\Ground Zero.mapdata">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Remove="SharedSource\**" />
-      <None Remove="SharedSource\World\WorldAction\**" />
-      <None Remove="SharedSource\World\WorldActions\**" />
-      <None Remove="SharedSource\World\**" />
-      <None Remove="obj\**" />
-      <None Update="Maps\testmap.mapdata">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
-      <EmbeddedResource Remove="SharedSource\**" />
-      <EmbeddedResource Remove="SharedSource\World\WorldAction\**" />
-      <EmbeddedResource Remove="SharedSource\World\WorldActions\**" />
-      <EmbeddedResource Remove="SharedSource\World\**" />
-      <EmbeddedResource Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Include="..\MasterServer\MasterServerData\NetMsgIds.cs">
-        <Link>ServerSource\Networking\NetMsgIds.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\AI\AI.cs">
         <Link>SharedSource\AI\AI.cs</Link>
       </Compile>
@@ -85,6 +54,9 @@
       </Compile>
       <Compile Include="..\SharedSource\NetworkingManager.cs">
         <Link>SharedSource\NetworkingManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\DummyNetworking.cs">
+        <Link>SharedSource\Networking\DummyNetworking.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
@@ -242,22 +214,12 @@
       <Compile Include="..\SharedSource\WorldTile.cs">
         <Link>SharedSource\WorldTile.cs</Link>
       </Compile>
-      <Compile Include="obj\Release\net6.0\linux-x64\.NETCoreApp,Version=v6.0.AssemblyAttributes.cs" />
-      <Compile Include="obj\Release\net6.0\linux-x64\Server.AssemblyInfo.cs" />
-      <Compile Remove="obj\**" />
     </ItemGroup>
-
-
 
     <ItemGroup>
       <Content Include="..\SharedSource\ObjectData.xml">
-        <Link>ObjectData.xml</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Link>SharedSource\ObjectData.xml</Link>
       </Content>
-      <Content Include="obj\Release\net6.0\linux-x64\apphost" />
-      <Content Include="obj\Release\net6.0\linux-x64\PublishOutputs.0a901391f4.txt" />
     </ItemGroup>
-
-
 
 </Project>

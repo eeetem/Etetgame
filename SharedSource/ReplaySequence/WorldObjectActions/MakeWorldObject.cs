@@ -23,8 +23,8 @@ public static partial class WorldObjectManager
 
 		public override BatchingMode Batching => BatchingMode.Sequential;
 		
-		Vector2Int position;
-		public WorldObject.WorldObjectData data;
+		Vector2Int position = new Vector2Int(23,11);
+		public WorldObject.WorldObjectData data = new WorldObject.WorldObjectData("basicFloor");
 		public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing, Unit.UnitData? unitData = null)
 		{
 			var data = new WorldObject.WorldObjectData(prefab);
@@ -49,14 +49,16 @@ public static partial class WorldObjectManager
 		protected override void RunSequenceAction()
 		{
 
-			Console.WriteLine("Making world object: " + data.ID);
+				Console.WriteLine("Making world object: " + data.ID + " " + data.Prefab + " " + position);
 				if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 				{
+					Console.WriteLine("deleting object with same if if exists");
 					DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
 				}
 				else
 				{
 					data.ID = GetNextId();
+					Console.WriteLine("Generated new id: " + data.ID);
 				}
 
 				WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
@@ -83,7 +85,26 @@ public static partial class WorldObjectManager
 
 		}
 
+		protected bool Equals(MakeWorldObject other)
+		{
+			return position.Equals(other.position) && data.Equals(other.data);
+		}
 
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((MakeWorldObject) obj);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return (position.GetHashCode() * 397) ^ data.GetHashCode();
+			}
+		}
 
 		protected override void SerializeArgs(Message message)
 		{
@@ -99,7 +120,17 @@ public static partial class WorldObjectManager
 			data = msg.GetSerializable<WorldObject.WorldObjectData>();
 		}
 
-	
+		public override Message? MakeTestingMessage()
+		{
+			position = new Vector2Int(12, 5);
+			data = new WorldObject.WorldObjectData("Scout");
+			data.Lifetime = 100;
+			data.Facing = Direction.SouthEast;
+			data.JustSpawned = true;
+			Message m = Message.Create();
+			SerializeArgs(m);
+			return m;
+		}
 	}
 
 }

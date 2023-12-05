@@ -267,7 +267,7 @@ public static partial class GameManager
 		List<int>ids = new List<int>();
 #if SERVER
 		ids = team1 ? T1Units : T2Units;
-#else
+#elif CLIENT
 		if(team1==IsPlayer1)
 		{
 			foreach (var u in GameLayout.MyUnits)

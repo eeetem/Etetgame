@@ -284,7 +284,7 @@ if(args.Target.HasValue){
 			Console.WriteLine("performing action " + a.Type);
 #if CLIENT
 			a.SendToServer(this,args);
-#else
+#elif SERVER
 			a.PerformServerSide(this,args);
 #endif
 
@@ -352,6 +352,11 @@ if(!Paniced){
 		[Serializable]
 		public struct UnitData : IMessageSerializable
 		{
+			public override string ToString()
+			{
+				return $"{nameof(Team1)}: {Team1}, {nameof(ActionPoints)}: {ActionPoints}, {nameof(MovePoints)}: {MovePoints}, {nameof(CanTurn)}: {CanTurn}, {nameof(Determination)}: {Determination}, {nameof(Crouching)}: {Crouching}, {nameof(Panic)}: {Panic}, {nameof(Overwatch)}: {Overwatch}, {nameof(MoveRangeEffect)}: {MoveRangeEffect}, {nameof(OverWatchedTiles)}: {OverWatchedTiles}, {nameof(StatusEffects)}: {StatusEffects}";
+			}
+
 			public bool Team1;
 			public int ActionPoints;
 			public int MovePoints;

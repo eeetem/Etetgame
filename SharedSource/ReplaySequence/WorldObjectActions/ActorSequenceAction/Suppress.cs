@@ -22,7 +22,27 @@ public class Suppress : UnitSequenceAction
 
 	public override BatchingMode Batching => BatchingMode.OnlySameType;
 	public int DetDmg;
-	
+
+	protected bool Equals(Suppress other)
+	{
+		return base.Equals(other) && DetDmg == other.DetDmg;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((Suppress) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			return (base.GetHashCode() * 397) ^ DetDmg;
+		}
+	}
 
 
 	public static Suppress Make(int detDmg, int actorID) 

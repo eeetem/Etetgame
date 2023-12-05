@@ -12,6 +12,30 @@ public class MoveCamera : SequenceAction
 	public bool doAlways;
 	public int scatter;
 
+	protected bool Equals(MoveCamera other)
+	{
+		return location.Equals(other.location) && doAlways == other.doAlways && scatter == other.scatter;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((MoveCamera) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = location.GetHashCode();
+			hashCode = (hashCode * 397) ^ doAlways.GetHashCode();
+			hashCode = (hashCode * 397) ^ scatter;
+			return hashCode;
+		}
+	}
+
 	public static MoveCamera Make(Vector2Int location,bool doAlways, int scatter) 
 	{
 		MoveCamera t = (GetAction(SequenceType.MoveCamera) as MoveCamera)!;

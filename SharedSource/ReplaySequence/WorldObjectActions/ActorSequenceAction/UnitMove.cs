@@ -13,7 +13,44 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitMove : UnitSequenceAction
 {
-	private List<Vector2Int> Path;
+	private List<Vector2Int> Path = new List<Vector2Int>();
+
+	protected bool Equals(UnitMove other)
+	{
+		return base.Equals(other) && Path.SequenceEqual(other.Path);
+	}
+
+	public override Message? MakeTestingMessage()
+	{
+		Requirements = new TargetingRequirements();
+		Requirements.Position = new Vector2Int(12, 5);
+		Requirements.TypesToIgnore = new List<string>();
+		Requirements.TypesToIgnore.Add("Unit");
+		Requirements.ActorID = 123;
+		Path.Add(new Vector2Int(12, 5));
+		Path.Add(new Vector2Int(12, 6));
+		Path.Add(new Vector2Int(12, 7));
+		var m = Message.Create();
+		Serialize(m);
+		return m;
+
+	}
+
+	public override bool Equals(object? obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((UnitMove) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			return (base.GetHashCode() * 397) ^ Path.GetHashCode();
+		}
+	}
 
 	public static UnitMove Make(int actorID,List<Vector2Int> path)
 	{
@@ -104,7 +141,7 @@ public class UnitMove : UnitSequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		base.SerializeArgs(message);
-		message.AddSerializables(Path.ToArray());
+		message.AddSerializables<Vector2Int>(Path.ToArray());
 	}
 
 	protected override void DeserializeArgs(Message message)

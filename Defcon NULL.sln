@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterServer", "MasterServer\MasterServer.csproj", "{1567A6C1-C444-4E33-8024-30CF823498ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{4556159D-B84F-4296-A7AA-91322006BC5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{1567A6C1-C444-4E33-8024-30CF823498ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1567A6C1-C444-4E33-8024-30CF823498ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1567A6C1-C444-4E33-8024-30CF823498ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4556159D-B84F-4296-A7AA-91322006BC5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4556159D-B84F-4296-A7AA-91322006BC5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4556159D-B84F-4296-A7AA-91322006BC5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4556159D-B84F-4296-A7AA-91322006BC5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
 	EndGlobalSection
