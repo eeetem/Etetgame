@@ -97,7 +97,7 @@ public class GameLayout : MenuLayout
 		int columCounter = 0;
 		//sort by id
 		MyUnits.Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
-		foreach (var unit in MyUnits)
+		foreach (var unit in new List<Unit>(MyUnits))
 		{
 			if (!unitBarRenderTargets.ContainsKey(unit))
 			{

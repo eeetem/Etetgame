@@ -106,6 +106,8 @@ public partial class WorldObject
 			throw new Exception("attempted to  move and  edge or surface");
 		}
 
+		TileLocation.RemoveObject(this);
+		
 		if (UnitComponent != null)
 		{
 			var newTile = WorldManager.Instance.GetTileAtGrid(position);
@@ -114,7 +116,6 @@ public partial class WorldObject
 		}
 		else
 		{
-			TileLocation.RemoveObject(this);
 			IWorldTile newTile = WorldManager.Instance.GetTileAtGrid(position);
 			TileLocation = newTile;
 			newTile.PlaceObject(this);

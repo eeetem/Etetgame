@@ -93,7 +93,10 @@ public  partial class WorldManager
 		LoadTileObject(data.WestEdge,tile.WestEdge, tile);
 		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)));
 		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)));
+	
 		LoadTileObject(data.UnitAtLocation,tile.UnitAtLocation?.WorldObject, tile);
+		
+	
 
 
 
@@ -961,7 +964,7 @@ public  partial class WorldManager
 			CalculateFov();
 		}
 #if CLIENT
-		if(!SequenceManager.SequenceRunning && NetworkingManager.recivedTiles.Count>0){
+		if( !SequenceManager.SequenceRunning && NetworkingManager.recivedTiles.Count>0){
 			foreach (var tile in new List<WorldTile.WorldTileData>(NetworkingManager.recivedTiles.Values))
 			{
 				LoadWorldTile(tile);

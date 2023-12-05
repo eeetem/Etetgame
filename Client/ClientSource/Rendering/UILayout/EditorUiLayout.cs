@@ -289,6 +289,7 @@ public class EditorUiLayout : MenuLayout
 	private static Vector2Int bottomRightSelection = new Vector2Int(0,0);
 	private static bool IsValidPlacement(Vector2Int pos, string prefab, Direction dir)
 	{
+		
 		if (!WorldManager.IsPositionValid(pos))
 		{
 			return false;
@@ -516,7 +517,7 @@ public class EditorUiLayout : MenuLayout
 		switch (ActiveBrush)
 		{
 			case Brush.Point:
-				if (leftMouseDown && IsValidPlacement(mousePos,ActivePrefab,ActiveDir))
+				if (leftMouseDown && IsValidPlacement(mousePos,ActivePrefab,ActiveDir) && !SequenceManager.SequenceRunning)
 				{
 					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(ActivePrefab,mousePos,ActiveDir));
 				}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
@@ -533,7 +534,7 @@ public class EditorUiLayout : MenuLayout
 					startPoint = mousePos;
 					break;
 				}
-
+				if(SequenceManager.SequenceRunning) break;
 				currentPoint = mousePos;
 				if (startPoint.X > currentPoint.X)
 				{

@@ -89,8 +89,9 @@ public static partial class GameManager
 		}
 
 		
-		if (Player2!.IsAI)
-		{
+	//	if (Player2!.IsAI)
+	if (true)	
+    {
 			var newComcp = new List<SquadMember>();
 			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
 			{
