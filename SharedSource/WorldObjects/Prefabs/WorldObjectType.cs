@@ -87,7 +87,7 @@ public partial class WorldObjectType
 						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.East));
 						newTile.WestEdge = wo;
 						wo.Face(Direction.West, false);
-						wo.fliped = true;
+						wo.Fliped = true;
 						wo.TileLocation = newTile;
 						break;
 					
@@ -95,7 +95,7 @@ public partial class WorldObjectType
 						newTile = (WorldTile)WorldManager.Instance.GetTileAtGrid(tile.Position + Utility.DirToVec2(Direction.South));
 						newTile.NorthEdge = wo;
 						wo.Face(Direction.North,false);
-						wo.fliped = true;
+						wo.Fliped = true;
 						wo.TileLocation = newTile;
 						break;
 					

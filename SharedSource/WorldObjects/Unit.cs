@@ -291,7 +291,7 @@ if(args.Target.HasValue){
 
 		}
 
-		public bool Paniced { get; private set; }
+		public bool Paniced { get; set; }
 
 		public void Panic()
 		{
@@ -490,30 +490,7 @@ if(!Paniced){
 		{
 			StatusEffects.RemoveAll(x => x.type.name == effectName);
 		}
-
-		public void Suppress(int supression)
-		{
-			if(supression==0) return;
-
-#if CLIENT
 		
-			new PopUpText("\nSupression: " + supression, WorldObject.TileLocation.Position, Color.Blue, 0.8f);
-#endif
-			Determination-= supression;
-			if (Determination <= 0)
-			{
-				Panic();
-			}
-
-			if (Paniced && Determination > 0)
-			{
-				Paniced = false;
-			}
-			if(Determination>Type.Maxdetermination) Determination.Current = Type.Maxdetermination;
-			if(Determination<0) Determination.Current = 0;
-			
-
-		}
 
 
 		public int Health => WorldObject.Health;

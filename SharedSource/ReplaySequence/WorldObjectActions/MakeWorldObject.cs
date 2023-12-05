@@ -62,7 +62,7 @@ public static partial class WorldObjectManager
 				WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 				var tile = WorldManager.Instance.GetTileAtGrid(position);
 				WorldObject wo = new WorldObject(type, tile, data);
-				wo.fliped = data.Fliped;
+				wo.Fliped = data.Fliped;
 
 				type.Place(wo, tile, data);
 
@@ -79,7 +79,7 @@ public static partial class WorldObjectManager
 					}
 					
 				}
-				WorldManager.Instance.MakeFovDirty();
+		//		WorldManager.Instance.MakeFovDirty();
 
 		}
 

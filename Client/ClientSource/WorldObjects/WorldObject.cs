@@ -25,7 +25,7 @@ public partial class WorldObject : IDrawable
 		return TileLocation.Position;
 	}
 
-	private void GenerateDrawOrder()
+	public void GenerateDrawOrder()
 	{
 
 		DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
@@ -49,7 +49,7 @@ public partial class WorldObject : IDrawable
 	public Texture2D GetTexture()
 	{
 		int spriteIndex;
-		if (fliped&& Type.Faceable)
+		if (Fliped&& Type.Faceable)
 		{
 			spriteIndex = (int)Facing + 4;
 		}

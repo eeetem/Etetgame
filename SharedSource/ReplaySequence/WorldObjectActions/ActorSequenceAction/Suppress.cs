@@ -1,8 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
+
+#if CLIENT
+using DefconNull.Rendering;
+#endif
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
@@ -58,7 +65,26 @@ public class Suppress : UnitSequenceAction
 	protected override void RunSequenceAction()
 	{
 		
-			Actor.Suppress(DetDmg);
+		if(DetDmg==0) return;
+		Console.WriteLine("Suppressing: "+Actor.WorldObject.ID + " by "+DetDmg);
+#if CLIENT
+		
+		new PopUpText("\nSupression: " + DetDmg, Actor.WorldObject.TileLocation.Position, Color.Blue, 0.8f);
+#endif
+		Actor.Determination-= DetDmg;
+		if (Actor.Determination <= 0)
+		{
+			Actor.Panic();
+		}
+
+		if (Actor.Paniced && Actor.Determination > 0)
+		{
+			Actor.Paniced = false;
+		}
+		if(Actor.Determination>Actor.Type.Maxdetermination) Actor.Determination.Current = Actor.Type.Maxdetermination;
+		if(Actor.Determination<0) Actor.Determination.Current = 0;
+		
+		Console.WriteLine("Suppression result: "+Actor.WorldObject.ID + " has "+Actor.Determination.Current);
 
 	}
 	
@@ -70,7 +96,7 @@ public class Suppress : UnitSequenceAction
 			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 			if(t.Surface is null)return;
 			Texture2D sprite = t.Surface.GetTexture();
-			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.1f);
+			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Blue * 0.2f);
 			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Blue, 0.5f);
 		}
 		if(!ShouldDo())return;

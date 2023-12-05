@@ -121,12 +121,13 @@ public static partial class NetworkingManager
 				if(GameManager.IsPlayer1)return;
 				break;
 		}
-		while (message.UnreadLength>0)
+		int lenght = message.GetInt();
+		for (int i = 0; i < lenght; i++)
 		{
+
 			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
 			SequenceAction sqc;
 			sqc = SequenceAction.GetAction(type, message);
-			
 			
 			actions.Enqueue(sqc);
 		}

@@ -99,38 +99,9 @@ public partial class WorldObject
 
 	public int Health;
 
-	public void Move(Vector2Int position)
-	{
-		if (Type.Edge || Type.Surface)
-		{
-			throw new Exception("attempted to  move and  edge or surface");
-		}
+	
 
-		TileLocation.RemoveObject(this);
-		
-		if (UnitComponent != null)
-		{
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			TileLocation = newTile;
-			newTile.UnitAtLocation = UnitComponent;
-		}
-		else
-		{
-			IWorldTile newTile = WorldManager.Instance.GetTileAtGrid(position);
-			TileLocation = newTile;
-			newTile.PlaceObject(this);
-		}
-
-
-			
-#if CLIENT
-		GenerateDrawOrder();
-#endif
-	}
-		
-		
-
-	public bool fliped = false;//for display back texture
+	public bool Fliped = false;//for display back texture
 
 
 		
@@ -298,7 +269,7 @@ public partial class WorldObject
 		WorldObjectData data = new WorldObjectData(Type.Name);
 		data.Facing = Facing;
 		data.ID = ID;
-		data.Fliped = fliped;
+		data.Fliped = Fliped;
 		data.Health = Health;
 		data.Lifetime = LifeTime;
 		data.JustSpawned = forceJustSpawned;

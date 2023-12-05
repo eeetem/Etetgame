@@ -32,15 +32,15 @@ public class WorldEffect : Effect
 	{
 		//Console.WriteLine("getting consequences on "+target+" by "+actor.WorldObject.ID);
 		var changes = new List<SequenceAction>();
-
+		WorldObject? tgt = target;
 		if(!DeliveryMethod.CanPerform(actor, target,dimension).Item1) return changes;
-		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref target);
-	
+		var t = DeliveryMethod.ExectuteAndProcessLocation(actor,ref tgt);
+		if(tgt == null) return changes;
 		foreach (var change in t)
 		{
 			changes.Add(change);
 		}
-		foreach (var change in Conseqences.GetApplyConsiqunces(target))
+		foreach (var change in Conseqences.GetApplyConsiqunces(tgt))
 		{
 			changes.Add(change);
 		}

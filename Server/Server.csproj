@@ -22,7 +22,7 @@
       <PackageReference Include="MD5" Version="2.0.4" />
       <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
-      <PackageReference Include="RiptideNetworking.Riptide" Version="2.0.0" />
+      <PackageReference Include="RiptideNetworking.Riptide" Version="2.1.1" />
     </ItemGroup>
 
     <ItemGroup>

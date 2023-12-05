@@ -43,10 +43,6 @@ public static partial class NetworkingManager
 		client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048*2;
 
-		client.TimeoutTime = 10000;
-#if DEBUG
-		client.TimeoutTime = ushort.MaxValue;
-#endif
 
 		var msg = Message.Create();
 		msg.AddString(name);
@@ -99,6 +95,10 @@ public static partial class NetworkingManager
 			Console.WriteLine("Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
+		client.TimeoutTime = 10000;
+#if DEBUG
+		client.TimeoutTime = ushort.MaxValue;
+#endif
 
 
 

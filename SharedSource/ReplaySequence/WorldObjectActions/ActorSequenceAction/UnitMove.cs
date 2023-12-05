@@ -63,7 +63,15 @@ public class UnitMove : UnitSequenceAction
 				var frametask2 = new Task(delegate
 				{
 					//	Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
-					Actor.WorldObject.Move(Path[0]);
+					
+					Actor.WorldObject.TileLocation.UnitAtLocation = null;
+					var newTile = WorldManager.Instance.GetTileAtGrid(Path[0]);
+					Actor.WorldObject.TileLocation = newTile;
+					newTile.UnitAtLocation = Actor;
+			
+#if CLIENT
+		Actor.WorldObject.GenerateDrawOrder();
+#endif
 					Path.RemoveAt(0);
 
 

@@ -407,7 +407,7 @@ public static partial class NetworkingManager
 			{
 				var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
 				msg.Add((ushort)ReplaySequenceTarget.All);
-				
+				msg.Add(actions.Count);
 				foreach (var a in actions)
 				{
 					msg.Add((int) a.GetSequenceType());
@@ -440,7 +440,7 @@ public static partial class NetworkingManager
 			{
 				msg.Add((ushort)ReplaySequenceTarget.Player2);
 			}
-
+			msg.Add(actions.Count);
 			foreach (var a in actions)
 			{
 				msg.Add((int) a.GetSequenceType());
