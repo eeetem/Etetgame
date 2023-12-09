@@ -99,7 +99,7 @@ public static partial class NetworkingManager
 		server.Accept(connection);
 		SendGameData();
 		SendPreGameInfo(); 
-		//SendMapData(connection);
+		SendMapData(connection);
 
 	}
 		
@@ -140,17 +140,14 @@ public static partial class NetworkingManager
 							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
-								
 								ForceSendTileUpdate(tile, connection); //only send updates about tiles that have something on them
 							}
-
-							
 						}
 					}
 
 					Console.WriteLine("finished sending map data to " + connection.Id);
 					var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
-					msg.AddInt(WorldManager.Instance.GetMapHash());
+					msg.AddString(WorldManager.Instance.GetMapHash());
 					server.Send(msg, connection);
 
 				}catch(Exception e)
@@ -425,8 +422,8 @@ public static partial class NetworkingManager
 			else
 			{
 
-				SendSequenceToPlayer(actions, true);
-				SendSequenceToPlayer(actions, false);
+				SendSequenceToPlayer(new List<SequenceAction>(actions), true);
+				SendSequenceToPlayer(new List<SequenceAction>(actions), false);
 			}
 
 		}

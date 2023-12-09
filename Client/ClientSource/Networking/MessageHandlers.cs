@@ -49,7 +49,7 @@ public static partial class NetworkingManager
 			}
 
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
-			int hash = message.GetInt();
+			string hash = message.GetString();
 			if (WorldManager.Instance.GetMapHash() != hash)
 			{
 				Console.WriteLine("Map Hash Mismatch, resending");

@@ -559,5 +559,32 @@ public partial class WorldTile : IWorldTile
 	}
 
 
+
+		public string GetHash()
+		{
+			string hash = "";
+			if (NorthEdge != null)
+			{
+				hash += NorthEdge.GetHash();
+			}
+			if (WestEdge != null)
+			{
+				hash += WestEdge.GetHash();
+			}
+			if (UnitAtLocation != null)
+			{
+				hash += UnitAtLocation.GetHash();
+			}
+			if (Surface != null)
+			{
+				hash += Surface.GetHash();
+			}
+			foreach (var obj in ObjectsAtLocation)
+			{
+				hash += obj.GetHash();
+			}
+
+			return hash;
+		}
 	
 }

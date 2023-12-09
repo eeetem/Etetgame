@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,7 +132,7 @@ public class UnitMove : UnitSequenceAction
 				}
 			
 			}
-
+			Console.WriteLine("movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			Actor.canTurn = true;
 
 

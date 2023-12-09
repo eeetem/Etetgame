@@ -63,12 +63,12 @@ public static partial class WorldObjectManager
 
 		protected override void RunSequenceAction()
 		{
-			Console.WriteLine("Deleting world object: " + id);
+			Console.WriteLine("tryint to delete world object: " + id);
 				if (!WorldObjects.ContainsKey(id)) return;
-
+			Console.WriteLine("Deleting world object: " + id);
 				if (id < NextId)
 				{
-					NextId = id; //reuse IDs
+				//	NextId = id; //reuse IDs
 				}
 
 				WorldObject Obj = WorldObjects[id];
@@ -101,7 +101,13 @@ public static partial class WorldObjectManager
 			id = msg.GetInt();
 		}
 
-	
+		public override string ToString()
+		{
+			var obj = GetObject(id);
+			if (obj is null) return $"Deleteing non existant Object: {nameof(id)}: {id}";
+			var tileLocationPosition = obj.TileLocation.Position;
+			return $"Delete Object: {nameof(id)}: {id} {obj.Type.Name} "+tileLocationPosition;
+		}
 	}
 
 }
