@@ -143,11 +143,20 @@ public partial class WorldObject
 	public bool destroyed { get; set; } = false;
 
 	
-	public Visibility GetMinimumVisibility()
+	public Visibility GetMinimumVisibility(bool dontautoRevealEdges = false)
 	{
-		if (Type.Surface || Type.Edge)
+		if (Type.Surface)
 		{
 			return Visibility.None;
+		}
+
+		if (Type.Edge)
+		{
+			if (!dontautoRevealEdges)
+			{
+				return Visibility.None;
+			}
+			return Visibility.Partial;
 		}
 
 		if (UnitComponent != null && UnitComponent.Crouching)
@@ -229,36 +238,36 @@ public partial class WorldObject
 		{
 			message.AddString(Prefab);
 			message.AddInt(ID);
-			//message.AddInt((int)Facing);
-			//message.AddBool(Fliped);
-			//message.Add(Health);
-			//message.Add(Lifetime);
-			//message.AddBool(JustSpawned);
-			//message.AddBool(UnitData != null);
-			//if (UnitData != null)
-			//{
-			//	message.AddSerializable(UnitData.Value);
-			//}
+			message.AddInt((int)Facing);
+			message.AddBool(Fliped);
+			message.Add(Health);
+			message.Add(Lifetime);
+			message.AddBool(JustSpawned);
+			message.AddBool(UnitData != null);
+			if (UnitData != null)
+			{
+				message.AddSerializable(UnitData.Value);
+			}
 		}
 
 		public void Deserialize(Message message)
 		{
 			Prefab = message.GetString();
 			ID = message.GetInt();
-		//Facing = (Direction)message.GetInt();
-		//Fliped = message.GetBool();
-		//Health = message.GetInt();
-		//Lifetime = message.GetInt();
-		//JustSpawned = message.GetBool();
-		//bool hasUnit = message.GetBool();
-		//if (hasUnit)
-		//{
-		//	UnitData = message.GetSerializable<Unit.UnitData>();
-		//}
-		//else
-		//{
-		//	UnitData = null;
-		//}
+			Facing = (Direction)message.GetInt();
+			Fliped = message.GetBool();
+			Health = message.GetInt();
+			Lifetime = message.GetInt();
+			JustSpawned = message.GetBool();
+			bool hasUnit = message.GetBool();
+			if (hasUnit)
+			{
+				UnitData = message.GetSerializable<Unit.UnitData>();
+			}
+			else
+			{
+				UnitData = null;
+			}
 		}
 
 		public string GetHash()
@@ -325,9 +334,31 @@ public partial class WorldObject
 	{
 		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
 	}
-	public bool IsVisible(bool team1)
+	public bool ShouldBeVisibilityUpdated(bool team1)
 	{
-		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility(team1);
+		var vis =  ((WorldTile)TileLocation).GetVisibility(team1);
+		
+		if(Type.Edge)
+		{
+			Visibility vis2;
+			WorldTile t;
+			switch (Facing)
+			{
+				case Direction.North:
+					t = WorldManager.Instance.GetTileAtGrid(TileLocation.Position + new Vector2Int(0, -1));
+					vis2 = t.GetVisibility(team1);
+					if(vis2>vis) vis = vis2;
+					break;
+					
+				case Direction.West:
+					t = WorldManager.Instance.GetTileAtGrid(TileLocation.Position + new Vector2Int(-1, 0));
+					vis2 = t.GetVisibility(team1);
+					if(vis2>vis) vis = vis2;
+					break;
+			}
+		}
+
+		return GetMinimumVisibility(true) <= vis;
 	}
 
 

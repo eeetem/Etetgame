@@ -14,7 +14,7 @@ public static partial class WorldObjectManager
 			return SequenceType.MakeWorldObject;
 		}
 #if SERVER
-		public override bool ShouldDoServerCheck(bool player1)
+		public override bool ShouldSendToPlayerServerCheck(bool player1)
 		{
 			var wtile = WorldManager.Instance.GetTileAtGrid(position);
 			return wtile.IsVisible(team1: player1);
@@ -45,43 +45,48 @@ public static partial class WorldObjectManager
 			return t;
 		}
 
+		public override string ToString()
+		{
+			return "Making world object: " + data.ID + " " + data.Prefab + " " + position + data.Facing;
+		}
 
 		protected override void RunSequenceAction()
 		{
 
-				Console.WriteLine("Making world object: " + data.ID + " " + data.Prefab + " " + position);
-				if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
+			Console.WriteLine("DOING:"+ this);
+			if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
+			{
+				Console.WriteLine("deleting object with same if if exists");
+				DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
+			}
+			else
+			{
+				data.ID = GetNextId();
+				Console.WriteLine("Generated new id: " + data.ID);
+			}
+
+			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
+			var tile = WorldManager.Instance.GetTileAtGrid(position);
+			WorldObject wo = new WorldObject(type, tile, data);
+			wo.Fliped = data.Fliped;
+
+			type.Place(wo, tile, data);
+
+			if(wo is null) throw new Exception("Created a null worldobject");
+			lock (WoLock)
+			{
+				if (!WorldObjects.ContainsKey(wo.ID))
 				{
-					Console.WriteLine("deleting object with same if if exists");
-					DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
+					WorldObjects[wo.ID] = wo;
 				}
 				else
 				{
-					data.ID = GetNextId();
-					Console.WriteLine("Generated new id: " + data.ID);
+					WorldObjects.Add(wo.ID,wo);
 				}
-
-				WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
-				var tile = WorldManager.Instance.GetTileAtGrid(position);
-				WorldObject wo = new WorldObject(type, tile, data);
-				wo.Fliped = data.Fliped;
-
-				type.Place(wo, tile, data);
-
-				if(wo is null) throw new Exception("Created a null worldobject");
-				lock (WoLock)
-				{
-					if (!WorldObjects.ContainsKey(wo.ID))
-					{
-						WorldObjects[wo.ID] = wo;
-					}
-					else
-					{
-						WorldObjects.Add(wo.ID,wo);
-					}
 					
-				}
-		//		WorldManager.Instance.MakeFovDirty();
+			}
+			
+			
 
 		}
 

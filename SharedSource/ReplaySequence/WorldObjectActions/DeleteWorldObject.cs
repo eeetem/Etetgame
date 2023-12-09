@@ -36,11 +36,11 @@ public static partial class WorldObjectManager
 			return id;
 		}
 #if SERVER
-		public override bool ShouldDoServerCheck(bool player1)
+		public override bool ShouldSendToPlayerServerCheck(bool player1)
 		{
 			var obj = GetObject(id);
 			if (obj is null) return false;
-			return obj.IsVisible(team1: player1);
+			return obj.ShouldBeVisibilityUpdated(team1: player1);
 		}
 #endif
 

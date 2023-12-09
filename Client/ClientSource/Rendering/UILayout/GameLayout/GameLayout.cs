@@ -801,6 +801,17 @@ public class GameLayout : MenuLayout
 				}
 				SortedConsequences[obj].Add(act);
 			
+			}if (act.GetType() == typeof(Shoot))
+			{
+				var shoot = (Shoot) act;
+				var obj = WorldObjectManager.GetObject(shoot.Projectile.Result.HitObjId);
+				if(obj == null) continue;
+				if (!SortedConsequences.ContainsKey(obj))
+				{
+					SortedConsequences.Add(obj,new List<SequenceAction>());
+				}
+				SortedConsequences[obj].Add(act);
+			
 			}else if (act.IsUnitAction)
 			{
 				var uact = (UnitSequenceAction) act;
@@ -1093,6 +1104,7 @@ public class GameLayout : MenuLayout
 
 		if (drawExtra)
 		{
+			return;
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;

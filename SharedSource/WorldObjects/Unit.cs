@@ -8,6 +8,8 @@ using DefconNull.WorldActions.UnitAbility;
 using DefconNull.WorldObjects.Units;
 using Microsoft.Xna.Framework;
 using Riptide;
+using System.Collections;
+using System.Linq;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
 
@@ -361,6 +363,36 @@ if(!Paniced){
 			public int ActionPoints;
 			public int MovePoints;
 			public bool CanTurn;
+
+			public bool Equals(UnitData other)
+			{
+				return Team1 == other.Team1 && ActionPoints == other.ActionPoints && MovePoints == other.MovePoints && CanTurn == other.CanTurn && Determination == other.Determination && Crouching == other.Crouching && Panic == other.Panic && Overwatch.Equals(other.Overwatch) && MoveRangeEffect == other.MoveRangeEffect && OverWatchedTiles.SequenceEqual(other.OverWatchedTiles) && StatusEffects.SequenceEqual(other.StatusEffects);
+			}
+
+			public override bool Equals(object? obj)
+			{
+				return obj is UnitData other && Equals(other);
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					int hashCode = Team1.GetHashCode();
+					hashCode = (hashCode * 397) ^ ActionPoints;
+					hashCode = (hashCode * 397) ^ MovePoints;
+					hashCode = (hashCode * 397) ^ CanTurn.GetHashCode();
+					hashCode = (hashCode * 397) ^ Determination;
+					hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
+					hashCode = (hashCode * 397) ^ Panic.GetHashCode();
+					hashCode = (hashCode * 397) ^ Overwatch.GetHashCode();
+					hashCode = (hashCode * 397) ^ MoveRangeEffect;
+					hashCode = (hashCode * 397) ^ OverWatchedTiles.GetHashCode();
+					hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
+					return hashCode;
+				}
+			}
+
 			public int Determination;
 			public bool Crouching;
 			public bool Panic;
@@ -465,21 +497,39 @@ if(!Paniced){
 
 		protected bool Equals(Unit other)
 		{
-			return WorldObject.Equals(other.WorldObject);
+			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && overWatchedTiles.Equals(other.overWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Paniced == other.Paniced;
 		}
 
 		public override bool Equals(object? obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != GetType()) return false;
+			if (obj.GetType() != this.GetType()) return false;
 			return Equals((Unit) obj);
 		}
 
 		public override int GetHashCode()
 		{
-			return WorldObject.GetHashCode();
+			unchecked
+			{
+				int hashCode = Abilities.GetHashCode();
+				hashCode = (hashCode * 397) ^ MovePoints.GetHashCode();
+				hashCode = (hashCode * 397) ^ ActionPoints.GetHashCode();
+				hashCode = (hashCode * 397) ^ Determination.GetHashCode();
+				hashCode = (hashCode * 397) ^ MoveRangeEffect.GetHashCode();
+				hashCode = (hashCode * 397) ^ Overwatch.GetHashCode();
+				hashCode = (hashCode * 397) ^ overWatchedTiles.GetHashCode();
+				hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
+				hashCode = (hashCode * 397) ^ VisibleTiles.GetHashCode();
+				hashCode = (hashCode * 397) ^ Type.GetHashCode();
+				hashCode = (hashCode * 397) ^ canTurn.GetHashCode();
+				hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
+				hashCode = (hashCode * 397) ^ IsPlayer1Team.GetHashCode();
+				hashCode = (hashCode * 397) ^ Paniced.GetHashCode();
+				return hashCode;
+			}
 		}
+
 
 		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
 		

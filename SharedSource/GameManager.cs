@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DefconNull.Networking;
@@ -57,8 +58,18 @@ public static partial class GameManager
 	public static int score;
 	public static void Forget(WorldObject wo)
 	{
-		T1SpawnPoints.Remove(wo.TileLocation.Position);
-		T2SpawnPoints.Remove(wo.TileLocation.Position);
+		if (T1SpawnPoints.Contains(wo.TileLocation.Position))
+		{
+			Console.WriteLine("removing spawn point FOR T1");
+			T1SpawnPoints.Remove(wo.TileLocation.Position);
+		}
+
+		if(T2SpawnPoints.Contains(wo.TileLocation.Position))
+		{
+			Console.WriteLine("removing spawn point FOR T2");
+			T2SpawnPoints.Remove(wo.TileLocation.Position);
+		}
+
 		CapturePoints.Remove(wo);
 #if SERVER
 		if(T1Units.Contains(wo.ID)){

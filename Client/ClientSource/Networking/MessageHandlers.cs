@@ -73,15 +73,15 @@ public static partial class NetworkingManager
 	}
 
 	//cache tiles to be updated and load them all at once
-	public static Dictionary<Vector2Int,WorldTile.WorldTileData> recivedTiles = new Dictionary<Vector2Int, WorldTile.WorldTileData>();
+	public static readonly Dictionary<Vector2Int,WorldTile.WorldTileData> RecievedTiles = new Dictionary<Vector2Int, WorldTile.WorldTileData>();
 
 	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
 	private static void ReciveTileUpdate(Message message)
 	{
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		if(recivedTiles.ContainsKey(data.position))
-			recivedTiles.Remove(data.position);
-		recivedTiles.Add(data.position,data);
+		if(RecievedTiles.ContainsKey(data.position))
+			RecievedTiles.Remove(data.position);
+		RecievedTiles.Add(data.position,data);
 	
 	}
 	

@@ -9,16 +9,16 @@ using Riptide;
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
-public class UnitShoot : UnitSequenceAction
+public class Shoot : SequenceAction
 {
-	public override SequenceType GetSequenceType()
+	public override SequenceAction.SequenceType GetSequenceType()
 	{
-		return SequenceType.UnitShoot;
+		return SequenceAction.SequenceType.Shoot;
 	}
-
-	protected bool Equals(UnitShoot other)
+	
+	protected bool Equals(Shoot other)
 	{
-		return base.Equals(other) && OriginalDamage == other.OriginalDamage && CoverBlock == other.CoverBlock && RangeBlock == other.RangeBlock && Projectile.Equals(other.Projectile);
+		return OriginalDamage == other.OriginalDamage && CoverBlock == other.CoverBlock && RangeBlock == other.RangeBlock && Projectile.Equals(other.Projectile);
 	}
 
 	public override bool Equals(object? obj)
@@ -26,7 +26,7 @@ public class UnitShoot : UnitSequenceAction
 		if (ReferenceEquals(null, obj)) return false;
 		if (ReferenceEquals(this, obj)) return true;
 		if (obj.GetType() != this.GetType()) return false;
-		return Equals((UnitShoot) obj);
+		return Equals((Shoot) obj);
 	}
 
 	public override int GetHashCode()
@@ -46,11 +46,9 @@ public class UnitShoot : UnitSequenceAction
 	public int CoverBlock;
 	public int RangeBlock;
 	public Shootable.Projectile Projectile = new Shootable.Projectile();
-
-	public static UnitShoot Make(int actorID, Shootable.Projectile p, int originalDamage, int coverBlock, int rangeBlock) 
+	public static Shoot Make(Shootable.Projectile p, int originalDamage, int coverBlock, int rangeBlock) 
 	{
-		UnitShoot t = (GetAction(SequenceType.UnitShoot) as UnitShoot)!;
-		t.Requirements = new TargetingRequirements(actorID);
+		Shoot t = (GetAction(SequenceType.Shoot) as Shoot)!;
 		t.OriginalDamage = originalDamage;
 		t.CoverBlock = coverBlock;
 		t.RangeBlock = rangeBlock;
@@ -160,16 +158,23 @@ public class UnitShoot : UnitSequenceAction
 
 	protected override void DeserializeArgs(Message message)
 	{
-		base.DeserializeArgs(message);
+		
 		OriginalDamage = message.GetInt();
 		CoverBlock = message.GetInt();
 		RangeBlock = message.GetInt();
 		Projectile = message.GetSerializable<Shootable.Projectile>();
 	}
+#if SERVER
+	public override bool ShouldSendToPlayerServerCheck(bool player1)
+	{
+		return true;
+	}
+
+#endif
 
 	protected override void SerializeArgs(Message message)
 	{
-		base.SerializeArgs(message);
+	
 		message.Add(OriginalDamage);
 		message.Add(CoverBlock);
 		message.Add(RangeBlock);

@@ -18,7 +18,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		PlaySound = 100,
 		PostProcessingEffect =101,
 		TakeDamage = 102,
-	//	UpdateTile =103,
+		Shoot =103,
 		MakeWorldObject =104,
 		MoveCamera=105,
 		DeleteWorldObject=106,
@@ -36,7 +36,7 @@ public abstract class SequenceAction :  IMessageSerializable
 		UnitStatusEffect =10,
 		//	AbilityToggle = 11,
 		DelayedAbilityUse =12,
-		UnitShoot =13,
+
 		
 		
 		Undefined = -1,
@@ -111,9 +111,9 @@ public abstract class SequenceAction :  IMessageSerializable
 		{
 			return SequenceType.Undefined;
 		}
-		if(t== typeof(UnitShoot))
+		if(t== typeof(Shoot))
 		{
-			return SequenceType.UnitShoot;
+			return SequenceType.Shoot;
 		}
 		if(t== typeof(WorldObjectManager.DeleteWorldObject))
 		{
@@ -151,8 +151,8 @@ public abstract class SequenceAction :  IMessageSerializable
 				return typeof(UnitStatusEffect);
 			case SequenceType.DelayedAbilityUse:
 				return typeof(DelayedAbilityUse);
-			case SequenceType.UnitShoot:
-				return typeof(UnitShoot);
+			case SequenceType.Shoot:
+				return typeof(Shoot);
 			case SequenceType.DeleteWorldObject:
 				return typeof(WorldObjectManager.DeleteWorldObject);
 			default:
@@ -303,6 +303,6 @@ public abstract class SequenceAction :  IMessageSerializable
 	}
 #endif
 #if SERVER
-	public abstract bool ShouldDoServerCheck(bool player1);
+	public abstract bool ShouldSendToPlayerServerCheck(bool player1);
 	#endif
 }

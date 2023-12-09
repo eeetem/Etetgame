@@ -38,12 +38,12 @@ public partial class WorldObjectType
 				
 				break;
 			case "spawnPointT1":
-
+				Console.WriteLine("adding spawn point FOR T1");
 				GameManager.T1SpawnPoints.Add(objOfType.TileLocation.Position);
 		
 				break;
 			case "spawnPointT2":
-
+				Console.WriteLine("adding spawn point FOR T2");
 				GameManager.T2SpawnPoints.Add(objOfType.TileLocation.Position);
 
 				break;

@@ -100,25 +100,26 @@ public class Tests
 			WorldObject.WorldObjectData d = new WorldObject.WorldObjectData();
 			d.Prefab = Random.Shared.Next().ToString();
 			d.ID = Random.Shared.Next();
-			//d.Facing = (Direction) Random.Shared.Next(0, 8);
-			//d.Fliped = Random.Shared.Next(2) == 1;
-			//
-			//d.JustSpawned = Random.Shared.Next(2) == 1;
-			//d.Health = Random.Shared.Next();
-			//
-			//if (Random.Shared.Next(2) == 1)
-			//{
-			//	
-			//	var unitData = new Unit.UnitData();
-			//	unitData.Determination = Random.Shared.Next();
-			//	unitData.ActionPoints = Random.Shared.Next();
-			//	unitData.MoveRangeEffect = Random.Shared.Next();
-			//	unitData.MovePoints = Random.Shared.Next();
-			//	unitData.CanTurn = Random.Shared.Next(2) == 1;
-			//	unitData.Overwatch = new Tuple<bool, int>( Random.Shared.Next(2) == 1, Random.Shared.Next());
-			//	unitData.OverWatchedTiles = new List<Vector2Int>();
-			//	d.UnitData = unitData;
-			//}
+			d.Facing = (Direction) Random.Shared.Next(0, 8);
+			d.Fliped = Random.Shared.Next(2) == 1;
+			
+			d.JustSpawned = Random.Shared.Next(2) == 1;
+			d.Health = Random.Shared.Next();
+			
+			if (Random.Shared.Next(2) == 1)
+			{
+				
+				var unitData = new Unit.UnitData();
+				unitData.Determination = Random.Shared.Next();
+				unitData.ActionPoints = Random.Shared.Next();
+				unitData.MoveRangeEffect = Random.Shared.Next();
+				unitData.MovePoints = Random.Shared.Next();
+				unitData.CanTurn = Random.Shared.Next(2) == 1;
+				unitData.Overwatch = new Tuple<bool, int>( Random.Shared.Next(2) == 1, Random.Shared.Next());
+				unitData.OverWatchedTiles = new List<Vector2Int>();
+				unitData.StatusEffects = new List<Tuple<string, int>>();
+				d.UnitData = unitData;
+			}
 			Message message = Message.Create();
 			message.AddSerializable(d);
 			var d2 = message.GetSerializable<WorldObject.WorldObjectData>();

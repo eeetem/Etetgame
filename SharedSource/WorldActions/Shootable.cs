@@ -351,7 +351,7 @@ public class Shootable : Effect
 
 		
 		
-		var shoot = UnitShoot.Make(p.Result.HitObjId,p, preDropOffDmg, coverBlock, rangeBlock);
+		var shoot = Shoot.Make(p, preDropOffDmg, coverBlock, rangeBlock);
 		retrunList.Add(shoot);
 		if (p.Result.hit)
 		{

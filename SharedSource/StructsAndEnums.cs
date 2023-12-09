@@ -125,7 +125,7 @@ public struct Vector2Int : IMessageSerializable
 	
 	public override string ToString()
 	{
-		return "{X: " + X + " Y:" + Y + "}";
+		return "{X: " + X + " Y: " + Y + "}";
 	}
 	
 	public void Deconstruct(out int X, out int Y)

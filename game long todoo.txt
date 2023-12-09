@@ -18,6 +18,7 @@ shooting without using points -> too quick follow up action?
 grebade range dropoff
 smoke sniping
 must reload
+cant rpg through people
 
 UI Rework:
 crouch indicator

@@ -15,7 +15,7 @@ public class PostProcessingEffect : SequenceAction
 	}
 	
 #if SERVER
-	public override bool ShouldDoServerCheck(bool player1)
+	public override bool ShouldSendToPlayerServerCheck(bool player1)
 	{
 		return true;
 	}

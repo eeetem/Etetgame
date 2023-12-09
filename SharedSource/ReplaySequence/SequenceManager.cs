@@ -129,12 +129,15 @@ public class SequenceManager
 
 				CurrentSequenceTasks.Clear();
 				SequenceRunningRightNow = false;
+
+				if(SequenceQueue.Count == 0)
+				{
 #if CLIENT
-			if(SequenceQueue.Count == 0)
-			{
 				GameLayout.ReMakeMovePreview();
-			}
 #endif
+					WorldManager.Instance.MakeFovDirty();
+				}
+
 			}
 		}
 
@@ -154,7 +157,7 @@ public class SequenceManager
 
 		lock (lockObj)
 		{
-			Console.WriteLine("adding sequnce task: " + action.GetSequenceType());
+			Console.WriteLine("adding sequnce task: " + action);
 			SequenceQueue.Enqueue(action);
 		}
 	

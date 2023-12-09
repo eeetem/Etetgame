@@ -27,8 +27,8 @@ public static partial class NetworkingManager
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
 
-	///	selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
-		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
+		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
+		//selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
 		WorldManager.Instance.LoadMap(selectedMap);
 		server.Start(port, 10);
 			
@@ -301,7 +301,10 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		//worldTileData.forceRebuild = false;
 		msg.Add(worldTileData);
-		
+		if (tile.Position.X == 45 && tile.Position.Y == 80)
+		{
+			Console.WriteLine("breakpoint");
+		}
 
 
 		//add the entry if it's missing
@@ -429,7 +432,7 @@ public static partial class NetworkingManager
 
 	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
 	{
-		actions.RemoveAll(x => !x.ShouldDoServerCheck(player1));
+		actions.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(player1));
 		lock (UpdateLock)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);

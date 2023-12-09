@@ -87,7 +87,19 @@ public static partial class WorldObjectManager
 		public override bool ShouldDo()
 		{
 
-			if (ObjID != -1) return true;
+			if (ObjID != -1)
+			{
+				if (GetObject(ObjID) == null)
+				{
+					Console.WriteLine("object with id: " + ObjID + " not found for purposes of takedamage");
+					return false;
+				}
+				return true;
+			}
+			
+
+		
+			
 			if (Position == new Vector2Int(-1, -1)) return false;
 			var tile = WorldManager.Instance.GetTileAtGrid(Position);
 			if (tile.UnitAtLocation == null) return false;
@@ -97,12 +109,10 @@ public static partial class WorldObjectManager
 			return true;
 		}
 #if SERVER
-		public override bool ShouldDoServerCheck(bool player1)
+		public override bool ShouldSendToPlayerServerCheck(bool player1)
 		{
 			if (GetTargetObject() == null) return false;
-
-			var wtile = (WorldTile) (GetTargetObject()!.TileLocation);
-			return wtile.IsVisible(team1: player1);
+			return GetTargetObject()!.ShouldBeVisibilityUpdated(team1: player1);
 		}
 #endif
 

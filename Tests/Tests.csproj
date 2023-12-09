@@ -103,9 +103,6 @@
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitSequenceAction.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitSequenceAction.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitShoot.cs">
-        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitShoot.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs</Link>
       </Compile>
@@ -114,6 +111,9 @@
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\TakeDamage.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\TakeDamage.cs</Link>

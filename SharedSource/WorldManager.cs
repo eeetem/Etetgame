@@ -82,20 +82,18 @@ public  partial class WorldManager
 	}
 
 
-	public void LoadWorldTile(WorldTile.WorldTileData data)
+	public void LoadWorldTile(WorldTile.WorldTileData data, bool forceUpdateEverything = false)
 	{
 		Console.WriteLine("Loading tile at " + data.position);
 
 		WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 		
-		LoadTileObject(data.Surface,tile.Surface, tile);
-		LoadTileObject(data.NorthEdge,tile.NorthEdge, tile);
-		LoadTileObject(data.WestEdge,tile.WestEdge, tile);
-		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)));
-		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)));
-	
-		LoadTileObject(data.UnitAtLocation,tile.UnitAtLocation?.WorldObject, tile);
-		
+		LoadTileObject(data.Surface,tile.Surface, tile,forceUpdateEverything);
+		LoadTileObject(data.NorthEdge,tile.NorthEdge, tile,forceUpdateEverything);
+		LoadTileObject(data.WestEdge,tile.WestEdge, tile,forceUpdateEverything);
+		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)),forceUpdateEverything);
+		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)),forceUpdateEverything);
+		LoadTileObject(data.UnitAtLocation, tile.UnitAtLocation?.WorldObject, tile,forceUpdateEverything);
 	
 
 
@@ -114,22 +112,30 @@ public  partial class WorldManager
 
 	}
 
-	private static void LoadTileObject(WorldObject.WorldObjectData? data, WorldObject? tileObject, WorldTile tile)
+	private static void LoadTileObject(WorldObject.WorldObjectData? data, WorldObject? tileObject, WorldTile tile, bool forceUpdateEverything = false)
 	{
+		
 		if (data.HasValue)
 		{
-			if (tileObject is null)
+			var obj = WorldObjectManager.GetObject(data.Value.ID);
+			if (forceUpdateEverything || obj == null || !obj.IsVisible()) //dont update if we can see it since that causes weird stuff and we should already have all the info through sequence actionss
 			{
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
-			}
-			else if (tileObject.ID != data.Value.ID)
-			{
-				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tileObject.ID));
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
-			}
-			else if (tileObject.GetHash() != data.Value.GetHash())
-			{
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile)); //if id is same we dont need to delete
+				if (tileObject is null)
+				{
+					Console.WriteLine("desired location is null making obj: " + data.Value.ID);
+					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
+				}
+				else if (tileObject.ID != data.Value.ID)
+				{
+					Console.WriteLine("desired location is has an object with a different id(" + tileObject.ID + ")deleting and  making obj: " + data.Value.ID);
+					SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(tileObject.ID));
+					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile));
+				}
+				else if (tileObject.GetHash() != data.Value.GetHash())
+				{
+					Console.WriteLine("desired location is has an object with a different hash remaking obj: " + data.Value.ID);
+					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data.Value, tile)); //if id is same we dont need to delete
+				}
 			}
 		}
 		else if (tileObject is not null)
@@ -993,12 +999,12 @@ public  partial class WorldManager
 			CalculateFov();
 		}
 #if CLIENT
-		if( !SequenceManager.SequenceRunning && NetworkingManager.recivedTiles.Count>0){
-			foreach (var tile in new List<WorldTile.WorldTileData>(NetworkingManager.recivedTiles.Values))
+		if( !SequenceManager.SequenceRunning && NetworkingManager.RecievedTiles.Count>0){
+			foreach (var tile in new List<WorldTile.WorldTileData>(NetworkingManager.RecievedTiles.Values))
 			{
 				LoadWorldTile(tile);
 			}
-			NetworkingManager.recivedTiles.Clear();
+			NetworkingManager.RecievedTiles.Clear();
 		}
 #endif
 		
@@ -1106,7 +1112,7 @@ public  partial class WorldManager
 		CurrentMap = mapData;
 		foreach (var worldTileData in mapData.Data)
 		{
-			LoadWorldTile(worldTileData);
+			LoadWorldTile(worldTileData,true);
 		}
 
 		return true;
