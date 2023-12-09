@@ -1129,19 +1129,18 @@ public  partial class WorldManager
 		nullWorldObject = new WorldObject(null,null,data);
 	}
 
-	public string GetMapHash()
+	public int GetMapHash()
 	{
-		string hash = "";
+		int hash = 0;
 		lock (createSync)
 		{
 			foreach (var tile in _gridData)
 			{
-				hash += tile.GetHash();
+				hash += tile.GetHashCode();
 			}
 			
 		}
-	
-		var md5 = hash.GetMD5();
-		return md5;
+
+		return hash;
 	}
 }

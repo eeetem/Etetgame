@@ -31,8 +31,6 @@ public static partial class WorldObjectManager
 		}
 
 #endif
-	
-
 		Console.WriteLine("Destroyed "+obj.ID +" "+obj.Type.Name);
 
 	}

@@ -150,7 +150,7 @@ public static partial class NetworkingManager
 
 					Console.WriteLine("finished sending map data to " + connection.Id);
 					var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
-					msg.AddString(WorldManager.Instance.GetMapHash());
+					msg.AddInt(WorldManager.Instance.GetMapHash());
 					server.Send(msg, connection);
 
 				}catch(Exception e)
@@ -293,34 +293,37 @@ public static partial class NetworkingManager
 		server.Send(msg,con);
 	}
 
-	static Dictionary<Vector2Int,ValueTuple<string,string>> tileUpdateLog = new Dictionary<Vector2Int, (string, string)>();
+	static readonly Dictionary<Vector2Int,ValueTuple<int,int>> tileUpdateLog = new Dictionary<Vector2Int, (int, int)>();
 	public static void SendTileUpdate(WorldTile tile)
 	{
 		
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		//worldTileData.forceRebuild = false;
+		
 		msg.Add(worldTileData);
-		if (tile.Position.X == 45 && tile.Position.Y == 80)
+		if (tile.Position.X == 77 && tile.Position.Y == 47)
 		{
 			Console.WriteLine("breakpoint");
 		}
 
 
 		//add the entry if it's missing
-		tileUpdateLog.TryAdd(tile.Position, (string.Empty,string.Empty));
+		tileUpdateLog.TryAdd(tile.Position, (0,0));
 
+		int tileHash = tile.GetHashCode();
+		
 		bool sent = false;
-		if (tile.IsVisible(team1:true)&& GameManager.Player1 is not null && GameManager.Player1.Connection is not null &&tileUpdateLog[tile.Position].Item1 != tile.GetHash())
+		if (tile.IsVisible(team1:true)&& GameManager.Player1 is not null && GameManager.Player1.Connection is not null &&tileUpdateLog[tile.Position].Item1 != tileHash)
 		{
-			tileUpdateLog[tile.Position] = (tile.GetHash(), tileUpdateLog[tile.Position].Item2);
+			tileUpdateLog[tile.Position] = (tile.GetHashCode(), tileUpdateLog[tile.Position].Item2);
 			
 			server.Send(msg,GameManager.Player1.Connection,false);
 			sent = true;
 		}
-		if (tile.IsVisible(team1:false) && GameManager.Player2 is not null && GameManager.Player2.Connection is not null &&tileUpdateLog[tile.Position].Item2 != tile.GetHash())
+		if (tile.IsVisible(team1:false) && GameManager.Player2 is not null && GameManager.Player2.Connection is not null &&tileUpdateLog[tile.Position].Item2 != tileHash)
 		{
-			tileUpdateLog[tile.Position] = (tileUpdateLog[tile.Position].Item1,tile.GetHash());
+			tileUpdateLog[tile.Position] = (tileUpdateLog[tile.Position].Item1,tile.GetHashCode());
 			server.Send(msg,GameManager.Player2.Connection,false);
 			sent = true;
 		}

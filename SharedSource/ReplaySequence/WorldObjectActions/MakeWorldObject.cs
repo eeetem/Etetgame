@@ -17,7 +17,29 @@ public static partial class WorldObjectManager
 		public override bool ShouldSendToPlayerServerCheck(bool player1)
 		{
 			var wtile = WorldManager.Instance.GetTileAtGrid(position);
-			return wtile.IsVisible(team1: player1);
+			var vis = wtile.GetVisibility(player1);
+		
+			if(PrefabManager.WorldObjectPrefabs[data.Prefab].Edge)
+			{
+				Visibility vis2;
+				WorldTile t;
+				switch (data.Facing)
+				{
+					case Direction.North:
+						t = WorldManager.Instance.GetTileAtGrid(position + new Vector2Int(0, -1));
+						vis2 = t.GetVisibility(player1);
+						if(vis2>vis) vis = vis2;
+						break;
+					
+					case Direction.West:
+						t = WorldManager.Instance.GetTileAtGrid(position + new Vector2Int(-1, 0));
+						vis2 = t.GetVisibility(player1);
+						if(vis2>vis) vis = vis2;
+						break;
+				}
+			}
+
+			return vis > Visibility.None;
 		}
 #endif
 

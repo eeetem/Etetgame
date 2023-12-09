@@ -282,7 +282,7 @@ public class Shootable : Effect
 		if (p.Result.hit)
 		{
 			var hitobj = PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
-			if (hitobj!.Type.Edge || hitobj.TileLocation.Position != (Vector2Int)p.Result.EndPoint)
+			if (hitobj == null || hitobj!.Type.Edge || hitobj.TileLocation.Position != (Vector2Int)p.Result.EndPoint)
 			{
 				return new Tuple<bool, string>(false,"Can't hit target");
 			}
