@@ -16,6 +16,13 @@ public static class Program
 		
 	static void Main(string[] args)
 	{ 
+		
+		FileStream filestream = new FileStream("serverLog.txt", FileMode.Create);
+		var streamwriter = new StreamWriter(filestream);
+		streamwriter.AutoFlush = true;
+		Console.SetOut(streamwriter);
+		Console.SetError(streamwriter);
+		
 		Console.WriteLine("Hello World!");
 		string port = "52233";
 		bool allowSinglePlayer = true;

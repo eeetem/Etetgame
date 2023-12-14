@@ -9,10 +9,9 @@ namespace DefconNull.WorldObjects;
 public partial class WorldObject : IDrawable
 {
 	private Transform2 DrawTransform = null!;
-	private int spriteVariation;
-	private float DrawOrder;
+	public int spriteVariation;
 	public PreviewData PreviewData;
-
+	
 
 	public Transform2 GetDrawTransform()
 	{
@@ -25,10 +24,11 @@ public partial class WorldObject : IDrawable
 		return TileLocation.Position;
 	}
 
-	public void GenerateDrawOrder()
-	{
 
-		DrawOrder = TileLocation.Position.X + TileLocation.Position.Y;
+
+	public float GetDrawOrder()
+	{
+		float DrawOrder = TileLocation.Position.X + TileLocation.Position.Y + 0.1f;
 		if (Type.Surface)
 		{
 			DrawOrder--;
@@ -37,14 +37,27 @@ public partial class WorldObject : IDrawable
 		{
 			DrawOrder += 0.5f;
 		}
-		
-		DrawOrder += Type.Zoffset;
-	}
 
-	public float GetDrawOrder()
-	{
+		if (Type.Edge)
+		{
+			switch (Type.SolidCover)
+			{
+				case Cover.Full:
+					DrawOrder += 0.3f;
+					break;
+				case Cover.High:
+					DrawOrder += 0.2f;
+					break;
+				case Cover.Low:
+					DrawOrder += 0.1f;
+					break;
+			}
+		}
+
+		DrawOrder += Type.Zoffset;
 		return DrawOrder;
 	}
+
 
 	public Texture2D GetTexture()
 	{
@@ -61,22 +74,22 @@ public partial class WorldObject : IDrawable
 		string state = "";
 		if (UnitComponent != null)
 		{
-			state = "/Stand";
+			state = "Stand";
 			if (UnitComponent!.Crouching)
-			{	
-				state = "/Crouch";	
+			{
+				state = "Crouch";	
 			}
 		}
-		
-		state += _currentAnimation?.GetState() ?? "";
-		return Type.GetSprite(spriteVariation, spriteIndex,state);
+		state+= CurrentAnimation?.GetState() ?? "";
+		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
+		return baseSprite;
 
 	}
 
 	public Color GetColor()
 	{
 
-		Color color = ((DefconNull.WorldTile) TileLocation).GetTileColor();
+		Color color = ((WorldTile) TileLocation).GetTileColor();
 
 		if (UnitComponent != null)
 		{
@@ -104,7 +117,7 @@ public partial class WorldObject : IDrawable
 	}
 
 	private Queue<Animation> animationQueue = new Queue<Animation>();
-	private Animation? _currentAnimation = null;
+	public Animation? CurrentAnimation = null;
 	public void AnimationUpdate(float gametime)
 	{
 
@@ -112,14 +125,14 @@ public partial class WorldObject : IDrawable
 		{
 			UnitComponent.Update(gametime);
 		}
-		_currentAnimation?.Process(gametime);
+		CurrentAnimation?.Process(gametime);
 
-		if (_currentAnimation == null || _currentAnimation.IsOver)
+		if (CurrentAnimation == null || CurrentAnimation.IsOver)
 		{
-			_currentAnimation = null;
+			CurrentAnimation = null;
 			if (animationQueue.Count > 0)
 			{
-				_currentAnimation = animationQueue.Dequeue();
+				CurrentAnimation = animationQueue.Dequeue();
 			}
 		}
 		

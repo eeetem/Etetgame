@@ -210,7 +210,7 @@ public  partial class WorldManager
 		});
 		
 #if SERVER
-	
+			Console.WriteLine("sending FOV tile updates");
 			foreach (var tile in _gridData)
 			{
 				NetworkingManager.SendTileUpdate(tile);
@@ -1000,9 +1000,9 @@ public  partial class WorldManager
 		}
 #if CLIENT
 		if( !SequenceManager.SequenceRunning && NetworkingManager.RecievedTiles.Count>0){
-			foreach (var tile in new List<WorldTile.WorldTileData>(NetworkingManager.RecievedTiles.Values))
+			foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
 			{
-				LoadWorldTile(tile);
+				LoadWorldTile(tile.Item2);
 			}
 			NetworkingManager.RecievedTiles.Clear();
 		}

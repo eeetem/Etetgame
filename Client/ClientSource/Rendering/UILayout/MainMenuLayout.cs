@@ -215,7 +215,7 @@ GameManager.PreGameData = preGameDataStruct;
 			for (int i = 0; i < 8; i++)
 			{
 				var cdata = new Unit.UnitData(false);
-				int r = Random.Shared.Next(4);
+				int r = Random.Shared.Next(1);
 				string unit;
 				switch (r)
 				{
@@ -237,12 +237,12 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),Direction.South,cdata));
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),(Direction)Random.Shared.Next(8),cdata));
 			}
 			for (int i = 0; i < 8; i++)
 			{
 				var cdata = new Unit.UnitData(true);
-				int r = Random.Shared.Next(4);
+				int r = Random.Shared.Next(1);
 				string unit;
 				switch (r)
 				{
@@ -264,7 +264,7 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),Direction.North,cdata));
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),(Direction)Random.Shared.Next(8),cdata));
 			}
 			
 			switchTicker = 0;

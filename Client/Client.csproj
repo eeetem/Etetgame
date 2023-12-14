@@ -256,6 +256,15 @@
         <None Update="Content\Icons\Repositioning.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\Units\Scout\Bottom\Crouch.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Bottom\Stand.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Top\base.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
@@ -282,7 +291,7 @@
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
         <PackageReference Include="Myra" Version="1.5.2" />
         <PackageReference Include="NetDiscordRpc" Version="1.0.2" />
-        <PackageReference Include="RiptideNetworking.Riptide" Version="2.0.0" />
+        <PackageReference Include="RiptideNetworking.Riptide" Version="2.1.2" />
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
     <ItemGroup>

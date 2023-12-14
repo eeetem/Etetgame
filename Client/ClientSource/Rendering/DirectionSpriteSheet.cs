@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.Rendering;
 
-public class DirectionSpriteSheet
+public class DirectionSpriteSheet//this operates on the whole folder looking for variants
 {
 	private readonly Dictionary<string,Texture2D[]> _spriteSheets = new Dictionary<string, Texture2D[]>();
 	private string texturePath;

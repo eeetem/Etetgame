@@ -12,11 +12,11 @@ namespace DefconNull.Rendering;
 
 public static class RenderSystem
 {
-	private static GraphicsDevice graphicsDevice = null!;
+	public static GraphicsDevice GraphicsDevice = null!;
 	public static void Init(GraphicsDevice graphicsdevice)
 	{
 
-		graphicsDevice = graphicsdevice;
+		GraphicsDevice = graphicsdevice;
 	}
 
 	public static List<Tuple<Color, List<Vector2Int>>> debugPaths = new List<Tuple<Color, List<Vector2Int>>>();
@@ -48,6 +48,10 @@ public static class RenderSystem
 			if (tile.UnitAtLocation != null)
 			{
 				objs.Add(tile.UnitAtLocation.WorldObject);
+			}
+			if (tile.UnitAtLocation != null)
+			{
+				objs.Add(tile.UnitAtLocation);
 			}
 
 			foreach (var item in tile.ObjectsAtLocation)

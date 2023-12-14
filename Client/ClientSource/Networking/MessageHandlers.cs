@@ -73,15 +73,41 @@ public static partial class NetworkingManager
 	}
 
 	//cache tiles to be updated and load them all at once
-	public static readonly Dictionary<Vector2Int,WorldTile.WorldTileData> RecievedTiles = new Dictionary<Vector2Int, WorldTile.WorldTileData>();
+	public static readonly Dictionary<Vector2Int,ValueTuple<long,WorldTile.WorldTileData>> RecievedTiles = new Dictionary<Vector2Int, ValueTuple<long,WorldTile.WorldTileData>>();
 
 	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
 	private static void ReciveTileUpdate(Message message)
 	{
+		long timestamp = message.GetLong();
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		if(RecievedTiles.ContainsKey(data.position))
-			RecievedTiles.Remove(data.position);
-		RecievedTiles.Add(data.position,data);
+
+
+		Console.WriteLine("tileupdate recived: " + data.position);
+		if (data.position == new Vector2Int(52,78))
+		{
+			Console.WriteLine("TARGET TILE UPDATE RECIVED: "+data);
+		}
+		if (RecievedTiles.ContainsKey(data.position))
+		{
+			Console.WriteLine("tile already present");
+			if (RecievedTiles[data.position].Item1 < timestamp)
+			{
+				Console.WriteLine("update is newer, discarding old");
+				RecievedTiles.Remove(data.position);
+				RecievedTiles.Add(data.position, (timestamp,data));
+			}
+			else
+			{
+				Console.WriteLine("old update, discarding");
+			}
+		}
+		else
+		{
+			Console.WriteLine("new tile, adding");
+			RecievedTiles.Add(data.position, (timestamp,data));
+		}
+			
+		
 	
 	}
 	

@@ -58,13 +58,14 @@ public static partial class GameManager
 	public static int score;
 	public static void Forget(WorldObject wo)
 	{
-		if (T1SpawnPoints.Contains(wo.TileLocation.Position))
+
+		if (wo.Type.Surface&&T1SpawnPoints.Contains(wo.TileLocation.Position))
 		{
 			Console.WriteLine("removing spawn point FOR T1");
 			T1SpawnPoints.Remove(wo.TileLocation.Position);
 		}
 
-		if(T2SpawnPoints.Contains(wo.TileLocation.Position))
+		if(wo.Type.Surface&&T2SpawnPoints.Contains(wo.TileLocation.Position))
 		{
 			Console.WriteLine("removing spawn point FOR T2");
 			T2SpawnPoints.Remove(wo.TileLocation.Position);

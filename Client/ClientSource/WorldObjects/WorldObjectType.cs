@@ -14,10 +14,9 @@ public partial class WorldObjectType
 	public List<Tuple<string, int>> Variations;
 	public int TotalVariationsWeight;
 	public float Zoffset { get; set; }
-	public void GenerateSpriteSheet(string name,List<Tuple<string, int>>? variations = null)
+	public virtual void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations)
 	{
-		if(variations == null){
-			variations = new List<Tuple<string, int>>();
+		if(variations.Count==0){
 			variations.Add(new Tuple<string, int>("", 1));
 		}
 		foreach (var va in variations)
@@ -34,7 +33,7 @@ public partial class WorldObjectType
 		}
 	}
 
-	public virtual Texture2D GetSprite(int spriteVariation, int spriteIndex, string extraState = "")
+	public Texture2D GetSprite(int spriteVariation, int spriteIndex, string extraState = "")
 	{
 		return variationSheets[spriteVariation].GetSprite(spriteIndex, extraState);
 	}

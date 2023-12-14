@@ -83,14 +83,6 @@ public partial class WorldObject
 		set
 		{
 			_tileLocation = value;
-#if CLIENT
-				
-
-			if (_tileLocation != null)
-			{
-				GenerateDrawOrder();
-			}
-#endif
 		}
 	}
 	public Unit? UnitComponent { get;  set; }
@@ -213,11 +205,8 @@ public partial class WorldObject
 		public int ID;
 		public string Prefab ="";
 		
-		
-		
         public bool Fliped;
-		
-		
+        
 		public Unit.UnitData? UnitData;
 		public int Health;
 		public int Lifetime;
@@ -277,7 +266,7 @@ public partial class WorldObject
 
 		public override string ToString()
 		{
-			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Fliped)}: {Fliped}, {nameof(Prefab)}: {Prefab}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(Lifetime)}: {Lifetime}, {nameof(JustSpawned)}: {JustSpawned}";
+			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Prefab)}: {Prefab}, {nameof(Fliped)}: {Fliped}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(Lifetime)}: {Lifetime}, {nameof(JustSpawned)}: {JustSpawned}";
 		}
 	}
 
@@ -366,4 +355,6 @@ public partial class WorldObject
 	{
 		return Type.Name + ID + Health;
 	}
+
+
 }

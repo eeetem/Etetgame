@@ -65,6 +65,20 @@ public class UnitMove : UnitSequenceAction
 	{
 		return SequenceType.Move;
 	}
+#if SERVER
+	public override bool ShouldSendToPlayerServerCheck(bool player1)
+	{
+		if (base.ShouldSendToPlayerServerCheck(player1)) return true;
+		foreach (var pos in Path)
+		{
+			var wtile = (WorldTile) WorldManager.Instance.GetTileAtGrid(pos);
+			if( wtile.IsVisible(team1: player1))return true;
+		}
+
+		return false;
+	}
+#endif
+	
 
 	public override bool ShouldDo()
 	{
@@ -73,47 +87,31 @@ public class UnitMove : UnitSequenceAction
 
 	protected override void RunSequenceAction()
 	{
+
+		while (Path.Count >0)
+		{
+
+			if(Path[0] != Actor.WorldObject.TileLocation.Position)
+				Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
+
 #if CLIENT
-		//	debugPaths.Add(new Tuple<Color, List<Vector2Int>>(new Color(Random.Shared.NextSingle(),Random.Shared.NextSingle(),Random.Shared.NextSingle()), new List<Vector2Int>(Path)));
+				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
+#else
+			Thread.Sleep(10);
+
 #endif
 		
-			//	int tick = 0;
-			
-			while (Path.Count >0)
-			{
-				//Console.WriteLine("movement task is running: "+tick);
-				//tick++;
-
-				var frametask1 = new Task(delegate
-				{
-
-					if(Path[0] != Actor.WorldObject.TileLocation.Position)
-						Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
-
-				});
-				WorldManager.Instance.RunNextAfterFrames(frametask1);
-				#if CLIENT
-				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
-			#else
-					Thread.Sleep(10);
-
-			#endif
-				var frametask2 = new Task(delegate
-				{
-					//	Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
+			Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
 					
-					Actor.WorldObject.TileLocation.UnitAtLocation = null;
-					var newTile = WorldManager.Instance.GetTileAtGrid(Path[0]);
-					Actor.WorldObject.TileLocation = newTile;
-					newTile.UnitAtLocation = Actor;
-			
-#if CLIENT
-		Actor.WorldObject.GenerateDrawOrder();
-#endif
-					Path.RemoveAt(0);
+			Actor.WorldObject.TileLocation.UnitAtLocation = null;
+			var newTile = WorldManager.Instance.GetTileAtGrid(Path[0]);
+			Actor.WorldObject.TileLocation = newTile;
+			newTile.UnitAtLocation = Actor;
+
+			Path.RemoveAt(0);
 
 
-					WorldManager.Instance.MakeFovDirty();
+			WorldManager.Instance.MakeFovDirty();
 
 #if CLIENT
 					if (Actor.WorldObject.IsVisible())
@@ -122,18 +120,13 @@ public class UnitMove : UnitSequenceAction
 					}
 #endif
 					
-				});
-				//	Console.WriteLine("queued movement task to: "+Path[0]+" path size left: "+Path.Count);
-				WorldManager.Instance.RunNextAfterFrames(frametask2);
-
-				while (frametask2.Status != TaskStatus.RanToCompletion)
-				{
-					Thread.Sleep(10);
-				}
+			if(Path.Count > 0)
+				Console.WriteLine("queued movement task to: "+Path[0]+" path size left: "+Path.Count);
+	
+		}
+		Console.WriteLine("movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
-			}
-			Console.WriteLine("movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
-			Actor.canTurn = true;
+		Actor.canTurn = true;
 
 
 	}

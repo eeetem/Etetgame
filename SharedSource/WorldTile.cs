@@ -382,7 +382,11 @@ public partial class WorldTile : IWorldTile
 	}
 	[Serializable]
 	public struct WorldTileData : IMessageSerializable{
-	
+		public override string ToString()
+		{
+			return $"{nameof(NorthEdge)}: {NorthEdge}, {nameof(WestEdge)}: {WestEdge}, {nameof(EastEdge)}: {EastEdge}, {nameof(SouthEdge)}: {SouthEdge}, {nameof(Surface)}: {Surface}, {nameof(UnitAtLocation)}: {UnitAtLocation}, {nameof(position)}: {position}, {nameof(ObjectsAtLocation)}: {ObjectsAtLocation}";
+		}
+
 		public WorldObject.WorldObjectData? NorthEdge;
 		public WorldObject.WorldObjectData? WestEdge;
 		public WorldObject.WorldObjectData? EastEdge;

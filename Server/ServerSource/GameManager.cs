@@ -44,35 +44,38 @@ public static partial class GameManager
 		
 
 		int i = 0;
-	//debug
-	var newComp = new List<SquadMember>();
-		for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
+		if (Player1?.SquadComp == null || Player1.SquadComp.Count == 0)
 		{
-			var sq = new SquadMember();
-			sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[j];
-			Vector2Int pos = new Vector2Int(0, 0);
-			do
-			{
-				pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
-			}while(newComp.Find((s) => s.Position == pos) != null);
-			sq.Position = pos;
-			newComp.Add(sq);
-		}
-		for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount-PrefabManager.UnitPrefabs.Keys.Count; j++)
-		{
-			var sq = new SquadMember();
-			sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[Random.Shared.Next(PrefabManager.UnitPrefabs.Count)];
-			Vector2Int pos = new Vector2Int(0, 0);
-			do
-			{
-				pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
-			}while(newComp.Find((s) => s.Position == pos) != null);
-			sq.Position = pos;
-			newComp.Add(sq);
-		}
-		Player1.SetSquadComp(newComp);
 		
+
+			var newComp = new List<SquadMember>();
+			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
+			{
+				var sq = new SquadMember();
+				sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[j];
+				Vector2Int pos = new Vector2Int(0, 0);
+				do
+				{
+					pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
+				}while(newComp.Find((s) => s.Position == pos) != null);
+				sq.Position = pos;
+				newComp.Add(sq);
+			}
+			for (int j = 0; j < WorldManager.Instance.CurrentMap.unitCount-PrefabManager.UnitPrefabs.Keys.Count; j++)
+			{
+				var sq = new SquadMember();
+				sq.Prefab = PrefabManager.UnitPrefabs.Keys.ToList()[Random.Shared.Next(PrefabManager.UnitPrefabs.Count)];
+				Vector2Int pos = new Vector2Int(0, 0);
+				do
+				{
+					pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
+				}while(newComp.Find((s) => s.Position == pos) != null);
+				sq.Position = pos;
+				newComp.Add(sq);
+			}
+			Player1.SetSquadComp(newComp);
 		
+		}
 		foreach (var spawn in Player1!.SquadComp!)
 		{
 			Unit.UnitData cdata = new Unit.UnitData(true);
@@ -89,9 +92,8 @@ public static partial class GameManager
 		}
 
 		
-	//	if (Player2!.IsAI)
-	if (true)	
-    {
+		if (Player2.SquadComp == null || Player2.SquadComp.Count == 0)
+		{
 			var newComcp = new List<SquadMember>();
 			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
 			{

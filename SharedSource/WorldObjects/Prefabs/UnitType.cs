@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DefconNull.WorldActions;
 using DefconNull.WorldActions.UnitAbility;
+using Microsoft.Xna.Framework.Graphics;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
@@ -8,12 +9,12 @@ using DefconNull.Rendering.UILayout.GameLayout;
 
 namespace DefconNull.WorldObjects;
 
-public class UnitType : WorldObjectType
+public partial class UnitType : WorldObjectType
 {
 
 	public UnitType(string name, List<UnitAbility> actions) : base(name)
 	{
-		Actions = actions;
+		this.actions = actions;
 	}
 
 	public int MoveRange = 4;
@@ -27,7 +28,7 @@ public class UnitType : WorldObjectType
 
 
 
-	private readonly List<UnitAbility> Actions = new List<UnitAbility>();
+	private readonly List<UnitAbility> actions;
 
 	public WorldConseqences? SpawnEffect { get; set; }
 
@@ -36,7 +37,7 @@ public class UnitType : WorldObjectType
 	{
 		wo.Face(data.Facing,false);
 		Unit component = new Unit(wo,this,data.UnitData!.Value,data.JustSpawned);
-		Actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
+		actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
 #if CLIENT
 		GameLayout.RegisterUnit(component);
 #endif

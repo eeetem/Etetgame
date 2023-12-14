@@ -37,10 +37,7 @@ public static class UI
 	private static Widget root = null!;
 	public static void SetUI(UiLayout? newUI)
 	{
-		lock (currentUi)
-		{
-			
-		
+
 			UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
 			
 		
@@ -62,7 +59,7 @@ public static class UI
 			{
 				root = currentUi.Generate(Desktop, lastDifferentUI);
 			}
-		}
+		
 		Console.WriteLine("Changing UI to: "+currentUi);
 	}
 	private static MouseState lastMouseState;

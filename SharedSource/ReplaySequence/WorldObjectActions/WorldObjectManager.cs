@@ -12,6 +12,13 @@ namespace DefconNull.ReplaySequence.WorldObjectActions;
 
 public static partial class WorldObjectManager
 {
+	
+	
+	public static void Init()
+	{
+		throw new NotImplementedException();
+	}
+	
 	/**
 	 * Destructs the world object with the given ID properly with all destruction effects rather than just deleting it
 	 * 
@@ -60,5 +67,6 @@ public static partial class WorldObjectManager
 
 		return NextId;
 	}
-	
+
+
 }

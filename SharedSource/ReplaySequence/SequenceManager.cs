@@ -64,7 +64,7 @@ public class SequenceManager
 							break;//most likely cause by the task waiting for UI Thread
 						}
 						
-						Console.WriteLine($"sequnceing a  task: {i}{peeked.GetSequenceType()}");
+						//Console.WriteLine($"sequnceing a  task: {i}{peeked.GetSequenceType()}");
 						i++;
 						StartNextTask();
 					}

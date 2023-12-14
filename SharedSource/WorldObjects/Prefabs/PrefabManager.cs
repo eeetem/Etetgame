@@ -151,9 +151,6 @@ public static class PrefabManager
 				
 #if CLIENT
 
-	
-
-
 			type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
 
 #endif
@@ -201,7 +198,7 @@ public static class PrefabManager
 
 
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name);//this is a bit inconsistent but eeeh
+			unitType.GenerateSpriteSheet("Units/"+name, new List<Tuple<string, int>>());//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);
