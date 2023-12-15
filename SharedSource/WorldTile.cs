@@ -327,10 +327,11 @@ public partial class WorldTile : IWorldTile
 				_surface = null;
 			}
 			if (value != null && (value.Type.Edge || !value.Type.Surface))
-				throw new Exception("attempted to set a nonsurface to surface");
+					throw new Exception("attempted to set a nonsurface to surface");
 			if (_surface != null)
 			{
-				throw new Exception("attempted to place an object over an existing one");
+				Console.Write("overwritting surface");
+				WorldObjectManager.DeleteWorldObject.Make(_surface.ID).GenerateTask().RunSynchronously();
 			}
 			_surface = value;
 		}

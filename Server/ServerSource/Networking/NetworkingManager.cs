@@ -334,7 +334,6 @@ public static partial class NetworkingManager
 			Console.WriteLine("Not sending tile to player 1: " + tile.Position +" because tile is not visible");
 		} 
 
-
 		if (tile.IsVisible(team1:false))
 		{
 			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && tileUpdateLog[tile.Position].Item2 != tileHash)

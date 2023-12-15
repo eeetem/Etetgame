@@ -15,8 +15,16 @@
     <name>basicFloor</name>
   </object>
   <object Faceable = "true" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/roadStripe0" offset= "0,0"/>
+    <sprite name="Environment/Surfaces/roadStripe" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+    </sprite>
     <name>Striped Road</name>
+  </object>
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite name="Environment/Surfaces/blankRoad" offset= "0,0">
+    </sprite>
+    <name>Blank Road</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
     <sprite name="Environment/Surfaces/water" variations = "1" offset= "0,0"/>
