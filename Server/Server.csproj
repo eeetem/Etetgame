@@ -22,6 +22,7 @@
       <PackageReference Include="MD5" Version="2.0.4" />
       <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+      <PackageReference Include="NLog" Version="5.2.7" />
       <PackageReference Include="RiptideNetworking.Riptide" Version="2.1.2" />
     </ItemGroup>
 
@@ -82,6 +83,9 @@
       </Compile>
       <Compile Include="..\SharedSource\IWorldTile.cs">
         <Link>SharedSource\IWorldTile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Log.cs">
+        <Link>SharedSource\Log.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\NetworkingManager.cs">
         <Link>SharedSource\NetworkingManager.cs</Link>

@@ -291,6 +291,7 @@
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
         <PackageReference Include="Myra" Version="1.5.2" />
         <PackageReference Include="NetDiscordRpc" Version="1.0.2" />
+        <PackageReference Include="NLog" Version="5.2.7" />
         <PackageReference Include="RiptideNetworking.Riptide" Version="2.1.2" />
         <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
     </ItemGroup>
@@ -328,8 +329,14 @@
       <Compile Include="..\SharedSource\IWorldTile.cs">
         <Link>SharedSource\IWorldTile.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\Log.cs">
+        <Link>SharedSource\Log.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\NetworkingManager.cs">
         <Link>SharedSource\NetworkingManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\DummyNetworking.cs">
+        <Link>SharedSource\Networking\DummyNetworking.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>

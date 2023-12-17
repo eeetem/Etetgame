@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Utils;
@@ -23,7 +24,7 @@ public static partial class NetworkingManager
 		server.TimeoutTime = ushort.MaxValue;
 #endif
 
-		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
+		server.ClientConnected += (a, b) => { Log.Message("NETWORK MANAGER",$" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
 
@@ -32,14 +33,14 @@ public static partial class NetworkingManager
 		WorldManager.Instance.LoadMap(selectedMap);
 		server.Start(port, 10);
 			
-		Console.WriteLine("Started server at port" + port);
+		Log.Message("NETWORK MANAGER","Started server at port" + port);
 		
 	}
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
 		string name = connectmessage.GetString();
-		Console.WriteLine("Begining Client Register: "+name);
+		Log.Message("NETWORK MANAGER","Begining Client Register: "+name);
 		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']')||name=="AI"||name=="Practice Opponent")
 		{
 			var msg = Message.Create();
@@ -95,8 +96,14 @@ public static partial class NetworkingManager
 
 		
 
-		Console.WriteLine("Client Register Done");
+		Log.Message("NETWORK MANAGER","Client Register Done");
 		server.Accept(connection);
+		connection.MaxSendAttempts = 50;
+		connection.MaxAvgSendAttempts = 5;
+		connection.AvgSendAttemptsResilience = 10;
+		
+		
+		
 		SendGameData();
 		SendPreGameInfo(); 
 		SendMapData(connection);
@@ -113,9 +120,10 @@ public static partial class NetworkingManager
 	public static void SendMapData(Connection connection)
 	{
 	
-		Console.WriteLine("initiating sending map data to "+connection.Id+"...");
+		Log.Message("NETWORK MANAGER","initiating sending map data to "+connection.Id+"...");
 		WorldManager.Instance.SaveCurrentMapTo("temp.mapdata");//we dont actually read the file but we call this so the currentMap updates
 		var packet = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataInitiate);
+		packet.AddString(WorldManager.Instance.GetMapHash());
 		packet.AddString(WorldManager.Instance.CurrentMap.Name);
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
@@ -131,8 +139,9 @@ public static partial class NetworkingManager
 			{
 				try
 				{
-					Console.WriteLine("Actually sending map data to " + connection.Id + "...");
+					Log.Message("NETWORK MANAGER","Actually sending map data to " + connection.Id + "...");
 
+					int sendTiles = 0;
 					for (int x = 0; x < 100; x++)
 					{
 						for (int y = 0; y < 100; y++)
@@ -141,19 +150,23 @@ public static partial class NetworkingManager
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
 								ForceSendTileUpdate(tile, connection); //only send updates about tiles that have something on them
+								sendTiles++;
+								if (sendTiles >30)
+								{
+									Thread.Sleep(10);
+									sendTiles = 0;
+								}
 							}
 						}
 					}
 
-					Console.WriteLine("finished sending map data to " + connection.Id);
-					var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapDataFinish);
-					msg.AddString(WorldManager.Instance.GetMapHash());
-					server.Send(msg, connection);
+					Log.Message("NETWORK MANAGER","finished sending map data to " + connection.Id);
+	
 
 				}catch(Exception e)
 				{
-					Console.WriteLine("Error sending map data to " + connection.Id);
-					Console.WriteLine(e);
+					Log.Message("NETWORK MANAGER","Error sending map data to " + connection.Id);
+					Log.Message("NETWORK MANAGER",e.ToString());
 				}
 
 		
@@ -172,7 +185,7 @@ public static partial class NetworkingManager
 
 	public static void Kick(string reason,Connection connection)
 	{
-		Console.WriteLine("Kicking " + connection.Id + " for " + reason);
+		Log.Message("NETWORK MANAGER","Kicking " + connection.Id + " for " + reason);
 		if (connection.IsConnected)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
@@ -191,7 +204,7 @@ public static partial class NetworkingManager
 		
 	private static void ClientDisconnected(object? sender, ServerDisconnectedEventArgs e)
 	{
-		Console.WriteLine($"Connection lost. Reason {e.Reason} {server.ClientCount}");
+		Log.Message("NETWORK MANAGER",$"Connection lost. Reason {e.Reason} {server.ClientCount}");
 		string name;
 		if (e.Client == GameManager.Player1?.Connection)
 		{
@@ -286,7 +299,7 @@ public static partial class NetworkingManager
 
 		var msg = Message.Create(MessageSendMode.Unreliable, NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
-		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 		msg.Add(worldTileData);
 		server.Send(msg,con);
 	}
@@ -294,11 +307,11 @@ public static partial class NetworkingManager
 	static readonly Dictionary<Vector2Int,ValueTuple<string,string>> tileUpdateLog = new Dictionary<Vector2Int, (string, string)>();
 	public static void SendTileUpdate(WorldTile tile)
 	{
-		
+		if(tile.Surface == null) return;//ignore empty tiles
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.TileUpdate);
 		WorldTile.WorldTileData worldTileData = tile.GetData();
 		//worldTileData.forceRebuild = false;
-		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
 		msg.Add(worldTileData);
 
 		//add the entry if it's missing
@@ -308,7 +321,7 @@ public static partial class NetworkingManager
 		string tileHash = tile.GetHash();
 
 
-			Console.WriteLine("updating tile at "+tile.Position+"with hash: "+tileHash);
+		Log.Message("NETWORK MANAGER","updating tile at "+tile.Position+"with hash: "+tileHash);
 		
 	
 
@@ -318,7 +331,7 @@ public static partial class NetworkingManager
 		{
 			if (GameManager.Player1 is not null && GameManager.Player1.Connection is not null && tileUpdateLog[tile.Position].Item1 != tileHash)
 			{
-				Console.WriteLine("Sending tile to player 1: " + tile.Position);
+				Log.Message("NETWORK MANAGER","Sending tile to player 1: " + tile.Position);
 				tileUpdateLog[tile.Position] = (tile.GetHash(), tileUpdateLog[tile.Position].Item2);
 
 				server.Send(msg, GameManager.Player1.Connection, false);
@@ -326,31 +339,31 @@ public static partial class NetworkingManager
 			}
 			else
 			{
-				Console.WriteLine("Not sending tile to player 1: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item1);
+				Log.Message("NETWORK MANAGER","Not sending tile to player 1: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item1);
 			}
 		}
 		else
 		{
-			Console.WriteLine("Not sending tile to player 1: " + tile.Position +" because tile is not visible");
+			Log.Message("NETWORK MANAGER","Not sending tile to player 1: " + tile.Position +" because tile is not visible");
 		} 
 
 		if (tile.IsVisible(team1:false))
 		{
 			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && tileUpdateLog[tile.Position].Item2 != tileHash)
 			{
-				Console.WriteLine("Sending tile to player 2: " + tile.Position);
+				Log.Message("NETWORK MANAGER","Sending tile to player 2: " + tile.Position);
 				tileUpdateLog[tile.Position] = (tileUpdateLog[tile.Position].Item1, tile.GetHash());
 				server.Send(msg, GameManager.Player2.Connection, false);
 				sent = true;
 			}
 			else
 			{
-				Console.WriteLine("Not sending tile to player 2: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item2);
+				Log.Message("NETWORK MANAGER","Not sending tile to player 2: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item2);
 			}
 		}
 		else
 		{
-			Console.WriteLine("Not sending tile to player 2: " + tile.Position +" because tile is not visible");
+			Log.Message("NETWORK MANAGER","Not sending tile to player 2: " + tile.Position +" because tile is not visible");
 		}
 
 		//if we sent atleast to 1 player also update the spectators
@@ -376,7 +389,7 @@ public static partial class NetworkingManager
 
 	public static void SendGameData()
 	{
-		Console.WriteLine("sending game data");
+		Log.Message("NETWORK MANAGER","sending game data");
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
 		var state = GameManager.GetState();
 		state.IsPlayerOne = true;
@@ -455,12 +468,19 @@ public static partial class NetworkingManager
 			}
 
 		}
-
+		
+		
+		actions.ForEach(x=>x.ReleaseIfShould());
 	}
+	
 
 	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
 	{
 		actions.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(player1));
+		
+		List<SequenceAction> filteredActions = new List<SequenceAction>();
+		actions.ForEach(x=>filteredActions.Add(x.FilterForPlayer(player1)));
+		
 		lock (UpdateLock)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
@@ -472,8 +492,8 @@ public static partial class NetworkingManager
 			{
 				msg.Add((ushort)ReplaySequenceTarget.Player2);
 			}
-			msg.Add(actions.Count);
-			foreach (var a in actions)
+			msg.Add(filteredActions.Count);
+			foreach (var a in filteredActions)
 			{
 				msg.Add((int) a.GetSequenceType());
 				msg.AddSerializable(a);
@@ -481,21 +501,21 @@ public static partial class NetworkingManager
 
 			if (player1 && GameManager.Player1 != null && GameManager.Player1.Connection != null)
 			{
-				server.Send(msg,GameManager.Player1.Connection);
+				server.Send(msg,GameManager.Player1.Connection,false);
 			}
 			else if (!player1 && GameManager.Player2 != null && GameManager.Player2.Connection != null)
 			{
-				server.Send(msg,GameManager.Player2.Connection);
+				server.Send(msg,GameManager.Player2.Connection,false);
 			}
 			
 
 			foreach (var spec in GameManager.Spectators)
 			{
-				server.Send(msg, spec.Connection);
+				server.Send(msg, spec.Connection,false);
 			}
-
-			
+			msg.Release();
 		}
+		filteredActions.ForEach(x=>x.ReleaseIfShould());
 	}
 
 	public static void SendEndTurn()
@@ -504,5 +524,71 @@ public static partial class NetworkingManager
 		server.SendToAll(msg);
 	}
 
+	static readonly Dictionary<int,ValueTuple<string,string>> UnitUpdateLog = new Dictionary<int, (string, string)>();
 
+	public static void SendUnitUpdate(Unit unit)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
+		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+		msg.Add(unit.WorldObject.ID);
+		msg.Add(unit.GetData());
+
+		var tile = (WorldTile)unit.WorldObject.TileLocation!;
+		//add the entry if it's missing
+		UnitUpdateLog.TryAdd(unit.WorldObject.ID, (string.Empty,string.Empty));
+
+
+		var unitHash = unit.GetHash();
+		bool sent = false;
+		if (unit.IsPlayer1Team || tile.IsVisible(team1:true))
+		{
+			if (GameManager.Player1 is not null && GameManager.Player1.Connection is not null && UnitUpdateLog[unit.WorldObject.ID].Item1 != unitHash)
+			{
+				Log.Message("NETWORK MANAGER","Sending unit to player 1: " + tile.Position);
+				tileUpdateLog[tile.Position] = (unitHash, UnitUpdateLog[unit.WorldObject.ID].Item2);
+
+				server.Send(msg, GameManager.Player1.Connection, false);
+				sent = true;
+			}
+			else
+			{
+				Log.Message("NETWORK MANAGER","Not sending unit to player 1: " + tile.Position +" becuase sent hash is the same: "+UnitUpdateLog[unit.WorldObject.ID].Item1);
+			}
+		}
+		else
+		{
+			Log.Message("NETWORK MANAGER","Not sending unit to player 1: " + tile.Position +" because unit is not visible");
+		} 
+
+		if (!unit.IsPlayer1Team || tile.IsVisible(team1:false))
+		{
+			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && UnitUpdateLog[unit.WorldObject.ID].Item2 != unitHash)
+			{
+				Log.Message("NETWORK MANAGER","Sending unit to player 2: " + tile.Position);
+				tileUpdateLog[tile.Position] = (UnitUpdateLog[unit.WorldObject.ID].Item1, unitHash);
+				server.Send(msg, GameManager.Player2.Connection, false);
+				sent = true;
+			}
+			else
+			{
+				Log.Message("NETWORK MANAGER","Not sending unit to player 2: " + tile.Position +" becuase sent hash is the same: "+UnitUpdateLog[unit.WorldObject.ID].Item2);
+			}
+		}
+		else
+		{
+			Log.Message("NETWORK MANAGER","Not sending unit to player 2: " + tile.Position +" because unit is not visible");
+		}
+
+		//if we sent atleast to 1 player also update the spectators
+		if (sent)
+		{
+			foreach (var spectator in GameManager.Spectators)
+			{
+				server.Send(msg, spectator.Connection, false);
+			}
+		}
+
+		msg.Release();
+		
+	}
 }

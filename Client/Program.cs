@@ -27,7 +27,7 @@ public static class Program
 
 		DateTime date = DateTime.Now;
 			
-		File.WriteAllText("CrashDump"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+		File.WriteAllText("/Logs/Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
 	
 	}
 }

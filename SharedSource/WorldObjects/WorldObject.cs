@@ -15,7 +15,7 @@ public partial class WorldObject
 {
 
 	public int LifeTime = -100;
-	public WorldObject(WorldObjectType? type, IWorldTile tile, WorldObjectData data)
+	public WorldObject(WorldObjectType? type, IWorldTile? tile, WorldObjectData data)
 	{
 		ID = data.ID;
 		
@@ -50,8 +50,13 @@ public partial class WorldObject
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
+		int seed = ID;
+		if (tile != null)
+		{
+			seed = (int)(tile.Position.X + tile.Position.Y + ID);
+		}
 		
-		var r = new Random(tile.Position.X + tile.Position.Y +ID);
+		var r = new Random(seed);
 		int roll = (r.Next(1000)) % type.TotalVariationsWeight;
 		for (int i = 0; i < type.Variations.Count; i++)
 		{
@@ -76,7 +81,7 @@ public partial class WorldObject
 
 
 	private IWorldTile _tileLocation = null!;
-	public IWorldTile TileLocation
+	public IWorldTile? TileLocation
 	{
 		get => _tileLocation;
 

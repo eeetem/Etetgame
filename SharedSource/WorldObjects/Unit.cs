@@ -584,7 +584,7 @@ if(!Paniced){
 
 		public string GetHash()
 		{
-			return WorldObject.GetHash();
+			return WorldObject.GetHash() + ActionPoints + MovePoints + Determination + MoveRangeEffect + Overwatch + overWatchedTiles + StatusEffects + VisibleTiles + Type + canTurn + Crouching + IsPlayer1Team + Paniced;
 		}
 
 		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)

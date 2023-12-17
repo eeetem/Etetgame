@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using DefconNull.LocalObjects;
 using DefconNull.Networking;
 using DefconNull.Rendering;
@@ -33,14 +34,8 @@ public class Game1 : Game
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
-
 		Window.AllowUserResizing = false;
-		FileStream filestream = new FileStream("clientLog"+DateTime.Now.ToFileTime()+".txt", FileMode.Create);
-		var streamwriter = new StreamWriter(filestream);
-		streamwriter.AutoFlush = true;
-		Console.SetOut(streamwriter);
-		Console.SetError(streamwriter);
-
+		
 	}
 
 	public float GetWindowWidth()
@@ -50,7 +45,7 @@ public class Game1 : Game
 
 	protected override void Initialize()
 	{
-
+		Log.Init();
 		spriteBatch = new SpriteBatch(GraphicsDevice);
 		Camera.Init(GraphicsDevice,Window);
 		//WorldEditSystem.Init();

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.ReplaySequence;
+using DefconNull.WorldObjects;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -18,6 +19,7 @@ public static partial class NetworkingManager
 		UI.Desktop.Widgets.Remove(mapLoadMsg);
 		mapLoadMsg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
 		var oldname = WorldManager.Instance.CurrentMap.Name;
+		string hash = message.GetString();
 		WorldManager.Instance.CurrentMap = new WorldManager.MapData();
 		WorldManager.Instance.CurrentMap.Name = message.GetString();
 		WorldManager.Instance.CurrentMap.Author = message.GetString();
@@ -30,29 +32,18 @@ public static partial class NetworkingManager
 		
 		var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapDataInitiateConfirm);
 		client?.Send(msg);
-	}
-	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
-	private static void RecieveEndTrugn(Message message)
-	{
-		GameManager.SetEndTurn();
-	}
-
-
-	[MessageHandler((ushort) NetworkMessageID.MapDataFinish)]
-	private static void FinishMapRecieve(Message message)
-	{
+		
 		Task t = new Task(delegate
 		{
-			while (SequenceManager.SequenceRunning)//still loading the map
+			do
 			{
-				Thread.Sleep(100);
-			}
+				Thread.Sleep(1000);
+			} while (SequenceManager.SequenceRunning || RecievedTiles.Count>0); //still loading the map
 
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
-			string hash = message.GetString();
 			if (WorldManager.Instance.GetMapHash() != hash)
 			{
-				Console.WriteLine("Map Hash Mismatch, resending");
+				Log.Message("MESSAGE HANDLER","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);
 				client?.Send(msg);
 			
@@ -61,9 +52,15 @@ public static partial class NetworkingManager
 			
 		});
 		t.Start();
-
-		
 	}
+	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
+	private static void RecieveEndTrugn(Message message)
+	{
+		GameManager.SetEndTurn();
+	}
+
+
+	
 
 	[MessageHandler((ushort)NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
@@ -82,29 +79,61 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 
 
-		Console.WriteLine("tileupdate recived: " + data.position);
-		if (data.position == new Vector2Int(52,78))
-		{
-			Console.WriteLine("TARGET TILE UPDATE RECIVED: "+data);
-		}
+		Log.Message("MESSAGE HANDLER","unit Update recived: " + data);
+
 		if (RecievedTiles.ContainsKey(data.position))
 		{
-			Console.WriteLine("tile already present");
-			if (RecievedTiles[data.position].Item1 < timestamp)
+			Log.Message("MESSAGE HANDLER","tile already present");
+			if (RecievedTiles[data.position].Item1 <= timestamp)
 			{
-				Console.WriteLine("update is newer, discarding old");
+				Log.Message("MESSAGE HANDLER","update is newer, discarding old");
 				RecievedTiles.Remove(data.position);
 				RecievedTiles.Add(data.position, (timestamp,data));
 			}
 			else
 			{
-				Console.WriteLine("old update, discarding");
+				Log.Message("MESSAGE HANDLER","old update, discarding");
 			}
 		}
 		else
 		{
-			Console.WriteLine("new tile, adding");
+			Log.Message("MESSAGE HANDLER","new tile, adding");
 			RecievedTiles.Add(data.position, (timestamp,data));
+		}
+			
+		
+	
+	}
+	
+	public static readonly Dictionary<int,ValueTuple<long,WorldObject.WorldObjectData>> RecivedUnits = new Dictionary<int, ValueTuple<long,WorldObject.WorldObjectData>>();
+
+	[MessageHandler((ushort)NetworkMessageID.UnitUpdate)]
+	private static void ReciveUnitUpdate(Message message)
+	{
+		long timestamp = message.GetLong();
+		WorldObject.WorldObjectData data = message.GetSerializable<WorldObject.WorldObjectData>();
+
+
+		Log.Message("MESSAGE HANDLER","unit update recived: " + data);
+
+		if (RecivedUnits.ContainsKey(data.ID))
+		{
+			Log.Message("MESSAGE HANDLER","tile already present");
+			if (RecivedUnits[data.ID].Item1 <= timestamp)
+			{
+				Log.Message("MESSAGE HANDLER","update is newer, discarding old");
+				RecivedUnits.Remove(data.ID);
+				RecivedUnits.Add(data.ID, (timestamp,data));
+			}
+			else
+			{
+				Log.Message("MESSAGE HANDLER","old update, discarding");
+			}
+		}
+		else
+		{
+			Log.Message("MESSAGE HANDLER","new unit, adding");
+			RecivedUnits.Add(data.ID, (timestamp,data));
 		}
 			
 		
@@ -122,7 +151,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.PreGameData)]
 	private static void RecivePreGameData(Message message)
 	{
-		Console.WriteLine("LobbyData Recived");
+		Log.Message("MESSAGE HANDLER","LobbyData Recived");
 		GameManager.PreGameData = message.GetSerializable<GameManager.PreGameDataStruct>();
 	}
 	

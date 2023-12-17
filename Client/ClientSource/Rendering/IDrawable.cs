@@ -13,7 +13,5 @@ public interface IDrawable
 
 	public Color GetColor();
 
-	public bool IsVisible();
-
 
 }

@@ -78,7 +78,7 @@ public static partial class NetworkingManager
 			}
 			else
 			{
-				UI.ShowMessage("Connection Rejected By Server", b.ToString()!);
+				
 				Disconnect();
 				if (MasterServerNetworking.IsConnected)
 				{
@@ -88,6 +88,7 @@ public static partial class NetworkingManager
 				{
 					UI.SetUI(new MainMenuLayout());
 				}
+				UI.ShowMessage("Connection Lost", b.Reason.ToString());
 			}
 		};
 		client.MessageReceived += (a, b) =>
@@ -116,14 +117,7 @@ public static partial class NetworkingManager
 		client?.Disconnect();
 		WorldManager.Instance.WipeGrid();
 		GameManager.intated = false;
-		/*	if (MasterServerNetworking.serverConnection != null && MasterServerNetworking.serverConnection.IsAlive)
-			{
-				UI.SetUI(new LobbyBrowserLayout());
-			}
-			else
-			{*/
-	//	UI.SetUI(new MainMenuLayout());
-		//}
+	
 		GameManager.ResetGame();
 	}
 

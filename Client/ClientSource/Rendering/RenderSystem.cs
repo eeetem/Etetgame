@@ -94,10 +94,10 @@ public static class RenderSystem
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 
-			if (!obj.IsVisible())//hide tileobjects
-			{
-				continue;
-			}
+			//if (!obj.IsVisible())//hide tileobjects
+			//{
+			//	continue;
+			//}
 			
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 			
@@ -179,10 +179,10 @@ public static class RenderSystem
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 
-			if (!obj.IsVisible())//hide tileobjects
-			{
-				continue;
-			}
+			//if (!obj.IsVisible())//hide tileobjects
+			//{
+			//	continue;
+			//}
 
 			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
 
