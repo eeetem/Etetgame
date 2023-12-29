@@ -146,7 +146,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.MapDataInitiateConfirm)]
 	private static void MapRecivedConfirm(ushort senderID, Message message)
 	{
-		Console.WriteLine("Recived map confirm from: " + senderID);
+		Log.Message("NETWORKING","Recived map confirm from: " + senderID);
 		ClientsReadyForMap.Add(senderID);
 	}
 
@@ -159,7 +159,7 @@ public static partial class NetworkingManager
 			{
 				if (!GameManager.IsPlayer1Turn)
 				{
-					Console.WriteLine("Client sent an action out of turn");
+					Log.Message("NETWORKING","Client sent an action out of turn");
 					return;
 				}
 			}
@@ -167,7 +167,7 @@ public static partial class NetworkingManager
 			{
 				if (GameManager.IsPlayer1Turn)
 				{
-					Console.WriteLine("Client sent an action out of turn");
+					Log.Message("NETWORKING","Client sent an action out of turn");
 					return;
 				}
 			}
@@ -176,7 +176,7 @@ public static partial class NetworkingManager
 		{
 			if (!(GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID) && !(GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID))
 			{
-				Console.WriteLine("Spectator tried to control a unit");
+				Log.Message("NETWORKING","Spectator tried to control a unit");
 				return;
 			}
 		}
@@ -186,19 +186,19 @@ public static partial class NetworkingManager
 
 		if (WorldObjectManager.GetObject(packet.UnitId) == null)
 		{
-			Console.WriteLine("Recived packet for a non existant object: " + packet.UnitId);
+			Log.Message("NETWORKING","Recived packet for a non existant object: " + packet.UnitId);
 			return;
 		}
 
 		Unit? controllable = WorldObjectManager.GetObject(packet.UnitId)?.UnitComponent;
 		if(controllable == null)
 		{
-			Console.WriteLine("Recived packet for a non controllable object: " + packet.UnitId);
+			Log.Message("NETWORKING","Recived packet for a non controllable object: " + packet.UnitId);
 			return;
 		}
 		if(controllable.IsPlayer1Team != GameManager.IsPlayer1Turn)
 		{
-			Console.WriteLine("Client sent an action for worng teams Unit");
+			Log.Message("NETWORKING","Client sent an action for worng teams Unit");
 			return;
 		}
 

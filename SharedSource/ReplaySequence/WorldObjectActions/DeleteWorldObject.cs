@@ -63,9 +63,9 @@ public static partial class WorldObjectManager
 
 		protected override void RunSequenceAction()
 		{
-			Console.WriteLine("tryint to delete world object: " + id);
+			Log.Message("WORLD OBJECT MANAGER","tryint to delete world object: " + id);
 				if (!WorldObjects.ContainsKey(id)) return;
-			Console.WriteLine("Deleting world object: " + id);
+			Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
 				if (id < NextId)
 				{
 				//	NextId = id; //reuse IDs

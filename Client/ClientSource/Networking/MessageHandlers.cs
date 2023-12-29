@@ -43,7 +43,7 @@ public static partial class NetworkingManager
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			if (WorldManager.Instance.GetMapHash() != hash)
 			{
-				Log.Message("MESSAGE HANDLER","Map Hash Mismatch, resending");
+				Log.Message("NETWORKING","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);
 				client?.Send(msg);
 			
@@ -79,25 +79,25 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 
 
-		Log.Message("MESSAGE HANDLER","unit Update recived: " + data);
+		Log.Message("NETWORKING","unit Update recived: " + data);
 
 		if (RecievedTiles.ContainsKey(data.position))
 		{
-			Log.Message("MESSAGE HANDLER","tile already present");
+			Log.Message("NETWORKING","tile already present");
 			if (RecievedTiles[data.position].Item1 <= timestamp)
 			{
-				Log.Message("MESSAGE HANDLER","update is newer, discarding old");
+				Log.Message("NETWORKING","update is newer, discarding old");
 				RecievedTiles.Remove(data.position);
 				RecievedTiles.Add(data.position, (timestamp,data));
 			}
 			else
 			{
-				Log.Message("MESSAGE HANDLER","old update, discarding");
+				Log.Message("NETWORKING","old update, discarding");
 			}
 		}
 		else
 		{
-			Log.Message("MESSAGE HANDLER","new tile, adding");
+			Log.Message("NETWORKING","new tile, adding");
 			RecievedTiles.Add(data.position, (timestamp,data));
 		}
 			
@@ -114,25 +114,25 @@ public static partial class NetworkingManager
 		WorldObject.WorldObjectData data = message.GetSerializable<WorldObject.WorldObjectData>();
 
 
-		Log.Message("MESSAGE HANDLER","unit update recived: " + data);
+		Log.Message("NETWORKING","unit update recived: " + data);
 
 		if (RecivedUnits.ContainsKey(data.ID))
 		{
-			Log.Message("MESSAGE HANDLER","tile already present");
+			Log.Message("NETWORKING","tile already present");
 			if (RecivedUnits[data.ID].Item1 <= timestamp)
 			{
-				Log.Message("MESSAGE HANDLER","update is newer, discarding old");
+				Log.Message("NETWORKING","update is newer, discarding old");
 				RecivedUnits.Remove(data.ID);
 				RecivedUnits.Add(data.ID, (timestamp,data));
 			}
 			else
 			{
-				Log.Message("MESSAGE HANDLER","old update, discarding");
+				Log.Message("NETWORKING","old update, discarding");
 			}
 		}
 		else
 		{
-			Log.Message("MESSAGE HANDLER","new unit, adding");
+			Log.Message("NETWORKING","new unit, adding");
 			RecivedUnits.Add(data.ID, (timestamp,data));
 		}
 			
@@ -151,7 +151,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.PreGameData)]
 	private static void RecivePreGameData(Message message)
 	{
-		Log.Message("MESSAGE HANDLER","LobbyData Recived");
+		Log.Message("NETWORKING","LobbyData Recived");
 		GameManager.PreGameData = message.GetSerializable<GameManager.PreGameDataStruct>();
 	}
 	

@@ -24,6 +24,7 @@ namespace DefconNull;
 
 public  partial class WorldManager
 {
+
     private readonly WorldTile[,] _gridData;
     private static WorldManager instance;
     public static WorldManager Instance
@@ -84,7 +85,7 @@ public  partial class WorldManager
 
     public void LoadWorldTile(WorldTile.WorldTileData data, bool forceUpdateEverything = false)
     {
-        Console.WriteLine("Loading tile at " + data.position);
+        Log.Message("WORLD MANAGER","Loading tile at " + data.position);
 
         WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 		
@@ -122,18 +123,18 @@ public  partial class WorldManager
             {
                 if (tileObject is null)
                 {
-                    Console.WriteLine("desired location is null making obj: " + data.Value.ID);
+                  Log.Message("WORLD MANAGER","desired location is null making obj: " + data.Value.ID);
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
                 }
                 else if (tileObject.ID != data.Value.ID)
                 {
-                    Console.WriteLine("desired location is has an object with a different id(" + tileObject.ID + ")deleting and  making obj: " + data.Value.ID);
+                    Log.Message("WORLD MANAGER","desired location is has an object with a different id(" + tileObject.ID + ")deleting and  making obj: " + data.Value.ID);
                     WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunSynchronously();
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
                 }
                 else if (tileObject.GetHash() != data.Value.GetHash())
                 {
-                    Console.WriteLine("desired location is has an object with a different hash remaking obj: " + data.Value.ID);
+                    Log.Message("WORLD MANAGER","desired location is has an object with a different hash remaking obj: " + data.Value.ID);
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
                 }
             }
@@ -211,7 +212,7 @@ public  partial class WorldManager
         });
 		
 #if SERVER
-        Console.WriteLine("sending FOV tile updates");
+        Log.Message("WORLD MANAGER","sending FOV tile updates");
         foreach (var tile in _gridData)
         {
             NetworkingManager.SendTileUpdate(tile);

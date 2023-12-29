@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
 using Riptide;
+using Riptide.Utils;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
 using TcpClient = Riptide.Transports.Tcp.TcpClient;
 
@@ -32,6 +33,7 @@ public static partial class NetworkingManager
 	}
 	public static bool Connect(string ipport,string name)
 	{
+		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		ipport = ipport.Trim();
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());
 		if(client!=null)
@@ -52,7 +54,7 @@ public static partial class NetworkingManager
 			return false;
 		}
 	
-		Console.WriteLine($"{client} Connection established");
+		Log.Message("NETWORKING",$"{client} Connection established");
 
 		client.ConnectionFailed += (a, b) =>
 		{
@@ -93,7 +95,7 @@ public static partial class NetworkingManager
 		};
 		client.MessageReceived += (a, b) =>
 		{
-			Console.WriteLine("Recived Message: " + (NetworkMessageID)b.MessageId);
+			Log.Message("NETWORKING","Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
 		client.TimeoutTime = 10000;

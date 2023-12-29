@@ -20,7 +20,7 @@ public static class Program
 		
 	static void Main(string[] args)
 	{
-		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
+		//RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		server = new Server(new TcpServer());
 			
 

@@ -40,5 +40,10 @@ public static partial class NetworkingManager
 		Player2 = 1,
 		All =2,
 	}
+	
+	private static void LogNetCode(string msg)
+	{
+		DefconNull.Log.Message("NETWORKING",msg);
+	}
 
 }
