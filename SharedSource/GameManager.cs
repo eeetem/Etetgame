@@ -72,14 +72,14 @@ public static partial class GameManager
 		}
 
 		CapturePoints.Remove(wo);
-#if SERVER
+
 		if(T1Units.Contains(wo.ID)){
 			T1Units.Remove(wo.ID);
 		}
 		if(T2Units.Contains(wo.ID)){
 			T2Units.Remove(wo.ID);
 		}
-#endif
+
 	}
 
 	private static void EndGame(bool player1Win)
@@ -273,30 +273,26 @@ public static partial class GameManager
 
 	}
 
-    
+	public static readonly List<int> T1Units = new();
+	public static readonly List<int> T2Units = new();
+#if CLIENT
+	public static List<Unit> GetMyTeamUnits(int dimension = -1)
+	{
+		return GetTeamUnits(IsPlayer1,dimension);
+	}
+	public static List<Unit> GetEnemyTeamUnits(int dimension = -1)
+	{
+		return GetTeamUnits(!IsPlayer1,dimension);
+	}
+
+#endif
+  
 	public static List<Unit> GetTeamUnits(bool team1, int dimension = -1)
 	{
 		List<int>ids = new List<int>();
-#if SERVER
-		ids = team1 ? T1Units : T2Units;
-#elif CLIENT
-		if(team1==IsPlayer1)
-		{
-			foreach (var u in GameLayout.MyUnits)
-			{
-				ids.Add(u.WorldObject.ID);
-			}
-		}
-		else
-		{
-			foreach (var u in GameLayout.EnemyUnits)
-			{
-				ids.Add(u.WorldObject.ID);
-			}
-		}
 
-		
-#endif
+		ids = team1 ? T1Units : T2Units;
+
 		List<Unit> units = new List<Unit>();
 		
 		foreach (var id in ids)

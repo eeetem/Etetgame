@@ -124,24 +124,24 @@ public  partial class WorldManager
                 if (tileObject is null)
                 {
                   Log.Message("WORLD MANAGER","desired location is null making obj: " + data.Value.ID);
-                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
+                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
                 }
                 else if (tileObject.ID != data.Value.ID)
                 {
                     Log.Message("WORLD MANAGER","desired location is has an object with a different id(" + tileObject.ID + ")deleting and  making obj: " + data.Value.ID);
-                    WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunSynchronously();
-                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
+                    WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunTaskSynchronously();
+                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
                 }
                 else if (tileObject.GetHash() != data.Value.GetHash())
                 {
                     Log.Message("WORLD MANAGER","desired location is has an object with a different hash remaking obj: " + data.Value.ID);
-                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunSynchronously();
+                    WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
                 }
             }
         }
         else if (tileObject is not null)
         {
-            WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunSynchronously();;
+            WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunTaskSynchronously();;
         }
     }
 
@@ -983,7 +983,7 @@ public  partial class WorldManager
                 }
                 else
                 {
-                    task.Item1.RunSynchronously();
+                    task.Item1.RunTaskSynchronously();
                 }
             }
 
@@ -1028,15 +1028,23 @@ public  partial class WorldManager
         if (obj== null)
         {
             Log.Message("WORLD MANAGER","creating unit " + tileItem2.ID);
-            WorldObjectManager.MakeWorldObject.Make(tileItem2).GenerateTask().RunSynchronously();
+            WorldObjectManager.MakeWorldObject.Make(tileItem2).GenerateTask().RunTaskSynchronously();
+
         }
         else
         {
             Log.Message("WORLD MANAGER","updating unit " + tileItem2.ID);
-            WorldObjectManager.MakeWorldObject.Make(tileItem2, (WorldTile)obj.TileLocation).GenerateTask().RunSynchronously();
+            WorldObjectManager.MakeWorldObject.Make(tileItem2, (WorldTile)obj.TileLocation).GenerateTask().RunTaskSynchronously();
         }
 
-       
+        if (tileItem2.UnitData.Value.Team1 && !GameManager.T1Units.Contains(tileItem2.ID))
+        {
+            GameManager.T1Units.Add(tileItem2.ID);
+        }
+        else if(!GameManager.T2Units.Contains(tileItem2.ID))
+        {
+            GameManager.T2Units.Add(tileItem2.ID);
+        }
      
     }
 

@@ -79,7 +79,7 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 
 
-		Log.Message("NETWORKING","unit Update recived: " + data);
+		Log.Message("NETWORKING","TILE Update recived: " + data);
 
 		if (RecievedTiles.ContainsKey(data.position))
 		{
@@ -112,18 +112,20 @@ public static partial class NetworkingManager
 	{
 		long timestamp = message.GetLong();
 		WorldObject.WorldObjectData data = message.GetSerializable<WorldObject.WorldObjectData>();
+		int id = data.ID;
 
 
-		Log.Message("NETWORKING","unit update recived: " + data);
 
-		if (RecivedUnits.ContainsKey(data.ID))
+		Log.Message("NETWORKING","UNIT update recived: " + data);
+
+		if (RecivedUnits.ContainsKey(id))
 		{
 			Log.Message("NETWORKING","tile already present");
-			if (RecivedUnits[data.ID].Item1 <= timestamp)
+			if (RecivedUnits[id].Item1 <= timestamp)
 			{
 				Log.Message("NETWORKING","update is newer, discarding old");
-				RecivedUnits.Remove(data.ID);
-				RecivedUnits.Add(data.ID, (timestamp,data));
+				RecivedUnits.Remove(id);
+				RecivedUnits.Add(id, (timestamp,data));
 			}
 			else
 			{

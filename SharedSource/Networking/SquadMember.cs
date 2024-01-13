@@ -1,11 +1,20 @@
 ﻿using System;
+using DefconNull.WorldObjects;
 using Riptide;
 
 namespace DefconNull;
 
 
-public class SquadMember : IMessageSerializable
+public struct SquadMember : IMessageSerializable
 {
+	public SquadMember()
+	{
+	}
+	public SquadMember(string name)
+	{
+		Prefab = name;
+	}
+	
 	public string Prefab { get; set; } = "";
 	public Vector2Int Position { get; set; } = new Vector2Int(0, 0);
 
@@ -16,7 +25,7 @@ public class SquadMember : IMessageSerializable
 
 	}
 
-	protected bool Equals(SquadMember other)
+	bool Equals(SquadMember other)
 	{
 		return Prefab == other.Prefab && Position.Equals(other.Position);
 	}

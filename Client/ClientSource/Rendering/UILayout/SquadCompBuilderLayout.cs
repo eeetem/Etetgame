@@ -116,18 +116,16 @@ public class SquadCompBuilderLayout : UiLayout
 
 	
 	static SquadMember? _currentlyPlacing;
-	private static void StartPlacing(string? unit)
+	private static void StartPlacing(string unit)
 	{
-		_currentlyPlacing = new SquadMember();
-		_currentlyPlacing.Prefab = unit;
-
+		_currentlyPlacing = new SquadMember(unit);
 	}
 
 	private Panel? itemMenu;
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		SquadMember memberAtLocation = null;
+		SquadMember? memberAtLocation = null;
 		foreach (var member in MyComposition)
 		{
 			if (member.Position == position)
@@ -145,17 +143,18 @@ public class SquadCompBuilderLayout : UiLayout
 
 		if(_currentlyPlacing!=null&& memberAtLocation == null && (_mySpawnPoints.Contains(position)|| _otherSpawnPoints.Contains(position)))
 		{
-			_currentlyPlacing.Position = position;
+			var currentlyPlacing = _currentlyPlacing.Value;
+			currentlyPlacing.Position = position;
 			if(_mySpawnPoints.Contains(position))
 			{
-				MyComposition.Add(_currentlyPlacing);
+				MyComposition.Add(currentlyPlacing);
 			}
 			else
 			{
-				OtherComposition.Add(_currentlyPlacing);
+				OtherComposition.Add(currentlyPlacing);
 			}
 			
-			var placed = _currentlyPlacing;
+			var placed = currentlyPlacing;
 			_currentlyPlacing = null;
 			UI.Desktop.Widgets.Remove(itemMenu);
 			itemMenu = new Panel();
@@ -171,8 +170,8 @@ public class SquadCompBuilderLayout : UiLayout
 		else if(memberAtLocation!=null)
 		{
 			_currentlyPlacing = memberAtLocation;
-			MyComposition.Remove(memberAtLocation);
-			OtherComposition.Remove(memberAtLocation);
+			MyComposition.Remove(memberAtLocation.Value);
+			OtherComposition.Remove(memberAtLocation.Value);
 		}
 
 		freeslots.Text = "Free Units " + (WorldManager.Instance.CurrentMap.unitCount - MyComposition.Count);
@@ -187,7 +186,7 @@ public class SquadCompBuilderLayout : UiLayout
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			var Mousepos = TileCoordinate;
-			_currentlyPlacing.Position = Mousepos;
+			_currentlyPlacing = _currentlyPlacing.Value with { Position = Mousepos };
 		}
 
 	}
@@ -196,10 +195,10 @@ public class SquadCompBuilderLayout : UiLayout
 	{
 		base.RenderBehindHud(batch, deltatime);
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		if (_currentlyPlacing != null)
+		if (_currentlyPlacing.HasValue)
 		{
-			var previewSprite = PrefabManager.UnitPrefabs[_currentlyPlacing.Prefab].GetSprite(0,0,"/Stand");
-			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
+			var previewSprite = PrefabManager.UnitPrefabs[_currentlyPlacing.Value.Prefab].GetSprite(0,0,"/Stand");
+			batch.Draw(previewSprite, Utility.GridToWorldPos(_currentlyPlacing.Value.Position+ new Vector2(-1.5f, -0.5f)), Color.White*0.5f);
 		}
 
 		foreach (var member in MyComposition)

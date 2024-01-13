@@ -137,7 +137,7 @@ public abstract class UnitSequenceAction : SequenceAction
 			if (Requirements.ActorID!= -1)
 			{
 				var obj =WorldObjectManager.GetObject(Requirements.ActorID);
-				if(obj == null) Console.WriteLine("Sequence Actor not found");
+				if(obj == null) throw new Exception("Sequence Actor not found");
 				return obj?.UnitComponent;
 			}
 

@@ -74,10 +74,10 @@ public partial class WorldObject : IDrawable
 		string state = "";
 		if (UnitComponent != null)
 		{
-			state = "Stand";
+			state = "/Stand";
 			if (UnitComponent!.Crouching)
 			{
-				state = "Crouch";	
+				state = "/Crouch";	
 			}
 		}
 		state+= CurrentAnimation?.GetState() ?? "";

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -26,6 +27,14 @@ public static partial class Utility
     private static int mainThreadId;
 // If called in the non main thread, will return false;
     public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == mainThreadId;
+
+
+    public static void RunTaskSynchronously(this Task t)
+    {
+        t.Start();
+        t.Wait();
+        if(t.IsFaulted) throw t.Exception!;
+    }
 
     public static void AddNullableString(this Message msg, string? s)
     {

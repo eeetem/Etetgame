@@ -525,28 +525,43 @@ public static partial class NetworkingManager
 		server.SendToAll(msg);
 	}
 
-	static readonly Dictionary<int,ValueTuple<string,string>> UnitUpdateLog = new Dictionary<int, (string, string)>();
+	static readonly Dictionary<int,(Unit.UnitData,Unit.UnitData)> UnitUpdateLog = new Dictionary<int, (Unit.UnitData, Unit.UnitData)>();
 
+	
 	public static void SendUnitUpdate(Unit unit)
 	{
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
-		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-		msg.Add(unit.WorldObject.ID);
-		msg.Add(unit.GetData());
+
 
 		var tile = (WorldTile)unit.WorldObject.TileLocation!;
 		//add the entry if it's missing
-		UnitUpdateLog.TryAdd(unit.WorldObject.ID, (string.Empty,string.Empty));
+		if (UnitUpdateLog.ContainsKey(unit.WorldObject.ID) == false)
+		{
+			var pseudoMsg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
+			pseudoMsg.AddLong(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+			var pseudoData = new WorldObject.WorldObjectData("");
+			pseudoData.ID = unit.WorldObject.ID;
+			pseudoData.UnitData = new Unit.UnitData(unit.IsPlayer1Team);
+	
+			pseudoMsg.Add(pseudoData);
+			server.SendToAll(pseudoMsg);
+			UnitUpdateLog.TryAdd(unit.WorldObject.ID, (new Unit.UnitData(),new Unit.UnitData()));
+		}
+
+		
 
 
-		var unitHash = unit.GetHash();
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
+		msg.AddLong(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+		msg.Add(unit.WorldObject.GetData());
+		
+		var data = unit.GetData();
 		bool sent = false;
 		if (unit.IsPlayer1Team || tile.IsVisible(team1:true))
 		{
-			if (GameManager.Player1 is not null && GameManager.Player1.Connection is not null && UnitUpdateLog[unit.WorldObject.ID].Item1 != unitHash)
+			if (GameManager.Player1 is not null && GameManager.Player1.Connection is not null && !UnitUpdateLog[unit.WorldObject.ID].Item1.Equals(data))
 			{
 				Log.Message("NETWORKING","Sending unit to player 1: " + tile.Position);
-				tileUpdateLog[tile.Position] = (unitHash, UnitUpdateLog[unit.WorldObject.ID].Item2);
+				UnitUpdateLog[unit.WorldObject.ID] = (data, UnitUpdateLog[unit.WorldObject.ID].Item2);
 
 				server.Send(msg, GameManager.Player1.Connection, false);
 				sent = true;
@@ -563,10 +578,10 @@ public static partial class NetworkingManager
 
 		if (!unit.IsPlayer1Team || tile.IsVisible(team1:false))
 		{
-			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && UnitUpdateLog[unit.WorldObject.ID].Item2 != unitHash)
+			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && !UnitUpdateLog[unit.WorldObject.ID].Item2.Equals(data))
 			{
 				Log.Message("NETWORKING","Sending unit to player 2: " + tile.Position);
-				tileUpdateLog[tile.Position] = (UnitUpdateLog[unit.WorldObject.ID].Item1, unitHash);
+				UnitUpdateLog[unit.WorldObject.ID] = (UnitUpdateLog[unit.WorldObject.ID].Item1, data);
 				server.Send(msg, GameManager.Player2.Connection, false);
 				sent = true;
 			}

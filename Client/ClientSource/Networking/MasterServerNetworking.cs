@@ -85,7 +85,7 @@ public class MasterServerNetworking
 	public static List<string> Players = new List<string>();
 	public static void CreateLobby(string name,string password = "")
 	{
-		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetworkingManager.NetworkMessageID.LobbyStart);
+		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyStart);
 		msg.Add(name);
 		msg.Add(password);
 		Client?.Send(msg);
@@ -96,7 +96,7 @@ public class MasterServerNetworking
 	public static void RefreshServers()
 	{
 		Lobbies.Clear();
-		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetworkingManager.NetworkMessageID.Refresh);
+		var msg = Message.Create(MessageSendMode.Unreliable, (ushort)  NetworkingManager.MasterServerNetworkMessageID.Refresh);
 		Client?.Send(msg);
 	}
 
@@ -106,7 +106,7 @@ public class MasterServerNetworking
 		Client?.Disconnect();
 	}
 
-	[MessageHandler((ushort)  NetworkingManager.NetworkMessageID.PlayerList)]
+	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.PlayerList)]
 	private static void RecivePlayetList(Message message)
 	{
 		string list = message.GetString();
@@ -115,7 +115,7 @@ public class MasterServerNetworking
 	}
 		
 		
-	[MessageHandler((ushort)  NetworkingManager.NetworkMessageID.LobbyCreated)]
+	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated)]
 	private static void ReciveCreatedLobby(Message message)
 	{
 		Console.WriteLine("Connecting to started lobbby...");
@@ -125,7 +125,7 @@ public class MasterServerNetworking
 	
 	}
 		
-	[MessageHandler((ushort)  NetworkingManager.NetworkMessageID.LobbyList)]
+	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyList)]
 	private static void RecieveLobbies(Message message)
 	{
 		Lobbies.Clear();

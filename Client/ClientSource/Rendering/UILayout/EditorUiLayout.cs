@@ -686,24 +686,24 @@ public class EditorUiLayout : MenuLayout
 
         if (tile.UnitAtLocation != null)
         {
-            WorldObjectManager.DeleteWorldObject.Make(tile.UnitAtLocation.WorldObject.ID).GenerateTask().RunSynchronously();
+            WorldObjectManager.DeleteWorldObject.Make(tile.UnitAtLocation.WorldObject.ID).GenerateTask().RunTaskSynchronously();
             return;
         }
         if (tile.NorthEdge != null)
         {
-            WorldObjectManager.DeleteWorldObject.Make(tile.NorthEdge).GenerateTask().RunSynchronously();
+            WorldObjectManager.DeleteWorldObject.Make(tile.NorthEdge).GenerateTask().RunTaskSynchronously();
             return;
         }
         if (tile.WestEdge != null)
         {
-            WorldObjectManager.DeleteWorldObject.Make(tile.WestEdge).GenerateTask().RunSynchronously();
+            WorldObjectManager.DeleteWorldObject.Make(tile.WestEdge).GenerateTask().RunTaskSynchronously();
             return;
         }
         if(Pos.Y != 99){
             WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
             if (southTile.NorthEdge != null)
             {
-                WorldObjectManager.DeleteWorldObject.Make(southTile.NorthEdge).GenerateTask().RunSynchronously();
+                WorldObjectManager.DeleteWorldObject.Make(southTile.NorthEdge).GenerateTask().RunTaskSynchronously();
                 return;
             }
         }
@@ -713,7 +713,7 @@ public class EditorUiLayout : MenuLayout
             WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
             if (eastTile.WestEdge != null)
             {
-                WorldObjectManager.DeleteWorldObject.Make((eastTile.WestEdge)).GenerateTask().RunSynchronously();
+                WorldObjectManager.DeleteWorldObject.Make((eastTile.WestEdge)).GenerateTask().RunTaskSynchronously();
                 return;
             }
         }
@@ -723,7 +723,7 @@ public class EditorUiLayout : MenuLayout
 
         if (tile.Surface != null)
         {
-            WorldObjectManager.DeleteWorldObject.Make(tile.Surface).GenerateTask().RunSynchronously();
+            WorldObjectManager.DeleteWorldObject.Make(tile.Surface).GenerateTask().RunTaskSynchronously();
             return;
         }
 

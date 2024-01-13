@@ -38,6 +38,8 @@ public static class PrefabManager
 
 		}
 
+		WorldObjectPrefabs.Add("",new WorldObjectType(""));
+		
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))
 		{
 			if(xmlObj == null) continue;
@@ -143,16 +145,12 @@ public static class PrefabManager
 
 #endif
 			
-				
-
-			
+	
 				
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-
 			type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
-
 #endif
 		}
 
@@ -160,9 +158,7 @@ public static class PrefabManager
 		{
 			if(xmlObj == null) continue;
 			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? throw new Exception("null name for a prefab");
-
 			
-
 			List<UnitAbility> actionsList = new List<UnitAbility>();
 			
 			var actions = ((XmlElement) xmlObj).GetElementsByTagName("action");
@@ -186,16 +182,14 @@ public static class PrefabManager
 			unitType.MaxActionPoints = int.Parse(xmlObj.Attributes?["actions"]?.InnerText ?? "1");
 			unitType.SightRange = int.Parse(xmlObj.Attributes?["sightrange"]?.InnerText ?? "16");
 				
-				
-	
+			
 
 			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
 			if (speff != null)
 			{
 				unitType.SpawnEffect = ParseConsequences((XmlElement) speff);
 			}
-
-
+			
 
 #if CLIENT
 			unitType.GenerateSpriteSheet("Units/"+name, new List<Tuple<string, int>>());//this is a bit inconsistent but eeeh

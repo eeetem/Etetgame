@@ -75,12 +75,6 @@ public static partial class WorldObjectManager
 			
 				GameManager.Forget(Obj);
 
-#if  CLIENT
-		if (Obj.UnitComponent != null)
-		{
-			GameLayout.UnRegisterUnit(Obj.UnitComponent);
-		}
-#endif		
 				WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
 				tile.Remove(id);
 				lock (WoLock)

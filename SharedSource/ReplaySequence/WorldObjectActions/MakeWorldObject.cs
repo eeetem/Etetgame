@@ -99,7 +99,8 @@ public static partial class WorldObjectManager
 			if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
 			{
 				Log.Message("WORLD OBJECT MANAGER","deleting object with same if if exists");
-				DeleteWorldObject.Make(data.ID).GenerateTask().RunSynchronously();
+				 DeleteWorldObject.Make(data.ID).GenerateTask().RunTaskSynchronously();
+
 			}
 			else
 			{
@@ -107,6 +108,15 @@ public static partial class WorldObjectManager
 				Log.Message("WORLD OBJECT MANAGER","Generated new id: " + data.ID);
 			}
 
+			try
+			{
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 
 			WorldObject wo;

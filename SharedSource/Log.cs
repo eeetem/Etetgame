@@ -30,11 +30,11 @@ public static class Log
     {
         Console.WriteLine("Log Init");
         startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var files = new DirectoryInfo("/Logs").EnumerateDirectories()
+        var files = new DirectoryInfo("Logs").EnumerateDirectories()
             .OrderByDescending(f => f.CreationTime)
             .Skip(10)
             .ToList();
-        files.ForEach(f => f.Delete());
+        files.ForEach(f => f.Delete(true));
         
         
         Task.Run(() =>

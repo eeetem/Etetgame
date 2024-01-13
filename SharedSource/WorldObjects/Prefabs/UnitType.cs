@@ -38,9 +38,7 @@ public partial class UnitType : WorldObjectType
 		wo.Face(data.Facing,false);
 		Unit component = new Unit(wo,this,data.UnitData!.Value,data.JustSpawned);
 		actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
-#if CLIENT
-		GameLayout.RegisterUnit(component);
-#endif
+
 		tile.UnitAtLocation = component;
 
 

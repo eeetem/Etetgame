@@ -49,10 +49,10 @@ public static class RenderSystem
 			{
 				objs.Add(tile.UnitAtLocation.WorldObject);
 			}
-			if (tile.UnitAtLocation != null)
-			{
-				objs.Add(tile.UnitAtLocation);
-			}
+			//if (tile.UnitAtLocation != null)
+			//{
+			//	objs.Add(tile.UnitAtLocation);
+			//}
 
 			foreach (var item in tile.ObjectsAtLocation)
 			{

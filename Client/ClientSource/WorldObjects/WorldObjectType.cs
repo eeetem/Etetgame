@@ -11,14 +11,15 @@ public partial class WorldObjectType
 
 	public Transform2 Transform = new Transform2();
 	private DirectionSpriteSheet[] variationSheets = null!;
-	public List<Tuple<string, int>> Variations;
-	public int TotalVariationsWeight;
+	public List<Tuple<string, int>> Variations = new List<Tuple<string, int>>();
+	public int TotalVariationsWeight = 1;
 	public float Zoffset { get; set; }
 	public virtual void GenerateSpriteSheet(string name,List<Tuple<string, int>> variations)
 	{
 		if(variations.Count==0){
 			variations.Add(new Tuple<string, int>("", 1));
 		}
+		TotalVariationsWeight = 0;
 		foreach (var va in variations)
 		{
 			TotalVariationsWeight += va.Item2;

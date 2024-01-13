@@ -42,7 +42,7 @@ public class GameLayout : MenuLayout
 	{
 		if (controllable == null)
 		{
-			controllable = MyUnits.FirstOrDefault();
+			controllable = GameManager.GetTeamUnits(GameManager.IsPlayer1).FirstOrDefault();
 		}
 		if(controllable is null)return;
 
@@ -93,11 +93,11 @@ public class GameLayout : MenuLayout
 	public static void MakeUnitBarRenders(SpriteBatch batch)
 	{
 		if(_unitBar == null ||  _unitBar.Widgets.Count == 0) return;
-		if( MyUnits.Count == 0) return;
+		if( GameManager.GetMyTeamUnits().Count == 0) return;
 		int columCounter = 0;
 		//sort by id
-		MyUnits.Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
-		foreach (var unit in new List<Unit>(MyUnits))
+		GameManager.GetMyTeamUnits().Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
+		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
 			if (!unitBarRenderTargets.ContainsKey(unit))
 			{
@@ -213,8 +213,8 @@ public class GameLayout : MenuLayout
 		}
 
 		Debug.Assert(unitBarRenderTargets != null, nameof(unitBarRenderTargets) + " != null");
-		int realWidth = unitBarRenderTargets[MyUnits[0]].Width;
-		int realHeight = unitBarRenderTargets[MyUnits[0]].Height;
+		int realWidth = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0]].Width;
+		int realHeight = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0]].Height;
 		//float scale = (float) (_unitBar.MaxWidth! / _unitBar.Widgets.Count/realWidth);
 
 		bool twoLayer = false;
@@ -240,7 +240,7 @@ public class GameLayout : MenuLayout
 			_unitBar.Top = (int) ( (_unitBar.MaxHeight! - h)/2f);
 		}
 
-		foreach (var unit in MyUnits)
+		foreach (var unit in GameManager.GetMyTeamUnits())
 		{
 			if(_unitBar.Widgets.Count > columCounter ){
 				ImageButton elem = (ImageButton)_unitBar.Widgets[columCounter];
@@ -363,7 +363,6 @@ public class GameLayout : MenuLayout
 			{
 				GameManager.IsPlayer1 = !GameManager.IsPlayer1;
 				WorldManager.Instance.MakeFovDirty();
-				(MyUnits, EnemyUnits) = (EnemyUnits, MyUnits);
 				UI.SetUI(null);
 			};
 			panel.Widgets.Add(swapTeam);
@@ -557,7 +556,7 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(OverWatchToggle);
 		
-		foreach (var unit in new List<Unit>(MyUnits))
+		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
 			var unitPanel = new ImageButton();
 
@@ -638,12 +637,7 @@ public class GameLayout : MenuLayout
 
 
 	private static readonly List<HudActionButton> ActionButtons = new();
-
-
-	private static readonly List<Unit> Controllables = new();
-	public static List<Unit> MyUnits = new();
-	public static List<Unit> EnemyUnits = new();
-
+	
 	private static void DoActiveAction(bool force = false)
 	{
 		if(ActionTarget == null) return;
@@ -680,34 +674,7 @@ public class GameLayout : MenuLayout
 
 		SelectHudAction(null);
 	}
-
-	public static void RegisterUnit(Unit c)
-	{
-		
-		Controllables.Add(c);
-		if (c.IsMyTeam())
-		{
-			MyUnits.Add(c);
-			if(SelectedUnit == null) SelectUnit(c);
-		}
-		else
-		{
-			EnemyUnits.Add(c);
-		}
-	}
-	public static void UnRegisterUnit(Unit c)
-	{
-		Controllables.Remove(c);
-		if (c.IsMyTeam())
-		{
-			MyUnits.Remove(c);
-		}		
-		else
-		{
-			EnemyUnits.Remove(c);
-		}
-		
-	}
+	
 
 
 	public static WorldObject? ActionTarget;
@@ -908,7 +875,7 @@ public class GameLayout : MenuLayout
 				}
 			}
 		}
-		foreach (var controllable in Controllables)
+		foreach (var controllable in GameManager.GetAllUnits())
 		{
 			if (controllable.WorldObject.IsVisible())
 			{
@@ -1168,13 +1135,13 @@ public class GameLayout : MenuLayout
 			}
 		}
 
-		int targetIndex = Controllables.IndexOf(SelectedUnit);
+		int targetIndex = GameManager.GetAllUnits().IndexOf(SelectedUnit);
 		if (targetIndex != -1)
 		{
-			for (int i = targetIndex; i < Controllables.Count - 1; i++)
+			for (int i = targetIndex; i < GameManager.GetAllUnits().Count - 1; i++)
 			{
-				Controllables[i] = Controllables[i + 1];
-				Controllables[i + 1] = SelectedUnit;
+				GameManager.GetAllUnits()[i] = GameManager.GetAllUnits()[i + 1];
+				GameManager.GetAllUnits()[i + 1] = SelectedUnit;
 			}
 		}
 
@@ -1182,15 +1149,15 @@ public class GameLayout : MenuLayout
 		
 		if (tile.UnitAtLocation != null)
 		{
-			targetIndex = Controllables.IndexOf(tile.UnitAtLocation);
+			targetIndex = GameManager.GetAllUnits().IndexOf(tile.UnitAtLocation);
 			if (targetIndex != -1)
 			{
-				Unit target = Controllables[targetIndex];
-				for (int i = targetIndex; i < Controllables.Count - 1; i++)
+				Unit target = GameManager.GetAllUnits()[targetIndex];
+				for (int i = targetIndex; i < GameManager.GetAllUnits().Count - 1; i++)
 				{
 						
-					Controllables[i] = Controllables[i + 1];
-					Controllables[i + 1] = target;
+					GameManager.GetAllUnits()[i] = GameManager.GetAllUnits()[i + 1];
+					GameManager.GetAllUnits()[i + 1] = target;
 				}
 			}
 			
@@ -1309,36 +1276,36 @@ public class GameLayout : MenuLayout
 			}
 		}
 
-		if (JustPressed(Keys.D1) && MyUnits.Count > 0)
+		if (JustPressed(Keys.D1) && GameManager.GetMyTeamUnits().Count > 0)
 		{
-			SelectUnit(MyUnits[0]);
-		}else if (JustPressed(Keys.D2) && MyUnits.Count > 1)
+			SelectUnit(GameManager.GetMyTeamUnits()[0]);
+		}else if (JustPressed(Keys.D2) && GameManager.GetMyTeamUnits().Count > 1)
 		{
-			SelectUnit(MyUnits[1]);
-		}else if (JustPressed(Keys.D3) && MyUnits.Count > 2)
+			SelectUnit(GameManager.GetMyTeamUnits()[1]);
+		}else if (JustPressed(Keys.D3) && GameManager.GetMyTeamUnits().Count > 2)
 		{
-			SelectUnit(MyUnits[2]);
-		}else if (JustPressed(Keys.D4) && MyUnits.Count > 3)
+			SelectUnit(GameManager.GetMyTeamUnits()[2]);
+		}else if (JustPressed(Keys.D4) && GameManager.GetMyTeamUnits().Count > 3)
 		{
-			SelectUnit(MyUnits[3]);
-		}else if (JustPressed(Keys.D5) && MyUnits.Count > 4)
+			SelectUnit(GameManager.GetMyTeamUnits()[3]);
+		}else if (JustPressed(Keys.D5) && GameManager.GetMyTeamUnits().Count > 4)
 		{
-			SelectUnit(MyUnits[4]);
-		}else if (JustPressed(Keys.D6) && MyUnits.Count > 5)
+			SelectUnit(GameManager.GetMyTeamUnits()[4]);
+		}else if (JustPressed(Keys.D6) && GameManager.GetMyTeamUnits().Count > 5)
 		{
-			SelectUnit(MyUnits[5]);
-		}else if (JustPressed(Keys.D7) && MyUnits.Count > 6)
+			SelectUnit(GameManager.GetMyTeamUnits()[5]);
+		}else if (JustPressed(Keys.D7) && GameManager.GetMyTeamUnits().Count > 6)
 		{
-			SelectUnit(MyUnits[6]);
-		}else if (JustPressed(Keys.D8) && MyUnits.Count > 7)
+			SelectUnit(GameManager.GetMyTeamUnits()[6]);
+		}else if (JustPressed(Keys.D8) && GameManager.GetMyTeamUnits().Count > 7)
 		{
-			SelectUnit(MyUnits[7]);
-		}else if (JustPressed(Keys.D9) && MyUnits.Count > 8)
+			SelectUnit(GameManager.GetMyTeamUnits()[7]);
+		}else if (JustPressed(Keys.D9) && GameManager.GetMyTeamUnits().Count > 8)
 		{
-			SelectUnit(MyUnits[8]);
-		}else if (JustPressed(Keys.D0) && MyUnits.Count > 9)
+			SelectUnit(GameManager.GetMyTeamUnits()[8]);
+		}else if (JustPressed(Keys.D0) && GameManager.GetMyTeamUnits().Count > 9)
 		{
-			SelectUnit(MyUnits[9]);
+			SelectUnit(GameManager.GetMyTeamUnits()[9]);
 		}
 
 		if (JustPressed(Keys.Space))
@@ -1763,8 +1730,8 @@ public class GameLayout : MenuLayout
 				}
 
 				List<Unit> potentialTargets = new();
-				MyUnits.ForEach(x => potentialTargets.Add(x));
-				EnemyUnits.ForEach(x => potentialTargets.Add(x));
+				GameManager.GetMyTeamUnits().ForEach(x => potentialTargets.Add(x));
+				GameManager.GetEnemyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				suggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(potentialTargets);
 
 				if (suggestedTargets.Count > 0)

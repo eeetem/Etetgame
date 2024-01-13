@@ -56,9 +56,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\MasterServer\MasterServerData\NetworkingShared.cs">
-        <Link>ServerSource\Networking\NetworkingShared.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\AI\AI.cs">
         <Link>SharedSource\AI\AI.cs</Link>
       </Compile>
@@ -86,8 +83,11 @@
       <Compile Include="..\SharedSource\Log.cs">
         <Link>SharedSource\Log.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\NetworkingManager.cs">
-        <Link>SharedSource\NetworkingManager.cs</Link>
+      <Compile Include="..\SharedSource\Networking\SquadMember.cs">
+        <Link>SharedSource\Networking\SquadMember.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\SharedNetworking.cs">
+        <Link>SharedSource\Networking\SharedNetworking.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>

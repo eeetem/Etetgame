@@ -12,11 +12,7 @@ public static partial class GameManager
 	public static ClientInstance? Player2;
 	public static List<ClientInstance> Spectators = new();
 	public static PreGameDataStruct PreGameData = new();
-
-
-
-	public static readonly List<int> T1Units = new();
-	public static readonly List<int> T2Units = new();
+	
 
 	public static void StartSetup()
 	{
@@ -57,7 +53,7 @@ public static partial class GameManager
 				do
 				{
 					pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
-				}while(newComp.Find((s) => s.Position == pos) != null);
+				}while(!newComp.Find((s) => s.Position == pos).Equals(default(SquadMember)));
 				sq.Position = pos;
 				newComp.Add(sq);
 			}
@@ -69,7 +65,7 @@ public static partial class GameManager
 				do
 				{
 					pos = T1SpawnPoints[Random.Shared.Next(T1SpawnPoints.Count)];
-				}while(newComp.Find((s) => s.Position == pos) != null);
+				}while(!newComp.Find((s) => s.Position == pos).Equals(default(SquadMember)));
 				sq.Position = pos;
 				newComp.Add(sq);
 			}
@@ -103,7 +99,7 @@ public static partial class GameManager
 				do
 				{
 					pos = T2SpawnPoints[Random.Shared.Next(T2SpawnPoints.Count)];
-				}while(newComcp.Find((s) => s.Position == pos) != null);
+				}while(!newComcp.Find((s) => s.Position == pos).Equals(default(SquadMember)));
 				sq.Position = pos;
 				newComcp.Add(sq);
 			}
@@ -115,7 +111,7 @@ public static partial class GameManager
 				do
 				{
 					pos = T2SpawnPoints[Random.Shared.Next(T2SpawnPoints.Count)];
-				}while(newComcp.Find((s) => s.Position == pos) != null);
+				}while(!newComcp.Find((s) => s.Position == pos).Equals(default(SquadMember)));
 				sq.Position = pos;
 				newComcp.Add(sq);
 			}

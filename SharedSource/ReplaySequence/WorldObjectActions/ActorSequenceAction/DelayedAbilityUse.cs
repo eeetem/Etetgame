@@ -32,7 +32,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 			//but we'll see
 			Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
 			{
-				if(x.ShouldDo()){x.GenerateTask().RunSynchronously();}
+				if(x.ShouldDo()){x.GenerateTask().RunTaskSynchronously();}
 			});
 
 	}

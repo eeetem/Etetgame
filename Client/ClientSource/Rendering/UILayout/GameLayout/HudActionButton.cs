@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldActions;
 using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework;
@@ -18,7 +19,8 @@ public class HudActionButton
 {
 	public static HudActionButton? SelectedButton;
 	public readonly ImageButton UIButton;
-	public readonly Unit Owner;
+	public readonly int OwnerID;
+	public Unit Owner => WorldObjectManager.GetObject(OwnerID).UnitComponent!;
 	private readonly Action<Unit,WorldObject> _executeTask;
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _performCheckTask;
@@ -34,7 +36,7 @@ public class HudActionButton
 		Cost = cost;
 		Tooltip = tooltip;
 		CanOverwatch = false;
-		Owner = owner;
+		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;
 		_previewTask = null;
@@ -55,7 +57,7 @@ public class HudActionButton
 		Cost = abl.GetCost();
 		Tooltip = abl.Tooltip;
 		CanOverwatch = abl.CanOverWatch;
-		Owner = owner;
+		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(abl.Icon);
 		_executeTask = (unit, target) =>
 		{

@@ -319,7 +319,7 @@ if(!Paniced){
 
 
 
-		public Tuple<bool, int> Overwatch = new Tuple<bool, int>(false,-1);
+		public ValueTuple<bool, int> Overwatch = new ValueTuple<bool, int>(false,-1);
 
 
 		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
@@ -328,7 +328,7 @@ if(!Paniced){
 
 		public void ClearOverWatch()
 		{
-			Overwatch = new Tuple<bool, int>(false,-1);
+			Overwatch = new ValueTuple<bool, int>(false,-1);
 			foreach (var tile in overWatchedTiles)
 			{
 				((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).UnWatch(this);
@@ -354,6 +354,7 @@ if(!Paniced){
 		[Serializable]
 		public struct UnitData : IMessageSerializable
 		{
+	
 			public override string ToString()
 			{
 				return $"{nameof(Team1)}: {Team1}, {nameof(ActionPoints)}: {ActionPoints}, {nameof(MovePoints)}: {MovePoints}, {nameof(CanTurn)}: {CanTurn}, {nameof(Determination)}: {Determination}, {nameof(Crouching)}: {Crouching}, {nameof(Panic)}: {Panic}, {nameof(Overwatch)}: {Overwatch}, {nameof(MoveRangeEffect)}: {MoveRangeEffect}, {nameof(OverWatchedTiles)}: {OverWatchedTiles}, {nameof(StatusEffects)}: {StatusEffects}";
@@ -396,9 +397,9 @@ if(!Paniced){
 			public int Determination;
 			public bool Crouching;
 			public bool Panic;
-			public Tuple<bool,int> Overwatch;
+			public ValueTuple<bool,int> Overwatch;
 			public int MoveRangeEffect;
-			public List<Vector2Int> OverWatchedTiles;
+			public List<Vector2Int> OverWatchedTiles = new List<Vector2Int>();
 
 			public List<Tuple<string, int>> StatusEffects { get; set; }
 		
@@ -411,7 +412,7 @@ if(!Paniced){
 				Determination = -100;
 				Crouching = false;
 				Panic = false;
-				Overwatch = new Tuple<bool, int>(false,-1);	
+				Overwatch = new ValueTuple<bool, int>(false,-1);	
 				StatusEffects = new List<Tuple<string, int>>();
 				MoveRangeEffect = 0;
 				OverWatchedTiles = new List<Vector2Int>();
@@ -475,7 +476,7 @@ if(!Paniced){
 				Determination = message.GetInt();
 				Crouching = message.GetBool();
 				Panic = message.GetBool();
-				Overwatch = new Tuple<bool, int>(message.GetBool(),message.GetInt());
+				Overwatch = new ValueTuple<bool, int>(message.GetBool(),message.GetInt());
 
 				MoveRangeEffect = message.GetInt();
 

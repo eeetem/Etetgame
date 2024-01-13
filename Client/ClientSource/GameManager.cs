@@ -74,7 +74,7 @@ public static partial class GameManager
 	{
 		if (IsPlayer1 != IsPlayer1Turn) return;
 
-		foreach (var unit in GameLayout.MyUnits)
+		foreach (var unit in GetTeamUnits(IsPlayer1))
 		{
 			if (unit.MovePoints > 0)
 			{

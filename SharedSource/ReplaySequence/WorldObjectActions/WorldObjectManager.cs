@@ -28,7 +28,7 @@ public static partial class WorldObjectManager
 		if(obj.destroyed)return;
 		obj.destroyed = true;
 
-		DeleteWorldObject.Make(obj.ID).GenerateTask().RunSynchronously();
+		DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)
 		{

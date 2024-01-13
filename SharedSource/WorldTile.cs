@@ -331,7 +331,7 @@ public partial class WorldTile : IWorldTile
 			if (_surface != null)
 			{
 				Console.Write("overwritting surface");
-				WorldObjectManager.DeleteWorldObject.Make(_surface.ID).GenerateTask().RunSynchronously();
+				WorldObjectManager.DeleteWorldObject.Make(_surface.ID).GenerateTask().RunTaskSynchronously();
 			}
 			_surface = value;
 		}

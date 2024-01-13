@@ -52,7 +52,7 @@ public class UnitOverWatch : UnitSequenceAction
 		
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
-			Actor.Overwatch = new  Tuple<bool, int>(true,abilityIndex);
+			Actor.Overwatch = new  ValueTuple<bool, int>(true,abilityIndex);
 			var positions = Actor.GetOverWatchPositions(Target,abilityIndex);
 			foreach (var shot in positions)
 			{
