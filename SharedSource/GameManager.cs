@@ -297,8 +297,10 @@ public static partial class GameManager
 		
 		foreach (var id in ids)
 		{
-			var unitComponent = PseudoWorldManager.GetObject(id, dimension)?.UnitComponent;
-			if (unitComponent != null) units.Add(unitComponent);
+			var obj = PseudoWorldManager.GetObject(id, dimension);
+			if(obj == null || obj.UnitComponent == null)
+				throw new Exception("unit is null for a registered unit");
+			units.Add(obj.UnitComponent!);
 		}
 
 		return units;

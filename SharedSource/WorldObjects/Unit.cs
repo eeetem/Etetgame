@@ -32,11 +32,16 @@ namespace DefconNull.WorldObjects
 
 			WorldObject = parent;
 			Type = type;
-			IsPlayer1Team = data.Team1;
 			parent.UnitComponent = this;
+			SetData(data,justSpawned);
+			type.actions.ForEach(extraAction => { Abilities.Add((UnitAbility) extraAction.Clone()); });
+			
+		}
 
-
-			Determination = new Value(0, type.Maxdetermination);
+		public void SetData(UnitData data, bool justSpawned)
+		{
+			IsPlayer1Team = data.Team1;
+			Determination = new Value(0, Type.Maxdetermination);
 			if (data.Determination != -100)
 			{
 				Determination.Current = data.Determination;
@@ -53,13 +58,13 @@ namespace DefconNull.WorldObjects
 
 
 
-			MovePoints = new Value(0, type.MaxMovePoints);
+			MovePoints = new Value(0, Type.MaxMovePoints);
 			if (data.MovePoints != -100)
 			{
 				MovePoints.Current = data.MovePoints;
 			}
 
-			ActionPoints = new Value(0, type.MaxActionPoints);
+			ActionPoints = new Value(0, Type.MaxActionPoints);
 			if (data.ActionPoints != -100)
 			{
 				ActionPoints.Current = data.ActionPoints;
@@ -72,19 +77,27 @@ namespace DefconNull.WorldObjects
 			MoveRangeEffect.Current = data.MoveRangeEffect;
             
 	
-
+			foreach (var effect in data.StatusEffects)
+			{
+				ApplyStatus(effect.Item1, effect.Item2);
+			}
+			
+			Overwatch = data.Overwatch;
+			foreach (var t in data.OverWatchedTiles)
+			{
+				overWatchedTiles.Add(t);
+				WorldManager.Instance.GetTileAtGrid(t).Watch(this);
+			}
+            
 			if (justSpawned)
 			{
-				foreach (var effect in data.StatusEffects)
-				{
-					ApplyStatus(effect.Item1, effect.Item2);
-				}
+
 #if SERVER
-				if (type.SpawnEffect != null)
+				if (Type.SpawnEffect != null)
 				{
 					Task t = new Task(delegate
 					{
-						foreach (var c in type.SpawnEffect.GetApplyConsiqunces(WorldObject))
+						foreach (var c in Type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
 							SequenceManager.AddSequence(c);
 							NetworkingManager.SendSequence(c);
@@ -97,15 +110,8 @@ namespace DefconNull.WorldObjects
 				StartTurn();
 			}
 
-			Overwatch = data.Overwatch;
-			foreach (var t in data.OverWatchedTiles)
-			{
-				overWatchedTiles.Add(t);
-				WorldManager.Instance.GetTileAtGrid(t).Watch(this);
-			}
 		}
-        
-        
+
 
 		public List<UnitAbility> Abilities = new List<UnitAbility>();
 
@@ -618,6 +624,21 @@ if(!Paniced){
 			}
 
 			return result;
+		}
+
+		public void MoveTo(Vector2Int vector2Int)
+		{
+			if(this.WorldObject.TileLocation is not null)
+				this.WorldObject.TileLocation.UnitAtLocation = null;
+			
+			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
+			this.WorldObject.TileLocation = newTile;
+			newTile.UnitAtLocation = this;
+		}
+
+		public void LoadData(WorldObject.WorldObjectData updateData)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -1010,7 +1010,7 @@ public  partial class WorldManager
                 LoadWorldTile(tile.Item2);
             }
             NetworkingManager.RecievedTiles.Clear();
-            foreach (var tile in new List<ValueTuple<long,WorldObject.WorldObjectData>>(NetworkingManager.RecivedUnits.Values))
+            foreach (var tile in new List<ValueTuple<long,NetworkingManager.UnitUpdate>>(NetworkingManager.RecivedUnits.Values))
             {
                 CreateOrUpdateUnit(tile.Item2);
             }
@@ -1022,29 +1022,52 @@ public  partial class WorldManager
 
     }
 
-    private void CreateOrUpdateUnit(WorldObject.WorldObjectData tileItem2)
+    private void CreateOrUpdateUnit(NetworkingManager.UnitUpdate update)
     {
-        var obj = WorldObjectManager.GetObject(tileItem2.ID);
-        if (obj== null)
+        int id = update.Data.ID;
+        var obj = WorldObjectManager.GetObject(id);
+        
+        if (update.Data.UnitData!.Value.Team1 && !GameManager.T1Units.Contains(id))
         {
-            Log.Message("WORLD MANAGER","creating unit " + tileItem2.ID);
-            WorldObjectManager.MakeWorldObject.Make(tileItem2).GenerateTask().RunTaskSynchronously();
+            GameManager.T1Units.Add(id);
+        }
+        else if(!GameManager.T2Units.Contains(id))
+        {
+            GameManager.T2Units.Add(id);
+        }
+        
+        
+        
+        if (obj== null || obj.TileLocation == null)//if the unit doesn't exist or is just stored off the map re-create it and it'll just delete the old one
+        {
+            Log.Message("WORLD MANAGER","creating unit " + id);
+            WorldObjectManager.MakeWorldObject.Make(update.Data,update.Position).GenerateTask().RunTaskSynchronously();
+            return;
+        }
+        
+        
+
+        if (obj.IsVisible())//if we can see the unit - dont update it as the sequence actions should do that
+        {
+            return;
+        }
+
+        if (update.Position != null && obj.TileLocation.Position != update.Position)
+        {
+          
+
+            Log.Message("WORLD MANAGER","updating(moving from "+obj.TileLocation.Position +" to "+ update.Position+" )unit " + id);
+            obj!.SetData(update.Data);
+            obj.UnitComponent!.MoveTo(update.Position.Value);
 
         }
-        else
+        else//otherwise update unit on the location it is
         {
-            Log.Message("WORLD MANAGER","updating unit " + tileItem2.ID);
-            WorldObjectManager.MakeWorldObject.Make(tileItem2, (WorldTile)obj.TileLocation).GenerateTask().RunTaskSynchronously();
+            Log.Message("WORLD MANAGER","updating unit " + id);
+            obj!.SetData(update.Data);
         }
 
-        if (tileItem2.UnitData.Value.Team1 && !GameManager.T1Units.Contains(tileItem2.ID))
-        {
-            GameManager.T1Units.Add(tileItem2.ID);
-        }
-        else if(!GameManager.T2Units.Contains(tileItem2.ID))
-        {
-            GameManager.T2Units.Add(tileItem2.ID);
-        }
+
      
     }
 

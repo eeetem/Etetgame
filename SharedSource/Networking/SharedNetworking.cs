@@ -1,4 +1,7 @@
-﻿namespace DefconNull.Networking;
+﻿using DefconNull.WorldObjects;
+using Riptide;
+
+namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
@@ -33,6 +36,41 @@ public static partial class NetworkingManager
         Player1 = 0,
         Player2 = 1,
         All =2,
+    }
+    
+    public struct UnitUpdate : IMessageSerializable
+    {
+        public WorldObject.WorldObjectData Data;
+        public Vector2Int? Position;
+
+        public UnitUpdate(WorldObject.WorldObjectData data, Vector2Int? position)
+        {
+            this.Data = data;
+            Position = position;
+        }
+
+        public void Serialize(Message message)
+        {
+            message.Add(Data);
+            message.Add(Position.HasValue);
+            if (Position.HasValue)
+            {
+                message.Add(Position.Value);
+            }
+        }
+
+        public void Deserialize(Message message)
+        {
+            Data = message.GetSerializable<WorldObject.WorldObjectData>();
+            if (message.GetBool())
+            {
+                Position = message.GetSerializable<Vector2Int>();
+            }
+            else
+            {
+                Position = null;
+            }
+        }
     }
 	
     private static void LogNetCode(string msg)

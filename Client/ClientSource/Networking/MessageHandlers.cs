@@ -105,18 +105,18 @@ public static partial class NetworkingManager
 	
 	}
 	
-	public static readonly Dictionary<int,ValueTuple<long,WorldObject.WorldObjectData>> RecivedUnits = new Dictionary<int, ValueTuple<long,WorldObject.WorldObjectData>>();
+	public static readonly Dictionary<int,ValueTuple<long,UnitUpdate>> RecivedUnits = new Dictionary<int, ValueTuple<long,UnitUpdate>>();
 
 	[MessageHandler((ushort)NetworkMessageID.UnitUpdate)]
 	private static void ReciveUnitUpdate(Message message)
 	{
 		long timestamp = message.GetLong();
-		WorldObject.WorldObjectData data = message.GetSerializable<WorldObject.WorldObjectData>();
-		int id = data.ID;
+		UnitUpdate data = message.GetSerializable<UnitUpdate>();
+		int id = data.Data.ID;
 
 
 
-		Log.Message("NETWORKING","UNIT update recived: " + data);
+		Log.Message("NETWORKING","UNIT update recived: " +data.Position + data.Data);
 
 		if (RecivedUnits.ContainsKey(id))
 		{
@@ -135,7 +135,7 @@ public static partial class NetworkingManager
 		else
 		{
 			Log.Message("NETWORKING","new unit, adding");
-			RecivedUnits.Add(data.ID, (timestamp,data));
+			RecivedUnits.Add(id, (timestamp,data));
 		}
 			
 		

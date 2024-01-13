@@ -18,7 +18,6 @@ public partial class WorldObject
 	public WorldObject(WorldObjectType? type, IWorldTile? tile, WorldObjectData data)
 	{
 		ID = data.ID;
-		
 		if (type == null)
 		{
 			type = new WorldObjectType("nullType");
@@ -26,28 +25,9 @@ public partial class WorldObject
 			return;
 		}
 		Type = type;
-
 		TileLocation = tile;
-		if (data.JustSpawned)
-		{
-			Health = type.MaxHealth;
-		}
-		else
-		{
-			Health = data.Health;
-		}
-		if (data.JustSpawned)//this will cause issues
-		{
-			LifeTime = type.lifetime;
-		}
-		else
-		{
-			LifeTime = data.Lifetime;
-		}
-
-
-
 		Type.SpecialBehaviour(this);
+		SetData(data);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
 		int seed = ID;
@@ -362,4 +342,42 @@ public partial class WorldObject
 	}
 
 
+	public void SetData(WorldObjectData data)
+	{
+		if(data.ID != -1 && data.ID != ID)
+			throw new Exception("Data set ID mismatch");
+		Face(data.Facing,false);
+		if (data.JustSpawned)
+		{
+			Health = Type.MaxHealth;
+		}
+		else
+		{
+			Health = data.Health;
+		}
+		if (data.JustSpawned)
+		{
+			LifeTime = Type.lifetime;
+		}
+		else
+		{
+			LifeTime = data.Lifetime;
+		}
+
+		if (data.UnitData != null)
+		{
+			if (UnitComponent != null)
+			{
+				UnitComponent.SetData(data.UnitData.Value, data.JustSpawned);
+			}
+			else
+			{
+				UnitComponent = new Unit(this, (UnitType)Type, data.UnitData.Value, data.JustSpawned);
+			}}
+		else
+		{
+			UnitComponent = null;
+		}
+		
+	}
 }

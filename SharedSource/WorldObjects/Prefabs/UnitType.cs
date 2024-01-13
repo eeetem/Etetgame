@@ -26,22 +26,14 @@ public partial class UnitType : WorldObjectType
 	public int Maxdetermination = 2;
 
 
-
-
-	private readonly List<UnitAbility> actions;
+	public readonly List<UnitAbility> actions;
 
 	public WorldConseqences? SpawnEffect { get; set; }
 
 
 	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)
-	{
-		wo.Face(data.Facing,false);
-		Unit component = new Unit(wo,this,data.UnitData!.Value,data.JustSpawned);
-		actions.ForEach(extraAction => { component.Abilities.Add((UnitAbility) extraAction.Clone()); });
-
-		tile.UnitAtLocation = component;
-
-
+	{ 
+		tile.UnitAtLocation = wo.UnitComponent;
 	}
 
 	

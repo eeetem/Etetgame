@@ -121,25 +121,27 @@ public class UnitMove : UnitSequenceAction
         while (Path.Count >0)
         {
 
-            if(Path[0] != Actor.WorldObject.TileLocation.Position)
-                Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
+            
             WorldManager.Instance.MakeFovDirty();
+
+            if (Actor.WorldObject.TileLocation != null)
+            {
+                if (Path[0] != Actor.WorldObject.TileLocation.Position)
+                    Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
+
 
 #if CLIENT
 				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
 #else
-            while (WorldManager.Instance.FovDirty)//make sure we get all little turns and moves updated serverside
-                Thread.Sleep(10);
+                while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
+                    Thread.Sleep(10);
 
 #endif
-			
-		
+            }
+
             Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
 					
-            Actor.WorldObject.TileLocation.UnitAtLocation = null;
-            var newTile = WorldManager.Instance.GetTileAtGrid(Path[0]);
-            Actor.WorldObject.TileLocation = newTile;
-            newTile.UnitAtLocation = Actor;
+            Actor.MoveTo(Path[0]);
 
             Path.RemoveAt(0);
 

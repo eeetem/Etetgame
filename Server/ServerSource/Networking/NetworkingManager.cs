@@ -538,11 +538,11 @@ public static partial class NetworkingManager
 		{
 			var pseudoMsg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
 			pseudoMsg.AddLong(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-			var pseudoData = new WorldObject.WorldObjectData("");
+			var pseudoData = new WorldObject.WorldObjectData("emptyUnit");
 			pseudoData.ID = unit.WorldObject.ID;
 			pseudoData.UnitData = new Unit.UnitData(unit.IsPlayer1Team);
 	
-			pseudoMsg.Add(pseudoData);
+			pseudoMsg.Add(new UnitUpdate(pseudoData,null));
 			server.SendToAll(pseudoMsg);
 			UnitUpdateLog.TryAdd(unit.WorldObject.ID, (new Unit.UnitData(),new Unit.UnitData()));
 		}
@@ -552,7 +552,7 @@ public static partial class NetworkingManager
 
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
 		msg.AddLong(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-		msg.Add(unit.WorldObject.GetData());
+		msg.Add(new UnitUpdate(unit.WorldObject.GetData(),unit.WorldObject.TileLocation.Position));
 		
 		var data = unit.GetData();
 		bool sent = false;

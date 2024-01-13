@@ -75,8 +75,12 @@ public static partial class WorldObjectManager
 			
 				GameManager.Forget(Obj);
 
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
-				tile.Remove(id);
+				if (Obj.TileLocation is not null)
+				{
+					WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
+					tile.Remove(id);
+				}
+				
 				lock (WoLock)
 				{
 					WorldObjects.Remove(id);

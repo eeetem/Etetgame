@@ -74,9 +74,13 @@ public static partial class WorldObjectManager
 			t._position = null;
 			return t;
 		}
-		public static MakeWorldObject Make(WorldObject.WorldObjectData data, Vector2Int position)
+		public static MakeWorldObject Make(WorldObject.WorldObjectData data, Vector2Int? position)
 		{
-			return Make(data,WorldManager.Instance.GetTileAtGrid(position));
+			if( position.HasValue)
+				return Make(data,WorldManager.Instance.GetTileAtGrid(position.Value));
+			else
+				return Make(data);
+
 		}
 
 		public static MakeWorldObject Make(WorldObject.WorldObjectData data, WorldTile position)
@@ -108,15 +112,7 @@ public static partial class WorldObjectManager
 				Log.Message("WORLD OBJECT MANAGER","Generated new id: " + data.ID);
 			}
 
-			try
-			{
-
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				throw;
-			}
+		
 			WorldObjectType type = PrefabManager.WorldObjectPrefabs[data.Prefab];
 
 			WorldObject wo;
@@ -132,7 +128,6 @@ public static partial class WorldObjectManager
 			else
 			{
 				wo = new WorldObject(type, null, data);
-
 			}
 			wo.Fliped = data.Fliped;
 
