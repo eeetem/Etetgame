@@ -32,7 +32,7 @@ public static class UI
 	public delegate void UIGen();
 		
 
-	private static UiLayout currentUi = new MainMenuLayout();
+	public static UiLayout currentUi = new MainMenuLayout();
 	private static UiLayout? lastDifferentUI = new MainMenuLayout();
 	private static Widget root = null!;
 	public static void SetUI(UiLayout? newUI)

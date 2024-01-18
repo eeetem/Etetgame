@@ -1003,26 +1003,12 @@ public  partial class WorldManager
         {
             CalculateFov();
         }
-#if CLIENT
-        if( !SequenceManager.SequenceRunning){
-            foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
-            {
-                LoadWorldTile(tile.Item2);
-            }
-            NetworkingManager.RecievedTiles.Clear();
-            foreach (var tile in new List<ValueTuple<long,NetworkingManager.UnitUpdate>>(NetworkingManager.RecivedUnits.Values))
-            {
-                CreateOrUpdateUnit(tile.Item2);
-            }
-            NetworkingManager.RecivedUnits.Clear();
-        }
-  
-#endif
+
 		
 
     }
 
-    private void CreateOrUpdateUnit(NetworkingManager.UnitUpdate update)
+    public void CreateOrUpdateUnit(NetworkingManager.UnitUpdate update)
     {
         int id = update.Data.ID;
         var obj = WorldObjectManager.GetObject(id);
@@ -1031,7 +1017,7 @@ public  partial class WorldManager
         {
             GameManager.T1Units.Add(id);
         }
-        else if(!GameManager.T2Units.Contains(id))
+        else if(!update.Data.UnitData!.Value.Team1 && !GameManager.T2Units.Contains(id))
         {
             GameManager.T2Units.Add(id);
         }

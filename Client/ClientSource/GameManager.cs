@@ -111,7 +111,7 @@ public static partial class GameManager
 			IsPlayer1 = data.IsPlayerOne.Value;
 		}
 		Console.WriteLine("IsPlayer1: " + IsPlayer1);
-
+		Console.WriteLine("IsPlayer1Turn: " + IsPlayer1Turn);
 			
 		score = data.Score;
 		GameState = data.GameState;

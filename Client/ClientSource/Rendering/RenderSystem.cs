@@ -179,6 +179,7 @@ public static class RenderSystem
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 
+
 			//if (!obj.IsVisible())//hide tileobjects
 			//{
 			//	continue;

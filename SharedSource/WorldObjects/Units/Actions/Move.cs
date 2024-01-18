@@ -99,11 +99,11 @@ public class Move : Action
 		queue.Enqueue(ChangeUnitValues.Make(actor.WorldObject.ID,0,-moveUse,0,0));
 		for (int j = 0; j < paths.Count; j++)
 		{
-			Console.WriteLine("moving from: "+paths[j][0]+" to:" + paths[j].Last());
+			Log.Message("UNITS","moving from: "+paths[j][0]+" to:" + paths[j].Last());
 			queue.Enqueue(UnitMove.Make(actor.WorldObject.ID,paths[j]));
 			if (j < shootingSpots.Count)
 			{
-				Console.WriteLine("shooting at:" + shootingSpots[j].Item2 +" with: "+ shootingSpots[j].Item1.Count+" units");
+				Log.Message("UNITS","shooting at:" + shootingSpots[j].Item2 +" with: "+ shootingSpots[j].Item1.Count+" units");
 				foreach (var attacker in shootingSpots[j].Item1)
 				{
 					

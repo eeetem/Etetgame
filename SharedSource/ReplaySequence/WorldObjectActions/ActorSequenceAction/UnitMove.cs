@@ -81,10 +81,10 @@ public class UnitMove : UnitSequenceAction
 
     protected override SequenceAction FilterForPlayerInternal(bool player1)
     { 
-        Console.WriteLine("filtering for player: "+player1+" "+Actor.WorldObject.ID);
+        //Log.Message("UNITS","filtering for player: "+player1+" "+Actor.WorldObject.ID);
         if (Actor.IsPlayer1Team != player1)
         {
-            Console.WriteLine("performing filter");
+            //Log.Message("UNITS","performing filter");
             var ret = Make(Requirements.ActorID, Path);
             List<Vector2Int> newPath = new List<Vector2Int>();
             bool justVisible = false;
@@ -101,9 +101,15 @@ public class UnitMove : UnitSequenceAction
                 }
             }
             ret.Path = newPath;
+            if (ret.Path.Count > 0)
+            {
+                //force an update if we're gonna see unit at any point
+                Networking.NetworkingManager.SendUnitUpdate(Actor,true);
+            }
+
             return ret;
         }
-        Console.WriteLine("no filter needed");
+     //   Log.Message("UNITS","no filter needed");
         return base.FilterForPlayerInternal(player1);
        
     }
@@ -117,29 +123,24 @@ public class UnitMove : UnitSequenceAction
 
     protected override void RunSequenceAction()
     {
-
         while (Path.Count >0)
         {
-
-            
             WorldManager.Instance.MakeFovDirty();
-
+            Actor.Moving = true;
             if (Actor.WorldObject.TileLocation != null)
             {
                 if (Path[0] != Actor.WorldObject.TileLocation.Position)
                     Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
-
-
+                
 #if CLIENT
-				Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
+                Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
 #else
                 while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
                     Thread.Sleep(10);
-
 #endif
             }
 
-            Console.WriteLine("moving to: "+Path[0]+" path size left: "+Path.Count);
+            Log.Message("UNITS","moving to: "+Path[0]+" path size left: "+Path.Count);
 					
             Actor.MoveTo(Path[0]);
 
@@ -149,20 +150,20 @@ public class UnitMove : UnitSequenceAction
 		
 
 #if CLIENT
-					if (Actor.WorldObject.IsVisible())
-					{
-						Audio.PlaySound("footstep", Utility.GridToWorldPos(Actor.WorldObject.TileLocation.Position));
-					}
+            if (Actor.WorldObject.IsVisible())
+            {
+                Audio.PlaySound("footstep", Utility.GridToWorldPos(Actor.WorldObject.TileLocation.Position));
+            }
 #endif
 					
             if(Path.Count > 0)
-                Console.WriteLine("queued movement task to: "+Path[0]+" path size left: "+Path.Count);
+                Log.Message("UNITS","queued movement task to: "+Path[0]+" path size left: "+Path.Count);
 	
         }
-        Console.WriteLine("movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
+        Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
         Actor.canTurn = true;
-
+        Actor.Moving = false;
 
     }
 	
@@ -180,9 +181,9 @@ public class UnitMove : UnitSequenceAction
     }
 
 #if CLIENT
-	public override void Preview(SpriteBatch spriteBatch)
-	{
-		//no need to preview
-	}
+    public override void Preview(SpriteBatch spriteBatch)
+    {
+        //no need to preview
+    }
 #endif
 }

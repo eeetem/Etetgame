@@ -557,6 +557,7 @@ if(!Paniced){
 
 		public int Health => WorldObject.Health;
 		public ConcurrentDictionary<Vector2Int, Visibility> VisibleTiles = new ConcurrentDictionary<Vector2Int, Visibility>();
+		public bool Moving;
 
 
 		public string GetVar(string var,string? param = null)

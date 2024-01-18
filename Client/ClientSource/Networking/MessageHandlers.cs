@@ -58,10 +58,7 @@ public static partial class NetworkingManager
 	{
 		GameManager.SetEndTurn();
 	}
-
-
 	
-
 	[MessageHandler((ushort)NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
 	{
@@ -71,14 +68,12 @@ public static partial class NetworkingManager
 
 	//cache tiles to be updated and load them all at once
 	public static readonly Dictionary<Vector2Int,ValueTuple<long,WorldTile.WorldTileData>> RecievedTiles = new Dictionary<Vector2Int, ValueTuple<long,WorldTile.WorldTileData>>();
-
+	
 	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
 	private static void ReciveTileUpdate(Message message)
 	{
 		long timestamp = message.GetLong();
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-
-
 		Log.Message("NETWORKING","TILE Update recived: " + data);
 
 		if (RecievedTiles.ContainsKey(data.position))
@@ -113,9 +108,7 @@ public static partial class NetworkingManager
 		long timestamp = message.GetLong();
 		UnitUpdate data = message.GetSerializable<UnitUpdate>();
 		int id = data.Data.ID;
-
-
-
+		
 		Log.Message("NETWORKING","UNIT update recived: " +data.Position + data.Data);
 
 		if (RecivedUnits.ContainsKey(id))
@@ -162,13 +155,15 @@ public static partial class NetworkingManager
 	{
 		Chat.ReciveMessage(message.GetString());	
 	}
-
 	
 	[MessageHandler((ushort)NetworkMessageID.ReplaySequence)]
 	private static void RecieveReplaySequence(Message message)
 	{
+		
+		
 		Queue<SequenceAction> actions = new Queue<SequenceAction>();
 		ReplaySequenceTarget t = (ReplaySequenceTarget)message.GetUShort();
+		Log.Message("SEQUENCENETOWRKING","recived sequence for: "+t);
 		switch (t)
 		{//CLIENT side filtering, only relevant topractice mode and spectator
 			case ReplaySequenceTarget.Player1:
@@ -179,14 +174,15 @@ public static partial class NetworkingManager
 				break;
 		}
 		int lenght = message.GetInt();
+		Log.Message("SEQUENCENETOWRKING","sequence legnhts: "+lenght);
 		for (int i = 0; i < lenght; i++)
 		{
 
 			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
 			SequenceAction sqc;
 			sqc = SequenceAction.GetAction(type, message);
-			
 			actions.Enqueue(sqc);
+			Log.Message("SEQUENCENETOWRKING","actions: "+sqc);
 		}
 		SequenceManager.AddSequence(actions);
 	

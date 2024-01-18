@@ -64,6 +64,8 @@ public class GameLayout : MenuLayout
 	public static readonly int[,,] AIMoveCache = new int[100,100,2];
 	public static void ReMakeMovePreview()
 	{
+		if(UI.currentUi is not GameLayout) return;
+		
 		if(SelectedUnit == null) return;
 		PreviewMoves = SelectedUnit.GetPossibleMoveLocations();
 		UpdateHudButtons();

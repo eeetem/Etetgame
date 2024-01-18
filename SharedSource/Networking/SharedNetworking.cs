@@ -75,7 +75,7 @@ public static partial class NetworkingManager
 	
     private static void LogNetCode(string msg)
     {
-        DefconNull.Log.Message("NETWORKING",msg);
+        DefconNull.Log.Message("RIPTIDE",msg);
     }
 
 }
