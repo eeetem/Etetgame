@@ -61,7 +61,7 @@ public partial class WorldObject
 
 
 	private IWorldTile _tileLocation = null!;
-	public IWorldTile? TileLocation
+	public IWorldTile TileLocation
 	{
 		get => _tileLocation;
 

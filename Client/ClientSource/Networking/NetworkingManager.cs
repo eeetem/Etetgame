@@ -95,7 +95,7 @@ public static partial class NetworkingManager
 		};
 		client.MessageReceived += (a, b) =>
 		{
-			Log.Message("NETWORKING","Recived Message: " + (NetworkMessageID)b.MessageId);
+			//Log.Message("RIPTIDE","Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
 		client.TimeoutTime = 10000;

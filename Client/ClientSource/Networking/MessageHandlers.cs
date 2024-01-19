@@ -74,67 +74,47 @@ public static partial class NetworkingManager
 	{
 		long timestamp = message.GetLong();
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		Log.Message("NETWORKING","TILE Update recived: " + data);
+		Log.Message("TILEUPDATES","TILE Update recived: " + data);
 
 		if (RecievedTiles.ContainsKey(data.position))
 		{
-			Log.Message("NETWORKING","tile already present");
+			Log.Message("TILEUPDATES","tile already present");
 			if (RecievedTiles[data.position].Item1 <= timestamp)
 			{
-				Log.Message("NETWORKING","update is newer, discarding old");
+				Log.Message("TILEUPDATES","update is newer, discarding old");
 				RecievedTiles.Remove(data.position);
 				RecievedTiles.Add(data.position, (timestamp,data));
 			}
 			else
 			{
-				Log.Message("NETWORKING","old update, discarding");
+				Log.Message("TILEUPDATES","old update, discarding");
 			}
 		}
 		else
 		{
-			Log.Message("NETWORKING","new tile, adding");
+			Log.Message("TILEUPDATES","new tile, adding");
 			RecievedTiles.Add(data.position, (timestamp,data));
 		}
 			
 		
 	
 	}
-	
-	public static readonly Dictionary<int,ValueTuple<long,UnitUpdate>> RecivedUnits = new Dictionary<int, ValueTuple<long,UnitUpdate>>();
 
 	[MessageHandler((ushort)NetworkMessageID.UnitUpdate)]
-	private static void ReciveUnitUpdate(Message message)
+	private static void ReciveUnitUpdateUpdate(Message message)
 	{
-		long timestamp = message.GetLong();
-		UnitUpdate data = message.GetSerializable<UnitUpdate>();
-		int id = data.Data.ID;
 		
-		Log.Message("NETWORKING","UNIT update recived: " +data.Position + data.Data);
-
-		if (RecivedUnits.ContainsKey(id))
+		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recivedUnitPositions = new();
+		int lenght = message.GetInt();
+		for (int i = 0; i < lenght; i++)
 		{
-			Log.Message("NETWORKING","tile already present");
-			if (RecivedUnits[id].Item1 <= timestamp)
-			{
-				Log.Message("NETWORKING","update is newer, discarding old");
-				RecivedUnits.Remove(id);
-				RecivedUnits.Add(id, (timestamp,data));
-			}
-			else
-			{
-				Log.Message("NETWORKING","old update, discarding");
-			}
+			recivedUnitPositions.Add(message.GetInt(),(message.GetSerializable<Vector2Int>(),message.GetSerializable<WorldObject.WorldObjectData>()));	
 		}
-		else
-		{
-			Log.Message("NETWORKING","new unit, adding");
-			RecivedUnits.Add(id, (timestamp,data));
-		}
-			
+		GameManager.SetUnitPositions(recivedUnitPositions);
 		
-	
 	}
-	
+
+
 	[MessageHandler((ushort)NetworkMessageID.Notify)]
 	private static void ReciveNotify(Message message)
 	{

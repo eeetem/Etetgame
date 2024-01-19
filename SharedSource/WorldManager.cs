@@ -85,7 +85,7 @@ public  partial class WorldManager
 
     public void LoadWorldTile(WorldTile.WorldTileData data, bool forceUpdateEverything = false)
     {
-        Log.Message("WORLD MANAGER","Loading tile at " + data.position);
+        Log.Message("TILEUPDATES","Loading tile at " + data.position);
 
         WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
 		
@@ -123,7 +123,7 @@ public  partial class WorldManager
             {
                 if (tileObject is null)
                 {
-                  Log.Message("WORLD MANAGER","desired location is null making obj: " + data.Value.ID);
+                    Log.Message("WORLD MANAGER","desired location is null making obj: " + data.Value.ID);
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
                 }
                 else if (tileObject.ID != data.Value.ID)
@@ -175,7 +175,7 @@ public  partial class WorldManager
 		
     private void CalculateFov()
     {
-        FovDirty = false;
+        
 		
 				
 
@@ -194,23 +194,36 @@ public  partial class WorldManager
 #elif CLIENT
         units = GameManager.GetTeamUnits(GameManager.IsPlayer1);
 #endif
-        Parallel.ForEach(units, unit =>
+        Parallel.ForEach(units, seeingUnit =>
         {
-            var unitSee = GetVisibleTiles(unit.WorldObject.TileLocation.Position, unit.WorldObject.Facing, unit.GetSightRange(), unit.Crouching);
+            var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
             foreach (var visTuple in unitSee)
             {
-                if(GetTileAtGrid(visTuple.Key).GetVisibility(unit.IsPlayer1Team) < visTuple.Value)
+                if(GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
                 {
-                    GetTileAtGrid(visTuple.Key).SetVisibility(unit.IsPlayer1Team,visTuple.Value);
+                    GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team,visTuple.Value);
+
+                    var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
+
+                    if(spotedUnit == null) continue;
 #if CLIENT
-                    GetTileAtGrid(visTuple.Key).UnitAtLocation?.Spoted();
-#endif
+                   spotedUnit.Spoted();
+#else
+                    if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team)
+                    {
+                        GameManager.EnsureUnitSpoted(spotedUnit);
+                    }
+
+                
+#endif               
                 }
 				
             }
-            unit.VisibleTiles = unitSee;
+            seeingUnit.VisibleTiles = unitSee;
         });
 		
+        
+        
 #if SERVER
         Log.Message("WORLD MANAGER","sending FOV tile updates");
         foreach (var tile in _gridData)
@@ -218,11 +231,9 @@ public  partial class WorldManager
             NetworkingManager.SendTileUpdate(tile);
         }
 
-        foreach (var u in units)
-        {
-            NetworkingManager.SendUnitUpdate(u);
-        }
+        GameManager.UpdatePlayerSideUnitPositions();
 #endif
+        FovDirty = false;
     }
 			
     public ConcurrentDictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
@@ -1008,52 +1019,29 @@ public  partial class WorldManager
 
     }
 
-    public void CreateOrUpdateUnit(NetworkingManager.UnitUpdate update)
+    public void UpdateUnit(WorldObject.WorldObjectData data)
     {
-        int id = update.Data.ID;
+        int id = data.ID;
         var obj = WorldObjectManager.GetObject(id);
         
-        if (update.Data.UnitData!.Value.Team1 && !GameManager.T1Units.Contains(id))
+        if (data.UnitData!.Value.Team1 && !GameManager.T1Units.Contains(id))
         {
             GameManager.T1Units.Add(id);
         }
-        else if(!update.Data.UnitData!.Value.Team1 && !GameManager.T2Units.Contains(id))
+        else if(data.UnitData!.Value.Team1 && !GameManager.T2Units.Contains(id))
         {
             GameManager.T2Units.Add(id);
         }
         
         
-        
-        if (obj== null || obj.TileLocation == null)//if the unit doesn't exist or is just stored off the map re-create it and it'll just delete the old one
-        {
-            Log.Message("WORLD MANAGER","creating unit " + id);
-            WorldObjectManager.MakeWorldObject.Make(update.Data,update.Position).GenerateTask().RunTaskSynchronously();
-            return;
-        }
-        
-        
 
-        if (obj.IsVisible())//if we can see the unit - dont update it as the sequence actions should do that
+        if (obj is null || obj.IsVisible())//if we can see the unit - dont update it as the sequence actions should do that
         {
             return;
         }
 
-        if (update.Position != null && obj.TileLocation.Position != update.Position)
-        {
-          
-
-            Log.Message("WORLD MANAGER","updating(moving from "+obj.TileLocation.Position +" to "+ update.Position+" )unit " + id);
-            obj!.SetData(update.Data);
-            obj.UnitComponent!.MoveTo(update.Position.Value);
-
-        }
-        else//otherwise update unit on the location it is
-        {
-            Log.Message("WORLD MANAGER","updating unit " + id);
-            obj!.SetData(update.Data);
-        }
-
-
+        Log.Message("WORLD MANAGER","updating unit " + id);
+        obj!.SetData(data);
      
     }
 

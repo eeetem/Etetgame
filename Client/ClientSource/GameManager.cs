@@ -9,6 +9,8 @@ using DefconNull.Networking;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
 using DefconNull.Rendering.UILayout.GameLayout;
+using DefconNull.ReplaySequence.WorldObjectActions;
+using DefconNull.WorldObjects;
 
 namespace DefconNull;
 
@@ -196,4 +198,88 @@ public static partial class GameManager
 
 	}
 
+	public static void SetUnitPositions(Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> recivedUnitPositions)
+	{
+		
+		Log.Message("UNITS","recived unit positions");
+		
+		//remove all units that we are aware of that we shouldnt be
+		var allUnits = GetAllUnits();
+		foreach (var u in allUnits)
+		{
+			if (!recivedUnitPositions.ContainsKey(u.WorldObject.ID))
+			{
+				Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
+				WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+				T1Units.Remove(u.WorldObject.ID);
+				T2Units.Remove(u.WorldObject.ID);
+			}
+		}
+		
+	
+		
+		//create new units that we didnt know of before
+		foreach (var u in recivedUnitPositions)
+		{
+			var obj = WorldObjectManager.GetObject(u.Key);
+			if (obj == null)
+			{
+				Log.Message("UNITS","creating new unit: "+u.Key);
+				WorldObjectManager.MakeWorldObject.Make(u.Value.Item2,u.Value.Item1).GenerateTask().RunTaskSynchronously();
+			}
+		}
+		
+		//assign teams to new units
+		foreach (var u in recivedUnitPositions)
+		{
+			if (u.Value.Item2.UnitData!.Value.Team1)
+			{
+				if (!T1Units.Contains(u.Key))
+				{
+					T1Units.Add(u.Key);
+					Log.Message("UNITS","adding unit to team 1: "+u.Key);
+				}
+			}
+			else
+			{
+				if (!T2Units.Contains(u.Key))
+				{
+					T2Units.Add(u.Key);
+					Log.Message("UNITS","adding unit to team 2: "+u.Key);
+				}
+			}	
+		}
+		
+		//update existing units
+		foreach (var u in new List<int>(T1Units))
+		{
+			if (recivedUnitPositions.TryGetValue(u, out var data))
+			{
+				if (!data.Item2.UnitData!.Value.Team1)//this unit is for other team
+				{
+					throw new Exception("Unit on wrong team");
+				}	
+				//move units to known positions
+				Log.Message("UNITS","moving unit to known position: "+u + " " + data.Item1);
+				var obj = WorldObjectManager.GetObject(u);
+				obj!.SetData(data.Item2);
+				obj.UnitComponent!.MoveTo(data.Item1);
+			}
+		}
+		foreach (var u in new List<int>(T2Units))
+		{
+			if (recivedUnitPositions.TryGetValue(u, out var data))
+			{
+				if (data.Item2.UnitData!.Value.Team1)//this unit is for other team
+				{
+					throw new Exception("Unit on wrong team");
+				}	
+				//move units to known positions
+				Log.Message("UNITS","moving unit to known position: "+u + " " + data.Item1);
+				var obj = WorldObjectManager.GetObject(u);
+				obj!.SetData(data.Item2);
+				obj.UnitComponent!.MoveTo(data.Item1);
+			}
+		}
+	}
 }

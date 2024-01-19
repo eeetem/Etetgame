@@ -6,6 +6,7 @@ using DefconNull.Networking;
 
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
+using DefconNull.WorldObjects;
 #endif
 
 namespace DefconNull.ReplaySequence;
@@ -34,12 +35,7 @@ public class SequenceManager
                     WorldManager.Instance.LoadWorldTile(tile.Item2);
                 }
                 NetworkingManager.RecievedTiles.Clear();
-                foreach (var tile in new List<ValueTuple<long,NetworkingManager.UnitUpdate>>(NetworkingManager.RecivedUnits.Values))
-                {
-                    WorldManager.Instance.CreateOrUpdateUnit(tile.Item2);
-                }
-                NetworkingManager.RecivedUnits.Clear();
-        
+
   
 #endif
                 if (SequenceQueue.Count > 0)

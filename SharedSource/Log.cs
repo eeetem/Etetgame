@@ -53,17 +53,26 @@ public static class Log
         });
         
     }
+    
+    private static List<string> generalIgnoreList = new List<string>()
+    {
+        "TILEUPDATES",
+    };
     public static void Message(string category, string message)
     {
         
         String msg = "["+DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()+"]["+category  +"]"+message;
         Directory.CreateDirectory("Logs");
         Directory.CreateDirectory("Logs/"+startTime);
-        GeneralLog(msg);
+        
+        
+        if (!generalIgnoreList.Contains(category))
+            GeneralLog(msg);
+       
 
         GetLogStream(category).WriteLine(msg);
 
-    
+
     }
     private static ConcurrentQueue<string> consoleQueue = new ConcurrentQueue<string>();
     private static void GeneralLog(string msg)

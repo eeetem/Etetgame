@@ -553,13 +553,10 @@ if(!Paniced){
 			StatusEffects.RemoveAll(x => x.type.name == effectName);
 		}
 		
-
-
+		
 		public int Health => WorldObject.Health;
 		public ConcurrentDictionary<Vector2Int, Visibility> VisibleTiles = new ConcurrentDictionary<Vector2Int, Visibility>();
-		public bool Moving;
-
-
+	
 		public string GetVar(string var,string? param = null)
 		{
 			Console.WriteLine("getting value "+var+" with param "+param);
@@ -629,17 +626,32 @@ if(!Paniced){
 
 		public void MoveTo(Vector2Int vector2Int)
 		{
-			if(this.WorldObject.TileLocation is not null)
-				this.WorldObject.TileLocation.UnitAtLocation = null;
-			
+			Log.Message("UNITS","units re-located from "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			var oldtile = this.WorldObject.TileLocation;
+			oldtile.UnitAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
 			this.WorldObject.TileLocation = newTile;
 			newTile.UnitAtLocation = this;
+
+#if SERVER
+		Log.Message("UNITS","doing checks for player-side-movement "+WorldObject.TileLocation.Position+" to "+vector2Int);
+		if(newTile.IsVisible(team1: true)||((WorldTile)oldtile).IsVisible(team1: true))
+		{
+			Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			if (GameManager.Player1UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player1UnitPositions.Remove(this.WorldObject.ID);
+	
+			GameManager.Player1UnitPositions[this.WorldObject.ID] = (newTile.Position,newTile.UnitAtLocation!.WorldObject.GetData());
+		}
+		if(newTile.IsVisible(team1: false)||((WorldTile)oldtile).IsVisible(team1: false))
+		{
+			Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			if (!GameManager.Player2UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player2UnitPositions.Remove(this.WorldObject.ID);
+			
+			GameManager.Player2UnitPositions[this.WorldObject.ID] = (newTile.Position,newTile.UnitAtLocation!.WorldObject.GetData());
+		}
+#endif
 		}
 
-		public void LoadData(WorldObject.WorldObjectData updateData)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 }

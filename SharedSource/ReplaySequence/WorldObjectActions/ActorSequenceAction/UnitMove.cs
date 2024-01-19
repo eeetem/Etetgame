@@ -104,7 +104,7 @@ public class UnitMove : UnitSequenceAction
             if (ret.Path.Count > 0)
             {
                 //force an update if we're gonna see unit at any point
-                Networking.NetworkingManager.SendUnitUpdate(Actor,true);
+                Networking.NetworkingManager.DetectUnit(Actor,ret.Path[0]);
             }
 
             return ret;
@@ -126,7 +126,7 @@ public class UnitMove : UnitSequenceAction
         while (Path.Count >0)
         {
             WorldManager.Instance.MakeFovDirty();
-            Actor.Moving = true;
+
             if (Actor.WorldObject.TileLocation != null)
             {
                 if (Path[0] != Actor.WorldObject.TileLocation.Position)
@@ -163,7 +163,6 @@ public class UnitMove : UnitSequenceAction
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
         Actor.canTurn = true;
-        Actor.Moving = false;
 
     }
 	
