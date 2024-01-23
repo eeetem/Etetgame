@@ -25,9 +25,9 @@ public partial class WorldObject
 			return;
 		}
 		Type = type;
+		SetData(data);
 		TileLocation = tile;
 		Type.SpecialBehaviour(this);
-		SetData(data);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
 		int seed = ID;
@@ -334,8 +334,7 @@ public partial class WorldObject
 		{
 			Health = Type.MaxHealth;
 #if CLIENT
-		//	if (Type.Animations.ContainsKey("start"))
-	//			StartAnimation("start", Type.Animations["start"].Item1, Type.Animations["start"].Item2);
+			StartAnimation("start");
 #endif
 		}
 		else

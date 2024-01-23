@@ -141,14 +141,8 @@ public static class PrefabManager
 					XmlElement obj = (XmlElement) node;
 					if (obj.Name == "variation")
 					{
-						var variation = new SpriteVariation(obj.GetAttribute("id"),
-							int.Parse(obj.GetAttribute("weight")), int.Parse(obj.GetAttribute("frames")),
-							int.Parse(obj.GetAttribute("animFPS")));
+						var variation = new SpriteVariation(obj.GetAttribute("id"), int.Parse(obj.GetAttribute("weight")));
 						spriteVariations.Add(variation);
-					}
-					else if(obj.Name == "anim")
-					{
-						type.Animations.Add(obj.Attributes["name"]?.InnerText ?? string.Empty, (int.Parse(obj.Attributes["frames"]?.InnerText ?? "0"), int.Parse(obj.Attributes["animfps"]?.InnerText ?? "0")));
 					}
 			
 				}
@@ -162,7 +156,7 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-			type.GenerateSpriteSheet(defaultSpritename,defaultFrames,defaultanimFps,spriteVariations);//this is a bit inconsistent but eeeh
+			type.GenerateSpriteSheet(defaultSpritename,spriteVariations);//this is a bit inconsistent but eeeh
 #endif
 		}
 
@@ -204,7 +198,7 @@ public static class PrefabManager
 			
 
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name, new List<Tuple<string, int>>());//this is a bit inconsistent but eeeh
+			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>());//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);

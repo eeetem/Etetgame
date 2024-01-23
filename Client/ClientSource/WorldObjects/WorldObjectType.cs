@@ -13,9 +13,12 @@ public partial class WorldObjectType
     private DirectionSpriteSheet[] _variationSheets = null!;
     public int TotalVariationsWeight = 1;
     public int TotalVarationCount = 1;
-    public Dictionary<string,(int,int)> Animations = new Dictionary<string, (int, int)>();
     public float Zoffset { get; set; }
 
+    public string GetVariationName(int variation)
+    {
+        return _variationSheets[variation].GetVariationName();
+    }
     public int GetRandomVariationIndex(int seed)
     {
         var r = new Random(seed);
@@ -53,5 +56,10 @@ public partial class WorldObjectType
     public Texture2D GetSprite(int spriteVariation, int spriteIndex, string extraState = "")
     {
         return _variationSheets[spriteVariation].GetSprite(spriteIndex, extraState);
+    }
+
+    public int GetAnimationLenght(int spriteVariation, string name)
+    {
+        return _variationSheets[spriteVariation].GetAnimationLenght(name);
     }
 }

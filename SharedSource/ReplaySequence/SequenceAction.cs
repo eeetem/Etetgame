@@ -24,7 +24,7 @@ public abstract class SequenceAction :  IMessageSerializable
         DeleteWorldObject=106,
 		
         ChangeUnitValues =0,
-        //GiveItem =1,
+        PlayAnimation =1,
         Move=2,
         Face=3,
         Crouch=4,
@@ -42,7 +42,7 @@ public abstract class SequenceAction :  IMessageSerializable
         Undefined = -1,
 
 
-		
+       
     }
 
     private readonly static Dictionary<SequenceType, FluentObjectPool<SequenceAction>> ActionPools = new();
@@ -119,6 +119,10 @@ public abstract class SequenceAction :  IMessageSerializable
         {
             return SequenceType.DeleteWorldObject;
         }
+        if(t== typeof(PlayAnimation))
+        {
+            return SequenceType.PlayAnimation;
+        }
         throw new ArgumentOutOfRangeException(nameof(t), t, null);
     }
     public static Type EnumToType(SequenceType t)
@@ -155,6 +159,8 @@ public abstract class SequenceAction :  IMessageSerializable
                 return typeof(Shoot);
             case SequenceType.DeleteWorldObject:
                 return typeof(WorldObjectManager.DeleteWorldObject);
+            case SequenceType.PlayAnimation:
+                return typeof(PlayAnimation);
             default:
                 throw new ArgumentOutOfRangeException(nameof(t), t, null);
         }

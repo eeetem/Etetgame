@@ -1782,4 +1782,9 @@ public class GameLayout : MenuLayout
 
 		UpdateHudButtons();
 	}
+
+	public static void CleanUp()
+	{
+		ActionButtons.Clear();
+	}
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -48,5 +50,18 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 	public Texture2D GetSprite(int dir, string extraState="")
 	{
 		return GetSprite(Utility.NormaliseDir(dir),extraState);
+	}
+
+	public int GetAnimationLenght(string name)
+	{
+		var path = "Content/"+_baseName + "/" + name+_variation.Name+"/";
+		if (!Directory.Exists(path)) return 0;
+		var res = Directory.EnumerateFiles(path);
+		return res.Count();
+	}
+
+	public string GetVariationName()
+	{
+		return _variation.Name;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DefconNull.Rendering.UILayout.GameLayout;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -11,7 +12,8 @@ public partial class WorldObject : IDrawable
 	private Transform2 DrawTransform = null!;
 	public int spriteVariation;
 	public PreviewData PreviewData;
-	
+	public bool IsAnimating => CurrentAnimation != null || _animationQueue.Count > 0;
+
 
 	public Transform2 GetDrawTransform()
 	{
@@ -80,7 +82,8 @@ public partial class WorldObject : IDrawable
 				state = "/Crouch";	
 			}
 		}
-		state+= CurrentAnimation?.GetState() ?? "";
+		if(this.destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
+		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
 
@@ -122,6 +125,7 @@ public partial class WorldObject : IDrawable
 
 	private readonly Queue<Animation> _animationQueue = new Queue<Animation>();
 	public Animation? CurrentAnimation = null;
+	public Animation? Loop = null;
 	public void AnimationUpdate(float msDelta)
 	{
 		CurrentAnimation?.Process(msDelta);
@@ -142,9 +146,10 @@ public partial class WorldObject : IDrawable
 	}
 
 
-	private void StartAnimation(string name, int frameCount, int FPS)
+	public void StartAnimation(string name)
 	{
-		_animationQueue.Enqueue(new Animation(name, frameCount, FPS));
+		int count = Type.GetAnimationLenght(spriteVariation, name);
+		_animationQueue.Enqueue(new Animation(name,count));
 	}
 	
 }

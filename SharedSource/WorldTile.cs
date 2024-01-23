@@ -533,7 +533,7 @@ public partial class WorldTile : IWorldTile
 
 	public void NextTurn(bool team1Turn)
 	{
-		foreach (var item in ObjectsAtLocation)
+		foreach (var item in new List<WorldObject>(ObjectsAtLocation))
 		{
 			item.NextTurn();
 		}

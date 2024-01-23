@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using DefconNull.WorldObjects;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
@@ -27,8 +28,10 @@ public static partial class WorldObjectManager
 	{
 		if(obj.destroyed)return;
 		obj.destroyed = true;
-
-		DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
+#if CLIENT
+		obj.StartAnimation("end");
+#endif
+		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)
 		{

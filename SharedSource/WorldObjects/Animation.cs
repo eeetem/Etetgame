@@ -3,12 +3,12 @@
 public class Animation
 {
 	private int _currentFrame = 0;
-	private readonly int _frameCount = 0;
 	private readonly string _name;
 	private readonly float _msPerFrame = 0;
 	float _elapsedMsSinceLastFrame = 0;
+	private readonly int _frameCount;
 
-	public Animation(string name, int frameCount, int FPS)
+	public Animation(string name, int frameCount, int FPS=5)
 	{
 		this._name = name;
 		this._frameCount = frameCount;
@@ -27,8 +27,9 @@ public class Animation
 
 	public bool IsOver => _currentFrame >= _frameCount;
 
-	public string GetState()
+	public string GetState(string spriteVariation)
 	{
-		return _name+_currentFrame.ToString();
+		if (IsOver) return "";
+		return "/"+_name+spriteVariation+"/"+_currentFrame.ToString();
 	}
 }

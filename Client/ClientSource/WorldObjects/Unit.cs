@@ -6,7 +6,7 @@ using IDrawable = DefconNull.Rendering.IDrawable;
 
 namespace DefconNull.WorldObjects;
 
-public partial class Unit :IDrawable
+public partial class Unit// :IDrawable
 {
 	
     public bool IsMyTeam()
@@ -22,7 +22,7 @@ public partial class Unit :IDrawable
 			
     }
 
-
+/*
     public Transform2 GetDrawTransform()
     {
         var t = WorldObject.GetDrawTransform();
@@ -79,5 +79,5 @@ public partial class Unit :IDrawable
     public bool IsVisible()
     {
         return WorldObject.IsVisible();
-    }
+    }*/
 }

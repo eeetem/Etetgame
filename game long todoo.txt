@@ -10,15 +10,14 @@ apply shader to every obj in effect area rather than whole screen
 
 display shoot breakdown
 headshot and overwatch?
-face unit force?
 
-new det icon?
-shooting without using points -> too quick follow up action?
+
 
 grebade range dropoff
 smoke sniping
 must reload
 cant rpg through people
+smoke sync
 
 UI Rework:
 crouch indicator

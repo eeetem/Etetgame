@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
+using DefconNull.Rendering.UILayout.GameLayout;
 using Riptide;
 using Riptide.Utils;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -67,6 +68,7 @@ public static partial class NetworkingManager
 				UI.OptionMessage("Lost Connection: " + a, "Do you want to reconnect?", "no", (a, b) =>
 				{
 					Disconnect();
+					GameLayout.CleanUp();
 					if (MasterServerNetworking.IsConnected)
 					{
 						UI.SetUI(new LobbyBrowserLayout());

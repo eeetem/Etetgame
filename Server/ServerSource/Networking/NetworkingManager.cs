@@ -30,6 +30,8 @@ public static partial class NetworkingManager
         server.ClientConnected += (a, b) => { Log.Message("NETWORKING",$" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
         server.HandleConnection += HandleConnection;
         server.ClientDisconnected += ClientDisconnected;
+        
+        
 
         selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
         //selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
@@ -103,6 +105,9 @@ public static partial class NetworkingManager
         connection.MaxSendAttempts = 50;
         connection.MaxAvgSendAttempts = 5;
         connection.AvgSendAttemptsResilience = 10;
+#if DEBUG
+        connection.CanQualityDisconnect = false;
+#endif
 		
 		
 		
@@ -538,7 +543,7 @@ public static partial class NetworkingManager
     public static void SendUnitPositionUpdates()
     {
         Log.Message("UNITS","sending unit position updates");
-        if (GameManager.Player1 != null)
+        if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
         {
             var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
             msg.Add(GameManager.Player1UnitPositions.Count);
@@ -550,7 +555,7 @@ public static partial class NetworkingManager
             }
             server.Send(msg, GameManager.Player1.Connection);
         }
-        if (GameManager.Player2 != null)
+        if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
         {
             var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
             msg.Add(GameManager.Player2UnitPositions.Count);
