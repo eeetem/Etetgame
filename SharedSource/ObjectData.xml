@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
+
+
+  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
+    <sprite source="Environment/Smoke/Smoke" fames="2"  animFPS="1">
+      <anim name="start" frames="5" animFPS="10"/>
+      <anim name="end" frames="4"  animFPS="10"/>
+    </sprite>
+    <name>Smoke</name>
+  </object>
+  
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/ground" offset= "0,0">
+    <sprite source="Environment/Surfaces/ground" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="5"/>
@@ -15,73 +25,73 @@
     <name>basicFloor</name>
   </object>
   <object Faceable = "true" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/roadStripe" offset= "0,0">
+    <sprite source="Environment/Surfaces/roadStripe" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
     </sprite>
     <name>Striped Road</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/blankRoad" offset= "0,0">
+    <sprite source="Environment/Surfaces/blankRoad" offset= "0,0">
     </sprite>
     <name>Blank Road</name>
   </object>
   <object Faceable = "false" SCover ="0" Impassible = "true" Surface = "true">
-    <sprite name="Environment/Surfaces/water" variations = "1" offset= "0,0"/>
+    <sprite source="Environment/Surfaces/water" variations = "1" offset= "0,0"/>
     <name>water</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/capturePoint" offset= "0,0"/>
+    <sprite source="Environment/Surfaces/capturePoint" offset= "0,0"/>
     <name>capturePoint</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/spawnPoint1" offset= "0,0"/>
+    <sprite source="Environment/Surfaces/spawnPoint1" offset= "0,0"/>
     <name>spawnPointT1</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
-    <sprite name="Environment/Surfaces/spawnPoint2"  offset= "0,0"/>
+    <sprite source="Environment/Surfaces/spawnPoint2" offset= "0,0"/>
     <name>spawnPointT2</name>
   </object>
 
   <object SCover = "3" Edge = "true" health="1000">
-    <sprite  name="Environment/borderWall"  offset= "0,0"/>
+    <sprite source="Environment/borderWall" offset= "0,0"/>
     <name>borderWall</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
     </destroyConsequences>
   </object>
   <object SCover = "0" Edge = "true" health="5">
-    <sprite  name="Environment/destroyedWall"  offset= "0,0"/>
+    <sprite source="Environment/destroyedWall" offset= "0,0"/>
     <name>basicWallDebris</name>
   </object>
   <object VCover = "0" SCover = "3" Edge = "true" health="3">
-    <sprite  name="Environment/glassWall"  offset= "0,0"/>
+    <sprite source="Environment/glassWall" offset= "0,0"/>
     <name>glassWall</name>
   </object>
   <object VCover="3" SCover = "0" Edge = "true" health="6">
-    <sprite  name="Environment/strawWall"  offset= "0,0"/>
+    <sprite source="Environment/strawWall" offset= "0,0"/>
     <name>strawWall</name>
   </object>
   <object VCover = "0" SCover = "3" Edge = "true" health="1">
-    <sprite  name="Environment/paperMache"  offset= "0,0"/>
+    <sprite source="Environment/paperMache" offset= "0,0"/>
     <name>paperMache</name>
   </object>
   <object SCover = "3" Edge = "true" health="8">
-    <sprite  name="Environment/basicWall"  offset= "0,0"/>
+    <sprite source="Environment/basicWall" offset= "0,0"/>
     <name>basicWall</name>
     <destroyConsequences range = "1" >
       <place name="basicHalfWall"/>
     </destroyConsequences>
   </object>
   <object SCover = "2" Edge = "true">
-    <sprite  name="Environment/basicHalfWall" offset= "0,0"  health="8"/>
+    <sprite source="Environment/basicHalfWall" offset= "0,0" health="8"/>
     <name>basicHalfWall</name>
     <destroyConsequences range = "1" >
       <place name="basicHalfWallLight"/>
     </destroyConsequences>
   </object>
   <object SCover = "1" Edge = "true">
-    <sprite name="Environment/basicHalfWallLight" health="8" offset= "0,0"/>
+    <sprite source="Environment/basicHalfWallLight" health="8" offset= "0,0"/>
     <name>basicHalfWallLight</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
@@ -407,7 +417,7 @@
 
 
   <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
-    <sprite name="Environment/satchel"  offset= "0,0"/>
+    <sprite source="Environment/satchel" offset= "0,0"/>
     <name>Satchel</name>
 
     <destroyConsequences range="2">
@@ -423,15 +433,11 @@
 
 
   <object VCover = "0" Faceable = "false" SCover ="0" z="0">
-    <sprite name="Environment/crater"  offset= "0,0"/>
+    <sprite source="Environment/crater" offset= "0,0"/>
     <name>Crater</name>
   </object>
 
 
-  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
-    <sprite name="Environment/Smoke"  offset= "0,0"/>
-    <name>Smoke</name>
-  </object>
 
   <item>
     <name>Satchel Charge</name>

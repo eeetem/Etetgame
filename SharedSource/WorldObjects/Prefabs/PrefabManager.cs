@@ -125,26 +125,35 @@ public static class PrefabManager
 			}
 
 
-			var spritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["name"]?.InnerText;
+			var defaultSpritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["source"]?.InnerText;
+			var defaultFrames = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["frames"]?.InnerText ?? "1");
+			var defaultanimFps = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["animFPS"]?.InnerText ?? "1");
+
+
 			var xmlNodeList = xmlObj.GetElementsByTagName("sprite")[0]?.ChildNodes;
 
-			List<Tuple<string, int>> spriteVariations = new List<Tuple<string, int>>();
+			List<SpriteVariation> spriteVariations = new List<SpriteVariation>();
 			if (xmlNodeList != null)
 			{
 				foreach (var node in xmlNodeList)
 				{
+					
 					XmlElement obj = (XmlElement) node;
-					spriteVariations.Add(new Tuple<string, int>(obj.GetAttribute("id"), int.Parse(obj.GetAttribute("weight"))));
+					if (obj.Name == "variation")
+					{
+						var variation = new SpriteVariation(obj.GetAttribute("id"),
+							int.Parse(obj.GetAttribute("weight")), int.Parse(obj.GetAttribute("frames")),
+							int.Parse(obj.GetAttribute("animFPS")));
+						spriteVariations.Add(variation);
+					}
+					else if(obj.Name == "anim")
+					{
+						type.Animations.Add(obj.Attributes["name"]?.InnerText ?? string.Empty, (int.Parse(obj.Attributes["frames"]?.InnerText ?? "0"), int.Parse(obj.Attributes["animfps"]?.InnerText ?? "0")));
+					}
+			
 				}
 			}
-			if(spriteVariations.Count == 0){
-				spriteVariations.Add(new Tuple<string, int>("", 1));
-			}
 
-			if (spritename == null)
-			{
-				spritename = name;
-			}
 
 #endif
 			
@@ -153,7 +162,7 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-			type.GenerateSpriteSheet(spritename,spriteVariations);//this is a bit inconsistent but eeeh
+			type.GenerateSpriteSheet(defaultSpritename,defaultFrames,defaultanimFps,spriteVariations);//this is a bit inconsistent but eeeh
 #endif
 		}
 

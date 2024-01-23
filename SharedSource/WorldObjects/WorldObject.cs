@@ -36,24 +36,7 @@ public partial class WorldObject
 			seed = (int)(tile.Position.X + tile.Position.Y + ID);
 		}
 		
-		var r = new Random(seed);
-		int roll = (r.Next(1000)) % type.TotalVariationsWeight;
-		for (int i = 0; i < type.Variations.Count; i++)
-		{
-			if (roll < type.Variations[i].Item2)
-			{
-				spriteVariation = i;
-				break;
-			}
-			roll -= type.Variations[i].Item2;
-		
-		}
-
-		if (spriteVariation == null)
-		{
-			throw new Exception("failed to generate sprite variation");
-		}
-
+		spriteVariation = Type.GetRandomVariationIndex(seed);
 #endif
 			
 		Health = Math.Clamp(Health, 0, type.MaxHealth);
@@ -147,15 +130,15 @@ public partial class WorldObject
 	
 
 
-	public void Update(float gametime)
+	public void Update(float msDelta)
 	{
 #if CLIENT
 		PreviewData = new PreviewData();//probably very bad memory wise
-		AnimationUpdate(gametime);
+		AnimationUpdate(msDelta);
 #endif 
 		if (UnitComponent != null)
 		{
-			UnitComponent.Update(gametime);
+			UnitComponent.Update(msDelta);
 		}
 
 
@@ -350,6 +333,10 @@ public partial class WorldObject
 		if (data.JustSpawned)
 		{
 			Health = Type.MaxHealth;
+#if CLIENT
+		//	if (Type.Animations.ContainsKey("start"))
+	//			StartAnimation("start", Type.Animations["start"].Item1, Type.Animations["start"].Item2);
+#endif
 		}
 		else
 		{

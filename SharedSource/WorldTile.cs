@@ -72,7 +72,7 @@ public partial class WorldTile : IWorldTile
 
 		
 
-	public void Update(float delta)
+	public void Update(float msDelta)
 	{
 		lock (syncobj)
 		{
@@ -91,13 +91,13 @@ public partial class WorldTile : IWorldTile
 				CalcWatchLevel();
 			}
 #endif
-			NorthEdge?.Update(delta);
-			WestEdge?.Update(delta);
-			UnitAtLocation?.WorldObject.Update(delta);
-			Surface?.Update(delta);
+			NorthEdge?.Update(msDelta);
+			WestEdge?.Update(msDelta);
+			UnitAtLocation?.WorldObject.Update(msDelta);
+			Surface?.Update(msDelta);
 			foreach (var obj  in ObjectsAtLocation)
 			{
-				obj.Update(delta);
+				obj.Update(msDelta);
 			}
 		
 		}	

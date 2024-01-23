@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.Rendering;
@@ -6,19 +7,29 @@ namespace DefconNull.Rendering;
 public class DirectionSpriteSheet//this operates on the whole folder looking for variants
 {
 	private readonly Dictionary<string,Texture2D[]> _spriteSheets = new Dictionary<string, Texture2D[]>();
-	private string texturePath;
-	private bool faceable;
-	public DirectionSpriteSheet(string texturePath, bool faceable)
+	private readonly bool _faceable;
+	private readonly string _baseName;
+	private SpriteVariation _variation;
+	public DirectionSpriteSheet(string baseName, SpriteVariation variation, bool faceable)
 	{
-		this.texturePath = texturePath;
-		this.faceable = faceable;
+		_baseName = baseName;
+		this._variation = variation;
+		this._faceable = faceable;
 	}
 
+	private string GetFulLName()
+	{
+		return _baseName+_variation.Name;
+	}
+	public int GetWeight()
+	{
+		return _variation.Weight;
+	}
 	private void GenerateSheetForState(string state)
 	{
-		Texture2D tex = TextureManager.GetTextureFromPNG(texturePath+state);
+		Texture2D tex = TextureManager.GetTextureFromPNG(GetFulLName()+state);
 		
-		if (!this.faceable)
+		if (!this._faceable)
 		{
 			_spriteSheets.Add(state,new Texture2D[1]{tex});
 			return;
@@ -31,7 +42,7 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 	{
 		if(!_spriteSheets.ContainsKey(extraState)) GenerateSheetForState(extraState);
 		var sheet = _spriteSheets[extraState];
-		if(!faceable) return sheet[0];
+		if(!_faceable) return sheet[0];
 		return sheet[(int) dir];
 	}
 	public Texture2D GetSprite(int dir, string extraState="")

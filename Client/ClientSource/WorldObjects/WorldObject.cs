@@ -120,23 +120,17 @@ public partial class WorldObject : IDrawable
 
 	}
 
-	private Queue<Animation> animationQueue = new Queue<Animation>();
+	private readonly Queue<Animation> _animationQueue = new Queue<Animation>();
 	public Animation? CurrentAnimation = null;
-	public void AnimationUpdate(float gametime)
+	public void AnimationUpdate(float msDelta)
 	{
-
-		if (UnitComponent != null)
-		{
-			UnitComponent.Update(gametime);
-		}
-		CurrentAnimation?.Process(gametime);
-
+		CurrentAnimation?.Process(msDelta);
 		if (CurrentAnimation == null || CurrentAnimation.IsOver)
 		{
 			CurrentAnimation = null;
-			if (animationQueue.Count > 0)
+			if (_animationQueue.Count > 0)
 			{
-				CurrentAnimation = animationQueue.Dequeue();
+				CurrentAnimation = _animationQueue.Dequeue();
 			}
 		}
 		
@@ -148,4 +142,9 @@ public partial class WorldObject : IDrawable
 	}
 
 
+	private void StartAnimation(string name, int frameCount, int FPS)
+	{
+		_animationQueue.Enqueue(new Animation(name, frameCount, FPS));
+	}
+	
 }

@@ -56,3 +56,40 @@ everything around the grunt
 -short range grunt
 -dedicated spotter
 -tear gas grenadier
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sprite master list:
+-destruction states
+-windows and doorways
+-roofs
+-misc world objects(things that you can take cover behind that arent walls) + flavour
+-impassible terian
+-vegatation
+-explosion fx
+
+
+
+
+
+
