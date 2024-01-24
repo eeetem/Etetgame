@@ -13,11 +13,11 @@ public class ClientInstance
 	public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0;
 	
 	private List<ushort> MessagesToBeDelivered = new List<ushort>();
-	public ClientInstance(string name,Connection con)
+	public ClientInstance(string name,Connection? con)
 	{
 		Name = name;
 		Connection = con;
-		Connection.ReliableDelivered += ProcessDelivery;
+		if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
 	}
 	
 	public void RegisterMessageToBeDelivered(ushort id)

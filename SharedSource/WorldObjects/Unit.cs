@@ -76,7 +76,7 @@ namespace DefconNull.WorldObjects
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
             
-	
+			StatusEffects.Clear();
 			foreach (var effect in data.StatusEffects)
 			{
 				ApplyStatus(effect.Item1, effect.Item2);

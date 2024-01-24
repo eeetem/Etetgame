@@ -214,9 +214,8 @@ public static partial class NetworkingManager
 	{
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
-		Connection c;
-		server.TryGetClient(senderID, out c);
-		GameManager.Player2 = new ClientInstance("AI", c);
+
+		GameManager.Player2 = new ClientInstance("AI", null);
 		GameManager.Player2.IsAI = true;
 		SendPreGameInfo();
 	}

@@ -38,9 +38,6 @@ public static class PrefabManager
 
 		}
 
-		var emtpy = new UnitType("emptyUnit", new List<UnitAbility>());
-		WorldObjectPrefabs.Add("emptyUnit",emtpy);
-		UnitPrefabs.Add("emptyUnit",emtpy);
 		
 		
 		foreach (XmlElement xmlObj in xmlDoc.GetElementsByTagName("object"))

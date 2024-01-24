@@ -25,8 +25,8 @@ public partial class WorldObject
 			return;
 		}
 		Type = type;
-		SetData(data);
 		TileLocation = tile;
+		SetData(data);
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
@@ -47,9 +47,10 @@ public partial class WorldObject
 	public IWorldTile TileLocation
 	{
 		get => _tileLocation;
-
 		set
 		{
+			if(value == null)
+				throw new Exception("Tile location cannot be null");
 			_tileLocation = value;
 		}
 	}

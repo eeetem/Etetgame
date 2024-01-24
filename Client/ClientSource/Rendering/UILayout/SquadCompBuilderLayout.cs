@@ -60,7 +60,6 @@ public class SquadCompBuilderLayout : UiLayout
 		//one button for each unit type
 		foreach (var obj in PrefabManager.UnitPrefabs)
 		{
-			if(obj.Value.Name=="emptyUnit") continue;
 			units.Add(obj.Value.Name);
 		}
 

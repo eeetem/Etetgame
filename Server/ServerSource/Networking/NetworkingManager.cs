@@ -392,7 +392,7 @@ public static partial class NetworkingManager
 
         if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty)
         {
-            SendUnitPositionUpdates();
+            SendUnitUpdates();
             GameManager.PlayerUnitPositionsDirty = false;
         }
     }
@@ -400,7 +400,7 @@ public static partial class NetworkingManager
     public static void SendGameData()
     {
         Log.Message("NETWORKING","sending game data");
-        SendUnitPositionUpdates();
+        SendUnitUpdates();
         var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
         var state = GameManager.GetState();
         state.IsPlayerOne = true;
@@ -540,7 +540,7 @@ public static partial class NetworkingManager
         server.SendToAll(msg);
     }
     
-    public static void SendUnitPositionUpdates()
+    public static void SendUnitUpdates()
     {
         Log.Message("UNITS","sending unit position updates");
         if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
@@ -583,7 +583,7 @@ public static partial class NetworkingManager
             if(GameManager.Player2UnitPositions.ContainsKey(unit.WorldObject.ID)) GameManager.Player2UnitPositions.Remove(unit.WorldObject.ID);
             GameManager.Player2UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
         }
-        SendUnitPositionUpdates();
+        SendUnitUpdates();
         
 		
     }
