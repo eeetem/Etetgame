@@ -2,7 +2,7 @@
 <root>
 
 
-  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="1" z="0.3">
+  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
     <sprite source="Environment/Smoke" fames="2"  animFPS="1">
       <anim name="start" frames="5" animFPS="10"/>
       <anim name="end" frames="4"  animFPS="10"/>

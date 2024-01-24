@@ -332,6 +332,12 @@ public  partial class WorldManager
                     return Visibility.Full;
                 }
 
+                var hitObj = WorldObjectManager.GetObject(cast.Value.HitObjId);
+                if(!hitObj.Type.Edge && hitObj.TileLocation.Position == to)//if we hit a non edge object then we can still spot the tile it's on. this is used for smoke
+                {
+                    return Visibility.Partial;
+                }
+                
                 //i think this is for seeing over distant cover while crouched, dont quote me on that tho
                 if (Vector2.Floor(cast.Value.CollisionPointLong) == Vector2.Floor(cast.Value.EndPoint) && cast.Value.HitObjId != -1 && WorldObjectManager.GetObject(cast.Value.HitObjId).GetCover(true) != Cover.Full)
                 {
@@ -346,6 +352,12 @@ public  partial class WorldManager
                 {
                     return Visibility.Partial;
                 }
+                var hitObj = WorldObjectManager.GetObject(cast.Value.HitObjId);
+                if(!hitObj.Type.Edge && hitObj.TileLocation.Position == to)//if we hit a non edge object then we can still spot the tile it's on. this is used for smoke
+                {
+                    return Visibility.Partial;
+                }
+
             }
         }
         finally
@@ -595,23 +607,24 @@ public  partial class WorldManager
                     foreach (var obj in tile.ObjectsAtLocation)
                     {
                         smokeLayers += obj.Type.VisibilityObstructFactor;
-                    }
-
-                    if (smokeLayers > 10)
-                    {
-                        result.CollisionPointLong = collisionPointlong;
-                        result.CollisionPointShort = collisionPointshort;
-                        result.hit = true;
-                        result.HitObjId = hitobj.ID;
-                        //if this is true then we're hitting a controllable form behind
-                        if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
+                        if (smokeLayers >= 10)
                         {
-                            result.CollisionPointLong += -0.3f * dir;
-                            result.CollisionPointShort += -0.3f * dir;
-                        }
+                            result.CollisionPointLong = collisionPointlong;
+                            result.CollisionPointShort = collisionPointshort;
+                            result.hit = true;
+                            result.HitObjId = obj.ID;
+                            //if this is true then we're hitting a controllable form behind
+                            if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
+                            {
+                                result.CollisionPointLong += -0.3f * dir;
+                                result.CollisionPointShort += -0.3f * dir;
+                            }
 
-                        return result;
+                            return result;
+                        }
                     }
+
+                  
                 }
 
                 if (hitobj.ID != -1 )

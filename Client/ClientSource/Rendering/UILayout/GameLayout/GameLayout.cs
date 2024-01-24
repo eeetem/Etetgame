@@ -879,7 +879,7 @@ public class GameLayout : MenuLayout
 		}
 		foreach (var controllable in GameManager.GetAllUnits())
 		{
-			if (controllable.WorldObject.TileLocation != null && controllable.WorldObject.IsVisible())
+			if (controllable.WorldObject.TileLocation != null)// && controllable.WorldObject.IsVisible()
 			{
 				DrawHoverHud(batch, controllable.WorldObject);
 			}
