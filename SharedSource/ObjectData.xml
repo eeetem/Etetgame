@@ -388,7 +388,7 @@
           <throwable throwRange="7"/>
         </delivery>
         <consequences range="3">
-          <damage det="1" dmg="6" detRes="2" envRes="0"/>
+          <damage det="1" dmg="2" detRes="1" envRes="0"/>
           <vfx name="tintR" target="5" speed="50"/>
           <vfx name="tintG" target="5" speed="50"/>
           <vfx name="clmagnitude" target="100" speed="50"/>
@@ -397,7 +397,22 @@
           <place name="Crater"/>
           <fowSpot scatter="4"/>
         </consequences>
-        
+      </effect>
+      <effect>
+        <delivery>
+          <throwable throwRange="7"/>
+        </delivery>
+        <consequences range="2">
+          <damage det="0" dmg="3" detRes="1" envRes="0"/>
+        </consequences>
+      </effect>
+      <effect>
+        <delivery>
+          <throwable throwRange="7"/>
+        </delivery>
+        <consequences range="1">
+          <damage det="0" dmg="3" detRes="0" envRes="0"/>
+        </consequences>
       </effect>
 
     </action>

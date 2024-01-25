@@ -196,7 +196,7 @@ public abstract class SequenceAction :  IMessageSerializable
         {
             if(ran) throw new Exception("SequenceAction was run twice");
             ran = true;
-            Console.WriteLine("executing sequence action: "+this);
+            Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
             RunSequenceAction();
             Return();
         });
