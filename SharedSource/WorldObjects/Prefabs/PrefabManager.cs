@@ -330,7 +330,6 @@ public static class PrefabManager
 		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "0");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
 
-		eff.Los = bool.Parse(effect.Attributes?["los"]?.InnerText ?? "false");
 		string ignores = effect.Attributes?["ignore"]?.InnerText ?? "";
 		eff.Ignores = ignores.Split(',').ToList();
 		string target = effect.Attributes?["target"]?.InnerText ?? "any";

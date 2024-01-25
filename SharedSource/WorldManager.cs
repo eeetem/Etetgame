@@ -953,7 +953,7 @@ public  partial class WorldManager
         {
             foreach (var tile in new List<IWorldTile>(tiles))
             {
-                if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, visibilityCast: false,ignoreControllables: true).hit)
+                if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, visibilityCast: true,ignoreControllables: true).hit)
                 {
                     tiles.Remove(tile);
                 }

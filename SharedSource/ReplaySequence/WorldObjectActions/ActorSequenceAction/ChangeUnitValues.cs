@@ -12,6 +12,8 @@ public class ChangeUnitValues : UnitSequenceAction
 	public ValueChange DetChange;
 	public ValueChange MoveRangeeffectChange;
 
+	public override BatchingMode Batching => BatchingMode.Sequential;
+
 	protected bool Equals(ChangeUnitValues other)
 	{
 		return base.Equals(other) && ActChange.Equals(other.ActChange) && MoveChange.Equals(other.MoveChange) && DetChange.Equals(other.DetChange) && MoveRangeeffectChange.Equals(other.MoveRangeeffectChange);
@@ -24,7 +26,6 @@ public class ChangeUnitValues : UnitSequenceAction
 		if (obj.GetType() != this.GetType()) return false;
 		return Equals((ChangeUnitValues) obj);
 	}
-
 	public override int GetHashCode()
 	{
 		unchecked

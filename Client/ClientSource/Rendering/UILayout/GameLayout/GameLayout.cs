@@ -77,8 +77,8 @@ public class GameLayout : MenuLayout
 	private static RenderTarget2D?timerRenderTarget;
 	//private static RenderTarget2D? chatRenderTarget;
 	//private static RenderTarget2D? chatScreenRenderTarget;
-	private static Dictionary<Unit, RenderTarget2D> unitBarRenderTargets;
-	private static Dictionary<WorldObject, RenderTarget2D>?targetBarRenderTargets;
+	private static Dictionary<int, RenderTarget2D> unitBarRenderTargets;
+	private static Dictionary<int, RenderTarget2D>?targetBarRenderTargets;
 		
 
 	public static void Init()
@@ -87,8 +87,8 @@ public class GameLayout : MenuLayout
 		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("HoverHud/consequenceFrame").Width,200);
 	
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Height);
-		unitBarRenderTargets = new Dictionary<Unit, RenderTarget2D>();
-		targetBarRenderTargets = new Dictionary<WorldObject, RenderTarget2D>();
+		unitBarRenderTargets = new Dictionary<int, RenderTarget2D>();
+		targetBarRenderTargets = new Dictionary<int, RenderTarget2D>();
 	}
 
 
@@ -101,13 +101,13 @@ public class GameLayout : MenuLayout
 		GameManager.GetMyTeamUnits().Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
 		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
-			if (!unitBarRenderTargets.ContainsKey(unit))
+			if (!unitBarRenderTargets.ContainsKey(unit.WorldObject.ID))
 			{
-				unitBarRenderTargets.Add(unit, new RenderTarget2D(graphicsDevice, TextureManager.GetTexture("GameHud/UnitBar/Background").Width, TextureManager.GetTexture("GameHud/UnitBar/Background").Height));
+				unitBarRenderTargets.Add(unit.WorldObject.ID, new RenderTarget2D(graphicsDevice, TextureManager.GetTexture("GameHud/UnitBar/Background").Width, TextureManager.GetTexture("GameHud/UnitBar/Background").Height));
 
 			}
 
-			graphicsDevice.SetRenderTarget(unitBarRenderTargets[unit]);
+			graphicsDevice.SetRenderTarget(unitBarRenderTargets[unit.WorldObject.ID]);
 			graphicsDevice.Clear(Color.Transparent);
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 			batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Background"), Vector2.Zero, Color.White);
@@ -215,8 +215,8 @@ public class GameLayout : MenuLayout
 		}
 
 		Debug.Assert(unitBarRenderTargets != null, nameof(unitBarRenderTargets) + " != null");
-		int realWidth = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0]].Width;
-		int realHeight = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0]].Height;
+		int realWidth = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Width;
+		int realHeight = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Height;
 		//float scale = (float) (_unitBar.MaxWidth! / _unitBar.Widgets.Count/realWidth);
 
 		bool twoLayer = false;
@@ -244,6 +244,7 @@ public class GameLayout : MenuLayout
 
 		foreach (var unit in GameManager.GetMyTeamUnits())
 		{
+			
 			if(_unitBar.Widgets.Count > columCounter ){
 				ImageButton elem = (ImageButton)_unitBar.Widgets[columCounter];
 				int colum = columCounter;
@@ -264,8 +265,8 @@ public class GameLayout : MenuLayout
 				elem.FocusedBackground = new SolidBrush(Color.Transparent);
 				elem.OverBackground = new SolidBrush(Color.Transparent);
 				elem.PressedBackground = new SolidBrush(Color.Transparent);
-				elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit]);
-				elem.Image = new TextureRegion(unitBarRenderTargets[unit]);
+				elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
+				elem.Image = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
 				if (unit.Equals(SelectedUnit)){
 					elem.Top = 10;
 				}
@@ -282,12 +283,12 @@ public class GameLayout : MenuLayout
 		foreach (var wo in suggestedTargets)
 		{
 			var unit = wo.UnitComponent;
-			if (!targetBarRenderTargets.ContainsKey(wo))
+			if (!targetBarRenderTargets.ContainsKey(wo.ID))
 			{
-				targetBarRenderTargets.Add(wo, new RenderTarget2D(graphicsDevice, TextureManager.GetTextureFromPNG("Units/" + wo.Type.Name+"/Icon").Width,TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon").Height));
+				targetBarRenderTargets.Add(wo.ID, new RenderTarget2D(graphicsDevice, TextureManager.GetTextureFromPNG("Units/" + wo.Type.Name+"/Icon").Width,TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon").Height));
 
 			}
-			graphicsDevice.SetRenderTarget(targetBarRenderTargets[wo]);
+			graphicsDevice.SetRenderTarget(targetBarRenderTargets[wo.ID]);
 			graphicsDevice.Clear(Color.Transparent);
 			if (unit != null && unit.IsMyTeam())
 			{
@@ -318,8 +319,8 @@ public class GameLayout : MenuLayout
 			elem.FocusedBackground = new SolidBrush(Color.Transparent);
 			elem.OverBackground = new SolidBrush(Color.Transparent);
 			elem.PressedBackground = new SolidBrush(Color.Transparent);
-			elem.PressedImage = new TextureRegion(targetBarRenderTargets[unit]);
-			elem.Image = new TextureRegion(targetBarRenderTargets[unit]);
+			elem.PressedImage = new TextureRegion(targetBarRenderTargets[unit.ID]);
+			elem.Image = new TextureRegion(targetBarRenderTargets[unit.ID]);
 			if (unit.Equals(ActionTarget)){
 				elem.Top = 10;
 			}

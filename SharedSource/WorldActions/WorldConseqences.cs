@@ -27,7 +27,6 @@ public class WorldConseqences
 
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
 	public ValueChange MoveRange ;
-	public bool Los;
 	public int ExRange;
 	public bool TargetFoe = false;
 	public bool TargetFriend =false;
@@ -45,10 +44,6 @@ public class WorldConseqences
 		var hitt = WorldManager.Instance.GetTilesAround(target, Range, -1,Cover.Low);
 		var excl = WorldManager.Instance.GetTilesAround(target, ExRange, -1,Cover.Low);
 		var list = hitt.Except(excl).ToList();
-		if (Los)
-		{
-				list.RemoveAll(x => Visibility.None == WorldManager.Instance.VisibilityCast(target, x.Position,99,false));
-		}
 		return list;
 	}
 

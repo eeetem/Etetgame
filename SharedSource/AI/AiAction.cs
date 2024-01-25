@@ -550,7 +550,7 @@ public abstract class AIAction
 			}
 			else
 			{
-				shouldAttack = WorldManager.Instance.VisibilityCast(attacker.WorldObject.TileLocation.Position, enemy.WorldObject.TileLocation.Position, 9999, attacker.Crouching) >= enemy.WorldObject.GetMinimumVisibility();
+				shouldAttack = attacker.VisibleTiles.ContainsKey(enemy.WorldObject.TileLocation.Position) && attacker.VisibleTiles[enemy.WorldObject.TileLocation.Position] >= enemy.WorldObject.GetMinimumVisibility();
 			}
 
 			if (shouldAttack)

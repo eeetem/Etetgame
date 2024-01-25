@@ -211,7 +211,7 @@
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
 
       <effect>
-        <consequences visible ="false" los="true" range = "7" exRange="1" target="friend" ignore="Officer">
+        <consequences visible ="false"  range = "7" exRange="1" target="friend" ignore="Officer">
           <damage det="-100"/>
         </consequences>
       </effect>

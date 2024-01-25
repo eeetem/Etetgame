@@ -13,7 +13,10 @@ public abstract class UnitSequenceAction : SequenceAction
 		return Requirements.Equals(other.Requirements);
 	}
 
-
+	public override string ToString()
+	{
+		return this.GetType().Name+": "+ $"{nameof(Requirements)}: {Requirements}";
+	}
 
 	public override bool Equals(object? obj)
 	{
@@ -28,6 +31,11 @@ public abstract class UnitSequenceAction : SequenceAction
 	public TargetingRequirements Requirements;
 	public struct TargetingRequirements : IMessageSerializable
 	{
+		public override string ToString()
+		{
+			return $"{nameof(ActorID)}: {ActorID}, {nameof(Position)}: {Position}, {nameof(TypesToIgnore)}: {TypesToIgnore}";
+		}
+
 		public bool Equals(TargetingRequirements other)
 		{
 			return ActorID == other.ActorID && Position.Equals(other.Position) && (TypesToIgnore is null == other.TypesToIgnore is null) && (TypesToIgnore is null || Enumerable.SequenceEqual(TypesToIgnore, other.TypesToIgnore!));

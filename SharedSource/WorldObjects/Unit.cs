@@ -77,9 +77,9 @@ namespace DefconNull.WorldObjects
 			MoveRangeEffect.Current = data.MoveRangeEffect;
             
 			StatusEffects.Clear();
-			foreach (var effect in data.StatusEffects)
+			foreach (var effect in data.StatusEffects)//dont apply them since their aplication would already be considered by the rest of the data
 			{
-				ApplyStatus(effect.Item1, effect.Item2);
+				StatusEffects.Add(new StatusEffectInstance(PrefabManager.StatusEffects[effect.Item1],effect.Item2));
 			}
 			
 			Overwatch = data.Overwatch;
@@ -190,7 +190,7 @@ namespace DefconNull.WorldObjects
 			if(Paniced) mp--;
 			else det.Current++;
 			
-			foreach (var st in StatusEffects)
+			foreach (var st in new List<StatusEffectInstance>(StatusEffects))
 			{
 				if(st.duration<=0) continue;
 				//incorrect if status effect doesnt actually affect this unit but whatever

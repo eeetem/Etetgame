@@ -235,7 +235,7 @@ public class UnitAbility
 		{
 			target = actor.WorldObject;
 		}
-		var consequences = new List<SequenceAction>();
+		var consequences = new List<SequenceAction>(Effects.Count*3);
 		ChangeUnitValues ch = ChangeUnitValues.Make(actor.WorldObject.ID,-ActCost,-MoveCost,-DetCost);
 		consequences.Add(ch);
 		

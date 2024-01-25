@@ -6,11 +6,11 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class FaceUnit : UnitSequenceAction
 {
-	public Vector2Int target;
+	public Vector2Int Target;
 
 	protected bool Equals(FaceUnit other)
 	{
-		return base.Equals(other) && target.Equals(other.target);
+		return base.Equals(other) && Target.Equals(other.Target);
 	}
 
 	public override bool Equals(object? obj)
@@ -25,14 +25,19 @@ public class FaceUnit : UnitSequenceAction
 	{
 		unchecked
 		{
-			return (base.GetHashCode() * 397) ^ target.GetHashCode();
+			return (base.GetHashCode() * 397) ^ Target.GetHashCode();
 		}
+	}
+
+	public override string ToString()
+	{
+		return  "Face: "+ base.ToString()+ $"{nameof(Target)}: {Target}";
 	}
 
 	public static FaceUnit Make(int actorID, Vector2Int target) 
 	{
 		FaceUnit t = (GetAction(SequenceType.Face) as FaceUnit)!;
-		t.target = target;
+		t.Target = target;
 		t.Requirements = new TargetingRequirements(actorID);
 
 		return t;
@@ -46,8 +51,8 @@ public class FaceUnit : UnitSequenceAction
 	protected override void RunSequenceAction()
 	{
 		
-			if(Actor.WorldObject.TileLocation.Position == target) return;
-			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, target);
+			if(Actor.WorldObject.TileLocation.Position == Target) return;
+			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target);
 			Actor.canTurn = false;
 			Actor.WorldObject.Face(targetDir);
 
@@ -58,13 +63,13 @@ public class FaceUnit : UnitSequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		base.SerializeArgs(message);
-		message.AddSerializable(target);
+		message.AddSerializable(Target);
 	}
 
 	protected override void DeserializeArgs(Message message)
 	{
 		base.DeserializeArgs(message);
-		target = message.GetSerializable<Vector2Int>();
+		Target = message.GetSerializable<Vector2Int>();
 	}
 #if CLIENT
 	public override void Preview(SpriteBatch spriteBatch)

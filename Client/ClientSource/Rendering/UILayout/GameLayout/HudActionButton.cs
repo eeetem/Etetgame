@@ -20,7 +20,7 @@ public class HudActionButton
 	public static HudActionButton? SelectedButton;
 	public readonly ImageButton UIButton;
 	public readonly int OwnerID;
-	public Unit Owner => WorldObjectManager.GetObject(OwnerID).UnitComponent!;
+	public Unit? Owner => WorldObjectManager.GetObject(OwnerID)?.UnitComponent;
 	private readonly Action<Unit,WorldObject> _executeTask;
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _performCheckTask;
@@ -119,6 +119,7 @@ public class HudActionButton
 
 	public bool HasPoints()
 	{
+		if(Owner == null) return false;
 		if (Cost.Determination > 0)
 		{
 			if (Owner.Determination.Current - Cost.Determination < 0)

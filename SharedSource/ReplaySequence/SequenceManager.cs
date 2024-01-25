@@ -53,7 +53,7 @@ public class SequenceManager
                         act = SequenceQueue.Dequeue();
                     }
 
-                    Console.WriteLine("runnin sequnce task: " + act.GetSequenceType());
+                    Log.Message("SEQUENCE MANAGER","runnin sequnce task: " + act.GetSequenceType());
                     CurrentSequenceTasks.Add(act.GenerateTask());
                     CurrentSequenceTasks.Last().Start();
 
@@ -77,7 +77,7 @@ public class SequenceManager
                             break;//most likely cause by the task waiting for UI Thread
                         }
 						
-                        //Console.WriteLine($"sequnceing a  task: {i}{peeked.GetSequenceType()}");
+                        Log.Message("SEQUENCE MANAGER",$"sequnceing a  task: {i}{peeked.GetSequenceType()}");
                         i++;
                         StartNextTask();
                     }
@@ -110,7 +110,7 @@ public class SequenceManager
                         }
                         if(!shouldBatch || !peeked.ShouldDo()) break;
 						
-                        Console.WriteLine($"batching sequnce task: {i}{peeked.GetSequenceType()}");
+                        Log.Message("SEQUENCE MANAGER",$"batching sequnce task: {i}{peeked.GetSequenceType()}");
                         i++;
                         StartNextTask();
 
@@ -124,17 +124,17 @@ public class SequenceManager
                 {
                     if (t.Status == TaskStatus.RanToCompletion)
                     {
-                        //	Console.WriteLine("sequence task finished");
+                        //	Log.Message("SEQUENCE MANAGER","sequence task finished");
                     }
                     else if (t.Status == TaskStatus.Faulted)
                     {
-                        Console.WriteLine("Sequence task failed");
-                        Console.WriteLine(t.Status);
+                        Log.Message("SEQUENCE MANAGER","Sequence task failed");
+                        Log.Message("SEQUENCE MANAGER",t.Status.ToString());
                         throw t.Exception!;
                     }
                     else
                     {
-                        Console.WriteLine("undefined sequence task state: "+t.Status);
+                        Log.Message("SEQUENCE MANAGER","undefined sequence task state: "+t.Status);
                         throw new Exception("undefined sequence task state: "+t.Status);
                     }
 
@@ -170,7 +170,7 @@ public class SequenceManager
 
         lock (lockObj)
         {
-            Console.WriteLine("adding sequnce task: " + action);
+            Log.Message("SEQUENCE MANAGER","adding sequnce task: " + action);
             SequenceQueue.Enqueue(action);
         }
 	
