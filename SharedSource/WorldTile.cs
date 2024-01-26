@@ -205,7 +205,7 @@ public partial class WorldTile : IWorldTile
 
 			if (value != null && (!value.Type.Edge || value.Type.Surface))
 				throw new Exception("attempted non edge to edge");
-			if (_northEdge != null)
+			if (_northEdge != null && !_westEdge.destroyed)
 			{
 				throw new Exception($"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
 			}
@@ -227,7 +227,7 @@ public partial class WorldTile : IWorldTile
 			}
 			if (value != null && (!value.Type.Edge || value.Type.Surface))
 				throw new Exception("attempted non edge to edge");
-			if (_westEdge != null)
+			if (_westEdge != null && !_westEdge.destroyed)
 			{
 				throw new Exception($"attempted to place an object({value!.ID}) over an existing({WestEdge!.ID}) one");
 			}

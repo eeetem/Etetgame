@@ -131,7 +131,6 @@ public abstract class Action
 
 		public ActionExecutionParamters(Vector2Int target)
 		{
-	
 			Target = target;
 		}
 

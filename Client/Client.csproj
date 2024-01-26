@@ -3,10 +3,11 @@
         <OutputType>Exe</OutputType>
         <PublishReadyToRun>false</PublishReadyToRun>
         <TieredCompilation>false</TieredCompilation>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Nullable>enable</Nullable>
         <RootNamespace>DefconNull</RootNamespace>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
         <ApplicationManifest>app.manifest</ApplicationManifest>

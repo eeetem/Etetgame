@@ -29,7 +29,11 @@ public static class Log
     public static void Init()
     {
         Console.WriteLine("Log Init");
+        
         startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        
+        Directory.CreateDirectory("Logs");
+        Directory.CreateDirectory("Logs/"+startTime);
         var files = new DirectoryInfo("Logs").EnumerateDirectories()
             .OrderByDescending(f => f.CreationTime)
             .Skip(10)
@@ -62,9 +66,6 @@ public static class Log
     {
         
         String msg = "["+DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()+"]["+category  +"]"+message;
-        Directory.CreateDirectory("Logs");
-        Directory.CreateDirectory("Logs/"+startTime);
-        
         
         if (!generalIgnoreList.Contains(category))
             GeneralLog(msg);

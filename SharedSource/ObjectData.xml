@@ -339,7 +339,7 @@
     </action>
   </unit>
 
-  <unit health="10" moveRange = "6" moves="2" determination="2" z="0.1">
+  <unit health="10" moveRange = "6" moves="2" determination="2" z="-0.1">
     <name>Specialist</name>
     <action moveCost="1" actCost="1">
       <name>RPG</name>

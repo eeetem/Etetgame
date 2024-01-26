@@ -24,7 +24,7 @@ public class ConnectionLayout : UiLayout
 		{
 			GridColumn = 1,
 			GridRow = 1,
-			Text = "109.77.144.238:52233",
+			Text = "localhost:52233",
 			HorizontalAlignment = HorizontalAlignment.Stretch
 		};
 		grid.Widgets.Add(textBox);
