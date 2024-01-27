@@ -56,10 +56,8 @@
   <object SCover = "3" Edge = "true" health="1000">
     <sprite source="Environment/borderWall" offset= "0,0"/>
     <name>borderWall</name>
-    <destroyConsequences range = "1" >
-      <place name="basicWallDebris"/>
-    </destroyConsequences>
   </object>
+  
   <object SCover = "0" Edge = "true" health="5">
     <sprite source="Environment/destroyedWall" offset= "0,0"/>
     <name>basicWallDebris</name>
@@ -77,6 +75,7 @@
     <name>paperMache</name>
   </object>
   
+  <!-- wall1-->
   <object SCover = "3" Edge = "true" health="8">
     <sprite source="Environment/Brick Walls/BrickWallOne" offset= "0,0">
       <variation id="0" weight="10"/>
@@ -85,10 +84,44 @@
     </sprite>
   <name>Brick Wall 1</name>
   <destroyConsequences range = "1" >
-    <place name="basicWallDebris"/>
+    <place name="Brick Wall Half 1"/>
   </destroyConsequences>
 </object>
 
+  <object SCover = "2" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallOneHalf" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Half 1</name>
+    <destroyConsequences range = "1" >
+      <place name="Brick Wall Half Lite 1"/>
+    </destroyConsequences>
+  </object>
+  
+  <object SCover = "1" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallOnehalflite" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Half Lite 1</name>
+    <destroyConsequences range = "1" >
+      <place name="Brick Wall Destroyed 1"/>
+    </destroyConsequences>
+  </object>
+
+  <object SCover = "0" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallOnedestroyed" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Destroyed 1</name>
+  </object>
+  <!-- wall1-->
+  <!-- wall2-->
   <object SCover = "3" Edge = "true" health="8">
     <sprite source="Environment/Brick Walls/BrickWallTwo" offset= "0,0">
       <variation id="0" weight="10"/>
@@ -97,10 +130,43 @@
     </sprite>
     <name>Brick Wall 2</name>
     <destroyConsequences range = "1" >
-      <place name="basicWallDebris"/>
+      <place name="Brick Wall Half 2"/>
     </destroyConsequences>
   </object>
 
+  <object SCover = "2" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallTwoHalf" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Half 2</name>
+    <destroyConsequences range = "1" >
+      <place name="Brick Wall Half Lite 2"/>
+    </destroyConsequences>
+  </object>
+
+  <object SCover = "1" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallTwohalflite" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Half Lite 2</name>
+    <destroyConsequences range = "2" >
+      <place name="Brick Wall Destroyed 2"/>
+    </destroyConsequences>
+  </object>
+
+  <object SCover = "0" Edge = "true" health="8">
+    <sprite source="Environment/Brick Walls/BrickWallTwodestroyed" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Wall Destroyed 2</name>
+  </object>
+  <!-- wall2-->
 
 
   <object SCover = "3" Edge = "true" health="8">
@@ -110,15 +176,15 @@
       <place name="basicHalfWall"/>
     </destroyConsequences>
   </object>
-  <object SCover = "2" Edge = "true">
-    <sprite source="Environment/basicHalfWall" offset= "0,0" health="8"/>
+  <object SCover = "2" Edge = "true" health="8">
+    <sprite source="Environment/basicHalfWall" offset= "0,0" />
     <name>basicHalfWall</name>
     <destroyConsequences range = "1" >
       <place name="basicHalfWallLight"/>
     </destroyConsequences>
   </object>
-  <object SCover = "1" Edge = "true">
-    <sprite source="Environment/basicHalfWallLight" health="8" offset= "0,0"/>
+  <object SCover = "1" Edge = "true" health="8" >
+    <sprite source="Environment/basicHalfWallLight" offset= "0,0"/>
     <name>basicHalfWallLight</name>
     <destroyConsequences range = "1" >
       <place name="basicWallDebris"/>
