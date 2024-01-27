@@ -137,6 +137,7 @@ public static class UI
 
 	public static void Update(float deltatime)
 	{
+		if(!Game1.instance.IsActive) return;
 		currentUi.Update(deltatime);
 	}
 

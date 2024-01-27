@@ -34,14 +34,10 @@ public static partial class GameManager
 		}
 	}
 
-
-
 	public static bool IsMyTurn()
 	{
 		return IsPlayer1 == IsPlayer1Turn;
 	}
-
-	
 
 	private static void GenerateMapList()
 	{

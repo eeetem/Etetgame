@@ -113,9 +113,7 @@ public static partial class WorldObjectManager
             wo = new WorldObject(type, tile, data);
 				
             type.Place(wo, tile, data);
-			
-            wo.Fliped = data.Fliped;
-
+	
 
             if(wo is null) throw new Exception("Created a null worldobject");
             lock (WoLock)
