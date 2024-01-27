@@ -76,14 +76,14 @@ public static partial class NetworkingManager
 		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
 		Log.Message("TILEUPDATES","TILE Update recived: " + data);
 
-		if (RecievedTiles.ContainsKey(data.position))
+		if (RecievedTiles.ContainsKey(data.Position))
 		{
 			Log.Message("TILEUPDATES","tile already present");
-			if (RecievedTiles[data.position].Item1 <= timestamp)
+			if (RecievedTiles[data.Position].Item1 <= timestamp)
 			{
 				Log.Message("TILEUPDATES","update is newer, discarding old");
-				RecievedTiles.Remove(data.position);
-				RecievedTiles.Add(data.position, (timestamp,data));
+				RecievedTiles.Remove(data.Position);
+				RecievedTiles.Add(data.Position, (timestamp,data));
 			}
 			else
 			{
@@ -93,7 +93,7 @@ public static partial class NetworkingManager
 		else
 		{
 			Log.Message("TILEUPDATES","new tile, adding");
-			RecievedTiles.Add(data.position, (timestamp,data));
+			RecievedTiles.Add(data.Position, (timestamp,data));
 		}
 			
 		

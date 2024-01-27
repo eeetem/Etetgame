@@ -85,15 +85,15 @@ public  partial class WorldManager
 
     public void LoadWorldTile(WorldTile.WorldTileData data, bool forceUpdateEverything = false)
     {
-        Log.Message("TILEUPDATES","Loading tile at " + data.position);
+        Log.Message("TILEUPDATES","Loading tile at " + data.Position);
 
-        WorldTile tile = (WorldTile) GetTileAtGrid(data.position);
+        WorldTile tile = (WorldTile) GetTileAtGrid(data.Position);
 		
         LoadTileObject(data.Surface,tile.Surface, tile,forceUpdateEverything);
         LoadTileObject(data.NorthEdge,tile.NorthEdge, tile,forceUpdateEverything);
         LoadTileObject(data.WestEdge,tile.WestEdge, tile,forceUpdateEverything);
-        LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.position+new Vector2(1,0)),forceUpdateEverything);
-        LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.position+new Vector2(0,1)),forceUpdateEverything);
+        LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.Position+new Vector2(1,0)),forceUpdateEverything);
+        LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.Position+new Vector2(0,1)),forceUpdateEverything);
         //	LoadTileObject(data.UnitAtLocation, tile.UnitAtLocation?.WorldObject, tile,forceUpdateEverything);
 	
 

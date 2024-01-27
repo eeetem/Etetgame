@@ -17,6 +17,15 @@ public static partial class GameManager
 	public static Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> Player1UnitPositions = new();
 	public static Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> Player2UnitPositions = new();
 	
+	
+	public static ClientInstance? GetPlayer(bool isPlayer1)
+	{
+		if (isPlayer1)
+		{
+			return Player1;
+		}
+		return Player2;
+	}
 
 	public static void StartSetup()
 	{
@@ -261,4 +270,5 @@ public static partial class GameManager
 			}
 		}
 	}
+
 }

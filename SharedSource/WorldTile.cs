@@ -205,7 +205,7 @@ public partial class WorldTile : IWorldTile
 
 			if (value != null && (!value.Type.Edge || value.Type.Surface))
 				throw new Exception("attempted non edge to edge");
-			if (_northEdge != null && !_westEdge.destroyed)
+			if (_northEdge != null && !_northEdge.destroyed)
 			{
 				throw new Exception($"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
 			}
@@ -385,7 +385,7 @@ public partial class WorldTile : IWorldTile
 	public struct WorldTileData : IMessageSerializable{
 		public override string ToString()
 		{
-			return $"{nameof(NorthEdge)}: {NorthEdge}, {nameof(WestEdge)}: {WestEdge}, {nameof(EastEdge)}: {EastEdge}, {nameof(SouthEdge)}: {SouthEdge}, {nameof(Surface)}: {Surface}, {nameof(position)}: {position}, {nameof(ObjectsAtLocation)}: {ObjectsAtLocation}";
+			return $"{nameof(NorthEdge)}: {NorthEdge}, {nameof(WestEdge)}: {WestEdge}, {nameof(EastEdge)}: {EastEdge}, {nameof(SouthEdge)}: {SouthEdge}, {nameof(Surface)}: {Surface}, {nameof(Position)}: {Position}, {nameof(ObjectsAtLocation)}: {ObjectsAtLocation}";
 		}
 
 		public WorldObject.WorldObjectData? NorthEdge;
@@ -393,11 +393,11 @@ public partial class WorldTile : IWorldTile
 		public WorldObject.WorldObjectData? EastEdge;
 		public WorldObject.WorldObjectData? SouthEdge;
 		public WorldObject.WorldObjectData? Surface;
-		public Vector2Int position;
+		public Vector2Int Position;
 		public List<WorldObject.WorldObjectData> ObjectsAtLocation;
 		public WorldTileData(Vector2Int position)
 		{
-			this.position = position;
+			this.Position = position;
 			NorthEdge = null;
 			WestEdge = null;
 			Surface = null;
@@ -409,7 +409,7 @@ public partial class WorldTile : IWorldTile
 		{
 			
 			//cast to non-nullables before serialising
-			message.AddSerializable(position);
+			message.AddSerializable(Position);
 			bool b = NorthEdge != null;
 			message.AddBool(b);
 			if (b) 	message.AddSerializable(NorthEdge!.Value);
@@ -440,7 +440,7 @@ public partial class WorldTile : IWorldTile
 		public void Deserialize(Message message)
 		{
 			
-			position = message.GetSerializable<Vector2Int>();
+			Position = message.GetSerializable<Vector2Int>();
 			
 			if (message.GetBool()) NorthEdge = message.GetSerializable<WorldObject.WorldObjectData>();
 			else NorthEdge = null;
@@ -486,8 +486,13 @@ public partial class WorldTile : IWorldTile
 			data.SouthEdge = SouthEdge.GetData(forceJustSpawned);
 		}
 
-		data.ObjectsAtLocation = ObjectsAtLocation.Select(x => x.GetData(forceJustSpawned)).ToList();
+		data.ObjectsAtLocation = new List<WorldObject.WorldObjectData>();
+		foreach (var obj in ObjectsAtLocation)
+		{
+			data.ObjectsAtLocation.Add(obj.GetData(forceJustSpawned));
+		}
 
+	
 		return data;
 	}
 	List<WorldObject> edges = new List<WorldObject>();

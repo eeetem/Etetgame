@@ -111,8 +111,8 @@ public abstract class UnitSequenceAction : SequenceAction
 		return true;
 	}
 #if SERVER
-		public override bool ShouldSendToPlayerServerCheck(bool player1)
-	{
+	public override bool ShouldSendToPlayerServerCheck(bool player1)
+	{ ;
 		if (Actor == null) return false;
 
 		var wtile = (WorldTile) (Actor.WorldObject.TileLocation);

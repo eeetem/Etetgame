@@ -85,7 +85,7 @@ public class UnitMove : UnitSequenceAction
         if (Actor.IsPlayer1Team != player1)
         {
             //Log.Message("UNITS","performing filter");
-            var ret = Make(Requirements.ActorID, Path);
+            var ret = Make(Requirements.ActorID, new List<Vector2Int>(Path));
             List<Vector2Int> newPath = new List<Vector2Int>();
             bool justVisible = false;
             foreach (var p in ret.Path)
@@ -123,6 +123,9 @@ public class UnitMove : UnitSequenceAction
 
     protected override void RunSequenceAction()
     {
+ 
+        Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
+
         while (Path.Count >0)
         {
             WorldManager.Instance.MakeFovDirty();
@@ -157,7 +160,7 @@ public class UnitMove : UnitSequenceAction
 #endif
 					
             if(Path.Count > 0)
-                Log.Message("UNITS","queued movement task to: "+Path[0]+" path size left: "+Path.Count);
+                Log.Message("UNITS","queued     movement task to: "+Path[0]+" path size left: "+Path.Count);
 	
         }
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);

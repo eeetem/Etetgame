@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
@@ -49,6 +50,10 @@ public static partial class GameManager
 			}
 #endif
 		}
+
+#if CLIENT
+		UpdateUnitPositions();
+#endif
 			
 	}
 
@@ -94,8 +99,6 @@ public static partial class GameManager
 		{
 			NetworkingManager.NotifyAll(Player2!.Name + " Wins!");	
 		}
-
-
 #endif
 	}
 
@@ -162,7 +165,7 @@ public static partial class GameManager
 		Console.WriteLine("turn: "+IsPlayer1Turn);
 		NetworkingManager.SendEndTurn();
 
-		if (Player2.IsAI && !IsPlayer1Turn)// ai match
+		if (Player2.IsAI) //&& !IsPlayer1Turn)// ai match
 		{
 			FinishTurnWithAI();
 		}
@@ -315,5 +318,13 @@ public static partial class GameManager
 		var list = GetTeamUnits(true,dimension);
 		list.AddRange(GetTeamUnits(false,dimension));
 		return list;
+	}
+
+	public static bool NoPendingUpdates()
+	{
+#if CLIENT
+		if (RecivedUnitPositions != null) return false;
+#endif
+		return true;
 	}
 }

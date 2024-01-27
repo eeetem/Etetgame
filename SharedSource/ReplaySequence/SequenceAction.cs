@@ -194,6 +194,7 @@ public abstract class SequenceAction :  IMessageSerializable
     {
         Task t = new Task(delegate
         {
+            if(!_active) throw new Exception("SequenceAction was returned to pool");
             if(ran) throw new Exception("SequenceAction was run twice");
             ran = true;
             Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
@@ -296,10 +297,12 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public void Return()
     {
-
         _active = false;
+#if SERVER
+        this.shouldReturn = false;
+#endif
+        
         ActionPools[GetSequenceType()].Return(this);
-			
     }
 
 #if CLIENT
@@ -315,7 +318,7 @@ public abstract class SequenceAction :  IMessageSerializable
         var ret = FilterForPlayerInternal(player1);
         if (!ret.Equals(this))
         {
-            ret.shouldReturn = true;//we generated a new sequence actions so we should make a seperate case to return it
+            ret.shouldReturn = true;//we generated a new sequence actions so we should make a seperate case to return it becayse it wont be returned by the sequcne manager
         }
         return ret;
     }

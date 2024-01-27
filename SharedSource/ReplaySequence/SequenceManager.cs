@@ -25,18 +25,14 @@ public class SequenceManager
         SequenceRunningRightNow = true;
         lock (lockObj)
         {
-            if (CurrentSequenceTasks.Count == 0)
+            if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
             {
-				
 #if CLIENT
-
                 foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
                 {
                     WorldManager.Instance.LoadWorldTile(tile.Item2);
                 }
                 NetworkingManager.RecievedTiles.Clear();
-
-  
 #endif
                 if (SequenceQueue.Count > 0)
                 {

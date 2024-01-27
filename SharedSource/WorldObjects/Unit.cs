@@ -626,6 +626,7 @@ if(!Paniced){
 
 		public void MoveTo(Vector2Int vector2Int)
 		{
+			if(WorldObject.TileLocation.Position == vector2Int) return;
 			Log.Message("UNITS","units re-located from "+WorldObject.TileLocation.Position+" to "+vector2Int);
 			var oldtile = this.WorldObject.TileLocation;
 			oldtile.UnitAtLocation = null;

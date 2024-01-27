@@ -1,4 +1,6 @@
-﻿using Riptide;
+﻿using System.Collections.Concurrent;
+using DefconNull.ReplaySequence;
+using Riptide;
 
 namespace DefconNull;
 
@@ -11,6 +13,8 @@ public class ClientInstance
 	public bool IsPracticeOpponent { get; set; }
 	
 	public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0;
+	
+	public ConcurrentQueue<List<SequenceAction>> SequenceQueue = new ConcurrentQueue<List<SequenceAction>>();
 	
 	private List<ushort> MessagesToBeDelivered = new List<ushort>();
 	public ClientInstance(string name,Connection? con)
@@ -28,8 +32,7 @@ public class ClientInstance
 	{
 		MessagesToBeDelivered.Remove(id);
 	}
-
-
+	
 	public void SetSquadComp(List<SquadMember> squad)
 	{
 		SquadComp = squad;

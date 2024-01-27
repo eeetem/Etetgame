@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,11 +65,17 @@ public static class Log
     };
     public static void Message(string category, string message)
     {
-        
-        String msg = "["+DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()+"]["+category  +"]"+message;
+       
+        StringBuilder msg = new StringBuilder();
+        msg.Append("[");
+        msg.Append(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        msg.Append("][");
+        msg.Append(category);
+        msg.Append("]");
+        msg.Append(message);
         
         if (!generalIgnoreList.Contains(category))
-            GeneralLog(msg);
+            GeneralLog(msg.ToString());
        
 
         GetLogStream(category).WriteLine(msg);

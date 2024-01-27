@@ -56,13 +56,7 @@ public class Shoot : SequenceAction
 		return t;
 	}
 
-
-	protected override void RunSequenceAction()
-	{
-		
-
-
-	}
+	
 #if CLIENT
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
@@ -171,6 +165,11 @@ public class Shoot : SequenceAction
 	}
 
 #endif
+
+	protected override void RunSequenceAction()
+	{
+		
+	}
 
 	protected override void SerializeArgs(Message message)
 	{
