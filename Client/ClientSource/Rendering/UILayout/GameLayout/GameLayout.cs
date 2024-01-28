@@ -67,17 +67,35 @@ public class GameLayout : MenuLayout
 		if(UI.currentUi is not GameLayout) return;
 		
 		if(SelectedUnit == null) return;
-		//var ret =  SelectedUnit.GetPossibleMoveLocations();
-		//int i = 0;
-		//foreach (var g in ret)
-		//{
-		//	if
-		//	PreviewMoves[i].Clear();
-		//	foreach (var item in g)
-		//	{
-		//		PreviewMoves[i].Add(item.Item1);
-		//	}
-		//}
+		var ret =  SelectedUnit.GetPossibleMoveLocations();
+		if(PreviewMoves.Length <= ret.Length)
+		{
+			Array.Resize(ref PreviewMoves, ret.Length);
+		}
+
+		for (int j = 0; j < ret.Length; j++)
+		{
+			if(PreviewMoves[j] == null)
+			{
+				PreviewMoves[j] = new List<Vector2Int>();
+			}
+			else
+			{
+				PreviewMoves[j].Clear();
+			}
+		}
+		
+		int i = 0;
+		foreach (var g in ret)
+		{
+
+			foreach (var item in g)
+			{
+				PreviewMoves[i].Add(item.Item1);
+			}
+
+			i++;
+		}
 		UpdateHudButtons();
 	}
 

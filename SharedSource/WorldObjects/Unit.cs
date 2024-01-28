@@ -144,7 +144,7 @@ namespace DefconNull.WorldObjects
 			return result;
 		}
 
-		public List<(Vector2Int,PathFinding.PathFindResult)>[] GetPossibleMoveLocations(int moveRange = -1, int moveOverride = -1)
+		public List<(Vector2Int,PathFinding.PathFindResult)>[] GetPossibleMoveLocations(int moveRange = -1, int moveOverride = -1, bool generatePaths = false)
 		{
 			int mp = MovePoints.Current;
 			if(moveOverride!=-1) mp = moveOverride;
@@ -154,7 +154,7 @@ namespace DefconNull.WorldObjects
 				List<(Vector2Int,PathFinding.PathFindResult)>[] possibleMoves = new List<(Vector2Int,PathFinding.PathFindResult)>[mp];
 				for (int i = 0; i < mp; i++)
 				{
-					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1));
+					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1),generatePaths);
 				}
 
 				for (int i = mp - 1; i > 0; i--)

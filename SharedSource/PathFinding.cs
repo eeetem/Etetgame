@@ -84,7 +84,7 @@ public static class PathFinding
 
     public static readonly object syncobj = new object();
 
-    public static List<(Vector2Int,PathFindResult)> GetAllPaths(Vector2Int from, int range)
+    public static List<(Vector2Int,PathFindResult)> GetAllPaths(Vector2Int from, int range, bool generatePaths)
     {
         int layer = -1;
         lock (syncobj)
@@ -92,16 +92,13 @@ public static class PathFinding
             layer = GetNextFreeLayer();
             InUse[layer] = true;
         }
-        var p = GetAllPaths(Nodes[layer][from.X, from.Y], range);
+        var p = GetAllPaths(Nodes[layer][from.X, from.Y], range,generatePaths);
         InUse[layer] = false;
         return p;
     }
-    public static List<(Vector2Int,PathFindResult)> GetAllPaths(Node from, int range)
+    public static List<(Vector2Int,PathFindResult)> GetAllPaths(Node from, int range, bool generatePaths)
     {
-        while (SequenceManager.SequenceRunning)
-        {
-            Thread.Sleep(500);
-        }
+
         var done = new List<Node>();
         var inRange = new List<(Vector2Int,PathFindResult)>();
 
@@ -143,7 +140,16 @@ public static class PathFinding
 					
             if (current.CurrentCost <= range)
             {
-                inRange.Add((current.Position,new PathFindResult(GeneratePath(current),current.CurrentCost)));
+                if(generatePaths)
+                {
+                    var path = GeneratePath(current);
+                    inRange.Add((current.Position,new PathFindResult(path,current.CurrentCost)));
+                }
+                else
+                {
+                    inRange.Add((current.Position,new PathFindResult(new List<Vector2Int>(),current.CurrentCost)));
+                }
+
                 //Console.WriteLine("added with range: "+current.CurrentCost);
             }
             else
@@ -188,10 +194,6 @@ public static class PathFinding
     public static PathFindResult GetPath(Node from, Node to)
     {
 
-        while (SequenceManager.SequenceRunning)
-        {
-            Thread.Sleep(500);
-        }
         var done = new List<Node>((int) (Vector2.Distance(from.Position,to.Position)*2f));
 			
         var open = new PriorityQueue<Node,double>();

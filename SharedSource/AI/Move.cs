@@ -181,13 +181,13 @@ public class Move : AIAction
 		for (int i = 0; i < Math.Min(distance,allLocations.Length); i++)
 		{
 			int moveUse = i+1;
-			//Parallel.ForEach(allLocations[i],l =>
-			foreach (var loc in allLocations[i])
+			Parallel.ForEach(allLocations[i], loc =>
 			{
-				int scr = GetTileMovementScore(loc,moveUse,unit.Crouching, unit, out var mv);
+				int scr = GetTileMovementScore(loc, moveUse, unit.Crouching, unit, out var mv);
 
-				scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(loc.Item1, unit.Crouching,scr,mv));
-			}//);
+				scoredLocations.Add(
+					new Tuple<Vector2Int, bool, int, MoveCalcualtion>(loc.Item1, unit.Crouching, scr, mv));
+			});
 		}
 
 		if (unit.Crouching)
