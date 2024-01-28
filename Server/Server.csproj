@@ -83,11 +83,11 @@
       <Compile Include="..\SharedSource\Log.cs">
         <Link>SharedSource\Log.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\Networking\SquadMember.cs">
-        <Link>SharedSource\Networking\SquadMember.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\Networking\SharedNetworking.cs">
         <Link>SharedSource\Networking\SharedNetworking.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\SquadMember.cs">
+        <Link>SharedSource\Networking\SquadMember.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>

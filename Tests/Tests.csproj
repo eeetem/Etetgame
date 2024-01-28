@@ -11,7 +11,7 @@
 
         <RootNamespace>DefconNull</RootNamespace>
 
-        <LangVersion>default</LangVersion>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -52,11 +52,14 @@
       <Compile Include="..\SharedSource\IWorldTile.cs">
         <Link>SharedSource\IWorldTile.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\NetworkingManager.cs">
-        <Link>SharedSource\NetworkingManager.cs</Link>
+      <Compile Include="..\SharedSource\Log.cs">
+        <Link>SharedSource\Log.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\Networking\DummyNetworking.cs">
-        <Link>SharedSource\Networking\DummyNetworking.cs</Link>
+      <Compile Include="..\SharedSource\Networking\SharedNetworking.cs">
+        <Link>SharedSource\Networking\SharedNetworking.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\SquadMember.cs">
+        <Link>SharedSource\Networking\SquadMember.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\PathFinding.cs">
         <Link>SharedSource\PathFinding.cs</Link>
@@ -111,6 +114,9 @@
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\PlayAnimation.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\PlayAnimation.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs</Link>
@@ -217,8 +223,19 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Include="..\Server\Maps\Custom\gggg.mapdata">
+        <Link>Maps\Custom\gggg.mapdata</Link>
+      </Content>
+      <Content Include="..\Server\Maps\Ground Zero.mapdata">
+        <Link>Maps\Ground Zero.mapdata</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="..\Server\Maps\testmap.mapdata">
+        <Link>Maps\testmap.mapdata</Link>
+      </Content>
       <Content Include="..\SharedSource\ObjectData.xml">
-        <Link>SharedSource\ObjectData.xml</Link>
+        <Link>ObjectData.xml</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 

@@ -40,7 +40,11 @@ public class Overwatch : AIAction
 		{
 			foreach (var possibleMoveLocationList in u.GetPossibleMoveLocations(moveOverride: u.MovePoints.Max))
 			{
-				tilesList.AddRange(possibleMoveLocationList);
+				foreach (var mv in possibleMoveLocationList)
+				{
+					tilesList.Add(mv.Item1);
+				}
+				
 			}
 		}
 

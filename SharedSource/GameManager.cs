@@ -66,13 +66,13 @@ public static partial class GameManager
 
 		if (wo.Type.Surface&&T1SpawnPoints.Contains(wo.TileLocation.Position))
 		{
-			Console.WriteLine("removing spawn point FOR T1");
+			Log.Message("GAME MANAGER","removing spawn point FOR T1");
 			T1SpawnPoints.Remove(wo.TileLocation.Position);
 		}
 
 		if(wo.Type.Surface&&T2SpawnPoints.Contains(wo.TileLocation.Position))
 		{
-			Console.WriteLine("removing spawn point FOR T2");
+			Log.Message("GAME MANAGER","removing spawn point FOR T2");
 			T2SpawnPoints.Remove(wo.TileLocation.Position);
 		}
 
@@ -162,7 +162,7 @@ public static partial class GameManager
 
 
 #if SERVER
-		Console.WriteLine("turn: "+IsPlayer1Turn);
+		Log.Message("GAME MANAGER","turn: "+IsPlayer1Turn);
 		NetworkingManager.SendEndTurn();
 
 		if (Player2.IsAI) //&& !IsPlayer1Turn)// ai match

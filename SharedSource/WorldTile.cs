@@ -28,7 +28,7 @@ public partial class WorldTile : IWorldTile
 	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
 		List<Unit> shooters = new List<Unit>();
-		Console.WriteLine("getting overwatch shooters");
+		//Console.WriteLine("getting overwatch shooters");
 
 		foreach (var watcher in Watchers)
 		{

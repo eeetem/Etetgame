@@ -208,13 +208,11 @@ public  partial class WorldManager
                     if(spotedUnit == null) continue;
 #if CLIENT
                    spotedUnit.Spoted();
-#else
+#elif SERVER
                     if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team)
                     {
                         GameManager.EnsureUnitSpoted(spotedUnit);
                     }
-
-                
 #endif               
                 }
 				
@@ -915,7 +913,8 @@ public  partial class WorldManager
             
 
         }
-        
+
+        if (biggestCoverObj == null) throw new Exception("Biggest cover obj cannot be null");
         return biggestCoverObj;
 		
     }

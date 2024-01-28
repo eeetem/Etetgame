@@ -45,7 +45,6 @@ public static partial class GameManager
 		{
 			return;
 		}
-
 		
 		//not a fan of this, should probably be made a single function
 		int i = 0;

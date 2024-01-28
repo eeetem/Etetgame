@@ -140,7 +140,7 @@ public class Move : AIAction
 	{
 		int movesToUse = GetMovesToUse(unit);
 		var locs = GetMovementLocations(unit, movesToUse);
-		int scoreForCurrentTile = GetTileMovementScore(unit.WorldObject.TileLocation.Position, 0,unit.Crouching,unit, out _);
+		int scoreForCurrentTile = GetTileMovementScore((unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,unit.Crouching,unit, out _);
 
 		int countedLocs = 0;
 		List<int> scores = new List<int>();
@@ -169,31 +169,32 @@ public class Move : AIAction
 
 	private static ConcurrentBag<Tuple<Vector2Int, bool, int,MoveCalcualtion>> GetMovementLocations(Unit unit, int distance)
 	{
-		List<Vector2Int>[] allLocations = unit.GetPossibleMoveLocations();
+		List<(Vector2Int,PathFinding.PathFindResult)>[] allLocations = unit.GetPossibleMoveLocations();
 	
 		var scoredLocations = new ConcurrentBag<Tuple<Vector2Int,bool, int,MoveCalcualtion>>();
 
 		MoveCalcualtion m;
-		int score = GetTileMovementScore(unit.WorldObject.TileLocation.Position,0,unit.Crouching, unit, out m);
+		int score = GetTileMovementScore((unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()),0,unit.Crouching, unit, out m);
 		scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(unit.WorldObject.TileLocation.Position, unit.Crouching,score,m));
+		
 		//move locations where we do not change stance
 		for (int i = 0; i < Math.Min(distance,allLocations.Length); i++)
 		{
 			int moveUse = i+1;
-			Parallel.ForEach(allLocations[i],l =>
+			//Parallel.ForEach(allLocations[i],l =>
+			foreach (var loc in allLocations[i])
 			{
-				MoveCalcualtion m;
-				int score = GetTileMovementScore(l,moveUse,unit.Crouching, unit, out m);
+				int scr = GetTileMovementScore(loc,moveUse,unit.Crouching, unit, out var mv);
 
-				scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, unit.Crouching,score,m));
-			});
+				scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(loc.Item1, unit.Crouching,scr,mv));
+			}//);
 		}
 
 		if (unit.Crouching)
 		{
 			//stand up then move
-			List<Vector2Int>[] standUpLocations = unit.GetPossibleMoveLocations(unit.GetMoveRange()+2);//offset the courch penalty since we're gonna be standing up
-			standUpLocations[0].Add(unit.WorldObject.TileLocation.Position);
+			List<(Vector2Int,PathFinding.PathFindResult)>[] standUpLocations = unit.GetPossibleMoveLocations(unit.GetMoveRange()+2);//offset the courch penalty since we're gonna be standing up
+			standUpLocations[0].Add((unit.WorldObject.TileLocation.Position, new PathFinding.PathFindResult()));
 			for (int i = 0; i < Math.Min(distance-1, standUpLocations.Length); i++)
 			{
 				int i1 = i;
@@ -202,15 +203,15 @@ public class Move : AIAction
 					MoveCalcualtion m;
 					int score = GetTileMovementScore(l,i1+2,false, unit, out m);
 					//discourage changing stance by doing -1 if the scores are equal
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, false,score-1,m));
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l.Item1, false,score-1,m));
 				});
 			}
 		}
 		else
 		{
 			//move then crouch
-			List<Vector2Int>[] crouchLocations = unit.GetPossibleMoveLocations();
-			crouchLocations[0].Add(unit.WorldObject.TileLocation.Position);
+			List<(Vector2Int,PathFinding.PathFindResult)>[] crouchLocations = unit.GetPossibleMoveLocations();
+			crouchLocations[0].Add((unit.WorldObject.TileLocation.Position, new PathFinding.PathFindResult()));
 			for (int i = 0; i < Math.Min(distance-1, crouchLocations.Length); i++)
 			{
 				int i1 = i;
@@ -219,7 +220,7 @@ public class Move : AIAction
 					MoveCalcualtion m;
 					int score = GetTileMovementScore(l,i1+2,true, unit, out m);
 					//discourage changing stance by doing -1 if the scores are equal
-					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l, true,score-1,m));
+					scoredLocations.Add(new Tuple<Vector2Int, bool,int,MoveCalcualtion>(l.Item1, true,score-1,m));
 				});
 			}
 		}

@@ -49,18 +49,18 @@ public class AI
 					if (currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 					passiveMode = !CanSeeAnyEnemy(currentUnit.IsPlayer1Team);
 					AIAction a = new Attack();
-					Console.WriteLine("Calculating Attack Action...");
+					Log.Message("AI","Calculating Attack Action...");
 					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
 					a = new Overwatch();
-					Console.WriteLine("Calculating Overwatch Action...");
+					Log.Message("AI","Calculating Overwatch Action...");
 					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
 					a = new Move();
-					Console.WriteLine("Calculating Move Action...");
+					Log.Message("AI","Calculating Move Action...");
 					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
 					int i = 0;
 					actions.ForEach((x) =>
 					{
-						Console.WriteLine(i + "ability scored: " + x.Item3);
+						Log.Message("AI",i + "ability scored: " + x.Item3);
 						i++;
 					});
 					actions.RemoveAll((x) => x.Item3 <= 0);
@@ -74,18 +74,18 @@ public class AI
 						{
 							currentUnitIndex = squad.IndexOf(unit);
 							a = new Attack();
-							Console.WriteLine("Calculating Attack Action...");
+							Log.Message("AI","Calculating Attack Action...");
 							actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
 							a = new Overwatch();
-							Console.WriteLine("Calculating Overwatch Action...");
+							Log.Message("AI","Calculating Overwatch Action...");
 							actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
 
 							a = new Move();
-							Console.WriteLine("Calculating Move Action...");
+							Log.Message("AI","Calculating Move Action...");
 							actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
 							actions.ForEach((x) =>
 							{
-								Console.WriteLine(i + "ability scored: " + x.Item3);
+								Log.Message("AI",i + "ability scored: " + x.Item3);
 								i++;
 							});
 							actions.RemoveAll((x) => x.Item3 <= 0);
@@ -96,7 +96,7 @@ public class AI
 					            
 							if(unit.MovePoints.Current > 0 && !unit.Overwatch.Item1)
 							{
-								Console.WriteLine("no actions for unit despite having points");
+								Log.Message("AI","no actions for unit despite having points");
 							}
 						}
 
@@ -116,12 +116,12 @@ public class AI
 
 
 					actionToDo.Item1.Execute(actionToDo.Item2);
-					Console.WriteLine("Doing AI action with score: "+actionToDo.Item3);
+					Log.Message("AI","Doing AI action"+actionToDo.Item1+" with score: "+actionToDo.Item3 + " by " + actionToDo.Item2);
 			          
 				}
 
 		
-				Console.WriteLine("AI turn over, ending turn");
+				Log.Message("AI","AI turn over, ending turn");
 				do
 				{
 					Thread.Sleep(1000);
@@ -134,7 +134,7 @@ public class AI
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
+				Log.Message("AI",e.ToString());
 				throw;
 			}
           

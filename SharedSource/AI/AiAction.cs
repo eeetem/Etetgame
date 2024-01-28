@@ -337,13 +337,13 @@ public abstract class AIAction
 		}
 	}
 
-	public static int GetTileMovementScore(Vector2Int tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
+	public static int GetTileMovementScore((Vector2Int,PathFinding.PathFindResult) tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
 #if DEBUG && !CLIENT
 		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
 		{
 
-			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition);
+			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition.Item1);
 
 			int calcMovesToUse = 0;
 			int moveRange = realUnit.GetMoveRange();
@@ -359,7 +359,7 @@ public abstract class AIAction
 		}
 #endif
 		var u = ChangeUnitValues.Make(-1,0,-movesToUse);
-		return GetTileMovementScore(tilePosition, u,crouch, realUnit, out details);
+		return GetTileMovementScore(tilePosition.Item1, u,crouch, realUnit, out details);
 	}
 
 	

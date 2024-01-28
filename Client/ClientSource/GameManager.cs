@@ -265,7 +265,7 @@ public static partial class GameManager
 					throw new Exception("Unit on wrong team");
 				}	
 				//move units to known positions
-				Log.Message("UNITS","moving unit to known position: "+u + " " + data.Item1);
+				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				var obj = WorldObjectManager.GetObject(u);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);
@@ -280,7 +280,7 @@ public static partial class GameManager
 					throw new Exception("Unit on wrong team");
 				}	
 				//move units to known positions
-				Log.Message("UNITS","moving unit to known position: "+u + " " + data.Item1);
+				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				var obj = WorldObjectManager.GetObject(u);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);
