@@ -16,6 +16,8 @@ public static partial class NetworkingManager
     private static Server server = null!;
     private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
     private static bool SinglePlayerFeatures = false;
+    public static bool HasPendingMessages => (GameManager.Player1!= null && (!GameManager.Player1.HasDeliveredAllMessages || GameManager.Player1.SequenceQueue.Count >0)) || (GameManager.Player2 != null && (!GameManager.Player2.HasDeliveredAllMessages || GameManager.Player2.SequenceQueue.Count >0));
+
     public static void Start(ushort port, bool allowSP)
     {
         SinglePlayerFeatures = allowSP;
@@ -24,7 +26,7 @@ public static partial class NetworkingManager
         //1. Start listen on a portw
         server = new Server(new TcpServer());
         server.TimeoutTime = 10000;
-        Message.MaxPayloadSize = 2048*2*2;
+        Message.MaxPayloadSize = 2048*2*2*2;
 #if DEBUG
         server.TimeoutTime = ushort.MaxValue;
 #endif
@@ -515,10 +517,12 @@ public static partial class NetworkingManager
     {
 		if (actions.Count == 0) return;
         
+        var p =GameManager.GetPlayer(player1);
+        
+        
+
         List<SequenceAction> filteredActions = new List<SequenceAction>();
         actions.ForEach(x=>filteredActions.Add(x.FilterForPlayer(player1)));
-        
-        var p =GameManager.GetPlayer(player1);
         if(p.SequenceQueue.Count > 0 || !p.HasDeliveredAllMessages)  //if we have other things queued OR if we havent delivered all player updates yet queue it up and send later
         {
             p.SequenceQueue.Enqueue(filteredActions);
@@ -606,13 +610,22 @@ public static partial class NetworkingManager
     public static void DetectUnit(Unit unit, Vector2Int position)
     {
         if (!unit.IsPlayer1Team)
-        { 
-            if(GameManager.Player1UnitPositions.ContainsKey(unit.WorldObject.ID)) GameManager.Player1UnitPositions.Remove(unit.WorldObject.ID);
+        {
+            if (GameManager.Player1UnitPositions.ContainsKey(unit.WorldObject.ID))
+            {
+                if(GameManager.Player1UnitPositions[unit.WorldObject.ID].Item1 == position && GameManager.Player1UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
+               
+                GameManager.Player1UnitPositions.Remove(unit.WorldObject.ID);
+            }
             GameManager.Player1UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
         }
         else
         {
-            if(GameManager.Player2UnitPositions.ContainsKey(unit.WorldObject.ID)) GameManager.Player2UnitPositions.Remove(unit.WorldObject.ID);
+            if (GameManager.Player2UnitPositions.ContainsKey(unit.WorldObject.ID))
+            {
+                if(GameManager.Player2UnitPositions[unit.WorldObject.ID].Item1 == position && GameManager.Player2UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
+                GameManager.Player2UnitPositions.Remove(unit.WorldObject.ID);
+            }
             GameManager.Player2UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
         }
         SendUnitUpdates();

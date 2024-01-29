@@ -5,6 +5,7 @@ using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Riptide;
 
 #if CLIENT
 using DefconNull.Rendering.UILayout;
@@ -339,25 +340,25 @@ public abstract class AIAction
 
 	public static int GetTileMovementScore((Vector2Int,PathFinding.PathFindResult) tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
-#if DEBUG && !CLIENT
-		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
-		{
-
-			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition.Item1);
-
-			int calcMovesToUse = 0;
-			int moveRange = realUnit.GetMoveRange();
-			while (result.Cost > moveRange*calcMovesToUse)
-			{
-				calcMovesToUse++;
-			}
-			
-			if (calcMovesToUse!=movesToUse)
-			{
-				Console.WriteLine("WARNING: moves to use not equal to cost of path");
-			}
-		}
-#endif
+//#if DEBUG && !CLIENT
+//		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
+//		{
+//
+//			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition.Item1);
+//
+//			int calcMovesToUse = 0;
+//			int moveRange = realUnit.GetMoveRange();
+//			while (result.Cost > moveRange*calcMovesToUse)
+//			{
+//				calcMovesToUse++;
+//			}
+//			
+//			if (calcMovesToUse!=movesToUse)
+//			{
+//				Console.WriteLine("WARNING: moves to use not equal to cost of path");
+//			}
+//		}
+//#endif
 		var u = ChangeUnitValues.Make(-1,0,-movesToUse);
 		return GetTileMovementScore(tilePosition.Item1, u,crouch, realUnit, out details);
 	}
@@ -395,21 +396,40 @@ public abstract class AIAction
 
 	
 		//add points for being in range of your primiary attack
-		float closestDesiredDistance = 1000;
 		Vector2Int closestDesiredTile = new Vector2Int(-1,-1);
+		Vector2Int closestDesiredBaseTile = new Vector2Int(-1,-1);
 		List<Vector2Int> locationsToCheck = new List<Vector2Int>();
 		otherTeamUnits.ForEach(x=>locationsToCheck.Add(x.WorldObject.TileLocation.Position));
 		GameManager.CapturePoints.ForEach(x=>locationsToCheck.Add(x.TileLocation.Position));
-		foreach (var l in locationsToCheck)
+		
+		
+		double actualDistance = -1;
+		while (actualDistance < 0)
 		{
-			var dist = Vector2.Distance(l, tilePosition);
-			if(dist< closestDesiredDistance){
-				closestDesiredDistance = dist;
-				closestDesiredTile = l;
+			if(locationsToCheck.Count == 0)
+			{
+				throw new Exception("no valid paths for AI");
 			}
+			float closestDesiredDistance = 1000;
+			locationsToCheck.Remove(closestDesiredBaseTile);//if we couldnt get a path to last best result, find a new one
+			foreach (var l in locationsToCheck)
+			{
+				foreach (var tile in WorldManager.Instance.GetTilesAround(l,2))
+				{
+					var dist = Vector2.Distance(tile.Position, tilePosition);
+					if(dist< closestDesiredDistance){
+						closestDesiredDistance = dist;
+						closestDesiredTile = tile.Position;
+						closestDesiredBaseTile = l;
+					}
+				}
+
+			}
+			var p = PathFinding.GetPath(tilePosition, closestDesiredTile);
+			actualDistance = p.Cost;
+			Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
 		}
-		var p = PathFinding.GetPath(tilePosition, closestDesiredTile);
-		var actualDistance = p.Cost;
+		
 		
 		actualDistance -= hypotheticalUnit.Abilities[0].GetOptimalRangeAI();
 		actualDistance = Math.Max(0, actualDistance);
@@ -469,7 +489,7 @@ public abstract class AIAction
 			if(Equals(u, realUnit)) continue;
 			var friendLoc = u.WorldObject.TileLocation.Position;
 			var dist = Vector2.Distance(friendLoc, tilePosition);
-			clumpingPenalty -= (int)(4/dist);
+			clumpingPenalty -= (int)(3/dist);
 		}
 		score += clumpingPenalty;
 		details.ClumpingPenalty = clumpingPenalty;

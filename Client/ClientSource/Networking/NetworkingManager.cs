@@ -44,7 +44,7 @@ public static partial class NetworkingManager
 		Name = name;
 		
 		client = new Client( new TcpClient());
-		Message.MaxPayloadSize = 2048*2;
+		Message.MaxPayloadSize = 2048*2*2*2;
 
 
 		var msg = Message.Create();

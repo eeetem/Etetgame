@@ -140,7 +140,8 @@ public class Move : AIAction
 	{
 		int movesToUse = GetMovesToUse(unit);
 		var locs = GetMovementLocations(unit, movesToUse);
-		int scoreForCurrentTile = GetTileMovementScore((unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,unit.Crouching,unit, out _);
+		MoveCalcualtion details;
+		int scoreForCurrentTile = GetTileMovementScore((unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,unit.Crouching,unit, out details);
 
 		int countedLocs = 0;
 		List<int> scores = new List<int>();
@@ -160,7 +161,7 @@ public class Move : AIAction
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 90);
+		float percentile = Utility.CalculatePercentile(scores, 70);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
 		return worseThanAverage;

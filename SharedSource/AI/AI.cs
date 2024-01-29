@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
 using MonoGame.Extended.Collections;
@@ -38,7 +39,7 @@ public class AI
 				{
 					do
 					{
-						Thread.Sleep(200);
+						Thread.Sleep(100);
 					} while (SequenceManager.SequenceRunning);
 
 					//  if(GameManager.IsPlayer1Turn) break;
@@ -114,7 +115,12 @@ public class AI
 						}
 					}
 
-
+#if SERVER
+					while (NetworkingManager.HasPendingMessages)
+					{
+						Thread.Sleep(1000);
+					};		
+#endif
 					actionToDo.Item1.Execute(actionToDo.Item2);
 					Log.Message("AI","Doing AI action"+actionToDo.Item1+" with score: "+actionToDo.Item3 + " by " + actionToDo.Item2);
 			          
@@ -126,7 +132,14 @@ public class AI
 				{
 					Thread.Sleep(1000);
 				} while (SequenceManager.SequenceRunning);
-
+#if SERVER
+			
+				while (NetworkingManager.HasPendingMessages)
+				{
+					Thread.Sleep(1000);
+				} 
+#endif
+				
 				//  if (!GameManager.IsPlayer1Turn)
 				// {
 				GameManager.NextTurn();

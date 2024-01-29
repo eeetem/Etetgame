@@ -186,7 +186,9 @@ public static class PathFinding
             layer = GetNextFreeLayer();
             InUse[layer] = true;
         }
-        var p = GetPath(Nodes[layer][from.X, from.Y], Nodes[layer][to.X, to.Y]);
+        var node1 = Nodes[layer][from.X, from.Y];
+        var node2 = Nodes[layer][to.X, to.Y];
+        var p = GetPath(node1, node2);
         InUse[layer] = false;
         return p;
     }
@@ -219,7 +221,7 @@ public static class PathFinding
             {
                 ResetNodes(done);
                 ResetNodes(open.UnorderedItems);
-                return new PathFindResult(new List<Vector2Int>(), 0);
+                return new PathFindResult(new List<Vector2Int>(), -1);
             }
 
             // Selecting next Element from queue
