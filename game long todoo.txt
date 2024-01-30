@@ -1,25 +1,11 @@
 
-later
-
-no ghosting destruction -> no wall hack
-alt inspection of unit stats
 server ui -> dont show custom map list on local server
-
-apply shader to every obj in effect area rather than whole screen
 
 
 display shoot breakdown
-headshot and overwatch?
 
-
-
-grebade range dropoff
 must reload
 cant rpg through people
-
-rocket launcher destruction still crashes
-
-smoke sync
 
 
 UI Rework:
