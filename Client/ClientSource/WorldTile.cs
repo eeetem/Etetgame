@@ -17,7 +17,7 @@ public partial class WorldTile : IWorldTile
 					
 		}else if (TileVisibility == Visibility.Partial)
 		{
-			color = Color.LightPink;
+			color = Color.MediumPurple;
 		}
 
 
@@ -37,10 +37,7 @@ public partial class WorldTile : IWorldTile
 			
 
 		}
-
-
-
-
+		
 
 
 		return color;

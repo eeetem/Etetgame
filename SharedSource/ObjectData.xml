@@ -24,6 +24,18 @@
     </sprite>
     <name>basicFloor</name>
   </object>
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite source="Environment/Surfaces/wood" offset= "0,0">
+      <variation id="0" weight="10"/>
+    </sprite>
+    <name>Wooden Floor</name>
+  </object>
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite source="Environment/Surfaces/Tile" offset= "0,0">
+      <variation id="0" weight="10"/>
+    </sprite>
+    <name>Tiled Floor</name>
+  </object>
   <object Faceable = "true" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/roadStripe" offset= "0,0">
       <variation id="0" weight="10"/>

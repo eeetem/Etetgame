@@ -136,18 +136,16 @@ public static class RenderSystem
 
 				}
 				spriteBatch.DrawOutline(moves, c, 4f);
-				foreach (var path in moves)
-				{	
-					
-					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-
-					var tile = WorldManager.Instance.GetTileAtGrid(path);
-					if (tile.Surface != null)
-					{
-						Texture2D sprite = tile.Surface.GetTexture();
-						spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.2f);
-					}
-				}
+				//foreach (var path in moves)
+				//{	
+//
+				//	var tile = WorldManager.Instance.GetTileAtGrid(path);
+				//	if (tile.Surface != null)
+				//	{
+				//		Texture2D sprite = tile.Surface.GetTexture();
+				//		spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.1f);
+				//	}
+				//}
 
 				count++;
 			

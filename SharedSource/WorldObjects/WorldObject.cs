@@ -331,6 +331,7 @@ public partial class WorldObject
 		if(data.ID != -1 && data.ID != ID)
 			throw new Exception("Data set ID mismatch");
 		Face(data.Facing,false);
+		Fliped = data.Fliped;
 		if (data.JustSpawned)
 		{
 			Health = Type.MaxHealth;

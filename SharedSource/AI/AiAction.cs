@@ -404,12 +404,10 @@ public abstract class AIAction
 		
 		
 		double actualDistance = -1;
-		while (actualDistance < 0)
+		int fails = 0;
+		while (actualDistance < 0 && fails < 5)
 		{
-			if(locationsToCheck.Count == 0)
-			{
-				throw new Exception("no valid paths for AI");
-			}
+			fails++;
 			float closestDesiredDistance = 1000;
 			locationsToCheck.Remove(closestDesiredBaseTile);//if we couldnt get a path to last best result, find a new one
 			foreach (var l in locationsToCheck)
@@ -427,10 +425,13 @@ public abstract class AIAction
 			}
 			var p = PathFinding.GetPath(tilePosition, closestDesiredTile);
 			actualDistance = p.Cost;
-			Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
+		//	Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
 		}
 		
-		
+		if(Math.Abs(actualDistance - (-1)) < 0.1f)
+		{
+			actualDistance = 99999;
+		}
 		actualDistance -= hypotheticalUnit.Abilities[0].GetOptimalRangeAI();
 		actualDistance = Math.Max(0, actualDistance);
 		details.ClosestDistance = (float) actualDistance;
