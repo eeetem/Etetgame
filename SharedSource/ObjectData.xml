@@ -417,16 +417,16 @@
     </action>
   </unit>
 
-  <unit health="10" moveRange = "6" moves="2" determination="2" z="-0.1">
+  <unit health="8" moveRange = "6" moves="2" determination="2" z="-0.1">
     <name>Specialist</name>
-    <action moveCost="1" actCost="1">
+    <action moveCost="1" actCost="1" detCost="2">
       <name>RPG</name>
       <targetAid>enemy</targetAid>
       <tip>Depite looking quite scary the main use of the rpg involves destruction of environment and supression as any determined unit will duck out of the blast wave</tip>
 
       <effect>
         <delivery>
-          <throwable throwRange="24"/>
+          <projectile range="24"/>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>
@@ -438,23 +438,9 @@
           <fowSpot scatter="4"/>
         </consequences>
       </effect>
-
-      <effect>
-        <consequences  range="1">
-          <applystatus status="Holstered" duration="3"/>
-        </consequences>
-      </effect>
+      
     </action>
-    <action moveCost="1" detCost="2" immideate="true">
-      <name>Rapid Reload</name>
-      <tip>Expend extra effort to do a quick reckless reload.</tip>
 
-      <effect>
-        <consequences range="1">
-          <removestatus status="Holstered"/>
-        </consequences>
-      </effect>
-    </action>
 
     <action actCost="1">
       <name>Grenade</name>

@@ -120,7 +120,7 @@ public static partial class GameManager
 		score = data.Score;
 		GameState = data.GameState;
 
-		Audio.PlayMusic(GameState);
+		Audio.OnGameStateChange(GameState);
 		switch (GameState)
 		{
 			case GameState.Lobby:

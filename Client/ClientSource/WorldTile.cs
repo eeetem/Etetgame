@@ -32,7 +32,7 @@ public partial class WorldTile : IWorldTile
 			if (enemyWatching)
 			{
 				var vec = color.ToVector3();
-				color = new Color(vec.X*1.2f,vec.Y/2f, vec.Z*1.2f, 1);
+				color = new Color(vec.X*1.5f,vec.Y/2f, vec.Z*1.2f, 1);
 			}
 			
 

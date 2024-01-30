@@ -23,7 +23,7 @@ public static partial class NetworkingManager
         SinglePlayerFeatures = allowSP;
         RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 	
-        Message.MaxPayloadSize = 2048 * 2 * 2 * 2;
+        Message.MaxPayloadSize = 2048 * 2 * 2 ;
         //1. Start listen on a portw
         server = new Server(new TcpServer());
         server.TimeoutTime = 10000;

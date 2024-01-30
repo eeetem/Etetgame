@@ -266,7 +266,6 @@ public static class PrefabManager
 			XmlNode node = xmlObj.GetElementsByTagName("delivery")[0]!.ChildNodes[0]!;
 			if (node.Name == "throwable")
 			{	
-				
 				int throwRange = int.Parse(node.Attributes?["throwRange"]?.InnerText ?? "5");
 				dvm = new Throwable(throwRange);
 			}else if (node.Name == "vissionCast")
@@ -274,13 +273,17 @@ public static class PrefabManager
 				
 				int throwRange = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				dvm = new VissionCast(throwRange);
+			}else if (node.Name == "projectile")
+			{
+				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
+				dvm = new Projectile(range);
 			}
-		
 
-			
-      
-        
-			
+
+
+
+
+
 			if(dvm==null)
 				throw new Exception("no delivery method");
 			

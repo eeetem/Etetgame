@@ -91,7 +91,7 @@ public class Game1 : Game
 
 		_graphics.ApplyChanges();
 			
-		Audio.PlayMusic(GameState.Lobby);
+		Audio.OnGameStateChange(GameState.Lobby);
 			
 	
 	}

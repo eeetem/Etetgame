@@ -121,23 +121,53 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/grenade.wav
 
-#begin CompressedContent/audio/mg.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:CompressedContent/audio/mg.wav
-
 #begin CompressedContent/audio/mg-old1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg-old1.wav
 
-#begin CompressedContent/audio/music/tresspassing.ogg
+#begin CompressedContent/audio/mg.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/mg.wav
+
+#begin CompressedContent/audio/music/Cavern Dwelling.ogg
 /importer:OggImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/tresspassing.ogg
+/build:CompressedContent/audio/music/Cavern Dwelling.ogg
+
+#begin CompressedContent/audio/music/Planning.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/Planning.ogg
+
+#begin CompressedContent/audio/music/Seclusion.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/Seclusion.ogg
+
+#begin CompressedContent/audio/music/Tresspassing.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/Tresspassing.ogg
+
+#begin CompressedContent/audio/music/Universal.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/Universal.ogg
+
+#begin CompressedContent/audio/music/Warframes.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/music/Warframes.ogg
 
 #begin CompressedContent/audio/rifle.wav
 /importer:WavImporter
@@ -456,7 +486,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/GameHud/BottomBar/righte.png
-
 
 #begin CompressedContent/textures/GameHud/BottomBar/tinyBox.png
 /importer:TextureImporter
