@@ -1059,6 +1059,8 @@ public  partial class WorldManager
 
 
     public MapData CurrentMap { get; set; }
+    public bool Maploading { get; set; }
+
     [Serializable]
     public class MapData
     {

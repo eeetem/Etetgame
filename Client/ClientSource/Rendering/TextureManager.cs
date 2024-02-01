@@ -1,6 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -56,7 +58,11 @@ public static class TextureManager
         {
             return png;
         }
-        FileStream fileStream = new FileStream("Content/" + name + ".png", FileMode.Open);
+
+
+        FileStream fileStream = new FileStream("Content/" + name + ".png", FileMode.Open,FileAccess.Read);
+
+
         Texture2D tex = Texture2D.FromStream(Game1.instance.GraphicsDevice, fileStream);
         fileStream.Dispose();
         PngTextures.TryAdd(name, tex);

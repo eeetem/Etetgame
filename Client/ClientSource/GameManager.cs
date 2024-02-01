@@ -206,6 +206,7 @@ public static partial class GameManager
 	public static void UpdateUnitPositions()
 	{
 		if (RecivedUnitPositions == null) return;
+		List<int> justCreated = new List<int>();
 
 		Log.Message("UNITS","updating unit positions");
 		//remove all units that we are aware of that we shouldnt be
@@ -231,6 +232,7 @@ public static partial class GameManager
 			{
 				Log.Message("UNITS","creating new unit: "+u.Key);
 				WorldObjectManager.MakeWorldObject.Make(u.Value.Item2,u.Value.Item1).GenerateTask().RunTaskSynchronously();
+				justCreated.Add(u.Key);
 			}
 		}
 		
@@ -264,9 +266,12 @@ public static partial class GameManager
 				{
 					throw new Exception("Unit on wrong team");
 				}	
+				
 				//move units to known positions
-				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
+				
 				var obj = WorldObjectManager.GetObject(u);
+				if(obj.IsVisible() && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);
 			}
@@ -280,8 +285,10 @@ public static partial class GameManager
 					throw new Exception("Unit on wrong team");
 				}	
 				//move units to known positions
-				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
+				
 				var obj = WorldObjectManager.GetObject(u);
+				if(obj.IsVisible() && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);
 			}

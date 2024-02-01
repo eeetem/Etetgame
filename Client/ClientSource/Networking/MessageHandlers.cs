@@ -20,6 +20,7 @@ public static partial class NetworkingManager
 		mapLoadMsg  = UI.OptionMessage("Loading Map...", "Please Wait","",null,"",null);
 		var oldname = WorldManager.Instance.CurrentMap.Name;
 		string hash = message.GetString();
+		WorldManager.Instance.Maploading = true;
 		WorldManager.Instance.CurrentMap = new WorldManager.MapData();
 		WorldManager.Instance.CurrentMap.Name = message.GetString();
 		WorldManager.Instance.CurrentMap.Author = message.GetString();
@@ -41,6 +42,7 @@ public static partial class NetworkingManager
 			} while (SequenceManager.SequenceRunning || RecievedTiles.Count>0); //still loading the map
 
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
+			WorldManager.Instance.Maploading = false;
 			if (WorldManager.Instance.GetMapHash() != hash)
 			{
 				Log.Message("NETWORKING","Map Hash Mismatch, resending");

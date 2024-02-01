@@ -88,7 +88,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
 				SequenceManager.AddSequence(objMake);
-				NetworkingManager.SendSequence(objMake);
 				T1Units.Add(objMake.data.ID);
 				i++;
 
@@ -135,7 +134,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
 				SequenceManager.AddSequence(objMake);
-				NetworkingManager.SendSequence(objMake);
 				T2Units.Add(objMake.data.ID);
 				i++;
 

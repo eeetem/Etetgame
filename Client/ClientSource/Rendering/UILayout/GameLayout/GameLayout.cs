@@ -73,6 +73,11 @@ public class GameLayout : MenuLayout
 			Array.Resize(ref PreviewMoves, ret.Length);
 		}
 
+		foreach (var p in PreviewMoves)
+		{
+			if(p != null)p.Clear();
+		}
+
 		for (int j = 0; j < ret.Length; j++)
 		{
 			if(PreviewMoves[j] == null)

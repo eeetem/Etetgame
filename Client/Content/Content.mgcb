@@ -133,41 +133,41 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg.wav
 
-#begin CompressedContent/audio/music/Cavern Dwelling.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Cavern Dwelling.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Cavern Dwelling.ogg
+/build:CompressedContent/audio/music/Cavern Dwelling.wav
 
-#begin CompressedContent/audio/music/Planning.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Planning.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Planning.ogg
+/build:CompressedContent/audio/music/Planning.wav
 
-#begin CompressedContent/audio/music/Seclusion.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Seclusion.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Seclusion.ogg
+/build:CompressedContent/audio/music/Seclusion.wav
 
-#begin CompressedContent/audio/music/Tresspassing.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Tresspassing.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Tresspassing.ogg
+/build:CompressedContent/audio/music/Tresspassing.wav
 
-#begin CompressedContent/audio/music/Universal.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Universal.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Universal.ogg
+/build:CompressedContent/audio/music/Universal.wav
 
-#begin CompressedContent/audio/music/Warframes.ogg
-/importer:OggImporter
+#begin CompressedContent/audio/music/Warframes.wav
+/importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
-/build:CompressedContent/audio/music/Warframes.ogg
+/build:CompressedContent/audio/music/Warframes.wav
 
 #begin CompressedContent/audio/rifle.wav
 /importer:WavImporter

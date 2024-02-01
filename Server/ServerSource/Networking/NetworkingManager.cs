@@ -23,7 +23,7 @@ public static partial class NetworkingManager
         SinglePlayerFeatures = allowSP;
         RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 	
-        Message.MaxPayloadSize = 2048 * 2 * 2 ;
+        Message.MaxPayloadSize = 2048 * 2 * 2*2 ;
         //1. Start listen on a portw
         server = new Server(new TcpServer());
         server.TimeoutTime = 10000;
@@ -119,7 +119,7 @@ public static partial class NetworkingManager
         SendGameData();
         SendPreGameInfo(); 
         SendMapData(connection);
-
+        
     }
 		
     public static readonly object UpdateLock = new object();
@@ -129,6 +129,8 @@ public static partial class NetworkingManager
         server.TryGetClient(senderID, out c);
         SendMapData(c);
     }
+
+    static int mapSendings = 0;
     public static void SendMapData(Connection connection)
     {
 	
@@ -141,7 +143,9 @@ public static partial class NetworkingManager
         packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
         server.Send(packet,connection);
 		
-        Task.Run(() => {
+        Task.Run(() =>
+        {
+            mapSendings++;
             while (!ClientsReadyForMap.Contains(connection.Id) || SequenceManager.SequenceRunning)
             {
                 Thread.Sleep(100);
@@ -173,6 +177,7 @@ public static partial class NetworkingManager
                     }
 
                     Log.Message("NETWORKING","finished sending map data to " + connection.Id);
+                    
 	
 
                 }catch(Exception e)
@@ -181,9 +186,10 @@ public static partial class NetworkingManager
                     Log.Message("NETWORKING",e.ToString());
                 }
 
-		
+                mapSendings--;
+                SendUnitUpdates();
             }
-
+            
         });
 
     }
@@ -418,7 +424,7 @@ public static partial class NetworkingManager
         {
             List<SequenceAction> result;
             GameManager.Player2.SequenceQueue.TryDequeue(out result);
-            if(result!= null && result.Count>0) SendSequenceToPlayer(result,true);
+            if(result!= null && result.Count>0) SendSequenceToPlayer(result,false);
         }
     }
 
@@ -505,7 +511,7 @@ public static partial class NetworkingManager
                     
                     tempActList = new List<SequenceAction>(actions);
                     tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(false));
-                    SendSequenceToPlayer(new List<SequenceAction>(actions), false);
+                    SendSequenceToPlayer(new List<SequenceAction>(tempActList), false);
                    
             }
 
@@ -520,8 +526,6 @@ public static partial class NetworkingManager
         
         var p =GameManager.GetPlayer(player1);
         
-        
-
         List<SequenceAction> filteredActions = new List<SequenceAction>();
         actions.ForEach(x=>filteredActions.Add(x.FilterForPlayer(player1)));
         if(p.SequenceQueue.Count > 0 || !p.HasDeliveredAllMessages)  //if we have other things queued OR if we havent delivered all player updates yet queue it up and send later
