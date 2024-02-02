@@ -75,7 +75,7 @@ public static partial class NetworkingManager
                 return;
             }
 
-            GameManager.Player1.Connection = connection;//reconnection
+            GameManager.Player1.Reconnect(connection);//reconnection
             SendChatMessage(name+" reconnected as Player 1");
 				
         }
@@ -94,7 +94,7 @@ public static partial class NetworkingManager
                 server.Reject(connection,msg);
                 return;
             }
-            GameManager.Player2.Connection = connection;//reconnection
+            GameManager.Player2.Reconnect(connection);;//reconnection
             SendChatMessage(name+" reconnected as Player 2");
         }
         else
@@ -213,10 +213,10 @@ public static partial class NetworkingManager
 
         if (GameManager.Player1?.Connection == connection)
         {
-            GameManager.Player1.Connection = null;
+            GameManager.Player1.Disconnect();
         }else if (GameManager.Player2?.Connection == connection)
         {
-            GameManager.Player2.Connection = null;
+            GameManager.Player2.Disconnect();
         }
     }
 		
@@ -227,12 +227,12 @@ public static partial class NetworkingManager
         if (e.Client == GameManager.Player1?.Connection)
         {
             name = GameManager.Player1.Name;
-            GameManager.Player1.Connection = null;
+            GameManager.Player1.Disconnect();
             SendChatMessage(name+" left the game");
         }else if (e.Client == GameManager.Player2?.Connection)
         {
             name = GameManager.Player2.Name;
-            GameManager.Player2.Connection = null;
+            GameManager.Player2.Disconnect();
             SendChatMessage(name+" left the game");
         }
         else

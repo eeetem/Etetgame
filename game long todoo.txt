@@ -4,11 +4,8 @@ server ui -> dont show custom map list on local server
 
 display shoot breakdown
 
-remeber last server
-play music on enemy turn aswell
-unintentional update of walls
-move point updates no work
-view enemy fov
+
+
 
 UI  enemy progress
 

@@ -28,9 +28,6 @@ public class WorldConseqences
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
 	public ValueChange MoveRange ;
 	public int ExRange;
-	public bool TargetFoe = false;
-	public bool TargetFriend =false;
-	public bool TargetSelf =false;
 	public List<string> Ignores = new List<string>();
 
 	public bool FogOfWarSpot { get; set; }

@@ -58,6 +58,8 @@ public static partial class NetworkingManager
 	
 		Log.Message("NETWORKING",$"{client} Connection established");
 
+		Game1.config.SetValue("config", "LastServer", ipport);
+		
 		client.ConnectionFailed += (a, b) =>
 		{
 			UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});

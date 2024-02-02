@@ -122,6 +122,7 @@ public partial class WorldTile : IWorldTile
 			TileVisibility = new ValueTuple<Visibility, Visibility>(TileVisibility.Item1, visTupleValue);
 		}
 #else
+		if(GameManager.IsPlayer1 != unitIsPlayer1Team) return;
 		TileVisibility = visTupleValue;
 #endif	
 	}

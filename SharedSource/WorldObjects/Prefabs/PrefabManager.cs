@@ -342,18 +342,12 @@ public static class PrefabManager
 			switch (tar)
 			{
 				case "friend":
-					eff.TargetFriend = true;
 					break;
 				case "foe":
-					eff.TargetFoe = true;
 					break;		
 				case "self":
-					eff.TargetSelf = true;
 					break;	
 				case "any":
-					eff.TargetFriend = true;
-					eff.TargetSelf = true;
-					eff.TargetFoe = true;
 					break;
 				
 			}

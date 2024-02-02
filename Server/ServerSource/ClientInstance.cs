@@ -6,7 +6,7 @@ namespace DefconNull;
 
 public class ClientInstance
 {
-	public Connection? Connection;
+	public Connection? Connection { get; private set; }
 	public string Name;
 	public bool IsAI;
 	public List<SquadMember>?  SquadComp { get; private set; }
@@ -23,7 +23,12 @@ public class ClientInstance
 		Connection = con;
 		if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
 	}
-	
+	public void Reconnect(Connection? con)
+	{
+		MessagesToBeDelivered.Clear();
+		Connection = con;
+		if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
+	}
 	public void RegisterMessageToBeDelivered(ushort id)
 	{
 		MessagesToBeDelivered.Add(id);
@@ -38,4 +43,9 @@ public class ClientInstance
 		SquadComp = squad;
 	}
 
+	public void Disconnect()
+	{
+		Connection = null;
+		MessagesToBeDelivered.Clear();
+	}
 }

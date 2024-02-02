@@ -24,7 +24,7 @@ public class ConnectionLayout : UiLayout
 		{
 			GridColumn = 1,
 			GridRow = 1,
-			Text = "localhost:52233",
+			Text =  Game1.config.GetValue("config","LastServer","localhost:52233"),
 			HorizontalAlignment = HorizontalAlignment.Stretch
 		};
 		grid.Widgets.Add(textBox);

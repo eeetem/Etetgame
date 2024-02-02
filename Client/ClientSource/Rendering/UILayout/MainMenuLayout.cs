@@ -47,7 +47,7 @@ public class MainMenuLayout : UiLayout
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Bottom,
 			Height = (int) (300 * globalScale.Y),
-			Top = (int) (-15 * globalScale.Y)
+			Top = (int) (-45 * globalScale.Y)
 		};
 		menustack.Widgets.Add(MPStack);
 
@@ -60,6 +60,21 @@ public class MainMenuLayout : UiLayout
 			HorizontalAlignment = HorizontalAlignment.Center
 		};
 		MPStack.Widgets.Add(startlbl);
+		
+		var reconnect = new SoundButton
+		{
+			GridColumn = 0,
+			GridRow = 2,
+			Text = "Reconnect to last",
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
+		reconnect.Click += (a, b) =>
+		{
+			NetworkingManager.Connect(Game1.config.GetValue("config","LastServer","localhost:52233"),Game1.config.GetValue("config","Name","Operative#"+Random.Shared.Next(1000)));		
+		};
+		MPStack.Widgets.Add(reconnect);
+		
 		var singleplayer = new SoundButton
 		{
 			GridColumn = 0,
@@ -72,9 +87,10 @@ public class MainMenuLayout : UiLayout
 		{
 			GameManager.StartLocalServer();
 		};
-
-
 		MPStack.Widgets.Add(singleplayer);
+		
+		
+		
 		var lobybtn = new SoundButton
 		{
 			GridColumn = 0,

@@ -89,10 +89,10 @@ public static partial class WorldObjectManager
                 WorldObjects.Remove(id);
             }
 				
-            if (id < NextId)
-            {
-                NextId = id; //reuse IDs
-            }
+         //   if (id < NextId) this is bad becasue the server can use ids that clients are not aware of
+         //   {
+         //       NextId = id; //reuse IDs
+         //   }
         }
 
 

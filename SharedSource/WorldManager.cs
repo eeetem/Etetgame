@@ -189,14 +189,17 @@ public  partial class WorldManager
         }
 
         List<Unit> units = new List<Unit>();
-#if SERVER
+
         units = GameManager.GetAllUnits();
-#elif CLIENT
-        units = GameManager.GetTeamUnits(GameManager.IsPlayer1);
-#endif
+
         Parallel.ForEach(units, seeingUnit =>
         {
             var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
+
+            seeingUnit.VisibleTiles = unitSee;
+#if CLIENT
+            if(!seeingUnit.IsMyTeam())return;//enemy units dont update our FOV
+#endif
             foreach (var visTuple in unitSee)
             {
                 if(GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
@@ -217,7 +220,7 @@ public  partial class WorldManager
                 }
 				
             }
-            seeingUnit.VisibleTiles = unitSee;
+            
         });
 		
         

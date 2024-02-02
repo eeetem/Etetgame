@@ -38,27 +38,27 @@ public class GameLayout : MenuLayout
 	public static Unit? SelectedUnit { get; private set;} = null!;
 	public static Unit? SelectedEnemyUnit { get; private set;} = null!;
 
-	public static void SelectUnit(Unit? controllable)
+	public static void SelectUnit(Unit? unit)
 	{
-		if (controllable == null)
+		if (unit == null)
 		{
-			controllable = GameManager.GetTeamUnits(GameManager.IsPlayer1).FirstOrDefault();
+			unit = GameManager.GetTeamUnits(GameManager.IsPlayer1).FirstOrDefault();
 		}
-		if(controllable is null)return;
+		if(unit is null)return;
 
-		if (!controllable.IsMyTeam())
+		if (!unit.IsMyTeam())
 		{
-			SelectedEnemyUnit = controllable;
+			SelectedEnemyUnit = unit;
 			return;
 		}
 		SelectHudAction(null);
 
-		SelectedUnit = controllable;
+		SelectedUnit = unit;
 		ReMakeMovePreview();
 	
 			UI.SetUI( new GameLayout());
 		
-		Camera.SetPos(controllable.WorldObject.TileLocation.Position);
+		Camera.SetPos(unit.WorldObject.TileLocation.Position);
 	}
 
 	public static readonly int[,,] AIMoveCache = new int[100,100,2];
@@ -932,7 +932,7 @@ public class GameLayout : MenuLayout
 					c = Color.Red;
 				}
 
-				batch.Draw(TextureManager.GetTexture("eye"), Utility.GridToWorldPos(t.Key), null, c, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+				batch.Draw(TextureManager.GetTexture("eye"), Utility.GridToWorldPos(t.Key+new Vector2(0.5f,0.5f)), null, c, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
 
 			}
 			batch.End();

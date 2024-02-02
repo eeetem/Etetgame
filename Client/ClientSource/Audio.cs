@@ -42,8 +42,11 @@ public static class Audio
                 songList.Add("Tresspassing");
                 break;
             case GameState.Playing:
-                songList.Add("Universal");
-                songList.Add("Planning");
+                if (GameManager.IsMyTurn())//intense songs reserved for player's turn
+                {
+                    songList.Add("Universal");
+                    songList.Add("Planning");
+                }
                 songList.Add("Seclusion");
                 songList.Add("Warframes");
                 songList.Add("Cavern Dwelling");

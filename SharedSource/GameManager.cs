@@ -158,9 +158,9 @@ public static partial class GameManager
 
 		
 #if CLIENT
-if(IsMyTurn()){
+
 		Audio.OnGameStateChange(GameState.Playing);
-		}
+		
 #endif
 
 
