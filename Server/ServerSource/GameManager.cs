@@ -86,7 +86,7 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T1SpawnPoints.Contains(spawn.Position))
 			{
-				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
 				T1Units.Add(objMake.data.ID);
 				i++;
@@ -132,7 +132,7 @@ public static partial class GameManager
 			if (i >= WorldManager.Instance.CurrentMap.unitCount) break;
 			if (T2SpawnPoints.Contains(spawn.Position))
 			{
-				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North, cdata);
+				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
 				T2Units.Add(objMake.data.ID);
 				i++;
@@ -141,13 +141,9 @@ public static partial class GameManager
 
 		}
 		
-
-		
 		var t = new Task(delegate
 		{
-
 			GameState = GameState.Playing;
-		
 		
 			var rng = Random.Shared.Next(100);
 			NextTurn();

@@ -253,7 +253,7 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),(Direction)Random.Shared.Next(8),cdata));
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),(Direction)Random.Shared.Next(8),false,cdata));
 			}
 			for (int i = 0; i < 8; i++)
 			{
@@ -280,7 +280,7 @@ GameManager.PreGameData = preGameDataStruct;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),(Direction)Random.Shared.Next(8),cdata));
+				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),(Direction)Random.Shared.Next(8),false,cdata));
 			}
 			
 			switchTicker = 0;

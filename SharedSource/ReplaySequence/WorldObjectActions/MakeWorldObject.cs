@@ -55,13 +55,13 @@ public static partial class WorldObjectManager
 
         private Vector2Int _position = new Vector2Int(0, 0);
         public WorldObject.WorldObjectData data = new WorldObject.WorldObjectData("basicFloor");
-        public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing, Unit.UnitData? unitData = null)
+        public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing,bool fliped = false, Unit.UnitData? unitData = null)
         {
             var data = new WorldObject.WorldObjectData(prefab);
             data.UnitData = unitData;
             data.Facing = facing;
-            data.Facing = facing;
             data.ID = GetNextId();
+            data.Fliped = fliped;
             var t = GetAction(SequenceType.MakeWorldObject) as MakeWorldObject;
             t.data = data;
             t._position = Position;

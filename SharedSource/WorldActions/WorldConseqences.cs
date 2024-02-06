@@ -87,18 +87,14 @@ public class WorldConseqences
 			if (tile.EastEdge != null && !_ignoreList.Contains(tile.EastEdge))
 			{
 				//tile.EastEdge?.TakeDamage(Dmg, 0);
-
 				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.EastEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.EastEdge!);
 			}
 
 			if (tile.WestEdge != null && !_ignoreList.Contains(tile.WestEdge))
 			{
-
 				consequences.Add(WorldObjectManager.TakeDamage.Make(Dmg, DetRes,  tile.WestEdge!.ID,EnvRes));
 				_ignoreList.Add(tile.WestEdge!);
-				
-
 			}
 
 			if (tile.NorthEdge != null && !_ignoreList.Contains(tile.NorthEdge))
@@ -126,7 +122,7 @@ public class WorldConseqences
 
 		if (PLaceItemConsequence!=null)
 		{
-			consequences.Add(WorldObjectManager.MakeWorldObject.Make(PLaceItemConsequence, tile.Position, originalTarget.Facing)); //fix this
+			consequences.Add(WorldObjectManager.MakeWorldObject.Make(PLaceItemConsequence, tile.Position, originalTarget.Facing,originalTarget.Fliped)); //fix this
 		}
 
 		UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(tile.Position);
