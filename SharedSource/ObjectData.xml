@@ -504,7 +504,6 @@
   <statuseffect>
     <name>Rapid Manouvers</name>
 
-
       <consequences range="1">
         <values act ="1[set]" move="5[set]" moveRange="-3"/>
       </consequences>

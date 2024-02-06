@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -67,27 +66,11 @@ public static partial class NetworkingManager
 		};
 		client.Disconnected += (a, b) =>
 		{
-			if (b.Reason == DisconnectReason.TimedOut)
+	
+			UI.OptionMessage("Lost Connection: " + b.Reason, "Do you want to reconnect?", "no", (a, b) =>
 			{
-				UI.OptionMessage("Lost Connection: " + a, "Do you want to reconnect?", "no", (a, b) =>
-				{
-					Disconnect();
-					GameLayout.CleanUp();
-					if (MasterServerNetworking.IsConnected)
-					{
-						UI.SetUI(new LobbyBrowserLayout());
-					}
-					else
-					{
-						UI.SetUI(new MainMenuLayout());
-					}
-				}, "yes", (a, b) => { Reconnect(); });
-				
-			}
-			else
-			{
-				
 				Disconnect();
+				GameLayout.CleanUp();
 				if (MasterServerNetworking.IsConnected)
 				{
 					UI.SetUI(new LobbyBrowserLayout());
@@ -96,8 +79,8 @@ public static partial class NetworkingManager
 				{
 					UI.SetUI(new MainMenuLayout());
 				}
-				UI.ShowMessage("Connection Lost", b.Reason.ToString());
-			}
+			}, "yes", (a, b) => { Reconnect(); });
+
 		};
 		client.MessageReceived += (a, b) =>
 		{
@@ -124,15 +107,13 @@ public static partial class NetworkingManager
 	{
 		client?.Disconnect();
 		WorldManager.Instance.WipeGrid();
-		GameManager.intated = false;
-	
 		GameManager.ResetGame();
 	}
 
 	public static void UploadMap(string path)
 	{
 		//var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapUpload);
-	//	msg.Add(WorldManager.MapData.FromJSON(File.ReadAllText(path)));
+		//	msg.Add(WorldManager.MapData.FromJSON(File.ReadAllText(path)));
 		////client?.Send(msg);
 	}
 

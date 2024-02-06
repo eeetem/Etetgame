@@ -504,19 +504,29 @@ public static partial class NetworkingManager
 
 	public static void SendSequence(SequenceAction action, bool force = false)
 	{
-		SendSequence(new List<SequenceAction>(){action},force);
+		SendSequence(new List<SequenceAction>(){action.Clone()},force);
 	}
 
 	public static void SendSequence(IEnumerable<SequenceAction> actions)
 	{
-		SendSequence(actions.ToList());
+		
+		var clonedActions = new List<SequenceAction>(actions.Count());
+		foreach (var a in actions)
+		{
+			clonedActions.Add(a.Clone());
+		}
+		SendSequence(clonedActions);
 	}
 
-	public static void SendSequence(List<SequenceAction> actions, bool force = false)
+	private static void SendSequence(List<SequenceAction> actions, bool force = false)
 	{
-		actions = new List<SequenceAction>(actions);
+		var originalList = new List<SequenceAction>(actions);
 		actions.RemoveAll(x => !x.ShouldDo());
-
+		foreach (var a in originalList)
+		{
+			if(actions.Contains(a)) continue;
+			a.Return();//release actions that are not being sent
+		}
 		int chunkNumber = 25;
 		//for (int i = 0; i < Math.Min(actions.Count,chunkNumber); i++)
 		//{
@@ -539,8 +549,6 @@ public static partial class NetworkingManager
 
 		lock (UpdateLock)
 		{
-			
-            
 			if (force)
 			{
 				var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
@@ -556,36 +564,35 @@ public static partial class NetworkingManager
 			}
 			else
 			{
-				var tempActList = new List<SequenceAction>(actions);
+				var tempActList = new List<SequenceAction>(actions.Count);
+				actions.ForEach(x => tempActList.Add(x.Clone()));
 				tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(true));
 				EnqueueSendSequnceToPlayer(tempActList, true);
                     
-				tempActList = new List<SequenceAction>(actions);
+				tempActList = new List<SequenceAction>(actions.Count);
+				actions.ForEach(x => tempActList.Add(x.Clone()));
 				tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(false));
 				EnqueueSendSequnceToPlayer(new List<SequenceAction>(tempActList), false);
                    
 			}
 
 		}
-		actions.ForEach(x=>x.ReleaseIfShould());
+		actions.ForEach(x=>x.Return());
 
 	}
 	public static void EnqueueSendSequnceToPlayer(List<SequenceAction> actions, bool player1)
 	{
 		if (actions.Count == 0) return;
 		var p =GameManager.GetPlayer(player1);
-		List<SequenceAction> filteredActions = new List<SequenceAction>();
-		actions.ForEach(x=>filteredActions.Add(x.FilterForPlayer(player1)));
-		p.SequenceQueue.Enqueue(filteredActions);
+		p.SequenceQueue.Enqueue(actions);
 	}
 	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
 	{
 		if (actions.Count == 0) return;
         
 		var p =GameManager.GetPlayer(player1);
-        
-		List<SequenceAction> filteredActions = new List<SequenceAction>();
-		actions.ForEach(x=>filteredActions.Add(x.FilterForPlayer(player1)));
+ 
+		actions.ForEach(x=>x.FilterForPlayer(player1));
         
 		Log.Message("NETWORKING","Sending sequence to player: "+player1);
   
@@ -600,11 +607,13 @@ public static partial class NetworkingManager
 			{
 				msg.Add((ushort)ReplaySequenceTarget.Player2);
 			}
-			msg.Add(filteredActions.Count);
-			foreach (var a in filteredActions)
+			msg.Add(actions.Count);
+			foreach (var a in actions)
 			{
+				if (!a.Active) throw new Exception("sending inactive sequence");
 				msg.Add((int) a.GetSequenceType());
 				msg.AddSerializable(a);
+				a.Return();
 			}
 
 			if (player1 && GameManager.Player1 != null && GameManager.Player1.Connection != null)
@@ -623,7 +632,7 @@ public static partial class NetworkingManager
 			}
 			msg.Release();
 		}
-		filteredActions.ForEach(x=>x.ReleaseIfShould());
+	
 	}
 
 	public static void SendEndTurn()

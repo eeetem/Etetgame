@@ -79,17 +79,16 @@ public class UnitMove : UnitSequenceAction
     }
 
 
-    protected override SequenceAction FilterForPlayerInternal(bool player1)
+    public override void FilterForPlayer(bool player1)
     { 
         //Log.Message("UNITS","filtering for player: "+player1+" "+Actor.WorldObject.ID);
         if (Actor.IsPlayer1Team != player1)
         {
-            //Log.Message("UNITS","performing filter");
-            var ret = Make(Requirements.ActorID, new List<Vector2Int>(Path));
+
             List<Vector2Int> newPath = new List<Vector2Int>();
             bool justVisible = ((WorldTile)Actor.WorldObject.TileLocation).IsVisible(team1: player1);
 
-            foreach (var p in ret.Path)
+            foreach (var p in Path)
             {
                 if (WorldManager.Instance.GetTileAtGrid(p).IsVisible(team1: player1))
                 {
@@ -101,17 +100,15 @@ public class UnitMove : UnitSequenceAction
                     justVisible = false;
                 }
             }
-            ret.Path = newPath;
-            if (ret.Path.Count > 0)
+            Path = newPath;
+            if (Path.Count > 0)
             {
                 //force an update if we're gonna see unit at any point
-                Networking.NetworkingManager.DetectUnit(Actor,ret.Path[0]);
+                Networking.NetworkingManager.DetectUnit(Actor,Path[0]);
             }
-
-            return ret;
         }
         //   Log.Message("UNITS","no filter needed");
-        return base.FilterForPlayerInternal(player1);
+  
        
     }
 #endif

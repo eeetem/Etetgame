@@ -101,7 +101,7 @@ namespace DefconNull.WorldObjects
 						foreach (var c in Type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
 							NetworkingManager.SendSequence(c);
-SequenceManager.AddSequence(c);
+							SequenceManager.AddSequence(c);
 						}
 					});
 					WorldManager.Instance.RunNextAfterFrames(t);

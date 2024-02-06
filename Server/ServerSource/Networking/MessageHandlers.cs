@@ -155,7 +155,7 @@ public static partial class NetworkingManager
 	{
 		if (!GameManager.Player2!.IsPracticeOpponent)
 		{
-			if (GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID)
+			if (GameManager.Player1 != null && GameManager.Player1.Connection?.Id == senderID)
 			{
 				if (!GameManager.IsPlayer1Turn)
 				{
@@ -163,7 +163,7 @@ public static partial class NetworkingManager
 					return;
 				}
 			}
-			else if (GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID)
+			else if (GameManager.Player2 != null && GameManager.Player2.Connection?.Id == senderID)
 			{
 				if (GameManager.IsPlayer1Turn)
 				{

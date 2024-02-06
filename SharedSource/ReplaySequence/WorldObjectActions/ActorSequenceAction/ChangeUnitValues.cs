@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
@@ -28,15 +29,7 @@ public class ChangeUnitValues : UnitSequenceAction
 	}
 	public override int GetHashCode()
 	{
-		unchecked
-		{
-			int hashCode = base.GetHashCode();
-			hashCode = (hashCode * 397) ^ ActChange.GetHashCode();
-			hashCode = (hashCode * 397) ^ MoveChange.GetHashCode();
-			hashCode = (hashCode * 397) ^ DetChange.GetHashCode();
-			hashCode = (hashCode * 397) ^ MoveRangeeffectChange.GetHashCode();
-			return hashCode;
-		}
+		return HashCode.Combine(base.GetHashCode(), ActChange, MoveChange, DetChange, MoveRangeeffectChange);
 	}
 
 	public static ChangeUnitValues Make(int actorID, int actChange = 0, int moveChange = 0, int detChange = 0, int moveRangeEffect = 0)
@@ -100,12 +93,19 @@ public class ChangeUnitValues : UnitSequenceAction
 	protected override void RunSequenceAction()
 	{
 		
-			
-			ActChange.Apply(ref Actor.ActionPoints);
-			MoveChange.Apply(ref Actor.MovePoints);
-			DetChange.Apply(ref Actor.Determination);
+		ActChange.Apply(ref Actor.ActionPoints);
+		MoveChange.Apply(ref Actor.MovePoints);
+		DetChange.Apply(ref Actor.Determination);
+		if(MoveRangeeffectChange.Value != 0)
+		{
 			MoveRangeeffectChange.Apply(ref Actor.MoveRangeEffect);
+		}
+		
+	}
 
+	public override string ToString()
+	{
+		return $"{base.ToString()}, {nameof(ActChange)}: {ActChange}, {nameof(MoveChange)}: {MoveChange}, {nameof(DetChange)}: {DetChange}, {nameof(MoveRangeeffectChange)}: {MoveRangeeffectChange}";
 	}
 
 	protected override void SerializeArgs(Message message)

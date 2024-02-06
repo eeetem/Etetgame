@@ -194,7 +194,7 @@ public abstract class SequenceAction :  IMessageSerializable
     {
         Task t = new Task(delegate
         {
-            if(!_active) throw new Exception("SequenceAction was returned to pool");
+            if(!Active) throw new Exception("SequenceAction was returned to pool");
             if(ran) throw new Exception("SequenceAction was run twice");
             ran = true;
             Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
@@ -231,14 +231,16 @@ public abstract class SequenceAction :  IMessageSerializable
     protected abstract void DeserializeArgs(Message message);
 
     public static readonly object poolLock = new object();
+    private int randomID;
     protected internal static SequenceAction GetAction(SequenceType type, Message? msg = null)
     {
         //	Console.WriteLine("Getting action of type "+type );
         var act = ActionPools[type].Get();
         if(act == null) throw new Exception("SequenceAction pool is returned null");
         if(msg != null) act.DeserializeArgs(msg);
-        act._active = true;
+        act.Active = true;
         act.ran = false;
+        act.randomID = Random.Shared.Next();
         return act;
 		
     }
@@ -292,16 +294,13 @@ public abstract class SequenceAction :  IMessageSerializable
         }
     }*/
 
-    private bool _active = true;
+    public bool Active { private set; get; } = false;
 
 
     public void Return()
     {
-        _active = false;
-#if SERVER
-        this.shouldReturn = false;
-#endif
-        
+        Active = false;
+
         ActionPools[GetSequenceType()].Return(this);
     }
 
@@ -313,28 +312,19 @@ public abstract class SequenceAction :  IMessageSerializable
 #endif
 #if SERVER
     public abstract bool ShouldSendToPlayerServerCheck(bool player1);
-    public SequenceAction FilterForPlayer(bool player1)
+    public virtual void FilterForPlayer(bool player1)
     {
-        var ret = FilterForPlayerInternal(player1);
-        if (!ret.Equals(this))
-        {
-            ret.shouldReturn = true;//we generated a new sequence actions so we should make a seperate case to return it becayse it wont be returned by the sequcne manager
-        }
-        return ret;
+
     }
-    protected virtual SequenceAction FilterForPlayerInternal(bool player1)
-    {
-        return this;
-    }
-    bool shouldReturn = false;
-    public void ReleaseIfShould()
-    {
-        if (shouldReturn)
-        {
-            Return();
-        }
-    }
+    
 #endif
 
 
+    public SequenceAction Clone()
+    {
+        var msg = Message.Create();
+        Serialize(msg);
+        return GetAction(this.GetSequenceType(), msg);
+        
+    }
 }

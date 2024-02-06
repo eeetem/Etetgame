@@ -94,6 +94,10 @@ public static partial class GameManager
 
 	public static void ResetGame()
 	{
+		if (intated)
+		{
+			Console.WriteLine("Resetting Game");
+		}
 		intated = false;
 		spectating = false;
 		WorldManager.Instance.WipeGrid();

@@ -8,6 +8,11 @@ public struct ValueChange : IMessageSerializable
 	public bool Cap = false;
 	public int Value;
 
+	public override string ToString()
+	{
+		return $"{nameof(Set)}: {Set}, {nameof(Cap)}: {Cap}, {nameof(Value)}: {Value}";
+	}
+
 	public bool Equals(ValueChange other)
 	{
 		return Set == other.Set && Cap == other.Cap && Value == other.Value;
