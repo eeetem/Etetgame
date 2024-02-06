@@ -9,6 +9,7 @@ public class ClientInstance
 	public Connection? Connection { get; private set; }
 	public string Name;
 	public bool IsAI;
+	public int PseudoWorldID;
 	public List<SquadMember>?  SquadComp { get; private set; }
 	public bool IsPracticeOpponent { get; set; }
 	

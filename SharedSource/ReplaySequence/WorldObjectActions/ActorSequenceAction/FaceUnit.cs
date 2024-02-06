@@ -29,6 +29,7 @@ public class FaceUnit : UnitSequenceAction
 		}
 	}
 
+
 	public override string ToString()
 	{
 		return  "Face: "+ base.ToString()+ $"{nameof(Target)}: {Target}";

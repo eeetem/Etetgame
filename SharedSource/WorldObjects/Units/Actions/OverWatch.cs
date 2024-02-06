@@ -18,13 +18,13 @@ public class OverWatch : Action
 
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
 	//	var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 1);
 	//		queue.Enqueue(m);
 		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target!.Value,args.AbilityIndex));
-		return queue;
+		return new Queue<SequenceAction>[] {queue};
 	}
 #endif
 

@@ -60,7 +60,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 #if CLIENT
 	public override void Preview(SpriteBatch spriteBatch)
 	{
-
+		if(Actor == null) return;
 		Texture2D sprite = Actor.WorldObject.GetTexture();
 		spriteBatch.Draw(sprite, Actor.WorldObject.GetDrawTransform().Position, Color.Yellow * 0.8f);
 

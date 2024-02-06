@@ -132,7 +132,7 @@ public  partial class WorldManager
                     WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunTaskSynchronously();
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
                 }
-                else if (tileObject.GetHash() != data.Value.GetHash())
+                else if (tileObject.GetData().GetHash() != data.Value.GetHash())
                 {
                     Log.Message("WORLD MANAGER","desired location is has an object with a different hash remaking obj: " + data.Value.ID);
                     WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
@@ -169,6 +169,7 @@ public  partial class WorldManager
 
     public void MakeFovDirty()
     {
+        Log.Message("WORLD MANAGER","FOV made dirty");
         FovDirty = true;
     }
 
@@ -176,7 +177,7 @@ public  partial class WorldManager
     private void CalculateFov()
     {
         
-		
+        Log.Message("WORLD MANAGER","calculating FOV");
 				
 
         foreach (var tile in _gridData)
@@ -986,18 +987,16 @@ public  partial class WorldManager
 
     public void RunNextAfterFrames(Task t, int frames = 1)
     {
-        Task.Factory.StartNew(() =>
-        {
+
             lock (TaskSync)
             {
                 NextFrameTasks.Add(new Tuple<Task, int>(t, frames));
             }
-        });
     }
 
     public void Update(float gameTime)
     {
-		
+        List<Task> tasksToRun = new List<Task>();
         lock (TaskSync)
         {
             List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
@@ -1009,11 +1008,20 @@ public  partial class WorldManager
                 }
                 else
                 {
-                    task.Item1.RunTaskSynchronously();
+                   tasksToRun.Add(task.Item1);
                 }
             }
 
             NextFrameTasks = updatedList;
+        }
+
+        if (tasksToRun.Count > 0)
+        {
+            Log.Message("WORLD MANAGER","running next frame tasks: "+tasksToRun.Count);
+        }
+        foreach (var task in tasksToRun)
+        {
+            task.RunTaskSynchronously();
         }
 
 
@@ -1033,32 +1041,7 @@ public  partial class WorldManager
 		
 
     }
-
-    public void UpdateUnit(WorldObject.WorldObjectData data)
-    {
-        int id = data.ID;
-        var obj = WorldObjectManager.GetObject(id);
-        
-        if (data.UnitData!.Value.Team1 && !GameManager.T1Units.Contains(id))
-        {
-            GameManager.T1Units.Add(id);
-        }
-        else if(data.UnitData!.Value.Team1 && !GameManager.T2Units.Contains(id))
-        {
-            GameManager.T2Units.Add(id);
-        }
-        
-        
-
-        if (obj is null || obj.IsVisible())//if we can see the unit - dont update it as the sequence actions should do that
-        {
-            return;
-        }
-
-        Log.Message("WORLD MANAGER","updating unit " + id);
-        obj!.SetData(data);
-     
-    }
+    
 
 
     public MapData CurrentMap { get; set; }
@@ -1184,7 +1167,8 @@ public  partial class WorldManager
         {
             foreach (var tile in _gridData)
             {
-                hash += tile.GetHash();
+                
+                hash += tile.GetData().GetHash();
             }
 			
         }

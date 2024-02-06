@@ -12,30 +12,30 @@ namespace DefconNull.ReplaySequence.WorldObjectActions;
 
 public static partial class WorldObjectManager
 {
-    public class DeleteWorldObject : SequenceAction
-    {
-        public override SequenceType GetSequenceType()
-        {
-            return SequenceType.DeleteWorldObject;
-        }
+	public class DeleteWorldObject : SequenceAction
+	{
+		public override SequenceType GetSequenceType()
+		{
+			return SequenceType.DeleteWorldObject;
+		}
 
-        protected bool Equals(DeleteWorldObject other)
-        {
-            return id == other.id;
-        }
+		protected bool Equals(DeleteWorldObject other)
+		{
+			return id == other.id;
+		}
 
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((DeleteWorldObject) obj);
-        }
+		public override bool Equals(object? obj)
+		{
+			if (ReferenceEquals(null, obj)) return false;
+			if (ReferenceEquals(this, obj)) return true;
+			if (obj.GetType() != this.GetType()) return false;
+			return Equals((DeleteWorldObject) obj);
+		}
 
-        public override int GetHashCode()
-        {
-            return id;
-        }
+		public override int GetHashCode()
+		{
+			return id;
+		}
 #if SERVER
 		public override bool ShouldSendToPlayerServerCheck(bool player1)
 		{
@@ -45,75 +45,77 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-        public override BatchingMode Batching => BatchingMode.Sequential;
+		public override BatchingMode Batching => BatchingMode.Sequential;
 
-        private int id;
-        public static DeleteWorldObject Make(int id)
-        {
-            var t = GetAction(SequenceType.DeleteWorldObject) as DeleteWorldObject;
-            t!.id = id;
-            return t;
-        }
+		private int id;
+		public static DeleteWorldObject Make(int id)
+		{
+			var t = GetAction(SequenceType.DeleteWorldObject) as DeleteWorldObject;
+			t!.id = id;
+			return t;
+		}
 
-        public static DeleteWorldObject Make(WorldObject obj)
-        {
-            var t = GetAction(SequenceType.DeleteWorldObject) as DeleteWorldObject;
-            t!.id = obj.ID;
-            return t;
-        }
+		public static DeleteWorldObject Make(WorldObject obj)
+		{
+			var t = GetAction(SequenceType.DeleteWorldObject) as DeleteWorldObject;
+			t!.id = obj.ID;
+			return t;
+		}
 
-        protected override void RunSequenceAction()
-        {
-            Log.Message("WORLD OBJECT MANAGER","tryint to delete world object: " + id);
-            if (!WorldObjects.ContainsKey(id)) return;
+		protected override void RunSequenceAction()
+		{
+			Log.Message("WORLD OBJECT MANAGER","tryint to delete world object: " + id);
+			if (!WorldObjects.ContainsKey(id)) return;
 				
-            Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
+			Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
 
 				
-            WorldObject Obj = WorldObjects[id];
+			WorldObject Obj = WorldObjects[id];
 #if CLIENT
-            while (Obj.IsAnimating)
-            {
-                Thread.Sleep(50);//wait for animation finish this is quite bad tho
-            }
+			while (Obj.IsAnimating)
+			{
+				Thread.Sleep(50);//wait for animation finish this is quite bad tho
+			}
 #endif
-            GameManager.Forget(Obj);
+            
 
          
-                WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
-                tile.Remove(id);
+			
             
 				
-            lock (WoLock)
-            {
-                WorldObjects.Remove(id);
-            }
+			lock (WoLock)
+			{
+				GameManager.Forget(Obj);
+				WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
+				tile.Remove(id);
+				WorldObjects.Remove(id);
+			}
 				
-         //   if (id < NextId) this is bad becasue the server can use ids that clients are not aware of
-         //   {
-         //       NextId = id; //reuse IDs
-         //   }
-        }
+			//   if (id < NextId) this is bad becasue the server can use ids that clients are not aware of
+			//   {
+			//       NextId = id; //reuse IDs
+			//   }
+		}
 
 
 
-        protected override void SerializeArgs(Message message)
-        {
-            message.Add(id);
-        }
+		protected override void SerializeArgs(Message message)
+		{
+			message.Add(id);
+		}
 
-        protected override void DeserializeArgs(Message msg)
-        {
-            id = msg.GetInt();
-        }
+		protected override void DeserializeArgs(Message msg)
+		{
+			id = msg.GetInt();
+		}
 
-        public override string ToString()
-        {
-            var obj = GetObject(id);
-            if (obj is null) return $"Deleteing non existant Object: {nameof(id)}: {id}";
-            var tileLocationPosition = obj.TileLocation.Position;
-            return $"Delete Object: {nameof(id)}: {id} {obj.Type.Name} "+tileLocationPosition;
-        }
-    }
+		public override string ToString()
+		{
+			var obj = GetObject(id);
+			if (obj is null) return $"Deleteing non existant Object: {nameof(id)}: {id}";
+			var tileLocationPosition = obj.TileLocation.Position;
+			return $"Delete Object: {nameof(id)}: {id} {obj.Type.Name} "+tileLocationPosition;
+		}
+	}
 
 }

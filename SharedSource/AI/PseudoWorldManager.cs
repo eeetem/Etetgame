@@ -73,10 +73,15 @@ public static class PseudoWorldManager
 		}
 			
 	}
+
+	public static int CreatePseudoWorld()
+	{
+		return ReverseNextFreePseudoDimension();
+	}
 	public static int CreatePseudoWorldWithUnit(Unit realunit, Vector2Int tilePosition, out Unit pseudoUnit, int copyDimension = -1)
 	{
 
-		int dimension= GetNextFreePseudoDimension();
+		int dimension= ReverseNextFreePseudoDimension();
 		
 	
 		if (!PseudoWorldObjects.ContainsKey(dimension))
@@ -190,7 +195,7 @@ public static class PseudoWorldManager
 	}
 
 	public static readonly object PseudoGenLock = new object();
-	private static int GetNextFreePseudoDimension()
+	private static int ReverseNextFreePseudoDimension()
 	{
 		lock (PseudoGenLock)
 		{

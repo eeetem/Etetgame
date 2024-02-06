@@ -293,12 +293,13 @@ public static partial class GameManager
 	}
 
 #endif
-  
+    private static readonly object TeamLock = new object();
     public static List<Unit> GetTeamUnits(bool team1, int dimension = -1)
     {
+        
         List<int>ids = new List<int>();
 
-        ids = team1 ? T1Units : T2Units;
+        ids = team1 ? new List<int>(T1Units) : new List<int>(T2Units);
 
         List<Unit> units = new List<Unit>();
 		

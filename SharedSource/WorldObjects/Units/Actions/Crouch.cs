@@ -24,7 +24,7 @@ public class Crouch : Action
 	}
 #if SERVER
 
-public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
+public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -47,8 +47,8 @@ public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecution
 			queue.Enqueue(act);
 		
 		}
+		return new Queue<SequenceAction>[] {queue};
 		
-		return queue;
 	}
 
 #endif

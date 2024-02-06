@@ -318,12 +318,7 @@ public partial class WorldObject
 
 		return GetMinimumVisibility(true) <= vis;
 	}
-
-
-	public string GetHash()
-	{
-		return Type.Name + ID + Health;
-	}
+	
 
 
 	public void SetData(WorldObjectData data)

@@ -51,7 +51,7 @@ public class Move : Action
 
 	
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		int moveUse = 1;
@@ -114,7 +114,7 @@ public class Move : Action
 			}
 			
 		}
-		return queue;
+		return new Queue<SequenceAction>[] {queue};
 
 	}
 #endif
@@ -131,7 +131,6 @@ public class Move : Action
 	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
 		if (SequenceManager.SequenceRunning) return new List<SequenceAction>();
-	
 		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		
 

@@ -66,10 +66,7 @@ public static partial class GameManager
 		intated = true;
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
 		WorldManager.Instance.MakeFovDirty();
-		Task.Run(delegate
-		{
-			UI.SetUI(new GameLayout());
-		});
+
 		
 	}
 
@@ -150,6 +147,10 @@ public static partial class GameManager
 				break;
 			case GameState.Playing:
 				StartGame();
+				Task.Run(delegate
+				{
+					UI.SetUI(new GameLayout());
+				});
 				break;
 		}
 			
@@ -216,9 +217,7 @@ public static partial class GameManager
 			if (!RecivedUnitPositions.ContainsKey(u.WorldObject.ID))
 			{
 				Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
-				WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).GenerateTask().RunTaskSynchronously();
-				T1Units.Remove(u.WorldObject.ID);
-				T2Units.Remove(u.WorldObject.ID);
+				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID));
 			}
 		}
 		

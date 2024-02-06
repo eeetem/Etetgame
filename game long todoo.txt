@@ -5,7 +5,11 @@ server ui -> dont show custom map list on local server
 display shoot breakdown
 
 
-
+no turn after move?
+diagonal target issues
+destruction does not preserve flip
+heavy buff
+unit update after destruction
 
 UI  enemy progress
 

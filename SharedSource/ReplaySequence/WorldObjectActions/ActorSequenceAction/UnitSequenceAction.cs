@@ -153,7 +153,7 @@ public abstract class UnitSequenceAction : SequenceAction
 			{
 				var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 				var obj = tile.UnitAtLocation;
-				if(obj == null) throw new Exception("Sequence Actor not found");
+				//if(obj == null) throw new Exception("Sequence Actor not found");
 				return obj;
 			}
 

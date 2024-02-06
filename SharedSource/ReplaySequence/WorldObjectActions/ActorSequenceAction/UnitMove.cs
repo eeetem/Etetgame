@@ -87,7 +87,8 @@ public class UnitMove : UnitSequenceAction
             //Log.Message("UNITS","performing filter");
             var ret = Make(Requirements.ActorID, new List<Vector2Int>(Path));
             List<Vector2Int> newPath = new List<Vector2Int>();
-            bool justVisible = false;
+            bool justVisible = ((WorldTile)Actor.WorldObject.TileLocation).IsVisible(team1: player1);
+
             foreach (var p in ret.Path)
             {
                 if (WorldManager.Instance.GetTileAtGrid(p).IsVisible(team1: player1))
@@ -109,7 +110,7 @@ public class UnitMove : UnitSequenceAction
 
             return ret;
         }
-     //   Log.Message("UNITS","no filter needed");
+        //   Log.Message("UNITS","no filter needed");
         return base.FilterForPlayerInternal(player1);
        
     }
@@ -124,6 +125,7 @@ public class UnitMove : UnitSequenceAction
     protected override void RunSequenceAction()
     {
  
+        Actor.canTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
 
         while (Path.Count >0)

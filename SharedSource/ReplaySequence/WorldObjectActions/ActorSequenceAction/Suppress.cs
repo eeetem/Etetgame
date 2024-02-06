@@ -86,7 +86,7 @@ public class Suppress : UnitSequenceAction
 	{
 		
 		if(DetDmg==0) return;
-		Console.WriteLine("Suppressing: "+Actor.WorldObject.ID + " by "+DetDmg);
+		Log.Message("UNITS","Suppressing: "+Actor.WorldObject.ID + " by "+DetDmg);
 #if CLIENT
 		
 		new PopUpText("\nSupression: " + DetDmg, Actor.WorldObject.TileLocation.Position, Color.Blue, 0.8f);

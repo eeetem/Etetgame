@@ -140,6 +140,7 @@ public static partial class GameManager
 			}
 
 		}
+		
 
 		
 		var t = new Task(delegate

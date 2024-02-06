@@ -3,7 +3,7 @@
         <OutputType>Exe</OutputType>
         <PublishReadyToRun>false</PublishReadyToRun>
         <TieredCompilation>false</TieredCompilation>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ApplicationIcon>Icon.ico</ApplicationIcon>
         <Nullable>enable</Nullable>
         <RootNamespace>DefconNull</RootNamespace>

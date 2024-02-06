@@ -13,7 +13,6 @@ public static class Program
 		currentDomain = AppDomain.CurrentDomain;
 		// Handler for unhandled exceptions.
 		currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
-
 		using (var game = new Game1())
 			game.Run();
 			
@@ -27,7 +26,7 @@ public static class Program
 
 		DateTime date = DateTime.Now;
 			
-		File.WriteAllText("/Logs/Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+		File.WriteAllText("Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
 	
 	}
 }

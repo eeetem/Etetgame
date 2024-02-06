@@ -328,7 +328,7 @@ public partial class WorldTile : IWorldTile
 				_surface = null;
 			}
 			if (value != null && (value.Type.Edge || !value.Type.Surface))
-					throw new Exception("attempted to set a nonsurface to surface");
+				throw new Exception("attempted to set a nonsurface to surface");
 			if (_surface != null)
 			{
 				Console.Write("overwritting surface");
@@ -462,6 +462,31 @@ public partial class WorldTile : IWorldTile
 
 			ObjectsAtLocation = message.GetSerializables<WorldObject.WorldObjectData>().ToList();
 		}
+
+		public string GetHash()
+		{
+
+			string hash = "";
+			if (NorthEdge.HasValue)
+			{
+				hash += NorthEdge.Value.GetHash();
+			}
+			if (WestEdge.HasValue)
+			{
+				hash += WestEdge.Value.GetHash();
+			}
+			if (Surface.HasValue)
+			{
+				hash += Surface.Value.GetHash();
+			}
+			foreach (var obj in ObjectsAtLocation)
+			{
+				hash += obj.GetHash();
+			}
+
+			return hash;
+			
+		}
 	}
 	public WorldTileData GetData(bool forceJustSpawned = false)
 	{
@@ -561,27 +586,6 @@ public partial class WorldTile : IWorldTile
 
 
 
-		public string GetHash()
-		{
-			string hash = "";
-			if (NorthEdge != null)
-			{
-				hash += NorthEdge.GetHash();
-			}
-			if (WestEdge != null)
-			{
-				hash += WestEdge.GetHash();
-			}
-			if (Surface != null)
-			{
-				hash += Surface.GetHash();
-			}
-			foreach (var obj in ObjectsAtLocation)
-			{
-				hash += obj.GetHash();
-			}
-
-			return hash;
-		}
+	
 	
 }

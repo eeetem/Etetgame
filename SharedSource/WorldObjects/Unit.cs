@@ -83,6 +83,7 @@ namespace DefconNull.WorldObjects
 			}
 			
 			Overwatch = data.Overwatch;
+			if(Overwatch.Item1 && Overwatch.Item2 == -1) throw new Exception("overwatch is active but no ability is selected");
 			foreach (var t in data.OverWatchedTiles)
 			{
 				overWatchedTiles.Add(t);
@@ -99,8 +100,8 @@ namespace DefconNull.WorldObjects
 					{
 						foreach (var c in Type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
-							SequenceManager.AddSequence(c);
 							NetworkingManager.SendSequence(c);
+SequenceManager.AddSequence(c);
 						}
 					});
 					WorldManager.Instance.RunNextAfterFrames(t);
@@ -280,8 +281,8 @@ namespace DefconNull.WorldObjects
 			{
 #if CLIENT
 				new PopUpText(result.Item2, WorldObject.TileLocation.Position,Color.White);
-if(args.Target.HasValue){
-				new PopUpText(result.Item2, args.Target.Value,Color.White);
+				if(args.Target.HasValue){
+					new PopUpText(result.Item2, args.Target.Value,Color.White);
 				}
 #else
 				Console.WriteLine("tried to do action but failed: " + result.Item2);
@@ -306,14 +307,14 @@ if(args.Target.HasValue){
 
 			
 #if CLIENT
-if(!Paniced){
-			if (WorldObject.IsVisible())
-			{
-				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
-				t.scale = 2;
-			}
+			if(!Paniced){
+				if (WorldObject.IsVisible())
+				{
+					var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
+					t.scale = 2;
+				}
 
-}
+			}
 #endif
 
 			Crouching = true;
@@ -587,10 +588,6 @@ if(!Paniced){
 		}
 
 
-		public string GetHash()
-		{
-			return WorldObject.GetHash() + ActionPoints + MovePoints + Determination + MoveRangeEffect + Overwatch + overWatchedTiles + StatusEffects + VisibleTiles + Type + canTurn + Crouching + IsPlayer1Team + Paniced;
-		}
 
 		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)
 		{
@@ -631,26 +628,27 @@ if(!Paniced){
 			var oldtile = this.WorldObject.TileLocation;
 			oldtile.UnitAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
-			this.WorldObject.TileLocation = newTile;
-			newTile.UnitAtLocation = this;
 
 #if SERVER
-		Log.Message("UNITS","doing checks for player-side-movement "+WorldObject.TileLocation.Position+" to "+vector2Int);
 		if(newTile.IsVisible(team1: true)||((WorldTile)oldtile).IsVisible(team1: true))
 		{
 			Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
 			if (GameManager.Player1UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player1UnitPositions.Remove(this.WorldObject.ID);
 	
-			GameManager.Player1UnitPositions[this.WorldObject.ID] = (newTile.Position,newTile.UnitAtLocation!.WorldObject.GetData());
+			GameManager.Player1UnitPositions[this.WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 		}
 		if(newTile.IsVisible(team1: false)||((WorldTile)oldtile).IsVisible(team1: false))
 		{
 			Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
 			if (!GameManager.Player2UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player2UnitPositions.Remove(this.WorldObject.ID);
 			
-			GameManager.Player2UnitPositions[this.WorldObject.ID] = (newTile.Position,newTile.UnitAtLocation!.WorldObject.GetData());
+			GameManager.Player2UnitPositions[this.WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 		}
 #endif
+			
+			
+			this.WorldObject.TileLocation = newTile;
+			newTile.UnitAtLocation = this;
 		}
 
 		

@@ -299,8 +299,7 @@ public class Shootable : Effect
 		var retrunList = new List<SequenceAction>();
 		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
-		var turnact = FaceUnit.Make(actor.WorldObject.ID, target.TileLocation.Position);
-		retrunList.Add(turnact);
+
 
 		int rangeBlock = preDropOffDmg - p.Dmg;
 		int coverBlock = 0;

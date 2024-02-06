@@ -71,8 +71,18 @@ public abstract class Action
 			{
 				
 				var actions = GetConsiquenes(actor,args);
-				NetworkingManager.SendSequence(actions);
-				SequenceManager.AddSequence(actions);
+				int i = 1;
+				foreach (var queue in actions)
+				{
+					Task t = new Task(delegate
+					{
+						NetworkingManager.SendSequence(queue);//staggered execution becuase some actions need to wait for FOV update
+						SequenceManager.AddSequence(queue);
+					});
+					WorldManager.Instance.RunNextAfterFrames(t,i);
+					i += 4;
+				}
+				
 				
 			}
 			catch (Exception e)
@@ -85,7 +95,7 @@ public abstract class Action
 		
 		
 	}
-	public abstract Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args);
+	public abstract Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args);
 #endif
 	
 	public class GameActionPacket : IMessageSerializable

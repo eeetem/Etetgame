@@ -44,6 +44,7 @@ public partial class WorldTile : IWorldTile
 	}
 	public void CalcWatchLevel()
 	{
+		if(Surface == null) return;
 		friendlyWatching = false;
 		enemyWatching = false;
 		foreach (var watcher in Watchers)

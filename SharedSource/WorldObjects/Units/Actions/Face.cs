@@ -35,12 +35,12 @@ public class Face : Action
     }
 
 #if SERVER
-	public override Queue<SequenceAction> GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		var queue = new Queue<SequenceAction>();
 		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value));
-		return queue;
+		return new Queue<SequenceAction>[] {queue};
 
 	}
 #endif
