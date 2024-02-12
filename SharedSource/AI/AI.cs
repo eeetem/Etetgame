@@ -40,8 +40,9 @@ public class AI
 					do
 					{
 						Thread.Sleep(100);
+						Log.Message("AI","Waiting for sequence to end");
 					} while (SequenceManager.SequenceRunning);
-
+					Log.Message("AI","Waiting for seqeunce ended");
 					//  if(GameManager.IsPlayer1Turn) break;
 					List<Tuple<AIAction, Unit, int>> actions = new();
 
@@ -49,6 +50,7 @@ public class AI
 					var currentUnit = squad[currentUnitIndex];
 					if (currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 					passiveMode = !CanSeeAnyEnemy(currentUnit.IsPlayer1Team);
+					
 					AIAction a = new Attack();
 					Log.Message("AI","Calculating Attack Action...");
 					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
@@ -61,7 +63,7 @@ public class AI
 					int i = 0;
 					actions.ForEach((x) =>
 					{
-						Log.Message("AI",i + "ability scored: " + x.Item3);
+						Log.Message("AI",i + " ability scored: " + x.Item3);
 						i++;
 					});
 					actions.RemoveAll((x) => x.Item3 <= 0);
@@ -86,7 +88,7 @@ public class AI
 							actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
 							actions.ForEach((x) =>
 							{
-								Log.Message("AI",i + "ability scored: " + x.Item3);
+								Log.Message("AI",i + " ability scored: " + x.Item3);
 								i++;
 							});
 							actions.RemoveAll((x) => x.Item3 <= 0);
@@ -121,9 +123,10 @@ public class AI
 						Thread.Sleep(1000);
 					};		
 #endif
+					Log.Message("AI","Doing AI action"+actionToDo.Item1+" with score: "+actionToDo.Item3 + " by " + actionToDo.Item2.WorldObject.ID);
+
 					actionToDo.Item1.Execute(actionToDo.Item2);
-					Log.Message("AI","Doing AI action"+actionToDo.Item1+" with score: "+actionToDo.Item3 + " by " + actionToDo.Item2);
-			          
+
 				}
 
 		

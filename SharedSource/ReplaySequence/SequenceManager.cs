@@ -13,171 +13,209 @@ namespace DefconNull.ReplaySequence;
 
 public class SequenceManager
 {
-    private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
-    public static bool SequenceRunning => SequenceQueue.Count > 0 || CurrentSequenceTasks.Count > 0;
-    private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
-    public static bool SequenceRunningRightNow;
+	private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
+	public static bool SequenceRunning => SequenceQueue.Count > 0 || CurrentSequenceTasks.Count > 0 || nextFrameTasks.Count > 0;
+	private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
+	public static bool SequenceRunningRightNow;
 	
-    private static object lockObj = new object();
-    public static void Update()
-    {
-				
-        SequenceRunningRightNow = true;
-        lock (lockObj)
-        {
-            if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
-            {
+	private static object lockObj = new object();
+    
+    
+	private static List<Tuple<Task,int>> nextFrameTasks = new List<Tuple<Task,int>>();
+	public static readonly object TaskSync = new object();
+	public static void RunNextAfterFrames(Task t, int frames = 1)
+	{
+		lock (TaskSync)
+		{
+			nextFrameTasks.Add(new Tuple<Task, int>(t, frames));
+		}
+	}
+	public static void Update()
+	{
+		List<Task> tasksToRun = new List<Task>();
+		lock (TaskSync)
+		{
+			List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
+			foreach (var task in nextFrameTasks)
+			{
+				if (task.Item2 > 1)
+				{
+					updatedList.Add(new Tuple<Task, int>(task.Item1, task.Item2 - 1));
+				}
+				else
+				{
+					tasksToRun.Add(task.Item1);
+				}
+			}
+
+			nextFrameTasks = updatedList;
+		}
+
+		if (tasksToRun.Count > 0)
+		{
+			Log.Message("WORLD MANAGER","running next frame tasks: "+tasksToRun.Count);
+		}
+		foreach (var task in tasksToRun)
+		{
+			task.RunTaskSynchronously();
+		}
+		
+		SequenceRunningRightNow = true;
+		lock (lockObj)
+		{
+			if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
+			{
 #if CLIENT
-                foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
-                {
-                    WorldManager.Instance.LoadWorldTile(tile.Item2);
-                }
-                NetworkingManager.RecievedTiles.Clear();
+				foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
+				{
+					WorldManager.Instance.LoadWorldTile(tile.Item2);
+				}
+				NetworkingManager.RecievedTiles.Clear();
 #endif
-                if (SequenceQueue.Count > 0)
-                {
-                    var act = SequenceQueue.Dequeue();
-                    while (!act.ShouldDo())
-                    {
-                        act.Return();
-                        if (SequenceQueue.Count == 0)
-                        {
-                            SequenceRunningRightNow = false;
-                            return;
-                        }
+				if (SequenceQueue.Count > 0)
+				{
+					var act = SequenceQueue.Dequeue();
+					while (!act.ShouldDo())
+					{
+						act.Return();
+						if (SequenceQueue.Count == 0)
+						{
+							SequenceRunningRightNow = false;
+							return;
+						}
 
-                        act = SequenceQueue.Dequeue();
-                    }
+						act = SequenceQueue.Dequeue();
+					}
 
-                    Log.Message("SEQUENCE MANAGER","runnin sequnce task: " + act.GetSequenceType());
-                    CurrentSequenceTasks.Add(act.GenerateTask());
-                    CurrentSequenceTasks.Last().Start();
+					Log.Message("SEQUENCE MANAGER","runnin sequnce task: " + act.GetSequenceType());
+					CurrentSequenceTasks.Add(act.GenerateTask());
+					CurrentSequenceTasks.Last().Start();
 
-                    int i = 0;
-                    //do sequential tasks in queue
-                    while (true)
-                    {
-                        if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
-                        {
-                            break;
-                        }
-                        var peeked = SequenceQueue.Peek();
-                        if (peeked.Batching != SequenceAction.BatchingMode.Sequential || !peeked.ShouldDo())
-                        {
-                            break;
-                        }
+					int i = 0;
+					//do sequential tasks in queue
+					while (true)
+					{
+						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
+						{
+							break;
+						}
+						var peeked = SequenceQueue.Peek();
+						if (peeked.Batching != SequenceAction.BatchingMode.Sequential || !peeked.ShouldDo())
+						{
+							break;
+						}
 
-                        CurrentSequenceTasks.Last().Wait(300);
-                        if(CurrentSequenceTasks.Last().Status != TaskStatus.RanToCompletion)
-                        {
-                            break;//most likely cause by the task waiting for UI Thread
-                        }
+						CurrentSequenceTasks.Last().Wait(300);
+						if(CurrentSequenceTasks.Last().Status != TaskStatus.RanToCompletion)
+						{
+							break;//most likely cause by the task waiting for UI Thread
+						}
 						
-                        Log.Message("SEQUENCE MANAGER",$"sequnceing a  task: {i}{peeked.GetSequenceType()}");
-                        i++;
-                        StartNextTask();
-                    }
-                    //then do parralel tasks in queue
-                    //batch tile updates and other things
+						Log.Message("SEQUENCE MANAGER",$"sequnceing a  task: {i}{peeked.GetSequenceType()}");
+						i++;
+						StartNextTask();
+					}
+					//then do parralel tasks in queue
+					//batch tile updates and other things
 					
-                    while (true)
-                    {
-                        if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
-                        {
-                            break;
-                        }
+					while (true)
+					{
+						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
+						{
+							break;
+						}
 
-                        var peeked = SequenceQueue.Peek();
-                        bool shouldBatch = false;
-                        switch (peeked.Batching)
-                        {
-                            case SequenceAction.BatchingMode.Always:
-                                shouldBatch = true;
-                                break;
-                            case SequenceAction.BatchingMode.OnlySameType:
-                                shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
-                                break;
-                            case SequenceAction.BatchingMode.Never:
-                            case SequenceAction.BatchingMode.Sequential:
-                                shouldBatch = false;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        if(!shouldBatch || !peeked.ShouldDo()) break;
+						var peeked = SequenceQueue.Peek();
+						bool shouldBatch = false;
+						switch (peeked.Batching)
+						{
+							case SequenceAction.BatchingMode.Always:
+								shouldBatch = true;
+								break;
+							case SequenceAction.BatchingMode.OnlySameType:
+								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
+								break;
+							case SequenceAction.BatchingMode.Never:
+							case SequenceAction.BatchingMode.Sequential:
+								shouldBatch = false;
+								break;
+							default:
+								throw new ArgumentOutOfRangeException();
+						}
+						if(!shouldBatch || !peeked.ShouldDo()) break;
 						
-                        Log.Message("SEQUENCE MANAGER",$"batching sequnce task: {i}{peeked.GetSequenceType()}");
-                        i++;
-                        StartNextTask();
+						Log.Message("SEQUENCE MANAGER",$"batching sequnce task: {i}{peeked.GetSequenceType()}");
+						i++;
+						StartNextTask();
 
-                    }
+					}
 
-                }
-            }
-            else if (CurrentSequenceTasks.TrueForAll((t) => (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun)))
-            {
-                foreach (var t in CurrentSequenceTasks)
-                {
-                    if (t.Status == TaskStatus.RanToCompletion)
-                    {
-                        //	Log.Message("SEQUENCE MANAGER","sequence task finished");
-                    }
-                    else if (t.Status == TaskStatus.Faulted)
-                    {
-                        Log.Message("SEQUENCE MANAGER","Sequence task failed");
-                        Log.Message("SEQUENCE MANAGER",t.Status.ToString());
-                        throw t.Exception!;
-                    }
-                    else
-                    {
-                        Log.Message("SEQUENCE MANAGER","undefined sequence task state: "+t.Status);
-                        throw new Exception("undefined sequence task state: "+t.Status);
-                    }
+				}
+			}
+			else if (CurrentSequenceTasks.TrueForAll((t) => (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun)))
+			{
+				foreach (var t in CurrentSequenceTasks)
+				{
+					if (t.Status == TaskStatus.RanToCompletion)
+					{
+						//	Log.Message("SEQUENCE MANAGER","sequence task finished");
+					}
+					else if (t.Status == TaskStatus.Faulted)
+					{
+						Log.Message("SEQUENCE MANAGER","Sequence task failed");
+						Log.Message("SEQUENCE MANAGER",t.Status.ToString());
+						throw t.Exception!;
+					}
+					else
+					{
+						Log.Message("SEQUENCE MANAGER","undefined sequence task state: "+t.Status);
+						throw new Exception("undefined sequence task state: "+t.Status);
+					}
 
-                }
+				}
 
-                CurrentSequenceTasks.Clear();
-                SequenceRunningRightNow = false;
+				CurrentSequenceTasks.Clear();
+				SequenceRunningRightNow = false;
 
-                if(SequenceQueue.Count == 0)
-                {
+				if(SequenceQueue.Count == 0)
+				{
 #if CLIENT
-                    GameLayout.ReMakeMovePreview();
+					GameLayout.ReMakeMovePreview();
 #endif
-                    WorldManager.Instance.MakeFovDirty();
-                }
+					WorldManager.Instance.MakeFovDirty();
+				}
 
-            }
-        }
+			}
+		}
 
-        SequenceRunningRightNow = false;
-    }
+		SequenceRunningRightNow = false;
+	}
 
-    private static void StartNextTask()
-    {
-        var act = SequenceQueue.Dequeue();
-        CurrentSequenceTasks.Add(act.GenerateTask());
-        CurrentSequenceTasks.Last().Start();
-    }
+	private static void StartNextTask()
+	{
+		var act = SequenceQueue.Dequeue();
+		CurrentSequenceTasks.Add(act.GenerateTask());
+		CurrentSequenceTasks.Last().Start();
+	}
 
-    public static void AddSequence(SequenceAction action)
-    {
-        if(action==null) throw new ArgumentNullException(nameof(action));
+	public static void AddSequence(SequenceAction action)
+	{
+		if(action==null) throw new ArgumentNullException(nameof(action));
 
-        lock (lockObj)
-        {
-            Log.Message("SEQUENCE MANAGER","adding sequnce task: " + action);
-            SequenceQueue.Enqueue(action);
-        }
+		lock (lockObj)
+		{
+			Log.Message("SEQUENCE MANAGER","adding sequnce task: " + action);
+			SequenceQueue.Enqueue(action);
+		}
 	
-    }
+	}
 
-    public static void AddSequence(IEnumerable<SequenceAction> actions)
-    {
-        foreach (var a in actions)
-        {
-            AddSequence(a);
-        }
-    }
+	public static void AddSequence(IEnumerable<SequenceAction> actions)
+	{
+		foreach (var a in actions)
+		{
+			AddSequence(a);
+		}
+	}
 
 }

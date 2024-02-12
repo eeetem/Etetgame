@@ -340,30 +340,35 @@ public abstract class AIAction
 
 	public static int GetTileMovementScore((Vector2Int,PathFinding.PathFindResult) tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
-//#if DEBUG && !CLIENT
-//		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
-//		{
-//
-//			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition.Item1);
-//
-//			int calcMovesToUse = 0;
-//			int moveRange = realUnit.GetMoveRange();
-//			while (result.Cost > moveRange*calcMovesToUse)
-//			{
-//				calcMovesToUse++;
-//			}
-//			
-//			if (calcMovesToUse!=movesToUse)
-//			{
-//				Console.WriteLine("WARNING: moves to use not equal to cost of path");
-//			}
-//		}
-//#endif
+#if DEBUG && !CLIENT
+		if (crouch == realUnit.Crouching)//crouch moves are a bit more compilcated, skip this check
+		{
+
+			var result = PathFinding.GetPath(realUnit.WorldObject.TileLocation.Position, tilePosition.Item1);
+
+			int calcMovesToUse = 0;
+			int moveRange = realUnit.GetMoveRange();
+			while (result.Cost > moveRange*calcMovesToUse)
+			{
+				calcMovesToUse++;
+			}
+			
+			if (calcMovesToUse!=movesToUse)
+			{
+				Console.WriteLine("WARNING: moves to use not equal to cost of path");
+			}
+		}
+#endif
 		var u = ChangeUnitValues.Make(-1,0,-movesToUse);
 		return GetTileMovementScore(tilePosition.Item1, u,crouch, realUnit, out details);
 	}
 
-	
+	public static int GetTileMovementScore(Vector2Int tilePosition, int movesToUse, bool crouch, Unit realUnit, out MoveCalcualtion details)
+	{
+		var u = ChangeUnitValues.Make(-1,0,-movesToUse);
+		return GetTileMovementScore(tilePosition, u,crouch, realUnit, out details);
+	}
+
 	public static int GetTileMovementScore(Vector2Int tilePosition, ChangeUnitValues? valueMod,  bool crouch, Unit realUnit, out MoveCalcualtion details)
 	{
 		if(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation != null && !Equals(WorldManager.Instance.GetTileAtGrid(tilePosition).UnitAtLocation, realUnit))
@@ -571,7 +576,7 @@ public abstract class AIAction
 			}
 			else
 			{
-				shouldAttack = attacker.VisibleTiles.ContainsKey(enemy.WorldObject.TileLocation.Position) && attacker.VisibleTiles[enemy.WorldObject.TileLocation.Position] >= enemy.WorldObject.GetMinimumVisibility();
+				shouldAttack = WorldManager.Instance.VisibilityCast(attacker.WorldObject.TileLocation.Position, enemy.WorldObject.TileLocation.Position, 50, attacker.Crouching) >= enemy.WorldObject.GetMinimumVisibility();
 			}
 
 			if (shouldAttack)
@@ -631,7 +636,12 @@ public abstract class AIAction
 		public int TotalChangeScore=0;
 		public int AbilityIndex;
 		public WorldObject Target;
-		
+
+		public override string ToString()
+		{
+			return $"{nameof(Dmg)}: {Dmg}, {nameof(Supression)}: {Supression}, {nameof(TotalChangeScore)}: {TotalChangeScore}, {nameof(AbilityIndex)}: {AbilityIndex}, {nameof(Target)}: {Target}";
+		}
+
 		public AbilityUse()
 		{
 		}

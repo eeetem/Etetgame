@@ -169,7 +169,7 @@ public static partial class GameManager
         Log.Message("GAME MANAGER","turn: "+IsPlayer1Turn);
         NetworkingManager.SendEndTurn();
 
-        if (Player2.IsAI && !IsPlayer1Turn)// ai match
+        if (Player2.IsAI)// && !IsPlayer1Turn)// ai match
         {
             FinishTurnWithAI();
         }

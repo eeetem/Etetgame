@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DefconNull.WorldObjects;
+using Riptide;
 
 namespace DefconNull.AI;
 
@@ -25,6 +26,7 @@ public class Attack : AIAction
 		if(base.GetScore(unit) <= 0) return -100;
 		//only what you see
 		var atk = GetBestPossibleAbility(unit,true,false,false);
+		Log.Message("AI","calcualted attack score: "+(atk.GetTotalValue()*2) + " for unit: "+unit.WorldObject.ID + " "+atk);
 		return atk.GetTotalValue()*2;
 	}	
 	

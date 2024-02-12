@@ -330,7 +330,7 @@
 
 
 
-  <unit health="16" z="0.1"  moveRange = "2" moves="2" actions="2"  determination="5">
+  <unit health="16" z="0.1"  moveRange = "2" moves="3" actions="2"  determination="5">
     <name>Heavy</name>
 
     <action moveCost="1" actCost="1" overwatch="3">
@@ -487,13 +487,12 @@
     <name>Repositioning</name>
     
       <consequences range="1">
-        <values act ="0" move="3"/>
+        <values act ="0" move="5"/>
       </consequences>
   </statuseffect>
 
   <statuseffect>
     <name>Holstered</name>
-
 
       <consequences range="1">
         <values act ="[set]0" move="0"/>

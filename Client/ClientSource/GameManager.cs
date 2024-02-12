@@ -221,7 +221,7 @@ public static partial class GameManager
 			if (!RecivedUnitPositions.ContainsKey(u.WorldObject.ID))
 			{
 				Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
-				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID));
+				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID));//queue up deletion
 			}
 		}
 		

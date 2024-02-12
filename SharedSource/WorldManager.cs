@@ -980,58 +980,15 @@ public  partial class WorldManager
     }
 	
     public static readonly object createSync = new object();
-    public static readonly object TaskSync = new object();
 
-		
-    private static List<Tuple<Task,int>> NextFrameTasks = new List<Tuple<Task,int>>();
-
-    public void RunNextAfterFrames(Task t, int frames = 1)
-    {
-
-            lock (TaskSync)
-            {
-                NextFrameTasks.Add(new Tuple<Task, int>(t, frames));
-            }
-    }
 
     public void Update(float gameTime)
     {
-        List<Task> tasksToRun = new List<Task>();
-        lock (TaskSync)
-        {
-            List<Tuple<Task, int>> updatedList = new List<Tuple<Task, int>>();	
-            foreach (var task in NextFrameTasks)
-            {
-                if (task.Item2 > 1)
-                {
-                    updatedList.Add(new Tuple<Task, int>(task.Item1, task.Item2 - 1));
-                }
-                else
-                {
-                   tasksToRun.Add(task.Item1);
-                }
-            }
-
-            NextFrameTasks = updatedList;
-        }
-
-        if (tasksToRun.Count > 0)
-        {
-            Log.Message("WORLD MANAGER","running next frame tasks: "+tasksToRun.Count);
-        }
-        foreach (var task in tasksToRun)
-        {
-            task.RunTaskSynchronously();
-        }
-
-
         foreach (var tile in _gridData)
         {
             tile.Update(gameTime);
 					
         }
-
-
 
         if (FovDirty)
         {
@@ -1046,6 +1003,7 @@ public  partial class WorldManager
 
     public MapData CurrentMap { get; set; }
     public bool Maploading { get; set; }
+
 
     [Serializable]
     public class MapData

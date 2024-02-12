@@ -104,7 +104,7 @@ namespace DefconNull.WorldObjects
 							SequenceManager.AddSequence(c);
 						}
 					});
-					WorldManager.Instance.RunNextAfterFrames(t);
+					SequenceManager.RunNextAfterFrames(t);
 				}
 #endif
 				
@@ -285,12 +285,12 @@ namespace DefconNull.WorldObjects
 					new PopUpText(result.Item2, args.Target.Value,Color.White);
 				}
 #else
-				Console.WriteLine("tried to do action but failed: " + result.Item2);
+				Log.Message("UNITS","tried to do action but failed: " + result.Item2);
 #endif
 				return;
 			}
 			
-			Console.WriteLine("performing action " + a.Type);
+			Log.Message("UNITS","performing action " + a.Type);
 #if CLIENT
 			a.SendToServer(this,args);
 #elif SERVER
@@ -557,35 +557,7 @@ namespace DefconNull.WorldObjects
 		
 		public int Health => WorldObject.Health;
 		public ConcurrentDictionary<Vector2Int, Visibility> VisibleTiles = new ConcurrentDictionary<Vector2Int, Visibility>();
-	
-		public string GetVar(string var,string? param = null)
-		{
-			Console.WriteLine("getting value "+var+" with param "+param);
-			var type = GetType();
-			var field = type.GetField(var);
-			object? value = null;
-			if (field == null)
-			{
-				var property = type.GetProperty(var);
-				value = property?.GetValue(this);
-			}
-			else
-			{
-				value = field?.GetValue(this);
-			}
-
-			if (param == null)
-			{
-				Console.WriteLine("returning "+value);
-				return value.ToString();
-			}
-
-			var innerField = value.GetType().GetField(param);
-			var innerValue = innerField?.GetValue(value);
-			Console.WriteLine("returning "+innerValue);
-			return innerValue.ToString();
-
-		}
+		
 
 
 

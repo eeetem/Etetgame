@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
+using DefconNull.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
 
@@ -64,7 +65,7 @@ public class MasterServerNetworking
 					System.Threading.Thread.Sleep(1000);
 					UI.ShowMessage("Lost Connection To Master Server", b.Reason.ToString());
 				});
-				WorldManager.Instance.RunNextAfterFrames(t);
+				SequenceManager.RunNextAfterFrames(t);
 				
 			}
 		};

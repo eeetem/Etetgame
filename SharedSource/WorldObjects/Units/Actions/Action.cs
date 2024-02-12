@@ -79,7 +79,7 @@ public abstract class Action
 						NetworkingManager.SendSequence(queue);//staggered execution becuase some actions need to wait for FOV update
 						SequenceManager.AddSequence(queue);
 					});
-					WorldManager.Instance.RunNextAfterFrames(t,i);
+					SequenceManager.RunNextAfterFrames(t,i);
 					i += 4;
 				}
 				

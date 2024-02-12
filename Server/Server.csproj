@@ -215,9 +215,6 @@
       <Compile Include="..\SharedSource\WorldObjects\Prefabs\ValueChange.cs">
         <Link>SharedSource\WorldObjects\Prefabs\ValueChange.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldObjects\Prefabs\VariableValue.cs">
-        <Link>SharedSource\WorldObjects\Prefabs\VariableValue.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\WorldObjects\Prefabs\WorldObjectType.cs">
         <Link>SharedSource\WorldObjects\Prefabs\WorldObjectType.cs</Link>
       </Compile>

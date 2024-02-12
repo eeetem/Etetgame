@@ -6,8 +6,7 @@ display shoot breakdown
 
 
 no turn after move?
-destruction does not preserve flip
-heavy buff
+
 unit update after destruction
 
 UI  enemy progress

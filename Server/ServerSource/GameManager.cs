@@ -169,7 +169,7 @@ public static partial class GameManager
 			
 
 		});
-		WorldManager.Instance.RunNextAfterFrames(t,5);//let units be created and sent before we swtich to playing
+		SequenceManager.RunNextAfterFrames(t,5);//let units be created and sent before we swtich to playing
 
 
 		
