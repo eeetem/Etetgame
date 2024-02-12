@@ -18,11 +18,13 @@ public abstract class AIAction
 {
 
 	public readonly AIActionType Type;
+	public readonly Unit Unit;
     
-	public AIAction(AIActionType? type)
+	public AIAction(AIActionType? type, Unit unit)
 	{
 		if(type==null) return;
 		Type = (AIActionType)type;
+		this.Unit = unit;
 	}
 
     
@@ -299,11 +301,11 @@ public abstract class AIAction
 
 
 
-	public abstract void Execute(Unit unit);
+	public abstract void Execute();
 
-	public virtual int GetScore(Unit unit)
+	public virtual int GetScore()
 	{
-		if (unit.Overwatch.Item1) return -1000;
+		if (Unit.Overwatch.Item1) return -1000;
 		return 1;
 	}
 
@@ -430,7 +432,7 @@ public abstract class AIAction
 			}
 			var p = PathFinding.GetPath(tilePosition, closestDesiredTile);
 			actualDistance = p.Cost;
-		//	Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
+			//	Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
 		}
 		
 		if(Math.Abs(actualDistance - (-1)) < 0.1f)
@@ -472,12 +474,9 @@ public abstract class AIAction
 		
 			if(damagePotential <= 0)
 			{
-				damagePotential = -100;//discourage damageless tiles, we do this instead of vission checks
-			
-				//if we cant do any damage this turn atleast priorities tiles where we will be able to damage next turn
-				bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false, true, dimension,true);
-
-				damagePotential = bestAttack.GetTotalValue()/10;
+				//discourage damageless tiles, we do this instead of vission checks
+				damagePotential = -25;
+				
 			}
 
 			details.DamagePotential = damagePotential; 

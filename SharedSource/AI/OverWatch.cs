@@ -11,22 +11,22 @@ namespace DefconNull.AI;
 
 public class Overwatch : AIAction
 {
-	public Overwatch() : base(AIActionType.OverWatch)
+	public Overwatch(Unit u) : base(AIActionType.OverWatch,u)
 	{
 		
 	}
 
 
 
-	public override void Execute(Unit unit)
+	public override void Execute()
 	{
 
-		var abl = GetRandomOverWatchAbility(unit);
+		var abl = GetRandomOverWatchAbility(Unit);
 		if (abl is null) throw new Exception("No Overwatch Abilities Found!");
-		var highestTile = GetBestOverWatchTile(unit,abl);
+		var highestTile = GetBestOverWatchTile(Unit,abl);
 
 
-		unit.DoOverwatch(highestTile.Item1, abl.Index);
+		Unit.DoOverwatch(highestTile.Item1, abl.Index);
 
 	}
 
@@ -73,13 +73,13 @@ public class Overwatch : AIAction
 		return highestTile;
 	}
 
-	public override int GetScore(Unit unit)
+	public override int GetScore()
 	{
-		if(base.GetScore(unit) <= 0) return -100;
-		var abl = GetRandomOverWatchAbility(unit);
+		if(base.GetScore() <= 0) return -100;
+		var abl = GetRandomOverWatchAbility(Unit);
 		if(abl is null) return -100;
-		if(CanSeeAnyEnemy(unit)) return -100;//no overwatch when there's someone right in front of us
-		return GetBestOverWatchTile(unit,abl).Item2;
+		if(CanSeeAnyEnemy(Unit)) return -100;//no overwatch when there's someone right in front of us
+		return GetBestOverWatchTile(Unit,abl).Item2;
 	}
 
 

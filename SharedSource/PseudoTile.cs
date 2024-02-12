@@ -26,7 +26,8 @@ public class PseudoTile : IWorldTile
 
 			if (_unitAtLocation == null)
 			{
-				return _realParent.UnitAtLocation;
+				var realUnit = _realParent.UnitAtLocation;
+				return realUnit;
 			}
 
 			return _unitAtLocation;

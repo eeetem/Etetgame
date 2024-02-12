@@ -27,6 +27,28 @@ public class AI
 
 		return false;
 	}
+
+	public static void PopulateActionsForUnit(Unit u, List<ValueTuple<AIAction, int>> actions)
+	{
+		AIAction a = new Attack(u);
+		Log.Message("AI","Calculating Attack Action...");
+		actions.Add(new ValueTuple<AIAction,int>(a, a.GetScore()));
+		a = new Overwatch(u);
+		Log.Message("AI","Calculating Overwatch Action...");
+		actions.Add(new ValueTuple<AIAction,int>(a, a.GetScore()));
+		a = new Move(u);
+		Log.Message("AI","Calculating Move Action...");
+		actions.Add(new ValueTuple<AIAction, int>(a, a.GetScore()));
+					
+					
+		int i = 0;
+		actions.ForEach((x) =>
+		{
+			Log.Message("AI",i + " ability scored: " + x.Item2);
+			i++;
+		});
+		actions.RemoveAll((x) => x.Item2 <= 0);
+	}
 	public static void DoAITurn(List<Unit> squad)
 	{
 		var t = new Task(delegate
@@ -44,54 +66,24 @@ public class AI
 					} while (SequenceManager.SequenceRunning);
 					Log.Message("AI","Waiting for seqeunce ended");
 					//  if(GameManager.IsPlayer1Turn) break;
-					List<Tuple<AIAction, Unit, int>> actions = new();
+					List<ValueTuple<AIAction, int>> actions = new();
 
 					//keep going with current  unit untill depleted
 					var currentUnit = squad[currentUnitIndex];
 					if (currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 					passiveMode = !CanSeeAnyEnemy(currentUnit.IsPlayer1Team);
 					
-					AIAction a = new Attack();
-					Log.Message("AI","Calculating Attack Action...");
-					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
-					a = new Overwatch();
-					Log.Message("AI","Calculating Overwatch Action...");
-					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
-					a = new Move();
-					Log.Message("AI","Calculating Move Action...");
-					actions.Add(new Tuple<AIAction, Unit, int>(a, currentUnit, a.GetScore(currentUnit)));
-					int i = 0;
-					actions.ForEach((x) =>
-					{
-						Log.Message("AI",i + " ability scored: " + x.Item3);
-						i++;
-					});
-					actions.RemoveAll((x) => x.Item3 <= 0);
-		            
-					i = 0;
+				
+					PopulateActionsForUnit(currentUnit, actions);
+	
 					int totalScore = 0;
-					actions.ForEach((x) => totalScore += x.Item3);
+					actions.ForEach((x) => totalScore += x.Item2);
 					if (actions.Count == 0 || Random.Shared.Next(0, 100) > totalScore)
 					{
 						foreach (var unit in squad.Shuffle(Random.Shared))
 						{
 							currentUnitIndex = squad.IndexOf(unit);
-							a = new Attack();
-							Log.Message("AI","Calculating Attack Action...");
-							actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
-							a = new Overwatch();
-							Log.Message("AI","Calculating Overwatch Action...");
-							actions.Add(new Tuple<AIAction,Unit, int>(a,currentUnit, a.GetScore(currentUnit)));
-
-							a = new Move();
-							Log.Message("AI","Calculating Move Action...");
-							actions.Add(new Tuple<AIAction, Unit, int>(a, unit, a.GetScore(unit)));
-							actions.ForEach((x) =>
-							{
-								Log.Message("AI",i + " ability scored: " + x.Item3);
-								i++;
-							});
-							actions.RemoveAll((x) => x.Item3 <= 0);
+							PopulateActionsForUnit(unit,actions);
 							if (actions.Count > 0)
 							{
 								break;
@@ -107,11 +99,11 @@ public class AI
 
 					if(actions.Count == 0) break;
 						
-					Tuple<AIAction, Unit, int>? actionToDo = null;
+					ValueTuple<AIAction, int>? actionToDo = null;
 						
 					foreach (var action in actions)
 					{
-						if (actionToDo == null || action.Item3 > actionToDo.Item3)
+						if (!actionToDo.HasValue || action.Item2 > actionToDo.Value.Item2)
 						{
 							actionToDo = action;
 						}
@@ -123,9 +115,9 @@ public class AI
 						Thread.Sleep(1000);
 					};		
 #endif
-					Log.Message("AI","Doing AI action"+actionToDo.Item1+" with score: "+actionToDo.Item3 + " by " + actionToDo.Item2.WorldObject.ID);
+					Log.Message("AI","Doing AI action"+actionToDo.Value.Item1+" with score: "+actionToDo.Value.Item2 + " by " + actionToDo.Value.Item1.Unit.WorldObject.ID);
 
-					actionToDo.Item1.Execute(actionToDo.Item2);
+					actionToDo.Value.Item1.Execute();
 
 				}
 

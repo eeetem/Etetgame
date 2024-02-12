@@ -6,27 +6,27 @@ namespace DefconNull.AI;
 
 public class Attack : AIAction
 {
-	public Attack() : base(AIActionType.Attack)
+	public Attack(Unit u) : base(AIActionType.Attack,u)
 	{
 		
 	}
 
 
 
-	public override void Execute(Unit unit)
+	public override void Execute()
 	{
-		var atk = GetBestPossibleAbility(unit,true,false,false);
+		var atk = GetBestPossibleAbility(Unit,true,false,false);
 		File.AppendAllText("aidebug.txt","attacking with: "+atk.AbilityIndex+" at: "+atk.Target.TileLocation.Position+ "with score: "+atk.GetTotalValue()+" damage: "+atk.Dmg+" Suppression: "+atk.Supression+" scorechange: "+atk.TotalChangeScore+"\n");
 		
-		unit.DoAbility(atk.Target,atk.AbilityIndex);
+		Unit.DoAbility(atk.Target,atk.AbilityIndex);
 	}
 
-	public override int GetScore(Unit unit)
+	public override int GetScore()
 	{
-		if(base.GetScore(unit) <= 0) return -100;
+		if(base.GetScore() <= 0) return -100;
 		//only what you see
-		var atk = GetBestPossibleAbility(unit,true,false,false);
-		Log.Message("AI","calcualted attack score: "+(atk.GetTotalValue()*2) + " for unit: "+unit.WorldObject.ID + " "+atk);
+		var atk = GetBestPossibleAbility(Unit,true,false,false);
+		Log.Message("AI","calcualted attack score: "+(atk.GetTotalValue()*2) + " for unit: "+Unit.WorldObject.ID + " "+atk);
 		return atk.GetTotalValue()*2;
 	}	
 	

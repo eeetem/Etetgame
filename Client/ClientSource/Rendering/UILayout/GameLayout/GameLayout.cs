@@ -1223,7 +1223,7 @@ public class GameLayout : MenuLayout
 		}
 		if(inputBox != null && inputBox.IsKeyboardFocused) return;
 		
-		if(UI.Desktop.FocusedKeyboardWidget != null) return;
+		//if(UI.Desktop.FocusedKeyboardWidget != null) return;
 
 		drawExtra = false;
 		if (currentKeyboardState.IsKeyDown(Keys.LeftAlt))

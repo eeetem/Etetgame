@@ -17,37 +17,17 @@ namespace DefconNull.AI;
 
 public class Move : AIAction
 {
-	public Move() : base(AIActionType.Move)
+	public Move(Unit u) : base(AIActionType.Move,u)
 	{
 		
 	}
-
-	private static int GetMovesToUse(Unit u)
-	{
-		
-		int movesToUse = 0;
-		if (u.MovePoints.Current > u.ActionPoints.Current)
-		{
-			movesToUse = u.MovePoints.Current - u.ActionPoints.Current;//use our free moves
-			if(movesToUse == 1 && u.Crouching)//not doing this will always make them stay crouching if the only have 1 free move
-			{
-				movesToUse = u.MovePoints.Current;
-			}
-		}
-		else
-		{
-			movesToUse = u.MovePoints.Current; // we're out of free moves, use all our moves
-		}
-		
-		return movesToUse;
-	}
-
-	public override void Execute(Unit unit)
+	
+	
+	public override void Execute()
 	{
 
-		int movesToUse = unit.MovePoints.Current;
 
-		var locs = GetMovementLocations(unit,movesToUse);
+		var locs = GetTileScores();
 
 		int bestOf = Math.Min(locs.Count, 2);
 
@@ -62,37 +42,37 @@ public class Move : AIAction
 		Vector2Int target = best[r].Item1;
 		Console.WriteLine("moving to tile with score: "+best[r].Item3 + "at postion: "+target);
 		File.AppendAllText("aidebug.txt","moving to: "+target+" with: "+  bestMove.ToString()+"\n");
-		if(best[r].Item1 == unit.WorldObject.TileLocation.Position)
+		if(best[r].Item1 == Unit.WorldObject.TileLocation.Position)
 		{
 			Console.WriteLine("already at best tile");
 			return;
 		}
-		bool needToDoCrouchAction = best[r].Item2 != unit.Crouching;
+		bool needToDoCrouchAction = best[r].Item2 != Unit.Crouching;
 
-		if (unit.Crouching && needToDoCrouchAction)
+		if (Unit.Crouching && needToDoCrouchAction)
 		{
-			unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
+			Unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
 			needToDoCrouchAction = false;
 		}
 
-		if (target != unit.WorldObject.TileLocation.Position)
+		if (target != Unit.WorldObject.TileLocation.Position)
 		{
-			Console.WriteLine("ordering move action from: "+unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
-			unit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(target));
+			Console.WriteLine("ordering move action from: "+Unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
+			Unit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(target));
 		}
 		do
 		{
 			Thread.Sleep(500);
 		} while (SequenceManager.SequenceRunning);
-		if (!unit.Crouching && needToDoCrouchAction)
+		if (!Unit.Crouching && needToDoCrouchAction)
 		{
-			unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
+			Unit.DoAction(Action.ActionType.Crouch, new Action.ActionExecutionParamters());
 			needToDoCrouchAction = false;
 		}
 
 	
 		
-		var otherTeamUnits = GameManager.GetTeamUnits(!unit.IsPlayer1Team);
+		var otherTeamUnits = GameManager.GetTeamUnits(!Unit.IsPlayer1Team);
 	
 		
 		float closestDistance = 1000;
@@ -110,25 +90,32 @@ public class Move : AIAction
 		{
 			Thread.Sleep(250);
 		} while (SequenceManager.SequenceRunning);
-		unit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(vec));
+		Unit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(vec));
 	}
 
-	public override int GetScore(Unit unit)
+	ConcurrentBag<Tuple<Vector2Int, bool, int, MoveCalcualtion>> calculatedMoves = new ConcurrentBag<Tuple<Vector2Int, bool, int, MoveCalcualtion>>();
+	private ConcurrentBag<Tuple<Vector2Int, bool, int, MoveCalcualtion>> GetTileScores()
 	{
-		if(base.GetScore(unit) <= 0) return -100;
-		if(unit.MovePoints.Current <= 0 || unit.Paniced)
+		if(calculatedMoves.Count == 0)
+			calculatedMoves = GetMovementLocations(Unit,Unit.MovePoints.Current);
+		return calculatedMoves;
+	}
+	public override int GetScore()
+	{
+		if(base.GetScore() <= 0) return -100;
+		if(Unit.MovePoints.Current <= 0 || Unit.Paniced)
 		{
 			return 0;
 		}
 
-		float worseThanAverage = GetWorseThanAverage(unit);
+		float worseThanAverage = GetWorseThanAverage();
 		if(worseThanAverage <= 0)
 		{
 			return (int)worseThanAverage;
 		}
 		
 		float actionScore = 2+worseThanAverage;//diffference bwteen current tile and average of all other tiles
-		if (unit.MovePoints >= unit.MovePoints.Max)//we should probably move first then do something
+		if (Unit.MovePoints >= Unit.MovePoints.Max)//we should probably move first then do something
 		{
 			actionScore *= 1.5f;
 		}
@@ -136,12 +123,11 @@ public class Move : AIAction
 		return (int)actionScore;
 	}
 
-	public static float GetWorseThanAverage(Unit unit)
+	public float GetWorseThanAverage()
 	{
-		int movesToUse = GetMovesToUse(unit);
-		var locs = GetMovementLocations(unit, movesToUse);
+		var locs = GetTileScores();
 		MoveCalcualtion details;
-		int scoreForCurrentTile = GetTileMovementScore((unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,unit.Crouching,unit, out details);
+		int scoreForCurrentTile = GetTileMovementScore((Unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,Unit.Crouching,Unit, out details);
 
 		int countedLocs = 0;
 		List<int> scores = new List<int>();
