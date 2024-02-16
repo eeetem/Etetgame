@@ -96,18 +96,18 @@ public partial class WorldObject : IDrawable
 
 		if (UnitComponent != null)
 		{
-			if (UnitComponent.IsMyTeam())
-			{
-				color = new Color(200, 255, 200);
-			}
-			else if(!IsVisible())
-			{
-				color = new Color(255, 100, 100);
-			}
-			else
-			{
-				color = new Color(255, 200, 200);
-			}
+			//if (!UnitComponent.IsMyTeam())
+			//{
+			//	color = new Color(255, 180, 180);
+			//}
+			//else if(!IsVisible())
+			//{
+			//	color = new Color(255, 100, 100);
+			//}
+			//else
+			//{
+			//	color = new Color(255, 200, 200);
+			//}
 
 		}
 

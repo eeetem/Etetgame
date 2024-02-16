@@ -5,8 +5,8 @@ namespace DefconNull;
 
 public partial class WorldTile : IWorldTile
 {
-	private bool enemyWatching;
-	private bool friendlyWatching;
+	private bool _enemyWatching;
+	private bool _friendlyWatching;
 	public Color GetTileColor()
 	{
 		Color color = Color.White;
@@ -21,21 +21,19 @@ public partial class WorldTile : IWorldTile
 		}
 
 
-		if (Watchers.Count > 0)
+		if (_watchers.Count > 0)
 		{
-	
-			if (friendlyWatching)
+			if (_friendlyWatching)
 			{
 				var vec = color.ToVector3();
 				color = new Color(vec.X/2f,vec.Y, vec.Z/2f, 1);
 			}
-			if (enemyWatching)
+			if (_enemyWatching)
 			{
 				var vec = color.ToVector3();
 				color = new Color(vec.X*1.5f,vec.Y/2f, vec.Z*1.2f, 1);
 			}
 			
-
 		}
 		
 
@@ -45,9 +43,9 @@ public partial class WorldTile : IWorldTile
 	public void CalcWatchLevel()
 	{
 		if(Surface == null) return;
-		friendlyWatching = false;
-		enemyWatching = false;
-		foreach (var watcher in Watchers)
+		_friendlyWatching = false;
+		_enemyWatching = false;
+		foreach (var watcher in _watchers)
 		{
 			if (!watcher.WorldObject.IsVisible())
 			{
@@ -65,11 +63,11 @@ public partial class WorldTile : IWorldTile
 			{
 				if (watcher.IsMyTeam())
 				{
-					friendlyWatching = true;
+					_friendlyWatching = true;
 				}
 				else
 				{
-					enemyWatching = true;
+					_enemyWatching = true;
 				} 
 			}
 			else

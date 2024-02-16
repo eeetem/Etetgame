@@ -202,7 +202,7 @@ public static partial class GameManager
 		foreach (var pos in Player1UnitPositions)
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
-			if(!t.IsVisible(team1:true)) continue;//if they cant see the tile - dont do any checks
+			if(!t.IsVisible(team1:true) && !pos.Value.Item2.UnitData.Value.Team1) continue;//if they cant see the tile and the unit is from another team dont check anything
 			if (t.UnitAtLocation == null)
 			{
 				Player1UnitPositions.Remove(pos.Key);
@@ -220,7 +220,7 @@ public static partial class GameManager
 		foreach (var pos in Player2UnitPositions)
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
-			if(!t.IsVisible(team1:false)) continue;//if they cant see the tile - dont do any checks
+			if(!t.IsVisible(team1:false) && pos.Value.Item2.UnitData.Value.Team1) continue;//if they cant see the tile - dont do any checks
 			if (t.UnitAtLocation == null)
 			{
 				Player2UnitPositions.Remove(pos.Key);

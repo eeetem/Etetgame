@@ -6,6 +6,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
 using MonoGame.Extended.Collections;
+using Riptide;
 
 namespace DefconNull.AI;
 
@@ -33,13 +34,12 @@ public class AI
 		AIAction a = new Attack(u);
 		Log.Message("AI","Calculating Attack Action...");
 		actions.Add(new ValueTuple<AIAction,int>(a, a.GetScore()));
-		a = new Overwatch(u);
+		Move mv = new Move(u);
+		Log.Message("AI","Calculating Move Action...");
+		actions.Add(new ValueTuple<AIAction, int>(mv, mv.GetScore()));
+		a = new Overwatch(u,mv);
 		Log.Message("AI","Calculating Overwatch Action...");
 		actions.Add(new ValueTuple<AIAction,int>(a, a.GetScore()));
-		a = new Move(u);
-		Log.Message("AI","Calculating Move Action...");
-		actions.Add(new ValueTuple<AIAction, int>(a, a.GetScore()));
-					
 					
 		int i = 0;
 		actions.ForEach((x) =>
@@ -73,7 +73,7 @@ public class AI
 					if (currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 					passiveMode = !CanSeeAnyEnemy(currentUnit.IsPlayer1Team);
 					
-				
+					Log.Message("AI","PASSIVE MODE: "+passiveMode);
 					PopulateActionsForUnit(currentUnit, actions);
 	
 					int totalScore = 0;

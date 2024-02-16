@@ -121,17 +121,17 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/grenade.wav
 
-#begin CompressedContent/audio/mg-old1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:CompressedContent/audio/mg-old1.wav
-
 #begin CompressedContent/audio/mg.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg.wav
+
+#begin CompressedContent/audio/mg-old1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/mg-old1.wav
 
 #begin CompressedContent/audio/music/Cavern Dwelling.wav
 /importer:WavImporter
@@ -679,7 +679,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/actionpoint.png
 
-#begin CompressedContent/textures/HoverHud/consequenceFrame.png
+#begin CompressedContent/textures/HoverHud/Consequences/cover.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -689,7 +689,43 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/consequenceFrame.png
+/build:CompressedContent/textures/HoverHud/Consequences/cover.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/Infobox.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/Infobox.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/rangeicon.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/rangeicon.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/shoot.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/shoot.png
 
 #begin CompressedContent/textures/HoverHud/detBlank.png
 /importer:TextureImporter
@@ -726,18 +762,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/detYellow.png
-
-#begin CompressedContent/textures/HoverHud/frame.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/frame.png
 
 #begin CompressedContent/textures/HoverHud/health.png
 /importer:TextureImporter

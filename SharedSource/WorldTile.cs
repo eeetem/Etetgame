@@ -20,17 +20,16 @@ public partial class WorldTile : IWorldTile
 
 	}
 	
-	public static readonly object syncobj = new object();
+	public static readonly object Syncobj = new object();
 
-	private List<Unit> Watchers = new List<Unit>();
-	private List<Unit> UnWatchQueue = new List<Unit>();
+	private readonly List<Unit> _watchers = new List<Unit>();
 #if SERVER
 	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
 		List<Unit> shooters = new List<Unit>();
 		//Console.WriteLine("getting overwatch shooters");
 
-		foreach (var watcher in Watchers)
+		foreach (var watcher in _watchers)
 		{
 			
 			bool isFriendly = watcher.IsPlayer1Team == target.IsPlayer1Team;
@@ -52,9 +51,9 @@ public partial class WorldTile : IWorldTile
 
 	public void Watch(Unit watcher)
 	{
-		lock (syncobj)
+		lock (Syncobj)
 		{
-			Watchers.Add(watcher);
+			_watchers.Add(watcher);
 		}
 #if CLIENT
 		CalcWatchLevel();
@@ -62,11 +61,13 @@ public partial class WorldTile : IWorldTile
 	}
 	public void UnWatch(Unit watcher)
 	{
-		lock (syncobj)
+		lock (Syncobj)
 		{
-			UnWatchQueue.Add(watcher);
+			_watchers.Remove(watcher);
 		}
-
+#if CLIENT
+		CalcWatchLevel();
+#endif
 
 	}
 
@@ -74,23 +75,8 @@ public partial class WorldTile : IWorldTile
 
 	public void Update(float msDelta)
 	{
-		lock (syncobj)
+		lock (Syncobj)
 		{
-#pragma warning disable CS0219
-			bool recalcflag = false;
-#pragma warning restore CS0219
-			foreach (var Watcher in UnWatchQueue)
-			{
-				recalcflag = true;
-				Watchers.Remove(Watcher);
-			}
-			UnWatchQueue.Clear();
-#if CLIENT
-			if (recalcflag)
-			{
-				CalcWatchLevel();
-			}
-#endif
 			NorthEdge?.Update(msDelta);
 			WestEdge?.Update(msDelta);
 			UnitAtLocation?.WorldObject.Update(msDelta);
@@ -316,7 +302,7 @@ public partial class WorldTile : IWorldTile
 
 
 	private WorldObject? _surface;
-	public bool IsOverwatched => Watchers.Count > 0;
+	public bool IsOverwatched => _watchers.Count > 0;
 
 
 	public WorldObject? Surface{
@@ -348,7 +334,7 @@ public partial class WorldTile : IWorldTile
 		{
 			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
 		}
-		Watchers.Clear();
+		_watchers.Clear();
 		
 
 

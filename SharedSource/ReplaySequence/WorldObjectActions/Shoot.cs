@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+
 using DefconNull.WorldActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
@@ -7,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Riptide;
 
+#if CLIENT
+using DefconNull.Rendering;
+#endif
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class Shoot : SequenceAction
@@ -60,14 +64,20 @@ public class Shoot : SequenceAction
 #if CLIENT
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
-		batch.DrawText("Shot:" + OriginalDamage +" -" +CoverBlock +"C -"+RangeBlock+"R", pos, Color.White);
+		pos += new Vector2(0, 3);
+		Vector2 offset = new Vector2(TextureManager.GetTexture("HoverHud/Consequences/shoot").Width+3,0);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos, Color.White);
+		batch.DrawText(OriginalDamage.ToString(), pos+new Vector2(20,5),2f, Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/cover"), pos+offset, Color.White);
+		batch.DrawText(CoverBlock.ToString(), pos+offset+new Vector2(20,5),2f, Color.Red);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos+offset*2, Color.White);
+		batch.DrawText(RangeBlock.ToString(), pos+offset*2+new Vector2(20,5),2f, Color.Red);
 	}
 
 
 	public override void Preview(SpriteBatch spriteBatch)
 	{
 		base.Preview(spriteBatch);
-
 		
 		var startPoint = Utility.GridToWorldPos(Projectile.Result.StartPoint);
 		var endPoint = Utility.GridToWorldPos(Projectile.Result.EndPoint);
@@ -137,8 +147,7 @@ public class Shoot : SequenceAction
 			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position), Color.Yellow);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 5, 10, Color.Yellow, 15f);
-
-
+			
 		}
 
 

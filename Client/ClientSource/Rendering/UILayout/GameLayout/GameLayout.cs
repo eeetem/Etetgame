@@ -117,7 +117,7 @@ public class GameLayout : MenuLayout
 	public static void Init()
 	{
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,100);
-		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("HoverHud/consequenceFrame").Width,200);
+		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("HoverHud/Consequences/Infobox").Width,200);
 	
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Height);
 		unitBarRenderTargets = new Dictionary<int, RenderTarget2D>();
@@ -1492,13 +1492,13 @@ public class GameLayout : MenuLayout
 		graphicsDevice.Clear(Color.White*0);
 		if (SortedConsequences.TryGetValue(obj, out var list))
 		{
-			batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 			Vector2 pos = new Vector2(0, 0);
 			foreach (var cons in list)
 			{	
-				batch.Draw(TextureManager.GetTexture("HoverHud/consequenceFrame"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
-				cons.DrawDesc(pos+new Vector2(10,4),batch);
-				pos+= new Vector2(0, TextureManager.GetTexture("HoverHud/consequenceFrame").Height);
+				//batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				cons.DrawDesc(pos,batch);
+				pos+= new Vector2(0, TextureManager.GetTexture("HoverHud/Consequences/InfoBox").Height);
 			}
 			batch.End();
 		}
@@ -1506,7 +1506,7 @@ public class GameLayout : MenuLayout
 		
 		graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
 		graphicsDevice.Clear(Color.White*0);
-		float opacity = 0.9f;
+		float opacity = 0.95f;
 		
 
 		if (Equals(SelectedUnit, unit) || MousePos == obj.TileLocation.Position || (obj.Type.Edge && Utility.IsClose(obj,MousePos)))
@@ -1527,7 +1527,7 @@ public class GameLayout : MenuLayout
 		float healthBarWidth = healthWidth*obj.Type.MaxHealth;
 		float emtpySpace = baseWidth - healthBarWidth;
 		//Vector2 healthBarPos = new Vector2(emtpySpace/2f,36);
-		Vector2 healthBarPos = new Vector2(5f,25);
+		Vector2 healthBarPos = new Vector2(5f,40);
 
 
 		Vector2 offset = new Vector2(0,0);
@@ -1544,8 +1544,8 @@ public class GameLayout : MenuLayout
 			}
 			else
 			{
-				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
-				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect:PostProcessing.PostProcessing.UIGlowEffect);
+				
+				batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 				batch.Draw(healthTexture, healthBarPos + new Vector2(healthWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 				batch.End();
 				if (obj.PreviewData.finalDmg >= obj.Health - y)
@@ -1591,7 +1591,7 @@ public class GameLayout : MenuLayout
 			detbarWidht = detWidth * unit.Type.Maxdetermination;
 			detEmtpySpace = baseWidth - detbarWidht;
 			//DetPos = new Vector2(detEmtpySpace / 2f, 28);
-			DetPos = new Vector2(5f, 20);
+			DetPos = new Vector2(5f, 30);
 
 			
 			var animSheet = TextureManager.GetSpriteSheet("HoverHud/panicSheet", 1, 4);
@@ -1621,8 +1621,7 @@ public class GameLayout : MenuLayout
 				}
 				else
 				{
-					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width, hoverHudRenderTarget.Height), false);
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
+					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					batch.Draw(TextureManager.GetTexture("HoverHud/detGreen"), DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
 					batch.End();
 					if (unit.WorldObject.PreviewData.detDmg >= unit.Determination - y)
@@ -1640,8 +1639,8 @@ public class GameLayout : MenuLayout
 
 			}
 		
-			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 33);
-			int o = 5;
+			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 53);
+			int o = 10;
 			i = 0;
 			var nextT = unit.GetPointsNextTurn();
 			for (int j = 0; j < Math.Max(nextT.Item1,unit.MovePoints.Current); j++)
@@ -1649,8 +1648,7 @@ public class GameLayout : MenuLayout
 				Texture2D t;
 				if (j < unit.MovePoints)
 				{
-					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
-					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					t = TextureManager.GetTexture("HoverHud/movepoint");
 				
 				}
@@ -1672,8 +1670,7 @@ public class GameLayout : MenuLayout
 				Texture2D t;
 				if (j < unit.ActionPoints)
 				{
-					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(hoverHudRenderTarget.Width,hoverHudRenderTarget.Height), false);
-					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead,effect:PostProcessing.PostProcessing.UIGlowEffect);
+					batch.Begin(sortMode: SpriteSortMode.Deferred,  BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					t = TextureManager.GetTexture("HoverHud/actionpoint");
 				
 				}
@@ -1703,8 +1700,8 @@ public class GameLayout : MenuLayout
 		graphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-10, -100),null,Color.White*opacity,0,Vector2.Zero,2f,SpriteEffects.None,0);
-		batch.Draw(consequenceListRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-5, -60)+new Vector2(-78,0),null,Color.White*opacity,0,Vector2.Zero,0.7f,SpriteEffects.None,0);
+		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-10, -80),null,Color.White*opacity,0,Vector2.Zero,1f,SpriteEffects.None,0);
+		batch.Draw(consequenceListRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-5, -60)+new Vector2(-58,0),null,Color.White*opacity,0,Vector2.Zero,0.8f,SpriteEffects.None,0);
 		batch.End();
 	}
 

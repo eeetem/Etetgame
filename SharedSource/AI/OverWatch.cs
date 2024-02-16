@@ -11,9 +11,10 @@ namespace DefconNull.AI;
 
 public class Overwatch : AIAction
 {
-	public Overwatch(Unit u) : base(AIActionType.OverWatch,u)
+	private Move _moveact;
+	public Overwatch(Unit u, Move moveact) : base(AIActionType.OverWatch,u)
 	{
-		
+		this._moveact = moveact;
 	}
 
 
@@ -76,6 +77,7 @@ public class Overwatch : AIAction
 	public override int GetScore()
 	{
 		if(base.GetScore() <= 0) return -100;
+		if(_moveact.GetScore() > 0) return -100;
 		var abl = GetRandomOverWatchAbility(Unit);
 		if(abl is null) return -100;
 		if(CanSeeAnyEnemy(Unit)) return -100;//no overwatch when there's someone right in front of us

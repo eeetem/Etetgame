@@ -461,7 +461,6 @@ public abstract class AIAction
 
 			int damagePotential = bestAttack.GetTotalValue();
 
-
 			protectionPentalty *=2;//cover is VERY important
 		
 
@@ -476,7 +475,6 @@ public abstract class AIAction
 			{
 				//discourage damageless tiles, we do this instead of vission checks
 				damagePotential = -25;
-				
 			}
 
 			details.DamagePotential = damagePotential; 
