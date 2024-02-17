@@ -52,6 +52,12 @@ public static partial class NetworkingManager
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
+		connection.MaxSendAttempts = 50;
+		connection.MaxAvgSendAttempts = 5;
+		connection.AvgSendAttemptsResilience = 10;
+#if DEBUG
+		connection.CanQualityDisconnect = false;
+#endif
 		string name = connectmessage.GetString();
 		Log.Message("NETWORKING","Begining Client Register: "+name);
 		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']')||name=="AI"||name=="Practice Opponent")
@@ -103,13 +109,9 @@ public static partial class NetworkingManager
 		
 
 		Log.Message("NETWORKING","Client Register Done");
+
 		server.Accept(connection);
-		connection.MaxSendAttempts = 50;
-		connection.MaxAvgSendAttempts = 5;
-		connection.AvgSendAttemptsResilience = 10;
-#if DEBUG
-		connection.CanQualityDisconnect = false;
-#endif
+
 		
 		
 		

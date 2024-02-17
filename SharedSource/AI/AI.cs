@@ -63,7 +63,7 @@ public class AI
 					{
 						Thread.Sleep(100);
 						Log.Message("AI","Waiting for sequence to end");
-					} while (SequenceManager.SequenceRunning);
+					} while (SequenceManager.SequenceRunning || WorldManager.Instance.FovDirty);
 					Log.Message("AI","Waiting for seqeunce ended");
 					//  if(GameManager.IsPlayer1Turn) break;
 					List<ValueTuple<AIAction, int>> actions = new();

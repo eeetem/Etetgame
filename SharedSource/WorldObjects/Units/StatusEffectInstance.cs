@@ -15,6 +15,7 @@ public class StatusEffectInstance
 	public void Apply(Unit unit)
 	{
 		type.Apply(unit);
+		Log.Message("UNITS", "Applying status effect: " + type.name + " to " + unit.WorldObject.ID);
 		duration--;
 	}
 }

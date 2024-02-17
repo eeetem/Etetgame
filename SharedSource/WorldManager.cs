@@ -163,22 +163,16 @@ public  partial class WorldManager
     {
         return GetTileAtGrid(position).GetVisibility(team1);
     }
-
-
     public bool FovDirty { get; private set; }
-
     public void MakeFovDirty()
     {
         Log.Message("WORLD MANAGER","FOV made dirty");
         FovDirty = true;
     }
-
 		
     private void CalculateFov()
     {
-        
-        Log.Message("WORLD MANAGER","calculating FOV");
-				
+        Log.Message("WORLD MANAGER", "calculating FOV");
 
         foreach (var tile in _gridData)
         {

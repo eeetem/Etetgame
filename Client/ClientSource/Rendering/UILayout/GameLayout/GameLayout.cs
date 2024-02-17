@@ -1496,7 +1496,7 @@ public class GameLayout : MenuLayout
 			Vector2 pos = new Vector2(0, 0);
 			foreach (var cons in list)
 			{	
-				//batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
 				cons.DrawDesc(pos,batch);
 				pos+= new Vector2(0, TextureManager.GetTexture("HoverHud/Consequences/InfoBox").Height);
 			}
