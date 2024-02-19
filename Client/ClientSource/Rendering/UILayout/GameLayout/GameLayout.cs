@@ -68,11 +68,10 @@ public class GameLayout : MenuLayout
 		
 		if(SelectedUnit == null) return;
 		var ret =  SelectedUnit.GetPossibleMoveLocations();
-		if(PreviewMoves.Length <= ret.Length)
-		{
-			Array.Resize(ref PreviewMoves, ret.Length);
-		}
-
+		
+	
+		Array.Resize(ref PreviewMoves, ret.Length);
+		
 		foreach (var p in PreviewMoves)
 		{
 			if(p != null)p.Clear();
@@ -93,7 +92,6 @@ public class GameLayout : MenuLayout
 		int i = 0;
 		foreach (var g in ret)
 		{
-
 			foreach (var item in g)
 			{
 				PreviewMoves[i].Add(item.Item1);
@@ -117,7 +115,7 @@ public class GameLayout : MenuLayout
 	public static void Init()
 	{
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,100);
-		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("HoverHud/Consequences/Infobox").Width,200);
+		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,135,200);
 	
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Height);
 		unitBarRenderTargets = new Dictionary<int, RenderTarget2D>();
@@ -1496,9 +1494,9 @@ public class GameLayout : MenuLayout
 			Vector2 pos = new Vector2(0, 0);
 			foreach (var cons in list)
 			{	
-				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				//batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
 				cons.DrawDesc(pos,batch);
-				pos+= new Vector2(0, TextureManager.GetTexture("HoverHud/Consequences/InfoBox").Height);
+				pos+= new Vector2(0, 30);
 			}
 			batch.End();
 		}
@@ -1701,7 +1699,8 @@ public class GameLayout : MenuLayout
 
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		batch.Draw(hoverHudRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-10, -80),null,Color.White*opacity,0,Vector2.Zero,1f,SpriteEffects.None,0);
-		batch.Draw(consequenceListRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-5, -60)+new Vector2(-58,0),null,Color.White*opacity,0,Vector2.Zero,0.8f,SpriteEffects.None,0);
+		float consScale = 0.8f;
+		batch.Draw(consequenceListRenderTarget,Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-consequenceListRenderTarget.Width, -60)*consScale,null,Color.White*opacity,0,Vector2.Zero,consScale,SpriteEffects.None,0);
 		batch.End();
 	}
 

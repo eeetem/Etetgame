@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
+
+#if CLIENT
+using DefconNull.Rendering;
+#endif
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
@@ -128,6 +134,60 @@ public class ChangeUnitValues : UnitSequenceAction
 
 #if CLIENT
 
+	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	{
+		Texture2D upArrow = TextureManager.GetTexture("HoverHud/Consequences/upArrow");
+		Texture2D downArrow = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
+	
+		
+		Vector2 offset = new Vector2(upArrow.Width-2,0);
+		int i = 4;
+		var moveChange = MoveChange.GetChange(Actor.MovePoints);
+		if (moveChange != 0)
+		{
+			if (moveChange > 0)
+			{
+				batch.Draw(upArrow, pos + offset*i, Color.White);
+			}
+			else
+			{
+				batch.Draw(downArrow, pos + offset*i, Color.White);
+			}
+
+			batch.DrawNumberedIcon(Math.Abs(moveChange).ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos + offset*i + new Vector2(10, 0), Color.White);
+			i--;
+		}
+
+		var actChange = ActChange.GetChange(Actor.ActionPoints);
+		if (actChange != 0)
+		{
+			if (actChange > 0)
+			{
+				batch.Draw(upArrow, pos + offset*i, Color.White);
+			}
+			else
+			{
+				batch.Draw(downArrow, pos + offset*i, Color.White);
+			}
+			batch.DrawNumberedIcon(Math.Abs(actChange).ToString(), TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), pos +offset*i + new Vector2(10, 0), Color.White);
+			i--;
+		}
+
+		var detChange = DetChange.GetChange(Actor.Determination);
+		if(detChange != 0){
+			if(detChange > 0)
+			{
+				batch.Draw(upArrow, pos+offset*3, Color.White);
+			}
+			else
+			{
+				batch.Draw(downArrow, pos+offset*3, Color.White);
+			}
+			batch.DrawNumberedIcon(Math.Abs(detChange).ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+			i--;
+		}
+	
+	}
 	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//todo UI rework

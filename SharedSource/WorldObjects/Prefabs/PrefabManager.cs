@@ -370,6 +370,7 @@ public static class PrefabManager
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
 		if (valitm != null)
 		{
+			eff.ChangeValues = true;
 			eff.Act =  new ValueChange(valitm.Attributes?["act"]?.InnerText ?? "0");
 			eff.Move = new ValueChange(valitm.Attributes?["move"]?.InnerText ?? "0");
 			eff.MoveRange = new ValueChange(valitm.Attributes?["moveRange"]?.InnerText ?? "0");

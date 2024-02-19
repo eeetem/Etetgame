@@ -64,6 +64,11 @@ public static partial class Utility
 
 
 	}
+	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, Color c)
+	{
+		spriteBatch.Draw(icon, pos, Color.White);
+		spriteBatch.DrawText(num, pos+new Vector2(26,7),1.8f, c);
+	}
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
 	{
 		DrawText(spriteBatch,  text,  position, 1,100,  c);
@@ -226,6 +231,9 @@ public static partial class Utility
 					break;
 				case '#':
 					texId = "hash";
+					break;
+				case '=':
+					texId = "equal";
 					break;
 				default:
 					texId = "" + car;

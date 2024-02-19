@@ -109,6 +109,18 @@ public class Suppress : UnitSequenceAction
 	}
 	
 #if CLIENT
+
+	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	{
+		Texture2D arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/upArrow");
+		if(DetDmg>0) arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
+		int absDmg = Math.Abs(DetDmg);
+		
+		Vector2 offset = new Vector2(arrowSprite.Width-2,0);
+		batch.Draw(arrowSprite, pos+offset*3, Color.White);
+		batch.DrawNumberedIcon(absDmg.ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+	}
+
 	public override void Preview(SpriteBatch spriteBatch)
 	{
 		if (Requirements.Position != new Vector2Int(-1, -1))

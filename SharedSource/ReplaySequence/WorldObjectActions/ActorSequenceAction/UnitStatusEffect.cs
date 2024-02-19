@@ -3,6 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
+#if CLIENT
+using DefconNull.Rendering;
+#endif
+
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class UnitStatusEffect  : UnitSequenceAction
@@ -66,6 +70,19 @@ public class UnitStatusEffect  : UnitSequenceAction
 
 		
 		//todo UI rework
+	}
+
+	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	{
+	
+		Texture2D plusMinus = TextureManager.GetTexture("HoverHud/Consequences/minus");
+		if(addNotRemove) plusMinus = TextureManager.GetTexture("HoverHud/Consequences/plus");
+		Texture2D effectIcon = TextureManager.GetTextureFromPNG("Icons/" + effectName);
+		pos += new Vector2(70, 0);
+		batch.Draw(plusMinus, pos, Color.White);
+		batch.Draw(effectIcon, pos+new Vector2(30,0), Color.White);
+		
+		
 	}
 #endif
 }

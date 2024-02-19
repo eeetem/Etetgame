@@ -16,9 +16,11 @@ namespace DefconNull.WorldActions;
 public class WorldConseqences 
 {
 	public int Dmg;
-	public int Det ;
-	public ValueChange Move ;
-	public ValueChange Act ;
+	public int Det;
+	public ValueChange Move;
+	public ValueChange Act;
+	public ValueChange MoveRange;
+	public bool ChangeValues = false;
 	public int Range = 1;
 	public string? Sfx = "";
 	public string? PLaceItemConsequence = null;
@@ -26,7 +28,7 @@ public class WorldConseqences
 	public readonly List<string> RemoveStatus = new List<string>();
 
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
-	public ValueChange MoveRange ;
+	
 	public int ExRange;
 	public List<string> Ignores = new List<string>();
 
@@ -134,8 +136,10 @@ public class WorldConseqences
 		{
 			consequences.Add(Suppress.Make(Det, req));
 		}
-
-		consequences.Add(ChangeUnitValues.Make(req,Act,Move,null, MoveRange));
+		if (ChangeValues)
+		{
+			consequences.Add(ChangeUnitValues.Make(req,Act,MoveRange,null, MoveRange));
+		}
 
 		foreach (var status in RemoveStatus)
 		{

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -25,6 +26,8 @@ public class CrouchUnit : UnitSequenceAction
 
 
 #if CLIENT
+
+
 	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//no need to preview
