@@ -19,6 +19,10 @@ public partial class WorldObjectType
     {
         return _variationSheets[variation].GetVariationName();
     }
+    public string GetVariationPath(int variation)
+    {
+        return _variationSheets[variation].GetFulLName();
+    }
     public int GetRandomVariationIndex(int seed)
     {
         var r = new Random(seed);

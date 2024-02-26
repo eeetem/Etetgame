@@ -736,11 +736,11 @@ public class EditorUiLayout : MenuLayout
     public override void RenderBehindHud(SpriteBatch batch, float deltatime)
     {
         batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-        var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
-        batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X, 100)), Color.White, 5);
-        batch.DrawLine(Utility.GridToWorldPos(new Vector2(MousePos.X+1, 0)), Utility.GridToWorldPos(new Vector2(MousePos.X+1, 100)), Color.White, 5);
-        batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y)), Color.White, 5);
-        batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  MousePos.Y+1)), Utility.GridToWorldPos(new Vector2(100, MousePos.Y+1)), Color.White, 5);
+        var mousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+        batch.DrawLine(Utility.GridToWorldPos(new Vector2(mousePos.X, 0)), Utility.GridToWorldPos(new Vector2(mousePos.X, 100)), Color.White, 5);
+        batch.DrawLine(Utility.GridToWorldPos(new Vector2(mousePos.X+1, 0)), Utility.GridToWorldPos(new Vector2(mousePos.X+1, 100)), Color.White, 5);
+        batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  mousePos.Y)), Utility.GridToWorldPos(new Vector2(100, mousePos.Y)), Color.White, 5);
+        batch.DrawLine(Utility.GridToWorldPos(new Vector2(0,  mousePos.Y+1)), Utility.GridToWorldPos(new Vector2(100, mousePos.Y+1)), Color.White, 5);
         switch (ActiveBrush)
         {
             case Brush.Copy:
@@ -759,7 +759,7 @@ public class EditorUiLayout : MenuLayout
                     for (int y = 0; y < buffer.GetLength(1); y++)
                     {
                         var tileData = buffer[x, y];
-                        var pos = new Vector2Int(x, y) + MousePos;
+                        var pos = new Vector2Int(x, y) + mousePos;
                         foreach (var data in tileData)
                         {
                             batch.DrawPrefab(Utility.GridToWorldPos(pos), data.Prefab, data.Facing,data.Fliped);
@@ -772,9 +772,23 @@ public class EditorUiLayout : MenuLayout
 
         if (ActiveBrush == Brush.Selection || ActiveBrush == Brush.Point)
         {
-            batch.DrawPrefab(Utility.GridToWorldPos(MousePos),ActivePrefab,ActiveDir);
+            batch.DrawPrefab(Utility.GridToWorldPos(mousePos),ActivePrefab,ActiveDir);
         }
-
+        
+        var mouseTile = WorldManager.Instance.GetTileAtGrid(mousePos);
+        var northEdge = mouseTile.NorthEdge;
+        var eastEdge = mouseTile.EastEdge;
+        var westEdge = mouseTile.WestEdge;
+        var southEdge = mouseTile.SouthEdge;
+        var surface = mouseTile.Surface;
+        
+        batch.DrawText("\n north: "+(northEdge == null ? "null" : northEdge.Type.GetVariationPath(northEdge.spriteVariation))+"\n"
+            + "east: "+(eastEdge == null ? "null" : eastEdge.Type.GetVariationPath(eastEdge.spriteVariation))+"\n"
+            + "west: "+(westEdge == null ? "null" : westEdge.Type.GetVariationPath(westEdge.spriteVariation))+"\n"
+            + "south: "+(southEdge == null ? "null" : southEdge.Type.GetVariationPath(southEdge.spriteVariation))+"\n"
+            + "surface: "+(surface == null ? "null" : surface.Type.GetVariationPath(surface.spriteVariation))+"\n"
+            , Utility.GridToWorldPos(mousePos), 1, 100, Color.White);
+        
         batch.End();
 		
     }

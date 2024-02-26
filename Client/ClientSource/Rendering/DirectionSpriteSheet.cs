@@ -19,7 +19,7 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 		this._faceable = faceable;
 	}
 
-	private string GetFulLName()
+	public string GetFulLName()
 	{
 		return _baseName+_variation.Name;
 	}
