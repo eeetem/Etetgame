@@ -27,12 +27,18 @@
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/wood" offset= "0,0">
       <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+      <variation id="3" weight="50"/>
     </sprite>
     <name>Wooden Floor</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/Tile" offset= "0,0">
       <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+      <variation id="3" weight="50"/>
     </sprite>
     <name>Tiled Floor</name>
   </object>
@@ -93,6 +99,7 @@
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
+      <variation id="3" weight="50"/>
     </sprite>
   <name>Brick Wall 1</name>
   <destroyConsequences range = "1" >
@@ -139,6 +146,7 @@
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
+      <variation id="3" weight="50"/>
     </sprite>
     <name>Brick Wall 2</name>
     <destroyConsequences range = "1" >

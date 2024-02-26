@@ -27,7 +27,7 @@ public class StatusEffectInstance
 #if CLIENT
 	public void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
 	{
-		batch.DrawText("Status Effect:\n"+Type.Name+"\n"+Type.Tip, pos, scale, Color.White);
+		batch.DrawText("         Status Effect:\n[Green]"+Type.Name+"[-]\n"+Type.Tip, pos, scale, 50, Color.White);
 	}
 #endif
 
