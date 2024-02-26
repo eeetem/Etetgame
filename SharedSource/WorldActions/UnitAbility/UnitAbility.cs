@@ -73,12 +73,15 @@ public class UnitAbility
 
 	public Tuple<bool, string> CanPerform(Unit actor, WorldObject target, bool consultTargetAids, bool nextTurn, int dimension =-1)
 	{
-		if (ImmideateActivation && !Equals(target, actor.WorldObject))
-		{
-			return new Tuple<bool, string>(false, "Ability must be used on self");
-		}
 
 		Tuple<bool, string>? res;
+		res = HasEnoughPointsToPerform(actor,nextTurn);
+		if (!res.Item1)
+		{
+			return res;
+		}
+
+		
 		if (consultTargetAids)
 		{
 			var aids = IsValidTarget(actor, target);
@@ -95,11 +98,7 @@ public class UnitAbility
 		}
 		
 		
-		res = HasEnoughPointsToPerform(actor,nextTurn);
-		if (!res.Item1)
-		{
-			return res;
-		}
+	
 
 		return new Tuple<bool, string>(true, "");
 	

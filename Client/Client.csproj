@@ -452,13 +452,13 @@
         <None Update="Content\Environment\Windows\WindowOneDestroyed2.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Content\Environment\Windows\WindowTwo0Two1.png">
+        <None Update="Content\Environment\Windows\WindowTwo1.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Content\Environment\Windows\WindowTwo0Two2.png">
+        <None Update="Content\Environment\Windows\WindowTwo2.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Content\Environment\Windows\WindowTwo0Two3.png">
+        <None Update="Content\Environment\Windows\WindowTwo0.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Content\Environment\Windows\WindowTwoDestroyed1.png">
@@ -467,7 +467,7 @@
         <None Update="Content\Environment\Windows\WindowTwoDestroyed2.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Content\Environment\Windows\WindowTwoDestroyed3.png">
+        <None Update="Content\Environment\Windows\WindowTwoDestroyed0.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

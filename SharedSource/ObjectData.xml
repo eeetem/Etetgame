@@ -84,39 +84,56 @@
     <sprite source="Environment/glassWall" offset= "0,0"/>
     <name>glassWall</name>
   </object>
-  <object VCover="3" SCover = "0" Edge = "true" health="6">
-    <sprite source="Environment/strawWall" offset= "0,0"/>
-    <name>strawWall</name>
-  </object>
-  <object VCover = "0" SCover = "3" Edge = "true" health="1">
-    <sprite source="Environment/paperMache" offset= "0,0"/>
-    <name>paperMache</name>
-  </object>
   <!--window1-->
-  <object SCover = "3" Edge = "true" health="8">
-    <sprite source="Environment/Windows/BrickWallOne" offset= "0,0">
+  <object SCover = "1" Edge = "true" health="5">
+    <sprite source="Environment/Windows/WindowOne" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
-      <variation id="3" weight="50"/>
     </sprite>
-    <name>Brick Wall 1</name>
+    <name>Brick Window 1</name>
     <destroyConsequences range = "1" >
-      <place name="Brick Wall Half 1"/>
+      <place name="Brick Window Destroyed 1"/>
     </destroyConsequences>
   </object>
 
-  <object SCover = "2" Edge = "true" health="8">
-    <sprite source="Environment/Brick Walls/BrickWallOneHalf" offset= "0,0">
+  <object SCover = "1" Edge = "true" health="5">
+    <sprite source="Environment/Windows/WindowOneDestroyed" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
     </sprite>
-    <name>Brick Wall Half 1</name>
+    <name>Brick Window Destroyed 1</name>
     <destroyConsequences range = "1" >
       <place name="Brick Wall Half Lite 1"/>
     </destroyConsequences>
   </object>
+  <!-- window1-->
+  <!-- window2-->
+  <object SCover = "1" Edge = "true" health="5">
+    <sprite source="Environment/Windows/WindowTwo" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Window 2</name>
+    <destroyConsequences range = "1" >
+      <place name="Brick Window Destroyed 2"/>
+    </destroyConsequences>
+  </object>
+
+  <object SCover = "1" Edge = "true" health="5">
+    <sprite source="Environment/Windows/WindowTwoDestroyed" offset= "0,0">
+      <variation id="0" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="2" weight="10"/>
+    </sprite>
+    <name>Brick Window Destroyed 2</name>
+    <destroyConsequences range = "1" >
+      <place name="Brick Wall Half Lite 2"/>
+    </destroyConsequences>
+  </object>
+  <!-- window2-->
   <!--wall1-->
   <object SCover = "3" Edge = "true" health="8">
     <sprite source="Environment/Brick Walls/BrickWallOne" offset= "0,0">

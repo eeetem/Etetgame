@@ -57,7 +57,7 @@ public class GameLayout : MenuLayout
 		SelectedUnit = unit;
 		ReMakeMovePreview();
 	
-			UI.SetUI( new GameLayout());
+		UI.SetUI( new GameLayout());
 		
 		Camera.SetPos(unit.WorldObject.TileLocation.Position);
 	}
@@ -557,8 +557,8 @@ public class GameLayout : MenuLayout
 		ConfirmButton = new ImageButton();
 		ConfirmButton.HorizontalAlignment = HorizontalAlignment.Center;
 		ConfirmButton.VerticalAlignment = VerticalAlignment.Bottom;
-		ConfirmButton.Top = (int) (-120 * globalScale.X);
-		ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirm"));
+		ConfirmButton.Top = (int) (-90 * globalScale.X);
+		ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation4"));
 		ConfirmButton.ImageWidth = (int) (80 * globalScale.X);
 		ConfirmButton.Width = (int) (80 * globalScale.X);
 		ConfirmButton.ImageHeight = (int) (20 * globalScale.X);
@@ -614,7 +614,6 @@ public class GameLayout : MenuLayout
 			}, 
 			delegate(Unit unit, WorldObject vector2Int)
 			{
-				if(unit.WorldObject.TileLocation.Position != vector2Int.TileLocation.Position) return new Tuple<bool, string>(false,"Target isnt self");
 				if(unit.MovePoints<0) return new Tuple<bool, string>(false,"Not Enough Move Points");
 				return new Tuple<bool, string>(true,"");
 			}
@@ -638,10 +637,10 @@ public class GameLayout : MenuLayout
 		}
 
 
-		int top = (int) (-2*globalScale.X) ;
+		int top = (int) (-9*globalScale.X) ;
 		float scale = globalScale.X * 0.9f;
 		int totalBtns = ActionButtons.Count;
-		int btnWidth = (int) (32 * scale);
+		int btnWidth = (int) (34 * scale);
 		int totalWidth = totalBtns * btnWidth;
 		int startOffest = Game1.resolution.X / 2 - totalWidth / 2;
 
@@ -672,13 +671,13 @@ public class GameLayout : MenuLayout
 
 
 	private static readonly List<HudActionButton> ActionButtons = new();
-	
-	private static void DoActiveAction(bool force = false)
+	private static bool ActionForce = false;
+	private static void DoActiveAction()
 	{
 		if(ActionTarget == null) return;
 		if (activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch) return;
 
-		if (force||activeAction == ActiveActionType.Overwatch)
+		if (ActionForce||activeAction == ActiveActionType.Overwatch)
 		{
 			if (!HudActionButton.SelectedButton.HasPoints()) return;//only check for point is we're forcing
 		}
@@ -688,8 +687,8 @@ public class GameLayout : MenuLayout
 			var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
 			if (!res.Item1)
 			{
-				new PopUpText(res.Item2, ActionTarget.TileLocation.Position, Color.Red);
-				new PopUpText(res.Item2, SelectedUnit.WorldObject.TileLocation.Position, Color.Red);
+				ActionForce = true;
+				UpdateHudButtons();
 				return;
 			}
 
@@ -976,23 +975,17 @@ public class GameLayout : MenuLayout
 	
 		batch.Draw(timerRenderTarget, new Vector2(Game1.resolution.X-timerRenderTarget.Width*globalScale.X*0.9f, 0), null, Color.White, 0, Vector2.Zero, globalScale.X*0.9f ,SpriteEffects.None, 0);
 		
-		Texture2D bar = TextureManager.GetTexture("GameHud/BottomBar/mainbuttonbox");
-		var box = TextureManager.GetTexture("GameHud/BottomBar/Infobox");
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
-			infoboxtip = new Vector2((Game1.resolution.X - box.Width * globalScale.X) / 2f, Game1.resolution.Y - (box.Height+2) * globalScale.X);
-		}
-		else
-		{
-			infoboxtip = new Vector2((Game1.resolution.X - box.Width * globalScale.X) / 2f, Game1.resolution.Y - (bar.Height+10) * globalScale.X);
+			var box = TextureManager.GetTexture("GameHud/BottomBar/mainBox");
+			infoboxscale = globalScale.X * 0.8f;
+			infoboxtip = new Vector2((Game1.resolution.X - box.Width * infoboxscale) / 2f, Game1.resolution.Y - (box.Height+2) * infoboxscale);
+			batch.Draw(box, infoboxtip, null, Color.White, 0, Vector2.Zero, infoboxscale,SpriteEffects.None, 0);
 		}
 
-		batch.Draw(box, infoboxtip, null, Color.White, 0, Vector2.Zero, globalScale.X,SpriteEffects.None, 0);
 		batch.End();
 		
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
-		//centered
-		batch.Draw(bar, new Vector2((Game1.resolution.X - bar.Width*globalScale.X)/2f, Game1.resolution.Y - bar.Height*globalScale.X), null, Color.White, 0, Vector2.Zero, globalScale.X ,SpriteEffects.None, 0);
 		string chatmsg = "";
 		int extraLines = 0;
 		int width = 40;
@@ -1027,6 +1020,7 @@ public class GameLayout : MenuLayout
 		
 	}
 	private static Vector2 infoboxtip = new(0,0);
+	private static float infoboxscale = 1f;
 
 	public override void RenderFrontHud(SpriteBatch batch, float deltatime)
 	{
@@ -1040,78 +1034,53 @@ public class GameLayout : MenuLayout
 		char[] characters = { 'Z','X','C','V', 'B', 'N' };
 		for (int i = 0; i < ActionButtons.Count && i < characters.Length; i++)
 		{
-			batch.DrawText(characters[i].ToString(), new Vector2(ActionButtons[i].UIButton.Left + 12 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y - 20 * globalScale.Y), globalScale.Y * 1.6f, 1, Color.White);
+			batch.DrawText(characters[i].ToString(), new Vector2(ActionButtons[i].UIButton.Left + 16 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + 1 * globalScale.Y), globalScale.Y * 1.6f, 1, Color.White);
 		}
 
-
+		
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
-
+			Vector2 tooltip = infoboxtip + new Vector2(50, 38) * infoboxscale;
 			string toolTipText = HudActionButton.SelectedButton!.Tooltip;
-
-			batch.DrawText(toolTipText, infoboxtip + new Vector2(15, 10) * globalScale.X, globalScale.X * 0.6f, 40, Color.White);
-			Vector2 startpos = infoboxtip + new Vector2(5, 40f) * globalScale.X;
-
+	
+			batch.DrawText(toolTipText,tooltip+new Vector2(0,15)*infoboxscale, infoboxscale, 40, Color.White);
+			Vector2 startpos = infoboxtip + new Vector2(12, 32) * infoboxscale;
+			Vector2 offset = new Vector2(0, 40)*infoboxscale;
 
 			AbilityCost cost = HudActionButton.SelectedButton.Cost;
-			Vector2 offset = new Vector2(5, 0);
+			
 			Color c = Color.Green;
+			if (cost.ActionPoints > SelectedUnit.ActionPoints) c = Color.Red;
+			batch.DrawText(cost.ActionPoints.ToString(), startpos, globalScale.X * 2f, 24, c);
+
+			c = Color.Green;
+			if (cost.MovePoints > SelectedUnit.MovePoints) c = Color.Red;
+			batch.DrawText(cost.MovePoints.ToString(), startpos + offset, globalScale.X * 2f, 24, c);
+			
+			c = Color.Green;
+			if (cost.Determination > SelectedUnit.Determination) c = Color.Red;
+			batch.DrawText(cost.Determination.ToString(), startpos + offset*2f, globalScale.X * 2f, 24, c);
 
 
-			if (cost.MovePoints > 0)
-			{
-				if (cost.MovePoints > SelectedUnit.MovePoints)
-				{
-					c = Color.Red;
-				}
-
-				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/tinyBox"), startpos + offset * globalScale.X + new Vector2(0, 0) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.5f, SpriteEffects.None, 0);
-				batch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), startpos + offset * globalScale.X + new Vector2(5, 3) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.5f, SpriteEffects.None, 0);
-				batch.DrawText(cost.MovePoints + "", startpos + offset * globalScale.X + new Vector2(30, 2) * globalScale.X, globalScale.X * 1.5f, 24, c);
-			}
-
-			if (cost.ActionPoints > 0)
-			{
-				offset += new Vector2(40, 0);
-				c = Color.Green;
-				if (cost.ActionPoints > SelectedUnit.ActionPoints)
-				{
-					c = Color.Red;
-				}
-
-				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/tinyBox"), startpos + offset * globalScale.X + new Vector2(0, 0) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.5f, SpriteEffects.None, 0);
-				batch.Draw(TextureManager.GetTexture("HoverHud/actionpoint"), startpos + offset * globalScale.X + new Vector2(5, 3) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.5f, SpriteEffects.None, 0);
-				batch.DrawText(cost.ActionPoints + "", startpos + offset * globalScale.X + new Vector2(30, 2) * globalScale.X, globalScale.X * 1.5f, 24, c);
-			}
-
-			if (cost.Determination > 0)
-			{
-				offset += new Vector2(40, 0);
-				c = Color.Green;
-				if (cost.Determination > SelectedUnit.Determination)
-				{
-					c = Color.Red;
-				}
-
-				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/tinyBox"), startpos + offset * globalScale.X + new Vector2(0, 0) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.5f, SpriteEffects.None, 0);
-				batch.Draw(TextureManager.GetTexture("HoverHud/detgreen"), startpos + offset * globalScale.X + new Vector2(3, 5) * globalScale.X, null, Color.White, 0, Vector2.Zero, globalScale.X * 1.1f, SpriteEffects.None, 0);
-				batch.DrawText(cost.Determination + "", startpos + offset * globalScale.X + new Vector2(30, 2) * globalScale.X, globalScale.X * 1.5f, 24, c);
-			}
 
 			if (ActionTarget != null)
 			{
 				if (activeAction == ActiveActionType.Action)
 				{
-					var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
-					if (!res.Item1)
+					if (HudActionButton.SelectedButton.HasPoints())
 					{
-						batch.DrawText(res.Item2, startpos + new Vector2(12, 25) * globalScale.X, globalScale.X, 25, Color.DarkRed);
-
+						var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
+						Color g = Color.Yellow;
+						if (ActionForce) g = Color.Red;
+						if (!res.Item1)
+						{
+							batch.DrawText(res.Item2, tooltip, globalScale.X, 25, g);
+						}
 					}
 				}
 				else
 				{
-					batch.DrawText("Using overwatch will prevent this unit from  doing any other actions this turn", startpos + new Vector2(12, 25) * globalScale.X, globalScale.X / 2f, 50, Color.Yellow);
+					batch.DrawText("Using overwatch will prevent this unit from  doing any other actions this turn", tooltip, globalScale.X / 2f, 50, Color.Yellow);
 				}
 
 			}
@@ -1365,10 +1334,6 @@ public class GameLayout : MenuLayout
 			{
 				ToggleOverWatch();
 			}
-			else if(currentKeyboardState.IsKeyDown(Keys.LeftShift))
-			{
-				DoActiveAction(true);
-			}
 			else
 			{
 				DoActiveAction();
@@ -1442,10 +1407,10 @@ public class GameLayout : MenuLayout
 					SelectedUnit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(position));
 					break;
 				case ActiveActionType.Action:
+					
 					var edgeList = tile.GetAllEdges();
 					if (drawExtra && edgeList.Count>0)
 					{
-
 						int currentlySelected = -1;
 						if(ActionTarget != null)
 						{
@@ -1489,6 +1454,7 @@ public class GameLayout : MenuLayout
 			}
 
 		}
+		UpdateHudButtons();
 	}
 
 
@@ -1795,20 +1761,35 @@ public class GameLayout : MenuLayout
 				GameManager.GetMyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				GameManager.GetEnemyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				suggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(potentialTargets);
-
-				if (suggestedTargets.Count > 0)
+				if (!HudActionButton.SelectedButton.HasPoints())
 				{
-					ActionTarget = suggestedTargets[0];
+					ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation2"));
+				}else if (ActionTarget != null && !HudActionButton.SelectedButton.CanPerformAction((WorldObject)ActionTarget).Item1)
+				{
+					if (ActionForce)
+					{
+						ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation4"));
+					}
+					else
+					{
+						ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation3"));
+					}
 
 				}
+				else
+				{
+					ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation1"));
+				}
+
+				if (suggestedTargets.Count > 0 && ActionTarget == null)
+				{
+					ActionTarget = suggestedTargets[0];
+				}
+
 
 				break;
-
-
-
 		}
-
-
+	
 
 		if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
 
@@ -1840,6 +1821,7 @@ public class GameLayout : MenuLayout
 			activeAction = ActiveActionType.None;
 		}
 
+		ActionForce = false;
 		UpdateHudButtons();
 	}
 
