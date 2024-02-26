@@ -21,7 +21,7 @@ public class Suppress : UnitSequenceAction
 	}
 
 	public override BatchingMode Batching => BatchingMode.OnlySameType;
-	public int DetDmg;
+	public ushort DetDmg;
 
 	protected bool Equals(Suppress other)
 	{
@@ -45,25 +45,27 @@ public class Suppress : UnitSequenceAction
 	}
 
 
-	public static Suppress Make(int detDmg, int actorID) 
+	public static Suppress Make(ushort detDmg, int actorID) 
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.DetDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
-	public static Suppress Make(int detDmg, Vector2Int actorID)
+	public static Suppress Make(ushort detDmg, Vector2Int actorID)
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.DetDmg = detDmg;
 		t.Requirements = new TargetingRequirements(actorID);
+
 		return t;
 	}
-	public static Suppress Make(int detDmg, TargetingRequirements req) 
+	public static Suppress Make(ushort detDmg, TargetingRequirements req) 
 	{
 		Suppress t = (GetAction(SequenceType.Suppress) as Suppress)!;
 		t.DetDmg = detDmg;
 		t.Requirements = req;
+
 		return t;
 	}
 
@@ -78,7 +80,7 @@ public class Suppress : UnitSequenceAction
 	protected override void DeserializeArgs(Message msg)
 	{
 		base.DeserializeArgs(msg);
-		DetDmg = msg.GetInt();
+		DetDmg = msg.GetUShort();
 	}
 
 
@@ -112,13 +114,23 @@ public class Suppress : UnitSequenceAction
 
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
-		Texture2D arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/upArrow");
-		if(DetDmg>0) arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
-		int absDmg = Math.Abs(DetDmg);
 		
+		var arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
+
 		Vector2 offset = new Vector2(arrowSprite.Width-2,0);
 		batch.Draw(arrowSprite, pos+offset*3, Color.White);
-		batch.DrawNumberedIcon(absDmg.ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+		batch.DrawNumberedIcon(DetDmg.ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+	}
+
+	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+		batch.DrawText("" +
+		               "           Suppression:\n" +
+		               "  [Green]Amount[-] to be subtracted from determination\n" +
+		               "  todo panic", pos, scale, Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 5),scale/2f,Color.White);
+
+
 	}
 
 	public override void Preview(SpriteBatch spriteBatch)

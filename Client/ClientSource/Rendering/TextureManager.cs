@@ -85,9 +85,9 @@ public static class TextureManager
         }
         else
         {
-            var tex = new Texture2D(Game1.instance.GraphicsDevice, 10, 10);
+            var tex = new Texture2D(Game1.instance.GraphicsDevice, 1, 1);
             //make it white
-            var data = new Color[100];
+            var data = new Color[1];
             for (int i = 0; i < data.Length; ++i) data[i] = Color.White;
             tex.SetData(data);
 		

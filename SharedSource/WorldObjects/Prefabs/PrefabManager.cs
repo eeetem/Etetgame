@@ -28,11 +28,12 @@ public static class PrefabManager
 		{
 
 			string name = xmlObj.GetElementsByTagName("name")[0]?.InnerText ?? string.Empty;
+			string tip = xmlObj.GetElementsByTagName("tip")[0]?.InnerText ?? string.Empty;
 			var effectelement = xmlObj.GetElementsByTagName("consequences")[0];
 			if (effectelement != null)
 			{
 				var itm = ParseConsequences(effectelement);
-				var st = new StatusEffectType(name,itm);
+				var st = new StatusEffectType(name,tip,itm);
 				StatusEffects.Add(name, st);
 			}
 
@@ -239,7 +240,7 @@ public static class PrefabManager
 		
 		int dmg = int.Parse(xmlElement.Attributes?["dmg"]?.InnerText ?? "0");
 		int detRes = int.Parse(xmlElement.Attributes?["detRes"]?.InnerText ?? "0");
-		int supression = int.Parse(xmlElement.Attributes?["supression"]?.InnerText ?? "0");
+		ushort supression = ushort.Parse(xmlElement.Attributes?["supression"]?.InnerText ?? "0");
 		int supressionRange = int.Parse(xmlElement.Attributes?["supressionRange"]?.InnerText ?? "0");
 		int dropoff = int.Parse(xmlElement.Attributes?["dropOffRange"]?.InnerText ?? "10");
 
@@ -358,7 +359,8 @@ public static class PrefabManager
 			eff.Dmg =  int.Parse(dmgitm.Attributes?["dmg"]?.InnerText ?? "0");
 			eff.DetRes =  int.Parse(dmgitm.Attributes?["detRes"]?.InnerText ?? "0");
 			eff.EnvRes =  int.Parse(dmgitm.Attributes?["envRes"]?.InnerText ?? "0");
-			eff.Det = int.Parse(dmgitm.Attributes?["det"]?.InnerText ?? "0");
+			eff.Det = ushort.Parse(dmgitm.Attributes?["det"]?.InnerText ?? "0");
+
 		}
 		XmlNode? fowSpot = ((XmlElement) effect).GetElementsByTagName("fowSpot")[0];
 		if (fowSpot != null)
@@ -374,6 +376,7 @@ public static class PrefabManager
 			eff.Act =  new ValueChange(valitm.Attributes?["act"]?.InnerText ?? "0");
 			eff.Move = new ValueChange(valitm.Attributes?["move"]?.InnerText ?? "0");
 			eff.MoveRange = new ValueChange(valitm.Attributes?["moveRange"]?.InnerText ?? "0");
+			eff.Determination = new ValueChange(valitm.Attributes?["determination"]?.InnerText ?? "0");
 		}
 		XmlNode? placeItem = ((XmlElement) effect).GetElementsByTagName("place")[0];
 		if(placeItem !=null)

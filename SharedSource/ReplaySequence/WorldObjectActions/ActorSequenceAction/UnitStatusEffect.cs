@@ -5,6 +5,7 @@ using Riptide;
 
 #if CLIENT
 using DefconNull.Rendering;
+using DefconNull.WorldObjects;
 #endif
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -74,15 +75,42 @@ public class UnitStatusEffect  : UnitSequenceAction
 
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
-	
 		Texture2D plusMinus = TextureManager.GetTexture("HoverHud/Consequences/minus");
 		if(addNotRemove) plusMinus = TextureManager.GetTexture("HoverHud/Consequences/plus");
 		Texture2D effectIcon = TextureManager.GetTextureFromPNG("Icons/" + effectName);
 		pos += new Vector2(70, 0);
 		batch.Draw(plusMinus, pos, Color.White);
-		batch.Draw(effectIcon, pos+new Vector2(30,0), Color.White);
+		batch.DrawNumberedIcon(duration.ToString(),effectIcon, pos + new Vector2(30, 0), Color.White);
+
 		
 		
+	}
+
+	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+
+		string str = "                 Status Effect:\n";
+		Texture2D rmicn = TextureManager.GetTexture("HoverHud/Consequences/plus");
+		if (!addNotRemove)
+		{
+			str += "  Effect wil be [Red]removed[-]";
+			rmicn = TextureManager.GetTexture("HoverHud/Consequences/minus");
+		}
+		else
+		{
+			str += "  Effect wil be [Green]added[-]";
+			str += "\n  [Green]Duration[-]";
+		}
+		str += "\n"+PrefabManager.StatusEffects[effectName].Tip;
+		batch.DrawText(str, pos, scale, 50,Color.White);
+		batch.Draw(rmicn, pos + new Vector2(0, 5),scale/2f,Color.White);
+		if (addNotRemove)
+		{
+			Texture2D effectIcon = TextureManager.GetTextureFromPNG("Icons/" + effectName);
+			batch.Draw(effectIcon, pos + new Vector2(0, 16),scale/2f,Color.White);
+		}
+
+
 	}
 #endif
 }

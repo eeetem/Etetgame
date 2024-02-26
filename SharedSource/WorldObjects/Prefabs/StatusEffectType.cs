@@ -5,12 +5,14 @@ namespace DefconNull.WorldObjects;
 
 public class StatusEffectType
 {
-	public readonly string name;
+	public readonly string Name;
+	public readonly string Tip;
 	public readonly WorldConseqences Conseqences;
 
-	public StatusEffectType(string name, WorldConseqences itm)
+	public StatusEffectType(string name, string tip, WorldConseqences itm)
 	{
-		this.name = name;
+		this.Name = name;
+		this.Tip = tip;
 		Conseqences = itm;
 	}
 

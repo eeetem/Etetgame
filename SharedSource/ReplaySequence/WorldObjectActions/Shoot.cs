@@ -62,22 +62,38 @@ public class Shoot : SequenceAction
 
 	
 #if CLIENT
+
+	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+		batch.DrawText("" +
+		               "           Shooting:\n" +
+		               "  [Green]Base damage[-] done by the weapon\n" +
+		               "  Damage [Red]absorbed[-] by cover\n" +
+		               "  Damage [Red]lost[-] to weapons range\n" +
+		               "  [Green]Final Damage[-] done by the weapon", pos, scale, Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos + new Vector2(0, 5),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/cover"), pos + new Vector2(0, 16),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos + new Vector2(0, 28),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40),scale/2f,Color.White);
+		
+		
+	}
+
 	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
 	{
 		pos += new Vector2(0, 0);
 		Vector2 offset = new Vector2(TextureManager.GetTexture("HoverHud/Consequences/shoot").Width-2,0);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos, Color.White);
-		batch.DrawText(OriginalDamage.ToString(), pos+new Vector2(26,7),1.8f, Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/cover"), pos+offset, Color.White);
-		batch.DrawText(CoverBlock.ToString(), pos+offset+new Vector2(26,5),1.8f, Color.Red);
 		
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos+offset*2, Color.White);
-		batch.DrawText(RangeBlock.ToString(), pos+offset*2+new Vector2(26,7),1.8f, Color.Red);
+		batch.DrawNumberedIcon(OriginalDamage.ToString(), TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos, Color.White);
 		
-		batch.DrawText("=", pos+offset*2+new Vector2(45,7),2f, Color.White);
+		batch.DrawNumberedIcon(CoverBlock.ToString(), TextureManager.GetTexture("HoverHud/Consequences/cover"), pos+offset, Color.Red);
 		
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos+offset*3+new Vector2(8,0), Color.White);
-		batch.DrawText((OriginalDamage-CoverBlock-RangeBlock).ToString(), pos+offset*3+new Vector2(26+8,7),1.8f, Color.White);
+		batch.DrawNumberedIcon(RangeBlock.ToString(), TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos+offset*2, Color.Red);
+		
+		batch.DrawText("=", pos+offset*2+new Vector2(26,7),2f, Color.White);
+
+		batch.DrawNumberedIcon((OriginalDamage-CoverBlock-RangeBlock).ToString(), TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos+offset*3+new Vector2(8,0), Color.White);
+
 		
 		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/line"), new Vector2(44,25), Color.White);
 	}

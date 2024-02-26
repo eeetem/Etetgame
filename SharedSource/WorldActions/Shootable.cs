@@ -20,12 +20,12 @@ public class Shootable : Effect
 	
 	readonly int preDropOffDmg;
 	readonly int detResistance;
-	readonly int supressionStrenght;
+	readonly ushort supressionStrenght;
 	readonly int supressionRange;
 	readonly int dropOffRange;
 	
 
-	public Shootable(int preDropOffDmg, int detResistance, int supressionStrenght, int supressionRange, int dropOffRange)
+	public Shootable(int preDropOffDmg, int detResistance, ushort supressionStrenght, int supressionRange, int dropOffRange)
 	{
 		this.preDropOffDmg = preDropOffDmg;
 		this.detResistance = detResistance;

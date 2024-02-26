@@ -237,26 +237,71 @@ public static partial class WorldObjectManager
 			int resistance = DetResistance;
 			Texture2D damageSprite = TextureManager.GetTexture("HoverHud/Consequences/genericDamage");
 			Texture2D blockSprite = TextureManager.GetTexture("HoverHud/Consequences/detShield");
-			Color dmgColor = Color.White;
+			Color resistColor = Color.White;
+			int sumDamage = Dmg - resistance;
 			if (GetTargetObject().UnitComponent == null)
 			{
 				resistance = EnvResistance;
-				damageSprite = TextureManager.GetTexture("HoverHud/Consequences/cover");
+				//damageSprite = TextureManager.GetTexture("HoverHud/Consequences/cover");
+				blockSprite = TextureManager.GetTexture("HoverHud/Consequences/envShield");
 			//	dmgColor = Color.Orange;
+			}else if (GetTargetObject().UnitComponent.Determination <= 0)
+			{
+				bool supressed = true;
+				resistColor = Color.Red;
+				sumDamage = Dmg;
+				resistance = 0;
 			}
 			
 			pos += new Vector2(0, 0);
 			Vector2 offset = new Vector2(damageSprite.Width-2,0);
-			batch.Draw(damageSprite, pos+offset, Color.White);
-			batch.DrawText(Dmg.ToString(), pos+offset+new Vector2(26,7),1.8f, dmgColor);
+			batch.DrawNumberedIcon(Dmg.ToString(), damageSprite, pos+offset, Color.White);
+			batch.DrawNumberedIcon(resistance.ToString(), blockSprite, pos+offset*2f, Color.White,resistColor);
+			batch.DrawText("=", pos+offset*2+new Vector2(26,7),2f, Color.White);
+			batch.DrawNumberedIcon(sumDamage.ToString(), TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos+offset*3+new Vector2(8,0), Color.White);
+
+		}
+
+		public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+		{
 			
-			
-			batch.Draw(blockSprite, pos+offset*2, Color.White);
-			batch.DrawText(resistance.ToString(), pos+offset*2+new Vector2(26,5),1.8f, Color.Red);
-			batch.DrawText("=", pos+offset*2+new Vector2(45,7),2f, Color.White);
-			
-			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos+offset*3+new Vector2(8,0), Color.White);
-			batch.DrawText((Dmg-resistance).ToString(), pos+offset*3+new Vector2(26+8,5),1.8f, Color.White);
+
+			Texture2D blockSprite = TextureManager.GetTexture("HoverHud/Consequences/detShield");
+			string blockName = "determination";
+			Color resistColor = Color.White;
+			bool supressed = false;
+			if (GetTargetObject().UnitComponent == null)
+			{
+				blockSprite = TextureManager.GetTexture("HoverHud/Consequences/envShield");
+				blockName = "natural resistance";
+			}else if (GetTargetObject().UnitComponent.Determination <= 0)
+			{
+				supressed = true;
+			}
+
+			string tip = "" +
+			             "           Damage:\n" +
+			             "  [Green]Base damage[-] received\n" +
+			             "  Damage [Red]resisted[-] by " + blockName + "\n";
+			if (supressed)
+			{
+				tip += "  Resistance [Red]bypassed[-]-lack of determ.\n";
+			}
+
+			tip += "  [Green]Final Damage[-]";
+			batch.DrawText( tip, pos, scale, Color.White);
+			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 6),scale/2f,Color.White);
+			batch.Draw(blockSprite ,pos + new Vector2(0, 16),scale/2f,Color.White);
+			if (supressed)
+			{
+				batch.Draw(blockSprite ,pos + new Vector2(0, 29),scale/2f,Color.Red);
+				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 42),scale/2f,Color.White);
+			}
+			else
+			{
+				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 30),scale/2f,Color.White);
+			}
+
 		}
 
 		public override void Preview(SpriteBatch spriteBatch)

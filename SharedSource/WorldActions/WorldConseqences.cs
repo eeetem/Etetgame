@@ -16,10 +16,11 @@ namespace DefconNull.WorldActions;
 public class WorldConseqences 
 {
 	public int Dmg;
-	public int Det;
+	public ushort Det;
 	public ValueChange Move;
 	public ValueChange Act;
 	public ValueChange MoveRange;
+	public ValueChange Determination;
 	public bool ChangeValues = false;
 	public int Range = 1;
 	public string? Sfx = "";
@@ -36,6 +37,7 @@ public class WorldConseqences
 	public int FogOfWarSpotScatter { get; set; }
 	public int DetRes { get; set; }
 	public int EnvRes { get; set; }
+	
 
 
 	public List<IWorldTile> GetAffectedTiles(Vector2Int target)
@@ -138,7 +140,7 @@ public class WorldConseqences
 		}
 		if (ChangeValues)
 		{
-			consequences.Add(ChangeUnitValues.Make(req,Act,MoveRange,null, MoveRange));
+			consequences.Add(ChangeUnitValues.Make(req,Act,Move,Determination, MoveRange));
 		}
 
 		foreach (var status in RemoveStatus)

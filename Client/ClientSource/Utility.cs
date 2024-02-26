@@ -64,10 +64,14 @@ public static partial class Utility
 
 
 	}
-	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, Color c)
+	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, Color textc, Color iconc = default)
 	{
-		spriteBatch.Draw(icon, pos, Color.White);
-		spriteBatch.DrawText(num, pos+new Vector2(26,7),1.8f, c);
+		if (iconc == default)
+		{
+			iconc = Color.White;
+		}
+		spriteBatch.Draw(icon, pos, iconc);
+		spriteBatch.DrawText(num, pos+new Vector2(12,7),1.8f, textc);
 	}
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
 	{
@@ -76,6 +80,10 @@ public static partial class Utility
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position,float scale, Color c)
 	{
 		DrawText(spriteBatch,  text,  position, scale,100,  c);
+	}
+	public static void Draw(this SpriteBatch spriteBatch, Texture2D tex, Vector2 position,float scale, Color c)
+	{
+		spriteBatch.Draw(tex, position, null, c, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 	}
 	public static void DrawPrefab(this SpriteBatch spriteBatch, Vector2 Pos, string prefab, Direction dir, bool fliped = false)
 	{
@@ -115,7 +123,7 @@ public static partial class Utility
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, float scale, int width, Color c)
 	{
 		int row = 0;
-		int charsinRow = -1;
+		int charsinRow = 0;
 		Color originalColor = c;
 
 		for (int index = 0; index < text.Length; index++)
@@ -127,7 +135,7 @@ public static partial class Utility
 			if (car == '\n')
 			{
 				row++;
-				charsinRow = -1;
+				charsinRow = 0;
 				continue;
 			}
 
@@ -180,14 +188,14 @@ public static partial class Utility
 				if (charsinRow + nextSpace > width)
 				{
 					row++;
-					charsinRow = -1;
+					charsinRow = 0;
 					continue;
 				}
 			}
 			if (charsinRow > width)
 			{
 				row++;
-				charsinRow = -1;
+				charsinRow = 0;
 			}
 
 			string texId;

@@ -17,13 +17,13 @@ public class ChangeUnitValues : UnitSequenceAction
 	public ValueChange ActChange;
 	public ValueChange MoveChange;
 	public ValueChange DetChange;
-	public ValueChange MoveRangeeffectChange;
+	public ValueChange MoveRangeEffectChange;
 
 	public override BatchingMode Batching => BatchingMode.Sequential;
 
 	protected bool Equals(ChangeUnitValues other)
 	{
-		return base.Equals(other) && ActChange.Equals(other.ActChange) && MoveChange.Equals(other.MoveChange) && DetChange.Equals(other.DetChange) && MoveRangeeffectChange.Equals(other.MoveRangeeffectChange);
+		return base.Equals(other) && ActChange.Equals(other.ActChange) && MoveChange.Equals(other.MoveChange) && DetChange.Equals(other.DetChange) && MoveRangeEffectChange.Equals(other.MoveRangeEffectChange);
 	}
 
 	public override bool Equals(object? obj)
@@ -35,7 +35,7 @@ public class ChangeUnitValues : UnitSequenceAction
 	}
 	public override int GetHashCode()
 	{
-		return HashCode.Combine(base.GetHashCode(), ActChange, MoveChange, DetChange, MoveRangeeffectChange);
+		return HashCode.Combine(base.GetHashCode(), ActChange, MoveChange, DetChange, MoveRangeEffectChange);
 	}
 
 	public static ChangeUnitValues Make(int actorID, int actChange = 0, int moveChange = 0, int detChange = 0, int moveRangeEffect = 0)
@@ -81,11 +81,11 @@ public class ChangeUnitValues : UnitSequenceAction
 		
 		if (moveRangeEffect.HasValue)
 		{
-			t.MoveRangeeffectChange = moveRangeEffect.Value;
+			t.MoveRangeEffectChange = moveRangeEffect.Value;
 		}
 		else
 		{
-			t.MoveRangeeffectChange = new ValueChange(0);
+			t.MoveRangeEffectChange = new ValueChange(0);
 		}
 
 		return t;
@@ -102,16 +102,16 @@ public class ChangeUnitValues : UnitSequenceAction
 		ActChange.Apply(ref Actor.ActionPoints);
 		MoveChange.Apply(ref Actor.MovePoints);
 		DetChange.Apply(ref Actor.Determination);
-		if(MoveRangeeffectChange.Value != 0)
+		if(MoveRangeEffectChange.Value != 0)
 		{
-			MoveRangeeffectChange.Apply(ref Actor.MoveRangeEffect);
+			MoveRangeEffectChange.Apply(ref Actor.MoveRangeEffect);
 		}
 		
 	}
 
 	public override string ToString()
 	{
-		return $"{base.ToString()}, {nameof(ActChange)}: {ActChange}, {nameof(MoveChange)}: {MoveChange}, {nameof(DetChange)}: {DetChange}, {nameof(MoveRangeeffectChange)}: {MoveRangeeffectChange}";
+		return $"{base.ToString()}, {nameof(ActChange)}: {ActChange}, {nameof(MoveChange)}: {MoveChange}, {nameof(DetChange)}: {DetChange}, {nameof(MoveRangeEffectChange)}: {MoveRangeEffectChange}";
 	}
 
 	protected override void SerializeArgs(Message message)
@@ -120,7 +120,7 @@ public class ChangeUnitValues : UnitSequenceAction
 		message.Add(ActChange);
 		message.Add(MoveChange);
 		message.Add(DetChange);
-		message.Add(MoveRangeeffectChange);
+		message.Add(MoveRangeEffectChange);
 	}
 
 	protected override void DeserializeArgs(Message msg)
@@ -129,7 +129,7 @@ public class ChangeUnitValues : UnitSequenceAction
 		ActChange = msg.GetSerializable<ValueChange>();
 		MoveChange = msg.GetSerializable<ValueChange>();
 		DetChange = msg.GetSerializable<ValueChange>();
-		MoveRangeeffectChange = msg.GetSerializable<ValueChange>();
+		MoveRangeEffectChange = msg.GetSerializable<ValueChange>();
 	}
 
 #if CLIENT
@@ -188,6 +188,24 @@ public class ChangeUnitValues : UnitSequenceAction
 		}
 	
 	}
+
+	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+		batch.DrawText("" +
+		               "           Value Change:\n" +
+		               "  Move Point [Yellow]Change[-]\n" +
+		               "  Action Point [Yellow]Change[-]\n" +
+		               "  Determination [Yellow]Change[-]\n" +
+		               "  Move Range [Yellow]Change[-]\n" +
+		               "  todo sight\n", pos, scale, Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos + new Vector2(0, 5),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), pos + new Vector2(0, 16),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 28),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40),scale/2f,Color.White);
+
+	
+	}
+
 	public override void Preview(SpriteBatch spriteBatch)
 	{
 		//todo UI rework

@@ -290,7 +290,7 @@
 
       <effect>
         <consequences visible ="false"  range = "7" exRange="1" target="friend" ignore="Officer">
-          <damage det="-100"/>
+          <values determination="100"/>
         </consequences>
       </effect>
     </action>
@@ -485,6 +485,7 @@
 
   <statuseffect>
     <name>Repositioning</name>
+    <tip>Sets movement points to 5</tip>
     
       <consequences range="1">
         <values act ="0" move="5"/>
@@ -493,7 +494,7 @@
 
   <statuseffect>
     <name>Holstered</name>
-
+    <tip>Removes action points</tip>
       <consequences range="1">
         <values act ="[set]0" move="0"/>
       </consequences>
@@ -502,7 +503,7 @@
 
   <statuseffect>
     <name>Rapid Manouvers</name>
-
+    <tip>Restores action points and gives 5 movement points, while reducing movement range</tip>
       <consequences range="1">
         <values act ="1[set]" move="5[set]" moveRange="-3"/>
       </consequences>
@@ -511,8 +512,7 @@
 
   <statuseffect>
     <name>Boost</name>
-
-
+    <tip>Restores 1 move points and 1 action point</tip>
       <consequences  range="1">
         <values act ="1[cap]" move="1[cap]" moveRange="0"/>
       </consequences>

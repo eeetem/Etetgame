@@ -310,6 +310,11 @@ public abstract class SequenceAction :  IMessageSerializable
 
 		batch.DrawText(GetSequenceType().ToString(), pos, Color.White);
 	}
+
+    public virtual void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+    {
+        batch.DrawText(GetSequenceType().ToString(),pos, scale,Color.White);
+    }
 #endif
 #if SERVER
     public abstract bool ShouldSendToPlayerServerCheck(bool player1);
@@ -328,4 +333,6 @@ public abstract class SequenceAction :  IMessageSerializable
         return GetAction(this.GetSequenceType(), msg);
         
     }
+
+   
 }

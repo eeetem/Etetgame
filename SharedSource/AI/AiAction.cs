@@ -212,7 +212,7 @@ public abstract class AIAction
 
 		
 			
-			if(hitUnit.WorldObject.ID == attacker.WorldObject.ID && change.ActChange.GetChange(attacker.ActionPoints) <= 0 && change.MoveChange.GetChange(attacker.MovePoints) <= 0 && change.DetChange.GetChange(attacker.Determination) == 0 && change.MoveRangeeffectChange.GetChange(attacker.MoveRangeEffect) == 0)
+			if(hitUnit.WorldObject.ID == attacker.WorldObject.ID && change.ActChange.GetChange(attacker.ActionPoints) <= 0 && change.MoveChange.GetChange(attacker.MovePoints) <= 0 && change.DetChange.GetChange(attacker.Determination) == 0 && change.MoveRangeEffectChange.GetChange(attacker.MoveRangeEffect) == 0)
 			{
 				//we're just using points for an ability, no need to do extensive calculations
 				return new Tuple<int, int, int>(0,0,0);
@@ -224,12 +224,12 @@ public abstract class AIAction
 			var aChange =change.ActChange.GetChange(pseudoUnit.ActionPoints);
 			var mchanghe = change.MoveChange.GetChange(pseudoUnit.MovePoints);
 			var dchanghe = change.DetChange.GetChange(pseudoUnit.Determination);
-			var mrchanghe = change.MoveRangeeffectChange.GetChange(pseudoUnit.MoveRangeEffect);
+			var mrchanghe = change.MoveRangeEffectChange.GetChange(pseudoUnit.MoveRangeEffect);
 				
 			change.ActChange.Apply(ref pseudoUnit.ActionPoints);
 			change.MoveChange.Apply(ref pseudoUnit.MovePoints);
 			change.DetChange.Apply(ref pseudoUnit.Determination);
-			change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
+			change.MoveRangeEffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
 				
 			var postchangeScore = GetBestPossibleAbility(pseudoUnit, false,true,true,newDim);
 				
@@ -251,7 +251,7 @@ public abstract class AIAction
 				change.ActChange.Apply(ref pseudoUnit.ActionPoints);
 				change.MoveChange.Apply(ref pseudoUnit.MovePoints);
 				change.DetChange.Apply(ref pseudoUnit.Determination);
-				change.MoveRangeeffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
+				change.MoveRangeEffectChange.Apply(ref pseudoUnit.MoveRangeEffect);
 					
 				var postchangeDefenceScore = ProtectionPentalty(pseudoUnit,newDim, true);
 
@@ -396,7 +396,7 @@ public abstract class AIAction
 			valueMod.ActChange.Apply(ref hypotheticalUnit.ActionPoints);
 			valueMod.MoveChange.Apply(ref hypotheticalUnit.MovePoints);
 			valueMod.DetChange.Apply(ref hypotheticalUnit.Determination);
-			valueMod.MoveRangeeffectChange.Apply(ref hypotheticalUnit.MoveRangeEffect);
+			valueMod.MoveRangeEffectChange.Apply(ref hypotheticalUnit.MoveRangeEffect);
 			valueMod.Return();
 		}
 	

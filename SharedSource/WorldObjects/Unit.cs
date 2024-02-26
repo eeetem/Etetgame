@@ -79,7 +79,7 @@ namespace DefconNull.WorldObjects
 			StatusEffects.Clear();
 			foreach (var effect in data.StatusEffects)//dont apply them since their aplication would already be considered by the rest of the data
 			{
-				StatusEffects.Add(new StatusEffectInstance(PrefabManager.StatusEffects[effect.Item1],effect.Item2));
+				StatusEffects.Add(new StatusEffectInstance(PrefabManager.StatusEffects[effect.Item1],effect.Item2,this));
 			}
 			
 			Overwatch = data.Overwatch;
@@ -193,9 +193,9 @@ namespace DefconNull.WorldObjects
 			
 			foreach (var st in new List<StatusEffectInstance>(StatusEffects))
 			{
-				if(st.duration<=0) continue;
+				if(st.Duration<=0) continue;
 				//incorrect if status effect doesnt actually affect this unit but whatever
-				var cons = st.type.Conseqences.GetApplyConsiqunces(this.WorldObject);
+				var cons = st.Type.Conseqences.GetApplyConsiqunces(this.WorldObject);
 				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
 				foreach (var v in vals)
 				{
@@ -243,8 +243,7 @@ namespace DefconNull.WorldObjects
 			ClearOverWatch();
 			foreach (var effect in StatusEffects)
 			{
-				effect.Apply(this);
-
+				effect.Apply();
 			}
 
 
@@ -349,7 +348,7 @@ namespace DefconNull.WorldObjects
 		public void EndTurn()
 		{
 			
-			StatusEffects.RemoveAll(x => x.duration <= 0);
+			StatusEffects.RemoveAll(x => x.Duration <= 0);
 
 		}
 		
@@ -438,7 +437,7 @@ namespace DefconNull.WorldObjects
 				StatusEffects = new List<Tuple<string, int>>();
 				foreach (var st in u.StatusEffects)
 				{
-					StatusEffects.Add(new Tuple<string, int>(st.type.name,st.duration));
+					StatusEffects.Add(new Tuple<string, int>(st.Type.Name,st.Duration));
 				}
 
 				OverWatchedTiles = new List<Vector2Int>();
@@ -544,14 +543,14 @@ namespace DefconNull.WorldObjects
 
 		public void ApplyStatus(string? effect, int duration)
 		{
-			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration);
+			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration,this);
 			StatusEffects.Add(statuseffect);
-			statuseffect.Apply(this);
+			statuseffect.Apply();
 		}
 
 		public void RemoveStatus(string effectName)
 		{
-			StatusEffects.RemoveAll(x => x.type.name == effectName);
+			StatusEffects.RemoveAll(x => x.Type.Name == effectName);
 		}
 		
 		
