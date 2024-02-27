@@ -610,11 +610,11 @@ public  partial class WorldManager
                             result.hit = true;
                             result.HitObjId = obj.ID;
                             //if this is true then we're hitting a controllable form behind
-                            if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
-                            {
-                                result.CollisionPointLong += -0.3f * dir;
-                                result.CollisionPointShort += -0.3f * dir;
-                            }
+                           // if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
+                           // {
+                           //     result.CollisionPointLong += -0.3f * dir;
+                           //     result.CollisionPointShort += -0.3f * dir;
+                           // }
 
                             return result;
                         }
@@ -636,11 +636,11 @@ public  partial class WorldManager
                             result.hit = true;
                             result.HitObjId = hitobj.ID;
                             //if this is true then we're hitting a controllable form behind
-                            if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
-                            {
-                                result.CollisionPointLong += -0.3f * dir;
-                                result.CollisionPointShort += -0.2f * dir;
-                            }
+                           // if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
+                           // {
+                           //     result.CollisionPointLong += -0.1f * dir;
+                           //     result.CollisionPointShort += -0.1f * dir;
+                           // }
                             return result;
 								
                         }
@@ -654,11 +654,11 @@ public  partial class WorldManager
                             result.CollisionPointShort = collisionPointshort;
                             result.hit = true;
                             result.HitObjId = hitobj.ID;
-                            if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
-                            {
-                                result.CollisionPointLong += -0.3f * dir;
-                                result.CollisionPointShort += -0.3f * dir;
-                            }
+                           // if (GetTileAtGrid(lastCheckingSquare).UnitAtLocation != null)
+                           // {
+                           //     result.CollisionPointLong += -0.1f * dir;
+                           //     result.CollisionPointShort += -0.1f * dir;
+                           // }
                             return result;
                         }
                     }

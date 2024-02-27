@@ -220,7 +220,7 @@ public class Shootable : Effect
 		if (result.Value.hit)
 		{
 			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.Value.CollisionPointLong + Vector2.Normalize(to - from) / 5f;
+			to = result.Value.CollisionPointLong + Vector2.Normalize(to - from) / 7f;
 			WorldManager.RayCastOutcome cast;
 
 			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, false, true, pseudoLayer: dimension);
@@ -406,7 +406,7 @@ public class Shootable : Effect
 				passCover = Cover.Low;
 			}
 			
-			if (WorldManager.Instance.GetCover(pos,dir,true)>passCover)
+			if (WorldManager.Instance.GetCover(pos,dir,false,true)>passCover)
 			{
 				pos = new Vector2Int((int) p.Result.CollisionPointShort.X, (int) p.Result.CollisionPointShort.Y);
 		

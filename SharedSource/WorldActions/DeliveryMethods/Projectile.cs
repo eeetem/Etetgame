@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 #if CLIENT
@@ -26,6 +27,14 @@ public class Projectile : DeliveryMethod
 
 		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false);
 		target = WorldManager.Instance.GetTileAtGrid(outcome.CollisionPointShort).Surface!;
+		if(outcome.HitObjId != -1)
+		{
+			var obj = WorldObjectManager.GetObject(outcome.HitObjId)!;
+			if(obj.UnitComponent != null)
+			{
+				target = obj;
+			}
+		}
 		return new List<SequenceAction>();
 	}
 

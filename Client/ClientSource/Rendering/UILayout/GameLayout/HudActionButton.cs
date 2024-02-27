@@ -30,12 +30,14 @@ public class HudActionButton
 	readonly TextureRegion _icon;
 	public string Tooltip;
 	public readonly bool CanOverwatch;
-	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> performCheckTask, AbilityCost cost, string tooltip)
+	private bool selfOnly = false;
+	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> performCheckTask, AbilityCost cost, string tooltip, bool selfOnly)
 	{
 		UIButton = imageButton;
 		Cost = cost;
 		Tooltip = tooltip;
 		CanOverwatch = false;
+		this.selfOnly = selfOnly;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;
@@ -56,6 +58,7 @@ public class HudActionButton
 		UIButton = imageButton;
 		Cost = abl.GetCost();
 		Tooltip = abl.Tooltip;
+		selfOnly = abl.ImmideateActivation;
 		CanOverwatch = abl.CanOverWatch;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(abl.Icon);
@@ -99,7 +102,12 @@ public class HudActionButton
 	public List<WorldObject> GetSuggestedTargets(List<Unit> targetsToCheck)
 	{
 		List<WorldObject> suggestedTargets = new();
-
+	
+		if(selfOnly)
+		{
+			targetsToCheck.RemoveAll(x=>x.WorldObject.ID != OwnerID);
+			return suggestedTargets;
+		}
 		foreach (var target in targetsToCheck)
 		{
 			if (_performCheckTask(Owner,target.WorldObject).Item1

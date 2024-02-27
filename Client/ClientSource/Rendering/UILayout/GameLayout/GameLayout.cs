@@ -354,7 +354,7 @@ public class GameLayout : MenuLayout
 			elem.PressedImage = new TextureRegion(targetBarRenderTargets[unit.ID]);
 			elem.Image = new TextureRegion(targetBarRenderTargets[unit.ID]);
 			if (unit.Equals(ActionTarget)){
-				elem.Top = 10;
+				elem.Background =  new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/reticle"));
 			}
 			else
 			{
@@ -530,7 +530,7 @@ public class GameLayout : MenuLayout
 			//Width = (int)(50f*globalScale.X),
 			//MaxHeight = (int)(26f*globalScale.X),
 			//Height = (int)(38f*globalScale.X),
-			Top = (int)(0f*globalScale.Y),
+			Top = (int)(25f*globalScale.Y),
 			Left = (int)(-5f*globalScale.X),
 			ShowGridLines = true,
 		};
@@ -538,11 +538,13 @@ public class GameLayout : MenuLayout
 		var left = new Image();
 		left.Height = (int) (34f * globalScale.X);
 		left.Width = (int) (16f * globalScale.X);
+		left.HorizontalAlignment = HorizontalAlignment.Right;
 		left.Renderable = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/leftq"));
 		//left.
 		var right = new Image();
 		right.Height = (int) (34f * globalScale.X);
 		right.Width = (int) (16f * globalScale.X);
+		right.HorizontalAlignment = HorizontalAlignment.Left;
 		right.Renderable = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/righte"));
 		
 		targetBarStack.Widgets.Add(left);
@@ -618,7 +620,7 @@ public class GameLayout : MenuLayout
 				return new Tuple<bool, string>(true,"");
 			}
 			
-			,new AbilityCost(0,0,1),"Crouching increases the benefit of cover and allows hiding behind tall cover.");
+			,new AbilityCost(0,0,1),"Crouching increases the benefit of cover and allows hiding behind tall cover.",true);
 
 		panel.Widgets.Add(crouchbtn);
 
@@ -852,6 +854,7 @@ public class GameLayout : MenuLayout
 
 				batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.OutLineEffect);
 				Texture2D sprite = target.GetTexture();
+				
 				batch.Draw(sprite, target.GetDrawTransform().Position + Utility.GridToWorldPos(new Vector2(1.5f, 0.5f)), null, Color.White, 0, sprite.Bounds.Center.ToVector2(), Math.Max(1, 2f / Camera.GetZoom()), SpriteEffects.None, 0);
 				batch.End();
 			}
@@ -1679,7 +1682,7 @@ public class GameLayout : MenuLayout
 		var consDrawPoint = Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-consequenceListRenderTarget.Width, -60) * consScale;
 		if (SortedConsequences.TryGetValue(obj, out var list))
 		{
-			Console.WriteLine(consDrawPoint);
+			
 			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
 			Vector2 pos = new Vector2(0, 0);
 			foreach (var cons in list)
@@ -1807,9 +1810,9 @@ public class GameLayout : MenuLayout
 		}
 
 		targetBarStack!.Proportions!.Clear();
-		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 50));
+		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 200 * suggestedTargets.Count));
-		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 50));
+		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));
 	}
 
 	public static void SelectHudAction(HudActionButton? hudActionButton)
