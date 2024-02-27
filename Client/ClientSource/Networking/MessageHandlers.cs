@@ -105,7 +105,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.UnitUpdate)]
 	private static void ReciveUnitUpdateUpdate(Message message)
 	{
-		
+
 		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recivedUnitPositions = new();
 		int lenght = message.GetInt();
 		for (int i = 0; i < lenght; i++)

@@ -210,6 +210,7 @@ public static partial class GameManager
 	}
 	public static void UpdateUnitPositions()
 	{
+		if(SequenceManager.SequenceRunning) return;
 		if (RecivedUnitPositions == null) return;
 		List<int> justCreated = new List<int>();
 

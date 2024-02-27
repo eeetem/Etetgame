@@ -40,7 +40,7 @@ public static partial class NetworkingManager
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());
 		if(client!=null)
 			client.Disconnect();
-		
+
 		Ipport = ipport;
 		Name = name;
 		
@@ -91,6 +91,13 @@ public static partial class NetworkingManager
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif
+		client.Connection.MaxSendAttempts = 100;
+		client.Connection.MaxAvgSendAttempts = 10;
+		client.Connection.AvgSendAttemptsResilience = 25;
+#if DEBUG
+		client.Connection.CanQualityDisconnect = false;
+#endif
+
 
 
 

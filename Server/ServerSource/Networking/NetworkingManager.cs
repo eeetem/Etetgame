@@ -52,9 +52,9 @@ public static partial class NetworkingManager
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
-		connection.MaxSendAttempts = 50;
-		connection.MaxAvgSendAttempts = 5;
-		connection.AvgSendAttemptsResilience = 10;
+		connection.MaxSendAttempts = 100;
+		connection.MaxAvgSendAttempts = 10;
+		connection.AvgSendAttemptsResilience = 25;
 #if DEBUG
 		connection.CanQualityDisconnect = false;
 #endif
@@ -450,23 +450,38 @@ public static partial class NetworkingManager
 			server.Update();
 		}
 
-		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty)
+		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null || GameManager.Player1.HasDeliveredAllMessages) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.HasDeliveredAllMessages))
 		{
 			SendUnitUpdates();
-			GameManager.PlayerUnitPositionsDirty = false;
+			
 		}
         
 		if(GameManager.Player1 != null && GameManager.Player1.SequenceQueue.Count > 0 && GameManager.Player1.HasDeliveredAllMessages)
 		{
 			List<SequenceAction> result;
-			GameManager.Player1.SequenceQueue.TryDequeue(out result);
-			if(result!= null && result.Count>0) SendSequenceToPlayer(result,true);
+			GameManager.Player1.SequenceQueue.TryPeek(out result);
+			if (result != null && result.Count > 0)
+			{
+				var outcome = SendSequenceToPlayer(result,true);
+				if (outcome)
+				{
+					GameManager.Player1.SequenceQueue.TryDequeue(out result);
+				}
+			}
+			
 		}
 		if(GameManager.Player2 != null && GameManager.Player2.SequenceQueue.Count > 0 && GameManager.Player2.HasDeliveredAllMessages)
 		{
 			List<SequenceAction> result;
-			GameManager.Player2.SequenceQueue.TryDequeue(out result);
-			if(result!= null && result.Count>0) SendSequenceToPlayer(result,false);
+			GameManager.Player2.SequenceQueue.TryPeek(out result);
+			if (result != null && result.Count > 0)
+			{
+				var outcome = SendSequenceToPlayer(result,false);
+				if (outcome)
+				{
+					GameManager.Player2.SequenceQueue.TryDequeue(out result);
+				}
+			}
 		}
 	}
 
@@ -588,13 +603,15 @@ public static partial class NetworkingManager
 		var p =GameManager.GetPlayer(player1);
 		p.SequenceQueue.Enqueue(actions);
 	}
-	public static void SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
+	public static bool SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
 	{
-		if (actions.Count == 0) return;
+		if (actions.Count == 0) return true;
         
 		var p =GameManager.GetPlayer(player1);
  
 		actions.ForEach(x=>x.FilterForPlayer(player1));
+		if (!p.HasDeliveredAllMessages)
+			return false;
         
 		Log.Message("NETWORKING","Sending sequence to player: "+player1);
   
@@ -620,11 +637,13 @@ public static partial class NetworkingManager
 
 			if (player1 && GameManager.Player1 != null && GameManager.Player1.Connection != null)
 			{
-				server.Send(msg,GameManager.Player1.Connection,false);
+				var id = server.Send(msg,GameManager.Player1.Connection,false);
+				GameManager.Player1.RegisterMessageToBeDelivered(id);
 			}
 			else if (!player1 && GameManager.Player2 != null && GameManager.Player2.Connection != null)
 			{
-				server.Send(msg,GameManager.Player2.Connection,false);
+				var id = server.Send(msg,GameManager.Player2.Connection,false);
+				GameManager.Player2.RegisterMessageToBeDelivered(id);
 			}
 			
 
@@ -634,7 +653,8 @@ public static partial class NetworkingManager
 			}
 			msg.Release();
 		}
-	
+
+		return true;
 	}
 
 	public static void SendEndTurn()
@@ -646,6 +666,7 @@ public static partial class NetworkingManager
 	public static void SendUnitUpdates()
 	{
 		Log.Message("UNITS","sending unit position updates");
+
 		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
@@ -659,6 +680,7 @@ public static partial class NetworkingManager
 			var id = server.Send(msg, GameManager.Player1.Connection);
 			GameManager.Player1.RegisterMessageToBeDelivered(id);
 		}
+
 		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
 		{
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
@@ -672,6 +694,7 @@ public static partial class NetworkingManager
 			var id = server.Send(msg, GameManager.Player2.Connection);
 			GameManager.Player2.RegisterMessageToBeDelivered(id);
 		}
+		GameManager.PlayerUnitPositionsDirty = false;
 
 	}
 

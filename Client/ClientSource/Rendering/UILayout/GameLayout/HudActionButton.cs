@@ -105,7 +105,7 @@ public class HudActionButton
 	
 		if(selfOnly)
 		{
-			targetsToCheck.RemoveAll(x=>x.WorldObject.ID != OwnerID);
+			suggestedTargets.Add(Owner.WorldObject);
 			return suggestedTargets;
 		}
 		foreach (var target in targetsToCheck)

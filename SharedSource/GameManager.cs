@@ -327,9 +327,6 @@ public static partial class GameManager
 
     public static bool NoPendingUpdates()
     {
-#if CLIENT
-		if (RecivedUnitPositions != null) return false;
-#endif
         return true;
     }
 }

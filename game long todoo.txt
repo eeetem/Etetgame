@@ -5,11 +5,11 @@ server ui -> dont show custom map list on local server
 display shoot breakdown
 
 
-no turn after move?
-
-unit update after destruction
 
 UI  enemy progress
+
+shoot detailed tooltip
+
 
 UI Rework:
 crouch indicator
@@ -31,10 +31,6 @@ sfx list:
 
 
 
-
-point blank shotung
-rpg behind cover
-lvl editor sprite name
 
 
 

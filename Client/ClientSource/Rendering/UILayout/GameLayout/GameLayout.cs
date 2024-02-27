@@ -1094,7 +1094,7 @@ public class GameLayout : MenuLayout
 
 		if (drawExtra)
 		{
-			
+			return;
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;
@@ -1157,14 +1157,15 @@ public class GameLayout : MenuLayout
 					break;
 			}
 		}
-
-		int targetIndex = GameManager.GetAllUnits().IndexOf(SelectedUnit);
+		var units = GameManager.GetAllUnits();
+		int targetIndex =units.IndexOf(SelectedUnit);
 		if (targetIndex != -1)
 		{
-			for (int i = targetIndex; i < GameManager.GetAllUnits().Count - 1; i++)
+			
+			for (int i = targetIndex; i <units.Count - 1; i++)
 			{
-				GameManager.GetAllUnits()[i] = GameManager.GetAllUnits()[i + 1];
-				GameManager.GetAllUnits()[i + 1] = SelectedUnit;
+				units[i] = units[i + 1];
+				units[i + 1] = SelectedUnit;
 			}
 		}
 
@@ -1172,15 +1173,15 @@ public class GameLayout : MenuLayout
 		
 		if (tile.UnitAtLocation != null)
 		{
-			targetIndex = GameManager.GetAllUnits().IndexOf(tile.UnitAtLocation);
+			targetIndex = units.IndexOf(tile.UnitAtLocation);
 			if (targetIndex != -1)
 			{
-				Unit target = GameManager.GetAllUnits()[targetIndex];
-				for (int i = targetIndex; i < GameManager.GetAllUnits().Count - 1; i++)
+				Unit target = units[targetIndex];
+				for (int i = targetIndex; i < units.Count - 1; i++)
 				{
 						
-					GameManager.GetAllUnits()[i] = GameManager.GetAllUnits()[i + 1];
-					GameManager.GetAllUnits()[i + 1] = target;
+					units[i] = units[i + 1];
+					units[i + 1] = target;
 				}
 			}
 			
@@ -1826,6 +1827,10 @@ public class GameLayout : MenuLayout
 
 		ActionForce = false;
 		UpdateHudButtons();
+		if (suggestedTargets.Count > 0)
+		{
+			ActionTarget = suggestedTargets[0];
+		}
 	}
 
 	public static void CleanUp()
