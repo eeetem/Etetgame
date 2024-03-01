@@ -73,7 +73,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 		//todo UI rework
 	}
 
-	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	public override void DrawConsequence(Vector2 pos, SpriteBatch batch)
 	{
 		Texture2D plusMinus = TextureManager.GetTexture("HoverHud/Consequences/minus");
 		if(addNotRemove) plusMinus = TextureManager.GetTexture("HoverHud/Consequences/plus");

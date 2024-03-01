@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -119,7 +120,7 @@ public static class PrefabManager
 
 			if (xmlObj.HasAttributes && xmlObj.Attributes?["z"] != null)
 			{
-				type.Zoffset = float.Parse(xmlObj?.Attributes?["z"]!.InnerText!);
+				type.Zoffset = float.Parse(xmlObj?.Attributes?["z"]!.InnerText!,CultureInfo.InvariantCulture);
 			}
 
 

@@ -7,7 +7,7 @@ namespace DefconNull.WorldActions.DeliveryMethods;
 
 public abstract class DeliveryMethod
 {
-	public abstract Tuple<bool, string> CanPerform(Unit actor, WorldObject target,int dimension = -1);
+	public abstract Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target,int dimension = -1);
 
 	//do NOT convert this to old system, keep sequence actions for things like breaking windows with throwables
 	public List<SequenceAction> ExectuteAndProcessLocation(Unit actor,ref WorldObject? target)

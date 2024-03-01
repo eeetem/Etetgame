@@ -633,37 +633,50 @@ public class EditorUiLayout : MenuLayout
 			case Brush.Paste:
 				if (leftMouseDown && !lastLeftMouseDown)
 				{
-					if (buffer != null)
+					if (buffer == null) break;
+					Task.Run(() =>
+					{
 						for (int x = 0; x < buffer.GetLength(0); x++)
 						{
 							for (int y = 0; y < buffer.GetLength(1); y++)
 							{
-								if (!WorldManager.IsPositionValid(mousePos+new Vector2Int(x,y)))
+								var pos = new Vector2Int(x, y) + mousePos;
+								WorldManager.Instance.GetTileAtGrid(pos).Wipe(true);
+							}
+						}
+
+						while (SequenceManager.SequenceRunning)
+						{
+							Thread.Sleep(100);
+						}
+
+						for (int x = 0; x < buffer.GetLength(0); x++)
+						{
+
+							for (int y = 0; y < buffer.GetLength(1); y++)
+							{
+								if (!WorldManager.IsPositionValid(mousePos + new Vector2Int(x, y)))
 								{
 									continue;
-									
+
+								}
+								var tileData = buffer[x, y];
+								var pos = new Vector2Int(x, y) + mousePos;
+								
+
+
+								
+
+								foreach (var data in tileData)
+								{
+									SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data,
+										WorldManager.Instance.GetTileAtGrid(pos)));
 								}
 
-								var tileData = buffer[x, y];
-								var pos = new Vector2Int(x,y) + mousePos;
-								WorldManager.Instance.GetTileAtGrid(pos).Wipe();
-
-								Task.Run(() =>
-								{
-									while (SequenceManager.SequenceRunning)
-									{
-										Thread.Sleep(100);
-									}
-
-									foreach (var data in tileData)
-									{
-										SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(data,
-											WorldManager.Instance.GetTileAtGrid(pos)));
-									}
-								});
 
 							}
 						}
+					});
 
 					ActiveBrush = Brush.Point;
 					leftMouseDown = false;
@@ -715,7 +728,7 @@ public class EditorUiLayout : MenuLayout
 			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
 			if (eastTile.WestEdge != null)
 			{
-				WorldObjectManager.DeleteWorldObject.Make((eastTile.WestEdge)).GenerateTask().RunTaskSynchronously();
+				WorldObjectManager.DeleteWorldObject.Make(eastTile.WestEdge).GenerateTask().RunTaskSynchronously();
 				return;
 			}
 		}
@@ -757,6 +770,7 @@ public class EditorUiLayout : MenuLayout
 
 				break;
 			case Brush.Paste:
+				if(buffer == null) break;
 				for (int x = 0; x < buffer.GetLength(0); x++)
 				{
 					for (int y = 0; y < buffer.GetLength(1); y++)

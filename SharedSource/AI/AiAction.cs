@@ -336,7 +336,7 @@ public abstract class AIAction
 
 		private float GetTotalValue()
 		{
-			return (ClosestDistance + DistanceReward + ProtectionPentalty + ClumpingPenalty + DamagePotential + CoverBonus);
+			return ClosestDistance + DistanceReward + ProtectionPentalty + ClumpingPenalty + DamagePotential + CoverBonus;
 		}
 	}
 
@@ -435,7 +435,7 @@ public abstract class AIAction
 			//	Log.Message("AI","path to closest desired tile: "+closestDesiredTile+" from "+tilePosition+" cost: "+actualDistance);
 		}
 		
-		if(Math.Abs(actualDistance - (-1)) < 0.1f)
+		if(Math.Abs(actualDistance - -1) < 0.1f)
 		{
 			actualDistance = 99999;
 		}

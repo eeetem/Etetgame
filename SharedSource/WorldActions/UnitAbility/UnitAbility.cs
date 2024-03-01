@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 #if CLIENT
 using Microsoft.Xna.Framework.Graphics;
 using DefconNull.Rendering;
@@ -91,10 +92,14 @@ public class UnitAbility
 			}
 			
 		}
-		res = IsPlausibleToPerform(actor,target,dimension);
-		if (!res.Item1)
+		var res2 = IsPlausibleToPerform(actor,target,dimension);
+		if (!res2.Item1)//if impossible return
 		{
-			return res;
+			return new Tuple<bool, string>(res2.Item1, res2.Item3);
+		}
+		if(consultTargetAids && !res2.Item2)//unadvisable execution
+		{
+			return new Tuple<bool, string>(res2.Item2, res2.Item3);
 		}
 		
 		
@@ -161,16 +166,11 @@ public class UnitAbility
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public Tuple<bool, string> IsPlausibleToPerform(Unit actor, WorldObject target,int dimension = -1)
+	public Tuple<bool,bool, string>  IsPlausibleToPerform(Unit actor, WorldObject target,int dimension = -1)
 	{
 		
-		var result = Effects[0].CanPerform(actor, target,dimension);
-		if (!result.Item1)
-		{
-			return result;
-		}
-		
-		return new Tuple<bool, string>(true, "");
+		return Effects[0].CanPerform(actor, target,dimension);
+
 	}
 
 
@@ -271,6 +271,11 @@ public class UnitAbility
 
 
 	public Texture2D Icon { get; set; }
+	public void DrawOverWatchTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+		if(!CanOverWatch) throw new Exception("Cannot draw overwatch tooltip for ability that cannot overwatch");
+
+	}
 
 #endif
 
@@ -279,7 +284,7 @@ public class UnitAbility
 		return new UnitAbility(Name, Tooltip, DetCost, MoveCost, ActCost, OverWatchRange, Effects, ImmideateActivation,Index,AIExempt,TargetAids);	
 		
 	}
-    
+
 
 
 }

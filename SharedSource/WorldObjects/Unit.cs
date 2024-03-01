@@ -34,9 +34,10 @@ namespace DefconNull.WorldObjects
 			Type = type;
 			parent.UnitComponent = this;
 			SetData(data,justSpawned);
-			type.actions.ForEach(extraAction => { Abilities.Add((UnitAbility) extraAction.Clone()); });
-			
+
 		}
+
+		public List<UnitAbility> Abilities => Type.actions;
 
 		public void SetData(UnitData data, bool justSpawned)
 		{
@@ -112,9 +113,6 @@ namespace DefconNull.WorldObjects
 			}
 
 		}
-
-
-		public List<UnitAbility> Abilities = new List<UnitAbility>();
 
 		public bool canTurn { get; set; }
 
@@ -563,7 +561,7 @@ namespace DefconNull.WorldObjects
 		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)
 		{
 
-			UnitAbility action = this.Abilities[(abilityIndex)];
+			UnitAbility action = this.Abilities[abilityIndex];
 			if(!action.CanOverWatch) return new HashSet<Vector2Int>();
 
 			var tiles = WorldManager.Instance.GetTilesAround(target, action.OverWatchRange);

@@ -54,8 +54,7 @@ public static class PseudoWorldManager
 		WorldObject.WorldObjectData data = realunit.WorldObject.GetData();
 		WorldObject pseudoObj = new WorldObject(realunit.WorldObject.Type, GetTileAtGrid(tilePosition, dimension), data);
 		pseudoObj.UnitComponent = new Unit(pseudoObj, realunit.Type, realunit.GetData(),false);
-		realunit.Abilities.ForEach(extraAction => { pseudoObj.UnitComponent.Abilities.Add((UnitAbility) extraAction.Clone()); });
-				
+	
 		pseudoUnit = pseudoObj.UnitComponent;
 				
 

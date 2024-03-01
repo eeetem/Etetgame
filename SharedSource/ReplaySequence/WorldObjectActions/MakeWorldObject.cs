@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 
 namespace DefconNull.ReplaySequence.WorldObjectActions;
@@ -167,6 +168,15 @@ public static partial class WorldObjectManager
             _position = msg.GetSerializable<Vector2Int>();
             data = msg.GetSerializable<WorldObject.WorldObjectData>();
         }
+
+#if CLIENT
+	    override public void Preview(SpriteBatch spriteBatch)
+	    {
+		    spriteBatch.DrawPrefab(Utility.GridToWorldPos(_position), data.Prefab, data.Facing, data.Fliped);
+		   // var type = PrefabManager.WorldObjectPrefabs[data.Prefab];
+		    //type.Preview(spriteBatch, (Vector2)_position, data.Facing);
+	    }
+#endif
 
         public override Message? MakeTestingMessage()
         {

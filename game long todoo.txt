@@ -1,18 +1,9 @@
 
-server ui -> dont show custom map list on local server
-
-
-display shoot breakdown
-
-
-
 UI  enemy progress
-
 shoot detailed tooltip
-
-
-UI Rework:
-crouch indicator
+turn point display
+incrementing timer
+turn no point regain bug
 
 sfx list:
 -throw

@@ -69,7 +69,7 @@ public static partial class NetworkingManager
 
 		if (GameManager.Player1 == null)
 		{
-			GameManager.Player1 = new ClientInstance(name,connection);
+			GameManager.Player1 = new GameManager.ClientInstance(name,connection);
 			SendChatMessage(name+" joined as Player 1");
 		}
 		else if (GameManager.Player1.Name == name)
@@ -87,7 +87,7 @@ public static partial class NetworkingManager
 		else if (GameManager.Player2 == null)
 		{
 			
-			GameManager.Player2 = new ClientInstance(name,connection);
+			GameManager.Player2 = new GameManager.ClientInstance(name,connection);
 			SendChatMessage(name+" joined as Player 2");
 		}
 		else if (GameManager.Player2.Name == name)
@@ -102,7 +102,7 @@ public static partial class NetworkingManager
 		}
 		else
 		{
-			GameManager.Spectators.Add(new ClientInstance(name,connection));
+			GameManager.Spectators.Add(new GameManager.ClientInstance(name,connection));
 			SendChatMessage(name+" joined the spectators");
 		}
 
@@ -455,35 +455,65 @@ public static partial class NetworkingManager
 			SendUnitUpdates();
 			
 		}
-        
-		if(GameManager.Player1 != null && GameManager.Player1.SequenceQueue.Count > 0 && GameManager.Player1.HasDeliveredAllMessages)
+		SendSequenceIfShould(true);
+		SendSequenceIfShould(false);
+		lock (UpdateLock)
 		{
-			List<SequenceAction> result;
-			GameManager.Player1.SequenceQueue.TryPeek(out result);
-			if (result != null && result.Count > 0)
-			{
-				var outcome = SendSequenceToPlayer(result,true);
-				if (outcome)
-				{
-					GameManager.Player1.SequenceQueue.TryDequeue(out result);
-				}
-			}
-			
-		}
-		if(GameManager.Player2 != null && GameManager.Player2.SequenceQueue.Count > 0 && GameManager.Player2.HasDeliveredAllMessages)
-		{
-			List<SequenceAction> result;
-			GameManager.Player2.SequenceQueue.TryPeek(out result);
-			if (result != null && result.Count > 0)
-			{
-				var outcome = SendSequenceToPlayer(result,false);
-				if (outcome)
-				{
-					GameManager.Player2.SequenceQueue.TryDequeue(out result);
-				}
-			}
+			server.Update();
 		}
 	}
+
+	private static void SendSequenceIfShould(bool player1)
+	{
+		var p = GameManager.GetPlayer(player1);
+		if(p== null) return;
+		
+		if(p.PrepedSequence.Count > 0 && p.HasDeliveredAllMessages)
+		{
+			Log.Message("NETWORKING","Sending sequence to player: "+player1);
+			
+			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+			if (player1)
+			{
+				msg.Add((ushort)ReplaySequenceTarget.Player1);
+			}
+			else
+			{
+				msg.Add((ushort)ReplaySequenceTarget.Player2);
+			}
+			msg.Add(p.PrepedSequence.Count);
+			foreach (var a in p.PrepedSequence)
+			{
+				if (!a.Active) throw new Exception("sending inactive sequence");
+				msg.Add((int) a.GetSequenceType());
+				msg.AddSerializable(a);
+				a.Return();
+			}
+			p.ReadyForNextSequence = false;
+			p.PrepedSequence.Clear();
+			
+			server.Send(msg,p.Connection);
+			return;
+		}
+		if(p.SequenceQueue.Count == 0 || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
+		{
+			return;
+		}
+		List<SequenceAction> actions;
+		if (!p.SequenceQueue.TryDequeue(out actions!)) return;
+		
+		if (p.Connection == null || !p.Connection.IsConnected)//just discard all the shit since we have no connection and they will re-recive everything anyways when connecting
+		{
+			actions.ForEach(x=>x.Return());
+		}
+		
+		actions.ForEach(x=>x.FilterForPlayer(player1));
+		p.PrepedSequence = actions;
+		Log.Message("NETWORKING","Preping sequence for: "+player1);
+	}
+	
+		
+
 
 	public static void SendGameData()
 	{
@@ -603,59 +633,7 @@ public static partial class NetworkingManager
 		var p =GameManager.GetPlayer(player1);
 		p.SequenceQueue.Enqueue(actions);
 	}
-	public static bool SendSequenceToPlayer(List<SequenceAction> actions, bool player1)
-	{
-		if (actions.Count == 0) return true;
-        
-		var p =GameManager.GetPlayer(player1);
- 
-		actions.ForEach(x=>x.FilterForPlayer(player1));
-		if (!p.HasDeliveredAllMessages)
-			return false;
-        
-		Log.Message("NETWORKING","Sending sequence to player: "+player1);
-  
-		lock (UpdateLock)
-		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
-			if (player1)
-			{
-				msg.Add((ushort)ReplaySequenceTarget.Player1);
-			}
-			else
-			{
-				msg.Add((ushort)ReplaySequenceTarget.Player2);
-			}
-			msg.Add(actions.Count);
-			foreach (var a in actions)
-			{
-				if (!a.Active) throw new Exception("sending inactive sequence");
-				msg.Add((int) a.GetSequenceType());
-				msg.AddSerializable(a);
-				a.Return();
-			}
 
-			if (player1 && GameManager.Player1 != null && GameManager.Player1.Connection != null)
-			{
-				var id = server.Send(msg,GameManager.Player1.Connection,false);
-				GameManager.Player1.RegisterMessageToBeDelivered(id);
-			}
-			else if (!player1 && GameManager.Player2 != null && GameManager.Player2.Connection != null)
-			{
-				var id = server.Send(msg,GameManager.Player2.Connection,false);
-				GameManager.Player2.RegisterMessageToBeDelivered(id);
-			}
-			
-
-			foreach (var spec in GameManager.Spectators)
-			{
-				server.Send(msg, spec.Connection,false);
-			}
-			msg.Release();
-		}
-
-		return true;
-	}
 
 	public static void SendEndTurn()
 	{

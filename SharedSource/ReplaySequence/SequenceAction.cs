@@ -305,7 +305,7 @@ public abstract class SequenceAction :  IMessageSerializable
     }
 
 #if CLIENT
-	public virtual void DrawDesc(Vector2 pos, SpriteBatch batch)
+	public virtual void DrawConsequence(Vector2 pos, SpriteBatch batch)
 	{
 
 		batch.DrawText(GetSequenceType().ToString(), pos, Color.White);

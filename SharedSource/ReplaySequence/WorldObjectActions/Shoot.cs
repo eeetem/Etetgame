@@ -79,7 +79,7 @@ public class Shoot : SequenceAction
 		
 	}
 
-	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	public override void DrawConsequence(Vector2 pos, SpriteBatch batch)
 	{
 		pos += new Vector2(0, 0);
 		Vector2 offset = new Vector2(TextureManager.GetTexture("HoverHud/Consequences/shoot").Width-2,0);

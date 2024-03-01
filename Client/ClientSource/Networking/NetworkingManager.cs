@@ -205,4 +205,10 @@ public static partial class NetworkingManager
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.DoAI);
 		client?.Send(msg);
 	}
+
+	public static void SendSequenceExecuted()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SequenceFinished);
+		client?.Send(msg);
+	}
 }

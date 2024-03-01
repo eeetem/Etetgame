@@ -293,7 +293,7 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="8" detRes="1" supression="1" supressionRange="1" dropOffRange="6"/>
+      <shoot dmg ="7" detRes="1" supression="1" supressionRange="1" dropOffRange="5"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -333,7 +333,7 @@
 
     </action>
 
-    <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
+    <action immideate="true" detCost ="1" moveCost="0" actCost="0" aiExempt="false">
       <name>Rally</name>
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
 
@@ -344,7 +344,7 @@
       </effect>
     </action>
 
-    <action detCost ="1" moveCost="1" actCost="0">
+    <action detCost ="2" moveCost="1" actCost="0">
       <name>Command</name>
       <tip>Give a targeted 1 action point and 1 move point</tip>
       <targetAid>friend,!Officer</targetAid>
@@ -534,7 +534,7 @@
 
   <statuseffect>
     <name>Repositioning</name>
-    <tip>Sets movement points to 5</tip>
+    <tip>Increases movement points by 5</tip>
     
       <consequences range="1">
         <values act ="0" move="5"/>
@@ -585,7 +585,7 @@
   </object>
 
 
-  <object VCover = "0" Faceable = "false" SCover ="0" z="0">
+  <object VCover = "0" Faceable = "false" SCover ="0" z="-0.2">
     <sprite source="Environment/crater" offset= "0,0"/>
     <name>Crater</name>
   </object>

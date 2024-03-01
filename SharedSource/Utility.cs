@@ -94,7 +94,7 @@ public static partial class Utility
         numbers.Sort();
 
         // Calculate the index corresponding to the desired percentile
-        int index = (int)Math.Ceiling((percentile / 100) * numbers.Count) - 1;
+        int index = (int)Math.Ceiling(percentile / 100 * numbers.Count) - 1;
 
         // Check if the index is valid
         if (index >= 0 && index < numbers.Count)
@@ -105,13 +105,13 @@ public static partial class Utility
         else
         {
             // If the index is not an integer, interpolate between the values
-            int lowerIndex = (int)Math.Floor((percentile / 100) * numbers.Count);
-            int upperIndex = (int)Math.Ceiling((percentile / 100) * numbers.Count);
+            int lowerIndex = (int)Math.Floor(percentile / 100 * numbers.Count);
+            int upperIndex = (int)Math.Ceiling(percentile / 100 * numbers.Count);
             
             double lowerValue = numbers[lowerIndex];
             double upperValue = numbers[upperIndex];
             
-            double interpolationFactor = (percentile / 100 * numbers.Count) - lowerIndex;
+            double interpolationFactor = percentile / 100 * numbers.Count - lowerIndex;
 
             return (float) (lowerValue + interpolationFactor * (upperValue - lowerValue));
         }

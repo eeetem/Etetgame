@@ -1,7 +1,9 @@
-﻿using DefconNull.Networking;
+﻿using System.Collections.Concurrent;
+using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using Riptide;
 
 
 namespace DefconNull;
@@ -26,6 +28,19 @@ public static partial class GameManager
 		}
 		return Player2;
 	}
+	public static ClientInstance? GetPlayer(Connection c)
+	{
+		if (Player1?.Connection == c)
+		{
+			return Player1;
+		}
+		if (Player2?.Connection == c)
+		{
+			return Player2;
+		}
+		return null;
+	}
+
 
 	public static void StartSetup()
 	{
@@ -265,4 +280,61 @@ public static partial class GameManager
 		}
 	}
 
+	public static void SequenceFinished(Connection c)
+	{
+		var p = GetPlayer(c);
+		if(p == null) return;
+		p.ReadyForNextSequence = true;
+	}
+	
+	public class ClientInstance
+	{
+		public Connection? Connection { get; private set; }
+		public string Name;
+		public bool IsAI;
+		public List<SquadMember>?  SquadComp { get; private set; }
+		public bool IsPracticeOpponent { get; set; }
+	
+		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0;
+	
+		public ConcurrentQueue<List<SequenceAction>> SequenceQueue = new ConcurrentQueue<List<SequenceAction>>();
+	
+		private List<ushort> MessagesToBeDelivered = new List<ushort>();
+		public bool ReadyForNextSequence { get; set; } = true;
+		public List<SequenceAction> PrepedSequence = new List<SequenceAction>();
+
+		public ClientInstance(string name,Connection? con)
+		{
+			Name = name;
+			Connection = con;
+			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
+		}
+		public void Reconnect(Connection? con)
+		{
+			MessagesToBeDelivered.Clear();
+			Connection = con;
+			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
+		}
+		public void RegisterMessageToBeDelivered(ushort id)
+		{
+			MessagesToBeDelivered.Add(id);
+		}
+		private void ProcessDelivery(ushort id)
+		{
+			MessagesToBeDelivered.Remove(id);
+		}
+	
+		public void SetSquadComp(List<SquadMember> squad)
+		{
+			SquadComp = squad;
+		}
+
+		public void Disconnect()
+		{
+			Connection = null;
+			MessagesToBeDelivered.Clear();
+		}
+
+		
+	}
 }

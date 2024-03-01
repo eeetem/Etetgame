@@ -100,10 +100,10 @@ public partial class WorldObject : IDrawable
 			//{
 			//	color = new Color(255, 180, 180);
 			//}
-			//else if(!IsVisible())
-			//{
-			//	color = new Color(255, 100, 100);
-			//}
+			if(!IsVisible())
+			{
+				color = new Color(200, 100, 100);
+			}
 			//else
 			//{
 			//	color = new Color(255, 200, 200);

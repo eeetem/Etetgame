@@ -74,7 +74,7 @@ public class WorldEffect : Effect
 
 
 
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
+	protected override Tuple<bool,bool, string>  CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
 	{
 		return DeliveryMethod.CanPerform(actor, target,dimension);
 	}

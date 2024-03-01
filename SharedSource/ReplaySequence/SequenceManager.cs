@@ -152,7 +152,7 @@ public class SequenceManager
 
 				}
 			}
-			else if (CurrentSequenceTasks.TrueForAll((t) => (t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun)))
+			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun))
 			{
 				foreach (var t in CurrentSequenceTasks)
 				{
@@ -179,8 +179,10 @@ public class SequenceManager
 
 				if(SequenceQueue.Count == 0)
 				{
+					
 #if CLIENT
 					GameLayout.ReMakeMovePreview();
+					NetworkingManager.SendSequenceExecuted();
 #endif
 					WorldManager.Instance.MakeFovDirty();
 				}
@@ -198,6 +200,7 @@ public class SequenceManager
 		CurrentSequenceTasks.Last().Start();
 	}
 
+	
 	public static void AddSequence(SequenceAction action)
 	{
 		if(action==null) throw new ArgumentNullException(nameof(action));

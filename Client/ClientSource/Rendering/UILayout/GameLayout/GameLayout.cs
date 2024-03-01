@@ -115,7 +115,7 @@ public class GameLayout : MenuLayout
 
 	public static void Init()
 	{
-		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,100);
+		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,150);
 		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,135,200);
 	
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Height);
@@ -532,7 +532,7 @@ public class GameLayout : MenuLayout
 			//Height = (int)(38f*globalScale.X),
 			Top = (int)(25f*globalScale.Y),
 			Left = (int)(-5f*globalScale.X),
-			ShowGridLines = true,
+			ShowGridLines = false,
 		};
 	
 		var left = new Image();
@@ -569,7 +569,7 @@ public class GameLayout : MenuLayout
 		{
 			DoActiveAction();
 		};
-		ConfirmButton.Visible = (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch);
+		ConfirmButton.Visible = activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch;
 
 		panel.Widgets.Add(ConfirmButton);
 		
@@ -659,7 +659,7 @@ public class GameLayout : MenuLayout
 			UIButton.ImageHeight = (int) (32 * scale);
 			UIButton.ImageWidth = (int) (32 * scale);
 			UIButton.Top = top;
-			UIButton.Left = startOffest + btnWidth*(index);
+			UIButton.Left = startOffest + btnWidth*index;
 			index++;
 		}
 
@@ -681,12 +681,12 @@ public class GameLayout : MenuLayout
 
 		if (ActionForce||activeAction == ActiveActionType.Overwatch)
 		{
-			if (!HudActionButton.SelectedButton.HasPoints()) return;//only check for point is we're forcing
+			if (!HudActionButton.SelectedButton.IsAbleToPerform(ActionTarget).Item1) return;//only check for point is we're forcing
 		}
 		else
 		{
 
-			var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
+			var res = HudActionButton.SelectedButton.ShouldBeAbleToPerform(ActionTarget);
 			if (!res.Item1)
 			{
 				ActionForce = true;
@@ -981,9 +981,15 @@ public class GameLayout : MenuLayout
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
 			var box = TextureManager.GetTexture("GameHud/BottomBar/mainBox");
+			var line = TextureManager.GetTexture("GameHud/BottomBar/executeLine2");
+			if (!HudActionButton.SelectedButton.HasPoints())
+			{
+				line = TextureManager.GetTexture("GameHud/BottomBar/executeLine1");
+			}
 			infoboxscale = globalScale.X * 0.8f;
 			infoboxtip = new Vector2((Game1.resolution.X - box.Width * infoboxscale) / 2f, Game1.resolution.Y - (box.Height+2) * infoboxscale);
 			batch.Draw(box, infoboxtip, null, Color.White, 0, Vector2.Zero, infoboxscale,SpriteEffects.None, 0);
+			batch.Draw(line, infoboxtip, null, Color.White, 0, Vector2.Zero, infoboxscale,SpriteEffects.None, 0);
 		}
 
 		batch.End();
@@ -1004,10 +1010,54 @@ public class GameLayout : MenuLayout
 		}
 		batch.DrawText(chatmsg,new Vector2(15,-7*extraLines+240*globalScale.Y),1.5f,width,Color.White);
 		batch.End();
+		
+		if(SelectedUnit!=null)
+		{
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+			var portrait = TextureManager.GetTextureFromPNG("Units/" + SelectedUnit.Type.Name+"/portrait");
+			ushort hpPercent = (ushort) Math.Max(0,(float)SelectedUnit.Health / SelectedUnit.Type.MaxHealth*10f);
+			ushort detPercent = (ushort) Math.Max(0,(float)SelectedUnit.Determination.Current / SelectedUnit.Type.Maxdetermination*10f);
+			
+			var detBar = TextureManager.GetTexture("GameHud/BottomBar/detbar"+(10 - detPercent));
+			var hpBar = TextureManager.GetTexture("GameHud/BottomBar/hpbar"+(10 - hpPercent));
+			var sight = TextureManager.GetTexture("GameHud/BottomBar/sightrange");
+			var move = TextureManager.GetTexture("GameHud/BottomBar/moverange");
+			var portraitScale = 1.25f*globalScale.Y;
+			//infoboxtip = ;
+			batch.Draw(portrait, new Vector2(0, Game1.resolution.Y - portrait.Height * portraitScale),portraitScale,Color.White);
+			batch.Draw(detBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale ),portraitScale,Color.White);
+			batch.Draw(hpBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale),portraitScale,Color.White);
+			
+			var pos = new Vector2(44 * portraitScale, Game1.resolution.Y - 125 * portraitScale);
+			Color c = Color.White;
+			if (SelectedUnit.MoveRangeEffect.Current > 0)
+			{
+				c = Color.Green;
+			}else if (SelectedUnit.MoveRangeEffect.Current < 0)
+			{
+				c = Color.Red;
+			}
+			batch.DrawText(""+SelectedUnit.GetMoveRange(), pos + new Vector2(-15,0), portraitScale, 24, c);
+			batch.Draw(move, pos,portraitScale,Color.White);
+			
+			pos = new Vector2(44 * portraitScale, Game1.resolution.Y - 150 * portraitScale);
+			batch.DrawText(""+SelectedUnit.GetSightRange(), pos + new Vector2(-15,0), portraitScale, 24, Color.White);
+			batch.Draw(sight, pos,portraitScale,Color.White);
+			
+			
+			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 115 * portraitScale);
+			batch.DrawNumberedIcon(SelectedUnit.ActionPoints.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), pos, portraitScale);
+			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 80 * portraitScale);
+			batch.DrawNumberedIcon(SelectedUnit.MovePoints.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos, portraitScale);
+			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 45 * portraitScale);
+			batch.DrawNumberedIcon(SelectedUnit.Determination.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos, portraitScale);
+
+			batch.End();
+		}
+		
 		batch.Begin(transformMatrix:Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate);
 		//tooltip
 		var mouse = Camera.GetMouseWorldPos();
-		
 		foreach (var rect in _tooltipRects)
 		{
 			if(rect.Item1.Contains(mouse))
@@ -1019,7 +1069,6 @@ public class GameLayout : MenuLayout
 			}
 		}
 		batch.End();
-		
 		
 	}
 	private static Vector2 infoboxtip = new(0,0);
@@ -1070,15 +1119,20 @@ public class GameLayout : MenuLayout
 			{
 				if (activeAction == ActiveActionType.Action)
 				{
-					if (HudActionButton.SelectedButton.HasPoints())
+					var res = HudActionButton.SelectedButton.IsAbleToPerform(ActionTarget);
+					if (res.Item1)
 					{
-						var res = HudActionButton.SelectedButton.CanPerformAction(ActionTarget);
+						res = HudActionButton.SelectedButton.ShouldBeAbleToPerform(ActionTarget);
 						Color g = Color.Yellow;
 						if (ActionForce) g = Color.Red;
 						if (!res.Item1)
 						{
 							batch.DrawText(res.Item2, tooltip, globalScale.X, 25, g);
 						}
+					}
+					else
+					{
+						batch.DrawText(res.Item2, tooltip, globalScale.X, 25, Color.DarkRed);
 					}
 				}
 				else
@@ -1475,8 +1529,6 @@ public class GameLayout : MenuLayout
 		Unit? unit = obj.UnitComponent;
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		
-
-		
 		graphicsDevice.SetRenderTarget(hoverHudRenderTarget);
 		graphicsDevice.Clear(Color.White*0);
 		float opacity = 0.95f;
@@ -1500,7 +1552,7 @@ public class GameLayout : MenuLayout
 		float healthBarWidth = healthWidth*obj.Type.MaxHealth;
 		float emtpySpace = baseWidth - healthBarWidth;
 		//Vector2 healthBarPos = new Vector2(emtpySpace/2f,36);
-		Vector2 healthBarPos = new Vector2(5f,40);
+		Vector2 healthBarPos = new Vector2(5f, 70);
 
 
 		Vector2 offset = new Vector2(0,0);
@@ -1517,9 +1569,9 @@ public class GameLayout : MenuLayout
 			}
 		}
 	
-		var hudDrawPoint = Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-10, -80);
+		var hudDrawPoint = Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-10, -120);
 		float hudScale = 1f;
-		
+		Vector2 finalHealthBarPos = default;
 		for (int y = 0; y < obj.Type.MaxHealth; y++)
 		{
 			if (y >= obj.Health)
@@ -1545,6 +1597,7 @@ public class GameLayout : MenuLayout
 				}
 
 			}
+			finalHealthBarPos = healthBarPos + new Vector2(healthWidth * y, 0);
 		}
 
 		if (unit != null)
@@ -1553,17 +1606,33 @@ public class GameLayout : MenuLayout
 
 			if (unit.Overwatch.Item1)
 			{
-				batch.Draw(unit.Abilities[unit.Overwatch.Item2].Icon,new Vector2(0,0),null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				var abl = unit.Abilities[unit.Overwatch.Item2];
+				batch.Draw(abl.Icon,new Vector2(0,0),null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				batch.Draw(TextureManager.GetTexture("HoverHud/overwatch"),new Vector2(32,0),null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
+				_tooltipRects.Add(new ValueTuple<Rectangle, Action<Vector2,float,SpriteBatch>>(new Rectangle((int) hudDrawPoint.X, (int) hudDrawPoint.Y, (int) (32*hudScale), (int) (32*hudScale)),(pos, scale, innerBatch) =>
+				{
+					
+					innerBatch.DrawText("      Overwatch Ability: [Green]"+abl.Name + "[-]\n" + abl.Tooltip, pos, scale, 48, Color.White);
+
+				}));
+				_tooltipRects.Add(new ValueTuple<Rectangle, Action<Vector2,float,SpriteBatch>>(new Rectangle((int) hudDrawPoint.X+32, (int) hudDrawPoint.Y, (int) (32*hudScale), (int) (32*hudScale)),(pos, scale, innerBatch) =>
+				{
+					innerBatch.DrawText("      Overwatch:\n" +
+					                    "Can be interrupted by [Green]panicking[-] or [Green]dealing damage[-] to the unit\n"+
+					                    "Unit will attack with [Red]"+abl.Name+"[-] any enemies entering the targeted area.\n"
+						, pos, scale, 48, Color.White);
+
+				}));
 			}
 
 			int i = 0;
 			
 			foreach (var effect in unit.StatusEffects)
 			{
-				var pos = new Vector2(23 * i, 0);
+				var pos = new Vector2(23 * i, 30);
 				var texture = TextureManager.GetTextureFromPNG("Icons/"+effect.Type.Name);
 				batch.Draw(texture,pos,null,Color.White,0,Vector2.Zero,new Vector2(1,1),SpriteEffects.None,0);
-				batch.DrawText(effect.Duration+"", new Vector2(23*i+10,0), 1f, 100, Color.White);
+				batch.DrawText(effect.Duration+"", new Vector2(23*i+10,30), 1f, 100, Color.White);
 				_tooltipRects.Add(new ValueTuple<Rectangle, Action<Vector2,float,SpriteBatch>>(new Rectangle((int) ((int)pos.X+hudDrawPoint.X), (int) ((int)pos.Y+hudDrawPoint.Y), (int) (texture.Width*hudScale), (int) (texture.Height*hudScale)),effect.DrawTooltip));
 
 				i++;
@@ -1582,7 +1651,7 @@ public class GameLayout : MenuLayout
 			detbarWidht = detWidth * unit.Type.Maxdetermination;
 			detEmtpySpace = baseWidth - detbarWidht;
 			//DetPos = new Vector2(detEmtpySpace / 2f, 28);
-			DetPos = new Vector2(5f, 30);
+			DetPos = new Vector2(5f, 60);
 
 			
 			var animSheet = TextureManager.GetSpriteSheet("HoverHud/panicSheet", 1, 4);
@@ -1630,7 +1699,7 @@ public class GameLayout : MenuLayout
 
 			}
 		
-			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 53);
+			Vector2Int pointPos = new Vector2Int((int)healthBarPos.X, 53+30);
 			int o = 10;
 			i = 0;
 			var nextT = unit.GetPointsNextTurn();
@@ -1675,12 +1744,29 @@ public class GameLayout : MenuLayout
 				i++;
 			}
 		}
+		if (unit != null)
+		{
+			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp);
+		
+		
+			Texture2D indicator = TextureManager.GetTexture("HoverHud/friendly");
+			if (!unit.IsMyTeam()) indicator = TextureManager.GetTexture("HoverHud/enemy");
+			
+			batch.Draw(indicator,finalHealthBarPos+new Vector2(10,0),Color.White);
+			
+			indicator = TextureManager.GetTexture("HoverHud/uncrouch");
+			if(unit.Crouching) indicator = TextureManager.GetTexture("HoverHud/crouch");
+			
+			batch.Draw(indicator,finalHealthBarPos+new Vector2(26,0),Color.White);
+		
+			batch.End();
+		}
 
 		graphicsDevice.SetRenderTarget(consequenceListRenderTarget);
 		graphicsDevice.Clear(Color.White*0);
 		
 		float consScale = 0.8f;
-		var consDrawPoint = Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-consequenceListRenderTarget.Width, -60) * consScale;
+		var consDrawPoint = Utility.GridToWorldPos((Vector2) obj.TileLocation.Position + offset) + new Vector2(-consequenceListRenderTarget.Width, -80) * consScale;
 		if (SortedConsequences.TryGetValue(obj, out var list))
 		{
 			
@@ -1691,7 +1777,7 @@ public class GameLayout : MenuLayout
 				_tooltipRects.Add(new ValueTuple<Rectangle, Action<Vector2,float,SpriteBatch>>(new Rectangle((int) ((int)pos.X+consDrawPoint.X), (int) ((int)pos.Y+consDrawPoint.Y), (int) (200*consScale), (int) (30*consScale)),cons.DrawTooltip));
 
 				//batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/InfoBox"),pos,null,Color.White,0,Vector2.Zero,1f,SpriteEffects.None,0);
-				cons.DrawDesc(pos,batch);
+				cons.DrawConsequence(pos,batch);
 				pos+= new Vector2(0, 30);
 			}
 			batch.End();
@@ -1765,10 +1851,10 @@ public class GameLayout : MenuLayout
 				GameManager.GetMyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				GameManager.GetEnemyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				suggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(potentialTargets);
-				if (!HudActionButton.SelectedButton.HasPoints())
+				if (ActionTarget == null || !HudActionButton.SelectedButton.IsAbleToPerform(ActionTarget).Item1)
 				{
 					ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation2"));
-				}else if (ActionTarget != null && !HudActionButton.SelectedButton.CanPerformAction((WorldObject)ActionTarget).Item1)
+				}else if (!HudActionButton.SelectedButton.ShouldBeAbleToPerform((WorldObject)ActionTarget).Item1)
 				{
 					if (ActionForce)
 					{

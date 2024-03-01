@@ -29,6 +29,7 @@ public static partial class NetworkingManager
         DoAI = 22,
         MapReaload = 23,
         UnitUpdate = 24,
+        SequenceFinished = 25,
   
     }
 

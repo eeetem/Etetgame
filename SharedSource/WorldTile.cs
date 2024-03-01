@@ -324,10 +324,15 @@ public partial class WorldTile : IWorldTile
 		}
 	}
 		
-	public void Wipe()
+	public void Wipe(bool full360 = false)
 	{
 		if (NorthEdge != null) 	SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(NorthEdge.ID));
 		if (WestEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(WestEdge.ID));
+		if (full360)
+		{
+			if (SouthEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(SouthEdge.ID));
+			if (EastEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(EastEdge.ID));
+		}
 		if (UnitAtLocation != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(UnitAtLocation.WorldObject.ID));
 		if (Surface != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(Surface.ID));
 		foreach (var obj in ObjectsAtLocation)

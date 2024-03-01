@@ -183,6 +183,7 @@ public static partial class WorldObjectManager
 					Audio.PlaySound("grunt",obj.TileLocation.Position);
 #endif
 				}
+				unit.ClearOverWatch();
 			}
 			else
 			{
@@ -232,7 +233,7 @@ public static partial class WorldObjectManager
 		}
 
 #if CLIENT
-		public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+		public override void DrawConsequence(Vector2 pos, SpriteBatch batch)
 		{
 			int resistance = DetResistance;
 			Texture2D damageSprite = TextureManager.GetTexture("HoverHud/Consequences/genericDamage");

@@ -64,14 +64,19 @@ public static partial class Utility
 
 
 	}
-	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, Color textc, Color iconc = default)
+
+	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, Color textc = default, Color iconc = default)
 	{
-		if (iconc == default)
-		{
-			iconc = Color.White;
-		}
-		spriteBatch.Draw(icon, pos, iconc);
-		spriteBatch.DrawText(num, pos+new Vector2(12,7),1.8f, textc);
+		DrawNumberedIcon(spriteBatch, num, icon, pos, 1, textc, iconc);
+	}
+
+	public static void DrawNumberedIcon(this SpriteBatch spriteBatch, string num, Texture2D icon, Vector2 pos, float scale = 1f, Color textc = default, Color iconc = default)
+	{
+		if (iconc == default)iconc = Color.White;
+		if (textc == default)textc = Color.White;
+		
+		spriteBatch.Draw(icon, pos, scale, iconc);
+		spriteBatch.DrawText(num, pos+new Vector2(12,7)*scale,scale*2f, textc);
 	}
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
 	{

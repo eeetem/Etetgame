@@ -38,7 +38,7 @@ public abstract class UnitSequenceAction : SequenceAction
 
 		public bool Equals(TargetingRequirements other)
 		{
-			return ActorID == other.ActorID && Position.Equals(other.Position) && (TypesToIgnore is null == other.TypesToIgnore is null) && (TypesToIgnore is null || Enumerable.SequenceEqual(TypesToIgnore, other.TypesToIgnore!));
+			return ActorID == other.ActorID && Position.Equals(other.Position) && TypesToIgnore is null == other.TypesToIgnore is null && (TypesToIgnore is null || Enumerable.SequenceEqual(TypesToIgnore, other.TypesToIgnore!));
 		}
 
 		public override bool Equals(object? obj)

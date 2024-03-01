@@ -121,7 +121,7 @@ public class Shootable : Effect
 		
 		bool targetLow = false;//move this outside
 
-		if((targetObj.UnitComponent!= null && targetObj.UnitComponent.Crouching) )
+		if(targetObj.UnitComponent!= null && targetObj.UnitComponent.Crouching )
 		{
 			targetLow = true;
 		}
@@ -271,11 +271,11 @@ public class Shootable : Effect
 		return p;
 	}
 	
-	protected override Tuple<bool, string> CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
+	protected override Tuple<bool,bool, string>  CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
 	{
 		if(Equals(actor.WorldObject, target))
 		{
-			return new Tuple<bool, string>(false,"You can't shoot yourself!");
+			return new Tuple<bool,bool, string> (false,false,"You can't shoot yourself!");
 		}
 		var p = GenerateProjectile(actor, target,dimension);
 
@@ -284,12 +284,12 @@ public class Shootable : Effect
 			var hitobj = PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			if (hitobj == null || hitobj!.Type.Edge || hitobj.TileLocation.Position != (Vector2Int)p.Result.EndPoint)
 			{
-				return new Tuple<bool, string>(false,"Can't hit target");
+				return new Tuple<bool,bool, string> (true,false,"Can't hit target");
 			}
 		}
 
 
-		return new Tuple<bool, string>(true,"");
+		return new Tuple<bool,bool, string> (true,true,"");
 	}
 
 	protected override List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1)

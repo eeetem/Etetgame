@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DefconNull.WorldObjects;
@@ -134,7 +135,7 @@ public class ChangeUnitValues : UnitSequenceAction
 
 #if CLIENT
 
-	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	public override void DrawConsequence(Vector2 pos, SpriteBatch batch)
 	{
 		Texture2D upArrow = TextureManager.GetTexture("HoverHud/Consequences/upArrow");
 		Texture2D downArrow = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
@@ -208,7 +209,14 @@ public class ChangeUnitValues : UnitSequenceAction
 
 	public override void Preview(SpriteBatch spriteBatch)
 	{
-		//todo UI rework
+		if (Requirements.Position != new Vector2Int(-1, -1))
+		{
+			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
+			if(t.Surface is null)return;
+			Texture2D sprite = t.Surface.GetTexture();
+			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Yellow * 0.2f);
+			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Green, 0.5f);
+		}
 	}
 
 

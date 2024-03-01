@@ -35,14 +35,14 @@ public class Throwable : DeliveryMethod
 	}
 
 
-	public override Tuple<bool, string> CanPerform(Unit actor, WorldObject target, int dimension = -1)
+	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
 		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > throwRange)
 		{
-			return new Tuple<bool, string>(false, "Too Far");
+			return new Tuple<bool,bool, string> (false,false, "Too Far");
 		}
 		
-		return new Tuple<bool, string>(true, "");
+		return new Tuple<bool,bool, string>(true,true, "");
 	}
 
 }

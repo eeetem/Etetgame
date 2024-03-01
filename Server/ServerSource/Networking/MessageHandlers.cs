@@ -1,5 +1,6 @@
 ﻿using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Riptide;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
 
@@ -13,6 +14,17 @@ public static partial class NetworkingManager
 	{
 		NetworkingManager.SendMapData(senderID);
 	}
+	
+	[MessageHandler((ushort) NetworkMessageID.SequenceFinished)]
+	private static void SequenceFinished(ushort senderID, Message message)
+	{
+		if(server.TryGetClient(senderID, out var c))
+		{
+			GameManager.SequenceFinished(c);
+		}
+		
+	}
+
 
 	
 	[MessageHandler((ushort) NetworkMessageID.DoAI)]
@@ -38,7 +50,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.EndTurn)]
 	private static void HandleEndTurn(ushort senderID,Message message)
 	{
-		ClientInstance? currentPlayer;
+		GameManager.ClientInstance? currentPlayer;
 		if (GameManager.IsPlayer1Turn)
 		{
 			
@@ -215,7 +227,7 @@ public static partial class NetworkingManager
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
 
-		GameManager.Player2 = new ClientInstance("AI", null);
+		GameManager.Player2 = new GameManager.ClientInstance("AI", null);
 		GameManager.Player2.IsAI = true;
 		SendPreGameInfo();
 	}
@@ -227,7 +239,7 @@ public static partial class NetworkingManager
 		if (GameManager.Player2 != null) return;
 		Connection c;
 		server.TryGetClient(senderID, out c);
-		GameManager.Player2 = new ClientInstance("Practice Opponent", c);
+		GameManager.Player2 = new GameManager.ClientInstance("Practice Opponent", c);
 		GameManager.Player2.IsPracticeOpponent = true;
 		SendPreGameInfo();
 	}

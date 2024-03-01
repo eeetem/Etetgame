@@ -26,7 +26,7 @@ public partial class WorldObjectType
     public int GetRandomVariationIndex(int seed)
     {
         var r = new Random(seed);
-        int roll = (r.Next(1000)) % TotalVariationsWeight;
+        int roll = r.Next(1000) % TotalVariationsWeight;
         for (int i = 0; i < TotalVarationCount; i++)
         {
             if (roll < _variationSheets[i].GetWeight())

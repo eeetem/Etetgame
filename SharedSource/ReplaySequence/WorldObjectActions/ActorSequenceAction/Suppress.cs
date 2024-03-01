@@ -112,7 +112,7 @@ public class Suppress : UnitSequenceAction
 	
 #if CLIENT
 
-	public override void DrawDesc(Vector2 pos, SpriteBatch batch)
+	public override void DrawConsequence(Vector2 pos, SpriteBatch batch)
 	{
 		
 		var arrowSprite = TextureManager.GetTexture("HoverHud/Consequences/downArrow");
@@ -120,15 +120,27 @@ public class Suppress : UnitSequenceAction
 		Vector2 offset = new Vector2(arrowSprite.Width-2,0);
 		batch.Draw(arrowSprite, pos+offset*3, Color.White);
 		batch.DrawNumberedIcon(DetDmg.ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+		if (Actor.WorldObject.PreviewData.detDmg >= Actor.Determination)
+		{
+			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/panic"),pos+offset*2,Color.White);
+		}
 	}
 
 	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
 	{
-		batch.DrawText("" +
-		               "           Suppression:\n" +
-		               "  [Green]Amount[-] to be subtracted from determination\n" +
-		               "  todo panic", pos, scale, Color.White);
+		string str = "           Suppression:\n" +
+		             "  [Green]Amount[-] to be subtracted from determination\n";
+		if (Actor.WorldObject.PreviewData.detDmg >= Actor.Determination)
+		{
+			str += "  Unit will [Red]panic[-] causing it to crouch and loose a movement point next turn";
+		}
+
+		batch.DrawText(str, pos, scale, 45, Color.White);
 		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 5),scale/2f,Color.White);
+		if (Actor.WorldObject.PreviewData.detDmg >= Actor.Determination)
+		{
+			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/panic"), pos + new Vector2(0, 18),scale/2f,Color.White);
+		}
 
 
 	}

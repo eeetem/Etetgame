@@ -369,7 +369,7 @@ public  partial class WorldManager
     {
         public bool Equals(RayCastOutcome other)
         {
-            return CollisionPointLong.Equals(other.CollisionPointLong) && CollisionPointShort.Equals(other.CollisionPointShort) && StartPoint.Equals(other.StartPoint) && EndPoint.Equals(other.EndPoint) &&(Path is null) == (other.Path is null)&& ( (Path is null && other.Path is null) ||Enumerable.SequenceEqual(Path!, other.Path!)) && HitObjId == other.HitObjId && hit == other.hit;
+            return CollisionPointLong.Equals(other.CollisionPointLong) && CollisionPointShort.Equals(other.CollisionPointShort) && StartPoint.Equals(other.StartPoint) && EndPoint.Equals(other.EndPoint) &&Path is null == other.Path is null&& ( (Path is null && other.Path is null) ||Enumerable.SequenceEqual(Path!, other.Path!)) && HitObjId == other.HitObjId && hit == other.hit;
         }
 
         public override bool Equals(object? obj)
