@@ -102,7 +102,6 @@ namespace DefconNull.WorldObjects
 						foreach (var c in Type.SpawnEffect.GetApplyConsiqunces(WorldObject))
 						{
 							NetworkingManager.SendSequence(c);
-							SequenceManager.AddSequence(c);
 						}
 					});
 					SequenceManager.RunNextAfterFrames(t);
@@ -193,7 +192,7 @@ namespace DefconNull.WorldObjects
 			{
 				if(st.Duration<=0) continue;
 				//incorrect if status effect doesnt actually affect this unit but whatever
-				var cons = st.Type.Conseqences.GetApplyConsiqunces(this.WorldObject);
+				var cons = st.Type.Conseqences.GetApplyConsiqunces(WorldObject);
 				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
 				foreach (var v in vals)
 				{
@@ -509,7 +508,7 @@ namespace DefconNull.WorldObjects
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != this.GetType()) return false;
+			if (obj.GetType() != GetType()) return false;
 			return Equals((Unit) obj);
 		}
 
@@ -561,7 +560,7 @@ namespace DefconNull.WorldObjects
 		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)
 		{
 
-			UnitAbility action = this.Abilities[abilityIndex];
+			UnitAbility action = Abilities[abilityIndex];
 			if(!action.CanOverWatch) return new HashSet<Vector2Int>();
 
 			var tiles = WorldManager.Instance.GetTilesAround(target, action.OverWatchRange);
@@ -594,29 +593,29 @@ namespace DefconNull.WorldObjects
 		{
 			if(WorldObject.TileLocation.Position == vector2Int) return;
 			Log.Message("UNITS","units re-located from "+WorldObject.TileLocation.Position+" to "+vector2Int);
-			var oldtile = this.WorldObject.TileLocation;
+			var oldtile = WorldObject.TileLocation;
 			oldtile.UnitAtLocation = null;
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
 
 #if SERVER
-		if(newTile.IsVisible(team1: true)||((WorldTile)oldtile).IsVisible(team1: true))
+		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
 		{
 			Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-			if (GameManager.Player1UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player1UnitPositions.Remove(this.WorldObject.ID);
+			if (GameManager.Player1UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1UnitPositions.Remove(WorldObject.ID);
 	
-			GameManager.Player1UnitPositions[this.WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+			GameManager.Player1UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 		}
-		if(newTile.IsVisible(team1: false)||((WorldTile)oldtile).IsVisible(team1: false))
+		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
 		{
 			Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-			if (!GameManager.Player2UnitPositions.ContainsKey(this.WorldObject.ID)) GameManager.Player2UnitPositions.Remove(this.WorldObject.ID);
+			if (!GameManager.Player2UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2UnitPositions.Remove(WorldObject.ID);
 			
-			GameManager.Player2UnitPositions[this.WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+			GameManager.Player2UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 		}
 #endif
 			
 			
-			this.WorldObject.TileLocation = newTile;
+			WorldObject.TileLocation = newTile;
 			newTile.UnitAtLocation = this;
 		}
 

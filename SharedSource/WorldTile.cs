@@ -16,7 +16,7 @@ public partial class WorldTile : IWorldTile
 	public Vector2Int Position => _position;
 	public WorldTile(Vector2Int position)
 	{
-		this._position = position;
+		_position = position;
 
 	}
 	
@@ -34,7 +34,7 @@ public partial class WorldTile : IWorldTile
 			
 			bool isFriendly = watcher.IsPlayer1Team == target.IsPlayer1Team;
 
-			Visibility vis = WorldManager.Instance.CanTeamSee(this.Position, watcher.IsPlayer1Team);
+			Visibility vis = WorldManager.Instance.CanTeamSee(Position, watcher.IsPlayer1Team);
 
 
 			Console.WriteLine("overwatch spotted by " + watcher.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
@@ -389,7 +389,7 @@ public partial class WorldTile : IWorldTile
 		public List<WorldObject.WorldObjectData> ObjectsAtLocation;
 		public WorldTileData(Vector2Int position)
 		{
-			this.Position = position;
+			Position = position;
 			NorthEdge = null;
 			WestEdge = null;
 			Surface = null;

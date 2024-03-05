@@ -468,47 +468,69 @@ public static partial class NetworkingManager
 		var p = GameManager.GetPlayer(player1);
 		if(p== null) return;
 		
-		if(p.PrepedSequence.Count > 0 && p.HasDeliveredAllMessages)
+		if(p.PrepedSequence.HasValue && p.HasDeliveredAllMessages)
 		{
-			Log.Message("NETWORKING","Sending sequence to player: "+player1);
-			
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
-			if (player1)
+			if (p.PrepedSequence.Value.Actions.Count>0)
 			{
-				msg.Add((ushort)ReplaySequenceTarget.Player1);
+				Log.Message("NETWORKING", "Sending sequence to player: " + player1);
+
+				var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+				if (player1)
+				{
+					msg.Add((ushort) ReplaySequenceTarget.Player1);
+				}
+				else
+				{
+					msg.Add((ushort) ReplaySequenceTarget.Player2);
+				}
+
+				msg.Add(p.PrepedSequence.Value.Actions.Count);
+				foreach (var a in p.PrepedSequence.Value.Actions)
+				{
+					if (!a.Active) throw new Exception("sending inactive sequence");
+					msg.Add((int) a.GetSequenceType());
+					msg.AddSerializable(a);
+					a.Return();
+				}
+
+				p.isReadyForNextSequence = false;
+				server.Send(msg, p.Connection);
 			}
-			else
-			{
-				msg.Add((ushort)ReplaySequenceTarget.Player2);
-			}
-			msg.Add(p.PrepedSequence.Count);
-			foreach (var a in p.PrepedSequence)
-			{
-				if (!a.Active) throw new Exception("sending inactive sequence");
-				msg.Add((int) a.GetSequenceType());
-				msg.AddSerializable(a);
-				a.Return();
-			}
-			p.ReadyForNextSequence = false;
-			p.PrepedSequence.Clear();
-			
-			server.Send(msg,p.Connection);
+
+
+			p.PrepedSequence = null;
 			return;
 		}
 		if(p.SequenceQueue.Count == 0 || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
 		{
 			return;
 		}
-		List<SequenceAction> actions;
-		if (!p.SequenceQueue.TryDequeue(out actions!)) return;
+		SequencePacket packet;
+		if (!p.SequenceQueue.TryDequeue(out packet!)) return;
 		
 		if (p.Connection == null || !p.Connection.IsConnected)//just discard all the shit since we have no connection and they will re-recive everything anyways when connecting
 		{
-			actions.ForEach(x=>x.Return());
+			packet.Actions.ForEach(x=>x.Return());
+			return;
 		}
 		
-		actions.ForEach(x=>x.FilterForPlayer(player1));
-		p.PrepedSequence = actions;
+		packet.Actions.ForEach(x=>x.FilterForPlayer(player1));
+		p.PrepedSequence = packet;
+		if (player1)
+		{
+			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(true, sequencesToExecute[packet.ID].Item2, sequencesToExecute[packet.ID].Item3);
+		}
+		else
+		{
+			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(sequencesToExecute[packet.ID].Item1, true, sequencesToExecute[packet.ID].Item3);
+		}
+		if(sequencesToExecute[p.PrepedSequence.Value.ID].Item1 && (sequencesToExecute[p.PrepedSequence.Value.ID].Item2 || GameManager.Player2!.IsAI))
+		{
+			Log.Message("NETWORKING", "all players have recived sequence: "+p.PrepedSequence.Value.ID);
+			SequenceManager.AddSequence(sequencesToExecute[p.PrepedSequence.Value.ID].Item3);
+			sequencesToExecute.Remove(p.PrepedSequence.Value.ID);
+		}
+		
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
 	}
 	
@@ -549,9 +571,9 @@ public static partial class NetworkingManager
 			
 	}
 
-	public static void SendSequence(SequenceAction action, bool force = false)
+	public static void SendSequence(SequenceAction action)
 	{
-		SendSequence(new List<SequenceAction>(){action.Clone()},force);
+		SendSequence(new List<SequenceAction>(){action});
 	}
 
 	public static void SendSequence(IEnumerable<SequenceAction> actions)
@@ -565,7 +587,22 @@ public static partial class NetworkingManager
 		SendSequence(clonedActions);
 	}
 
-	private static void SendSequence(List<SequenceAction> actions, bool force = false)
+	static Dictionary<int,Tuple<bool,bool,List<SequenceAction>>> sequencesToExecute = new Dictionary<int, Tuple<bool, bool, List<SequenceAction>>>();
+	public struct SequencePacket
+	{
+		public int ID;
+		public List<SequenceAction> Actions;
+
+		public SequencePacket(int ID, List<SequenceAction> actions)
+		{
+			this.ID = ID;
+			Actions = actions;
+
+		}
+	}
+
+	private static int sequencePacketID = 0;
+	private static void SendSequence(List<SequenceAction> actions)
 	{
 		var originalList = new List<SequenceAction>(actions);
 		actions.RemoveAll(x => !x.ShouldDo());
@@ -575,15 +612,6 @@ public static partial class NetworkingManager
 			a.Return();//release actions that are not being sent
 		}
 		int chunkNumber = 25;
-		//for (int i = 0; i < Math.Min(actions.Count,chunkNumber); i++)
-		//{
-		//	if (actions[i] is FaceUnit)
-		//	{
-		//		chunkNumber = i+1;
-		//		break;
-		//	}
-		//}
-		//send in chunks
 		if (actions.Count() > chunkNumber)
 		{
 			SendSequence(actions.GetRange(0, chunkNumber));
@@ -594,45 +622,29 @@ public static partial class NetworkingManager
 		Log.Message("NETWORKING","sequence submited for sending "+actions.Count);
 
 
+
 		lock (UpdateLock)
 		{
-			if (force)
-			{
-				var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
-				msg.Add((ushort)ReplaySequenceTarget.All);
-				msg.Add(actions.Count);
-				foreach (var a in actions)
-				{
-					msg.Add((int) a.GetSequenceType());
-					msg.AddSerializable(a);
-				}
-				server.SendToAll(msg);
-                
-			}
-			else
-			{
-				var tempActList = new List<SequenceAction>(actions.Count);
-				actions.ForEach(x => tempActList.Add(x.Clone()));
-				tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(true));
-				EnqueueSendSequnceToPlayer(tempActList, true);
-                    
-				tempActList = new List<SequenceAction>(actions.Count);
-				actions.ForEach(x => tempActList.Add(x.Clone()));
-				tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(false));
-				EnqueueSendSequnceToPlayer(new List<SequenceAction>(tempActList), false);
-                   
-			}
+			sequencePacketID++;
+			var tempActList = new List<SequenceAction>(actions.Count);
+			actions.ForEach(x => tempActList.Add(x.Clone()));
+			tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(true));
+			var packet = new SequencePacket(sequencePacketID, tempActList);
+			GameManager.GetPlayer(true)!.SequenceQueue.Enqueue(packet);
 
+			tempActList = new List<SequenceAction>(actions.Count);
+			actions.ForEach(x => tempActList.Add(x.Clone()));
+			tempActList.RemoveAll(x => !x.ShouldSendToPlayerServerCheck(false));
+			packet = new SequencePacket(sequencePacketID, tempActList);
+			GameManager.GetPlayer(false)!.SequenceQueue.Enqueue(packet);
+	
+			
+
+			sequencesToExecute.Add(sequencePacketID, new Tuple<bool, bool, List<SequenceAction>>(false, false, actions));
 		}
-		actions.ForEach(x=>x.Return());
 
 	}
-	public static void EnqueueSendSequnceToPlayer(List<SequenceAction> actions, bool player1)
-	{
-		if (actions.Count == 0) return;
-		var p =GameManager.GetPlayer(player1);
-		p.SequenceQueue.Enqueue(actions);
-	}
+
 
 
 	public static void SendEndTurn()
@@ -676,32 +688,7 @@ public static partial class NetworkingManager
 
 	}
 
-//only for oposite team
-	public static void DetectUnit(Unit unit, Vector2Int position)
-	{
-		if (!unit.IsPlayer1Team)
-		{
-			if (GameManager.Player1UnitPositions.ContainsKey(unit.WorldObject.ID))
-			{
-				if(GameManager.Player1UnitPositions[unit.WorldObject.ID].Item1 == position && GameManager.Player1UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
-               
-				GameManager.Player1UnitPositions.Remove(unit.WorldObject.ID);
-			}
-			GameManager.Player1UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
-		}
-		else
-		{
-			if (GameManager.Player2UnitPositions.ContainsKey(unit.WorldObject.ID))
-			{
-				if(GameManager.Player2UnitPositions[unit.WorldObject.ID].Item1 == position && GameManager.Player2UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
-				GameManager.Player2UnitPositions.Remove(unit.WorldObject.ID);
-			}
-			GameManager.Player2UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
-		}
-		SendUnitUpdates();
-        
-		
-	}
+	
 
 
 }

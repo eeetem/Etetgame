@@ -10,9 +10,9 @@ public class Animation
 
 	public Animation(string name, int frameCount, int FPS=5)
 	{
-		this._name = name;
-		this._frameCount = frameCount;
-		this._msPerFrame = 1000 / (float)FPS;
+		_name = name;
+		_frameCount = frameCount;
+		_msPerFrame = 1000 / (float)FPS;
 	}
 
 	public void Process(float msDelta)

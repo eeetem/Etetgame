@@ -330,7 +330,7 @@ public abstract class SequenceAction :  IMessageSerializable
     {
         var msg = Message.Create();
         Serialize(msg);
-        return GetAction(this.GetSequenceType(), msg);
+        return GetAction(GetSequenceType(), msg);
         
     }
 

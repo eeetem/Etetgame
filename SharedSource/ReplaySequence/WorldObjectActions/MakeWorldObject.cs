@@ -143,7 +143,7 @@ public static partial class WorldObjectManager
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((MakeWorldObject) obj);
         }
 
@@ -182,7 +182,6 @@ public static partial class WorldObjectManager
         {
             _position = new Vector2Int(12, 5);
             data = new WorldObject.WorldObjectData("Scout");
-            data.Lifetime = 100;
             data.Facing = Direction.SouthEast;
             data.JustSpawned = true;
             Message m = Message.Create();

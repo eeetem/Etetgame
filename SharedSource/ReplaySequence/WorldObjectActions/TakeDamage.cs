@@ -200,12 +200,7 @@ public static partial class WorldObjectManager
 			
 			}
 
-				
-			if (obj.LifeTime != -100)
-			{
-				obj.LifeTime -= dmg;
-			}
-			if (obj.Health <= 0 || (obj.LifeTime <= 0 && obj.LifeTime != -100))
+			if (obj.Health <= 0)
 			{
 				Destroy(obj);
 			}
@@ -268,13 +263,13 @@ public static partial class WorldObjectManager
 			
 
 			Texture2D blockSprite = TextureManager.GetTexture("HoverHud/Consequences/detShield");
-			string blockName = "determination";
+			string blockName = "Damage [Red]dodged[-] due to determination\n";
 			Color resistColor = Color.White;
 			bool supressed = false;
 			if (GetTargetObject().UnitComponent == null)
 			{
 				blockSprite = TextureManager.GetTexture("HoverHud/Consequences/envShield");
-				blockName = "natural resistance";
+				blockName = "Damage [Red]resisted[-] by environment resistance\n";
 			}else if (GetTargetObject().UnitComponent.Determination <= 0)
 			{
 				supressed = true;
@@ -282,8 +277,7 @@ public static partial class WorldObjectManager
 
 			string tip = "" +
 			             "           Damage:\n" +
-			             "  [Green]Base damage[-] received\n" +
-			             "  Damage [Red]resisted[-] by " + blockName + "\n";
+			             "  [Green]Base damage[-] received\n" + blockName;
 			if (supressed)
 			{
 				tip += "  Resistance [Red]bypassed[-]-lack of determ.\n";

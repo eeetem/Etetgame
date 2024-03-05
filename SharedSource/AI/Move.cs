@@ -40,11 +40,11 @@ public class Move : AIAction
 		int r = Random.Shared.Next(bestOf);
 		var bestMove = best[r].Item4;
 		Vector2Int target = best[r].Item1;
-		Console.WriteLine("moving to tile with score: "+best[r].Item3 + "at postion: "+target);
-		File.AppendAllText("aidebug.txt","moving to: "+target+" with: "+  bestMove.ToString()+"\n");
+		Log.Message("AI","moving to tile with score: "+best[r].Item3 + "at postion: "+target);
+		Log.Message("AI","moving to: "+target+" with: "+  bestMove.ToString()+"\n");
 		if(best[r].Item1 == Unit.WorldObject.TileLocation.Position)
 		{
-			Console.WriteLine("already at best tile");
+			Log.Message("AI","already at best tile");
 			return;
 		}
 		bool needToDoCrouchAction = best[r].Item2 != Unit.Crouching;
@@ -57,7 +57,7 @@ public class Move : AIAction
 
 		if (target != Unit.WorldObject.TileLocation.Position)
 		{
-			Console.WriteLine("ordering move action from: "+Unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
+			Log.Message("AI","ordering move action from: "+Unit.WorldObject.TileLocation.Position+" to: "+target+" with score: "+best[r].Item3);
 			Unit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(target));
 		}
 		do

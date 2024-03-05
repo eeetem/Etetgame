@@ -13,8 +13,7 @@ namespace DefconNull.WorldObjects;
 
 public partial class WorldObject
 {
-
-	public int LifeTime = -100;
+	
 	public WorldObject(WorldObjectType? type, IWorldTile? tile, WorldObjectData data)
 	{
 		ID = data.ID;
@@ -88,14 +87,11 @@ public partial class WorldObject
 		
 	public void NextTurn()
 	{
-		if (LifeTime != -100)
+		if (Type.lifetimeTick)
 		{
-			LifeTime--;
-			if (LifeTime <= 0)
-			{
-				WorldObjectManager.Destroy(this);
-					
-			}
+			Health--;
+			if(Health <= 0)WorldObjectManager.Destroy(this);
+			
 		}
 	}
 
@@ -174,11 +170,10 @@ public partial class WorldObject
 		public int ID;
 		public string Prefab ="";
 		
-        public bool Fliped;
+		public bool Fliped;
         
 		public Unit.UnitData? UnitData;
 		public int Health;
-		public int Lifetime;
 		public bool JustSpawned;
 		public WorldObjectData(string prefab)
 		{
@@ -188,7 +183,6 @@ public partial class WorldObject
 			UnitData = null;
 			Fliped = false;
 			Health = -100;
-			Lifetime = -100;
 			JustSpawned = true;
 		}
 
@@ -199,7 +193,6 @@ public partial class WorldObject
 			message.AddInt((int)Facing);
 			message.AddBool(Fliped);
 			message.Add(Health);
-			message.Add(Lifetime);
 			message.AddBool(JustSpawned);
 			message.AddBool(UnitData != null);
 			if (UnitData != null)
@@ -215,7 +208,6 @@ public partial class WorldObject
 			Facing = (Direction)message.GetInt();
 			Fliped = message.GetBool();
 			Health = message.GetInt();
-			Lifetime = message.GetInt();
 			JustSpawned = message.GetBool();
 			bool hasUnit = message.GetBool();
 			if (hasUnit)
@@ -235,7 +227,7 @@ public partial class WorldObject
 
 		public override string ToString()
 		{
-			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Prefab)}: {Prefab}, {nameof(Fliped)}: {Fliped}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(Lifetime)}: {Lifetime}, {nameof(JustSpawned)}: {JustSpawned}";
+			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Prefab)}: {Prefab}, {nameof(Fliped)}: {Fliped}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(JustSpawned)}: {JustSpawned}";
 		}
 	}
 
@@ -246,7 +238,6 @@ public partial class WorldObject
 		data.ID = ID;
 		data.Fliped = Fliped;
 		data.Health = Health;
-		data.Lifetime = LifeTime;
 		data.JustSpawned = forceJustSpawned;
 		if (UnitComponent != null)
 		{
@@ -260,14 +251,14 @@ public partial class WorldObject
 
 	protected bool Equals(WorldObject other)
 	{
-		return LifeTime == other.LifeTime && _tileLocation.Equals(other._tileLocation) && ID == other.ID && Health == other.Health && Fliped == other.Fliped && Type.Equals(other.Type) && Equals(UnitComponent, other.UnitComponent) && destroyed == other.destroyed && Facing == other.Facing;
+		return _tileLocation.Equals(other._tileLocation) && ID == other.ID && Health == other.Health && Fliped == other.Fliped && Type.Equals(other.Type) && Equals(UnitComponent, other.UnitComponent) && destroyed == other.destroyed && Facing == other.Facing;
 	}
 
 	public override bool Equals(object? obj)
 	{
 		if (ReferenceEquals(null, obj)) return false;
 		if (ReferenceEquals(this, obj)) return true;
-		if (obj.GetType() != this.GetType()) return false;
+		if (obj.GetType() != GetType()) return false;
 		return Equals((WorldObject) obj);
 	}
 
@@ -275,8 +266,7 @@ public partial class WorldObject
 	{
 		unchecked
 		{
-			int hashCode = LifeTime;
-			hashCode = (hashCode * 397) ^ _tileLocation.GetHashCode();
+			int hashCode = _tileLocation.GetHashCode();
 			hashCode = (hashCode * 397) ^ ID;
 			hashCode = (hashCode * 397) ^ Health;
 			hashCode = (hashCode * 397) ^ Fliped.GetHashCode();
@@ -338,14 +328,7 @@ public partial class WorldObject
 		{
 			Health = data.Health;
 		}
-		if (data.JustSpawned)
-		{
-			LifeTime = Type.lifetime;
-		}
-		else
-		{
-			LifeTime = data.Lifetime;
-		}
+
 
 		if (data.UnitData != null)
 		{

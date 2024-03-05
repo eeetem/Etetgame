@@ -13,7 +13,7 @@ public partial class WorldObjectType
 
     public readonly string Name;
     public int MaxHealth;
-    public int lifetime = -100;
+    public bool lifetimeTick;
     public WorldObjectType(string name)
     {
         Name = name;

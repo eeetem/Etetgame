@@ -15,9 +15,9 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 
 public class Shoot : SequenceAction
 {
-	public override SequenceAction.SequenceType GetSequenceType()
+	public override SequenceType GetSequenceType()
 	{
-		return SequenceAction.SequenceType.Shoot;
+		return SequenceType.Shoot;
 	}
 	
 	protected bool Equals(Shoot other)
@@ -29,7 +29,7 @@ public class Shoot : SequenceAction
 	{
 		if (ReferenceEquals(null, obj)) return false;
 		if (ReferenceEquals(this, obj)) return true;
-		if (obj.GetType() != this.GetType()) return false;
+		if (obj.GetType() != GetType()) return false;
 		return Equals((Shoot) obj);
 	}
 

@@ -13,6 +13,7 @@ public static class Log
 {
     private static long startTime;
     private static Dictionary<string, StreamWriter> logStreams = new Dictionary<string, StreamWriter>();
+    public static object lockObject = new object();
     private static StreamWriter GetLogStream(string category)
     {
         if(logStreams.ContainsKey(category))
@@ -76,17 +77,21 @@ public static class Log
         
         if (!generalIgnoreList.Contains(category))
             GeneralLog(msg.ToString());
-       
 
-        GetLogStream(category).WriteLine(msg);
-
+        lock (lockObject)
+        {
+            GetLogStream(category).WriteLine(msg);
+        }
 
     }
     private static ConcurrentQueue<string> consoleQueue = new ConcurrentQueue<string>();
     private static void GeneralLog(string msg)
     {
-        GetLogStream("Main").WriteLine(msg);
-        
+        lock (lockObject)
+        {
+            GetLogStream("Main").WriteLine(msg);
+        }
+
         consoleQueue.Enqueue(msg);
       
     }

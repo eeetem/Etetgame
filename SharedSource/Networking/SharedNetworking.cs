@@ -44,7 +44,7 @@ public static partial class NetworkingManager
 	
     private static void LogNetCode(string msg)
     {
-        DefconNull.Log.Message("RIPTIDE",msg);
+        Log.Message("RIPTIDE",msg);
     }
 
 }

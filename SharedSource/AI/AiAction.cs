@@ -24,7 +24,7 @@ public abstract class AIAction
 	{
 		if(type==null) return;
 		Type = (AIActionType)type;
-		this.Unit = unit;
+		Unit = unit;
 	}
 
     
@@ -44,8 +44,8 @@ public abstract class AIAction
 		public Unit User;
 		public PotentialAbilityActivation(string name, int abilityIndex, Unit user,List<SequenceAction> consequences, WorldObject target)
 		{
-			this.Name = name;
-			this.User = user;
+			Name = name;
+			User = user;
 			Consequences = consequences;
 			this.abilityIndex = abilityIndex;
 			this.target = target;
@@ -111,6 +111,7 @@ public abstract class AIAction
 
 		if (attacker.Abilities[ability.abilityIndex].CanPerform(attacker, ability.target, true,nextTurnUse, dimension).Item1)
 		{
+
 			foreach(var c in ability.Consequences){
 				var consiquence = ScoreConsequence(c,dimension,attacker,noRecursion);
 				damage += consiquence.Item1;
@@ -261,6 +262,10 @@ public abstract class AIAction
 			outcome *= 3;
 			defenceOutcome *= 2;
 			outcome += defenceOutcome;
+			if(outcome != 0)
+			{
+				Log.Message("AI", "change score: " + outcome + " for unit: " + hitUnit.WorldObject.ID  + " prechange: " + prechangeScore + " postchange: " + postchangeScore + " defenceOutcome: " + defenceOutcome);
+			}
 			if (AI.passiveMode && outcome == 0 && mchanghe>0)//we only do movement abilities in passive mode
 			{
 				outcome += mchanghe ;//if there is no change in score, we still want to encourage movement buffs
@@ -461,7 +466,7 @@ public abstract class AIAction
 
 			int damagePotential = bestAttack.GetTotalValue();
 
-			protectionPentalty *=2;//cover is VERY important
+			//protectionPentalty *=2;//cover is VERY important
 		
 
 			score += protectionPentalty;
@@ -474,7 +479,7 @@ public abstract class AIAction
 			if(damagePotential <= 0)
 			{
 				//discourage damageless tiles, we do this instead of vission checks
-				damagePotential = -25;
+				damagePotential = -50;
 			}
 
 			details.DamagePotential = damagePotential; 

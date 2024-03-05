@@ -37,7 +37,6 @@ public static partial class WorldObjectManager
 		{
 			var cons = obj.Type.DestructionConseqences.GetApplyConsiqunces(obj);
 			NetworkingManager.SendSequence(cons);
-			SequenceManager.AddSequence(cons);
 		}
 
 #endif

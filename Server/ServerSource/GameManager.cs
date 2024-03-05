@@ -3,6 +3,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Riptide;
 
 
@@ -217,7 +218,9 @@ public static partial class GameManager
 		foreach (var pos in Player1UnitPositions)
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
-			if(!t.IsVisible(team1:true) && !pos.Value.Item2.UnitData.Value.Team1) continue;//if they cant see the tile and the unit is from another team dont check anything
+			Visibility minVis = Visibility.Partial;
+			if(pos.Value.Item2.UnitData!.Value.Crouching) minVis = Visibility.Full;
+			if(!t.IsVisible(minVis,team1:true) && !pos.Value.Item2.UnitData.Value.Team1) continue;//if they cant see the tile and the unit is from another team dont check anything
 			if (t.UnitAtLocation == null)
 			{
 				Player1UnitPositions.Remove(pos.Key);
@@ -228,14 +231,22 @@ public static partial class GameManager
 				Player1UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,pos.Value);
 				PlayerUnitPositionsDirty = true;
 			}
-			if(Player1UnitPositions.ContainsKey(pos.Key)){
-				Player1UnitPositions[pos.Key] = (pos.Value.Item1,t.UnitAtLocation!.WorldObject.GetData());
+			else
+			{
+				var unitData = (pos.Value.Item1, t.UnitAtLocation!.WorldObject.GetData());
+				if (Player1UnitPositions.ContainsKey(pos.Key) && !Player1UnitPositions[pos.Key].Equals(unitData))
+				{
+					Player1UnitPositions[pos.Key] = unitData;
+					PlayerUnitPositionsDirty = true;
+				}
 			}
 		}
 		foreach (var pos in Player2UnitPositions)
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
-			if(!t.IsVisible(team1:false) && pos.Value.Item2.UnitData.Value.Team1) continue;//if they cant see the tile - dont do any checks
+			Visibility minVis = Visibility.Partial;
+			if(pos.Value.Item2.UnitData!.Value.Crouching) minVis = Visibility.Full;
+			if(!t.IsVisible(minVis,team1:false) && pos.Value.Item2.UnitData!.Value.Team1) continue;//if they cant see the tile - dont do any checks
 			if (t.UnitAtLocation == null)
 			{
 				Player2UnitPositions.Remove(pos.Key);
@@ -246,13 +257,20 @@ public static partial class GameManager
 				Player2UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,pos.Value);
 				PlayerUnitPositionsDirty = true;
 			}
-			if(Player2UnitPositions.ContainsKey(pos.Key)){
-				Player2UnitPositions[pos.Key] = (pos.Value.Item1,t.UnitAtLocation!.WorldObject.GetData());
+			else
+			{
+
+				var unitData = (pos.Value.Item1, t.UnitAtLocation!.WorldObject.GetData());
+				if (Player2UnitPositions.ContainsKey(pos.Key) && !Player2UnitPositions[pos.Key].Equals(unitData))
+				{
+					Player2UnitPositions[pos.Key] = unitData;
+					PlayerUnitPositionsDirty = true;
+				}
 			}
 		}
 	}
 
-	public static void EnsureUnitSpoted(Unit spotedUnit)
+	public static void ShowUnitToEnemy(Unit spotedUnit)
 	{
 		if(spotedUnit.IsPlayer1Team)
 		{
@@ -279,12 +297,39 @@ public static partial class GameManager
 			}
 		}
 	}
+//only for oposite team
+	public static void ShowUnitToEnemyAtPosition(Unit unit, Vector2Int position)
+	{
+		if (!unit.IsPlayer1Team)
+		{
+			if (Player1UnitPositions.ContainsKey(unit.WorldObject.ID))
+			{
+				if(Player1UnitPositions[unit.WorldObject.ID].Item1 == position && Player1UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
+               
+				Player1UnitPositions.Remove(unit.WorldObject.ID);
+			}
+			Player1UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
+			
+		}
+		else
+		{
+			if (Player2UnitPositions.ContainsKey(unit.WorldObject.ID))
+			{
+				if(Player2UnitPositions[unit.WorldObject.ID].Item1 == position && Player2UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
+				Player2UnitPositions.Remove(unit.WorldObject.ID);
+			}
+			Player2UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
+		}
+		NetworkingManager.SendUnitUpdates();
+        
+		
+	}
 
 	public static void SequenceFinished(Connection c)
 	{
 		var p = GetPlayer(c);
 		if(p == null) return;
-		p.ReadyForNextSequence = true;
+		p.isReadyForNextSequence = true;
 	}
 	
 	public class ClientInstance
@@ -295,16 +340,18 @@ public static partial class GameManager
 		public List<SquadMember>?  SquadComp { get; private set; }
 		public bool IsPracticeOpponent { get; set; }
 	
-		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0;
+		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || GameManager.PlayerUnitPositionsDirty;
 	
-		public ConcurrentQueue<List<SequenceAction>> SequenceQueue = new ConcurrentQueue<List<SequenceAction>>();
+		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
 	
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
-		public bool ReadyForNextSequence { get; set; } = true;
-		public List<SequenceAction> PrepedSequence = new List<SequenceAction>();
+		public bool isReadyForNextSequence = false;
+		public bool ReadyForNextSequence => isReadyForNextSequence || IsAI;
+		public NetworkingManager.SequencePacket? PrepedSequence;
 
 		public ClientInstance(string name,Connection? con)
 		{
+			isReadyForNextSequence = true;
 			Name = name;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -312,6 +359,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
+			isReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
 		}

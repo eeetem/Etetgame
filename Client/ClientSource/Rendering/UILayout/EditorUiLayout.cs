@@ -335,7 +335,16 @@ public class EditorUiLayout : MenuLayout
 		base.Update(deltatime);
 //		WorldManager.Instance.MakeFovDirty(true);
 		timeUntilNextSave -= deltatime;
-		
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 100; y++)
+			{
+				var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+				tile.SetVisibility(GameManager.IsPlayer1,Visibility.Full);
+			}
+
+			
+		}
 		if(timeUntilNextSave<= 0)
 		{
 			timeUntilNextSave = 30000;

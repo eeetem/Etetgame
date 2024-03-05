@@ -8,6 +8,7 @@ using System.Xml;
 using DefconNull.WorldActions;
 using DefconNull.WorldActions.DeliveryMethods;
 using DefconNull.WorldActions.UnitAbility;
+using Microsoft.VisualBasic.CompilerServices;
 #if CLIENT
 using DefconNull.Rendering;
 #endif
@@ -97,9 +98,11 @@ public static class PrefabManager
 				vcover = scover;
 			}
 
+			
+			
 			if (xmlObj!.HasAttributes && xmlObj.Attributes?["lifetime"] != null)
 			{
-				type.lifetime = int.Parse(xmlObj?.Attributes?["lifetime"]!.InnerText!);
+				type.lifetimeTick = bool.Parse(xmlObj?.Attributes?["lifetime"]!.InnerText!);
 			}
 
 			type.Faceable = faceable;

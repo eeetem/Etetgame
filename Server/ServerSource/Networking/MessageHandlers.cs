@@ -12,7 +12,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.MapReaload)]
 	private static void ResendMap(ushort senderID, Message message)
 	{
-		NetworkingManager.SendMapData(senderID);
+		SendMapData(senderID);
 	}
 	
 	[MessageHandler((ushort) NetworkMessageID.SequenceFinished)]

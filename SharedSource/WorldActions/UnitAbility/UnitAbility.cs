@@ -50,17 +50,18 @@ public class UnitAbility
 
 	public UnitAbility(string name, string tooltip, ushort determinationCost, ushort movePointCost, ushort actionPointCost, ushort overWatchRange, List<Effect> effects, bool immideaateActivation, ushort index, bool aiExempt, List<string> targetAids)
 	{
-		this.Name = name;
-		this.Tooltip = tooltip;
+		Name = name;
+		tooltip = tooltip.Replace("\\n", "\n");//replace escape characters
+		Tooltip = tooltip;
 		DetCost = determinationCost;
 		MoveCost = movePointCost;
 		ActCost  = actionPointCost;
 		Effects = effects;
-		this.ImmideateActivation = immideaateActivation;
-		this.Index = index;
-		this.AIExempt = aiExempt;
+		ImmideateActivation = immideaateActivation;
+		Index = index;
+		AIExempt = aiExempt;
 		
-		this.TargetAids = targetAids;
+		TargetAids = targetAids;
 #if CLIENT
 
 		Icon = TextureManager.GetTextureFromPNG("Icons/" + name);

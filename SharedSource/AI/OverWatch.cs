@@ -14,7 +14,7 @@ public class Overwatch : AIAction
 	private Move _moveact;
 	public Overwatch(Unit u, Move moveact) : base(AIActionType.OverWatch,u)
 	{
-		this._moveact = moveact;
+		_moveact = moveact;
 	}
 
 

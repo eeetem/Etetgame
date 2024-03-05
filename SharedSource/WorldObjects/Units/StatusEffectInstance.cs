@@ -9,9 +9,9 @@ public class StatusEffectInstance
 {
 	public StatusEffectInstance(StatusEffectType type, int duration, Unit owner)
 	{
-		this.Type = type;
-		this.Duration = duration;
-		this.Owner = owner;
+		Type = type;
+		Duration = duration;
+		Owner = owner;
 	}
 
 	public readonly StatusEffectType Type;

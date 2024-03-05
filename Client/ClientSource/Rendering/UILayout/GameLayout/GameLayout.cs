@@ -885,13 +885,7 @@ public class GameLayout : MenuLayout
 		{
 			foreach (var obj in tile.ObjectsAtLocation)
 			{
-				if (obj.LifeTime > 0&& obj.IsVisible())
-				{
-					batch.Begin(transformMatrix: Camera.GetViewMatrix(),samplerState: SamplerState.AnisotropicClamp);
-					batch.DrawText(""+obj.LifeTime, Utility.GridToWorldPos(tile.Position + new Vector2(0f,0f)),  5,5, Color.White);
-					//obj.Type.DesturctionEffect?.Preview(obj.TileLocation.Position,batch,null);
-					batch.End();
-				}
+				DrawHoverHud(batch, obj);
 
 			}
 
@@ -1051,6 +1045,11 @@ public class GameLayout : MenuLayout
 			batch.DrawNumberedIcon(SelectedUnit.MovePoints.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos, portraitScale);
 			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 45 * portraitScale);
 			batch.DrawNumberedIcon(SelectedUnit.Determination.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos, portraitScale);
+			if (SelectedUnit.canTurn)
+			{
+				pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 130 * portraitScale);
+				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/turn"), pos, portraitScale,Color.White);
+			}
 
 			batch.End();
 		}
@@ -1092,10 +1091,10 @@ public class GameLayout : MenuLayout
 		
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
-			Vector2 tooltip = infoboxtip + new Vector2(50, 38) * infoboxscale;
+			Vector2 tooltip = infoboxtip + new Vector2(44, 38) * infoboxscale;
 			string toolTipText = HudActionButton.SelectedButton!.Tooltip;
 	
-			batch.DrawText(toolTipText,tooltip+new Vector2(0,15)*infoboxscale, infoboxscale, 40, Color.White);
+			batch.DrawText(toolTipText,tooltip+new Vector2(0,15)*infoboxscale, infoboxscale*0.8f, 58, Color.White);
 			Vector2 startpos = infoboxtip + new Vector2(12, 32) * infoboxscale;
 			Vector2 offset = new Vector2(0, 40)*infoboxscale;
 
@@ -1144,11 +1143,13 @@ public class GameLayout : MenuLayout
 			
 		}
 		batch.End();
-	
+
+#if  DEBUG
+		
 
 		if (drawExtra)
 		{
-			return;
+			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
 			Move.MoveCalcualtion details;
@@ -1183,7 +1184,7 @@ public class GameLayout : MenuLayout
 			AIMoveCache[(int) TileCoordinate.X, (int) TileCoordinate.Y, 0] = res;
 		}
 
-	
+#endif
 
 	}
 

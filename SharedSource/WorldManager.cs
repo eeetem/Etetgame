@@ -207,9 +207,9 @@ public  partial class WorldManager
 #if CLIENT
                    spotedUnit.Spoted();
 #elif SERVER
-                    if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team)
+                    if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
                     {
-                        GameManager.EnsureUnitSpoted(spotedUnit);
+                        GameManager.ShowUnitToEnemy(spotedUnit);
                     }
 #endif               
                 }

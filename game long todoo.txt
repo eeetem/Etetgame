@@ -1,9 +1,16 @@
 
 UI  enemy progress
-shoot detailed tooltip
-turn point display
 incrementing timer
-turn no point regain bug
+screen move gltich
+text scale crop
+overwatch always visible for 1 turn
+force camera
+remove the scaling unit effect
+overwatch icon
+
+icons:
+turn icon
+overwatch
 
 sfx list:
 -throw

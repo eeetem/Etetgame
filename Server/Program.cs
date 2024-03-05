@@ -16,8 +16,10 @@ public static class Program
 		
     static void Main(string[] args)
     { 
-		
-
+	
+	    AppDomain currentDomain = default(AppDomain);
+	    currentDomain = AppDomain.CurrentDomain;
+	    currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
 		
         Console.WriteLine("Hello World!");
         string port = "52233";
@@ -87,5 +89,13 @@ public static class Program
         msg += "[MAP]" +WorldManager.Instance.CurrentMap.Name + "[/MAP]";
         Console.WriteLine(msg);
 
+    }
+    private static void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+    {
+
+	    DateTime date = DateTime.Now;
+			
+	    File.WriteAllText("SERVER Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+	
     }
 }

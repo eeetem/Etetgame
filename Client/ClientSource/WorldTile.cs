@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using DefconNull.WorldObjects;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace DefconNull;
@@ -45,7 +47,7 @@ public partial class WorldTile : IWorldTile
 		if(Surface == null) return;
 		_friendlyWatching = false;
 		_enemyWatching = false;
-		foreach (var watcher in _watchers)
+		foreach (var watcher in new List<Unit>(_watchers))
 		{
 			if (!watcher.WorldObject.IsVisible())
 			{
@@ -58,7 +60,6 @@ public partial class WorldTile : IWorldTile
 				continue;
 			}
 
-			Log.Message("UNITS", "calculating overwatch:" + watcher.Overwatch.Item1 + " " + watcher.Overwatch.Item2);	
 			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Surface!, false, true);
 			if (res.Item1)
 			{

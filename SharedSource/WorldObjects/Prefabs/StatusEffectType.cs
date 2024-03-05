@@ -11,8 +11,8 @@ public class StatusEffectType
 
 	public StatusEffectType(string name, string tip, WorldConseqences itm)
 	{
-		this.Name = name;
-		this.Tip = tip;
+		Name = name;
+		Tip = tip;
 		Conseqences = itm;
 	}
 

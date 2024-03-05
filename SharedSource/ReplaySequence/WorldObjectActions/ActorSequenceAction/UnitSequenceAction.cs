@@ -15,7 +15,7 @@ public abstract class UnitSequenceAction : SequenceAction
 
 	public override string ToString()
 	{
-		return this.GetType().Name+": "+ $"{nameof(Requirements)}: {Requirements}";
+		return GetType().Name+": "+ $"{nameof(Requirements)}: {Requirements}";
 	}
 
 	public override bool Equals(object? obj)
@@ -116,7 +116,7 @@ public abstract class UnitSequenceAction : SequenceAction
 		if (Actor == null) return false;
 
 		var wtile = (WorldTile) (Actor.WorldObject.TileLocation);
-		return wtile.IsVisible(team1: player1);
+		return wtile.IsVisible(Actor.WorldObject.GetMinimumVisibility(),player1);
 	}
 #endif
 

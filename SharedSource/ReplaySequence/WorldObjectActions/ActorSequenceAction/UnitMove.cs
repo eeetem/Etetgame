@@ -41,7 +41,7 @@ public class UnitMove : UnitSequenceAction
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj.GetType() != GetType()) return false;
         return Equals((UnitMove) obj);
     }
 
@@ -72,12 +72,11 @@ public class UnitMove : UnitSequenceAction
         foreach (var pos in Path)
         {
             var wtile = (WorldTile) WorldManager.Instance.GetTileAtGrid(pos);
-            if( wtile.IsVisible(team1: player1))return true;
+            if( wtile.IsVisible(Actor.WorldObject.GetMinimumVisibility(),team1: player1))return true;
         }
 
         return false;
     }
-
 
     public override void FilterForPlayer(bool player1)
     { 
@@ -104,7 +103,7 @@ public class UnitMove : UnitSequenceAction
             if (Path.Count > 0)
             {
                 //force an update if we're gonna see unit at any point
-                Networking.NetworkingManager.DetectUnit(Actor,Path[0]);
+                GameManager.ShowUnitToEnemyAtPosition(Actor,Path[0]);
             }
         }
         //   Log.Message("UNITS","no filter needed");

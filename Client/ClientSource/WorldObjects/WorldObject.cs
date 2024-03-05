@@ -92,7 +92,7 @@ public partial class WorldObject : IDrawable
 	public Color GetColor()
 	{
 
-		Color color = ((WorldTile) TileLocation).GetTileColor();
+		Color color = Color.White;
 
 		if (UnitComponent != null)
 		{
@@ -109,6 +109,10 @@ public partial class WorldObject : IDrawable
 			//	color = new Color(255, 200, 200);
 			//}
 
+		}
+		else
+		{
+			color = ((WorldTile) TileLocation).GetTileColor();
 		}
 
 

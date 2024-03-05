@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using MonoGame.Extended.Collections;
 using Riptide;
 
@@ -62,8 +63,18 @@ public class AI
 					do
 					{
 						Thread.Sleep(100);
-						Log.Message("AI","Waiting for sequence to end");
-					} while (SequenceManager.SequenceRunning || WorldManager.Instance.FovDirty);
+						Log.Message("AI", "Waiting for sequence to end");
+					} while (
+						SequenceManager.SequenceRunning ||
+						WorldManager.Instance.FovDirty 
+#if SERVER
+						||
+						NetworkingManager.HasPendingMessages ||
+						!GameManager.Player1!.ReadyForNextSequence ||
+						GameManager.Player1.SequenceQueue.Count > 0
+#endif
+					);
+
 					Log.Message("AI","Waiting for seqeunce ended");
 					//  if(GameManager.IsPlayer1Turn) break;
 					List<ValueTuple<AIAction, int>> actions = new();
@@ -110,7 +121,7 @@ public class AI
 					}
 
 #if SERVER
-					while (NetworkingManager.HasPendingMessages)
+					while (NetworkingManager.HasPendingMessages || !GameManager.Player1.ReadyForNextSequence)
 					{
 						Thread.Sleep(1000);
 					};		

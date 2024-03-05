@@ -2,12 +2,18 @@
 <root>
 
 
-  <object VCover = "+5" Faceable = "false" SCover ="0" lifetime ="5" z="0.3">
+  <object VCover = "+5" Faceable = "false" SCover ="0" health="5" lifetime="true" z="0.3">
     <sprite source="Environment/Smoke" fames="2"  animFPS="1">
       <anim name="start" frames="5" animFPS="10"/>
       <anim name="end" frames="4"  animFPS="10"/>
     </sprite>
     <name>Smoke</name>
+  </object>
+
+  <object Faceable = "false" SCover ="2">
+    <sprite source="Environment/Boulder">
+    </sprite>
+    <name>Boulder</name>
   </object>
   
   <object Faceable = "false" SCover ="0" Surface = "true">
@@ -29,7 +35,7 @@
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
-      <variation id="3" weight="50"/>
+      <variation id="3" weight="100"/>
     </sprite>
     <name>Wooden Floor</name>
   </object>
@@ -38,14 +44,13 @@
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
-      <variation id="3" weight="50"/>
+      <variation id="3" weight="100"/>
     </sprite>
     <name>Tiled Floor</name>
   </object>
   <object Faceable = "true" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/roadStripe" offset= "0,0">
       <variation id="0" weight="10"/>
-      <variation id="1" weight="10"/>
     </sprite>
     <name>Striped Road</name>
   </object>
@@ -259,7 +264,7 @@
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
-
+      <tip>A standard attack. [Green]Excellent damage and long range.[-]\n[Green]7[-] Damage drops off every [Yellow]18[-] tiles.\nUnits in range [Green]2[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -271,7 +276,7 @@
 
     <action detCost ="3" moveCost="1" actCost="1" overwatch="2">
       <name>Headshot</name>
-      <tip>15 damage shot. Can only target targets with 0 determination. Great for punishing reckless ability usage</tip>
+      <tip>[Green]15[-] damage shot. Can only target targets with [Red]0 determination[-]. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
@@ -294,6 +299,7 @@
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="1" dropOffRange="5"/>
+      <tip>A standard attack. [Green]Has very high damage but sharp drop off.[-]\n[Green]7[-] Damage drops off every [Yellow]5[-] tiles.\nUnits in range [Green]1[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -321,8 +327,8 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="2" dropOffRange="12"/>
-
+      <shoot dmg ="6" detRes="2" supression="1" supressionRange="2" dropOffRange="12"/>
+      <tip>A standard attack. [Green]Mediocre attack, best used for finishing off weak units[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]2[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]2[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -386,7 +392,7 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
-
+      <tip>A standard attack. [Green]Mediocre damage, but excellent supression range[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]3[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -399,7 +405,7 @@
     <action detCost ="3" moveCost="1" actCost="2" overwatch="3">
       <name>Suppress</name>
       <targetAid>enemy</targetAid>
-      <tip>Shoot multiple shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
+      <tip>Shoot multiple weak shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
 
       <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
       <effect>
@@ -451,7 +457,7 @@
 
     <action immideate="true" detCost ="1" moveCost="0" actCost="2">
       <name>Reposition</name>
-      <tip>Holster heavy's weapon. Removes action points for 2 turns, adds extra move points for this turn</tip>
+      <tip>Holster heavy's weapon. Removes action points for 2 turns, adds extra 5 move points for this turn</tip>
 
       <effect>
         <consequences  range="1">
@@ -471,8 +477,8 @@
     <action moveCost="1" actCost="1" detCost="2">
       <name>RPG</name>
       <targetAid>enemy</targetAid>
-      <tip>Depite looking quite scary the main use of the rpg involves destruction of environment and supression as any determined unit will duck out of the blast wave</tip>
-
+      <tip>High Damage, but easily dodgeable.\n[Green]Great for destroying cover[-]\nDoes [Green]8[-] damage, determined units will dodge [Red]6[-].\nIgnores environment resistance making it take full damage.</tip>
+      
       <effect>
         <delivery>
           <projectile range="24"/>
@@ -494,7 +500,7 @@
     <action actCost="1">
       <name>Grenade</name>
       <targetAid>enemy</targetAid>
-      <tip>Throws a grenade. Doesnt require move points.</tip>
+      <tip>Throws a grenade. Doesnt require move points.\nDamage Table:\n[Yellow]Center[-]: [Green]8[-] damage, [Red]2[-] dodge\n[Yellow]1 Range[-]: [Green]5[-] damage, [Red]2[-] dodge\n[Yellow]2 Range[-]: [Green]3[-] damage, [Red]1[-] dodge</tip>
 
       <effect>
         <delivery>
@@ -536,8 +542,8 @@
     <name>Repositioning</name>
     <tip>Increases movement points by 5</tip>
     
-      <consequences range="1">
-        <values act ="0" move="5"/>
+      <consequences range="1"><!--todo remove the set 0 after ai prediction improvements-->
+        <values act ="[set]0" move="5"/>
       </consequences>
   </statuseffect>
 
@@ -569,21 +575,6 @@
   </statuseffect>
 
 
-  <object VCover = "0" Faceable = "false" SCover ="0" lifetime ="2">
-    <sprite source="Environment/satchel" offset= "0,0"/>
-    <name>Satchel</name>
-
-    <destroyConsequences range="2">
-      <damage det="1" dmg="15"/>
-      <vfx name="tintR" target="5" speed="50"/>
-      <vfx name="clmagnitude" target="100" speed="50"/>
-      <vfx name="noise" target="3" speed="60"/>
-      <sfx name="grenade"/>
-      <place name="Crater"/>
-      <fowSpot scatter="4"/>
-    </destroyConsequences>
-  </object>
-
 
   <object VCover = "0" Faceable = "false" SCover ="0" z="-0.2">
     <sprite source="Environment/crater" offset= "0,0"/>
@@ -592,78 +583,5 @@
 
 
 
-  <item>
-    <name>Satchel Charge</name>
-    <tip>Blows up after 1 turn dealing huge damage. Best for destroying enviroment</tip>
-
-    <effect>
-      <delivery>
-        <throwable throwRange="4"/>
-      </delivery>
-      <consequences range="1">
-        <place name="Satchel"/>
-      </consequences>
-    </effect>
-
-  </item>
-
-  <item>
-    <name>Frag</name>
-    <tip>Damages units in effect area</tip>
-    <availability>Specialist</availability>
-
-    <effect>
-      <delivery>
-        <throwable throwRange="6"/>
-      </delivery>
-      <consequences range="3">
-        <damage det="1" dmg="5"/>
-        <vfx name="tintR" target="5" speed="50"/>
-        <vfx name="tintG" target="5" speed="50"/>
-        <vfx name="clmagnitude" target="100" speed="50"/>
-        <vfx name="noise" target="2" speed="50"/>
-        <sfx name="grenade"/>
-        <place name="Crater"/>
-        <fowSpot scatter="4"/>
-      </consequences>
-    </effect>
-  </item>
-
-  <item>
-    <name>Flash</name>
-    <tip>Immideately panics units in effect radius</tip>
-
-
-    <effect range="3">
-      <delivery>
-        <throwable throwRange="6"/>
-      </delivery>
-      <consequences range="3">
-        <damage det="100" dmg="0"/>
-        <vfx name="tintR" target="20" speed="50"/>
-        <vfx name="tintG" target="20" speed="50"/>
-        <vfx name="tintB" target="20" speed="50"/>
-        <vfx name="clmagnitude" target="50" speed="50"/>
-        <vfx name="noise" target="1" speed="50"/>
-        <sfx name="bang"/>
-        <fowSpot scatter="4"/>
-      </consequences>
-    </effect>
-  </item>
-
-  <item>
-    <name>Smoke</name>
-    <tip>Blocks line of sight</tip>
-
-    <delivery>
-      <throwable throwRange="7"/>
-    </delivery>
-    <consequences range="3">
-      <place name="Smoke"/>
-      <vfx name="clmagnitude" target="100" speed="40"/>
-      <vfx name="noise" target="0.5" speed="50"/>
-      <sfx name="smoke"/>
-    </consequences>
-  </item>
 
 </root>
