@@ -76,7 +76,7 @@ public static partial class Utility
 		if (textc == default)textc = Color.White;
 		
 		spriteBatch.Draw(icon, pos, scale, iconc);
-		spriteBatch.DrawText(num, pos+new Vector2(12,7)*scale,scale*2f, textc);
+		spriteBatch.DrawText(num, pos+new Vector2(12,7)*scale,scale*2.5f, textc);
 	}
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
 	{

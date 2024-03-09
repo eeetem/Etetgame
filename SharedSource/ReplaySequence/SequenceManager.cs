@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DefconNull.Networking;
@@ -66,11 +67,18 @@ public class SequenceManager
 			if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
 			{
 #if CLIENT
+				if (SequenceQueue.Count == 0 && NetworkingManager.RecievedTiles.Count > 0)
+				{
+
+				Log.Message("SEQUENCE MANAGER","loading tiles");
 				foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
 				{
 					WorldManager.Instance.LoadWorldTile(tile.Item2);
 				}
+				Log.Message("SEQUENCE MANAGER","loading tiles done");
 				NetworkingManager.RecievedTiles.Clear();
+
+				}
 #endif
 				if (SequenceQueue.Count > 0)
 				{
@@ -93,8 +101,11 @@ public class SequenceManager
 
 					int i = 0;
 					//do sequential tasks in queue
+					Stopwatch sw = new Stopwatch();
+					sw.Start();
 					while (true)
 					{
+						
 						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
 						{
 							break;
@@ -105,16 +116,22 @@ public class SequenceManager
 							break;
 						}
 
-						CurrentSequenceTasks.Last().Wait(300);
+						CurrentSequenceTasks.Last().Wait(100);
 						if(CurrentSequenceTasks.Last().Status != TaskStatus.RanToCompletion)
 						{
 							break;//most likely cause by the task waiting for UI Thread
+						}
+						if(sw.ElapsedMilliseconds >600)//dont freeze the game
+						{
+							break;
 						}
 						
 						Log.Message("SEQUENCE MANAGER",$"sequnceing a  task: {i}{peeked.GetSequenceType()}");
 						i++;
 						StartNextTask();
+						
 					}
+					sw.Stop();
 					//then do parralel tasks in queue
 					//batch tile updates and other things
 					

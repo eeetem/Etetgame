@@ -1,16 +1,31 @@
 
 UI  enemy progress
-incrementing timer
-screen move gltich
-text scale crop
-overwatch always visible for 1 turn
-force camera
-remove the scaling unit effect
-overwatch icon
+incrementing timer?
+tab unit switch?
+jump camera to cant hit target?
+signing
+loud death sfx?
+possible usage locations smoke?
+JUMP CAMREA TO HIT TARGET?
+more obvious headshot warning?
+corpses
 
-icons:
+specialist sprite!!
+
+
 turn icon
-overwatch
+overwatch icon UI and overtile
+
+
+
+
+
+victory screen
+
+
+
+
+ui volume
 
 sfx list:
 -throw

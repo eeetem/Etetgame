@@ -14,15 +14,20 @@ public class Projectile : DeliveryMethod
 {
 	
 	readonly int range;
-	public Projectile(int range)
+	readonly int spot;
+	public Projectile(int range, int spot)
 	{
 		this.range = range;
+		this.spot = spot;
 	}
+
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
 	{
+		List<SequenceAction> list = new List<SequenceAction>();
+		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
 		if (target.TileLocation.Position == actor.WorldObject.TileLocation.Position)
 		{
-			return new List<SequenceAction>();
+			return list;
 		}
 
 		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false);
@@ -35,7 +40,7 @@ public class Projectile : DeliveryMethod
 				target = obj;
 			}
 		}
-		return new List<SequenceAction>();
+		return list;
 	}
 
 	public override float GetOptimalRangeAI(float margin)

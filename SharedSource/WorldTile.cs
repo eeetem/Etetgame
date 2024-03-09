@@ -188,13 +188,14 @@ public partial class WorldTile : IWorldTile
 			if (value == null)
 			{
 				_northEdge = null;
+				return;
 			}
 
 			if (value != null && (!value.Type.Edge || value.Type.Surface))
 				throw new Exception("attempted non edge to edge");
 			if (_northEdge != null && !_northEdge.destroyed)
 			{
-				throw new Exception($"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
+				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
 			}
 
 			_northEdge = value;
@@ -211,12 +212,13 @@ public partial class WorldTile : IWorldTile
 			if (value == null)
 			{
 				_westEdge = null;
+				return;
 			}
 			if (value != null && (!value.Type.Edge || value.Type.Surface))
 				throw new Exception("attempted non edge to edge");
 			if (_westEdge != null && !_westEdge.destroyed)
 			{
-				throw new Exception($"attempted to place an object({value!.ID}) over an existing({WestEdge!.ID}) one");
+				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
 			}
 
 			_westEdge = value;
@@ -380,6 +382,21 @@ public partial class WorldTile : IWorldTile
 			return $"{nameof(NorthEdge)}: {NorthEdge}, {nameof(WestEdge)}: {WestEdge}, {nameof(EastEdge)}: {EastEdge}, {nameof(SouthEdge)}: {SouthEdge}, {nameof(Surface)}: {Surface}, {nameof(Position)}: {Position}, {nameof(ObjectsAtLocation)}: {ObjectsAtLocation}";
 		}
 
+		public bool Equals(WorldTileData other)
+		{
+			return Nullable.Equals(NorthEdge, other.NorthEdge) && Nullable.Equals(WestEdge, other.WestEdge) && Nullable.Equals(EastEdge, other.EastEdge) && Nullable.Equals(SouthEdge, other.SouthEdge) && Nullable.Equals(Surface, other.Surface) && Position.Equals(other.Position) && ObjectsAtLocation.SequenceEqual(other.ObjectsAtLocation);
+		}
+
+		public override bool Equals(object? obj)
+		{
+			return obj is WorldTileData other && Equals(other);
+		}
+
+		public override int GetHashCode()
+		{
+			return HashCode.Combine(NorthEdge, WestEdge, EastEdge, SouthEdge, Surface, Position, ObjectsAtLocation);
+		}
+
 		public WorldObject.WorldObjectData? NorthEdge;
 		public WorldObject.WorldObjectData? WestEdge;
 		public WorldObject.WorldObjectData? EastEdge;
@@ -512,6 +529,8 @@ public partial class WorldTile : IWorldTile
 	
 		return data;
 	}
+
+
 	List<WorldObject> edges = new List<WorldObject>();
 	public List<WorldObject> GetAllEdges()
 	{

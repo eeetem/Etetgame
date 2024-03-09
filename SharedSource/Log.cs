@@ -14,12 +14,13 @@ public static class Log
     private static long startTime;
     private static Dictionary<string, StreamWriter> logStreams = new Dictionary<string, StreamWriter>();
     public static object lockObject = new object();
+    private static string logFolder = "Logs";
     private static StreamWriter GetLogStream(string category)
     {
         if(logStreams.ContainsKey(category))
             return logStreams[category];
         
-        FileStream filestream = new FileStream("Logs/"+startTime+"/"+category+".txt", FileMode.OpenOrCreate);
+        FileStream filestream = new FileStream(logFolder+"/"+startTime+"/"+category+".txt", FileMode.OpenOrCreate);
         var streamwriter = new StreamWriter(filestream);
         streamwriter.AutoFlush = true;
         
@@ -31,12 +32,14 @@ public static class Log
     public static void Init()
     {
         Console.WriteLine("Log Init");
-        
+#if SERVER
+        logFolder = "ServerLogs";
+#endif
         startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         
-        Directory.CreateDirectory("Logs");
-        Directory.CreateDirectory("Logs/"+startTime);
-        var files = new DirectoryInfo("Logs").EnumerateDirectories()
+        Directory.CreateDirectory(logFolder);
+        Directory.CreateDirectory(logFolder+"/"+startTime);
+        var files = new DirectoryInfo(logFolder).EnumerateDirectories()
             .OrderByDescending(f => f.CreationTime)
             .Skip(10)
             .ToList();
@@ -63,6 +66,7 @@ public static class Log
     private static List<string> generalIgnoreList = new List<string>()
     {
         "TILEUPDATES",
+        "WARNINGS"
     };
     public static void Message(string category, string message)
     {
@@ -74,14 +78,21 @@ public static class Log
         msg.Append(category);
         msg.Append("]");
         msg.Append(message);
-        
-        if (!generalIgnoreList.Contains(category))
-            GeneralLog(msg.ToString());
 
-        lock (lockObject)
+        if (generalIgnoreList.Contains(category))
         {
-            GetLogStream(category).WriteLine(msg);
+            lock (lockObject)
+            {
+                GetLogStream(category).WriteLine(msg);
+            }
         }
+        else
+        {
+            GeneralLog(msg.ToString());
+        }
+           
+
+ 
 
     }
     private static ConcurrentQueue<string> consoleQueue = new ConcurrentQueue<string>();
@@ -94,5 +105,25 @@ public static class Log
 
         consoleQueue.Enqueue(msg);
       
+    }
+
+    public static void Crash(object exceptionObject)
+    {
+        Message("CRASH",exceptionObject.ToString());
+        lock (lockObject)
+        {
+            try
+            {
+                foreach (var stream in logStreams)
+                {
+                    stream.Value.Close();
+                }
+
+                Directory.Move(logFolder + "/" + startTime, logFolder + "/[CRASH]" + startTime);
+            }catch(Exception e)
+            {
+                Message("CRASH",e.ToString());
+            }
+        }
     }
 }

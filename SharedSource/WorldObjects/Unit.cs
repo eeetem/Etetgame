@@ -85,6 +85,7 @@ namespace DefconNull.WorldObjects
 			
 			Overwatch = data.Overwatch;
 			if(Overwatch.Item1 && Overwatch.Item2 == -1) throw new Exception("overwatch is active but no ability is selected");
+			overWatchedTiles.Clear();
 			foreach (var t in data.OverWatchedTiles)
 			{
 				overWatchedTiles.Add(t);
@@ -276,7 +277,6 @@ namespace DefconNull.WorldObjects
 			if (!result.Item1)
 			{
 #if CLIENT
-				new PopUpText(result.Item2, WorldObject.TileLocation.Position,Color.White);
 				if(args.Target.HasValue){
 					new PopUpText(result.Item2, args.Target.Value,Color.White);
 				}

@@ -274,7 +274,7 @@
       </effect>
     </action>
 
-    <action detCost ="3" moveCost="1" actCost="1" overwatch="2">
+    <action detCost ="3" moveCost="1" actCost="1">
       <name>Headshot</name>
       <tip>[Green]15[-] damage shot. Can only target targets with [Red]0 determination[-]. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
@@ -357,7 +357,7 @@
 
       <effect range="1" visible ="false">
         <delivery>
-          <vissionCast range="18"/>
+          <vissionCast range="14"/>
         </delivery>
         <consequences ignore="Officer"  range="1">
           <applystatus status="Boost" duration="1"/>
@@ -365,10 +365,10 @@
       </effect>
     </action>
 
-    <action detCost ="0" moveCost="0" actCost="1">
+    <action detCost ="1" moveCost="0" actCost="1">
       <name>Smoke Launcher</name>
       <tip>Launches a smoke grenade to block lines of sight</tip>
-
+      <targetAid>ground</targetAid>
       <effect>
         <delivery>
           <throwable throwRange="12"/>
@@ -381,6 +381,9 @@
         </consequences>
       </effect>
     </action>
+    <destroyConsequences range = "7" exRange="1" target="friend" ignore="Officer">
+      <damage det="2" dmg="0" detRes="0" envRes="0"/>
+    </destroyConsequences>
   </unit>
 
 
@@ -391,7 +394,7 @@
     <action moveCost="1" actCost="1" overwatch="3">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot dmg ="5" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
       <tip>A standard attack. [Green]Mediocre damage, but excellent supression range[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]3[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
@@ -476,12 +479,12 @@
     <name>Specialist</name>
     <action moveCost="1" actCost="1" detCost="2">
       <name>RPG</name>
-      <targetAid>enemy</targetAid>
+      <targetAid>enemy,ground</targetAid>
       <tip>High Damage, but easily dodgeable.\n[Green]Great for destroying cover[-]\nDoes [Green]8[-] damage, determined units will dodge [Red]6[-].\nIgnores environment resistance making it take full damage.</tip>
       
       <effect>
         <delivery>
-          <projectile range="24"/>
+          <projectile range="24" fowSpot="4"/>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>
@@ -501,7 +504,8 @@
       <name>Grenade</name>
       <targetAid>enemy</targetAid>
       <tip>Throws a grenade. Doesnt require move points.\nDamage Table:\n[Yellow]Center[-]: [Green]8[-] damage, [Red]2[-] dodge\n[Yellow]1 Range[-]: [Green]5[-] damage, [Red]2[-] dodge\n[Yellow]2 Range[-]: [Green]3[-] damage, [Red]1[-] dodge</tip>
-
+      <targetAid>enemy,ground</targetAid>
+      
       <effect>
         <delivery>
           <throwable throwRange="7"/>

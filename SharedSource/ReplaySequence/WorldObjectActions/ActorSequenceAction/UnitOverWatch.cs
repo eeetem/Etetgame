@@ -49,7 +49,6 @@ public class UnitOverWatch : UnitSequenceAction
 
 	protected override void RunSequenceAction()
 	{
-		
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
 			Actor.Overwatch = new  ValueTuple<bool, int>(true,abilityIndex);
@@ -59,8 +58,8 @@ public class UnitOverWatch : UnitSequenceAction
 				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor);
 				Actor.overWatchedTiles.Add(shot);
 			}
-			Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
-
+			if (Actor.WorldObject.TileLocation.Position != Target)
+				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));
 
 	}
 

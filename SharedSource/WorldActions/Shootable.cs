@@ -217,7 +217,7 @@ public class Shootable : Effect
 		
 		}
 		WorldManager.RayCastOutcome? coverCast = null;
-		if (result.Value.hit)
+		if (result.Value.hit && Vector2.Distance(result.Value.StartPoint, result.Value.CollisionPointLong) > 1.6f)
 		{
 			Vector2 dir = Vector2.Normalize(from - to);
 			to = result.Value.CollisionPointLong + Vector2.Normalize(to - from) / 7f;
@@ -297,7 +297,9 @@ public class Shootable : Effect
 		if (actor.WorldObject.TileLocation.Position == target.TileLocation.Position) return new List<SequenceAction>();
 		var p = GenerateProjectile(actor, target,dimension);
 		var retrunList = new List<SequenceAction>();
-		var m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
+		var m = MoveCamera.Make(actor.WorldObject.TileLocation.Position, true, 3);
+		retrunList.Add(m);
+		m = MoveCamera.Make(p.Result.CollisionPointLong, true, 3);
 		retrunList.Add(m);
 
 
@@ -384,6 +386,10 @@ public class Shootable : Effect
 		retrunList.EnsureCapacity(retrunList.Count+tiles.Count);
 		foreach (var tile in tiles)
 		{
+			if(tile.UnitAtLocation != null && p.SuppressionIgnores.Contains(tile.UnitAtLocation.WorldObject.ID))
+			{
+				continue;
+			}
 			var act2 = Suppress.Make(supressionStrenght, tile.Position);
 			retrunList.Add(act2);
 	

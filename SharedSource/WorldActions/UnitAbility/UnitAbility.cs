@@ -150,7 +150,8 @@ public class UnitAbility
 				default:
 					var u = target.UnitComponent;
 					
-					if(u is null && !negate) return new Tuple<bool, string>(false, "Target is not a "+str);
+					//if(u is null && !negate) return new Tuple<bool, string>(false, "Target is not a "+str);
+					if(u is null)continue;
 					bool match = u!.Type.Name == str;
 
 					if (negate)

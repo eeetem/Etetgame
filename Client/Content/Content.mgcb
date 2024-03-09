@@ -1003,6 +1003,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/circlePoint.png
 
+#begin CompressedContent/textures/HoverHud/Consequences/circlePoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/circlePoint.png
+
 #begin CompressedContent/textures/HoverHud/Consequences/cover.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1014,6 +1026,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/cover.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/cover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/cover.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/determinationFlame.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/determinationFlame.png
 
 #begin CompressedContent/textures/HoverHud/Consequences/determinationFlame.png
 /importer:TextureImporter
@@ -1039,6 +1075,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/detShield.png
 
+#begin CompressedContent/textures/HoverHud/Consequences/detShield.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/detShield.png
+
 #begin CompressedContent/textures/HoverHud/Consequences/downArrow.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1050,6 +1098,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/downArrow.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/downArrow.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/downArrow.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/envShield.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/envShield.png
 
 #begin CompressedContent/textures/HoverHud/Consequences/envShield.png
 /importer:TextureImporter
@@ -1075,6 +1147,30 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/genericDamage.png
 
+#begin CompressedContent/textures/HoverHud/Consequences/genericDamage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/genericDamage.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/info.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/info.png
+
 #begin CompressedContent/textures/HoverHud/Consequences/line.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1086,6 +1182,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/line.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/line.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/line.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/minus.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/minus.png
 
 #begin CompressedContent/textures/HoverHud/Consequences/minus.png
 /importer:TextureImporter
@@ -1111,6 +1231,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/movePoint.png
 
+#begin CompressedContent/textures/HoverHud/Consequences/movePoint.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/movePoint.png
+
 #begin CompressedContent/textures/HoverHud/Consequences/panic.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1122,6 +1254,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/panic.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/panic.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/panic.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/plus.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/plus.png
 
 #begin CompressedContent/textures/HoverHud/Consequences/plus.png
 /importer:TextureImporter
@@ -1147,6 +1303,30 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/rangeicon.png
 
+#begin CompressedContent/textures/HoverHud/Consequences/rangeicon.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/rangeicon.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/recivedDamage.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/recivedDamage.png
+
 #begin CompressedContent/textures/HoverHud/Consequences/recivedDamage.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1170,6 +1350,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/Consequences/shoot.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/shoot.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/shoot.png
+
+#begin CompressedContent/textures/HoverHud/Consequences/upArrow.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/HoverHud/Consequences/upArrow.png
 
 #begin CompressedContent/textures/HoverHud/Consequences/upArrow.png
 /importer:TextureImporter
@@ -1303,30 +1507,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/noactionpoint.png
 
-#begin CompressedContent/textures/HoverHud/noactionpoint.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/noactionpoint.png
-
-#begin CompressedContent/textures/HoverHud/nohealth.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/nohealth.png
-
 #begin CompressedContent/textures/HoverHud/nohealth.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1350,30 +1530,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/nohealthenv.png
-
-#begin CompressedContent/textures/HoverHud/nohealthenv.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/nohealthenv.png
-
-#begin CompressedContent/textures/HoverHud/nomovepoint.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/nomovepoint.png
 
 #begin CompressedContent/textures/HoverHud/nomovepoint.png
 /importer:TextureImporter
@@ -1410,30 +1566,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/HoverHud/panicSheet.png
-
-#begin CompressedContent/textures/HoverHud/panicSheet.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/panicSheet.png
-
-#begin CompressedContent/textures/HoverHud/uncrouch.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/HoverHud/uncrouch.png
 
 #begin CompressedContent/textures/HoverHud/uncrouch.png
 /importer:TextureImporter

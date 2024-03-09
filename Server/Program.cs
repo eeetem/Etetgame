@@ -76,7 +76,8 @@ public static class Program
                 // Console.WriteLine("update took: "+ts.Milliseconds);
                 Thread.Sleep((int)(MSperTick - ts.Milliseconds));
             }
-				
+
+
         }
     }
 
@@ -93,9 +94,6 @@ public static class Program
     private static void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
     {
 
-	    DateTime date = DateTime.Now;
-			
-	    File.WriteAllText("SERVER Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
-	
+	    Log.Crash(e.ExceptionObject);
     }
 }

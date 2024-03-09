@@ -40,7 +40,7 @@ public static partial class WorldObjectManager
 		}
 
 #endif
-		Console.WriteLine("Destroyed "+obj.ID +" "+obj.Type.Name);
+		Log.Message("WORLD OBJECT MANAGER","Destroyed "+obj.ID +" "+obj.Type.Name);
 
 	}
 	

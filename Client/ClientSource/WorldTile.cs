@@ -49,10 +49,6 @@ public partial class WorldTile : IWorldTile
 		_enemyWatching = false;
 		foreach (var watcher in new List<Unit>(_watchers))
 		{
-			if (!watcher.WorldObject.IsVisible())
-			{
-				continue;
-			}
 
 			if (!watcher.Overwatch.Item1)
 			{

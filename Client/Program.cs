@@ -26,7 +26,7 @@ public static class Program
 
 		DateTime date = DateTime.Now;
 			
-		File.WriteAllText("Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
-	
+		//File.WriteAllText("Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+		Log.Crash(e.ExceptionObject);
 	}
 }

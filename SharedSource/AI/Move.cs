@@ -29,7 +29,7 @@ public class Move : AIAction
 
 		var locs = GetTileScores();
 
-		int bestOf = Math.Min(locs.Count, 2);
+		int bestOf = Math.Min(locs.Count, 3);
 
 		var oredredResults = locs.OrderByDescending(x => x.Item3);
 	
@@ -108,13 +108,21 @@ public class Move : AIAction
 			return 0;
 		}
 
-		float worseThanAverage = GetWorseThanAverage();
-		if(worseThanAverage <= 0)
+		(float, bool) result;
+		result	= GetWorseThanAverage();
+		if(result.Item1 <= 0)
 		{
-			return (int)worseThanAverage;
+			if(result.Item2)
+			{
+				return 1;//if there's a better tile out there we should have really low priority to move there if there's nothing else to do
+			}
+	
+			return (int)result.Item1;
+			
+			
 		}
 		
-		float actionScore = 2+worseThanAverage;//diffference bwteen current tile and average of all other tiles
+		float actionScore = 2+result.Item1;//diffference bwteen current tile and average of all other tiles
 		if (Unit.MovePoints >= Unit.MovePoints.Max)//we should probably move first then do something
 		{
 			actionScore *= 1.5f;
@@ -123,9 +131,10 @@ public class Move : AIAction
 		return (int)actionScore;
 	}
 
-	public float GetWorseThanAverage()
+	public (float,bool) GetWorseThanAverage()
 	{
 		var locs = GetTileScores();
+		bool betterTileExists = false;
 		MoveCalcualtion details;
 		int scoreForCurrentTile = GetTileMovementScore((Unit.WorldObject.TileLocation.Position,new PathFinding.PathFindResult()), 0,Unit.Crouching,Unit, out details);
 
@@ -137,20 +146,24 @@ public class Move : AIAction
 			{
 				countedLocs++;
 				scores.Add(loc.Item3);
+				if (loc.Item3 > scoreForCurrentTile+1)
+				{
+					betterTileExists = true;
+				}
 			}
 		}
 
 		if (countedLocs == 0)
 		{
-			return 0;
+			return (0,false);
 		}
 
 
 		//int averageScore = totalScore / countedLocs;
-		float percentile = Utility.CalculatePercentile(scores, 70);
+		float percentile = Utility.CalculatePercentile(scores, 65);
 		float worseThanAverage = percentile - scoreForCurrentTile;
 
-		return worseThanAverage;
+		return (worseThanAverage,betterTileExists);
 	}
 
 

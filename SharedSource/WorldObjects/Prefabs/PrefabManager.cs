@@ -197,7 +197,9 @@ public static class PrefabManager
 			{
 				unitType.SpawnEffect = ParseConsequences((XmlElement) speff);
 			}
-			
+			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
+				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
+			} 
 
 #if CLIENT
 			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>());//this is a bit inconsistent but eeeh
@@ -281,7 +283,8 @@ public static class PrefabManager
 			}else if (node.Name == "projectile")
 			{
 				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
-				dvm = new Projectile(range);
+				int spot = int.Parse(node.Attributes?["fowSpot"]?.InnerText ?? "3");
+				dvm = new Projectile(range,spot);
 			}
 
 

@@ -71,10 +71,10 @@ public class Shoot : SequenceAction
 		               "  Damage [Red]absorbed[-] by cover\n" +
 		               "  Damage [Red]lost[-] to weapons range\n" +
 		               "  [Green]Final Damage[-] done by the weapon", pos, scale, Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos + new Vector2(0, 5),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/cover"), pos + new Vector2(0, 16),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos + new Vector2(0, 28),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/shoot"), pos + new Vector2(0, 5)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/cover"), pos + new Vector2(0, 16)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/rangeicon"), pos + new Vector2(0, 28)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40)*scale,scale/2f,Color.White);
 		
 		
 	}

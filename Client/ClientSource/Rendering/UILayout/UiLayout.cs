@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using FontStashSharp;
 using Microsoft.Xna.Framework;
@@ -100,6 +101,7 @@ public abstract class UiLayout
 			
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
+		//Console.WriteLine(MousePos.X + " " + MousePos.Y);
 		batch.DrawText("X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/Camera.GetZoom(),Color.Wheat);
 		batch.End();
 	}

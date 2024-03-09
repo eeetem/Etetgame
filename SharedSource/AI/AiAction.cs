@@ -503,10 +503,10 @@ public abstract class AIAction
 		details.ClumpingPenalty = clumpingPenalty;
 		
 		int coverBonus = CoverScore(tilePosition, otherTeamUnits);
-		if (AI.passiveMode)
-		{
-			coverBonus /= 2;//dont care about cover in passive mode
-		}
+	//	if (AI.passiveMode)
+	//	{
+	//		coverBonus /= 2;//dont care about cover in passive mode
+	//	}
 
 		score += coverBonus;
 		details.CoverBonus = coverBonus;
@@ -594,6 +594,15 @@ public abstract class AIAction
 			if (res.GetTotalValue() > bestAttack.GetTotalValue())
 			{
 				bestAttack = res;
+				if(bestAttack.Target == null)
+				{
+					throw new Exception("best attack target is null");
+				}
+
+				if (bestAttack.Target.TileLocation == null)
+				{
+					throw new Exception("best attack target tile location is null");
+				}
 			}
 
 		}

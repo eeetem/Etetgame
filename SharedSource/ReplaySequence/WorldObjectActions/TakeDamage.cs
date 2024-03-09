@@ -49,7 +49,7 @@ public static partial class WorldObjectManager
 			return SequenceType.TakeDamage;
 		}
 
-		public override BatchingMode Batching => BatchingMode.Sequential;
+		public override BatchingMode Batching => BatchingMode.OnlySameType;
 		public int Dmg;
 		public int DetResistance;
 		public int EnvResistance;
@@ -195,8 +195,8 @@ public static partial class WorldObjectManager
 				new PopUpText("Damage: " + dmgNoResist, obj.TileLocation.Position, Color.Gray, 0.4f);
 #endif
 				obj.Health -= dmgNoResist;
-				Log.Message("UNITS","object hit for: " + dmgNoResist);
-				Log.Message("UNITS","outcome: health=" + obj.Health);
+				Log.Message("WORLD OBJECT MANAGER","object "+ObjID+" hit for: " + dmgNoResist+"\n "+"outcome: health=" + obj.Health);
+
 			
 			}
 
@@ -263,7 +263,7 @@ public static partial class WorldObjectManager
 			
 
 			Texture2D blockSprite = TextureManager.GetTexture("HoverHud/Consequences/detShield");
-			string blockName = "Damage [Red]dodged[-] due to determination\n";
+			string blockName = "  Damage [Red]dodged[-] due to determination\n";
 			Color resistColor = Color.White;
 			bool supressed = false;
 			if (GetTargetObject().UnitComponent == null)
@@ -285,16 +285,16 @@ public static partial class WorldObjectManager
 
 			tip += "  [Green]Final Damage[-]";
 			batch.DrawText( tip, pos, scale, Color.White);
-			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 6),scale/2f,Color.White);
-			batch.Draw(blockSprite ,pos + new Vector2(0, 16),scale/2f,Color.White);
+			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 6)*scale,scale/2f,Color.White);
+			batch.Draw(blockSprite ,pos + new Vector2(0, 29),scale/2f,Color.White);
 			if (supressed)
 			{
 				batch.Draw(blockSprite ,pos + new Vector2(0, 29),scale/2f,Color.Red);
-				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 42),scale/2f,Color.White);
+				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 42)*scale,scale/2f,Color.White);
 			}
 			else
 			{
-				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 30),scale/2f,Color.White);
+				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 30)*scale,scale/2f,Color.White);
 			}
 
 		}
@@ -328,6 +328,16 @@ public static partial class WorldObjectManager
 				{
 					obj!.PreviewData.finalDmg += Dmg;
 				}
+
+				if (obj.PreviewData.finalDmg >= obj.Health && obj.Type.DestructionConseqences != null)
+				{
+					var cons = obj.Type.DestructionConseqences.GetApplyConsiqunces(obj);
+					foreach (var con in cons)
+					{
+						con.Preview(spriteBatch);
+					}
+				}
+	
 			}
 
 		}

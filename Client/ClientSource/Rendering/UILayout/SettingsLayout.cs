@@ -108,12 +108,20 @@ public class SettingsLayout : UiLayout
 		{
 			Top = (int)(50*globalScale.Y),
 			Left = (int)(50*globalScale.X),
-			Scale = globalScale*2f,
+			Scale = globalScale,
+			ImageHeight = 10,
+			ImageWidth = 35,
+			Padding = new Thickness(0),
+			Margin = new Thickness(0),
+			BorderThickness = Thickness.Zero,
 			GridRow = 2,
 			GridColumn = 0,
 			IsChecked = bool.Parse(Game1.config.GetValue("settings", "fullscreen", "false"))
+				
 		};
+		fulscren.ImageHeight = 40;
 		grid.Widgets.Add(fulscren);
+		
 		var cancel = new SoundButton()
 		{
 			Text = "Cancel",
