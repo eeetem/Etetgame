@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define SINGLEPLAYER_ONLY
+using System;
 using System.Diagnostics;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
@@ -12,6 +13,8 @@ using Myra.Graphics2D.UI;
 using Unit = DefconNull.WorldObjects.Unit;
 
 namespace DefconNull.Rendering.UILayout;
+
+
 
 public class MainMenuLayout : UiLayout
 {
@@ -69,10 +72,14 @@ public class MainMenuLayout : UiLayout
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch
 		};
+#if !SINGLEPLAYER_ONLY
 		reconnect.Click += (a, b) =>
 		{
 			NetworkingManager.Connect(Game1.config.GetValue("config","LastServer","localhost:52233"),Game1.config.GetValue("config","Name","Operative#"+Random.Shared.Next(1000)));		
 		};
+#else
+reconnect.TextColor = Color.Gray;	
+#endif
 		MPStack.Widgets.Add(reconnect);
 		
 		var singleplayer = new SoundButton
@@ -86,6 +93,8 @@ public class MainMenuLayout : UiLayout
 		singleplayer.Click += (a, b) =>
 		{
 			GameManager.StartLocalServer();
+			NetworkingManager.AddAI();
+			NetworkingManager.SendStartGame();
 		};
 		MPStack.Widgets.Add(singleplayer);
 		
@@ -99,7 +108,7 @@ public class MainMenuLayout : UiLayout
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch
 		};
-
+#if !SINGLEPLAYER_ONLY
 		lobybtn.Click += (s, a) =>
 		{
 			var panel = new Panel();
@@ -123,6 +132,9 @@ public class MainMenuLayout : UiLayout
 				
 				
 		};
+#else
+		lobybtn.TextColor = Color.Gray;
+#endif
 		MPStack.Widgets.Add(lobybtn);
 
 		var btn = new SoundButton
@@ -131,9 +143,11 @@ public class MainMenuLayout : UiLayout
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Stretch
 		};
-
+#if !SINGLEPLAYER_ONLY
 		btn.Click += (s, a) => { UI.SetUI(new ConnectionLayout()); };
-
+#else
+	btn.TextColor = Color.Gray;		
+#endif
 		MPStack.Widgets.Add(btn);
 
 		var button2 = new SoundButton
@@ -198,7 +212,12 @@ public class MainMenuLayout : UiLayout
 		discord.HorizontalAlignment = HorizontalAlignment.Right;
 		discord.Click += (s, a) =>
 		{
+#if WINDOWS
 			Process.Start("explorer", "https://discord.gg/TrmAJbMaQ3");
+#else
+			Process.Start("xdg-open", "https://discord.gg/TrmAJbMaQ3");
+#endif
+			
 		};
 		panel.Widgets.Add(discord);
 

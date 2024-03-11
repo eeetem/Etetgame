@@ -1026,8 +1026,8 @@ public class GameLayout : MenuLayout
 			ushort detPercent = (ushort) Math.Max(0,(float)SelectedUnit.Determination.Current / SelectedUnit.Type.Maxdetermination*10f);
 			hpPercent = (ushort) Math.Min((ushort) 10,hpPercent);
 			detPercent = (ushort) Math.Min((ushort) 10,detPercent);
-			var detBar = TextureManager.GetTexture("GameHud/BottomBar/detbar"+(10 - detPercent));
-			var hpBar = TextureManager.GetTexture("GameHud/BottomBar/hpbar"+(10 - hpPercent));
+			var detBar = TextureManager.GetTexture("GameHud/BottomBar/detBar"+(10 - detPercent));
+			var hpBar = TextureManager.GetTexture("GameHud/BottomBar/hpBar"+(10 - hpPercent));
 			var sight = TextureManager.GetTexture("GameHud/BottomBar/sightrange");
 			var move = TextureManager.GetTexture("GameHud/BottomBar/moverange");
 			var portraitScale = 1.25f*globalScale.Y;

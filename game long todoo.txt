@@ -1,7 +1,7 @@
 
 UI  enemy progress
 incrementing timer?
-tab unit switch?
+
 jump camera to cant hit target?
 signing
 loud death sfx?
@@ -17,12 +17,12 @@ turn icon
 overwatch icon UI and overtile
 
 
-
-
-
+shoot preview doesnt account for crouch
+overwatch zone clear
+zoom icons
 victory screen
-
-
+target is not a groun
+tab unit switch?
 
 
 ui volume

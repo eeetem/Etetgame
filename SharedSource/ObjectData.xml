@@ -178,7 +178,7 @@
   </object>
 
   <object SCover = "0" Edge = "true" health="8">
-    <sprite source="Environment/Brick Walls/BrickWallOnedestroyed" offset= "0,0">
+    <sprite source="Environment/Brick Walls/BrickWallOneDestroyed" offset= "0,0">
       <variation id="0" weight="10"/>
       <variation id="1" weight="10"/>
       <variation id="2" weight="10"/>
