@@ -12,7 +12,7 @@ public partial class WorldObject : IDrawable
 	private Transform2 DrawTransform = null!;
 	public int spriteVariation;
 	public PreviewData PreviewData;
-	public bool IsAnimating => CurrentAnimation != null || _animationQueue.Count > 0;
+	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver) || _animationQueue.Count > 0;
 
 
 	public Transform2 GetDrawTransform()

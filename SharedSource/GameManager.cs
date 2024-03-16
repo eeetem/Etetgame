@@ -155,7 +155,17 @@ public static partial class GameManager
 			
         if(score > 8)EndGame(true);
         if(score < -8)EndGame(false);
-
+    
+        #if SERVER
+        if(GetTeamUnits(true).Count == 0)
+        {
+            EndGame(false);
+        }
+        if(GetTeamUnits(false).Count == 0)
+        {
+            EndGame(true);
+        }
+        #endif
 		
 #if CLIENT
 
@@ -173,11 +183,11 @@ public static partial class GameManager
         {
             FinishTurnWithAI();
         }
-
+        UpdatePlayerSideUnitPositions(true);
 #endif
 
         TimeTillNextTurn = PreGameData.TurnTime*1000;
-		
+      
 
     }
 
@@ -306,8 +316,7 @@ public static partial class GameManager
         foreach (var id in ids)
         {
             var obj = PseudoWorldManager.GetObject(id, dimension);
-            if(obj == null || obj.UnitComponent == null)
-                throw new Exception("unit is null for a registered unit");
+            if(obj == null || obj.UnitComponent == null) continue;
             units.Add(obj.UnitComponent!);
         }
 

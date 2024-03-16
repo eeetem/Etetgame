@@ -80,6 +80,7 @@ public class AI
 					List<ValueTuple<AIAction, int>> actions = new();
 
 					//keep going with current  unit untill depleted
+					currentUnitIndex %= squad.Count;
 					var currentUnit = squad[currentUnitIndex];
 					if (currentUnit.IsPlayer1Team != GameManager.IsPlayer1Turn) return;
 					passiveMode = !CanSeeAnyEnemy(currentUnit.IsPlayer1Team);

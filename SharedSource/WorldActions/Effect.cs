@@ -48,43 +48,5 @@ public abstract class Effect
 	
 	protected abstract List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1);
 
-#if CLIENT
-	
-	List<SequenceAction> previewCache = new List<SequenceAction>();
-	Vector2Int previewActor = new Vector2Int(-1,-1);
-	private WorldObject? previewTarget;
-
-	public List<SequenceAction>  Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
-	{
-		if (!Equals(previewTarget, target) || previewActor != actor.WorldObject.TileLocation.Position)
-		{
-		//	if (CanPerform(actor, target).Item1)
-			//{
-				previewCache = GetConsequences(actor, target);
-				previewActor = actor.WorldObject.TileLocation.Position;
-				previewTarget = target;
-			//}
-		}
-		spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(target.TileLocation.Position+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
-
-		foreach (var act in previewCache)
-		{
-			act.Preview(spriteBatch);
-		}
-
-		
-		if (Offset != new Vector2Int(0,0))
-		{
-		//	PreviewChild(actor, WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position+Offset).Surface,spriteBatch);
-			return previewCache;
-		}
-
-	//	PreviewChild(actor,target,spriteBatch);
-		return previewCache;
-	}
-	
-	//protected abstract void  PreviewChild(Unit actor, WorldObject target, SpriteBatch spriteBatch);
-#endif
-
 
 }

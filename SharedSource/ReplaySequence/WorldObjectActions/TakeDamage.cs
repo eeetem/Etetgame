@@ -19,7 +19,7 @@ public static partial class WorldObjectManager
 	{
 		protected bool Equals(TakeDamage other)
 		{
-			return Dmg == other.Dmg && DetResistance == other.DetResistance && EnvResistance == other.EnvResistance && ObjID == other.ObjID && Position.Equals(other.Position) && Ignores.SequenceEqual(other.Ignores);
+			return Dmg == other.Dmg && DetResistance == other.DetResistance && EnvResistance == other.EnvResistance && ObjID == other.ObjID;
 		}
 
 		public override bool Equals(object? obj)
@@ -38,8 +38,6 @@ public static partial class WorldObjectManager
 				hashCode = (hashCode * 397) ^ DetResistance;
 				hashCode = (hashCode * 397) ^ EnvResistance;
 				hashCode = (hashCode * 397) ^ ObjID;
-				hashCode = (hashCode * 397) ^ Position.GetHashCode();
-				hashCode = (hashCode * 397) ^ Ignores.GetHashCode();
 				return hashCode;
 			}
 		}
@@ -54,21 +52,6 @@ public static partial class WorldObjectManager
 		public int DetResistance;
 		public int EnvResistance;
 		public int ObjID = -1;
-		public Vector2Int Position = new Vector2Int(-1, -1);
-		private List<string> Ignores = new List<string>();
-
-		public static TakeDamage Make(int dmg, int detResistance, int envRes, Vector2Int position, List<string> ignores)
-		{
-			var t = GetAction(SequenceType.TakeDamage) as TakeDamage;
-			t.ObjID = -1;
-			t.Dmg = dmg;
-			t.EnvResistance = envRes;
-			t.DetResistance = detResistance;
-			t.Position = position;
-			t.Ignores = ignores;
-			return t;
-		}
-
 
 
 		public static TakeDamage Make(int dmg, int detResistance, int objID, int envRes = -999)
@@ -80,7 +63,6 @@ public static partial class WorldObjectManager
 			if (envRes != -999)
 				t.EnvResistance = envRes;
 			t.ObjID = objID;
-			t.Position = new Vector2Int(-1, -1);
 			return t;
 		}
 
@@ -96,16 +78,6 @@ public static partial class WorldObjectManager
 				}
 				return true;
 			}
-			
-
-		
-			
-			if (Position == new Vector2Int(-1, -1)) return false;
-			var tile = WorldManager.Instance.GetTileAtGrid(Position);
-			if (tile.UnitAtLocation == null) return false;
-			var obj = tile.UnitAtLocation;
-			if (Ignores.Contains(obj!.Type.Name)) return false;
-
 			return true;
 		}
 #if SERVER
@@ -119,19 +91,9 @@ public static partial class WorldObjectManager
 
 		public WorldObject? GetTargetObject()
 		{
-			if (ObjID != -1)
-			{
-				return GetObject(ObjID);
-			}
-			else
-			{
-				var u = WorldManager.Instance.GetTileAtGrid(Position).UnitAtLocation;
-				if (u is null) return null;
-				if (Ignores.Contains(u.Type.Name)) return null;
-				return u.WorldObject;
-			}
 
-			return null;
+			return GetObject(ObjID);
+				
 		}
 
 		protected override void RunSequenceAction()
@@ -215,7 +177,6 @@ public static partial class WorldObjectManager
 			message.Add(DetResistance);
 			message.Add(EnvResistance);
 			message.Add(ObjID);
-			message.Add(Position);
 		}
 
 		protected override void DeserializeArgs(Message args)
@@ -224,7 +185,6 @@ public static partial class WorldObjectManager
 			DetResistance = args.GetInt();
 			EnvResistance = args.GetInt();
 			ObjID = args.GetInt();
-			Position = args.GetSerializable<Vector2Int>();
 		}
 
 #if CLIENT
@@ -264,12 +224,11 @@ public static partial class WorldObjectManager
 
 			Texture2D blockSprite = TextureManager.GetTexture("HoverHud/Consequences/detShield");
 			string blockName = "  Damage [Red]dodged[-] due to determination\n";
-			Color resistColor = Color.White;
 			bool supressed = false;
 			if (GetTargetObject().UnitComponent == null)
 			{
 				blockSprite = TextureManager.GetTexture("HoverHud/Consequences/envShield");
-				blockName = "Damage [Red]resisted[-] by environment resistance\n";
+				blockName = "  Damage [Red]resisted[-] by environment resistance\n";
 			}else if (GetTargetObject().UnitComponent.Determination <= 0)
 			{
 				supressed = true;
@@ -280,16 +239,16 @@ public static partial class WorldObjectManager
 			             "  [Green]Base damage[-] received\n" + blockName;
 			if (supressed)
 			{
-				tip += "  Resistance [Red]bypassed[-]-lack of determ.\n";
+				tip += "  Resistance [Red]bypassed[-] x- lack of determination\n";
 			}
 
 			tip += "  [Green]Final Damage[-]";
 			batch.DrawText( tip, pos, scale, Color.White);
 			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 6)*scale,scale/2f,Color.White);
-			batch.Draw(blockSprite ,pos + new Vector2(0, 29),scale/2f,Color.White);
+			batch.Draw(blockSprite ,pos + new Vector2(0, 16*scale),scale/2f,Color.White);
 			if (supressed)
 			{
-				batch.Draw(blockSprite ,pos + new Vector2(0, 29),scale/2f,Color.Red);
+				batch.Draw(blockSprite ,pos + new Vector2(0, 29)*scale,scale/2f,Color.Red);
 				batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos + new Vector2(0, 42)*scale,scale/2f,Color.White);
 			}
 			else
@@ -301,8 +260,6 @@ public static partial class WorldObjectManager
 
 		public override void Preview(SpriteBatch spriteBatch)
 		{
-
-		
 			var obj = GetTargetObject();
 
 			if (obj !=null && obj!.IsVisible())
@@ -331,7 +288,7 @@ public static partial class WorldObjectManager
 
 				if (obj.PreviewData.finalDmg >= obj.Health && obj.Type.DestructionConseqences != null)
 				{
-					var cons = obj.Type.DestructionConseqences.GetApplyConsiqunces(obj);
+					var cons = obj.Type.DestructionConseqences.GetApplyConsequnces(obj,obj);
 					foreach (var con in cons)
 					{
 						con.Preview(spriteBatch);
@@ -345,7 +302,7 @@ public static partial class WorldObjectManager
 
 		public override string ToString()
 		{
-			return "TakeDamage: " + Dmg + " to " + ObjID +" at "+Position;
+			return "TakeDamage: " + Dmg + " to " + ObjID;
 		}
 	}
 }

@@ -577,14 +577,14 @@ public class GameLayout : MenuLayout
 		OverWatchToggle = new ImageButton();
 		OverWatchToggle.HorizontalAlignment = HorizontalAlignment.Center;
 		OverWatchToggle.VerticalAlignment = VerticalAlignment.Bottom;
-		OverWatchToggle.Top = (int) (-115 * globalScale.X);
-		OverWatchToggle.Left = (int) (40 * globalScale.X);
+		OverWatchToggle.Top = (int) (-90 * globalScale.X);
+		OverWatchToggle.Left = (int) (50 * globalScale.X);
 	
 
-		OverWatchToggle.ImageWidth = (int) (17 * globalScale.X);
-		OverWatchToggle.Width = (int) (17 * globalScale.X);
-		OverWatchToggle.ImageHeight = (int) (17 * globalScale.X);
-		OverWatchToggle.Height = (int) (17 * globalScale.X);
+		OverWatchToggle.ImageWidth = (int) (25 * globalScale.X);
+		OverWatchToggle.Width = (int) (25 * globalScale.X);
+		OverWatchToggle.ImageHeight = (int) (25 * globalScale.X);
+		OverWatchToggle.Height = (int) (25 * globalScale.X);
 		OverWatchToggle.Click += (sender, args) =>
 		{
 			ToggleOverWatch();
@@ -732,7 +732,6 @@ public class GameLayout : MenuLayout
 	static List<(Rectangle,Action<Vector2,float,SpriteBatch>)> _tooltipRects = new();
 	
 	private static readonly Dictionary<WorldObject,List<SequenceAction>> SortedConsequences = new();
-	List<SequenceAction> previewConsequences = new List<SequenceAction>();
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		if(SelectedUnit==null) return;
@@ -770,8 +769,7 @@ public class GameLayout : MenuLayout
 		}
 
 		var args = new Action.ActionExecutionParamters(TileCoordinate);
-		
-		previewConsequences.Clear();
+
 		switch (activeAction)
 		{
 			case ActiveActionType.Move:
@@ -785,54 +783,11 @@ public class GameLayout : MenuLayout
 				{
 					throw new Exception("Action as active action without selected action button");
 				}
-
-				if (ActionTarget != null) previewConsequences.AddRange( HudActionButton.SelectedButton.Preview(ActionTarget, batch));
+				if(ActionTarget!=null)HudActionButton.SelectedButton.Preview(ActionTarget, batch);
 				break;
 			case ActiveActionType.Overwatch:
 				if (ActionTarget != null) HudActionButton.SelectedButton.PreviewOverwatch(ActionTarget.TileLocation.Position, batch);
 				break;
-		}
-		SortedConsequences.Clear();
-		foreach (var act in previewConsequences)
-		{
-			if(act.GetType() == typeof(FaceUnit)) continue;
-			if (act.GetType() == typeof(WorldObjectManager.TakeDamage))
-			{
-				var tkDmg = (WorldObjectManager.TakeDamage) act;
-				WorldObject? obj = tkDmg.GetTargetObject();
-				if(obj == null) continue;
-				if (!SortedConsequences.ContainsKey(obj))
-				{
-					SortedConsequences.Add(obj,new List<SequenceAction>());
-				}
-				SortedConsequences[obj].Add(act);
-			
-			}if (act.GetType() == typeof(Shoot))
-			{
-				var shoot = (Shoot) act;
-				var obj = WorldObjectManager.GetObject(shoot.Projectile.Result.HitObjId);
-				if(obj == null) continue;
-				if (!SortedConsequences.ContainsKey(obj))
-				{
-					SortedConsequences.Add(obj,new List<SequenceAction>());
-				}
-				SortedConsequences[obj].Add(act);
-			
-			}else if (act.IsUnitAction)
-			{
-				var uact = (UnitSequenceAction) act;
-				var actor = uact.GetAffectedActor(-1);
-				if (actor != null)
-				{
-					var obj = actor.WorldObject;
-					if (!SortedConsequences.ContainsKey(obj))
-					{
-						SortedConsequences.Add(obj,new List<SequenceAction>());
-					}
-					SortedConsequences[obj].Add(act);
-				}
-				
-			}
 		}
 		
 		
@@ -845,21 +800,33 @@ public class GameLayout : MenuLayout
 			{
 
 				if (!target.IsVisible()) continue;
-				if (target.UnitComponent!=null && target.UnitComponent.IsMyTeam())
-				{
-					PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Green);
-				}
-				else
-				{
-					PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Red);
-				}
+
+	
+				PostProcessing.PostProcessing.SetOutlineEffectColor(Color.White);
+				
 
 				batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.OutLineEffect);
 				Texture2D sprite = target.GetTexture();
-				
 				batch.Draw(sprite, target.GetDrawTransform().Position + Utility.GridToWorldPos(new Vector2(1.5f, 0.5f)), null, Color.White, 0, sprite.Bounds.Center.ToVector2(), 1, SpriteEffects.None, 0);
 				batch.End();
 			}
+		}
+
+		if (ActionTarget != null && !ActionTarget.Type.Surface)
+		{
+
+			if (ActionTarget.UnitComponent != null && ActionTarget.UnitComponent.IsMyTeam())
+			{
+				PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Green);
+			}
+			else
+			{
+				PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Red);
+			}
+			batch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.OutLineEffect);
+			Texture2D sprite = ActionTarget.GetTexture();
+			batch.Draw(sprite, ActionTarget.GetDrawTransform().Position + Utility.GridToWorldPos(new Vector2(1.5f, 0.5f)), null, Color.White, 0, sprite.Bounds.Center.ToVector2(), 1, SpriteEffects.None, 0);
+			batch.End();
 		}
 		
 		
@@ -1035,6 +1002,8 @@ public class GameLayout : MenuLayout
 			batch.Draw(portrait, new Vector2(0, Game1.resolution.Y - portrait.Height * portraitScale),portraitScale,Color.White);
 			batch.Draw(detBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale ),portraitScale,Color.White);
 			batch.Draw(hpBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale),portraitScale,Color.White);
+			batch.DrawText(SelectedUnit.Health.ToString(), new Vector2(70*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
+			batch.DrawText(SelectedUnit.Determination.Current.ToString(), new Vector2(95*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
 			
 			var pos = new Vector2(44 * portraitScale, Game1.resolution.Y - 125 * portraitScale);
 			Color c = Color.White;
@@ -1061,7 +1030,7 @@ public class GameLayout : MenuLayout
 			batch.DrawNumberedIcon(SelectedUnit.Determination.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos, portraitScale);
 			if (SelectedUnit.canTurn)
 			{
-				pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 130 * portraitScale);
+				pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 145 * portraitScale);
 				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/turn"), pos, portraitScale,Color.White);
 			}
 
@@ -1121,10 +1090,10 @@ public class GameLayout : MenuLayout
 		
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
-			
+			batch.DrawText("spacebar",infoboxtip+new Vector2(165,5)*infoboxscale,infoboxscale*0.8f,50,Color.White);
 			string toolTipText = HudActionButton.SelectedButton!.Tooltip;
 	
-			batch.DrawText(toolTipText,infoboxtip+new Vector2(45,38)*infoboxscale, infoboxscale*0.8f, 50, Color.White);
+			batch.DrawText(toolTipText,infoboxtip+new Vector2(45,38)*infoboxscale, infoboxscale*0.8f, 51, Color.White);
 			Vector2 startpos = infoboxtip + new Vector2(19, 32) * infoboxscale;
 			Vector2 offset = new Vector2(0, 40)*infoboxscale;
 
@@ -1238,6 +1207,10 @@ public class GameLayout : MenuLayout
 					break;
 			}
 		}
+
+
+		
+
 		var units = GameManager.GetAllUnits();
 		int targetIndex =units.IndexOf(SelectedUnit);
 		if (targetIndex != -1)
@@ -1280,6 +1253,7 @@ public class GameLayout : MenuLayout
 			if (endBtn != null) endBtn.Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/UnitBar/end button")), Color.White);
 		}
 		_lastMouseTileCoordinate = _mouseTileCoordinate;
+		
 	}
 
 	private bool drawExtra;
@@ -1287,19 +1261,39 @@ public class GameLayout : MenuLayout
 	public void ProcessKeyboard()
 	{
 		//Console.WriteLine(UI.Desktop.FocusedKeyboardWidget);
-		if (lastKeyboardState.IsKeyDown(Keys.Tab))
+		if (lastKeyboardState.IsKeyDown(Keys.Tab) && currentKeyboardState.IsKeyUp(Keys.Tab))
 		{
 			UI.Desktop.FocusedKeyboardWidget = null;//override myra focus switch functionality
+			//loop through all units and find one with unused movepoints
+			var units = GameManager.GetMyTeamUnits();
+			int currentIndex = units.IndexOf(SelectedUnit);
+
+			// Start from the next unit
+			currentIndex = (currentIndex + 1) % units.Count;
+
+			// Loop through all units starting from the current
+			for (int i = 0; i < units.Count; i++)
+			{
+				var unit = units[currentIndex];
+
+				// If the unit has points left, select it and break the loop
+				if (unit.MovePoints.Current > 0)
+				{
+					SelectUnit(unit);
+					break;
+				}
+
+				// Move to the next unit, wrap around if necessary
+				currentIndex = (currentIndex + 1) % units.Count;
+			}
+			
 		}
 		if(inputBox != null && inputBox.IsKeyboardFocused) return;
 		
 		//if(UI.Desktop.FocusedKeyboardWidget != null) return;
 
-		drawExtra = false;
-		if (currentKeyboardState.IsKeyDown(Keys.LeftAlt))
-		{
-			drawExtra = true;
-		}
+
+		drawExtra = currentKeyboardState.IsKeyDown(Keys.LeftAlt);
 
 		if (JustPressed(Keys.Enter))
 		{
@@ -1307,9 +1301,11 @@ public class GameLayout : MenuLayout
 			inputBox.SetKeyboardFocus();
 		}
 
-
-		currentKeyboardState.IsKeyDown(Keys.LeftControl);
-
+		if (currentKeyboardState.IsKeyDown(Keys.CapsLock) && !lastKeyboardState.IsKeyDown(Keys.CapsLock))
+		{
+			GameManager.EndTurn();
+		}
+	
 
 		if (suggestedTargets.Count > 0)
 		{
@@ -1326,6 +1322,7 @@ public class GameLayout : MenuLayout
 				}
 
 				Camera.SetPos(ActionTarget.TileLocation.Position);
+				UpdateHudButtons();
 			}
 			else if (JustPressed(Keys.E))
 			{
@@ -1340,6 +1337,7 @@ public class GameLayout : MenuLayout
 				}
 
 				Camera.SetPos(ActionTarget.TileLocation.Position);
+				UpdateHudButtons();
 			}
 		}
 
@@ -1529,8 +1527,9 @@ public class GameLayout : MenuLayout
 						}
 					}
 
-				
 
+					
+				
 					break;
 				case ActiveActionType.Overwatch:
 					ActionTarget = WorldManager.Instance.GetTileAtGrid(position).Surface;
@@ -1880,7 +1879,7 @@ public class GameLayout : MenuLayout
 				ConfirmButton.Visible = false;
 				targetBarStack!.Visible = false;
 				OverWatchToggle.Visible = false;
-				return;
+
 				break;
 			case ActiveActionType.Overwatch:
 				OverWatchToggle.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/overwatchON"));
@@ -1903,10 +1902,10 @@ public class GameLayout : MenuLayout
 				GameManager.GetMyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				GameManager.GetEnemyTeamUnits().ForEach(x => potentialTargets.Add(x));
 				suggestedTargets = HudActionButton.SelectedButton.GetSuggestedTargets(potentialTargets);
-				if (ActionTarget == null || !HudActionButton.SelectedButton.IsAbleToPerform(ActionTarget).Item1)
+				if (ActionTarget != null && !HudActionButton.SelectedButton.IsAbleToPerform(ActionTarget).Item1)
 				{
 					ConfirmButton.Image = new TextureRegion(TextureManager.GetTexture("GameHud/BottomBar/confirmation2"));
-				}else if (!HudActionButton.SelectedButton.ShouldBeAbleToPerform((WorldObject)ActionTarget).Item1)
+				}else if (ActionTarget != null && !HudActionButton.SelectedButton.ShouldBeAbleToPerform((WorldObject)ActionTarget).Item1)
 				{
 					if (ActionForce)
 					{
@@ -1927,7 +1926,14 @@ public class GameLayout : MenuLayout
 				{
 					ActionTarget = suggestedTargets[0];
 				}
-
+				if (ActionTarget != null)
+				{
+					consPreviewTarget = ActionTarget.ID;
+				}
+				else
+				{
+					consPreviewTarget = SelectedUnit.WorldObject.ID;
+				}
 
 				break;
 		}
@@ -1952,6 +1958,54 @@ public class GameLayout : MenuLayout
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 200 * suggestedTargets.Count));
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));
+		
+		
+		SortedConsequences.Clear();
+		if(ActionTarget != null && activeAction == ActiveActionType.Action)
+		{
+			foreach (var act in HudActionButton.SelectedButton.GetConsequences(ActionTarget))
+			{
+				if(act.GetType() == typeof(FaceUnit)) continue;
+				if (act.GetType() == typeof(WorldObjectManager.TakeDamage))
+				{
+					var tkDmg = (WorldObjectManager.TakeDamage) act;
+					WorldObject? obj = tkDmg.GetTargetObject();
+					if(obj == null) continue;
+					if (!SortedConsequences.ContainsKey(obj))
+					{
+						SortedConsequences.Add(obj,new List<SequenceAction>());
+					}
+					SortedConsequences[obj].Add(act);
+			
+				}if (act.GetType() == typeof(Shoot))
+				{
+					var shoot = (Shoot) act;
+					var obj = WorldObjectManager.GetObject(shoot.Projectile.Result.HitObjId);
+					if(obj == null) continue;
+					if (!SortedConsequences.ContainsKey(obj))
+					{
+						SortedConsequences.Add(obj,new List<SequenceAction>());
+					}
+					SortedConsequences[obj].Add(act);
+			
+				}else if (act.IsUnitAction)
+				{
+					var uact = (UnitSequenceAction) act;
+					var actor = uact.GetAffectedActor(-1);
+					if (actor != null)
+					{
+						var obj = actor.WorldObject;
+						if (!SortedConsequences.ContainsKey(obj))
+						{
+							SortedConsequences.Add(obj,new List<SequenceAction>());
+						}
+						SortedConsequences[obj].Add(act);
+					}
+				
+				}
+			}
+		}
+	
 	}
 
 	public static void SelectHudAction(HudActionButton? hudActionButton)
@@ -1961,14 +2015,12 @@ public class GameLayout : MenuLayout
 		if (hudActionButton == null)
 		{
 			activeAction = ActiveActionType.None;
+			
 		}
-
+		ActionTarget = null;
 		ActionForce = false;
+		
 		UpdateHudButtons();
-		if (suggestedTargets.Count > 0)
-		{
-			ActionTarget = suggestedTargets[0];
-		}
 	}
 
 	public static void CleanUp()

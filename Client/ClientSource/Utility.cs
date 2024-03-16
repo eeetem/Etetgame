@@ -76,7 +76,15 @@ public static partial class Utility
 		if (textc == default)textc = Color.White;
 		
 		spriteBatch.Draw(icon, pos, scale, iconc);
-		spriteBatch.DrawText(num, pos+new Vector2(12,7)*scale,scale*2.5f, textc);
+		if (num.Length > 1)
+		{
+			spriteBatch.DrawText(num, pos+new Vector2(5,7)*scale,scale*1.5f, textc);
+		}
+		else
+		{
+			spriteBatch.DrawText(num, pos+new Vector2(12,7)*scale,scale*2.5f, textc);
+		}
+		
 	}
 	public static void DrawText(this SpriteBatch spriteBatch, string text, Vector2 position, Color c)
 	{
@@ -183,11 +191,12 @@ public static partial class Utility
 				for (int i = index+1; i < text.Length; i++)
 				{
 					nextSpaceCounter++;
-					if (text[i] == ' ' || text[i] == '\n')
+					if (text[i] == ' ' || text[i] == '\n' || text[i] == '[')
 					{
 						nextSpace = nextSpaceCounter;
 						break;
 					}
+
 				}
 
 				if (charsinRow + nextSpace > width)

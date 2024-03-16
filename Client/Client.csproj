@@ -488,6 +488,45 @@
         <None Update="Content\Environment\boulder.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\Environment\Objects\car.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\lappost.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\longBush.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\smallBush.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\carpet.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\pathway0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
@@ -576,11 +615,17 @@
       <Compile Include="..\SharedSource\ReplaySequence\PostProcessingEffect.cs">
         <Link>SharedSource\ReplaySequence\PostProcessingEffect.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ProjectilAction.cs">
+        <Link>SharedSource\ReplaySequence\ProjectilAction.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\ReplaySequence\SequenceAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
         <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\UnitUpdate.cs">
+        <Link>SharedSource\ReplaySequence\UnitUpdate.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs">
         <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs</Link>

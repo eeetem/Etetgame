@@ -23,6 +23,9 @@ public class UnitAbility
 	public readonly ushort OverWatchRange;
 	public readonly ushort Index;
 	public List<Effect> Effects { get; }
+#if CLIENT
+	public Texture2D Icon { get; set; }
+#endif
 
 	public AbilityCost GetCost()
 	{
@@ -253,33 +256,6 @@ public class UnitAbility
 	}
 
 	
-#if CLIENT
-	
-
-	public List<SequenceAction> Preview(Unit actor, WorldObject target, SpriteBatch spriteBatch)
-	{
-		List<SequenceAction> actions = new List<SequenceAction>();
-		if (ImmideateActivation)
-		{
-			target = actor.WorldObject;
-		}
-		foreach (var eff in Effects)
-		{
-			actions.AddRange( eff.Preview(actor, target, spriteBatch));
-		}
-
-		return actions;
-	}
-
-
-	public Texture2D Icon { get; set; }
-	public void DrawOverWatchTooltip(Vector2 pos, float scale, SpriteBatch batch)
-	{
-		if(!CanOverWatch) throw new Exception("Cannot draw overwatch tooltip for ability that cannot overwatch");
-
-	}
-
-#endif
 
 	public object Clone()
 	{

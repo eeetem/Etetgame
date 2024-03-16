@@ -50,7 +50,12 @@ public class ChangeUnitValues : UnitSequenceAction
 		return Make(new TargetingRequirements(actorID), actChange, moveChange, detChange, moveRangeEffect);
 		
 	}
-	
+
+	public static ChangeUnitValues Make(Vector2 pos, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null)
+	{
+		return Make(new TargetingRequirements(pos), actChange, moveChange, detChange, moveRangeEffect);
+	}
+
 	public static ChangeUnitValues Make(TargetingRequirements actorID, ValueChange? actChange = null, ValueChange? moveChange = null, ValueChange? detChange = null, ValueChange? moveRangeEffect = null)
 	{
 		var t = GetAction(SequenceType.ChangeUnitValues) as ChangeUnitValues;
@@ -142,7 +147,7 @@ public class ChangeUnitValues : UnitSequenceAction
 	
 		
 		Vector2 offset = new Vector2(upArrow.Width-2,0);
-		int i = 4;
+		int i = 3;
 		var moveChange = MoveChange.GetChange(Actor.MovePoints);
 		if (moveChange != 0)
 		{
@@ -178,13 +183,13 @@ public class ChangeUnitValues : UnitSequenceAction
 		if(detChange != 0){
 			if(detChange > 0)
 			{
-				batch.Draw(upArrow, pos+offset*3, Color.White);
+				batch.Draw(upArrow, pos+offset*i, Color.White);
 			}
 			else
 			{
-				batch.Draw(downArrow, pos+offset*3, Color.White);
+				batch.Draw(downArrow, pos+offset*i, Color.White);
 			}
-			batch.DrawNumberedIcon(Math.Abs(detChange).ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*3+new Vector2(10,0),Color.White);
+			batch.DrawNumberedIcon(Math.Abs(detChange).ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"),pos+offset*i+new Vector2(10,0),Color.White);
 			i--;
 		}
 	
@@ -199,10 +204,10 @@ public class ChangeUnitValues : UnitSequenceAction
 		               "  Determination [Yellow]Change[-]\n" +
 		               "  Move Range [Yellow]Change[-]\n" +
 		               "  todo sight\n", pos, scale, Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos + new Vector2(0, 5),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), pos + new Vector2(0, 16),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 28),scale/2f,Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos + new Vector2(0, 5)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), pos + new Vector2(0, 16)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 28)*scale,scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos + new Vector2(0, 40)*scale,scale/2f,Color.White);
 
 	
 	}

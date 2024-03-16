@@ -146,12 +146,12 @@ public abstract class AIAction
 			{
 				hitUnit = PseudoWorldManager.GetObject(((WorldObjectManager.TakeDamage)c).ObjID,dimension)!.UnitComponent;
 			}
-			else if(tkdmg.Position != new Vector2Int(-1, -1))
-			{
-
-				hitUnit = PseudoWorldManager.GetTileAtGrid(((WorldObjectManager.TakeDamage)c).Position,dimension).UnitAtLocation;
-				
-			}
+			//else if(tkdmg.Position != new Vector2Int(-1, -1))
+			//{
+//
+			//	hitUnit = PseudoWorldManager.GetTileAtGrid(((WorldObjectManager.TakeDamage)c).Position,dimension).UnitAtLocation;
+			//	
+			//}
 			if (hitUnit != null)
 			{
 				int dmgThisAttack = 0;
@@ -288,7 +288,7 @@ public abstract class AIAction
 			var hitUnit = status.GetAffectedActor(dimension);
 			if (hitUnit != null)
 			{
-				var consiq =PrefabManager.StatusEffects[status.effectName].Conseqences.GetApplyConsiqunces(hitUnit.WorldObject);
+				var consiq =PrefabManager.StatusEffects[status.effectName].Conseqences.GetApplyConsequnces(attacker.WorldObject,hitUnit.WorldObject);
 				foreach (var cact in consiq)
 				{
 					var res= ScoreConsequence(cact, dimension, attacker,noRecursion);

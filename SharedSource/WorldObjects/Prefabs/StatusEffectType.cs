@@ -18,6 +18,6 @@ public class StatusEffectType
 
 	public void Apply(Unit actor)
 	{
-		SequenceManager.AddSequence(Conseqences.GetApplyConsiqunces(actor.WorldObject));
+		SequenceManager.AddSequence(Conseqences.GetApplyConsequnces(actor.WorldObject,actor.WorldObject));
 	}
 }

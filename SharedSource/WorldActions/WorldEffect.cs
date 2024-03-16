@@ -40,7 +40,7 @@ public class WorldEffect : Effect
 		{
 			changes.Add(change);
 		}
-		foreach (var change in Conseqences.GetApplyConsiqunces(tgt))
+		foreach (var change in Conseqences.GetApplyConsequnces(actor.WorldObject,tgt))
 		{
 			changes.Add(change);
 		}

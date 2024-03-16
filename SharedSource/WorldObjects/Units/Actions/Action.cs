@@ -50,7 +50,7 @@ public abstract class Action
 	public abstract Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args);
 
 #if CLIENT
-	public abstract List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch);
+	public virtual void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch){}
 
 	public void SendToServer(Unit actor, ActionExecutionParamters args)
 	{
@@ -59,44 +59,24 @@ public abstract class Action
 	}
 #endif
 
-
 #if SERVER
-
 	public void PerformServerSide(Unit actor, ActionExecutionParamters args)
 	{
-		
-		Task.Run(() =>
+		var actions = GetConsequenes(actor,args);
+		int i = 1;
+		foreach (var queue in actions)
 		{
-			try
+			Task t = new Task(delegate
 			{
-				
-				var actions = GetConsiquenes(actor,args);
-				int i = 1;
-				foreach (var queue in actions)
-				{
-					Task t = new Task(delegate
-					{
-						NetworkingManager.SendSequence(queue);//staggered execution becuase some actions need to wait for FOV update
-					});
-					SequenceManager.RunNextAfterFrames(t,i);
-					i += 2;
-				}
-				
-				
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-                throw;
-            }
-
-		});
-		
-		
+				NetworkingManager.SendSequence(queue);//staggered execution becuase some actions need to wait for FOV update
+			});
+			SequenceManager.RunNextAfterFrames(t,i);
+			i += 2;
+		}
 	}
-	public abstract Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args);
-#endif
 	
+#endif
+	public abstract Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args);
 	public class GameActionPacket : IMessageSerializable
 	{
 		public ActionExecutionParamters Args { get; set; }

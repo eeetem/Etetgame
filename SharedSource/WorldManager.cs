@@ -190,13 +190,15 @@ public  partial class WorldManager
         Parallel.ForEach(units, seeingUnit =>
         {
             var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
-
+            
             seeingUnit.VisibleTiles = unitSee;
 #if CLIENT
             if(!seeingUnit.IsMyTeam())return;//enemy units dont update our FOV
 #endif
             foreach (var visTuple in unitSee)
             {
+
+               
                 if(GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
                 {
                     GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team,visTuple.Value);
@@ -204,9 +206,8 @@ public  partial class WorldManager
                     var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
 
                     if(spotedUnit == null) continue;
-#if CLIENT
-                   spotedUnit.Spoted();
-#elif SERVER
+
+#if SERVER
                     if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
                     {
                         GameManager.ShowUnitToEnemy(spotedUnit);
@@ -218,7 +219,12 @@ public  partial class WorldManager
             
         });
 		
-        
+#if CLIENT
+        foreach (var tile in _gridData)
+        {
+            tile.CalcWatchLevel();
+        }
+#endif    
         
 #if SERVER
         Log.Message("WORLD MANAGER","sending FOV tile updates");
@@ -697,6 +703,13 @@ public  partial class WorldManager
         dir = Utility.NormaliseDir(dir);
         WorldObject biggestCoverObj = nullWorldObject;
         IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc,pseudoLayer);
+        foreach (var obj in tileAtPos.ObjectsAtLocation)
+        {
+            if(obj.GetCover(false)>biggestCoverObj.GetCover(false))
+            {
+                biggestCoverObj = obj;
+            }
+        }
         IWorldTile? tileInDir =null;
         if(IsPositionValid(tileAtPos.Position + Utility.DirToVec2(dir)))
         {

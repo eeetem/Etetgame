@@ -143,24 +143,30 @@ public static class UI
 
 	public static void Render(float deltaTime, SpriteBatch spriteBatch)
 	{
-		
 
-		currentUi.RenderBehindHud(spriteBatch,deltaTime);
-
-			
-		Desktop.Root = root;
-		if (Game1.instance.IsActive)
+		try
 		{
-			Desktop.Render();
-		}
-		else
-		{
-			Desktop.RenderVisual();
-		}
-			
-		currentUi.RenderFrontHud(spriteBatch,deltaTime);
+			currentUi.RenderBehindHud(spriteBatch, deltaTime);
 
-			
+
+			Desktop.Root = root;
+			if (Game1.instance.IsActive)
+			{
+				Desktop.Render();
+			}
+			else
+			{
+				Desktop.RenderVisual();
+			}
+
+			currentUi.RenderFrontHud(spriteBatch, deltaTime);
+		}
+		catch (Exception e)
+		{
+			Log.Message("ERROR", "Error rendering UI: " + e.Message + " " + e.StackTrace);
+			throw;
+		}
+
 
 	}
 

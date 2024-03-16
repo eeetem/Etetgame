@@ -25,13 +25,15 @@ public class HudActionButton
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _shouldPerformTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _canPerformTask;
-	private readonly Func<Unit,WorldObject,SpriteBatch,List<SequenceAction>>? _previewTask;
+	private readonly Action<Unit,WorldObject,SpriteBatch>? _previewTask;
 	private readonly Action<Unit,Vector2Int,SpriteBatch>? _previewOverwatchTask;
 	public readonly AbilityCost Cost;
 	readonly TextureRegion _icon;
 	public string Tooltip;
 	public readonly bool CanOverwatch;
 	private bool selfOnly = false;
+	private readonly Func<Unit,WorldObject,List<SequenceAction>> _getConsequencesTask;
+
 	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> shouldPerformTask, AbilityCost cost, string tooltip, bool selfOnly)
 	{
 		UIButton = imageButton;
@@ -43,6 +45,7 @@ public class HudActionButton
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;
 		_previewTask = null;
+		_getConsequencesTask = (unit, target) => new List<SequenceAction>();
 		_shouldPerformTask = shouldPerformTask;
 		_canPerformTask = shouldPerformTask;
 		UIButton.Click += (o, a) =>
@@ -75,7 +78,24 @@ public class HudActionButton
 			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
 			args.TargetObj = target;
 			args.AbilityIndex = abl.Index;
-			return Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
+			Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
+		};
+		_getConsequencesTask = (unit, target) =>
+		{
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
+			args.TargetObj = target;
+			args.AbilityIndex = abl.Index;
+			List<SequenceAction> consequences = new();
+			var arr =  Action.Actions[Action.ActionType.UseAbility].GetConsequenes(unit, args);
+			foreach (var queue in arr)
+			{
+				foreach (var action in queue)
+				{
+					consequences.Add(action);
+				}
+			}
+
+			return consequences;
 		};
 		_shouldPerformTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, true, false);
 		_canPerformTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, false, false);
@@ -123,9 +143,9 @@ public class HudActionButton
 		return suggestedTargets;
 	}
 
-	public List<SequenceAction> Preview(WorldObject actionTarget, SpriteBatch batch)
+	public void Preview(WorldObject actionTarget, SpriteBatch batch)
 	{
-		return _previewTask?.Invoke(Owner,actionTarget,batch) ?? new List<SequenceAction>();
+		_previewTask?.Invoke(Owner, actionTarget, batch);
 	}
 
 	public Tuple<bool,string> IsAbleToPerform(WorldObject target)
@@ -203,5 +223,10 @@ public class HudActionButton
 	public void PreviewOverwatch(Vector2Int actionTarget, SpriteBatch batch)
 	{
 		_previewOverwatchTask?.Invoke(Owner,actionTarget,batch);
+	}
+
+	public IEnumerable<SequenceAction> GetConsequences(WorldObject actionTarget)
+	{
+		return _getConsequencesTask?.Invoke(Owner,actionTarget);
 	}
 }

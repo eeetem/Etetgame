@@ -103,11 +103,11 @@ public class UnitStatusEffect  : UnitSequenceAction
 		}
 		str += "\n"+PrefabManager.StatusEffects[effectName].Tip;
 		batch.DrawText(str, pos, scale, 50,Color.White);
-		batch.Draw(rmicn, pos + new Vector2(0, 5),scale/2f,Color.White);
+		batch.Draw(rmicn, pos + new Vector2(0, 5)*scale,scale/2f,Color.White);
 		if (addNotRemove)
 		{
 			Texture2D effectIcon = TextureManager.GetTextureFromPNG("Icons/" + effectName);
-			batch.Draw(effectIcon, pos + new Vector2(0, 16),scale/2f,Color.White);
+			batch.Draw(effectIcon, pos + new Vector2(0, 16)*scale,scale/2f,Color.White);
 		}
 
 

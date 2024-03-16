@@ -34,8 +34,7 @@ public class Face : Action
         return new Tuple<bool, string>(true, "");
     }
 
-#if SERVER
-	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		var queue = new Queue<SequenceAction>();
@@ -43,16 +42,16 @@ public class Face : Action
 		return new Queue<SequenceAction>[] {queue};
 
 	}
-#endif
+
 
 #if CLIENT
 
     private Vector2Int lastTarget;
     private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
 
-    public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+    public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
     {
-        if (actor.WorldObject.TileLocation.Position == args.Target!.Value) return new List<SequenceAction>();
+        if (actor.WorldObject.TileLocation.Position == args.Target!.Value) return;
         var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
         previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
 		
@@ -74,7 +73,6 @@ public class Face : Action
             spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
 			
         }
-        return new List<SequenceAction>();
 
     }
 

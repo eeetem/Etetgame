@@ -17,16 +17,13 @@ public class OverWatch : Action
 	}
 
 
-#if SERVER
-	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
-	//	var m = new MoveCamera(actor.WorldObject.TileLocation.Position, false, 1);
-	//		queue.Enqueue(m);
 		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target!.Value,args.AbilityIndex));
 		return new Queue<SequenceAction>[] {queue};
 	}
-#endif
+
 
 
 
@@ -40,9 +37,8 @@ public class OverWatch : Action
 
 #if CLIENT
 
-	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		
 		foreach (var loc in actor.GetOverWatchPositions(args.Target!.Value,args.AbilityIndex))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(loc);
@@ -53,7 +49,6 @@ public class OverWatch : Action
 
 			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, c);
 		}
-		return new List<SequenceAction>();
 	}
 
 #endif

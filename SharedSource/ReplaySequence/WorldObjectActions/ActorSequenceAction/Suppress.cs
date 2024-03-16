@@ -136,10 +136,10 @@ public class Suppress : UnitSequenceAction
 		}
 
 		batch.DrawText(str, pos, scale, 45, Color.White);
-		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 5),scale/2f,Color.White);
+		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos + new Vector2(0, 5)*scale,scale/2f,Color.White);
 		if (Actor.WorldObject.PreviewData.detDmg >= Actor.Determination)
 		{
-			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/panic"), pos + new Vector2(0, 18),scale/2f,Color.White);
+			batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/panic"), pos + new Vector2(0, 18)*scale,scale/2f,Color.White);
 		}
 
 

@@ -110,7 +110,6 @@ public class Shootable : Effect
 	public Projectile GenerateProjectile(Unit actor, WorldObject targetObj, int dimension)
 	{
 
-
 		Vector2Int target = targetObj.TileLocation.Position;
 		int targetId = targetObj.ID;
 		
@@ -220,17 +219,17 @@ public class Shootable : Effect
 		if (result.Value.hit && Vector2.Distance(result.Value.StartPoint, result.Value.CollisionPointLong) > 1.6f)
 		{
 			Vector2 dir = Vector2.Normalize(from - to);
-			to = result.Value.CollisionPointLong + Vector2.Normalize(to - from) / 7f;
+			to = result.Value.CollisionPointLong;
 			WorldManager.RayCastOutcome cast;
 
-			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.High, false, true, pseudoLayer: dimension);
+			cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 0.5f, to, Cover.High, false, true, pseudoLayer: dimension);
 			if (cast.hit && result.Value.HitObjId != cast.HitObjId)
 			{
 				coverCast = cast;
 			}
 			else
 			{
-				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir) * 1.25f, to, Cover.Low, false, true, pseudoLayer: dimension);
+				cast = WorldManager.Instance.Raycast(to + Vector2.Normalize(dir)  * 0.5f, to, Cover.Low, false, true, pseudoLayer: dimension);
 				if (cast.hit && result.Value.HitObjId != cast.HitObjId)
 				{
 					coverCast = cast;
@@ -375,13 +374,7 @@ public class Shootable : Effect
 				Console.WriteLine("hitobj is null");
 			}
 		}
-		else
-		{
-			//we missed so add taking damage on this tile as consiquences
-			var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, detResistance,p.Result.EndPoint, new List<string>());
-			retrunList.Add(act2);
-			
-		}
+
 		List<IWorldTile> tiles = SupressedTiles(p,dimension);
 		retrunList.EnsureCapacity(retrunList.Count+tiles.Count);
 		foreach (var tile in tiles)

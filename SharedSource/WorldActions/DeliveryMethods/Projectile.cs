@@ -24,9 +24,9 @@ public class Projectile : DeliveryMethod
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
 	{
 		List<SequenceAction> list = new List<SequenceAction>();
-		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
 		if (target.TileLocation.Position == actor.WorldObject.TileLocation.Position)
 		{
+			list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
 			return list;
 		}
 
@@ -40,6 +40,8 @@ public class Projectile : DeliveryMethod
 				target = obj;
 			}
 		}
+		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
+		list.Add( ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position));
 		return list;
 	}
 

@@ -340,6 +340,7 @@ public static class PrefabManager
 				
 		eff.Range = int.Parse(effect.Attributes?["range"]?.InnerText ?? "0");
 		eff.ExRange = int.Parse(effect.Attributes?["exRange"]?.InnerText ?? "0");
+		eff.LosCheckCover = (Cover)int.Parse(effect.Attributes?["los"]?.InnerText ?? "0");
 
 		string ignores = effect.Attributes?["ignore"]?.InnerText ?? "";
 		eff.Ignores = ignores.Split(',').ToList();
@@ -350,12 +351,22 @@ public static class PrefabManager
 			switch (tar)
 			{
 				case "friend":
+					eff.TargetFriend = true;
+					break;
+				case "env":
+					eff.TargetEnv = true;
 					break;
 				case "foe":
+					eff.TargetEnemy = true;
 					break;		
 				case "self":
+					eff.TargetSelf = true;
 					break;	
 				case "any":
+					eff.TargetFriend = true;
+					eff.TargetEnemy = true;
+					eff.TargetSelf = true;
+					eff.TargetEnv = true;
 					break;
 				
 			}

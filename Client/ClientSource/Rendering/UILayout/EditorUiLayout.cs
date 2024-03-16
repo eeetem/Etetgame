@@ -242,6 +242,7 @@ public class EditorUiLayout : MenuLayout
 	private static bool lastLeftMouseDown;
 	private static bool lastRghtMouseDown;
 	private static Vector2Int lastMousePos;
+	private static Vector2Int lastPlacedPos;
 	private static bool rightMouseDown;
 	private static bool leftMouseDown;
 
@@ -530,9 +531,10 @@ public class EditorUiLayout : MenuLayout
 		switch (ActiveBrush)
 		{
 			case Brush.Point:
-				if (leftMouseDown && IsValidPlacement(mousePos,ActivePrefab,ActiveDir) && !SequenceManager.SequenceRunning)
+				if (leftMouseDown && (!lastLeftMouseDown|| lastPlacedPos!= mousePos) && IsValidPlacement(mousePos,ActivePrefab,ActiveDir) && !SequenceManager.SequenceRunning)
 				{
 					SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(ActivePrefab,mousePos,ActiveDir));
+					lastPlacedPos = mousePos;
 				}else if ((rightMouseDown && !lastRghtMouseDown)||(rightMouseDown && lastMousePos!=mousePos))
 				{
 					DeletePrefab(mousePos);
@@ -742,6 +744,11 @@ public class EditorUiLayout : MenuLayout
 			}
 		}
 
+		if (tile.ObjectsAtLocation.Count > 0)
+		{
+			WorldObjectManager.DeleteWorldObject.Make(tile.ObjectsAtLocation.First()).GenerateTask().RunTaskSynchronously();
+			return;
+		}
 		
 
 

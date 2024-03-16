@@ -213,9 +213,9 @@ public static partial class GameManager
 	}
 
 	public static bool PlayerUnitPositionsDirty = false;
-	public static void UpdatePlayerSideUnitPositions()
+	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
-		foreach (var pos in Player1UnitPositions)
+		foreach (var pos in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(Player1UnitPositions))
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
 			Visibility minVis = Visibility.Partial;
@@ -228,7 +228,8 @@ public static partial class GameManager
 			}
 			else if(t.UnitAtLocation.WorldObject.ID != pos.Key){
 				Player1UnitPositions.Remove(pos.Key);
-				Player1UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,pos.Value);
+				Player1UnitPositions.Remove(t.UnitAtLocation.WorldObject.ID);
+				Player1UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,(pos.Value.Item1,t.UnitAtLocation.WorldObject.GetData()));
 				PlayerUnitPositionsDirty = true;
 			}
 			else
@@ -241,7 +242,7 @@ public static partial class GameManager
 				}
 			}
 		}
-		foreach (var pos in Player2UnitPositions)
+		foreach (var pos  in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(Player2UnitPositions))
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
 			Visibility minVis = Visibility.Partial;
@@ -254,7 +255,8 @@ public static partial class GameManager
 			}
 			else if(t.UnitAtLocation.WorldObject.ID != pos.Key){
 				Player2UnitPositions.Remove(pos.Key);
-				Player2UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,pos.Value);
+				Player2UnitPositions.Remove(t.UnitAtLocation.WorldObject.ID);
+				Player2UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,(pos.Value.Item1,t.UnitAtLocation.WorldObject.GetData()));
 				PlayerUnitPositionsDirty = true;
 			}
 			else
@@ -267,6 +269,32 @@ public static partial class GameManager
 					PlayerUnitPositionsDirty = true;
 				}
 			}
+		}
+
+		if (newTurn)
+		{
+			//remove overwatch from all the unit datas
+			foreach (var key in Player1UnitPositions.Keys.ToList())
+			{
+				
+				var data = Player1UnitPositions[key];
+				if (data.Item2.UnitData!.Value.Team1 == IsPlayer1Turn)
+				{
+					data.Item2.UnitData = data.Item2.UnitData!.Value with {Overwatch = (false, -1)};
+					Player1UnitPositions[key] = data;
+				}
+			}
+
+			foreach (var key in Player2UnitPositions.Keys.ToList())
+			{
+				var data = Player2UnitPositions[key];
+				if (data.Item2.UnitData!.Value.Team1 == IsPlayer1Turn)
+				{
+					data.Item2.UnitData = data.Item2.UnitData!.Value with {Overwatch = (false, -1)};
+					Player2UnitPositions[key] = data;
+				}
+			}
+			
 		}
 	}
 

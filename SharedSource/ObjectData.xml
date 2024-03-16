@@ -10,12 +10,30 @@
     <name>Smoke</name>
   </object>
 
+  <object Faceable = "false" SCover ="1">
+    <sprite source="Environment/Objects/smallBush">
+    </sprite>
+    <name>Bush</name>
+  </object>
+
   <object Faceable = "false" SCover ="2">
     <sprite source="Environment/Boulder">
     </sprite>
     <name>Boulder</name>
   </object>
-  
+
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite source="Environment/Surfaces/carpet" offset= "0,0">
+
+    </sprite>
+    <name>carpet</name>
+  </object>
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite source="Environment/Surfaces/pathway0" offset= "0,0">
+
+    </sprite>
+    <name>pathway</name>
+  </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/ground" offset= "0,0">
       <variation id="0" weight="10"/>
@@ -29,6 +47,15 @@
       <variation id="8" weight="1"/>
     </sprite>
     <name>basicFloor</name>
+  </object>
+  <object Faceable = "false" SCover ="0" Surface = "true">
+    <sprite source="Environment/Surfaces/grass" offset= "0,0">
+      <variation id="0" weight="50"/>
+      <variation id="1" weight="10"/>
+      <variation id="1" weight="10"/>
+      <variation id="3" weight="15"/>
+    </sprite>
+    <name>grass</name>
   </object>
   <object Faceable = "false" SCover ="0" Surface = "true">
     <sprite source="Environment/Surfaces/wood" offset= "0,0">
@@ -344,8 +371,8 @@
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
 
       <effect>
-        <consequences visible ="false"  range = "7" exRange="1" target="friend" ignore="Officer">
-          <values determination="100"/>
+        <consequences visible ="false" los="2" range = "7" exRange="1" target="friend" ignore="Officer">
+          <values determination="99[cap]"/>
         </consequences>
       </effect>
     </action>
@@ -359,7 +386,7 @@
         <delivery>
           <vissionCast range="14"/>
         </delivery>
-        <consequences ignore="Officer"  range="1">
+        <consequences ignore="Officer" target="friend" range="1">
           <applystatus status="Boost" duration="1"/>
         </consequences>
       </effect>
@@ -368,7 +395,6 @@
     <action detCost ="1" moveCost="0" actCost="1">
       <name>Smoke Launcher</name>
       <tip>Launches a smoke grenade to block lines of sight</tip>
-      <targetAid>ground</targetAid>
       <effect>
         <delivery>
           <throwable throwRange="12"/>
@@ -381,7 +407,7 @@
         </consequences>
       </effect>
     </action>
-    <destroyConsequences range = "7" exRange="1" target="friend" ignore="Officer">
+    <destroyConsequences range = "7" los="2" exRange="1" target="friend" ignore="Officer">
       <damage det="2" dmg="0" detRes="0" envRes="0"/>
     </destroyConsequences>
   </unit>
@@ -477,9 +503,9 @@
 
   <unit health="8" moveRange = "6" moves="2" determination="3">
     <name>Specialist</name>
-    <action moveCost="1" actCost="1" detCost="2">
+    <action moveCost="1" actCost="1" detCost="2" overwatch="2">
       <name>RPG</name>
-      <targetAid>enemy,ground</targetAid>
+      <targetAid>enemy</targetAid>
       <tip>High Damage, but easily dodgeable.\n[Green]Great for destroying cover[-]\nDoes [Green]8[-] damage, determined units will dodge [Red]6[-].\nIgnores environment resistance making it take full damage.</tip>
       
       <effect>
@@ -504,7 +530,7 @@
       <name>Grenade</name>
       <targetAid>enemy</targetAid>
       <tip>Throws a grenade. Doesnt require move points.\nDamage Table:\n[Yellow]Center[-]: [Green]8[-] damage, [Red]2[-] dodge\n[Yellow]1 Range[-]: [Green]5[-] damage, [Red]2[-] dodge\n[Yellow]2 Range[-]: [Green]3[-] damage, [Red]1[-] dodge</tip>
-      <targetAid>enemy,ground</targetAid>
+      <targetAid>enemy</targetAid>
       
       <effect>
         <delivery>

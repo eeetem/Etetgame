@@ -22,9 +22,8 @@ public class Crouch : Action
 		
 		return new Tuple<bool, string>(true, "");
 	}
-#if SERVER
 
-public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
+public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -51,15 +50,11 @@ public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecuti
 		
 	}
 
-#endif
-	
+
 
 
 #if CLIENT
-	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
-	{
-return new List<SequenceAction>();
-	}
+
 	
 #endif
 }

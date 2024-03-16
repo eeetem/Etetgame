@@ -599,13 +599,7 @@ public static partial class NetworkingManager
 
 	public static void SendSequence(IEnumerable<SequenceAction> actions)
 	{
-		
-		var clonedActions = new List<SequenceAction>(actions.Count());
-		foreach (var a in actions)
-		{
-			clonedActions.Add(a.Clone());
-		}
-		SendSequence(clonedActions);
+		SendSequence(actions.ToList());
 	}
 
 	static Dictionary<int,Tuple<bool,bool,List<SequenceAction>>> sequencesToExecute = new Dictionary<int, Tuple<bool, bool, List<SequenceAction>>>();

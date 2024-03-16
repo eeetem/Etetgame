@@ -13,14 +13,7 @@ public partial class Unit// :IDrawable
     {
         return GameManager.IsPlayer1 == IsPlayer1Team;
     }
-    public void Spoted()
-    {
-        foreach (var tile in overWatchedTiles)
-        {
-            WorldManager.Instance.GetTileAtGrid(tile).CalcWatchLevel();
-        }
-			
-    }
+
 
 /*
     public Transform2 GetDrawTransform()

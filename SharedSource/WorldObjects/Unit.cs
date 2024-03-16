@@ -83,9 +83,10 @@ namespace DefconNull.WorldObjects
 				StatusEffects.Add(new StatusEffectInstance(PrefabManager.StatusEffects[effect.Item1],effect.Item2,this));
 			}
 			
+
+			ClearOverWatch();
 			Overwatch = data.Overwatch;
 			if(Overwatch.Item1 && Overwatch.Item2 == -1) throw new Exception("overwatch is active but no ability is selected");
-			overWatchedTiles.Clear();
 			foreach (var t in data.OverWatchedTiles)
 			{
 				overWatchedTiles.Add(t);
@@ -100,7 +101,7 @@ namespace DefconNull.WorldObjects
 				{
 					Task t = new Task(delegate
 					{
-						foreach (var c in Type.SpawnEffect.GetApplyConsiqunces(WorldObject))
+						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
 						{
 							NetworkingManager.SendSequence(c);
 						}
@@ -193,7 +194,7 @@ namespace DefconNull.WorldObjects
 			{
 				if(st.Duration<=0) continue;
 				//incorrect if status effect doesnt actually affect this unit but whatever
-				var cons = st.Type.Conseqences.GetApplyConsiqunces(WorldObject);
+				var cons = st.Type.Conseqences.GetApplyConsequnces(WorldObject,WorldObject);
 				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
 				foreach (var v in vals)
 				{
@@ -579,8 +580,10 @@ namespace DefconNull.WorldObjects
 
 			HashSet<Vector2Int> result = new HashSet<Vector2Int>();
 			foreach (var position in positions)
-			{
-				if (action.CanPerform(this, WorldManager.Instance.GetTileAtGrid(position).Surface!, false, true).Item1)
+			{	
+				var tile = WorldManager.Instance.GetTileAtGrid(position);
+				if(tile.Surface==null) continue;
+				if (action.CanPerform(this, tile.Surface, false, true).Item1)
 				{
 					result.Add(position);
 				}

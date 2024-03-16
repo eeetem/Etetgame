@@ -167,8 +167,8 @@ public class Shoot : SequenceAction
 			//spriteBatch.DrawString(Game1.SpriteFont, hint, coverPoint + new Vector2(2f, 2f), c, 0, Vector2.Zero, 4, new SpriteEffects(), 0);
 			var coverobjtransform = coverObj.Type.Transform;
 			Texture2D yellowsprite = coverObj.GetTexture();
-
-			spriteBatch.Draw(yellowsprite, coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position), Color.Yellow);
+			var pos = coverobjtransform.Position + Utility.GridToWorldPos(coverObj.TileLocation.Position);
+			spriteBatch.Draw(yellowsprite, pos,null,Color.Yellow,0,Vector2.Zero, 1f,SpriteEffects.None,0);
 			//spriteBatch.Draw(obj.GetSprite().TextureRegion.Texture, transform.Position + Utility.GridToWorldPos(obj.TileLocation.Position),Color.Red);
 			spriteBatch.DrawCircle(Utility.GridToWorldPos(coverCast.CollisionPointLong), 5, 10, Color.Yellow, 15f);
 			

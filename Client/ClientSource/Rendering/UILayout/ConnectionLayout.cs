@@ -19,12 +19,15 @@ public class ConnectionLayout : UiLayout
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,300));
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-        
+		string defaultip = Game1.config.GetValue("config", "LastServer", "localhost:52233");
+#if DEBUG
+		defaultip = "localhost:52233";
+#endif
 		var textBox = new TextBox()
 		{
 			GridColumn = 1,
 			GridRow = 1,
-			Text =  Game1.config.GetValue("config","LastServer","localhost:52233"),
+			Text =  defaultip,
 			HorizontalAlignment = HorizontalAlignment.Stretch
 		};
 		grid.Widgets.Add(textBox);

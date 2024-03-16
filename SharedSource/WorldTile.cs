@@ -23,7 +23,7 @@ public partial class WorldTile : IWorldTile
 	public static readonly object Syncobj = new object();
 
 	private readonly List<Unit> _watchers = new List<Unit>();
-#if SERVER
+
 	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
 		List<Unit> shooters = new List<Unit>();
@@ -46,7 +46,7 @@ public partial class WorldTile : IWorldTile
 
 		return shooters;
 	}
-#endif
+
 	
 
 	public void Watch(Unit watcher)
@@ -150,6 +150,11 @@ public partial class WorldTile : IWorldTile
 		if (Surface != null && Surface.Type.Impassible) return false;
 		Cover obstacle =WorldManager.Instance.GetCover(from,Utility.Vec2ToDir(new Vector2Int(_position.X - from.X, _position.Y - from.Y)),ignoreControllables:ignoreControllables);
 		if (obstacle > Cover.High) return false;
+
+		foreach (var obj in ObjectsAtLocation)
+		{
+			if(obj.GetCover(false) > Cover.None) return false;
+		}
 		return true;
 
 	}
@@ -218,7 +223,7 @@ public partial class WorldTile : IWorldTile
 				throw new Exception("attempted non edge to edge");
 			if (_westEdge != null && !_westEdge.destroyed)
 			{
-				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
+				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_westEdge.ID}) one");
 			}
 
 			_westEdge = value;
@@ -531,15 +536,15 @@ public partial class WorldTile : IWorldTile
 	}
 
 
-	List<WorldObject> edges = new List<WorldObject>();
 	public List<WorldObject> GetAllEdges()
 	{
-		edges.Clear();
-		if (NorthEdge != null)
+		
+		List<WorldObject> edges = new List<WorldObject>();
+		if (NorthEdge is not null)
 		{
 			edges.Add(NorthEdge);
 		}
-		if (WestEdge != null)
+		if (WestEdge is not null)
 		{
 			edges.Add(WestEdge);
 		}
@@ -547,7 +552,7 @@ public partial class WorldTile : IWorldTile
 		if (WorldManager.IsPositionValid(_position + new Vector2Int(0, 1)))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(_position + new Vector2Int(0, 1));
-			if (tile.NorthEdge != null)
+			if (tile.NorthEdge is not null)
 			{
 				edges.Add(tile.NorthEdge);
 			}
@@ -557,7 +562,7 @@ public partial class WorldTile : IWorldTile
 		if (WorldManager.IsPositionValid(_position + new Vector2Int(1, 0)))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(_position + new Vector2Int(1, 0));
-			if (tile.WestEdge != null)
+			if (tile.WestEdge is not null)
 			{
 				edges.Add(tile.WestEdge);
 			}

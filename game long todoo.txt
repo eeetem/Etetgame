@@ -3,29 +3,25 @@ UI  enemy progress
 incrementing timer?
 
 jump camera to cant hit target?
-signing
 loud death sfx?
 possible usage locations smoke?
 JUMP CAMREA TO HIT TARGET?
 more obvious headshot warning?
 corpses
+merge vission and projectile
 
-specialist sprite!!
-
-
-turn icon
-overwatch icon UI and overtile
+signing
+i icon
 
 
-shoot preview doesnt account for crouch
-overwatch zone clear
-zoom icons
-victory screen
-target is not a groun
-tab unit switch?
 
+weird poor connection?
 
-ui volume
+[1710545172691][WORLD MANAGER]FOV made dirty
+[1710545172691][WORLD MANAGER]FOV made dirty
+[1710545172755][WORLD MANAGER]calculating FOV
+[1710545178460] discon
+[1710545182548][WORLD MANAGER]sending FOV tile updates
 
 sfx list:
 -throw

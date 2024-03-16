@@ -16,8 +16,18 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
-	
 
+#if SERVER
+	public override void FilterForPlayer(bool player1)
+	{
+		GameManager.ShowUnitToEnemyAtPosition(Actor, Actor.WorldObject.TileLocation.Position);
+	}
+
+	public override bool ShouldSendToPlayerServerCheck(bool player1)
+	{
+		return true;//always send overwatch shooting
+	}
+#endif
 
 	public override SequenceType GetSequenceType()
 	{

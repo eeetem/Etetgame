@@ -105,6 +105,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\PostProcessingEffect.cs">
         <Link>SharedSource\ReplaySequence\PostProcessingEffect.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ProjectilAction.cs">
+        <Link>SharedSource\ReplaySequence\ProjectilAction.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\ReplaySequence\SequenceAction.cs</Link>
       </Compile>

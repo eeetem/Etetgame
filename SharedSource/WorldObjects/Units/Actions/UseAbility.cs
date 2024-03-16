@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using DefconNull.WorldActions.UnitAbility;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 
 namespace DefconNull.WorldObjects.Units.Actions;
 
@@ -23,8 +25,7 @@ public class UseAbility : Action
 
 
 
-#if SERVER
-	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		UnitAbility action = actor.Abilities[args.AbilityIndex];
 		var queue1 = new Queue<SequenceAction>();
@@ -44,17 +45,32 @@ public class UseAbility : Action
 
 
 	}
-#endif
-	
+
 
 
 
 #if CLIENT
+		private ActionExecutionParamters _lastArgs = new ActionExecutionParamters();
+		private Unit? _lastActor = null;
+		List<SequenceAction> _previewCache = new List<SequenceAction>();
 
-		public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
+		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
 			UnitAbility action = actor.Abilities[args.AbilityIndex];
-			return action.Preview(actor, args.TargetObj!,spriteBatch);
+			if (!Equals(_lastArgs, args) || !Equals(_lastActor, actor) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
+			{
+				_previewCache = action.GetConsequences(actor, args.TargetObj!);
+				_lastActor = actor;
+				_lastArgs = args;
+			}
+			var pos = actor.WorldObject.TileLocation.Position;
+			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(pos+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
+
+			foreach (var c in _previewCache)
+			{
+				c.Preview(spriteBatch);
+			}
+			
 			
 		}
 

@@ -1,6 +1,7 @@
-﻿#define SINGLEPLAYER_ONLY
+﻿//#define SINGLEPLAYER_ONLY
 using System;
 using System.Diagnostics;
+using System.Threading;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
 using DefconNull.ReplaySequence;
@@ -94,6 +95,7 @@ reconnect.TextColor = Color.Gray;
 		{
 			GameManager.StartLocalServer();
 			NetworkingManager.AddAI();
+			Thread.Sleep(1000);
 			NetworkingManager.SendStartGame();
 		};
 		MPStack.Widgets.Add(singleplayer);

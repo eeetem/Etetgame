@@ -28,6 +28,7 @@ public class SquadCompBuilderLayout : UiLayout
 		var panel = new Panel();
 		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
 		
+		Camera.SetPos(_mySpawnPoints[0]);
 		if (PracticeDeployMode)
 		{
 			_mySpawnPoints = GameManager.T1SpawnPoints;

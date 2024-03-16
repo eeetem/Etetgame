@@ -35,7 +35,7 @@ public static partial class WorldObjectManager
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)
 		{
-			var cons = obj.Type.DestructionConseqences.GetApplyConsiqunces(obj);
+			var cons = obj.Type.DestructionConseqences.GetApplyConsequnces(obj,obj);
 			NetworkingManager.SendSequence(cons);
 		}
 

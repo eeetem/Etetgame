@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using Microsoft.Xna.Framework;
@@ -49,9 +50,8 @@ public class Move : Action
 		return new Tuple<bool, string>(true, "");
 	}
 
-	
-#if SERVER
-	public override Queue<SequenceAction>[] GetConsiquenes(Unit actor, ActionExecutionParamters args)
+
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		int moveUse = 1;
@@ -117,7 +117,6 @@ public class Move : Action
 		return new Queue<SequenceAction>[] {queue};
 
 	}
-#endif
 
 
 	
@@ -128,9 +127,9 @@ public class Move : Action
 	private Vector2Int lastTarget = new Vector2Int(0,0);
 
 	
-	public override List<SequenceAction> Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		if (SequenceManager.SequenceRunning) return new List<SequenceAction>();
+		if (SequenceManager.SequenceRunning) return;
 		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
 		
 
@@ -164,7 +163,6 @@ public class Move : Action
 			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(args.Target.Value) + new Vector2(-20 * moveUse, -30) + new Vector2(50, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
 		}
 		
-		return new List<SequenceAction>();
 	}
 #endif
 }
