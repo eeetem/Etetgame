@@ -24,6 +24,7 @@ public abstract class SequenceAction :  IMessageSerializable
         DeleteWorldObject=106,
         Projectile = 107,
         UnitUpdate = 108,
+        TileUpdate = 109,
         
         ChangeUnitValues =0,
         PlayAnimation =1,
@@ -44,7 +45,7 @@ public abstract class SequenceAction :  IMessageSerializable
         Undefined = -1,
 
 
-        
+       
     }
 
     private readonly static Dictionary<SequenceType, FluentObjectPool<SequenceAction>> ActionPools = new();
@@ -125,9 +126,17 @@ public abstract class SequenceAction :  IMessageSerializable
         {
             return SequenceType.PlayAnimation;
         }
+        if (t == typeof(UnitUpdate))
+        {
+            return SequenceType.UnitUpdate;
+        }
         if(t== typeof(ProjectileAction))
         {
             return SequenceType.Projectile;
+        }
+        if (t == typeof(TileUpdate))
+        {
+            return SequenceType.TileUpdate;
         }
         throw new ArgumentOutOfRangeException(nameof(t), t, null);
     }
@@ -169,6 +178,10 @@ public abstract class SequenceAction :  IMessageSerializable
                 return typeof(PlayAnimation);
             case SequenceType.Projectile:
                 return typeof(ProjectileAction);
+            case SequenceType.UnitUpdate:
+                return typeof(UnitUpdate);
+            case SequenceType.TileUpdate:
+                return typeof(TileUpdate);
             default:
                 throw new ArgumentOutOfRangeException(nameof(t), t, null);
         }
@@ -304,7 +317,11 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public bool Active { private set; get; } = false;
 
-
+    public virtual List<SequenceAction> GenerateInfoActions(bool player1)
+    {
+        return new List<SequenceAction>();
+    }
+    
     public void Return()
     {
         Active = false;

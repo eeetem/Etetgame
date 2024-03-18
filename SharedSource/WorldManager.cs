@@ -88,6 +88,7 @@ public  partial class WorldManager
         Log.Message("TILEUPDATES","Loading tile at " + data.Position);
 
         WorldTile tile = (WorldTile) GetTileAtGrid(data.Position);
+        if(tile.GetData().Equals(data))return;
 		
         LoadTileObject(data.Surface,tile.Surface, tile,forceUpdateEverything);
         LoadTileObject(data.NorthEdge,tile.NorthEdge, tile,forceUpdateEverything);
@@ -210,7 +211,7 @@ public  partial class WorldManager
 #if SERVER
                     if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
                     {
-                        GameManager.ShowUnitToEnemy(spotedUnit);
+                       GameManager.ShowUnitToEnemy(spotedUnit);
                     }
 #endif               
                 }
@@ -228,12 +229,10 @@ public  partial class WorldManager
         
 #if SERVER
         Log.Message("WORLD MANAGER","sending FOV tile updates");
-        foreach (var tile in _gridData)
-        {
-            NetworkingManager.SendTileUpdate(tile);
-        }
+
 
         GameManager.UpdatePlayerSideUnitPositions();
+        GameManager.UpdatePlayerSideEnvironment();
 #endif
         FovDirty = false;
     }

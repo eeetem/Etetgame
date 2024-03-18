@@ -153,7 +153,7 @@ public static partial class NetworkingManager
 				try
 				{
 					Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
-
+					List<SequenceAction> act = new List<SequenceAction>();
 					int sendTiles = 0;
 					for (int x = 0; x < 100; x++)
 					{
@@ -162,13 +162,13 @@ public static partial class NetworkingManager
 							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
-								ForceSendTileUpdate(tile, connection); //only send updates about tiles that have something on them
+								act.Add(TileUpdate.Make(new Vector2Int(x, y)));
 								sendTiles++;
-								if (sendTiles >30)
-								{
-									Thread.Sleep(10);
-									sendTiles = 0;
-								}
+							//	if (sendTiles >30)
+							//	{
+							//		Thread.Sleep(10);
+							//		sendTiles = 0;
+							//	}
 							}
 						}
 					}
@@ -176,14 +176,14 @@ public static partial class NetworkingManager
 					Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
 	
-
+					SendSequence(act);
+					SendAllSeenUnitPositions();
 				}catch(Exception e)
 				{
 					Log.Message("NETWORKING","Error sending map data to " + connection.Id);
 					Log.Message("NETWORKING",e.ToString());
 				}
                 
-				SendUnitUpdates();
 			}
             
 		});
@@ -192,24 +192,16 @@ public static partial class NetworkingManager
 
 	private static string GetMapHashForConnection(Connection connection)
 	{
-		bool player1 = GameManager.Player1?.Connection == connection;
-		if(! player1 && GameManager.Player2?.Connection != connection) return WorldManager.Instance.GetMapHash();
-	
+		var p = GameManager.GetPlayer(connection);
+
 		string hash = "";
 		for (int x = 0; x < 100; x++)
 		{
 			for (int y = 0; y < 100; y++)
 			{
-				if (tileUpdateLog.TryGetValue(new Vector2Int(x, y), out var tile))
+				if (p.WorldState.TryGetValue(new Vector2Int(x, y), out var tile))
 				{
-					if (player1)
-					{
-						hash+=tile.Item1.GetHash();
-					}
-					else
-					{
-						hash+=tile.Item2.GetHash();
-					}
+					hash+=tile.GetHash();
 				}
 				else
 				{
@@ -340,116 +332,11 @@ public static partial class NetworkingManager
 	}
 
 
-	public static void ForceSendTileUpdate(WorldTile tile, Connection con)
-	{
 
-		var msg = Message.Create(MessageSendMode.Unreliable, NetworkMessageID.TileUpdate);
-		if (GameManager.Player1?.Connection == con && tileUpdateLog.ContainsKey(tile.Position))
-		{
-			msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-			msg.Add(tileUpdateLog[tile.Position].Item1);
-			server.Send(msg,con);
-			return;
-		}
-		if (GameManager.Player2?.Connection == con && tileUpdateLog.ContainsKey(tile.Position))
-		{
-			msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-			msg.Add(tileUpdateLog[tile.Position].Item2!);
-			server.Send(msg,con);
-			return;
-		}
-		WorldTile.WorldTileData worldTileData = tile.GetData();
-		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-		msg.Add(worldTileData);
-		server.Send(msg,con);
-	}
-
-	static readonly Dictionary<Vector2Int, ValueTuple<WorldTile.WorldTileData, WorldTile.WorldTileData>>
-		tileUpdateLog = new Dictionary<Vector2Int, (WorldTile.WorldTileData, WorldTile.WorldTileData)>();
-	public static void SendTileUpdate(WorldTile tile)
-	{
-		
-		if(tile.Surface == null) return;//ignore empty tiles
-		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.TileUpdate);
-		WorldTile.WorldTileData worldTileData = tile.GetData();
-		//worldTileData.forceRebuild = false;
-		msg.Add(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-		msg.Add(worldTileData);
-
-		//add the entry if it's missing
-		tileUpdateLog.TryAdd(tile.Position, (worldTileData,worldTileData));
-
-        
-
-        
-
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("updating tile at ");
-		stringBuilder.Append(tile.Position);
-		stringBuilder.Append("with hash: ");
-		stringBuilder.Append(worldTileData);
-		Log.Message("TILEUPDATES",stringBuilder.ToString());
-
-
-		if (tile.IsVisible(team1:true))
-		{
-			if (GameManager.Player1 is not null && GameManager.Player1.Connection is not null && !tileUpdateLog[tile.Position].Item1!.Equals(worldTileData))
-			{
-				Log.Message("TILEUPDATES","Sending tile to player 1: " + tile.Position);
-			
-				tileUpdateLog[tile.Position] = (worldTileData, tileUpdateLog[tile.Position].Item2);
-				Task.Run(() =>
-				{
-					while (!GameManager.Player1.isReadyForNextSequence)
-					{
-						Thread.Sleep(300);	
-					}	
-					messageQueue.Enqueue((msg, GameManager.Player1.Connection));
-				});
-			}
-			else
-			{
-				Log.Message("TILEUPDATES","Not sending tile to player 1: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item1);
-			}
-		}
-		else
-		{
-			Log.Message("TILEUPDATES","Not sending tile to player 1: " + tile.Position +" because tile is not visible");
-		} 
-
-		if (tile.IsVisible(team1:false))
-		{
-			if (GameManager.Player2 is not null && GameManager.Player2.Connection is not null && !tileUpdateLog[tile.Position].Item2!.Equals(worldTileData))
-			{
-				Log.Message("TILEUPDATES","Sending tile to player 2: " + tile.Position);
-				tileUpdateLog[tile.Position] = (tileUpdateLog[tile.Position].Item1, worldTileData);
-				Task.Run(() =>
-				{
-					while (!GameManager.Player2.isReadyForNextSequence)
-					{
-						Thread.Sleep(300);	
-					}	
-					messageQueue.Enqueue((msg, GameManager.Player2.Connection));
-	
-				});
-	
-			}
-			else
-			{
-				Log.Message("TILEUPDATES","Not sending tile to player 2: " + tile.Position +" becuase sent hash is the same: "+tileUpdateLog[tile.Position].Item2);
-			}
-		}
-		else
-		{
-			Log.Message("TILEUPDATES","Not sending tile to player 2: " + tile.Position +" because tile is not visible");
-		}
-
-	}
-
-	private static ConcurrentQueue<ValueTuple<Message,Connection>> messageQueue = new ConcurrentQueue<ValueTuple<Message, Connection>>();
+	private static readonly ConcurrentQueue<ValueTuple<Message,Connection>> MessageQueue = new ConcurrentQueue<ValueTuple<Message, Connection>>();
 	public static void Update()
 	{
-		while (messageQueue.TryDequeue(out var msg))
+		while (MessageQueue.TryDequeue(out var msg))
 		{
 			server.Send(msg.Item1,msg.Item2);
 		}
@@ -460,8 +347,7 @@ public static partial class NetworkingManager
 
 		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null || GameManager.Player1.HasDeliveredAllMessages) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.HasDeliveredAllMessages))
 		{
-			SendUnitUpdates();
-			
+			SendAllSeenUnitPositions();
 		}
 		SendSequenceIfShould(true);
 		SendSequenceIfShould(false);
@@ -475,40 +361,8 @@ public static partial class NetworkingManager
 	{
 		var p = GameManager.GetPlayer(player1);
 		if(p== null) return;
+		if(!p.HasDeliveredAllMessages) return;
 		
-		if(p.PrepedSequence.HasValue && p.HasDeliveredAllMessages)
-		{
-			if (p.PrepedSequence.Value.Actions.Count>0)
-			{
-				Log.Message("NETWORKING", "Sending sequence to player: " + player1);
-
-				var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
-				if (player1)
-				{
-					msg.Add((ushort) ReplaySequenceTarget.Player1);
-				}
-				else
-				{
-					msg.Add((ushort) ReplaySequenceTarget.Player2);
-				}
-
-				msg.Add(p.PrepedSequence.Value.Actions.Count);
-				foreach (var a in p.PrepedSequence.Value.Actions)
-				{
-					if (!a.Active) throw new Exception("sending inactive sequence");
-					msg.Add((int) a.GetSequenceType());
-					msg.AddSerializable(a);
-					a.Return();
-				}
-
-				p.isReadyForNextSequence = false;
-				server.Send(msg, p.Connection);
-			}
-
-
-			p.PrepedSequence = null;
-			return;
-		}
 		if(p.SequenceQueue.Count == 0 || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
 		{
 			return;
@@ -536,7 +390,11 @@ public static partial class NetworkingManager
 			sequenceAction.Return();
 		}
 		packet.Actions.ForEach(x=>x.FilterForPlayer(player1));
-		p.PrepedSequence = packet;
+		List<SequenceAction> infoActions = new List<SequenceAction>();
+		foreach (var act in packet.Actions)
+		{
+			infoActions.AddRange(act.GenerateInfoActions(player1));
+		}
 		if (player1)
 		{
 			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(true, sequencesToExecute[packet.ID].Item2, sequencesToExecute[packet.ID].Item3);
@@ -545,14 +403,46 @@ public static partial class NetworkingManager
 		{
 			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(sequencesToExecute[packet.ID].Item1, true, sequencesToExecute[packet.ID].Item3);
 		}
-		if(sequencesToExecute[p.PrepedSequence.Value.ID].Item1 && (sequencesToExecute[p.PrepedSequence.Value.ID].Item2 || GameManager.Player2!.IsAI))
+		
+		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2 || GameManager.Player2!.IsAI))
 		{
-			Log.Message("NETWORKING", "all players have recived sequence: "+p.PrepedSequence.Value.ID);
-			SequenceManager.AddSequence(sequencesToExecute[p.PrepedSequence.Value.ID].Item3);
-			sequencesToExecute.Remove(p.PrepedSequence.Value.ID);
+			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
+			SequenceManager.AddSequence(sequencesToExecute[packet.ID].Item3);
+			sequencesToExecute.Remove(packet.ID);
 		}
 		
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
+		List<SequenceAction> actsToSend = new List<SequenceAction>();
+		actsToSend.AddRange(infoActions);
+		actsToSend.AddRange(packet.Actions);
+		if (actsToSend.Count>0)
+		{
+			Log.Message("NETWORKING", "Sending sequence to player: " + player1);
+
+			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+			if (player1)
+			{
+				msg.Add((ushort) ReplaySequenceTarget.Player1);
+			}
+			else
+			{
+				msg.Add((ushort) ReplaySequenceTarget.Player2);
+			}
+
+			msg.Add(actsToSend.Count);
+			foreach (var a in actsToSend)
+			{
+				if (!a.Active) throw new Exception("sending inactive sequence");
+				msg.Add((int) a.GetSequenceType());
+				msg.AddSerializable(a);
+				a.Return();
+			}
+
+			p.IsReadyForNextSequence = false;
+			server.Send(msg, p.Connection);
+		}
+
+		
 	}
 	
 		
@@ -561,7 +451,6 @@ public static partial class NetworkingManager
 	public static void SendGameData()
 	{
 		Log.Message("NETWORKING","sending game data");
-		SendUnitUpdates();
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
 		var state = GameManager.GetState();
 		state.IsPlayerOne = true;
@@ -641,21 +530,27 @@ public static partial class NetworkingManager
 		lock (UpdateLock)
 		{
 			sequencePacketID++;
-			var tempActList = new List<SequenceAction>(actions.Count);
-			actions.ForEach(x => tempActList.Add(x.Clone()));
-			
-			var packet = new SequencePacket(sequencePacketID, tempActList);
-			GameManager.GetPlayer(true)!.SequenceQueue.Enqueue(packet);
+			var p = GameManager.GetPlayer(true);
+			var t = new Tuple<bool, bool, List<SequenceAction>>(true, true, actions);
+			if (p != null)
+			{
+				var tempActList = new List<SequenceAction>(actions.Count);
+				actions.ForEach(x => tempActList.Add(x.Clone()));
+				var packet = new SequencePacket(sequencePacketID, tempActList);
+				p.SequenceQueue.Enqueue(packet);
+				t= new Tuple<bool, bool, List<SequenceAction>>(false, t.Item2, t.Item3);
+			}
+			p = GameManager.GetPlayer(false);
+			if (p != null)
+			{
+				var tempActList = new List<SequenceAction>(actions.Count);
+				actions.ForEach(x => tempActList.Add(x.Clone()));
+				var packet = new SequencePacket(sequencePacketID, tempActList);
+				p.SequenceQueue.Enqueue(packet);
+				t= new Tuple<bool, bool, List<SequenceAction>>(t.Item1, false, t.Item3);
+			}
 
-			tempActList = new List<SequenceAction>(actions.Count);
-			actions.ForEach(x => tempActList.Add(x.Clone()));
-
-			packet = new SequencePacket(sequencePacketID, tempActList);
-			GameManager.GetPlayer(false)!.SequenceQueue.Enqueue(packet);
-	
-			
-
-			sequencesToExecute.Add(sequencePacketID, new Tuple<bool, bool, List<SequenceAction>>(false, false, actions));
+			sequencesToExecute.Add(sequencePacketID, t);
 		}
 
 	}
@@ -668,36 +563,20 @@ public static partial class NetworkingManager
 		server.SendToAll(msg);
 	}
     
-	public static void SendUnitUpdates()
+	public static void SendAllSeenUnitPositions()
 	{
 		Log.Message("UNITS","sending unit position updates");
-
+		
 		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
 		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
-			msg.Add(GameManager.Player1UnitPositions.Count);
-			foreach (var p in GameManager.Player1UnitPositions)
-			{
-				msg.Add(p.Key);
-				msg.Add(p.Value.Item1);
-				msg.Add(p.Value.Item2);
-			}
-			var id = server.Send(msg, GameManager.Player1.Connection);
-			GameManager.Player1.RegisterMessageToBeDelivered(id);
+			var act = UnitUpdate.Make(GameManager.Player1UnitPositions,true);
+			SendSequence(act);
 		}
 
 		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
 		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.UnitUpdate);
-			msg.Add(GameManager.Player2UnitPositions.Count);
-			foreach (var p in GameManager.Player2UnitPositions)
-			{
-				msg.Add(p.Key);
-				msg.Add(p.Value.Item1);
-				msg.Add(p.Value.Item2);
-			}
-			var id = server.Send(msg, GameManager.Player2.Connection);
-			GameManager.Player2.RegisterMessageToBeDelivered(id);
+			var act = UnitUpdate.Make(GameManager.Player2UnitPositions,false);
+			SendSequence(act);
 		}
 		GameManager.PlayerUnitPositionsDirty = false;
 

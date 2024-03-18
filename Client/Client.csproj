@@ -624,6 +624,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
         <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\TileUpdate.cs">
+        <Link>SharedSource\ReplaySequence\TileUpdate.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\UnitUpdate.cs">
         <Link>SharedSource\ReplaySequence\UnitUpdate.cs</Link>
       </Compile>

@@ -180,9 +180,11 @@ public static partial class GameManager
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
 				Player2UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
 			}
+			//PlayerUnitPositionsDirty = true;
+			
 			NetworkingManager.SendGameData();
 			WorldManager.Instance.MakeFovDirty();	
-			
+			NetworkingManager.SendAllSeenUnitPositions();
 
 		});
 		SequenceManager.RunNextAfterFrames(t,5);//let units be created and sent before we swtich to playing
@@ -300,17 +302,20 @@ public static partial class GameManager
 
 	public static void ShowUnitToEnemy(Unit spotedUnit)
 	{
+	
 		if(spotedUnit.IsPlayer1Team)
 		{
 			if (!Player2UnitPositions.ContainsKey(spotedUnit.WorldObject.ID))
 			{
 				Player2UnitPositions.Add(spotedUnit.WorldObject.ID,(spotedUnit.WorldObject.TileLocation.Position,spotedUnit.WorldObject.GetData()));
 				PlayerUnitPositionsDirty = true;
+
 			}else if (Player2UnitPositions[spotedUnit.WorldObject.ID].Item1 != spotedUnit.WorldObject.TileLocation.Position)
 			{
 				Player2UnitPositions[spotedUnit.WorldObject.ID] = (spotedUnit.WorldObject.TileLocation.Position,spotedUnit.WorldObject.GetData());
 				PlayerUnitPositionsDirty = true;
 			}
+			
 		}
 		else
 		{
@@ -325,39 +330,12 @@ public static partial class GameManager
 			}
 		}
 	}
-//only for oposite team
-	public static void ShowUnitToEnemyAtPosition(Unit unit, Vector2Int position)
-	{
-		if (!unit.IsPlayer1Team)
-		{
-			if (Player1UnitPositions.ContainsKey(unit.WorldObject.ID))
-			{
-				if(Player1UnitPositions[unit.WorldObject.ID].Item1 == position && Player1UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
-               
-				Player1UnitPositions.Remove(unit.WorldObject.ID);
-			}
-			Player1UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
-			
-		}
-		else
-		{
-			if (Player2UnitPositions.ContainsKey(unit.WorldObject.ID))
-			{
-				if(Player2UnitPositions[unit.WorldObject.ID].Item1 == position && Player2UnitPositions[unit.WorldObject.ID].Item2.Equals(unit.WorldObject.GetData())) return;
-				Player2UnitPositions.Remove(unit.WorldObject.ID);
-			}
-			Player2UnitPositions.Add(unit.WorldObject.ID,(position,unit.WorldObject.GetData()));
-		}
-		NetworkingManager.SendUnitUpdates();
-        
-		
-	}
 
 	public static void SequenceFinished(Connection c)
 	{
 		var p = GetPlayer(c);
 		if(p == null) return;
-		p.isReadyForNextSequence = true;
+		p.IsReadyForNextSequence = true;
 	}
 	
 	public class ClientInstance
@@ -373,13 +351,13 @@ public static partial class GameManager
 		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
 	
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
-		public bool isReadyForNextSequence = false;
-		public bool ReadyForNextSequence => isReadyForNextSequence || IsAI;
-		public NetworkingManager.SequencePacket? PrepedSequence;
+		public bool IsReadyForNextSequence = false;
+		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI;
+		public readonly Dictionary<Vector2Int, WorldTile.WorldTileData> WorldState = new(); 
 
 		public ClientInstance(string name,Connection? con)
 		{
-			isReadyForNextSequence = true;
+			IsReadyForNextSequence = true;
 			Name = name;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -387,7 +365,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
-			isReadyForNextSequence = true;
+			IsReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
 		}
@@ -412,5 +390,41 @@ public static partial class GameManager
 		}
 
 		
+	}
+
+	public static void UpdatePlayerSideEnvironment()
+	{
+		ClientInstance? p = Player1;
+		bool team1 = true;
+		for (int i = 0; i < 2; i++)
+		{
+			if (i == 1)
+			{
+				p = Player2;
+				team1 = false;
+			}
+			for (int x = 0; x < 100; x++)
+			{
+				for (int y = 0; y < 100; y++)
+				{
+					var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+				
+					if(tile.Surface == null) return;//ignore empty tiles
+					WorldTile.WorldTileData worldTileData = tile.GetData();
+					p.WorldState.TryAdd(tile.Position,worldTileData);
+
+					if (tile.IsVisible(team1:team1))
+					{
+						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
+						{
+							p.WorldState[tile.Position] = worldTileData;
+						}
+
+					}
+					
+				
+				}
+			}
+		}
 	}
 }

@@ -36,10 +36,11 @@ public static partial class NetworkingManager
 		
 		Task t = new Task(delegate
 		{
+			Thread.Sleep(5000);
 			do
 			{
 				Thread.Sleep(1000);
-			} while (SequenceManager.SequenceRunning || RecievedTiles.Count>0); //still loading the map
+			} while (SequenceManager.SequenceRunning); //still loading the map
 
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
@@ -68,53 +69,6 @@ public static partial class NetworkingManager
 		GameManager.SetData(data);
 	}
 
-	//cache tiles to be updated and load them all at once
-	public static readonly Dictionary<Vector2Int,ValueTuple<long,WorldTile.WorldTileData>> RecievedTiles = new Dictionary<Vector2Int, ValueTuple<long,WorldTile.WorldTileData>>();
-	
-	[MessageHandler((ushort)NetworkMessageID.TileUpdate)]
-	private static void ReciveTileUpdate(Message message)
-	{
-		long timestamp = message.GetLong();
-		WorldTile.WorldTileData data = message.GetSerializable<WorldTile.WorldTileData>();
-		Log.Message("TILEUPDATES","TILE Update recived: " + data);
-
-		if (RecievedTiles.ContainsKey(data.Position))
-		{
-			Log.Message("TILEUPDATES","tile already present");
-			if (RecievedTiles[data.Position].Item1 <= timestamp)
-			{
-				Log.Message("TILEUPDATES","update is newer, discarding old");
-				RecievedTiles.Remove(data.Position);
-				RecievedTiles.Add(data.Position, (timestamp,data));
-			}
-			else
-			{
-				Log.Message("TILEUPDATES","old update, discarding");
-			}
-		}
-		else
-		{
-			Log.Message("TILEUPDATES","new tile, adding");
-			RecievedTiles.Add(data.Position, (timestamp,data));
-		}
-			
-		
-	
-	}
-
-	[MessageHandler((ushort)NetworkMessageID.UnitUpdate)]
-	private static void ReciveUnitUpdateUpdate(Message message)
-	{
-
-		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recivedUnitPositions = new();
-		int lenght = message.GetInt();
-		for (int i = 0; i < lenght; i++)
-		{
-			recivedUnitPositions.Add(message.GetInt(),(message.GetSerializable<Vector2Int>(),message.GetSerializable<WorldObject.WorldObjectData>()));	
-		}
-		GameManager.SetUnitPositions(recivedUnitPositions);
-		
-	}
 
 
 	[MessageHandler((ushort)NetworkMessageID.Notify)]

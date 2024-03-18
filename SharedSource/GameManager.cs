@@ -50,17 +50,28 @@ public static partial class GameManager
             }
 #endif
         }
-
-#if CLIENT
-		UpdateUnitPositions();
-#endif
-			
+	
     }
 
     public static List<WorldObject> CapturePoints = new List<WorldObject>();
     public static readonly List<Vector2Int> T1SpawnPoints = new();
     public static readonly List<Vector2Int> T2SpawnPoints = new();
     public static int score;
+
+    public static void Register(WorldObject wo)
+    {
+        if(wo.UnitComponent != null)
+        {
+            if(wo.UnitComponent.IsPlayer1Team)
+            {
+                T1Units.Add(wo.ID);
+            }
+            else
+            {
+                T2Units.Add(wo.ID);
+            }
+        }
+    }
     public static void Forget(WorldObject wo)
     {
 
@@ -290,8 +301,8 @@ public static partial class GameManager
 
     }
 
-    public static readonly List<int> T1Units = new();
-    public static readonly List<int> T2Units = new();
+    private static readonly List<int> T1Units = new();
+    private static readonly List<int> T2Units = new();
 #if CLIENT
 	public static List<Unit> GetMyTeamUnits(int dimension = -1)
 	{

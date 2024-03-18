@@ -20,7 +20,18 @@ public class DelayedAbilityUse  : UnitSequenceAction
 #if SERVER
 	public override void FilterForPlayer(bool player1)
 	{
-		GameManager.ShowUnitToEnemyAtPosition(Actor, Actor.WorldObject.TileLocation.Position);
+		return;
+	}
+
+	public override List<SequenceAction> GenerateInfoActions(bool player1)
+	{
+		var b =  base.GenerateInfoActions(player1);
+		if (Actor.IsPlayer1Team != player1)
+		{
+			b.Add(UnitUpdate.Make(Actor.WorldObject.ID, Actor.WorldObject.TileLocation.Position, Actor.WorldObject.GetData(),player1));
+		}
+
+		return b;
 	}
 
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
@@ -37,13 +48,13 @@ public class DelayedAbilityUse  : UnitSequenceAction
 	protected override void RunSequenceAction()
 	{
 		
-			//clientside execution of ability
-			//really should be avoided since it'll likely cause desyncs
-			//but we'll see
-			Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
-			{
-				if(x.ShouldDo()){x.GenerateTask().RunTaskSynchronously();}
-			});
+		//clientside execution of ability
+		//really should be avoided since it'll likely cause desyncs
+		//but we'll see
+		Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
+		{
+			if(x.ShouldDo()){x.GenerateTask().RunTaskSynchronously();}
+		});
 
 	}
 	

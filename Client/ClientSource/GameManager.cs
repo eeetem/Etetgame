@@ -201,35 +201,28 @@ public static partial class GameManager
 		if (!res)
 			UI.ShowMessage("Failed to connect to local server", "Failed to connect to local server");
 	}
-	public static Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>? RecivedUnitPositions = new();
 
-	public static void SetUnitPositions(Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> recived)
+	public static void UpdateUnitPositions(Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
 	{
-		Log.Message("UNITS","recived unit positions");
-		RecivedUnitPositions = recived;
-	}
-	public static void UpdateUnitPositions()
-	{
-		if(SequenceManager.SequenceRunning) return;
-		if (RecivedUnitPositions == null) return;
+
 		List<int> justCreated = new List<int>();
 
 		Log.Message("UNITS","updating unit positions");
-		//remove all units that we are aware of that we shouldnt be
+		//remove all units that we are aware of that we shouldnt be (if this is a full update)
 		var allUnits = GetAllUnits();
-		foreach (var u in allUnits)
+		if (fullUpdate)
 		{
-			if (!RecivedUnitPositions.ContainsKey(u.WorldObject.ID))
+			foreach (var u in allUnits)
 			{
-				Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
-				SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID));//queue up deletion
+				if (!recievedUnitPositions.ContainsKey(u.WorldObject.ID))
+				{
+					Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
+					WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).GenerateTask().RunTaskSynchronously(); //queue up deletion
+				}
 			}
 		}
-		
-	
-		
 		//create new units that we didnt know of before
-		foreach (var u in RecivedUnitPositions)
+		foreach (var u in recievedUnitPositions)
 		{
 			var obj = WorldObjectManager.GetObject(u.Key);
 			if (obj == null)
@@ -241,7 +234,7 @@ public static partial class GameManager
 		}
 		
 		//assign teams to new units
-		foreach (var u in RecivedUnitPositions)
+		foreach (var u in recievedUnitPositions)
 		{
 			if (u.Value.Item2.UnitData!.Value.Team1)
 			{
@@ -264,7 +257,7 @@ public static partial class GameManager
 		//update existing units
 		foreach (var u in new List<int>(T1Units))
 		{
-			if (RecivedUnitPositions.TryGetValue(u, out var data))
+			if (recievedUnitPositions.TryGetValue(u, out var data))
 			{
 				if (!data.Item2.UnitData!.Value.Team1)//this unit is for other team
 				{
@@ -282,7 +275,7 @@ public static partial class GameManager
 		}
 		foreach (var u in new List<int>(T2Units))
 		{
-			if (RecivedUnitPositions.TryGetValue(u, out var data))
+			if (recievedUnitPositions.TryGetValue(u, out var data))
 			{
 				if (data.Item2.UnitData!.Value.Team1)//this unit is for other team
 				{
@@ -298,9 +291,8 @@ public static partial class GameManager
 			}
 		}
 		
-		RecivedUnitPositions = null;
 		
 		if(GameLayout.SelectedUnit== null) GameLayout.SelectUnit(null);
-		return;
+	
 	}
 }

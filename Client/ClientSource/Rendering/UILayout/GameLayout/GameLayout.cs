@@ -649,7 +649,7 @@ public class GameLayout : MenuLayout
 
 		i = 0;
 		int index = 0;
-		foreach (var actionBtn in ActionButtons)
+		foreach (var actionBtn in new List<HudActionButton>(ActionButtons))
 		{
 			actionBtn.UpdateIcon();
 			var UIButton = actionBtn.UIButton;

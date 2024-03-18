@@ -131,7 +131,7 @@ public static partial class WorldObjectManager
             }
 			
 			
-
+            WorldManager.Instance.MakeFovDirty();
         }
 
         protected bool Equals(MakeWorldObject other)

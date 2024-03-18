@@ -15,7 +15,7 @@ namespace DefconNull.ReplaySequence;
 public class SequenceManager
 {
 	private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
-	public static bool SequenceRunning => SequenceQueue.Count > 0 || CurrentSequenceTasks.Count > 0 || nextFrameTasks.Count > 0;
+	public static bool SequenceRunning => SequenceQueue.Count > 0 || CurrentSequenceTasks.Count > 0 || nextFrameTasks.Count > 0 || SequenceRunningRightNow;
 	private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
 	public static bool SequenceRunningRightNow;
 	
@@ -66,20 +66,6 @@ public class SequenceManager
 		{
 			if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
 			{
-#if CLIENT
-				if (SequenceQueue.Count == 0 && NetworkingManager.RecievedTiles.Count > 0)
-				{
-
-				Log.Message("SEQUENCE MANAGER","loading tiles");
-				foreach (var tile in new List<ValueTuple<long,WorldTile.WorldTileData>>(NetworkingManager.RecievedTiles.Values))
-				{
-					WorldManager.Instance.LoadWorldTile(tile.Item2);
-				}
-				Log.Message("SEQUENCE MANAGER","loading tiles done");
-				NetworkingManager.RecievedTiles.Clear();
-
-				}
-#endif
 				if (SequenceQueue.Count > 0)
 				{
 					var act = SequenceQueue.Dequeue();
@@ -106,7 +92,7 @@ public class SequenceManager
 					while (true)
 					{
 						
-						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
+						if (SequenceQueue.Count == 0)
 						{
 							break;
 						}
@@ -132,12 +118,12 @@ public class SequenceManager
 						
 					}
 					sw.Stop();
-					//then do parralel tasks in queue
+					//then do parrallel tasks in queue
 					//batch tile updates and other things
 					
 					while (true)
 					{
-						if (SequenceQueue.Count == 0 || CurrentSequenceTasks.Count >= 45)
+						if (SequenceQueue.Count == 0)
 						{
 							break;
 						}
@@ -201,7 +187,6 @@ public class SequenceManager
 					GameLayout.ReMakeMovePreview();
 					NetworkingManager.SendSequenceExecuted();
 #endif
-					WorldManager.Instance.MakeFovDirty();
 				}
 
 			}

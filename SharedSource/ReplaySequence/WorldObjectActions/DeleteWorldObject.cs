@@ -45,7 +45,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override BatchingMode Batching => BatchingMode.Sequential;
+		public override BatchingMode Batching => BatchingMode.OnlySameType;
 
 		private int id;
 		public static DeleteWorldObject Make(int id)
@@ -70,31 +70,26 @@ public static partial class WorldObjectManager
 			Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
 
 				
-			WorldObject Obj = WorldObjects[id];
+			WorldObject obj = WorldObjects[id];
 #if CLIENT
-			while (Obj.IsAnimating)
+			while (obj.IsAnimating)
 			{
 				Thread.Sleep(50);//wait for animation finish this is quite bad tho
 			}
 #endif
             
 
-         
 			
-            
-				
+			
 			lock (WoLock)
 			{
-				GameManager.Forget(Obj);
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(Obj.TileLocation.Position);//get real tile
+				GameManager.Forget(obj);
+				WorldTile tile = WorldManager.Instance.GetTileAtGrid(obj.TileLocation.Position);//get real tile
 				tile.Remove(id);
 				WorldObjects.Remove(id);
 			}
 				
-			//   if (id < NextId) this is bad becasue the server can use ids that clients are not aware of
-			//   {
-			//       NextId = id; //reuse IDs
-			//   }
+			WorldManager.Instance.MakeFovDirty();
 		}
 
 

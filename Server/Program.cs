@@ -10,7 +10,7 @@ namespace DefconNull; // Note: actual namespace depends on the project name.
 public static class Program
 {
 	
-    static int tickrate = 16;
+    static int tickrate = 32;
     static float MSperTick = 1000 / tickrate;
     static Stopwatch stopWatch = new Stopwatch();
 		

@@ -80,10 +80,8 @@ public class UnitMove : UnitSequenceAction
 
     public override void FilterForPlayer(bool player1)
     { 
-        //Log.Message("UNITS","filtering for player: "+player1+" "+Actor.WorldObject.ID);
         if (Actor.IsPlayer1Team != player1)
         {
-
             List<Vector2Int> newPath = new List<Vector2Int>();
             bool justVisible = ((WorldTile)Actor.WorldObject.TileLocation).IsVisible(team1: player1);
 
@@ -100,15 +98,45 @@ public class UnitMove : UnitSequenceAction
                 }
             }
             Path = newPath;
+        }
+    }
+
+    public override List<SequenceAction> GenerateInfoActions(bool player1)
+    {
+        var b =  base.GenerateInfoActions(player1);
+        if (Actor.IsPlayer1Team != player1)//spot the unit that will walk in
+        {
             if (Path.Count > 0)
             {
-                //force an update if we're gonna see unit at any point
-                GameManager.ShowUnitToEnemyAtPosition(Actor,Path[0]);
+                b.Add(UnitUpdate.Make(Actor.WorldObject.ID, Path[0], Actor.WorldObject.GetData(),player1));
             }
         }
-        //   Log.Message("UNITS","no filter needed");
-  
-       
+        else//spot everyone else the unit will see
+        {
+            Vector2Int lastPos = Actor.WorldObject.TileLocation.Position;
+            HashSet<Vector2Int> seenTiles = new HashSet<Vector2Int>();
+            foreach (var spot in Path)
+            {
+                var tiles = WorldManager.Instance.GetVisibleTiles(spot, Utility.Vec2ToDir(spot-lastPos), Actor.GetSightRange(), Actor.Crouching);
+                foreach (var loc in tiles)
+                {
+                    var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
+                    if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value)
+                        b.Add(UnitUpdate.Make(tile.UnitAtLocation.WorldObject.ID, loc.Key, tile.UnitAtLocation.WorldObject.GetData(), player1));
+                    if(loc.Value>Visibility.None)
+                        seenTiles.Add(loc.Key);
+                }
+                lastPos = spot;
+            }
+
+            foreach (var t in seenTiles)
+            {
+                b.Add(TileUpdate.Make(t));
+            }
+           
+        }
+
+        return b;
     }
 #endif
 	
@@ -123,10 +151,10 @@ public class UnitMove : UnitSequenceAction
  
         Actor.canTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
-
+        WorldManager.Instance.MakeFovDirty();
         while (Path.Count >0)
         {
-            WorldManager.Instance.MakeFovDirty();
+            
 
             if (Actor.WorldObject.TileLocation != null)
             {

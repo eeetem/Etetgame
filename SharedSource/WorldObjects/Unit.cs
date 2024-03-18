@@ -620,6 +620,7 @@ namespace DefconNull.WorldObjects
 			
 			WorldObject.TileLocation = newTile;
 			newTile.UnitAtLocation = this;
+			WorldManager.Instance.MakeFovDirty();
 		}
 
 		

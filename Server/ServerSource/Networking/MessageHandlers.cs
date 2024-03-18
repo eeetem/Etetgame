@@ -150,7 +150,7 @@ public static partial class NetworkingManager
 		SendChatMessage(text);
 	}
 
-	[MessageHandler((ushort) NetworkMessageID.MapUpload)]
+	//[MessageHandler((ushort) NetworkMessageID.MapUpload)]
 	private static void ReciveMapUpload(ushort senderID, Message message)
 	{
 		//var data = message.GetSerializable<WorldManager.MapData>();

@@ -10,14 +10,14 @@ public static partial class NetworkingManager
     {
 
         MapDataInitiate =5,
-        MapDataFinish =6,
+        //MapDataFinish =6,
         GameData =7,
         GameAction =8,
         StartGame =9,
         EndTurn =10,
         SquadComp =11,
-        MapUpload =12,
-        TileUpdate =13,
+        //MapUpload =12,
+        //TileUpdate =13,
         MapDataInitiateConfirm = 14,
         ReplaySequence = 15,
         Notify = 16,
@@ -28,7 +28,7 @@ public static partial class NetworkingManager
         PracticeMode = 21,
         DoAI = 22,
         MapReaload = 23,
-        UnitUpdate = 24,
+        //UnitUpdate = 24,
         SequenceFinished = 25,
   
     }
