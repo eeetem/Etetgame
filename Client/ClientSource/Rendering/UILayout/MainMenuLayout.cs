@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
 using DefconNull.ReplaySequence;
@@ -95,8 +96,12 @@ reconnect.TextColor = Color.Gray;
 		{
 			GameManager.StartLocalServer();
 			NetworkingManager.AddAI();
-			Thread.Sleep(1000);
-			NetworkingManager.SendStartGame();
+			Task.Run(() =>
+			{
+				Thread.Sleep(2500);
+				NetworkingManager.SendStartGame();
+			});
+
 		};
 		MPStack.Widgets.Add(singleplayer);
 		

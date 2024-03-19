@@ -17,8 +17,6 @@ public class Overwatch : AIAction
 		_moveact = moveact;
 	}
 
-
-
 	public override void Execute()
 	{
 

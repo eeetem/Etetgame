@@ -344,13 +344,14 @@ public static partial class NetworkingManager
 		{
 			server.Update();
 		}
-
-		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null || GameManager.Player1.HasDeliveredAllMessages) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.HasDeliveredAllMessages))
-		{
-			SendAllSeenUnitPositions();
-		}
+		
 		SendSequenceIfShould(true);
 		SendSequenceIfShould(false);
+		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null ||  GameManager.Player1.ReadyForNextSequence) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.ReadyForNextSequence))
+		{
+			GameManager.UpdatePlayerSideUnitPositions();//make sure up to date info
+			SendAllSeenUnitPositions();
+		}
 		lock (UpdateLock)
 		{
 			server.Update();

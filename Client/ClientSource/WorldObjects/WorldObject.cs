@@ -102,7 +102,7 @@ public partial class WorldObject : IDrawable
 			//}
 			if(!IsVisible())
 			{
-				color = new Color(200, 100, 100);
+				color = new Color(200, 100, 100) * 0.55f;
 			}
 			//else
 			//{

@@ -878,7 +878,7 @@ public class GameLayout : MenuLayout
 		}
 		foreach (var controllable in GameManager.GetAllUnits())
 		{
-			if (controllable.WorldObject.TileLocation != null)// && controllable.WorldObject.IsVisible()
+			if (controllable.WorldObject.TileLocation != null && controllable.WorldObject.IsVisible())
 			{
 				DrawHoverHud(batch, controllable.WorldObject);
 			}
@@ -1071,19 +1071,33 @@ public class GameLayout : MenuLayout
 			batch.DrawText(characters[i].ToString(), new Vector2(ActionButtons[i].UIButton.Left + 16 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + 1 * globalScale.Y), globalScale.Y * 1.6f, 1, Color.White);
 			if (activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch)
 			{
-				
+				Vector2 start = new Vector2(ActionButtons[i].UIButton.Left + -4 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + -70 * globalScale.Y);
+				Vector2 offset = new Vector2(16,0)*globalScale.Y;
+				int j = 0;
 				Color c = Color.White;
-				if(SelectedUnit.MovePoints<ActionButtons[i].Cost.MovePoints) c = Color.Red;
-				batch.DrawNumberedIcon(ActionButtons[i].Cost.MovePoints.ToString(),TextureManager.GetTexture("HoverHud/Consequences/movePoint"), new Vector2(ActionButtons[i].UIButton.Left + -2 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + -70 * globalScale.Y), globalScale.Y * 0.6f, c, Color.White);
-				
-				c = Color.White;
-				if(SelectedUnit.ActionPoints<ActionButtons[i].Cost.ActionPoints) c = Color.Red;
-				batch.DrawNumberedIcon(ActionButtons[i].Cost.ActionPoints.ToString(),TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), new Vector2(ActionButtons[i].UIButton.Left + 14 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + -70 * globalScale.Y), globalScale.Y * 0.6f, c, Color.White);
-				
-				c = Color.White;
-				if(SelectedUnit.Determination<ActionButtons[i].Cost.Determination) c = Color.Red;
-				batch.DrawNumberedIcon(ActionButtons[i].Cost.Determination.ToString(),TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), new Vector2(ActionButtons[i].UIButton.Left + 30 * globalScale.Y + 3 * globalScale.Y, ActionButtons[i].UIButton.Top + Game1.resolution.Y + -70 * globalScale.Y), globalScale.Y * 0.6f, c, Color.White);
+				if (ActionButtons[i].Cost.MovePoints > 0)
+				{
+					if (SelectedUnit.MovePoints < ActionButtons[i].Cost.MovePoints) c = Color.Red;
+					batch.DrawNumberedIcon(ActionButtons[i].Cost.MovePoints.ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), start + offset*j, globalScale.Y * 0.7f, c, Color.White);
+					j++;
+				}
 
+				if (ActionButtons[i].Cost.ActionPoints > 0)
+				{
+					c = Color.White;
+					if (SelectedUnit.ActionPoints < ActionButtons[i].Cost.ActionPoints) c = Color.Red;
+					batch.DrawNumberedIcon(ActionButtons[i].Cost.ActionPoints.ToString(), TextureManager.GetTexture("HoverHud/Consequences/circlePoint"), start + offset * j, globalScale.Y * 0.7f, c, Color.White);
+					j++;
+				}
+
+
+				if (ActionButtons[i].Cost.Determination > 0)
+				{
+					c = Color.White;
+					if (SelectedUnit.Determination < ActionButtons[i].Cost.Determination) c = Color.Red;
+					batch.DrawNumberedIcon(ActionButtons[i].Cost.Determination.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), start + offset * j, globalScale.Y * 0.7f, c, Color.White);
+				}
+				
 			}
 		}
 
