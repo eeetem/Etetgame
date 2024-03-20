@@ -25,8 +25,8 @@ public static partial class NetworkingManager
 	{
 		SinglePlayerFeatures = allowSP;
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
-	
-		Message.MaxPayloadSize = 2048 * 2 * 2*2 *2 ;
+
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		server.TimeoutTime = 10000;
@@ -164,11 +164,11 @@ public static partial class NetworkingManager
 							{
 								act.Add(TileUpdate.Make(new Vector2Int(x, y)));
 								sendTiles++;
-							//	if (sendTiles >30)
-							//	{
-							//		Thread.Sleep(10);
-							//		sendTiles = 0;
-							//	}
+								//	if (sendTiles >30)
+								//	{
+								//		Thread.Sleep(10);
+								//		sendTiles = 0;
+								//	}
 							}
 						}
 					}

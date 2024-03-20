@@ -27,7 +27,7 @@ public class MasterServerNetworking
 
 
 		Client = new Client( new TcpClient());
-		Message.MaxPayloadSize = 2048;
+		Message.MaxPayloadSize = 2048*2;
 		Client.TimeoutTime = 11000;
 		Client.HeartbeatInterval = 5000;
 		

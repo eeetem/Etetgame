@@ -28,6 +28,10 @@ public static partial class WorldObjectManager
 	{
 		if(obj.destroyed)return;
 		obj.destroyed = true;
+		if(obj.UnitComponent!=null)
+		{
+			obj.UnitComponent.ClearOverWatch();
+		}
 #if CLIENT
 		obj.StartAnimation("end");
 #endif

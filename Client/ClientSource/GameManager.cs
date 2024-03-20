@@ -79,7 +79,7 @@ public static partial class GameManager
 		{
 			if (unit.MovePoints > 0)
 			{
-				UI.OptionMessage("Are you sure?", "You have units with unspent move points", "no", (a,b)=> {  }, "yes", (a, b) =>
+				UI.OptionMessage("Are you sure?", "You have units with unspent move points\nTAB to cycle units with unspent points", "no", (a,b)=> {  }, "yes", (a, b) =>
 				{
 						
 					NetworkingManager.EndTurn();
@@ -267,7 +267,11 @@ public static partial class GameManager
 				//move units to known positions
 				
 				var obj = WorldObjectManager.GetObject(u);
-				if(obj.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
+				{
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);
@@ -284,7 +288,11 @@ public static partial class GameManager
 				//move units to known positions
 				
 				var obj = WorldObjectManager.GetObject(u);
-				if(obj.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
+				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
+				{
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
 				obj.UnitComponent!.MoveTo(data.Item1);

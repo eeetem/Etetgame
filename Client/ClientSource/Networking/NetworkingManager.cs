@@ -34,7 +34,7 @@ public static partial class NetworkingManager
 	public static bool Connect(string ipport,string name)
 	{
 		Disconnect();
-		Message.MaxPayloadSize = 2048*2*2*2*2;
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		ipport = ipport.Trim();
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());

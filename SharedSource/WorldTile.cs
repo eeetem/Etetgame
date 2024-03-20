@@ -22,17 +22,17 @@ public partial class WorldTile : IWorldTile
 	
 	public static readonly object Syncobj = new object();
 
-	private readonly List<Unit> _watchers = new List<Unit>();
+	private readonly List<int> _watchers = new List<int>();
 
 	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
 		List<Unit> shooters = new List<Unit>();
 		//Console.WriteLine("getting overwatch shooters");
 
-		foreach (var watcher in _watchers)
+		foreach (var id in _watchers)
 		{
-			
-			bool isFriendly = watcher.IsPlayer1Team == target.IsPlayer1Team;
+			var watcher = WorldObjectManager.GetObject(id)!.UnitComponent;
+			bool isFriendly = watcher!.IsPlayer1Team == target.IsPlayer1Team;
 
 			Visibility vis = WorldManager.Instance.CanTeamSee(Position, watcher.IsPlayer1Team);
 
@@ -49,7 +49,7 @@ public partial class WorldTile : IWorldTile
 
 	
 
-	public void Watch(Unit watcher)
+	public void Watch(int watcher)
 	{
 		lock (Syncobj)
 		{
@@ -59,7 +59,7 @@ public partial class WorldTile : IWorldTile
 		CalcWatchLevel();
 #endif
 	}
-	public void UnWatch(Unit watcher)
+	public void UnWatch(int watcher)
 	{
 		lock (Syncobj)
 		{
@@ -200,7 +200,7 @@ public partial class WorldTile : IWorldTile
 				throw new Exception("attempted non edge to edge");
 			if (_northEdge != null && !_northEdge.destroyed)
 			{
-				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
+				Log.Message("WARNING",$"attempted to place an object({value.ID}) over an existing({_northEdge.ID}) one");
 			}
 
 			_northEdge = value;
@@ -223,7 +223,7 @@ public partial class WorldTile : IWorldTile
 				throw new Exception("attempted non edge to edge");
 			if (_westEdge != null && !_westEdge.destroyed)
 			{
-				Log.Message("WARNINGS",$"attempted to place an object({value.ID}) over an existing({_westEdge.ID}) one");
+				Log.Message("WARNING",$"attempted to place an object({value.ID}) over an existing({_westEdge.ID}) one");
 			}
 
 			_westEdge = value;
@@ -298,7 +298,7 @@ public partial class WorldTile : IWorldTile
 			}
 			if (_unitAtLocation != null)
 			{
-				throw new Exception("attempted to place a Unit over an existing one");
+				throw new Exception("attempted to place a Unit("+value.WorldObject.ID+") over an existing one("+_unitAtLocation.WorldObject.ID+")");
 			}
 
 			_unitAtLocation = value;
