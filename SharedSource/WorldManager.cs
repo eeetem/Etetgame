@@ -85,9 +85,10 @@ public  partial class WorldManager
 
     public void LoadWorldTile(WorldTile.WorldTileData data, bool forceUpdateEverything = false)
     {
-        Log.Message("TILEUPDATES","Loading tile at " + data.Position);
+       
 
         WorldTile tile = (WorldTile) GetTileAtGrid(data.Position);
+        Log.Message("WORLDMANAGER","Loading tile at " + data.Position);
         if(tile.GetData().Equals(data))return;
 		
         LoadTileObject(data.Surface,tile.Surface, tile,forceUpdateEverything);

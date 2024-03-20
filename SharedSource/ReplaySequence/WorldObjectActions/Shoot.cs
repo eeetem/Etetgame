@@ -9,6 +9,7 @@ using MonoGame.Extended;
 using Riptide;
 
 #if CLIENT
+using System;
 using DefconNull.Rendering;
 #endif
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -92,7 +93,7 @@ public class Shoot : SequenceAction
 		
 		batch.DrawText("=", pos+offset*2+new Vector2(26,7),2f, Color.White);
 
-		batch.DrawNumberedIcon((OriginalDamage-CoverBlock-RangeBlock).ToString(), TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos+offset*3+new Vector2(8,0), Color.White);
+		batch.DrawNumberedIcon(Math.Max(0,OriginalDamage-CoverBlock-RangeBlock).ToString(), TextureManager.GetTexture("HoverHud/Consequences/genericDamage"), pos+offset*3+new Vector2(8,0), Color.White);
 
 		
 		batch.Draw(TextureManager.GetTexture("HoverHud/Consequences/line"), new Vector2(44,25), Color.White);

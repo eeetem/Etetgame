@@ -163,8 +163,9 @@ public static class UI
 		}
 		catch (Exception e)
 		{
+
 			Log.Message("ERROR", "Error rendering UI: " + e.Message + " " + e.StackTrace);
-			throw;
+			spriteBatch.End();
 		}
 
 

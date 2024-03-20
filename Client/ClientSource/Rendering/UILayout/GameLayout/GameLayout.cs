@@ -908,8 +908,8 @@ public class GameLayout : MenuLayout
 		{
 			if (u.Overwatch.Item1)
 			{
-				foreach (var owTile in u.overWatchedTiles){
-					batch.Draw(TextureManager.GetTexture("HoverHud/overwatch"), Utility.GridToWorldPos(owTile), null, Color.White, 0, Vector2.Zero, 1f, SpriteEffects.None, 0);
+				foreach (var owTile in new List<Vector2Int>(u.OverWatchedTiles)){
+					batch.Draw(TextureManager.GetTexture("HoverHud/overwatch"), Utility.GridToWorldPos(owTile), null, Color.White, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
 				}
 			}
 		}

@@ -55,8 +55,8 @@ public class UnitOverWatch : UnitSequenceAction
 			var positions = Actor.GetOverWatchPositions(Target,abilityIndex);
 			foreach (var shot in positions)
 			{
-				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor);
-				Actor.overWatchedTiles.Add(shot);
+				WorldManager.Instance.GetTileAtGrid(shot).Watch(Actor.WorldObject.ID);
+				Actor.OverWatchedTiles.Add(shot);
 			}
 			if (Actor.WorldObject.TileLocation.Position != Target)
 				Actor.WorldObject.Face(Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target));

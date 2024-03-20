@@ -1,4 +1,4 @@
-﻿//#define SINGLEPLAYER_ONLY
+﻿#define SINGLEPLAYER_ONLY
 using System;
 using System.Diagnostics;
 using System.Threading;

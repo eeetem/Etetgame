@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Color = Microsoft.Xna.Framework.Color;
 
@@ -47,12 +48,11 @@ public partial class WorldTile : IWorldTile
 		if(Surface == null) return;
 		_friendlyWatching = false;
 		_enemyWatching = false;
-		foreach (var watcher in new List<Unit>(_watchers))
+		foreach (var id in new List<int>(_watchers))
 		{
-
-			if (!watcher.Overwatch.Item1)
+			var watcher = WorldObjectManager.GetObject(id)?.UnitComponent;
+			if (watcher == null || !watcher!.Overwatch.Item1)
 			{
-				Log.Message("UNITS","watcher has no overwatch");	
 				continue;
 			}
 

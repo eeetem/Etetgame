@@ -23,7 +23,7 @@ public class Move : Action
 	{
 		
 		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
-		if (result.Cost == 0)
+		if (result.Cost <= 0)
 		{
 			return new Tuple<bool, string>(false, "No path found");
 		}

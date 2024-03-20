@@ -10,7 +10,7 @@
     <name>Smoke</name>
   </object>
 
-  <object Faceable = "false" SCover ="1">
+  <object Faceable = "false" SCover ="1" health="4">
     <sprite source="Environment/Objects/smallBush">
     </sprite>
     <name>Bush</name>
@@ -325,7 +325,7 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="7" detRes="1" supression="1" supressionRange="1" dropOffRange="5"/>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="5"/>
       <tip>A standard attack. [Green]Has very high damage but sharp drop off.[-]\n[Green]7[-] Damage drops off every [Yellow]5[-] tiles.\nUnits in range [Green]1[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
@@ -394,7 +394,7 @@
 
     <action detCost ="1" moveCost="0" actCost="1">
       <name>Smoke Launcher</name>
-      <tip>Launches a smoke grenade to block lines of sight</tip>
+      <tip>Launches a smoke grenade to block lines of sight for 5 ticks</tip>
       <effect>
         <delivery>
           <throwable throwRange="12"/>

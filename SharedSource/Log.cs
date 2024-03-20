@@ -65,8 +65,8 @@ public static class Log
     
     private static List<string> generalIgnoreList = new List<string>()
     {
-        "TILEUPDATES",
-        "WARNINGS"
+        "WARNING",
+        "ERROR"
     };
     public static void Message(string category, string message)
     {
