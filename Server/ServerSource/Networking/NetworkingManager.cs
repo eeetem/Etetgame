@@ -128,7 +128,9 @@ public static partial class NetworkingManager
 		server.TryGetClient(senderID, out c);
 		SendMapData(c);
 	}
-    
+
+	private static Task? currentMapDataSendTask;
+	private static bool cancelMapSend = false;
 	public static void SendMapData(Connection connection)
 	{
 	
@@ -140,14 +142,14 @@ public static partial class NetworkingManager
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
 		server.Send(packet,connection);
-		
-		Task.Run(() =>
+		if(currentMapDataSendTask != null && !currentMapDataSendTask.IsCompleted)
 		{
-			while (!ClientsReadyForMap.Contains(connection.Id) || SequenceManager.SequenceRunning)
-			{
-				Thread.Sleep(100);
-			}
-
+			cancelMapSend = true;
+			currentMapDataSendTask.Wait();
+		}
+		currentMapDataSendTask = Task.Run(() =>
+		{
+			cancelMapSend = false;
 			lock (UpdateLock)
 			{
 				try
@@ -156,9 +158,10 @@ public static partial class NetworkingManager
 					List<SequenceAction> act = new List<SequenceAction>();
 					int sendTiles = 0;
 					for (int x = 0; x < 100; x++)
-					{
+					{	
 						for (int y = 0; y < 100; y++)
 						{
+							if(cancelMapSend) return;
 							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 							{
@@ -183,7 +186,6 @@ public static partial class NetworkingManager
 					Log.Message("NETWORKING","Error sending map data to " + connection.Id);
 					Log.Message("NETWORKING",e.ToString());
 				}
-                
 			}
             
 		});
@@ -193,13 +195,13 @@ public static partial class NetworkingManager
 	private static string GetMapHashForConnection(Connection connection)
 	{
 		var p = GameManager.GetPlayer(connection);
-
+		
 		string hash = "";
 		for (int x = 0; x < 100; x++)
 		{
 			for (int y = 0; y < 100; y++)
 			{
-				if (p.WorldState.TryGetValue(new Vector2Int(x, y), out var tile))
+				if (p != null && p.WorldState.TryGetValue(new Vector2Int(x, y), out var tile))
 				{
 					hash+=tile.GetHash();
 				}
@@ -408,6 +410,21 @@ public static partial class NetworkingManager
 		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2 || GameManager.Player2!.IsAI))
 		{
 			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
+			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+			msg.Add((ushort) ReplaySequenceTarget.All);
+			msg.Add(sequencesToExecute[packet.ID].Item3.Count);
+			foreach (var sqc in sequencesToExecute[packet.ID].Item3)
+			{
+				msg.Add((int) sqc.GetSequenceType());
+				msg.AddSerializable(sqc);
+			}
+			foreach (var spec in GameManager.Spectators)
+			{
+				if (spec.Connection != null && spec.Connection.IsConnected)
+				{
+					server.Send(msg, spec.Connection);
+				}
+			}
 			SequenceManager.AddSequence(sequencesToExecute[packet.ID].Item3);
 			sequencesToExecute.Remove(packet.ID);
 		}
@@ -440,7 +457,15 @@ public static partial class NetworkingManager
 			}
 
 			p.IsReadyForNextSequence = false;
-			server.Send(msg, p.Connection);
+			server.Send(msg, p.Connection,false);
+			foreach (var spec in GameManager.Spectators)
+			{
+				if (spec.Connection != null && spec.Connection.IsConnected)
+				{
+					server.Send(msg, spec.Connection);
+				}
+			}
+			msg.Release();
 		}
 
 		

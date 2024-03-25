@@ -101,7 +101,7 @@ public static partial class NetworkingManager
 		ReplaySequenceTarget t = (ReplaySequenceTarget)message.GetUShort();
 		Log.Message("SEQUENCENETOWRKING","recived sequence for: "+t);
 		switch (t)
-		{//CLIENT side filtering, only relevant topractice mode and spectator
+		{//CLIENT side filtering, only relevant to practice mode and spectator
 			case ReplaySequenceTarget.Player1:
 				if(!GameManager.IsPlayer1)return;
 				break;
