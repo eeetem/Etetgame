@@ -113,10 +113,10 @@ public static partial class NetworkingManager
 		Log.Message("SEQUENCENETOWRKING","sequence legnhts: "+lenght);
 		for (int i = 0; i < lenght; i++)
 		{
-
 			SequenceAction.SequenceType type = (SequenceAction.SequenceType) message.GetInt();
 			SequenceAction sqc;
 			sqc = SequenceAction.GetAction(type, message);
+			if(t == ReplaySequenceTarget.All && type != SequenceAction.SequenceType.UnitUpdate) continue;//unit update is the only message type we listen for for the oposite team while spectating
 			actions.Enqueue(sqc);
 			Log.Message("SEQUENCENETOWRKING","actions: "+sqc);
 		}

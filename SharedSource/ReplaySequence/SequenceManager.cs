@@ -180,19 +180,21 @@ public class SequenceManager
 				CurrentSequenceTasks.Clear();
 				SequenceRunningRightNow = false;
 
-				if(SequenceQueue.Count == 0)
-				{
+
+			}
+		}
+		SequenceRunningRightNow = false;
+		if(SequenceQueue.Count == 0 && CurrentSequenceTasks.Count==0 && hasSequece)
+		{
 					
 #if CLIENT
 					GameLayout.ReMakeMovePreview();
 					NetworkingManager.SendSequenceExecuted();
+			hasSequece = false;
 #endif
-				}
-
-			}
 		}
 
-		SequenceRunningRightNow = false;
+		
 	}
 
 	private static void StartNextTask()
@@ -203,8 +205,11 @@ public class SequenceManager
 	}
 
 	
+	private static bool hasSequece = false;
+	
 	public static void AddSequence(SequenceAction action)
 	{
+		hasSequece = true;
 		if(action==null) throw new ArgumentNullException(nameof(action));
 
 		lock (lockObj)

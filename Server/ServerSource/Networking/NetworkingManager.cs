@@ -142,54 +142,38 @@ public static partial class NetworkingManager
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
 		server.Send(packet,connection);
-		if(currentMapDataSendTask != null && !currentMapDataSendTask.IsCompleted)
-		{
-			cancelMapSend = true;
-			currentMapDataSendTask.Wait();
-		}
-		currentMapDataSendTask = Task.Run(() =>
-		{
-			cancelMapSend = false;
-			lock (UpdateLock)
-			{
-				try
-				{
-					Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
-					List<SequenceAction> act = new List<SequenceAction>();
-					int sendTiles = 0;
-					for (int x = 0; x < 100; x++)
-					{	
-						for (int y = 0; y < 100; y++)
-						{
-							if(cancelMapSend) return;
-							WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
-							if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
-							{
-								act.Add(TileUpdate.Make(new Vector2Int(x, y)));
-								sendTiles++;
-								//	if (sendTiles >30)
-								//	{
-								//		Thread.Sleep(10);
-								//		sendTiles = 0;
-								//	}
-							}
-						}
-					}
 
-					Log.Message("NETWORKING","finished sending map data to " + connection.Id);
-                    
-	
-					SendSequence(act);
-					SendAllSeenUnitPositions();
-				}catch(Exception e)
+		Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
+		List<SequenceAction> act = new List<SequenceAction>();
+		int sendTiles = 0;
+		for (int x = 0; x < 100; x++)
+		{	
+			for (int y = 0; y < 100; y++)
+			{
+				if(cancelMapSend) return;
+				WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+				if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 				{
-					Log.Message("NETWORKING","Error sending map data to " + connection.Id);
-					Log.Message("NETWORKING",e.ToString());
+					act.Add(TileUpdate.Make(new Vector2Int(x, y)));
+					sendTiles++;
+					//	if (sendTiles >30)
+					//	{
+					//		Thread.Sleep(10);
+					//		sendTiles = 0;
+					//	}
 				}
 			}
-            
-		});
+		}
 
+		Log.Message("NETWORKING","finished sending map data to " + connection.Id);
+                    
+	
+		SendSequence(act);
+		SendAllSeenUnitPositions();
+
+			
+            
+	
 	}
 
 	private static string GetMapHashForConnection(Connection connection)
@@ -535,7 +519,7 @@ public static partial class NetworkingManager
 	private static void SendSequence(List<SequenceAction> actions)
 	{
 		var originalList = new List<SequenceAction>(actions);
-		actions.RemoveAll(x => !x.ShouldDo());
+		actions.RemoveAll(x => !x.ShouldSend());
 		foreach (var a in originalList)
 		{
 			if(actions.Contains(a)) continue;

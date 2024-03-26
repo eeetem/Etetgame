@@ -210,14 +210,19 @@ public static partial class GameManager
 		if(!spectating && player1 != IsPlayer1) throw new Exception("Recieved unit update for wrong team");
 		if (spectating)
 		{
-			if (player1)
+			if (fullUpdate)
 			{
-				lastRecievedUnitPositionsP1 = recievedUnitPositions;
+				if (player1)
+				{
+					lastRecievedUnitPositionsP1 = recievedUnitPositions;
+				}
+				else
+				{
+					lastRecievedUnitPositionsP2 = recievedUnitPositions;
+				}
 			}
-			else
-			{
-				lastRecievedUnitPositionsP2 = recievedUnitPositions;
-			}
+
+			if(player1!=IsPlayer1) return;
 		}
 		List<int> justCreated = new List<int>();
 

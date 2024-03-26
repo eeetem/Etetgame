@@ -494,6 +494,20 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(ScoreIndicator);
 
+		if (GameManager.spectating)
+		{
+			var spec = new Label()
+			{
+				Top = 50,
+				VerticalAlignment = VerticalAlignment.Top,
+				HorizontalAlignment = HorizontalAlignment.Left
+			};
+			spec.Text = "Spectating";
+
+
+			panel.Widgets.Add(spec);
+		}
+
 		_unitBar = new Grid()
 		{
 			GridColumnSpan = 4,

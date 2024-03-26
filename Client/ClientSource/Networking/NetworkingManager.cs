@@ -208,6 +208,7 @@ public static partial class NetworkingManager
 
 	public static void SendSequenceExecuted()
 	{
+		Log.Message("NETWORKING","Sending Sequence Executed");
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SequenceFinished);
 		client?.Send(msg);
 	}

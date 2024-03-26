@@ -209,6 +209,10 @@ public abstract class SequenceAction :  IMessageSerializable
     {
         return true;
     }
+    public virtual bool ShouldSend()
+    {
+        return ShouldDo();
+    }
 
     private bool ran = false;
     public Task GenerateTask()

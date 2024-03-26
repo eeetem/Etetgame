@@ -29,6 +29,21 @@ public class TileUpdate : SequenceAction
 		return t;
 	}
 
+	public override bool ShouldDo()
+	{
+#if SERVER
+		return false;
+#else
+		var t = WorldManager.Instance.GetTileAtGrid(_data.Position);
+		return !t.GetData().Equals(_data);
+#endif
+	}
+
+	public override bool ShouldSend()
+	{
+		return true;
+	}
+
 	protected override void RunSequenceAction()
 	{
 #if SERVER
