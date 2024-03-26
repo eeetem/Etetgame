@@ -40,7 +40,7 @@ public class UnitUpdate : SequenceAction
 #if SERVER
 		return;
 #else
-		if (_player1 != GameManager.IsPlayer1) throw new Exception("unitUpdate for wrong team recived");
+
 		GameManager.UpdateUnitPositions(unitPositions, _fullUpdate);
 #endif
 	}
