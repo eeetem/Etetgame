@@ -15,6 +15,8 @@ TLDR tutorial:
 
 -There is no RNG, all mechanics are deterministic
 
+-You can turn units with right click
+
 -Core combat mechanics are focused around determination and supression:
 --Most abilities use up units determiation.
 --Determination regenerates 1 a turn(Officer can greately boost this).
@@ -41,4 +43,7 @@ TLDR tutorial:
 --Heavy: A lot of health, A lot of determination, Can shoot 3 times if stands still. Very slow. Special: shoots multiple shots in a small area with high supressive effect.
 --Scout: Fragile, Good Damage but Short Range, 2nd highest sight range. Very big movement range. Special: Uses up determination to restore action and move points.
 --Specialist: Average stats, Explosive abilities. Best for denying cover and doing supression damage.
+
+
+
 

@@ -230,7 +230,7 @@ reconnect.TextColor = Color.Gray;
 
 
 		var version = new Label();
-		version.Text = "Alpha 2.1.3";
+		version.Text = "Alpha 3";
 		version.VerticalAlignment = VerticalAlignment.Top;
 		version.HorizontalAlignment = HorizontalAlignment.Left;
 		version.Background = new SolidBrush(Color.Transparent);
