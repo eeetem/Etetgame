@@ -74,7 +74,7 @@ public static partial class NetworkingManager
 	private static void StartGameHandler(ushort senderID,Message message)
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id) return;
-		if( GameManager.GameState != GameState.Lobby) NetworkingManager.SendGameData();//incase the ui is desynced
+		if( GameManager.GameState != GameState.Lobby) SendGameData();//incase the ui is desynced
 		GameManager.StartSetup();
 	}
 	[MessageHandler((ushort)NetworkMessageID.SquadComp)]

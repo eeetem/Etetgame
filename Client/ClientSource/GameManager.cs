@@ -202,9 +202,23 @@ public static partial class GameManager
 			UI.ShowMessage("Failed to connect to local server", "Failed to connect to local server");
 	}
 
-	public static void UpdateUnitPositions(Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
-	{
 
+	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP1 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
+	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP2 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
+	public static void UpdateUnitPositions(bool player1, Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
+	{
+		if(!spectating && player1 != IsPlayer1) throw new Exception("Recieved unit update for wrong team");
+		if (spectating)
+		{
+			if (player1)
+			{
+				lastRecievedUnitPositionsP1 = recievedUnitPositions;
+			}
+			else
+			{
+				lastRecievedUnitPositionsP2 = recievedUnitPositions;
+			}
+		}
 		List<int> justCreated = new List<int>();
 
 		Log.Message("UNITS","updating unit positions");
@@ -302,5 +316,18 @@ public static partial class GameManager
 		
 		if(GameLayout.SelectedUnit== null) GameLayout.SelectUnit(null);
 	
+	}
+
+	public static void SwapSpecPov()
+	{
+		IsPlayer1 = !IsPlayer1;
+		if (IsPlayer1)
+		{
+			UpdateUnitPositions(true, lastRecievedUnitPositionsP1, true);
+		}
+		else
+		{
+			UpdateUnitPositions(false, lastRecievedUnitPositionsP2, true);
+		}
 	}
 }

@@ -15,8 +15,8 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 	public DirectionSpriteSheet(string baseName, SpriteVariation variation, bool faceable)
 	{
 		_baseName = baseName;
-		this._variation = variation;
-		this._faceable = faceable;
+		_variation = variation;
+		_faceable = faceable;
 	}
 
 	public string GetFulLName()
@@ -31,7 +31,7 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 	{
 		Texture2D tex = TextureManager.GetTextureFromPNG(GetFulLName()+state);
 		
-		if (!this._faceable)
+		if (!_faceable)
 		{
 			_spriteSheets.Add(state,new Texture2D[1]{tex});
 			return;

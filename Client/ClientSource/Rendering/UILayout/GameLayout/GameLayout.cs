@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using DefconNull.AI;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
@@ -397,7 +398,8 @@ public class GameLayout : MenuLayout
 			};
 			swapTeam.Click += (o, a) =>
 			{
-				GameManager.IsPlayer1 = !GameManager.IsPlayer1;
+				
+				GameManager.SwapSpecPov();
 				WorldManager.Instance.MakeFovDirty();
 				UI.SetUI(null);
 			};
@@ -1161,16 +1163,16 @@ public class GameLayout : MenuLayout
 			
 			var TileCoordinate = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 			TileCoordinate = Vector2.Clamp(TileCoordinate, Vector2.Zero, new Vector2(99, 99));
-			Move.MoveCalcualtion details;
-			Move.MoveCalcualtion details2;
+			AIAction.MoveCalcualtion details;
+			AIAction.MoveCalcualtion details2;
 			var path = PathFinding.GetPath(SelectedUnit.WorldObject.TileLocation.Position, TileCoordinate);
 			int moveUse = 1;
 			while (path.Cost > SelectedUnit.GetMoveRange()*moveUse)
 			{
 				moveUse++;
 			}
-			int res = AI.Move.GetTileMovementScore(TileCoordinate,moveUse,false,SelectedUnit, out details);
-			int res2 = AI.Move.GetTileMovementScore(TileCoordinate,moveUse,true, SelectedUnit, out details2);
+			int res = AIAction.GetTileMovementScore(TileCoordinate,moveUse,false,SelectedUnit, out details);
+			int res2 = AIAction.GetTileMovementScore(TileCoordinate,moveUse,true, SelectedUnit, out details2);
 
 			string text = $" Total: {res}\n Closest Distance: {details.ClosestDistance}\n Distance Reward: {details.DistanceReward}\n ProtectionPenalty: {details.ProtectionPentalty}\n";
 			

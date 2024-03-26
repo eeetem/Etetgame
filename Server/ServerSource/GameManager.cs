@@ -346,7 +346,7 @@ public static partial class GameManager
 		public List<SquadMember>?  SquadComp { get; private set; }
 		public bool IsPracticeOpponent { get; set; }
 	
-		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || GameManager.PlayerUnitPositionsDirty;
+		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || PlayerUnitPositionsDirty;
 	
 		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
 	

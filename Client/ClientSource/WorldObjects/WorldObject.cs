@@ -82,7 +82,7 @@ public partial class WorldObject : IDrawable
 				state = "/Crouch";	
 			}
 		}
-		if(this.destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
+		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
 		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
