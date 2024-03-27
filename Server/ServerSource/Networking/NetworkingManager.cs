@@ -142,20 +142,20 @@ public static partial class NetworkingManager
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
 		server.Send(packet,connection);
-
+		cancelMapSend = true;
 		lock (UpdateLock)
 		{
-			
-		
+			cancelMapSend = false;
+			Thread.Sleep(1000);//yeah this is bad
 			Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
-			if(SequenceManager.SequenceRunning) return;//we're probably arleady sending it and if not the client will do another request soon
+			if(SequenceManager.SequenceRunning || cancelMapSend) return;//we're probably arleady sending it and if not the client will do another request soon
 			List<SequenceAction> act = new List<SequenceAction>();
 			int sendTiles = 0;
 			for (int x = 0; x < 100; x++)
 			{	
 				for (int y = 0; y < 100; y++)
 				{
-					if(cancelMapSend) return;
+					
 					WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 					if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 					{
