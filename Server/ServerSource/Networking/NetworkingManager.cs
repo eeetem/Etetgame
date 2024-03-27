@@ -143,36 +143,41 @@ public static partial class NetworkingManager
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
 		server.Send(packet,connection);
 
-		Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
-		List<SequenceAction> act = new List<SequenceAction>();
-		int sendTiles = 0;
-		for (int x = 0; x < 100; x++)
-		{	
-			for (int y = 0; y < 100; y++)
-			{
-				if(cancelMapSend) return;
-				WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
-				if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
+		lock (UpdateLock)
+		{
+			
+		
+			Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
+			if(SequenceManager.SequenceRunning) return;//we're probably arleady sending it and if not the client will do another request soon
+			List<SequenceAction> act = new List<SequenceAction>();
+			int sendTiles = 0;
+			for (int x = 0; x < 100; x++)
+			{	
+				for (int y = 0; y < 100; y++)
 				{
-					act.Add(TileUpdate.Make(new Vector2Int(x, y)));
-					sendTiles++;
-					//	if (sendTiles >30)
-					//	{
-					//		Thread.Sleep(10);
-					//		sendTiles = 0;
-					//	}
+					if(cancelMapSend) return;
+					WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
+					if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
+					{
+						act.Add(TileUpdate.Make(new Vector2Int(x, y)));
+						sendTiles++;
+						//	if (sendTiles >30)
+						//	{
+						//		Thread.Sleep(10);
+						//		sendTiles = 0;
+						//	}
+					}
 				}
 			}
-		}
 
-		Log.Message("NETWORKING","finished sending map data to " + connection.Id);
+			Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
 	
-		SendSequence(act);
-		SendAllSeenUnitPositions();
+			SendSequence(act);
+			SendAllSeenUnitPositions();
 
 			
-            
+		}
 	
 	}
 

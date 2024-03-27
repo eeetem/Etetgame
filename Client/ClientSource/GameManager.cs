@@ -214,11 +214,11 @@ public static partial class GameManager
 			{
 				if (player1)
 				{
-					lastRecievedUnitPositionsP1 = recievedUnitPositions;
+					lastRecievedUnitPositionsP1 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>(recievedUnitPositions);
 				}
 				else
 				{
-					lastRecievedUnitPositionsP2 = recievedUnitPositions;
+					lastRecievedUnitPositionsP2 =  new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>(recievedUnitPositions);
 				}
 			}
 
