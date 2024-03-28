@@ -128,11 +128,6 @@ public static partial class GameManager
 				UI.SetUI(new PreGameLobbyLayout());
 				break;
 			case GameState.Setup:
-				if (spectating)
-				{
-					UI.SetUI(new PreGameLobbyLayout());
-					break;//todo specating
-				}
 
 				Task.Run(delegate
 				{
@@ -325,14 +320,22 @@ public static partial class GameManager
 
 	public static void SwapSpecPov()
 	{
-		IsPlayer1 = !IsPlayer1;
-		if (IsPlayer1)
+		Task.Run(delegate
 		{
-			UpdateUnitPositions(true, lastRecievedUnitPositionsP1, true);
-		}
-		else
-		{
-			UpdateUnitPositions(false, lastRecievedUnitPositionsP2, true);
-		}
+			while (SequenceManager.SequenceRunning)
+			{
+				Thread.Sleep(100);
+			}
+			IsPlayer1 = !IsPlayer1;
+			if (IsPlayer1)
+			{
+				UpdateUnitPositions(true, lastRecievedUnitPositionsP1, true);
+			}
+			else
+			{
+				UpdateUnitPositions(false, lastRecievedUnitPositionsP2, true);
+			}
+		});
+
 	}
 }

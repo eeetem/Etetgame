@@ -38,27 +38,27 @@ public static class UI
 	public static void SetUI(UiLayout? newUI)
 	{
 
-			UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
+		UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
 			
 		
-			if (newUI != null)
-			{
+		if (newUI != null)
+		{
 			
-				if (currentUi.GetType() != newUI.GetType())
-				{
-					lastDifferentUI = currentUi;
-					root = newUI.Generate(Desktop, lastDifferentUI);
-					currentUi = newUI;
-				}
-				else
-				{
-					root = currentUi.Generate(Desktop,lastDifferentUI);
-				}
+			if (currentUi.GetType() != newUI.GetType())
+			{
+				lastDifferentUI = currentUi;
+				root = newUI.Generate(Desktop, lastDifferentUI);
+				currentUi = newUI;
 			}
 			else
 			{
-				root = currentUi.Generate(Desktop, lastDifferentUI);
+				root = currentUi.Generate(Desktop,lastDifferentUI);
 			}
+		}
+		else
+		{
+			root = currentUi.Generate(Desktop, lastDifferentUI);
+		}
 		
 		Console.WriteLine("Changing UI to: "+currentUi);
 	}

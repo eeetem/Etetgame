@@ -41,9 +41,9 @@ public static partial class NetworkingManager
 			{
 				do
 				{
-					Thread.Sleep(1000);
+					Thread.Sleep(5000);
 				} while (SequenceManager.SequenceRunning); //still loading the map
-				Thread.Sleep(1000);
+				Thread.Sleep(5000);
 			} while (SequenceManager.SequenceRunning);
 			//holy shit this is atrocious
 			
@@ -102,8 +102,6 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.ReplaySequence)]
 	private static void RecieveReplaySequence(Message message)
 	{
-		
-		
 		Queue<SequenceAction> actions = new Queue<SequenceAction>();
 		ReplaySequenceTarget t = (ReplaySequenceTarget)message.GetUShort();
 		Log.Message("SEQUENCENETOWRKING","recived sequence for: "+t);
