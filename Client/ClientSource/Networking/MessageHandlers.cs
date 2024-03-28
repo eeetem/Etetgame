@@ -39,9 +39,16 @@ public static partial class NetworkingManager
 			Thread.Sleep(5000);
 			do
 			{
+				do
+				{
+					Thread.Sleep(1000);
+				} while (SequenceManager.SequenceRunning); //still loading the map
 				Thread.Sleep(1000);
-			} while (SequenceManager.SequenceRunning); //still loading the map
-
+			} while (SequenceManager.SequenceRunning);
+			//holy shit this is atrocious
+			
+			
+			
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
 			if (WorldManager.Instance.GetMapHash() != hash)

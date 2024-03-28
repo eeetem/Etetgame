@@ -383,8 +383,8 @@ public class GameLayout : MenuLayout
 
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
-#if DEBUG
-		if (GameManager.spectating || GameManager.PreGameData.SinglePLayerFeatures)
+
+		if (GameManager.spectating)
 		{
 			var swapTeam = new TextButton
 			{
@@ -405,6 +405,7 @@ public class GameLayout : MenuLayout
 			};
 			panel.Widgets.Add(swapTeam);
 		}
+#if DEBUG
 		var doAI = new TextButton
 		{
 			Top = (int) (200f * globalScale.Y),
