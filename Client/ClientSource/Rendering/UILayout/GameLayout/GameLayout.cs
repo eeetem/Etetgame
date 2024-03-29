@@ -383,8 +383,8 @@ public class GameLayout : MenuLayout
 
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
-#if DEBUG
-		if (GameManager.spectating || GameManager.PreGameData.SinglePLayerFeatures)
+
+		if (GameManager.spectating)
 		{
 			var swapTeam = new TextButton
 			{
@@ -405,6 +405,7 @@ public class GameLayout : MenuLayout
 			};
 			panel.Widgets.Add(swapTeam);
 		}
+#if DEBUG
 		var doAI = new TextButton
 		{
 			Top = (int) (200f * globalScale.Y),
@@ -421,28 +422,27 @@ public class GameLayout : MenuLayout
 		};
 		panel.Widgets.Add(doAI);
 #endif		
-		if (!GameManager.spectating)
+
+		endBtn = new ImageButton()
 		{
-			endBtn = new ImageButton()
-			{
-				Top = (int) (25f * globalScale.X),
-				Left = (int) (-10.4f * globalScale.X),
-				Width = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
-				Height = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
-				ImageWidth = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
-				ImageHeight = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
-				HorizontalAlignment = HorizontalAlignment.Right,
-				VerticalAlignment = VerticalAlignment.Top,
-				Background = new SolidBrush(Color.Transparent),
-				OverBackground = new SolidBrush(Color.Transparent),
-				PressedBackground = new SolidBrush(Color.Transparent),
-				Image = new TextureRegion(TextureManager.GetTexture("GameHud/UnitBar/end button")),
-			};
-			endBtn.Click += (o, a) => GameManager.EndTurn();
+			Top = (int) (25f * globalScale.X),
+			Left = (int) (-10.4f * globalScale.X),
+			Width = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
+			Height = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
+			ImageWidth = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * globalScale.X * 0.9f),
+			ImageHeight = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * globalScale.X * 0.9f),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Background = new SolidBrush(Color.Transparent),
+			OverBackground = new SolidBrush(Color.Transparent),
+			PressedBackground = new SolidBrush(Color.Transparent),
+			Image = new TextureRegion(TextureManager.GetTexture("GameHud/UnitBar/end button")),
+		};
+		endBtn.Click += (o, a) => GameManager.EndTurn();
 
 
-			panel.Widgets.Add(endBtn);
-		}
+		panel.Widgets.Add(endBtn);
+		
 
 		if (inputBox == null)
 		{

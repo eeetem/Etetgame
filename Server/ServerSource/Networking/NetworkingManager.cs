@@ -336,8 +336,10 @@ public static partial class NetworkingManager
 			server.Update();
 		}
 		
+		
+		SendSequenceIfShould(false);//second playerirst because of ai and practice mode
 		SendSequenceIfShould(true);
-		SendSequenceIfShould(false);
+		
 		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null ||  GameManager.Player1.ReadyForNextSequence) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.ReadyForNextSequence))
 		{
 			GameManager.UpdatePlayerSideUnitPositions();//make sure up to date info
@@ -362,6 +364,16 @@ public static partial class NetworkingManager
 		SequencePacket packet;
 		if (!p.SequenceQueue.TryDequeue(out packet!)) return;
 		
+		
+		if (player1)
+		{
+			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(true, sequencesToExecute[packet.ID].Item2, sequencesToExecute[packet.ID].Item3);
+		}
+		else
+		{
+			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(sequencesToExecute[packet.ID].Item1, true, sequencesToExecute[packet.ID].Item3);
+		}
+
 		if (p.Connection == null || !p.Connection.IsConnected)//just discard all the shit since we have no connection and they will re-recive everything anyways when connecting
 		{
 			packet.Actions.ForEach(x=>x.Return());
@@ -387,16 +399,8 @@ public static partial class NetworkingManager
 		{
 			infoActions.AddRange(act.GenerateInfoActions(player1));
 		}
-		if (player1)
-		{
-			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(true, sequencesToExecute[packet.ID].Item2, sequencesToExecute[packet.ID].Item3);
-		}
-		else
-		{
-			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(sequencesToExecute[packet.ID].Item1, true, sequencesToExecute[packet.ID].Item3);
-		}
-		
-		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2 || GameManager.Player2!.IsAI))
+
+		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2))
 		{
 			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
@@ -411,9 +415,15 @@ public static partial class NetworkingManager
 			{
 				if (spec.Connection != null && spec.Connection.IsConnected)
 				{
-					server.Send(msg, spec.Connection);
+					server.Send(msg, spec.Connection,false);
 				}
 			}
+
+			if (GameManager.Player2 != null && GameManager.Player2.IsPracticeOpponent)
+			{
+				server.Send(msg, GameManager.Player1!.Connection,false);
+			}
+			msg.Release();
 			SequenceManager.AddSequence(sequencesToExecute[packet.ID].Item3);
 			sequencesToExecute.Remove(packet.ID);
 		}
@@ -444,14 +454,14 @@ public static partial class NetworkingManager
 				msg.AddSerializable(a);
 				a.Return();
 			}
-
+			
 			p.IsReadyForNextSequence = false;
 			server.Send(msg, p.Connection,false);
 			foreach (var spec in GameManager.Spectators)
 			{
 				if (spec.Connection != null && spec.Connection.IsConnected)
 				{
-					server.Send(msg, spec.Connection);
+					server.Send(msg, spec.Connection,false);
 				}
 			}
 			msg.Release();
@@ -469,6 +479,7 @@ public static partial class NetworkingManager
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.GameData);
 		var state = GameManager.GetState();
 		state.IsPlayerOne = true;
+		if(GameManager.Player2 != null && GameManager.Player2.IsPracticeOpponent) state.IsPlayerOne = null;
 		msg.Add(state);
 		if (GameManager.Player1 is not null  && GameManager.Player1.Connection is not null)
 		{

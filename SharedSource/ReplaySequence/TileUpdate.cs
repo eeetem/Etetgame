@@ -28,7 +28,6 @@ public class TileUpdate : SequenceAction
 		t._data = data;
 		return t;
 	}
-
 	public override bool ShouldDo()
 	{
 #if SERVER
@@ -38,12 +37,11 @@ public class TileUpdate : SequenceAction
 		return !t.GetData().Equals(_data);
 #endif
 	}
-
 	public override bool ShouldSend()
 	{
 		return true;
 	}
-
+	
 	protected override void RunSequenceAction()
 	{
 #if SERVER
@@ -52,12 +50,11 @@ public class TileUpdate : SequenceAction
 		WorldManager.Instance.LoadWorldTile(_data);
 		if (GameManager.GameState == GameState.Lobby)
 		{
-		//	Camera.SetPos(_data.Position,false);
+			Camera.SetPos(_data.Position,false);
 		}
-
 #endif
 	}
-
+	
 	protected override void SerializeArgs(Message message)
 	{
 		message.Add(_data);

@@ -21,7 +21,6 @@ public class SquadCompBuilderLayout : UiLayout
 	private List<Vector2Int> _mySpawnPoints = new List<Vector2Int>();
 	private List<Vector2Int> _otherSpawnPoints = new List<Vector2Int>();//for practice mode
 
-	private bool PracticeDeployMode => GameManager.PreGameData.SinglePLayerFeatures && GameManager.PreGameData.Player2Name == "Practice Opponent";
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		WorldManager.Instance.MakeFovDirty();
@@ -29,7 +28,7 @@ public class SquadCompBuilderLayout : UiLayout
 		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
 		
 		Camera.SetPos(_mySpawnPoints[0]);
-		if (PracticeDeployMode)
+		if (GameManager.spectating)
 		{
 			_mySpawnPoints = GameManager.T1SpawnPoints;
 
@@ -45,7 +44,7 @@ public class SquadCompBuilderLayout : UiLayout
 		{
 			Top = 50,
 			Text = "Free Units(team 2): "+(WorldManager.Instance.CurrentMap.unitCount-OtherComposition.Count),
-			Visible = PracticeDeployMode
+			Visible = GameManager.spectating
 		};
 		panel.Widgets.Add(freeslots);
 		panel.Widgets.Add(otherfreeslots);
@@ -93,7 +92,7 @@ public class SquadCompBuilderLayout : UiLayout
 		};
 		confirm.Click += (s, a) =>
 		{
-			if (PracticeDeployMode)
+			if (GameManager.spectating)
 			{
 				NetworkingManager.SendDualSquadComp(MyComposition,OtherComposition);
 			}

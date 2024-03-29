@@ -352,7 +352,7 @@ public static partial class GameManager
 	
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
 		public bool IsReadyForNextSequence = false;
-		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI;
+		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI || IsPracticeOpponent;
 		public readonly Dictionary<Vector2Int, WorldTile.WorldTileData> WorldState = new(); 
 
 		public ClientInstance(string name,Connection? con)
