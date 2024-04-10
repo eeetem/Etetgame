@@ -25,6 +25,7 @@ public abstract class SequenceAction :  IMessageSerializable
         Projectile = 107,
         UnitUpdate = 108,
         TileUpdate = 109,
+        SpotUnit = 110,
         
         ChangeUnitValues =0,
         PlayAnimation =1,
@@ -45,7 +46,7 @@ public abstract class SequenceAction :  IMessageSerializable
         Undefined = -1,
 
 
-       
+      
     }
 
     private readonly static Dictionary<SequenceType, FluentObjectPool<SequenceAction>> ActionPools = new();
@@ -137,6 +138,10 @@ public abstract class SequenceAction :  IMessageSerializable
         if (t == typeof(TileUpdate))
         {
             return SequenceType.TileUpdate;
+        }
+        if (t == typeof(SpotUnit))
+        {
+            return SequenceType.SpotUnit;
         }
         throw new ArgumentOutOfRangeException(nameof(t), t, null);
     }

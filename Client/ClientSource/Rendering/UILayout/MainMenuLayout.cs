@@ -1,6 +1,7 @@
 ﻿//#define SINGLEPLAYER_ONLY
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.Networking;
@@ -219,12 +220,14 @@ reconnect.TextColor = Color.Gray;
 		discord.HorizontalAlignment = HorizontalAlignment.Right;
 		discord.Click += (s, a) =>
 		{
-#if WINDOWS
-			Process.Start("explorer", "https://discord.gg/TrmAJbMaQ3");
-#else
-			Process.Start("xdg-open", "https://discord.gg/TrmAJbMaQ3");
-#endif
-			
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Process.Start("explorer", "https://discord.gg/TrmAJbMaQ3");
+			}
+			else
+			{
+				Process.Start("xdg-open", "https://discord.gg/TrmAJbMaQ3");
+			}
 		};
 		panel.Widgets.Add(discord);
 

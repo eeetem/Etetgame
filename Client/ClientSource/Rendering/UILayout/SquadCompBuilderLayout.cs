@@ -12,7 +12,7 @@ using Thickness = Myra.Graphics2D.Thickness;
 
 namespace DefconNull.Rendering.UILayout;
 
-public class SquadCompBuilderLayout : UiLayout
+public class SquadCompBuilderLayout : MenuLayout
 {
 	private static readonly List<SquadMember> MyComposition = new List<SquadMember>();
 	private static readonly List<SquadMember> OtherComposition = new List<SquadMember>();
@@ -26,8 +26,8 @@ public class SquadCompBuilderLayout : UiLayout
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel();
 		_mySpawnPoints= GameManager.IsPlayer1 ?GameManager.T1SpawnPoints :GameManager.T2SpawnPoints;
-		
-		Camera.SetPos(_mySpawnPoints[0]);
+		if(_mySpawnPoints.Count != 0)
+			Camera.SetPos(_mySpawnPoints[0]);
 		if (GameManager.spectating)
 		{
 			_mySpawnPoints = GameManager.T1SpawnPoints;

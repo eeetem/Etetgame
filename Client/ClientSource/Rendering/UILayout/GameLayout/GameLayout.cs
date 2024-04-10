@@ -1015,13 +1015,14 @@ public class GameLayout : MenuLayout
 			var move = TextureManager.GetTexture("GameHud/BottomBar/moverange");
 			var portraitScale = 1.25f*globalScale.Y;
 			//infoboxtip = ;
+			var padding = portrait.Width * 0.85f;
 			batch.Draw(portrait, new Vector2(0, Game1.resolution.Y - portrait.Height * portraitScale),portraitScale,Color.White);
-			batch.Draw(detBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale ),portraitScale,Color.White);
-			batch.Draw(hpBar, new Vector2(65*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale),portraitScale,Color.White);
-			batch.DrawText(SelectedUnit.Health.ToString(), new Vector2(70*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
-			batch.DrawText(SelectedUnit.Determination.Current.ToString(), new Vector2(95*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
-			
-			var pos = new Vector2(44 * portraitScale, Game1.resolution.Y - 125 * portraitScale);
+			batch.Draw(detBar, new Vector2(padding*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale ),portraitScale,Color.White);
+			batch.Draw(hpBar, new Vector2(padding*portraitScale, Game1.resolution.Y - hpBar.Height* portraitScale),portraitScale,Color.White);
+			batch.DrawText(SelectedUnit.Health.ToString(), new Vector2((padding+5)*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
+			batch.DrawText(SelectedUnit.Determination.Current.ToString(), new Vector2((padding+30)*portraitScale, Game1.resolution.Y - 20* portraitScale),portraitScale,24,Color.White);
+			batch.DrawText(SelectedUnit.Type.Name.ToString(),new Vector2(15,Game1.resolution.Y-50),portraitScale,Color.White);
+			var pos = new Vector2((padding-20) * portraitScale, Game1.resolution.Y - 125 * portraitScale);
 			Color c = Color.White;
 			if (SelectedUnit.MoveRangeEffect.Current > 0)
 			{
@@ -1033,7 +1034,7 @@ public class GameLayout : MenuLayout
 			batch.DrawText(""+SelectedUnit.GetMoveRange(), pos + new Vector2(-15,0), portraitScale, 24, c);
 			batch.Draw(move, pos,portraitScale,Color.White);
 			
-			pos = new Vector2(44 * portraitScale, Game1.resolution.Y - 150 * portraitScale);
+			pos = new Vector2((padding-20) * portraitScale, Game1.resolution.Y - 150 * portraitScale);
 			batch.DrawText(""+SelectedUnit.GetSightRange(), pos + new Vector2(-15,0), portraitScale, 24, Color.White);
 			batch.Draw(sight, pos,portraitScale,Color.White);
 			

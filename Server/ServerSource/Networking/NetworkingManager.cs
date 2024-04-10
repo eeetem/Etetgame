@@ -125,8 +125,8 @@ public static partial class NetworkingManager
 	private static void SendMapData(ushort senderID)
 	{
 		Connection c;
-		server.TryGetClient(senderID, out c);
-		SendMapData(c);
+		if(server.TryGetClient(senderID, out c))
+			SendMapData(c);
 	}
 
 	private static Task? currentMapDataSendTask;

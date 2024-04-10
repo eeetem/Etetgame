@@ -128,20 +128,9 @@ public static partial class GameManager
 				UI.SetUI(new PreGameLobbyLayout());
 				break;
 			case GameState.Setup:
-
-				Task.Run(delegate
-				{
+				
 					var mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
 					UI.SetUI(new SquadCompBuilderLayout());
-					do
-					{
-						mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
-						Thread.Sleep(1000);
-
-					} while (mySpawnPoints.Count == 0);
-					//UI.SetUI(new SquadCompBuilderLayout());
-
-				});
 
 				break;
 			case GameState.Playing:
@@ -200,6 +189,8 @@ public static partial class GameManager
 
 	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP1 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
 	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP2 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
+	
+	
 	public static void UpdateUnitPositions(bool player1, Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
 	{
 		if(!spectating && player1 != IsPlayer1) throw new Exception("Recieved unit update for wrong team");
