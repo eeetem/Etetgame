@@ -1,1 +1,2 @@
 Alpha 3.1
+getting shot at from the fog of war now spots the shooting enemy

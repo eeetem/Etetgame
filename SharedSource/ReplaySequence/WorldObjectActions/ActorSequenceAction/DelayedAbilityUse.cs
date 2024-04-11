@@ -28,7 +28,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		var b =  base.GenerateInfoActions(player1);
 		if (Actor.IsPlayer1Team != player1)
 		{
-			b.Add(UnitUpdate.Make(Actor.WorldObject.ID, Actor.WorldObject.TileLocation.Position, Actor.WorldObject.GetData(),player1));
+			b.Add(SpotUnit.Make(Actor.WorldObject.ID, player1));
 		}
 
 		return b;

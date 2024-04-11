@@ -57,7 +57,7 @@ public class UseAbility : Action
 		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
 			UnitAbility action = actor.Abilities[args.AbilityIndex];
-			if (!Equals(_lastArgs, args) || !Equals(_lastActor, actor) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
+			if (_lastActor == null || !Equals(_lastArgs, args) || !Equals(_lastActor.WorldObject.TileLocation.Position, actor.WorldObject.TileLocation.Position) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
 			{
 				_previewCache = action.GetConsequences(actor, args.TargetObj!);
 				_lastActor = actor;

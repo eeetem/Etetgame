@@ -30,7 +30,7 @@ public class UnitUpdate : SequenceAction
 #if SERVER
 		return;
 #else
-		GameManager.UpdateUnitPositions(_player1, unitPositions, _fullUpdate);
+		GameManager.UpdateUnitPositions(_player1, _unitPositions, true);
 #endif
 	}
 

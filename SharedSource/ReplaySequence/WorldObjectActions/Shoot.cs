@@ -62,25 +62,7 @@ public class Shoot : SequenceAction
 		return t;
 	}
 
-	public override List<SequenceAction> GenerateInfoActions(bool player1)
-	{
-		if (Projectile.Result.hit)
-		{
-			var hitobj = WorldObjectManager.GetObject(Projectile.Result.HitObjId);
-			if(hitobj != null && hitobj.UnitComponent != null && hitobj.UnitComponent.IsPlayer1Team == player1)
-			{
-				Vector2Int tile = Projectile.Result.StartPoint;
-				var attacker = WorldManager.Instance.GetTileAtGrid(tile).UnitAtLocation;
-				if (attacker == null)
-				{
-					Log.Message("ERROR","Attacker not found for shooting reveal "+tile);
-					return base.GenerateInfoActions(player1);
-				}
-				return new List<SequenceAction>(){SpotUnit.Make(attacker.WorldObject.ID,player1)};
-			}
-		}
-		return base.GenerateInfoActions(player1);
-	}
+
 #if CLIENT
 
 	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
@@ -215,6 +197,25 @@ public class Shoot : SequenceAction
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
 	{
 		return true;
+	}
+		public override List<SequenceAction> GenerateInfoActions(bool player1)
+	{
+		if (Projectile.Result.hit)
+		{
+			var hitobj = WorldObjectManager.GetObject(Projectile.Result.HitObjId);
+			if(hitobj != null && hitobj.UnitComponent != null && hitobj.UnitComponent.IsPlayer1Team == player1)
+			{
+				Vector2Int tile = Projectile.Result.StartPoint;
+				var attacker = WorldManager.Instance.GetTileAtGrid(tile).UnitAtLocation;
+				if (attacker == null)
+				{
+					Log.Message("ERROR","Attacker not found for shooting reveal "+tile);
+					return base.GenerateInfoActions(player1);
+				}
+				return new List<SequenceAction>(){SpotUnit.Make(attacker.WorldObject.ID,player1)};
+			}
+		}
+		return base.GenerateInfoActions(player1);
 	}
 
 #endif

@@ -11,21 +11,33 @@ public class SpotUnit : SequenceAction
 {
 	public override SequenceType GetSequenceType()
 	{
-		return SequenceType.UnitUpdate;
+		return SequenceType.SpotUnit;
 	}
 
-	public override BatchingMode Batching => BatchingMode.Sequential;
+	public override BatchingMode Batching => BatchingMode.OnlySameType;
 
 	
 	private (Vector2Int, WorldObject.WorldObjectData)? spotedUnit = new();
 	private int unitId;
 	private bool _player1;
 	
-
+	//not netowrked
+	Vector2Int forcePos;
+	
 	public static SpotUnit Make(int id, bool player1)
 	{
 		SpotUnit t = (GetAction(SequenceType.SpotUnit) as SpotUnit)!;
 		t.unitId = id;
+		t._player1 = player1;
+		t.forcePos = new Vector2Int(-1,-1);
+		t.spotedUnit = null;
+		return t;
+	}
+	public static SpotUnit Make(int id, Vector2Int forcePos, bool player1)
+	{
+		SpotUnit t = (GetAction(SequenceType.SpotUnit) as SpotUnit)!;
+		t.unitId = id;
+		t.forcePos = forcePos;
 		t._player1 = player1;
 		t.spotedUnit = null;
 		return t;
@@ -33,7 +45,7 @@ public class SpotUnit : SequenceAction
 	protected override void RunSequenceAction()
 	{
 #if SERVER
-		if (_player1)
+		if (_player1) // this is sent to clients so make sure we dont override with it a regular unit update
 		{
 			GameManager.Player1UnitPositions[unitId] = spotedUnit!.Value;
 		}
@@ -41,10 +53,10 @@ public class SpotUnit : SequenceAction
 		{
 			GameManager.Player2UnitPositions[unitId] = spotedUnit!.Value;
 		}
-		
 #else
-
-		GameManager.UpdateUnitPositions(_player1, , _fullUpdate);
+		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> dict = new();
+		dict[unitId] = spotedUnit!.Value;
+		GameManager.UpdateUnitPositions(_player1, dict, false);
 #endif
 	}
 
@@ -53,7 +65,7 @@ public class SpotUnit : SequenceAction
 		message.Add(_player1);
 
 		message.Add(unitId);
-		message.Add(spotedUnit.Value.Item1);
+		message.Add(spotedUnit!.Value.Item1);
 		message.Add(spotedUnit.Value.Item2);
 		
 	}
@@ -81,7 +93,10 @@ public class SpotUnit : SequenceAction
 		var unit = WorldObjectManager.GetObject(unitId);
 
 		Debug.Assert(unit != null, nameof(unit) + " != null");
-		spotedUnit = (unit.TileLocation.Position, unit.GetData());
+		Vector2Int pos = unit.TileLocation.Position;
+		if(forcePos != new Vector2Int(-1,-1))
+			pos = forcePos;
+		spotedUnit = (pos, unit.GetData());
 
 	}
 #endif

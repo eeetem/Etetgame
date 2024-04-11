@@ -108,7 +108,7 @@ public class UnitMove : UnitSequenceAction
         {
             if (Path.Count > 0)
             {
-                b.Add(UnitUpdate.Make(Actor.WorldObject.ID, Path[0], Actor.WorldObject.GetData(),player1));
+                b.Add(SpotUnit.Make(Actor.WorldObject.ID, Path[0],player1));
             }
         }
         else//spot everyone else the unit will see
@@ -121,8 +121,8 @@ public class UnitMove : UnitSequenceAction
                 foreach (var loc in tiles)
                 {
                     var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
-                    if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value)
-                        b.Add(UnitUpdate.Make(tile.UnitAtLocation.WorldObject.ID, loc.Key, tile.UnitAtLocation.WorldObject.GetData(), player1));
+                    if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
+                        b.Add(SpotUnit.Make(tile.UnitAtLocation.WorldObject.ID, player1));
                     if(loc.Value>Visibility.None)
                         seenTiles.Add(loc.Key);
                 }
@@ -131,7 +131,7 @@ public class UnitMove : UnitSequenceAction
 
             foreach (var t in seenTiles)
             {
-                b.Add(TileUpdate.Make(t));
+                b.Add(TileUpdate.Make(t,false));
             }
            
         }

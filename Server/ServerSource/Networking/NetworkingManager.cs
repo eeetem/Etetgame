@@ -159,7 +159,7 @@ public static partial class NetworkingManager
 					WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 					if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 					{
-						act.Add(TileUpdate.Make(new Vector2Int(x, y)));
+						act.Add(TileUpdate.Make(new Vector2Int(x, y),true));
 						sendTiles++;
 						//	if (sendTiles >30)
 						//	{
@@ -393,13 +393,9 @@ public static partial class NetworkingManager
 			packet.Actions.Remove(sequenceAction);
 			sequenceAction.Return();
 		}
-		packet.Actions.ForEach(x=>x.FilterForPlayer(player1));
-		List<SequenceAction> infoActions = new List<SequenceAction>();
-		foreach (var act in packet.Actions)
-		{
-			infoActions.AddRange(act.GenerateInfoActions(player1));
-		}
+	
 
+		//execute the sequence serverside if all players have it
 		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2))
 		{
 			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
@@ -429,9 +425,22 @@ public static partial class NetworkingManager
 		}
 		
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
+		List<SequenceAction> infoActions = new List<SequenceAction>();
+		foreach (var act in packet.Actions)
+		{
+			infoActions.AddRange(act.GenerateInfoActions(player1));
+			
+		}
+
 		List<SequenceAction> actsToSend = new List<SequenceAction>();
 		actsToSend.AddRange(infoActions);
 		actsToSend.AddRange(packet.Actions);
+		actsToSend.ForEach(x=>x.FilterForPlayer(player1));
+		
+		
+		List<SequenceAction> serverInfoActions = new List<SequenceAction>();
+		infoActions.ForEach(x => serverInfoActions.Add(x.Clone()));
+		SequenceManager.AddSequence(serverInfoActions);//make sure server processes theinfo it's sneding to the client aswell
 		if (actsToSend.Count>0)
 		{
 			Log.Message("NETWORKING", "Sending sequence to player: " + player1);
@@ -535,7 +544,6 @@ public static partial class NetworkingManager
 	private static void SendSequence(List<SequenceAction> actions)
 	{
 		var originalList = new List<SequenceAction>(actions);
-		actions.RemoveAll(x => !x.ShouldSend());
 		foreach (var a in originalList)
 		{
 			if(actions.Contains(a)) continue;
