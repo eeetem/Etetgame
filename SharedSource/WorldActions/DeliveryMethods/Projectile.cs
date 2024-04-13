@@ -15,10 +15,12 @@ public class Projectile : DeliveryMethod
 	
 	readonly int range;
 	readonly int spot;
-	public Projectile(int range, int spot)
+	private readonly bool ignoreUnits;
+	public Projectile(int range, int spot, bool ignoreUnits = false)
 	{
 		this.range = range;
 		this.spot = spot;
+		this.ignoreUnits = ignoreUnits;
 	}
 
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
@@ -30,7 +32,24 @@ public class Projectile : DeliveryMethod
 			return list;
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false);
+		//if out of range pick furthest point in range
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > range)
+		{
+
+			Vector2 direction = Vector2.Normalize(target.TileLocation.Position - actor.WorldObject.TileLocation.Position);
+			Vector2 newTargetPosition = actor.WorldObject.TileLocation.Position + direction * range;
+			if (WorldManager.Instance.GetTileAtGrid(newTargetPosition).Surface != null)
+			{
+				target = WorldManager.Instance.GetTileAtGrid(newTargetPosition).Surface!;
+			}
+			else
+			{
+				target = actor.WorldObject; //there's no tile so just shoot yourself isntead lmao
+				return list;
+			}
+		}
+
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false, ignoreControllables:ignoreUnits);
 		target = WorldManager.Instance.GetTileAtGrid(outcome.CollisionPointShort).Surface!;
 		if(outcome.HitObjId != -1)
 		{
@@ -53,10 +72,7 @@ public class Projectile : DeliveryMethod
 
 	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
-		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > range)
-		{
-			return new Tuple<bool,bool, string> (false,false, "Too Far");
-		}
+
 		
 		return new Tuple<bool,bool, string> (true,true, "");
 	}

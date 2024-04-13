@@ -271,11 +271,7 @@ public static class PrefabManager
 		else
 		{
 			XmlNode node = xmlObj.GetElementsByTagName("delivery")[0]!.ChildNodes[0]!;
-			if (node.Name == "throwable")
-			{	
-				int throwRange = int.Parse(node.Attributes?["throwRange"]?.InnerText ?? "5");
-				dvm = new Throwable(throwRange);
-			}else if (node.Name == "vissionCast")
+			if (node.Name == "vissionCast")
 			{	
 				
 				int throwRange = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
@@ -284,7 +280,8 @@ public static class PrefabManager
 			{
 				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				int spot = int.Parse(node.Attributes?["fowSpot"]?.InnerText ?? "3");
-				dvm = new Projectile(range,spot);
+				bool ignoreUnits = bool.Parse(node.Attributes?["ignoreUnits"]?.InnerText ?? "false");
+				dvm = new Projectile(range,spot,ignoreUnits);
 			}
 
 

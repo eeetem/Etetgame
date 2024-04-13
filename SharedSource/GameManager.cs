@@ -57,6 +57,7 @@ public static partial class GameManager
     public static readonly List<Vector2Int> T1SpawnPoints = new();
     public static readonly List<Vector2Int> T2SpawnPoints = new();
     public static int score;
+    public static float CurrentTurnPercentDone;
 
     public static void Register(WorldObject wo)
     {
@@ -216,6 +217,16 @@ public static partial class GameManager
         data.IsPlayer1Turn = IsPlayer1Turn;
         data.Score = score;
         data.GameState = GameState;
+        var units = GetTeamUnits(IsPlayer1Turn);
+        var maxPoints = 0;
+        var currentPoints = 0;
+        foreach (var u in units)
+        {
+
+            maxPoints += u.MovePoints.Max;
+            currentPoints += u.MovePoints.Current;
+        }
+        data.CurrentTurnPercentDone = 1f - ((float)currentPoints / maxPoints);
         return data;
     }
 
@@ -223,6 +234,8 @@ public static partial class GameManager
     {
         public bool? IsPlayerOne { get; set; }
         public bool IsPlayer1Turn{ get; set; }
+
+        public float CurrentTurnPercentDone;
 
         public int Score { get; set; }
         public GameState GameState { get; set; }
@@ -233,6 +246,8 @@ public static partial class GameManager
             message.Add(IsPlayer1Turn);
             message.Add(Score);
             message.Add((int)GameState);
+            message.Add(CurrentTurnPercentDone);
+
             message.Add(IsPlayerOne == null);
             if (IsPlayerOne != null) message.Add(IsPlayerOne.Value);
         }
@@ -242,6 +257,8 @@ public static partial class GameManager
             IsPlayer1Turn = message.GetBool();
             Score = message.GetInt();
             GameState = (GameState)message.GetInt();
+            CurrentTurnPercentDone = message.GetFloat();
+    
             bool isNull = message.GetBool();
             if (!isNull) IsPlayerOne = message.GetBool();
         }

@@ -1,2 +1,16 @@
 Alpha 3.1
-getting shot at from the fog of war now spots the shooting enemy
+-Various bug/crash fixes
+-Getting shot at from the fog of war now spots the shooting enemy
+-Officer now actually unpanicks units rather than just increasing determination
+-All units now have a protrait
+-Updated specialist sprite
+-Ability tooltips are now shown on hover
+-Removed the static effect
+-Scout ability adds 5 move points rather than setting move points to 5(it still reduces move range so you're better off useing the normal moves first)
+-Added overwatch hotkey
+-When targeting an ability beyond max range rather than refusing to execute the ability will target at max range
+-Officer rally now can go through directly next to the officer in order to avoid werid corner cases blocking nearby units from being boosted
+-When starting a match fixed ability buttons displaying in a broken way
+-There's now a progress bar for AI turn
+-AI performs it's turn wastly faster
+-Added few unintentionally missing walls

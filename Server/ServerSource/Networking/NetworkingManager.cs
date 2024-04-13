@@ -335,12 +335,11 @@ public static partial class NetworkingManager
 		{
 			server.Update();
 		}
-		
-		
+
 		SendSequenceIfShould(false);//second playerirst because of ai and practice mode
 		SendSequenceIfShould(true);
 		
-		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && (GameManager.Player1 == null || GameManager.Player1.Connection == null ||  GameManager.Player1.ReadyForNextSequence) && (GameManager.Player2 == null || GameManager.Player2.Connection == null || GameManager.Player2.ReadyForNextSequence))
+		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && !HasPendingMessages)
 		{
 			GameManager.UpdatePlayerSideUnitPositions();//make sure up to date info
 			SendAllSeenUnitPositions();
@@ -420,27 +419,35 @@ public static partial class NetworkingManager
 				server.Send(msg, GameManager.Player1!.Connection,false);
 			}
 			msg.Release();
+			
+			List<SequenceAction> actsToExecute = new List<SequenceAction>();
+			foreach (var act in packet.Actions)
+			{
+				var info = act.GenerateInfoActions(true);
+				info.ForEach(x=>x.FilterForPlayer(true));
+				actsToExecute.AddRange(info);
+				
+				info = act.GenerateInfoActions(false);
+				info.ForEach(x=>x.FilterForPlayer(false));
+				actsToExecute.AddRange(info);
+				
+				actsToExecute.Add(act);
+
+			}
 			SequenceManager.AddSequence(sequencesToExecute[packet.ID].Item3);
 			sequencesToExecute.Remove(packet.ID);
 		}
 		
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
-		List<SequenceAction> infoActions = new List<SequenceAction>();
+		List<SequenceAction> actsToSend = new List<SequenceAction>();
 		foreach (var act in packet.Actions)
 		{
-			infoActions.AddRange(act.GenerateInfoActions(player1));
-			
+			var info = act.GenerateInfoActions(player1);
+			actsToSend.AddRange(info);
+			actsToSend.Add(act);
 		}
-
-		List<SequenceAction> actsToSend = new List<SequenceAction>();
-		actsToSend.AddRange(infoActions);
-		actsToSend.AddRange(packet.Actions);
 		actsToSend.ForEach(x=>x.FilterForPlayer(player1));
-		
-		
-		List<SequenceAction> serverInfoActions = new List<SequenceAction>();
-		infoActions.ForEach(x => serverInfoActions.Add(x.Clone()));
-		SequenceManager.AddSequence(serverInfoActions);//make sure server processes theinfo it's sneding to the client aswell
+
 		if (actsToSend.Count>0)
 		{
 			Log.Message("NETWORKING", "Sending sequence to player: " + player1);

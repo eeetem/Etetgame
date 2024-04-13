@@ -104,15 +104,27 @@ public class ChangeUnitValues : UnitSequenceAction
 
 	protected override void RunSequenceAction()
 	{
-		
+		var detChange = DetChange.GetChange(Actor.Determination);
 		ActChange.Apply(ref Actor.ActionPoints);
 		MoveChange.Apply(ref Actor.MovePoints);
 		DetChange.Apply(ref Actor.Determination);
+		if(Actor.Determination > 0 && Actor.Paniced)
+		{
+			Actor.Paniced = false;
+		}
 		if(MoveRangeEffectChange.Value != 0)
 		{
 			MoveRangeEffectChange.Apply(ref Actor.MoveRangeEffect);
 		}
-		
+
+#if CLIENT
+		if(detChange > 0)
+		{
+			var t = new PopUpText("Determination:"+detChange, Actor.WorldObject.TileLocation.Position,Color.Green);	
+		}
+
+#endif
+
 	}
 
 	public override string ToString()

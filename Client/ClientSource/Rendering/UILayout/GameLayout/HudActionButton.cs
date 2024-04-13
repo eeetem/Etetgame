@@ -57,7 +57,7 @@ public class HudActionButton
 
 		
 	}
-
+	bool quickPreview = false;
 	public HudActionButton(ImageButton imageButton, UnitAbility abl, Unit owner)
 	{
 		UIButton = imageButton;
@@ -114,8 +114,23 @@ public class HudActionButton
 		}
 		UIButton.Click += (o, a) =>
 		{
-			SelectedButton = this;
 			GameLayout.SelectHudAction(this);
+			quickPreview = false;
+		};
+		UIButton.MouseEntered += (o, a) =>
+		{
+			GameLayout.SelectHudAction(this);
+			quickPreview = true;
+		};
+		UIButton.MouseLeft += (o, a) =>
+		{
+			if (quickPreview)
+			{
+				GameLayout.SelectHudAction(null);
+				quickPreview = false;
+			}
+
+			
 		};
 
 	}

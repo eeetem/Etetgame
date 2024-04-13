@@ -190,8 +190,11 @@ public class SequenceManager
 #if CLIENT
 					GameLayout.ReMakeMovePreview();
 					NetworkingManager.SendSequenceExecuted();
-			hasSequece = false;
+			
+#else
+			NetworkingManager.SendGameData();
 #endif
+			hasSequece = false;
 		}
 
 		

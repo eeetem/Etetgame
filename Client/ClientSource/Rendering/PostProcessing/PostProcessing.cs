@@ -140,8 +140,8 @@ public static class PostProcessing
 
 
 		AddTween("noise", 0.002f, 5f, false);
-		AddTween("clmagnitude", 0.01f, 2f, false);
-			
+		AddTween("clmagnitude", 0f, 2f, false);
+		AddTween("clalpha" , 0f,1f,false);
 
 			
 		Console.Write("added tweens");

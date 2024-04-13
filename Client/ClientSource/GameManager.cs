@@ -12,6 +12,7 @@ using DefconNull.Rendering.UILayout.GameLayout;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 
 namespace DefconNull;
 
@@ -66,7 +67,7 @@ public static partial class GameManager
 		intated = true;
 		TimeTillNextTurn = PreGameData.TurnTime*1000;
 		WorldManager.Instance.MakeFovDirty();
-
+		GameLayout.SelectUnit(null);
 		
 	}
 
@@ -120,6 +121,10 @@ public static partial class GameManager
 			
 		score = data.Score;
 		GameState = data.GameState;
+		CurrentTurnPercentDone = data.CurrentTurnPercentDone;
+		if (IsPlayer1 == IsPlayer1Turn)
+			CurrentTurnPercentDone = -1;
+		GameLayout.SetPercentComplete(CurrentTurnPercentDone);
 
 		Audio.OnGameStateChange(GameState);
 		switch (GameState)

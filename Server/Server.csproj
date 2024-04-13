@@ -186,9 +186,6 @@
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\Projectile.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\Projectile.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\Throwable.cs">
-        <Link>SharedSource\WorldActions\DeliveryMethods\Throwable.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\VissionCast.cs">
         <Link>SharedSource\WorldActions\DeliveryMethods\VissionCast.cs</Link>
       </Compile>

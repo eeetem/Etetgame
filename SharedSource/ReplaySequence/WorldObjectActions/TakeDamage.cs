@@ -212,7 +212,7 @@ public static partial class WorldObjectManager
 			pos += new Vector2(0, 0);
 			Vector2 offset = new Vector2(damageSprite.Width-2,0);
 			batch.DrawNumberedIcon(Dmg.ToString(), damageSprite, pos+offset, Color.White);
-			batch.DrawNumberedIcon(resistance.ToString(), blockSprite, pos+offset*2f, Color.White,resistColor);
+			batch.DrawNumberedIcon(resistance.ToString(), blockSprite, pos+offset*2f, Color.Red,resistColor);
 			batch.DrawText("=", pos+offset*2+new Vector2(26,7),2f, Color.White);
 			batch.DrawNumberedIcon(sumDamage.ToString(), TextureManager.GetTexture("HoverHud/Consequences/recivedDamage"), pos+offset*3+new Vector2(8,0), Color.White);
 

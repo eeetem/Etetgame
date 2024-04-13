@@ -115,6 +115,7 @@ public class UnitMove : UnitSequenceAction
         {
             Vector2Int lastPos = Actor.WorldObject.TileLocation.Position;
             HashSet<Vector2Int> seenTiles = new HashSet<Vector2Int>();
+            HashSet<int> seenUnits = new HashSet<int>();
             foreach (var spot in Path)
             {
                 var tiles = WorldManager.Instance.GetVisibleTiles(spot, Utility.Vec2ToDir(spot-lastPos), Actor.GetSightRange(), Actor.Crouching);
@@ -122,13 +123,17 @@ public class UnitMove : UnitSequenceAction
                 {
                     var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
                     if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
-                        b.Add(SpotUnit.Make(tile.UnitAtLocation.WorldObject.ID, player1));
+                        seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
                     if(loc.Value>Visibility.None)
                         seenTiles.Add(loc.Key);
                 }
                 lastPos = spot;
             }
 
+            foreach (var u in seenUnits)
+            {
+                b.Add(SpotUnit.Make(u, player1));
+            }
             foreach (var t in seenTiles)
             {
                 b.Add(TileUpdate.Make(t,false));

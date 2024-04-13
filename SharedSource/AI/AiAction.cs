@@ -460,26 +460,30 @@ public abstract class AIAction
 		
 		if (!AI.passiveMode)
 		{
-			int protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
+			
 
 			var bestAttack = GetBestPossibleAbility(hypotheticalUnit, false, false, true, dimension);
 
 			int damagePotential = bestAttack.GetTotalValue();
 
 			//protectionPentalty *=2;//cover is VERY important
-		
+			
+			//if damage is no good why even check if it's safe?
+			if (damagePotential > 0)
+			{ 
+				int protectionPentalty = ProtectionPentalty(hypotheticalUnit, dimension, false);
+				score += protectionPentalty;
+				details.ProtectionPentalty = protectionPentalty;
+				
+			}
 
-			score += protectionPentalty;
-			details.ProtectionPentalty = protectionPentalty;
-			//	details.EnemyAttackScores = enemyAttackScores;
-	
-		
+
 			damagePotential *= 3; //damage is important
 		
 			if(damagePotential <= 0)
 			{
 				//discourage damageless tiles, we do this instead of vission checks
-				damagePotential = -50;
+				damagePotential = -100;
 			}
 
 			details.DamagePotential = damagePotential; 
@@ -497,7 +501,7 @@ public abstract class AIAction
 			if(Equals(u, realUnit)) continue;
 			var friendLoc = u.WorldObject.TileLocation.Position;
 			var dist = Vector2.Distance(friendLoc, tilePosition);
-			clumpingPenalty -= (int)(3/dist);
+			clumpingPenalty -= (int)(2/dist);
 		}
 		score += clumpingPenalty;
 		details.ClumpingPenalty = clumpingPenalty;

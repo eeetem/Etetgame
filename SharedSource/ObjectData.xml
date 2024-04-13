@@ -366,12 +366,18 @@
 
     </action>
 
-    <action immideate="true" detCost ="1" moveCost="0" actCost="0" aiExempt="false">
+    <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
       <name>Rally</name>
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
 
+      
       <effect>
-        <consequences visible ="false" los="2" range = "7" exRange="1" target="friend" ignore="Officer">
+        <consequences los="4" range = "2" exRange="1" target="friend" ignore="Officer">
+          <values determination="99[cap]"/>
+        </consequences>
+      </effect>
+      <effect>
+        <consequences  los="2" range = "7" exRange="1" target="friend" ignore="Officer">
           <values determination="99[cap]"/>
         </consequences>
       </effect>
@@ -397,7 +403,7 @@
       <tip>Launches a smoke grenade to block lines of sight for 5 ticks</tip>
       <effect>
         <delivery>
-          <throwable throwRange="12"/>
+          <projectile ignoreUnits="true" range="12"/>
         </delivery>
         <consequences range="3">
           <place name="Smoke"/>
@@ -510,7 +516,7 @@
       
       <effect>
         <delivery>
-          <projectile range="24" fowSpot="4"/>
+          <projectile ignoreUnits="false" range="24" fowSpot="4"/>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>
@@ -534,7 +540,7 @@
       
       <effect>
         <delivery>
-          <throwable throwRange="7"/>
+          <projectile ignoreUnits="true" range="7"/>
         </delivery>
         <consequences range="3">
           <damage det="1" dmg="2" detRes="1" envRes="0"/>
@@ -549,7 +555,7 @@
       </effect>
       <effect>
         <delivery>
-          <throwable throwRange="7"/>
+          <projectile ignoreUnits="true" range="7"/>
         </delivery>
         <consequences range="2">
           <damage det="0" dmg="3" detRes="1" envRes="0"/>
@@ -557,7 +563,7 @@
       </effect>
       <effect>
         <delivery>
-          <throwable throwRange="7"/>
+          <projectile ignoreUnits="true" range="7"/>
         </delivery>
         <consequences range="1">
           <damage det="0" dmg="3" detRes="0" envRes="0"/>
@@ -590,7 +596,7 @@
     <name>Rapid Manouvers</name>
     <tip>Restores action points and gives 5 movement points, while reducing movement range</tip>
       <consequences range="1">
-        <values act ="1[set]" move="5[set]" moveRange="-3"/>
+        <values act ="1[set]" move="5" moveRange="-3"/>
       </consequences>
 
   </statuseffect>

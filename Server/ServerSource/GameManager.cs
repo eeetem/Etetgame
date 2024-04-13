@@ -217,6 +217,7 @@ public static partial class GameManager
 	public static bool PlayerUnitPositionsDirty = false;
 	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
+		Log.Message("UNITPOSITIONS","updating unit positions");
 		foreach (var pos in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(Player1UnitPositions))
 		{
 			var t = WorldManager.Instance.GetTileAtGrid(pos.Value.Item1);
@@ -226,12 +227,14 @@ public static partial class GameManager
 			if (t.UnitAtLocation == null)
 			{
 				Player1UnitPositions.Remove(pos.Key);
+				Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" is null");
 				PlayerUnitPositionsDirty = true;
 			}
 			else if(t.UnitAtLocation.WorldObject.ID != pos.Key){
 				Player1UnitPositions.Remove(pos.Key);
 				Player1UnitPositions.Remove(t.UnitAtLocation.WorldObject.ID);
 				Player1UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,(pos.Value.Item1,t.UnitAtLocation.WorldObject.GetData()));
+				Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" is not the same as the one at the tile");
 				PlayerUnitPositionsDirty = true;
 			}
 			else
@@ -240,6 +243,7 @@ public static partial class GameManager
 				if (Player1UnitPositions.ContainsKey(pos.Key) && !Player1UnitPositions[pos.Key].Equals(unitData))
 				{
 					Player1UnitPositions[pos.Key] = unitData;
+					Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" has different data");
 					PlayerUnitPositionsDirty = true;
 				}
 			}
@@ -253,12 +257,16 @@ public static partial class GameManager
 			if (t.UnitAtLocation == null)
 			{
 				Player2UnitPositions.Remove(pos.Key);
+				Log.Message("UNITPOSITIONS","P2 unit at pos: "+pos.Value.Item1+" is null");
+
 				PlayerUnitPositionsDirty = true;
 			}
 			else if(t.UnitAtLocation.WorldObject.ID != pos.Key){
 				Player2UnitPositions.Remove(pos.Key);
 				Player2UnitPositions.Remove(t.UnitAtLocation.WorldObject.ID);
 				Player2UnitPositions.Add(t.UnitAtLocation.WorldObject.ID,(pos.Value.Item1,t.UnitAtLocation.WorldObject.GetData()));
+				Log.Message("UNITPOSITIONS","P2 unit at pos: "+pos.Value.Item1+" is not the same as the one at the tile");
+
 				PlayerUnitPositionsDirty = true;
 			}
 			else
@@ -268,6 +276,8 @@ public static partial class GameManager
 				if (Player2UnitPositions.ContainsKey(pos.Key) && !Player2UnitPositions[pos.Key].Equals(unitData))
 				{
 					Player2UnitPositions[pos.Key] = unitData;
+					Log.Message("UNITPOSITIONS","P2 unit at pos: "+pos.Value.Item1+" has different data");
+
 					PlayerUnitPositionsDirty = true;
 				}
 			}

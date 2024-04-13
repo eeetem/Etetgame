@@ -27,6 +27,7 @@ public enum Cover
 	Low=1,//small fences and such, visible when crouch
 	High=2,//small walls and such, hidden when crouched
 	Full=3,//full impassible walls
+	Beyond=4//
 }
 [Serializable]
 public enum Direction

@@ -51,15 +51,18 @@ public static class Camera
 	static Vector2 MoveTarget;
 	public static bool ForceMoving { get; private set; }
 	public static bool noCancel = false;
+	private static float preForceZoom;
+
 	public static void SetPos(Vector2Int vec, bool force = false)
 	{
 
 		vec = Utility.GridToWorldPos(vec);
 		//vec.X -= Cam.BoundingRectangle.Width / 2;
 		//	vec.Y -= Cam.BoundingRectangle.Height / 2;
-		MoveTarget = vec-(Vector2Int)Cam.Origin;
+		MoveTarget = vec - (Vector2Int) Cam.Origin;
 		noCancel = force;
 		ForceMoving = true;
+
 	}
 
 
@@ -112,18 +115,15 @@ public static class Camera
 			Vector2 difference = MoveTarget - Cam.Position;
 			if (difference.Length() < 25)
 			{
+
+
 				ForceMoving = false;
 				noCancel = false;
 			}
-
-	
-
 			difference = difference / 400f;
 				
 				
 			var vec =  Vector2.Clamp(difference,new Vector2(-3,-3),new Vector2(3,3));
-		
-
 			return vec;
 		}
 			

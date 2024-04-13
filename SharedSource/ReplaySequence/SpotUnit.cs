@@ -100,5 +100,8 @@ public class SpotUnit : SequenceAction
 
 	}
 #endif
-	
+	public override string ToString()
+	{
+		return $"{nameof(spotedUnit)}: {spotedUnit}, {nameof(unitId)}: {unitId}";
+	}
 }

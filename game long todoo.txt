@@ -13,16 +13,13 @@ merge vission and projectile
 signing
 i icon
 
+shooting while panicked bug?
+ai timer + speed up (fix bug first)
 
 
+tutorial
 
-weird poor connection?
 
-[1710545172691][WORLD MANAGER]FOV made dirty
-[1710545172691][WORLD MANAGER]FOV made dirty
-[1710545172755][WORLD MANAGER]calculating FOV
-[1710545178460] discon
-[1710545182548][WORLD MANAGER]sending FOV tile updates
 
 sfx list:
 -throw

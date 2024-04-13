@@ -36,6 +36,22 @@ public class GameLayout : MenuLayout
 			ScoreIndicator.Text = "score: " + score;
 		}
 	}
+	public static void SetPercentComplete(float score)
+	{
+		if (CompleteIndicator != null)
+		{
+			if (score < 0)
+			{
+				CompleteIndicator.Visible = false;
+			}
+			else
+			{	
+				CompleteIndicator.Visible = true;
+				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100f).ToString("n2") + "%";
+			}
+			
+		}
+	}
 
 	public static Unit? SelectedUnit { get; private set;} = null!;
 	public static Unit? SelectedEnemyUnit { get; private set;} = null!;
@@ -376,6 +392,7 @@ public class GameLayout : MenuLayout
 	private static ImageButton? ConfirmButton;
 	private static ImageButton? OverWatchToggle;
 	public static Label? ScoreIndicator;
+	public static Label? CompleteIndicator;
 	private static ImageButton? endBtn;
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
@@ -491,8 +508,21 @@ public class GameLayout : MenuLayout
 			};
 			SetScore(0);
 		}
+		
 
 		panel.Widgets.Add(ScoreIndicator);
+		
+		if (CompleteIndicator == null)
+		{
+			CompleteIndicator = new Label()
+			{
+				Top=250,
+				VerticalAlignment = VerticalAlignment.Top,
+				HorizontalAlignment = HorizontalAlignment.Center
+			};
+			SetPercentComplete(-1);
+		}
+		panel.Widgets.Add(CompleteIndicator);
 
 		if (GameManager.spectating)
 		{
@@ -1122,6 +1152,11 @@ public class GameLayout : MenuLayout
 		if (activeAction == ActiveActionType.Action || activeAction == ActiveActionType.Overwatch)
 		{
 			batch.DrawText("spacebar",infoboxtip+new Vector2(165,5)*infoboxscale,infoboxscale*0.8f,50,Color.White);
+			if (HudActionButton.SelectedButton.CanOverwatch)
+			{
+				batch.DrawText("ctrl", infoboxtip + new Vector2(240, 5) * infoboxscale, infoboxscale * 0.8f, 50, Color.White);
+			}
+
 			string toolTipText = HudActionButton.SelectedButton!.Tooltip;
 	
 			batch.DrawText(toolTipText,infoboxtip+new Vector2(45,38)*infoboxscale, infoboxscale*0.8f, 51, Color.White);
@@ -1443,17 +1478,13 @@ public class GameLayout : MenuLayout
 		}
 
 		if (JustPressed(Keys.Space))
-		{
-			if (currentKeyboardState.IsKeyDown(Keys.LeftControl))
-			{
-				ToggleOverWatch();
-			}
-			else
-			{
-				DoActiveAction();
-			}
+		{ 
+			DoActiveAction();
+		}
 
-			
+		if (JustPressed(Keys.LeftControl))
+		{
+			ToggleOverWatch();
 		}
 
 	}
