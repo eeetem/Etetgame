@@ -11,10 +11,12 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
+      <OutputPath>..\Server\bin\Debug\</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
+      <OutputPath>..\Client\bin\Debug\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -43,6 +45,9 @@
       <None Remove="SharedSource\World\**" />
       <None Remove="obj\**" />
       <None Update="Maps\testmap.mapdata">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Special\tutorial.mapdata">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

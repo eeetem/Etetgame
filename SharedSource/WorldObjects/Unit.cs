@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Riptide;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
 
@@ -261,40 +262,47 @@ namespace DefconNull.WorldObjects
 			args.AbilityIndex = ability;
 			DoAction(Action.ActionType.UseAbility,args);
 		}
-		
+
 		public void DoAction(Action.ActionType type, Action.ActionExecutionParamters args)
 		{
-			
+			Task.Run(() =>
+			{
 #if CLIENT
 			if(SequenceManager.SequenceRunning) return;
 			if (!GameManager.IsMyTurn()) return;
+#else
+
+				while (SequenceManager.SequenceRunning)
+				{
+					Thread.Sleep(1000);
+				}
 #endif
-			if (Overwatch.Item1) return;
-			if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
-			
-			var a = Action.Actions[type];
-			var result = a.CanPerform(this, args);
-			
-			if (!result.Item1)
-			{
+				if (Overwatch.Item1) return;
+				if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
+
+				var a = Action.Actions[type];
+				var result = a.CanPerform(this, args);
+
+				if (!result.Item1)
+				{
 #if CLIENT
 				if(args.Target.HasValue){
 					new PopUpText(result.Item2, args.Target.Value,Color.White);
 				}
 #else
-				Log.Message("UNITS","tried to do action but failed: " + result.Item2);
+					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
 #endif
-				return;
-			}
-			
-			Log.Message("UNITS","performing action " + a.Type);
+					return;
+				}
+
+				Log.Message("UNITS", "performing action " + a.Type);
 #if CLIENT
 			a.SendToServer(this,args);
 #elif SERVER
-			a.PerformServerSide(this,args);
+				a.PerformServerSide(this, args);
 #endif
 
-
+			});
 		}
 
 		public bool Paniced { get; set; }

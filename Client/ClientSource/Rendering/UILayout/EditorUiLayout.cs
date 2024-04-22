@@ -819,7 +819,8 @@ public class EditorUiLayout : MenuLayout
 			var southEdge = mouseTile.SouthEdge;
 			var surface = mouseTile.Surface;
 
-			batch.DrawText("\n north: " + (northEdge == null ? "null" : northEdge.Type.GetVariationPath(northEdge.spriteVariation)) + "\n"
+			batch.DrawText("\n X:" + mousePos.X + " Y:" + mousePos.Y +
+			               "\n north: " + (northEdge == null ? "null" : northEdge.Type.GetVariationPath(northEdge.spriteVariation)) + "\n"
 			               + "east: " + (eastEdge == null ? "null" : eastEdge.Type.GetVariationPath(eastEdge.spriteVariation)) + "\n"
 			               + "west: " + (westEdge == null ? "null" : westEdge.Type.GetVariationPath(westEdge.spriteVariation)) + "\n"
 			               + "south: " + (southEdge == null ? "null" : southEdge.Type.GetVariationPath(southEdge.spriteVariation)) + "\n"

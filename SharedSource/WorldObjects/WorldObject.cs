@@ -37,8 +37,7 @@ public partial class WorldObject
 		
 		spriteVariation = Type.GetRandomVariationIndex(seed);
 #endif
-			
-		Health = Math.Clamp(Health, 0, type.MaxHealth);
+
 	}
 
 
@@ -327,6 +326,7 @@ public partial class WorldObject
 		else
 		{
 			Health = data.Health;
+			Health = Math.Clamp(Health, 0, Type.MaxHealth);
 		}
 
 

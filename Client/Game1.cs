@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using DefconNull.LocalObjects;
 using DefconNull.Networking;
 using DefconNull.Rendering;
@@ -68,6 +69,8 @@ public class Game1 : Game
 
 	public static RenderTarget2D GlobalRenderTarget;
 	public static ConfigParser config;
+	
+
 	protected override void LoadContent()
 	{
 			

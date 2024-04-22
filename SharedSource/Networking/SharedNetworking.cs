@@ -28,9 +28,9 @@ public static partial class NetworkingManager
         PracticeMode = 21,
         DoAI = 22,
         MapReaload = 23,
-        //UnitUpdate = 24,
+        StartTutorial = 24,
         SequenceFinished = 25,
-  
+        
     }
 
     public enum ReplaySequenceTarget : ushort

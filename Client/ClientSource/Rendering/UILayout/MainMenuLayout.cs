@@ -106,7 +106,26 @@ reconnect.TextColor = Color.Gray;
 		};
 		MPStack.Widgets.Add(singleplayer);
 		
-		
+		var tutorial = new SoundButton
+		{
+			GridColumn = 0,
+			GridRow = 2,
+			Text = "Tutorial",
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
+		tutorial.Click += (a, b) =>
+		{
+	
+			GameManager.StartLocalServer();
+
+			NetworkingManager.StartTutorial();
+
+			GameLayout.GameLayout.TutorialSequence();
+
+		};
+		MPStack.Widgets.Add(tutorial);
+
 		
 		var lobybtn = new SoundButton
 		{

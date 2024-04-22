@@ -12,4 +12,6 @@ public static partial class NetworkingManager
         Refresh = 4,
         //server
     }
+
+
 }

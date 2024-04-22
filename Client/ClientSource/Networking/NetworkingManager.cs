@@ -34,7 +34,7 @@ public static partial class NetworkingManager
 	public static bool Connect(string ipport,string name)
 	{
 		Disconnect();
-		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		ipport = ipport.Trim();
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());
@@ -103,6 +103,11 @@ public static partial class NetworkingManager
 
 		return true;
 
+	}
+	public static void StartTutorial()
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.StartTutorial);
+		client?.Send(msg);
 	}
 	public static void SendStartGame(bool singleplayer = false)
 	{

@@ -54,7 +54,11 @@ public abstract class Action
 
 	public void SendToServer(Unit actor, ActionExecutionParamters args)
 	{
-		var packet = new GameActionPacket(actor.WorldObject.ID, Type, args);
+		SendToServer(actor.WorldObject.ID,args);
+	}
+	public void SendToServer(int actorID, ActionExecutionParamters args)
+	{
+		var packet = new GameActionPacket(actorID, Type, args);
 		NetworkingManager.SendGameAction(packet);
 	}
 #endif
@@ -139,7 +143,7 @@ public abstract class Action
 		{
 			
 			Target = message.GetSerializable<Vector2Int>();
-			TargetObj =WorldObjectManager.GetObject(message.GetInt());
+			TargetObj = WorldObjectManager.GetObject(message.GetInt());
 			AbilityIndex = message.GetInt();
 		}
 	}

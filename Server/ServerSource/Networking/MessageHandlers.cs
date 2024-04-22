@@ -1,4 +1,5 @@
-﻿using DefconNull.ReplaySequence.WorldObjectActions;
+﻿using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Riptide;
@@ -61,7 +62,7 @@ public static partial class NetworkingManager
 			currentPlayer = GameManager.Player2;
 		}
 
-		if (currentPlayer?.Connection?.Id != senderID)
+		if (currentPlayer?.Connection?.Id != senderID && !currentPlayer!.IsPracticeOpponent)
 		{
 			//out of turn action. perhaps desync or hax? kick perhaps
 			return;
@@ -76,6 +77,14 @@ public static partial class NetworkingManager
 		if(senderID != GameManager.Player1?.Connection?.Id) return;
 		if( GameManager.GameState != GameState.Lobby) SendGameData();//incase the ui is desynced
 		GameManager.StartSetup();
+	}
+	[MessageHandler((ushort)NetworkMessageID.StartTutorial)]
+	private static void Tutorial(ushort senderID,Message message)
+	{
+		if(senderID != GameManager.Player1?.Connection?.Id) return;
+		if(!SinglePlayerFeatures) return;
+		if( GameManager.GameState != GameState.Lobby) SendGameData();//incase the ui is desynced
+		GameManager.StartTutorial();
 	}
 	[MessageHandler((ushort)NetworkMessageID.SquadComp)]
 	private static void ReciveSquadComp(ushort senderID,Message message)
@@ -124,6 +133,10 @@ public static partial class NetworkingManager
 		}
 		GameManager.PreGameData.TurnTime = data.TurnTime;
 		SendPreGameInfo();
+		SendMapData(GameManager.Player1.Connection);
+		if (GameManager.Player2 != null)
+			if (GameManager.Player2.Connection != null)
+				SendMapData(GameManager.Player2.Connection);
 	}
 	[MessageHandler((ushort)NetworkMessageID.Chat)]
 	private static void ReciveChatMsg(ushort senderID,Message message)
@@ -170,6 +183,8 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
+
+		Log.Message("NETWORKING","Recived Game Action from: " + senderID);
 		if (!GameManager.Player2!.IsPracticeOpponent)
 		{
 			if (GameManager.Player1 != null && GameManager.Player1.Connection?.Id == senderID)
@@ -218,9 +233,9 @@ public static partial class NetworkingManager
 			return;
 		}
 
-	
+		Log.Message("NETWORKING","DOING GAME ACTION: " + packet.Type + " " + packet.Args.Target + " " + packet.Args.TargetObj?.ID + " " + packet.Args.AbilityIndex);
 		controllable.DoAction(packet.Type,packet.Args);
-		
+
 
 	}
 	
@@ -241,11 +256,8 @@ public static partial class NetworkingManager
 	{
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
-		Connection c;
-		server.TryGetClient(senderID, out c);
-		GameManager.Player2 = new GameManager.ClientInstance("Practice Opponent", c);
-		GameManager.Player2.IsPracticeOpponent = true;
-		SendPreGameInfo();
+		GameManager.PracticeMode(GameManager.Player1!.Connection);
+
 	}
 
 }

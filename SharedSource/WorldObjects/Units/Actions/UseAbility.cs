@@ -32,6 +32,7 @@ public class UseAbility : Action
 		
 		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
 		queue1.Enqueue(m);
+		
 		var turnact = FaceUnit.Make(actor.WorldObject.ID, args.TargetObj!.TileLocation.Position);
 		queue1.Enqueue(turnact);
 
@@ -52,12 +53,13 @@ public class UseAbility : Action
 #if CLIENT
 		private ActionExecutionParamters _lastArgs = new ActionExecutionParamters();
 		private Unit? _lastActor = null;
+		private Vector2Int lastpos = new Vector2Int(-1, -1);
 		List<SequenceAction> _previewCache = new List<SequenceAction>();
 
 		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
 			UnitAbility action = actor.Abilities[args.AbilityIndex];
-			if (_lastActor == null || !Equals(_lastArgs, args) || !Equals(_lastActor.WorldObject.TileLocation.Position, actor.WorldObject.TileLocation.Position) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
+			if (_lastActor == null || !Equals(_lastArgs, args) || !Equals(lastpos, actor.WorldObject.TileLocation.Position) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
 			{
 				_previewCache = action.GetConsequences(actor, args.TargetObj!);
 				_lastActor = actor;

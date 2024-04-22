@@ -13,8 +13,8 @@ merge vission and projectile
 signing
 i icon
 
-shooting while panicked bug?
-ai timer + speed up (fix bug first)
+
+spotted while moving bug
 
 
 tutorial

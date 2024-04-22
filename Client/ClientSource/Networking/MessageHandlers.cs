@@ -36,14 +36,13 @@ public static partial class NetworkingManager
 		
 		Task t = new Task(delegate
 		{
-			Thread.Sleep(5000);
 			do
 			{
 				do
 				{
-					Thread.Sleep(5000);
+					Thread.Sleep(1000);
 				} while (SequenceManager.SequenceRunning); //still loading the map
-				Thread.Sleep(5000);
+				Thread.Sleep(1000);
 			} while (SequenceManager.SequenceRunning);
 			//holy shit this is atrocious
 			

@@ -35,13 +35,13 @@ public static partial class WorldObjectManager
 				switch (data.Facing)
 				{
 					case Direction.North:
-						t = WorldManager.Instance.GetTileAtGrid((Vector2Int)_position + new Vector2Int(0, -1));
+						t = WorldManager.Instance.GetTileAtGrid(_position + new Vector2Int(0, -1));
 						vis2 = t.GetVisibility(player1);
 						if(vis2>vis) vis = vis2;
 						break;
 					
 					case Direction.West:
-						t = WorldManager.Instance.GetTileAtGrid((Vector2Int)_position + new Vector2Int(-1, 0));
+						t = WorldManager.Instance.GetTileAtGrid(_position + new Vector2Int(-1, 0));
 						vis2 = t.GetVisibility(player1);
 						if(vis2>vis) vis = vis2;
 						break;
@@ -56,7 +56,7 @@ public static partial class WorldObjectManager
 
         private Vector2Int _position = new Vector2Int(0, 0);
         public WorldObject.WorldObjectData data = new WorldObject.WorldObjectData("basicFloor");
-        public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing,bool fliped = false, Unit.UnitData? unitData = null)
+        public static MakeWorldObject Make(string prefab, Vector2Int Position, Direction facing,  bool fliped = false, Unit.UnitData? unitData = null)
         {
             var data = new WorldObject.WorldObjectData(prefab);
             data.UnitData = unitData;
@@ -110,7 +110,7 @@ public static partial class WorldObjectManager
             WorldTile? tile = null;
 		
 		
-            tile = WorldManager.Instance.GetTileAtGrid((Vector2Int)_position);
+            tile = WorldManager.Instance.GetTileAtGrid(_position);
             wo = new WorldObject(type, tile, data);
 				
             type.Place(wo, tile, data);
@@ -130,7 +130,7 @@ public static partial class WorldObjectManager
 					
             }
 			
-			
+			GameManager.Register(wo);
             WorldManager.Instance.MakeFovDirty();
         }
 

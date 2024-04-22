@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.AI;
@@ -1080,20 +1081,16 @@ public  partial class WorldManager
 	}
 
 
-	public bool LoadMap(string path)
+	public void LoadMap(string path)
 	{
-		if (File.Exists(path))
-		{
-			MapData mapData = MapData.FromJSON(File.ReadAllText(path));
-			return LoadMap(mapData);
-		}
-
-		return false;
-
+		if(!File.Exists(path))
+			path =  Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)+ "/" + path;
+		MapData mapData = MapData.FromJSON(File.ReadAllText(path)); 
+		LoadMap(mapData);
 
 	}
 
-	public bool LoadMap(MapData mapData)
+	public void LoadMap(MapData mapData)
 	{
 
 		WipeGrid();
@@ -1103,7 +1100,6 @@ public  partial class WorldManager
 			LoadWorldTile(worldTileData,true);
 		}
 
-		return true;
 	}
 
 

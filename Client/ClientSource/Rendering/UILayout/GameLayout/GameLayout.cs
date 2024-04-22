@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.AI;
 using DefconNull.Networking;
@@ -58,6 +59,7 @@ public class GameLayout : MenuLayout
 
 	public static void SelectUnit(Unit? unit)
 	{
+		if(!generated) return;
 		if (unit == null)
 		{
 			unit = GameManager.GetTeamUnits(GameManager.IsPlayer1).FirstOrDefault();
@@ -129,11 +131,365 @@ public class GameLayout : MenuLayout
 	private static Dictionary<int, RenderTarget2D> unitBarRenderTargets;
 	private static Dictionary<int, RenderTarget2D>?targetBarRenderTargets;
 		
+	
+	private static string tutorialNote = "";
+	private static Vector2Int highlightTile = new Vector2Int(-1,-1);
+	private static bool tutorial = false;
+	private static int tutorialUnitLock = -1;
+	public static void TutorialSequence()
+	{
+		Task.Run(() =>
+		{
+			tutorial = true;
+			canEndTurnTutorial = false;
+			tutorialNote = "Welcome to Etetgame!\n" +
+			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
+			Thread.Sleep(7000);
+			tutorialNote = "[Green]The Scout[-]\n" +
+			               "You currently control the [Green]Scout[-], one of the five unique unit classes in the game.\n\n" +
+			               "The [Green]Scout[-] is [Green]quick[-], [Green]aggressive[-] and has [Green]long range of sight[-], however it's [Red]fragile[-] and has [Red]sharp damage dropoff[-] over range.\n\n" +
+			               "Select the [Green]Scout[-] now and double click the highlighted tile to move to it, using one of your [Green]movement points[-].";
+			tutorialActionLock = ActiveActionType.Move;
+			highlightTile = new Vector2Int(19, 38);
+			var scout = GameManager.GetMyTeamUnits()[0];
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(19, 38))
+			{
+				Thread.Sleep(350);
+			}
+			highlightTile = new Vector2Int(-1, -1);
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "There's 3 types of cover. [Green]Low[-], [Yellow]High[-] and [Red]Full[-].\n" +
+			               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
+			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
+			               "[Red]Full[-] - Full walls, cannot bit hit crouching or standing.\n\n" +
+			               "There's colored indicators on your cursor indicating cover of nearby tiles.\n" +
+			               "Press [Green]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
+			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
+			{
+				Thread.Sleep(350);
+			}
+			
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "The [Red]enemy[-] unit is behind [Yellow]High[-] cover, the cover would absorb all your damage.\n\n" +
+			               "Right click to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
+			TutorialMove(scout,new Vector2Int(23,39));
 
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "Finally shoot the [Red]enemy[-],\n\n" +
+			               "Using 1 [Green]move[-] and 1 [Orange]action[-] point.";
+			TutorialFire(scout,new Vector2Int(23, 42));
+			
+			tutorialNote = "[Green]Turning[-]\n" +
+			               "Now that you've killed the [Red]enemy[-] double right click the highlighted tile to face into its direction.\n\n" +
+			               "You can turn units once per movement.";
+			tutorialActionLock = ActiveActionType.Face;
+			highlightTile = new Vector2Int(25, 39);
+
+			while (scout.WorldObject.Facing != Direction.East)
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "[Green]End turn[-]\n" +
+			               "You're out of [Green]movement[-] and [Orange]action[-] points." +
+			               "You can now end your turn by pressing [Orange]end turn[-] button in top right corner";
+			highlightTile = new Vector2Int(-1, -1);
+			TutorialEndTurn();
+			
+			int heavyId = 0;
+			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+			{
+				if (u.Value.Item2.Prefab == "Heavy")
+				{
+					heavyId = u.Key;
+					break;
+				}
+			}
+			
+			var mv = Action.Actions[Action.ActionType.Move];
+			var ow = Action.Actions[Action.ActionType.OverWatch];
+			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(32, 37)));
+			MoveCamera.Make(new Vector2Int(32,37),true,0).GenerateTask().RunTaskSynchronously();
+			Thread.Sleep(300);
+			var act = new Action.ActionExecutionParamters(new Vector2Int(29, 43));
+			act.AbilityIndex = 0;
+			ow.SendToServer(heavyId,act);
+			
+			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
+			NetworkingManager.EndTurn();
+
+			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
+			               "The [Red]enemy heavy[-] is awaiting you approach and has [Purple]overwatched[-] it. If you enter the area you will be automatically attacked.\n" +
+			               "Approach it carefully by moving to a highlighted tile.";
+			TutorialMove(scout,new Vector2Int(26,42));
+			
+			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
+			               "You can hide under [Yellow]high cover[-] to avoid being seen and shot by [Purple]overwatch[-].\n" +
+			               "Crouch by pressing [Green]Z[-].";
+			TutorialCrouch(scout);
+
+			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
+			               "Now that you've hidden you can walk towards the [Red]heavy[-].\n";
+			TutorialMove(scout,new Vector2Int(29,42));
+
+			tutorialNote = "[Green]Scouts Ability[-]\n" +
+			               "Uh Oh! You're out of [Green]movement points[-]!\n" +
+			               "You can use the scout's special ability by pressing [Green]C[-] to gain more [Green]movement points[-].\n" +
+			               "The ability is very strong, however it will use up 3 [Blue]determination[-] leaving you open to be [Red]suppressed[-] if you get shot at.\n" +
+			               "Use it wisely in your games!";
+			tutorialActionLock = ActiveActionType.Action;
+			tutorialAbilityIndex = 2;
+			while (scout.MovePoints<=0)
+			{
+				Thread.Sleep(350);
+			}
+			tutorialNote = "[Green]Scouts Ability[-]\n" +
+			               "Move to flank the [Red]Heavy[-]";
+			tutorialAbilityIndex = -1;
+			TutorialMove(scout, new Vector2Int(33, 42));
+
+			tutorialNote = "[Green]Scouts Ability[-]\n" +
+			               "Face the [Red]Heavy[-]";
+			highlightTile = new Vector2Int(33, 40);
+			tutorialActionLock = ActiveActionType.Face;
+			tutorialAbilityIndex = -1;
+			while (scout.WorldObject.Facing != Direction.North)
+			{
+				Thread.Sleep(350);
+			}
+			
+			tutorialNote = "[Green]Scouts Ability[-]\n" +
+			               "Fire at the [Red]Heavy[-]!";
+			TutorialFire(scout,new Vector2Int(32, 37));
+			
+			tutorialNote = "[Green]Scout Tutorial[-]\n" +
+			               "Shooting the [Red]Heavy[-] has interrupted the [Purple]overwatch[-], if you had other friendly units they would've been able to pass unobstructed.\n" +
+			               "This is the end of [Green]Scout[-] tutorial, [Orange]end your turn[-] to move onto the Grunt tutorial.";
+			TutorialEndTurn();
+			
+			tutorialNote = "[Green]The Grunt[-]\n" +
+			               "This is the [Green]Grunt[-], one of the five unique unit classes in the game.\n\n" +
+			               "The [Green]Grunt[-] has the [Green]longest weapon range[-], [Green]high damage[-] and has [Green]high health[-], however it [Red]lacks utility[-] and [Red]needs support[-] for scouting and suppression.\n\n" +
+			               "move the [Green]Grunt[-] to highlighted tile.";
+			do
+			{
+				Thread.Sleep(2000);
+			}while (GameManager.GetMyTeamUnits().Count == 0 || SequenceManager.SequenceRunning);
+			var grunt = GameManager.GetMyTeamUnits()[0];
+			SelectUnit(null);
+			TutorialMove(grunt, new Vector2Int(22, 44));
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "You are standing in front of [Green]Light[-] cover. Crouch for better protection by pressing [Green]Z[-].";
+			TutorialCrouch(grunt);
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "You're out of [Green]movement points[-]. [Orange]End your turn[-]";
+			TutorialEndTurn();
+
+			int enemyScout1 = 0;
+			int enemyScout2 = 0;
+			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+			{
+				if (u.Value.Item2.Prefab == "Scout" && !u.Value.Item2.UnitData.Value.Team1)
+				{
+					if(enemyScout1 == 0)
+					{
+						enemyScout1 = u.Key;
+					}
+					else
+					{
+						enemyScout2 = u.Key;
+						break;
+					}
+				}
+			}
+			var abl = Action.Actions[Action.ActionType.UseAbility];
+			
+			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(29, 44)));
+			MoveCamera.Make(new Vector2Int(29,44),true,0).GenerateTask().RunTaskSynchronously();
+			
+			var param = new Action.ActionExecutionParamters();
+			param.AbilityIndex = 1;
+			param.TargetObj = WorldObjectManager.GetObject(enemyScout1);
+			abl.SendToServer(enemyScout1,param);
+			do
+			{
+				Thread.Sleep(1500);
+			}while (SequenceManager.SequenceRunning);
+			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
+			param.AbilityIndex = 0;
+			abl.SendToServer(enemyScout1,param);
+			do
+			{
+				Thread.Sleep(1500);
+			}while (SequenceManager.SequenceRunning);
+			
+			
+			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(29, 43)));
+			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
+			
+			param = new Action.ActionExecutionParamters();
+			param.AbilityIndex = 1;
+			param.TargetObj = WorldObjectManager.GetObject(enemyScout2);
+			abl.SendToServer(enemyScout2,param);
+			do
+			{
+				Thread.Sleep(1500);
+			}while (SequenceManager.SequenceRunning);
+			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
+			param.AbilityIndex = 0;
+			abl.SendToServer(enemyScout2,param);
+			do
+			{
+				Thread.Sleep(1500);
+			}while (SequenceManager.SequenceRunning);
+			
+			NetworkingManager.EndTurn();
+			Thread.Sleep(1500);
+			tutorialNote = "[Green]Suppression[-]\n" +
+			               "The [Red]Enemy Scouts[-] are being reckless. They used their ability using up determination and clumped up.\n" +
+			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both  of them";
+			TutorialFire(grunt, new Vector2Int(29, 44));
+			tutorialNote = "[Green]Suppression[-]\n" +
+			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Paniced[-] and were [Red]forcefully crouched[-] and next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
+			               "If you look at your [Blue]determination[-] bar you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
+			               "End your turn by pressing [Orange]end turn[-]";
+			TutorialEndTurn();
+			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
+			MoveCamera.Make(new Vector2Int(34,44),true,0).GenerateTask().RunTaskSynchronously();
+			do
+			{
+				Thread.Sleep(1500);
+			}while (SequenceManager.SequenceRunning);
+			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(34, 43)));
+			MoveCamera.Make(new Vector2Int(34,43),true,0).GenerateTask().RunTaskSynchronously();
+			NetworkingManager.EndTurn();
+			
+			tutorialNote = "[Green]The Grunt[-]\n" +
+			               "The [Green]Grunt's[-] ability has [Green]extremely high damage[-] however units with [Blue]determination[-] can [Red]dodge[-] the damage.\n" +
+			               "Every damage source will be [Red]dodged[-] by units that have [Blue]determination[-]. For most attacks the [Red]dodge[-] will only reduce damage by 1, but in case of [Green]Grunt's[-] ability it completely nullifies the damage.\n\n" +
+			               "Use [Green]Grunt's[-] special ability to instantly kill the healthy [Red]Scout[-].";
+			do
+			{
+				Thread.Sleep(1000);
+			} while (SequenceManager.SequenceRunning);
+			tutorialAbilityIndex = 2;
+			tutorialActionLock = ActiveActionType.Action;
+			highlightTile = new Vector2Int(34,43);
+			var acts = grunt.ActionPoints.Current;
+			while (acts == grunt.ActionPoints.Current)
+			{
+				Thread.Sleep(350);
+			}
+			
+			tutorialNote = "[Green]The Grunt[-]\n" +
+			               "Keep in mind if the enemy has a [Red]Grunt[-] nearby they can [Yellow]\"Counter-Snipe\"[-] your [Green]Grunt[-] as using the ability will leave grunt on 0 [Blue]determination[-].\n\n" +
+			               "The [Red]Scout[-] has been [Green]eliminated[-].\n" +
+			               "End your turn by pressing [Orange]end turn[-]";
+			highlightTile = new Vector2Int(-1, -1);
+			do
+			{
+				Thread.Sleep(1500);
+			} while (SequenceManager.SequenceRunning);
+			TutorialEndTurn();
+			MoveCamera.Make(new Vector2Int(29, 44),true,0).GenerateTask().RunTaskSynchronously();
+
+			do
+			{
+				Thread.Sleep(1500);
+			} while (SequenceManager.SequenceRunning || !GameManager.IsMyTurn());
+			var heavy = GameManager.GetMyTeamUnits()[1];
+			tutorialNote = "[Green]The Heavy[-]\n" +
+			               "The [Red]enemy[-] is swarming you with units trying to overwhelm you.\n\n" +
+			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-]; [Green]extended overwatch radius[-] and is great at [Green]Suppressing units[-]." +
+			               "Heavy can easily hold of groups of enemies on his own however he's [Red]very slow[-] and can be outflanked or avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses\n." +
+			               "\nMove the heavy into position";
+			TutorialMove(heavy, new Vector2Int(22, 45));
+			tutorialNote = "[Green]The Heavy's ability[-]\n" +
+			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
+			               "[Blue]Suppress[-] the scouts\n";
+			tutorialAbilityIndex = 2;
+			tutorialActionLock = ActiveActionType.Action;
+			tutorialUnitLock = heavy.WorldObject.ID;
+			highlightTile = new Vector2Int(29, 44);
+			acts = heavy.ActionPoints.Current;
+			while (acts == heavy.ActionPoints.Current)
+			{
+				Thread.Sleep(350);
+			}
+			tutorialUnitLock = -1;
+			tutorialActionLock = ActiveActionType.None;
+			highlightTile = new Vector2Int(-1, -1);
+
+			tutorialNote = "[Green]The Heavy[-]\n" +
+			               "All the [Red]enemy scouts[-] are [Red]paniced[-]. They're are now easy pickings for your other units.\n\n" +
+			               "[Orange]End your turn[-] to finish this part of the tutorial.";
+			TutorialEndTurn();
+			MoveCamera.Make(new Vector2Int(35,44),true,0).GenerateTask().RunTaskSynchronously();
+			tutorialNote = "[Green]End of tutorial![-]\n" +
+			               "The game currently has 2 other units, the [Green]Officer[-] and the [Green]Specialist[-].\n" +
+			               "[Green]Officer[-] is provides [Green]extremely strong support abilities[-] but [Red]lacks any meaningful firepower[-], [Red]Death of an officer suppresses nearby friendlies![-]\n" +
+			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isnt great for a frontal confrontation[-].\n" +
+			               "You now understand the basics of the game, you can explore all abilities and stategies by practicing against AI or yourself in the singleplayer modes.";
+
+
+		});
+	}
+
+	private static void TutorialEndTurn()
+	{
+		canEndTurnTutorial = true;
+		while (GameManager.IsMyTurn())
+		{
+			Thread.Sleep(10);
+		}
+		canEndTurnTutorial = false;
+	}
+
+	private static void TutorialCrouch(Unit u)
+	{
+		tutorialAbilityIndex = 0;
+		tutorialActionLock = ActiveActionType.Action;
+		highlightTile = u.WorldObject.TileLocation.Position;
+		bool courch = u.Crouching;
+		while (u.Crouching == courch)
+		{
+			Thread.Sleep(350);	
+		}
+		tutorialActionLock = ActiveActionType.None;
+		highlightTile = new Vector2Int(-1, -1);
+	}
+	private static void TutorialMove(Unit u, Vector2Int pos)
+	{
+		tutorialAbilityIndex = -1;
+		tutorialUnitLock = u.WorldObject.ID;
+		tutorialActionLock = ActiveActionType.Move;
+		highlightTile = pos;
+		while (u.WorldObject.TileLocation.Position != pos)
+		{
+			Thread.Sleep(350);
+		}
+
+		tutorialUnitLock = -1;
+		tutorialActionLock = ActiveActionType.None;
+		highlightTile = new Vector2Int(-1, -1);
+	}
+	private static void TutorialFire(Unit u, Vector2Int pos)
+	{
+		tutorialAbilityIndex = 1;
+		tutorialActionLock = ActiveActionType.Action;
+		highlightTile = pos;
+		var acts = u.ActionPoints.Current;
+		while (acts == u.ActionPoints.Current)
+		{
+			Thread.Sleep(350);
+		}
+		tutorialActionLock = ActiveActionType.None;
+		highlightTile = new Vector2Int(-1, -1);
+	}
 	public static void Init()
 	{
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,150);
-		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,135,200);
+		consequenceListRenderTarget = new RenderTarget2D(graphicsDevice,135,500);
 	
 		timerRenderTarget = new RenderTarget2D(graphicsDevice,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Width,TextureManager.GetTexture("GameHud/UnitBar/unitframe").Height);
 		unitBarRenderTargets = new Dictionary<int, RenderTarget2D>();
@@ -395,14 +751,25 @@ public class GameLayout : MenuLayout
 	public static Label? CompleteIndicator;
 	private static ImageButton? endBtn;
 
+	private static bool generated = false;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-
+		
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
 
-		if (GameManager.spectating)
+		if (GameManager.spectating && !tutorial)
 		{
+			var spec = new Label()
+			{
+				Top = 50,
+				VerticalAlignment = VerticalAlignment.Top,
+				HorizontalAlignment = HorizontalAlignment.Left
+			};
+			spec.Text = "Spectating";
+
+
+			panel.Widgets.Add(spec);
 			var swapTeam = new TextButton
 			{
 				Top = (int) (100f * globalScale.Y),
@@ -455,7 +822,11 @@ public class GameLayout : MenuLayout
 			PressedBackground = new SolidBrush(Color.Transparent),
 			Image = new TextureRegion(TextureManager.GetTexture("GameHud/UnitBar/end button")),
 		};
-		endBtn.Click += (o, a) => GameManager.EndTurn();
+		endBtn.Click += (o, a) =>
+		{
+			if(canEndTurnTutorial)
+				GameManager.EndTurn();
+		};
 
 
 		panel.Widgets.Add(endBtn);
@@ -516,7 +887,7 @@ public class GameLayout : MenuLayout
 		{
 			CompleteIndicator = new Label()
 			{
-				Top=250,
+				Top=150,
 				VerticalAlignment = VerticalAlignment.Top,
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
@@ -524,19 +895,6 @@ public class GameLayout : MenuLayout
 		}
 		panel.Widgets.Add(CompleteIndicator);
 
-		if (GameManager.spectating)
-		{
-			var spec = new Label()
-			{
-				Top = 50,
-				VerticalAlignment = VerticalAlignment.Top,
-				HorizontalAlignment = HorizontalAlignment.Left
-			};
-			spec.Text = "Spectating";
-
-
-			panel.Widgets.Add(spec);
-		}
 
 		_unitBar = new Grid()
 		{
@@ -651,7 +1009,8 @@ public class GameLayout : MenuLayout
 			};
 			_unitBar.Widgets.Add(unitPanel);
 		}
-		
+
+		generated = true;
 		if (SelectedUnit == null) return panel;
 
 
@@ -712,7 +1071,7 @@ public class GameLayout : MenuLayout
 
 
 	
-		
+		generated = true;
 		return panel;
 	}
 
@@ -721,10 +1080,19 @@ public class GameLayout : MenuLayout
 
 	private static readonly List<HudActionButton> ActionButtons = new();
 	private static bool ActionForce = false;
+	
+	private static ActiveActionType tutorialActionLock = ActiveActionType.None;
+	private static int tutorialAbilityIndex = -1;
+	private static bool canEndTurnTutorial = true;
 	private static void DoActiveAction()
 	{
 		if(ActionTarget == null) return;
 		if (activeAction != ActiveActionType.Action && activeAction != ActiveActionType.Overwatch) return;
+		
+		if(highlightTile != new Vector2Int(-1,-1) && ActionTarget.TileLocation.Position != highlightTile) return;
+		if(tutorialActionLock != ActiveActionType.None && activeAction != tutorialActionLock) return;
+		if(tutorialUnitLock != -1 && tutorialUnitLock != SelectedUnit.WorldObject.ID) return;
+		if(tutorialAbilityIndex != -1 && ActionButtons.IndexOf(HudActionButton.SelectedButton) != tutorialAbilityIndex) return;
 
 		if (ActionForce||activeAction == ActiveActionType.Overwatch)
 		{
@@ -797,7 +1165,7 @@ public class GameLayout : MenuLayout
 		
 			var indicator = TextureManager.GetSpriteSheet("coverIndicator",3,3)[i];
 			Color c = Color.White;
-			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i))
+			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i,ignoreControllables:true))
 			{
 				case Cover.Full:
 					c = Color.Red;
@@ -1097,6 +1465,30 @@ public class GameLayout : MenuLayout
 				rect.Item2.Invoke(mouse,scale,batch);
 			}
 		}
+		
+		if (highlightTile != new Vector2Int(-1, -1))
+		{
+			var surface = WorldManager.Instance.GetTileAtGrid(highlightTile).Surface;
+			batch.Draw(surface!.GetTexture(), surface.GetDrawTransform().Position, null, Color.Red*animopacity, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+		}
+		batch.End();
+		batch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate);
+		if (tutorialNote != "")
+		{
+			//draw middle of the screen
+			var blank = TextureManager.GetTexture("");
+			//batch.Draw(blank,new Rectangle(new Point((int) (Game1.resolution.X/2f),(int) (100*globalScale.X)),new Point((int) (350*globalScale.X),(int) (75*globalScale.X))),Color.Black*0.7f);
+			//batch.DrawText(tutorialNote, new Vector2(Game1.resolution.X/2f,100*globalScale.X),globalScale.X,50,Color.White);
+			Vector2 screenCenter = new Vector2(Game1.resolution.X / 2f, Game1.resolution.Y / 2f);
+			
+			
+			Vector2 squareSize = new Vector2(460 * globalScale.X, 100 * globalScale.X);
+			Rectangle squareRect = new Rectangle((screenCenter - squareSize / 2f).ToPoint(), squareSize.ToPoint());
+			squareRect.Y -= (int)(130 * globalScale.X);
+
+			batch.Draw(blank, squareRect, Color.Black * 0.7f);
+			batch.DrawText(tutorialNote, new Vector2(squareRect.X,squareRect.Y), globalScale.X*0.9f, 62, Color.White);
+		}
 		batch.End();
 		
 	}
@@ -1363,13 +1755,13 @@ public class GameLayout : MenuLayout
 
 		if (JustPressed(Keys.Enter))
 		{
-			inputBox.Visible = true;
+			inputBox!.Visible = true;
 			inputBox.SetKeyboardFocus();
 		}
 
 		if (currentKeyboardState.IsKeyDown(Keys.CapsLock) && !lastKeyboardState.IsKeyDown(Keys.CapsLock))
 		{
-			GameManager.EndTurn();
+			endBtn!.DoClick();
 		}
 	
 
@@ -1526,7 +1918,8 @@ public class GameLayout : MenuLayout
 					ActionTarget = tile.Surface;
 					break;
 				case ActiveActionType.Face:
-					SelectedUnit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(position));
+					if(tutorialActionLock == ActiveActionType.None || (tutorialActionLock == ActiveActionType.Face && highlightTile == position))
+						SelectedUnit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(position));
 					break;
 				case ActiveActionType.Action:
 				case ActiveActionType.Overwatch:
@@ -1549,7 +1942,11 @@ public class GameLayout : MenuLayout
 					activeAction = ActiveActionType.None;
 					break;
 				case ActiveActionType.Move:
-					SelectedUnit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(position));
+					if(tutorialActionLock == ActiveActionType.None || (tutorialActionLock == ActiveActionType.Move && highlightTile == position))
+					{
+						if(tutorialUnitLock == -1 || tutorialUnitLock == SelectedUnit.WorldObject.ID)
+							SelectedUnit.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(position));
+					}
 					break;
 				case ActiveActionType.Action:
 					
@@ -1611,6 +2008,8 @@ public class GameLayout : MenuLayout
 
 
 	private static int consPreviewTarget = -1;
+
+
 	public static void DrawHoverHud(SpriteBatch batch, WorldObject obj)
 	{
 

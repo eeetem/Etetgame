@@ -158,6 +158,7 @@ public static partial class GameManager
 		string pass = "";
 		int port = 52233;
 		Console.WriteLine("Port: " + port); //ddos or spam protection is needed
+#if RELEASE // only run server in release mode since we always have a server running while debugging
 		if(localServerProcess != null)
 			localServerProcess.Kill();
 		localServerProcess = new Process();
@@ -184,7 +185,7 @@ public static partial class GameManager
 
 		localServerProcess.Start();
 		Console.WriteLine("process started with id: "+localServerProcess.Id);
-		
+#endif
 		Thread.Sleep(1000);
 		bool res = NetworkingManager.Connect("localhost:" + port,"Player");
 		if (!res)
@@ -192,8 +193,8 @@ public static partial class GameManager
 	}
 
 
-	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP1 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
-	private static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP2 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
+	public static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP1 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
+	public static Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> lastRecievedUnitPositionsP2 = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
 	
 	
 	public static void UpdateUnitPositions(bool player1, Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)

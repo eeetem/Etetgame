@@ -177,6 +177,7 @@ public static partial class GameManager
         {
             EndGame(true);
         }
+
         #endif
 		
 #if CLIENT
@@ -196,11 +197,12 @@ public static partial class GameManager
             FinishTurnWithAI();
         }
         UpdatePlayerSideUnitPositions(true);
+        Program.InformMasterServer();
 #endif
 
         TimeTillNextTurn = PreGameData.TurnTime*1000;
+        
       
-
     }
 
 

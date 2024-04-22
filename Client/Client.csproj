@@ -770,10 +770,6 @@
       </Compile>
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\Server\Maps\Ground Zero.mapdata">
-        <Link>Maps\Ground Zero.mapdata</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <Content Include="..\SharedSource\ObjectData.xml">
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -26,7 +26,7 @@ public static partial class NetworkingManager
 		SinglePlayerFeatures = allowSP;
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 
-		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		server.TimeoutTime = 10000;
@@ -38,12 +38,14 @@ public static partial class NetworkingManager
 		server.ClientConnected += (a, b) => { Log.Message("NETWORKING",$" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
-        
-        
 
-		selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
-		//selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
-		WorldManager.Instance.LoadMap(selectedMap);
+
+		if (!SinglePlayerFeatures)
+		{
+			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
+			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
+			WorldManager.Instance.LoadMap(selectedMap);
+		}
 		server.Start(port, 10);
 			
 		Log.Message("NETWORKING","Started server at port" + port);
@@ -89,6 +91,8 @@ public static partial class NetworkingManager
 			
 			GameManager.Player2 = new GameManager.ClientInstance(name,connection);
 			SendChatMessage(name+" joined as Player 2");
+			
+
 		}
 		else if (GameManager.Player2.Name == name)
 		{
@@ -146,7 +150,7 @@ public static partial class NetworkingManager
 		lock (UpdateLock)
 		{
 			cancelMapSend = false;
-			Thread.Sleep(1000);//yeah this is bad
+			Thread.Sleep(100);//yeah this is bad
 			Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
 			if(SequenceManager.SequenceRunning || cancelMapSend) return;//we're probably arleady sending it and if not the client will do another request soon
 			List<SequenceAction> act = new List<SequenceAction>();
@@ -519,7 +523,7 @@ public static partial class NetworkingManager
 			server.Send(msg3, spectator.Connection,false);
 		}
 		msg3.Release();
-		Program.InformMasterServer();
+		
 			
 	}
 
