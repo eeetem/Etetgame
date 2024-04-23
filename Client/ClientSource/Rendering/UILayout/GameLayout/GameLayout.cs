@@ -219,7 +219,7 @@ public class GameLayout : MenuLayout
 			NetworkingManager.EndTurn();
 
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
-			               "The [Red]enemy heavy[-] is awaiting you approach and has [Purple]overwatched[-] it. If you enter the area you will be automatically attacked.\n" +
+			               "The [Red]enemy Heavy[-] is awaiting your approach and has [Purple]overwatched[-] it. If you enter the area you will be automatically attacked.\n" +
 			               "Approach it carefully by moving to a highlighted tile.";
 			TutorialMove(scout,new Vector2Int(26,42));
 			
@@ -229,7 +229,7 @@ public class GameLayout : MenuLayout
 			TutorialCrouch(scout);
 
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
-			               "Now that you've hidden you can walk towards the [Red]heavy[-].\n";
+			               "Now that you've hidden, you can walk towards the [Red]Heavy[-].\n";
 			TutorialMove(scout,new Vector2Int(29,42));
 
 			tutorialNote = "[Green]Scouts Ability[-]\n" +
@@ -346,8 +346,8 @@ public class GameLayout : MenuLayout
 			NetworkingManager.EndTurn();
 			Thread.Sleep(1500);
 			tutorialNote = "[Green]Suppression[-]\n" +
-			               "The [Red]Enemy Scouts[-] are being reckless. They used their ability using up determination and clumped up.\n" +
-			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both  of them";
+			               "The [Red]Enemy Scouts[-] are being reckless. They used their ability using up determination and grouped up.\n" +
+			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both of them";
 			TutorialFire(grunt, new Vector2Int(29, 44));
 			tutorialNote = "[Green]Suppression[-]\n" +
 			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Paniced[-] and were [Red]forcefully crouched[-] and next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
@@ -401,12 +401,12 @@ public class GameLayout : MenuLayout
 			tutorialNote = "[Green]The Heavy[-]\n" +
 			               "The [Red]enemy[-] is swarming you with units trying to overwhelm you.\n\n" +
 			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-]; [Green]extended overwatch radius[-] and is great at [Green]Suppressing units[-]." +
-			               "Heavy can easily hold of groups of enemies on his own however he's [Red]very slow[-] and can be outflanked or avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses\n." +
+			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses\n." +
 			               "\nMove the heavy into position";
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
 			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
-			               "[Blue]Suppress[-] the scouts\n";
+			               "[Blue]Suppress[-] the Scouts\n";
 			tutorialAbilityIndex = 2;
 			tutorialActionLock = ActiveActionType.Action;
 			tutorialUnitLock = heavy.WorldObject.ID;
@@ -427,9 +427,9 @@ public class GameLayout : MenuLayout
 			MoveCamera.Make(new Vector2Int(35,44),true,0).GenerateTask().RunTaskSynchronously();
 			tutorialNote = "[Green]End of tutorial![-]\n" +
 			               "The game currently has 2 other units, the [Green]Officer[-] and the [Green]Specialist[-].\n" +
-			               "[Green]Officer[-] is provides [Green]extremely strong support abilities[-] but [Red]lacks any meaningful firepower[-], [Red]Death of an officer suppresses nearby friendlies![-]\n" +
-			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isnt great for a frontal confrontation[-].\n" +
-			               "You now understand the basics of the game, you can explore all abilities and stategies by practicing against AI or yourself in the singleplayer modes.";
+			               "[Green]Officer[-] provides [Green]extremely strong support abilities[-] but [Red]lacks any meaningful firepower[-], [Red]Death of an officer suppresses nearby friendlies![-]\n" +
+			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isn't great for a frontal confrontation[-].\n" +
+			               "You now understand the basics of the game, you can explore all abilities and stategies by practicing against AI or yourself in the singleplayer modes!";
 
 
 		});
