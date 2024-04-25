@@ -14,7 +14,7 @@ public class ConnectionLayout : UiLayout
 		{
 			RowSpacing = 0,
 			ColumnSpacing = 0,
-			Background = new TextureRegion(TextureManager.GetTexture("background")),
+			Background = new TextureRegion(TextureManager.GetTexture("MainMenu/background")),
 		};
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,300));
 		grid.ColumnsProportions.Add(new Proportion(ProportionType.Auto));

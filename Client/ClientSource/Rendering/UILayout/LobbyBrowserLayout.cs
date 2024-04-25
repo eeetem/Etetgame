@@ -17,7 +17,7 @@ public class LobbyBrowserLayout : MenuLayout
 	{
 		
 			var Grid = new Grid();
-			Grid.Background = new TextureRegion(TextureManager.GetTexture("background"));
+			Grid.Background = new TextureRegion(TextureManager.GetTexture("MainMenu/background"));
 			Grid.ColumnsProportions.Add(Proportion.Auto);
 			Grid.ColumnsProportions.Add(Proportion.Fill);
 			Grid.ColumnsProportions.Add(Proportion.Auto);

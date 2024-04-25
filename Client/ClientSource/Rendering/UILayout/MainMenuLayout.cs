@@ -9,7 +9,9 @@ using DefconNull.Rendering.CustomUIElements;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Sprites;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -21,14 +23,85 @@ namespace DefconNull.Rendering.UILayout;
 
 public class MainMenuLayout : UiLayout
 {
+
+	public override void Update(float deltatime)
+	{
+		
+		gruntOffestTarget = new Vector2((-275+(Game1.instance.GraphicsDevice.Viewport.Width- Camera.GetMouseWorldPos().X)*0.1f),0);
+		gruntOffestTarget = Vector2.Clamp(gruntOffestTarget,new Vector2(-275,0),new Vector2(25,0));
+		gruntOffestCurrent = Vector2.Lerp(gruntOffestCurrent,gruntOffestTarget,0.05f);
+
+		base.Update(deltatime);
+	}
+	
+	Vector2 gruntOffestTarget = new Vector2(-10,0);
+	Vector2 gruntOffestCurrent = new Vector2(-10,0);
+	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
+	{
+		var back = TextureManager.GetTexture("MainMenu/staticLayer");
+		var backdrop = TextureManager.GetTexture("MainMenu/backdrop");
+	
+		var border = TextureManager.GetTexture("MainMenu/borders");
+		var grunt = TextureManager.GetTexture("MainMenu/grunt");
+		var smoke0 = TextureManager.GetTexture("MainMenu/smokeLayer0");
+		var smoke1 = TextureManager.GetTexture("MainMenu/smokeLayer1");
+		var smoke2 = TextureManager.GetTexture("MainMenu/smokeLayer2");
+		var smoke3 = TextureManager.GetTexture("MainMenu/smokeLayer3");
+		
+		
+		var deb0 = TextureManager.GetTexture("MainMenu/debrislayer0");
+		var deb1 = TextureManager.GetTexture("MainMenu/debrislayer1");
+		var deb2 = TextureManager.GetTexture("MainMenu/debrislayer2");
+		
+		
+		
+		Vector2 center = new Vector2(back.Width / 2f, back.Height / 2f);
+
+		var mousePos =  Camera.GetMouseWorldPos();
+		float scale = 1f + 0.00001f *  (Game1.instance.GraphicsDevice.Viewport.Height- mousePos.Y); // Adjust the multiplier for the desired zoom speed and amount
+		scale = Math.Clamp(scale,1,1.1f);
+		Matrix transform = Matrix.CreateTranslation(-center.X, -center.Y, 0) *
+		                   Matrix.CreateScale(scale) *
+		                   Matrix.CreateTranslation(center.X, center.Y, 0);
+		var drawscale =  Game1.instance.GraphicsDevice.Viewport.Height/back.Height;
+		
+		Vector2 blankOffset = new Vector2(-200*drawscale, 0);
+		
+		batch.Begin(transformMatrix: transform,sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+		batch.Draw(backdrop,blankOffset, drawscale,Color.White);
+		batch.Draw(smoke3,blankOffset  -gruntOffestCurrent/10f,drawscale,Color.White);
+		batch.Draw(smoke2,blankOffset + gruntOffestCurrent/5f,drawscale,Color.White);
+
+		batch.Draw(back, blankOffset -gruntOffestCurrent/4f, drawscale,Color.White);
+		
+		
+		batch.Draw(deb1,  blankOffset-gruntOffestCurrent*0.2f,drawscale,Color.White);
+		batch.Draw(deb2,  blankOffset-gruntOffestCurrent*0.2f,drawscale,Color.White);
+		batch.Draw(deb0,  blankOffset-gruntOffestCurrent*0.1f,drawscale,Color.White);
+		
+		
+		
+		
+		batch.Draw(grunt,  blankOffset+gruntOffestCurrent*0.8f,drawscale*scale,Color.White);
+		batch.Draw(smoke1,  blankOffset+-gruntOffestCurrent*0.5f,drawscale*scale,Color.White);
+		batch.Draw(smoke0,  blankOffset+ gruntOffestCurrent*0.1f,drawscale*scale,Color.White);
+		batch.End();
+		batch.Begin(samplerState: SamplerState.PointClamp);
+		batch.Draw(border,blankOffset,drawscale,Color.White);
+		batch.End();
+
+		
+	}
+
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
 		NetworkingManager.Disconnect();
 		MasterServerNetworking.Disconnect();
 		var panel = new Panel()
 		{
-			Background = new TextureRegion(TextureManager.GetTexture("background")),
+			//Background = new TextureRegion(TextureManager.GetTexture("background")),
 		};
+		//return panel;
 
 		var menustack = new HorizontalStackPanel()
 		{
@@ -269,82 +342,4 @@ reconnect.TextColor = Color.Gray;
 	}
 
 
-	private int switchTicker = -1;
-	public override void Update(float deltatime)
-	{
-		if (JustPressed(Keys.OemTilde))
-		{
-			var preGameDataStruct = GameManager.PreGameData;
-			preGameDataStruct.SinglePLayerFeatures = true;
-GameManager.PreGameData = preGameDataStruct;			
-			
-			for (int i = 0; i < 8; i++)
-			{
-				var cdata = new Unit.UnitData(false);
-				int r = Random.Shared.Next(1);
-				string unit;
-				switch (r)
-				{
-					case 0:
-						unit = "Scout";
-						break;
-					case 1:
-						unit = "Grunt";
-						break;
-					case 2:
-						unit = "Heavy";
-						break;
-					case 3:
-						unit = "Officer";
-						break;
-					case 4:
-						unit = "Specialist";
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,0),(Direction)Random.Shared.Next(8),false,cdata));
-			}
-			for (int i = 0; i < 8; i++)
-			{
-				var cdata = new Unit.UnitData(true);
-				int r = Random.Shared.Next(1);
-				string unit;
-				switch (r)
-				{
-					case 0:
-						unit = "Scout";
-						break;
-					case 1:
-						unit = "Grunt";
-						break;
-					case 2:
-						unit = "Heavy";
-						break;
-					case 3:
-						unit = "Officer";
-						break;
-					case 4:
-						unit = "Specialist";
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-				SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(unit,new Vector2Int(i,5),(Direction)Random.Shared.Next(8),false,cdata));
-			}
-			
-			switchTicker = 0;
-		}
-		if(switchTicker >= 0)
-		{
-			switchTicker++;
-			if (switchTicker > 10)
-			{
-				switchTicker = -1;
-				UI.SetUI(new GameLayout.GameLayout());
-			}
-		}
-
-		base.Update(deltatime);
-	}
 }
