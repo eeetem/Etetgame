@@ -100,6 +100,8 @@ reconnect.TextColor = Color.Gray;
 			Task.Run(() =>
 			{
 				Thread.Sleep(2500);
+				NetworkingManager.SwapMap("/Maps/Ground Zero.mapdata");
+				Thread.Sleep(2500);
 				NetworkingManager.SendStartGame();
 			});
 

@@ -126,11 +126,9 @@ public static partial class NetworkingManager
 	{
 		if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
 		var data = message.GetSerializable<GameManager.PreGameDataStruct>();
-		WorldManager.MapData mapData = WorldManager.MapData.FromJSON(File.ReadAllText(data.SelectedMap));
-		if (WorldManager.Instance.CurrentMap.Name != mapData.Name)
-		{
-			WorldManager.Instance.LoadMap(data.SelectedMap);
-		}
+
+		WorldManager.Instance.LoadMap(data.SelectedMap);
+		
 		GameManager.PreGameData.TurnTime = data.TurnTime;
 		SendPreGameInfo();
 		SendMapData(GameManager.Player1.Connection);

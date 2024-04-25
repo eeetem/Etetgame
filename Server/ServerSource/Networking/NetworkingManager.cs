@@ -43,7 +43,7 @@ public static partial class NetworkingManager
 		if (!SinglePlayerFeatures)
 		{
 			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
-			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
+			//selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
 			WorldManager.Instance.LoadMap(selectedMap);
 		}
 		server.Start(port, 10);

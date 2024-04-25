@@ -132,19 +132,23 @@ public class GameLayout : MenuLayout
 	private static Dictionary<int, RenderTarget2D>?targetBarRenderTargets;
 		
 	
-	private static string tutorialNote = "";
+	public static string tutorialNote = "";
+	private static bool bigTutorialNote = false;
 	private static Vector2Int highlightTile = new Vector2Int(-1,-1);
-	private static bool tutorial = false;
+	public static bool tutorial = false;
 	private static int tutorialUnitLock = -1;
 	public static void TutorialSequence()
 	{
 		Task.Run(() =>
 		{
+			bigTutorialNote = false;
 			tutorial = true;
 			canEndTurnTutorial = false;
+			tutorialActionLock = ActiveActionType.Move;
+			highlightTile = new Vector2Int(1, 1);
 			tutorialNote = "Welcome to Etetgame!\n" +
 			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
-			Thread.Sleep(7000);
+			Thread.Sleep(15000);
 			tutorialNote = "[Green]The Scout[-]\n" +
 			               "You currently control the [Green]Scout[-], one of the five unique unit classes in the game.\n\n" +
 			               "The [Green]Scout[-] is [Green]quick[-], [Green]aggressive[-] and has [Green]long range of sight[-], however it's [Red]fragile[-] and has [Red]sharp damage dropoff[-] over range.\n\n" +
@@ -163,7 +167,7 @@ public class GameLayout : MenuLayout
 			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
 			               "[Red]Full[-] - Full walls, cannot bit hit crouching or standing.\n\n" +
 			               "There's colored indicators on your cursor indicating cover of nearby tiles.\n" +
-			               "Press [Green]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
+			               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
 			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
 			{
 				Thread.Sleep(350);
@@ -175,7 +179,8 @@ public class GameLayout : MenuLayout
 			TutorialMove(scout,new Vector2Int(23,39));
 
 			tutorialNote = "[Green]Cover[-]\n" +
-			               "Finally shoot the [Red]enemy[-],\n\n" +
+			               "Finally shoot the [Red]enemy[-]" +
+			               "By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
 			               "Using 1 [Green]move[-] and 1 [Orange]action[-] point.";
 			TutorialFire(scout,new Vector2Int(23, 42));
 			
@@ -225,7 +230,7 @@ public class GameLayout : MenuLayout
 			
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
 			               "You can hide under [Yellow]high cover[-] to avoid being seen and shot by [Purple]overwatch[-].\n" +
-			               "Crouch by pressing [Green]Z[-].";
+			               "Crouch by pressing [Yellow]Z[-] and then [Yellow]Spacebar[-].";
 			TutorialCrouch(scout);
 
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
@@ -268,7 +273,6 @@ public class GameLayout : MenuLayout
 			TutorialEndTurn();
 			
 			tutorialNote = "[Green]The Grunt[-]\n" +
-			               "This is the [Green]Grunt[-], one of the five unique unit classes in the game.\n\n" +
 			               "The [Green]Grunt[-] has the [Green]longest weapon range[-], [Green]high damage[-] and has [Green]high health[-], however it [Red]lacks utility[-] and [Red]needs support[-] for scouting and suppression.\n\n" +
 			               "move the [Green]Grunt[-] to highlighted tile.";
 			do
@@ -279,11 +283,12 @@ public class GameLayout : MenuLayout
 			SelectUnit(null);
 			TutorialMove(grunt, new Vector2Int(22, 44));
 			tutorialNote = "[Green]Cover[-]\n" +
-			               "You are standing in front of [Green]Light[-] cover. Crouch for better protection by pressing [Green]Z[-].";
+			               "You are standing in front of [Green]Light[-] cover. Crouch for better protection by pressing [Yellow]Z[-].";
 			TutorialCrouch(grunt);
 			tutorialNote = "[Green]Cover[-]\n" +
 			               "You're out of [Green]movement points[-]. [Orange]End your turn[-]";
 			TutorialEndTurn();
+			tutorialNote = "";
 
 			int enemyScout1 = 0;
 			int enemyScout2 = 0;
@@ -350,10 +355,11 @@ public class GameLayout : MenuLayout
 			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both of them";
 			TutorialFire(grunt, new Vector2Int(29, 44));
 			tutorialNote = "[Green]Suppression[-]\n" +
-			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Paniced[-] and were [Red]forcefully crouched[-] and next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
+			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Paniced[-], were [Red]forcefully crouched[-], next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
 			               "If you look at your [Blue]determination[-] bar you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
 			               "End your turn by pressing [Orange]end turn[-]";
 			TutorialEndTurn();
+			tutorialNote = "";
 			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
 			MoveCamera.Make(new Vector2Int(34,44),true,0).GenerateTask().RunTaskSynchronously();
 			do
@@ -391,6 +397,7 @@ public class GameLayout : MenuLayout
 				Thread.Sleep(1500);
 			} while (SequenceManager.SequenceRunning);
 			TutorialEndTurn();
+			tutorialNote = "";
 			MoveCamera.Make(new Vector2Int(29, 44),true,0).GenerateTask().RunTaskSynchronously();
 
 			do
@@ -401,7 +408,7 @@ public class GameLayout : MenuLayout
 			tutorialNote = "[Green]The Heavy[-]\n" +
 			               "The [Red]enemy[-] is swarming you with units trying to overwhelm you.\n\n" +
 			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-]; [Green]extended overwatch radius[-] and is great at [Green]Suppressing units[-]." +
-			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses\n." +
+			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses.\n" +
 			               "\nMove the heavy into position";
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
@@ -425,11 +432,15 @@ public class GameLayout : MenuLayout
 			               "[Orange]End your turn[-] to finish this part of the tutorial.";
 			TutorialEndTurn();
 			MoveCamera.Make(new Vector2Int(35,44),true,0).GenerateTask().RunTaskSynchronously();
+			bigTutorialNote = true;
 			tutorialNote = "[Green]End of tutorial![-]\n" +
-			               "The game currently has 2 other units, the [Green]Officer[-] and the [Green]Specialist[-].\n" +
-			               "[Green]Officer[-] provides [Green]extremely strong support abilities[-] but [Red]lacks any meaningful firepower[-], [Red]Death of an officer suppresses nearby friendlies![-]\n" +
-			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isn't great for a frontal confrontation[-].\n" +
-			               "You now understand the basics of the game, you can explore all abilities and stategies by practicing against AI or yourself in the singleplayer modes!";
+			               "The game currently has 2 other units, the [Green]Officer[-] and the [Green]Specialist[-].\n\n" +
+			               "[Green]Officer[-] provides [Green]extremely strong support abilities[-] but [Red]lacks any meaningful firepower[-] and [Red]Death of an officer suppresses nearby friendlies![-]\n\n" +
+			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isn't great for a frontal confrontation[-].\n\n" +
+			               "You now understand the basics of the game, you can explore all abilities and strategies by practicing against AI or yourself in the singleplayer modes!\n\n" +
+			               "Press [Orange]ESC[-] to quit to main menu.";
+			tutorial = false;
+
 
 
 		});
@@ -754,7 +765,14 @@ public class GameLayout : MenuLayout
 	private static bool generated = false;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
-		
+		if (!tutorial)
+		{
+			tutorialNote = "";
+			highlightTile = new Vector2Int(-1, -1);
+			tutorialActionLock = ActiveActionType.None;
+			tutorialUnitLock = -1;
+			canEndTurnTutorial = false;
+		}
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
 
@@ -1483,11 +1501,18 @@ public class GameLayout : MenuLayout
 			
 			
 			Vector2 squareSize = new Vector2(460 * globalScale.X, 100 * globalScale.X);
+			if (bigTutorialNote)
+			{
+				squareSize = new Vector2(460 * globalScale.X, 250 * globalScale.X);
+			}
 			Rectangle squareRect = new Rectangle((screenCenter - squareSize / 2f).ToPoint(), squareSize.ToPoint());
 			squareRect.Y -= (int)(130 * globalScale.X);
-
+			if (bigTutorialNote)
+			{
+				squareRect.Y += (int) (100 * globalScale.X);
+			}
 			batch.Draw(blank, squareRect, Color.Black * 0.7f);
-			batch.DrawText(tutorialNote, new Vector2(squareRect.X,squareRect.Y), globalScale.X*0.9f, 62, Color.White);
+			batch.DrawText(tutorialNote, new Vector2(squareRect.X,squareRect.Y), globalScale.X*0.9f, 63, Color.White);
 		}
 		batch.End();
 		

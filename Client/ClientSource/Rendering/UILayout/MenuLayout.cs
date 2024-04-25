@@ -57,6 +57,7 @@ public abstract class MenuLayout : UiLayout
 
 	protected virtual void HandleMenuQuit()
 	{
+		GameLayout.GameLayout.tutorial = false;
 		if (MasterServerNetworking.IsConnected)
 		{
 			UI.SetUI(new LobbyBrowserLayout());

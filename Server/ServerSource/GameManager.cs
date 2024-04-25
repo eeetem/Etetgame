@@ -174,12 +174,20 @@ public static partial class GameManager
 			foreach (var u in T1Units)
 			{
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player1UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
+				if (!Player1UnitPositions.ContainsKey(u))
+				{
+					Player1UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
+				}
+
+				
 			}
 			foreach (var u in T2Units)
 			{
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player2UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
+				if (!Player2UnitPositions.ContainsKey(u))
+				{
+					Player2UnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
+				}
 			}
 			//PlayerUnitPositionsDirty = true;
 			
@@ -674,6 +682,7 @@ public static partial class GameManager
 					Player1UnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
 				}
 			}
+			NetworkingManager.SendAllSeenUnitPositions();
 			SetEndTurn();
 		});
 		t.Start();

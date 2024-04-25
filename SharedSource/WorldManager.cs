@@ -1086,8 +1086,8 @@ public  partial class WorldManager
 		if(!File.Exists(path))
 			path =  Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)+ "/" + path;
 		MapData mapData = MapData.FromJSON(File.ReadAllText(path)); 
-		LoadMap(mapData);
-
+		if(mapData.Name != CurrentMap.Name)
+			LoadMap(mapData);
 	}
 
 	public void LoadMap(MapData mapData)

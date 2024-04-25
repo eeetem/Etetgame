@@ -11,12 +11,12 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
-      <OutputPath>..\Server\bin\Debug\</OutputPath>
+      <OutputPath>..\MasterServer\bin\Release\</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DefineConstants>TRACECOREAPP;SERVER;COREAPP</DefineConstants>
-      <OutputPath>..\Client\bin\Debug\</OutputPath>
+      <OutputPath>bin\Debug\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>

@@ -7,6 +7,7 @@ using DefconNull.Rendering.UILayout;
 using DefconNull.ReplaySequence;
 using Riptide;
 using Riptide.Transports.Tcp;
+using Riptide.Utils;
 
 namespace DefconNull.Networking;
 
@@ -16,20 +17,22 @@ public class MasterServerNetworking
 	private static string Ipport="";
 	private static string Name="";
 	public static bool IsConnected => Client != null && Client.IsConnected;
-		
+	private static void LogNetCode(string msg)
+	{
+		Log.Message("RIPTIDE",msg);
+	}
 	public static bool Connect(string ipport,string name)
 	{
 		if(Client!=null && Client.IsConnected)
 			Client.Disconnect();
-		
+		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		Ipport = ipport;
 		Name = name;
 
 
 		Client = new Client( new TcpClient());
 		Message.MaxPayloadSize = 2048*2;
-		Client.TimeoutTime = 11000;
-		Client.HeartbeatInterval = 5000;
+
 		
 		var msg = Message.Create();
 		msg.AddString(name);
@@ -39,7 +42,8 @@ public class MasterServerNetworking
 			return false;
 		}
 	
-			
+		Client.TimeoutTime = 11000;
+		Client.HeartbeatInterval = 5000;
 
 		Client.Connected += (a, b) =>
 		{

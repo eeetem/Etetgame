@@ -169,7 +169,15 @@ public static partial class NetworkingManager
 		msg.AddSerializables(composition2.ToArray());
 		client?.Send(msg);
 	}
-		
+
+	public static void SwapMap(string name)
+	{
+		var data = GameManager.PreGameData;
+		data.SelectedMap = name;
+		GameManager.PreGameData = data;
+					
+		NetworkingManager.SendPreGameUpdate();
+	}
 	public static void SendPreGameUpdate()
 	{
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);

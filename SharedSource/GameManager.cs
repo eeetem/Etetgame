@@ -291,8 +291,7 @@ public static partial class GameManager
         {
             message.Add(HostName);
             message.Add(Player2Name);
-
-
+            
             message.AddStrings(MapList.ToArray(), true);
             message.AddStrings(CustomMapList.ToArray(), true);
             message.AddStrings(Spectators.ToArray(), true);
