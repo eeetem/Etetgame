@@ -134,7 +134,7 @@ public class PreGameLobbyLayout : MenuLayout
 			};
 			time.Text = "" + GameManager.PreGameData.TurnTime;
 			stack.Widgets.Add(time);
-			var btn = new SoundButton()
+			var btn = new SoundTextButton()
 			{
 				Text = "Apply",
 				Top = 25,

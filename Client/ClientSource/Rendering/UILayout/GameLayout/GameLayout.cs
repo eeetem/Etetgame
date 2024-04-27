@@ -407,8 +407,8 @@ public class GameLayout : MenuLayout
 			var heavy = GameManager.GetMyTeamUnits()[1];
 			tutorialNote = "[Green]The Heavy[-]\n" +
 			               "The [Red]enemy[-] is swarming you with units trying to overwhelm you.\n\n" +
-			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-]; [Green]extended overwatch radius[-] and is great at [Green]Suppressing units[-]." +
-			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units and has quite [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses.\n" +
+			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-] and is great at [Green]Suppressing units[-]." +
+			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units aswell having [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses.\n" +
 			               "\nMove the heavy into position";
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
@@ -1487,7 +1487,10 @@ public class GameLayout : MenuLayout
 		if (highlightTile != new Vector2Int(-1, -1))
 		{
 			var surface = WorldManager.Instance.GetTileAtGrid(highlightTile).Surface;
-			batch.Draw(surface!.GetTexture(), surface.GetDrawTransform().Position, null, Color.Red*animopacity, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+			if (surface != null)
+			{
+				batch.Draw(surface!.GetTexture(), surface.GetDrawTransform().Position, null, Color.Red * animopacity, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+			}
 		}
 		batch.End();
 		batch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate);

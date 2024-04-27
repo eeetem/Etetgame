@@ -116,13 +116,17 @@ public class SettingsLayout : UiLayout
 			BorderThickness = Thickness.Zero,
 			GridRow = 2,
 			GridColumn = 0,
+#if DEBUG
 			IsChecked = bool.Parse(Game1.config.GetValue("settings", "fullscreen", "false"))
+#else
+			IsChecked = bool.Parse(Game1.config.GetValue("settings", "fullscreen", "true"))
+#endif
 				
 		};
 		fulscren.ImageHeight = 40;
 		grid.Widgets.Add(fulscren);
 		
-		var cancel = new SoundButton()
+		var cancel = new SoundTextButton()
 		{
 			Text = "Cancel",
 			Margin = new Thickness(1),
@@ -134,7 +138,7 @@ public class SettingsLayout : UiLayout
 			UI.SetUI(lastLayout);
 		};
 		grid.Widgets.Add(cancel);
-		var ok = new SoundButton()
+		var ok = new SoundTextButton()
 		{
 			Text = "OK",	
 			GridColumn = 6,

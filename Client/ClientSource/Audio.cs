@@ -79,6 +79,11 @@ public static class Audio
 			instance.Play();
 		}
 	}
+	public static void ForcePlayMusic(string name)
+	{
+		CurrentMusic?.Item2.Stop();
+		PlayMusicTrack(name);
+	}
 
 
 	private static SoundEffect GetSound(string name)

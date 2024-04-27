@@ -252,7 +252,7 @@ public class LobbyBrowserLayout : MenuLayout
 		
 			btnstack.Widgets.Add(btn);
 			
-			var btn2 = new SoundButton()
+			var btn2 = new SoundTextButton()
 			{
 				Text = "Refresh",
 				HorizontalAlignment = HorizontalAlignment.Center,

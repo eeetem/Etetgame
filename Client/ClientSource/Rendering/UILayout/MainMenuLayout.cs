@@ -12,6 +12,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Sprites;
+using MonoGame.Extended.TextureAtlases;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -23,7 +25,8 @@ namespace DefconNull.Rendering.UILayout;
 
 public class MainMenuLayout : UiLayout
 {
-
+	public static Vector2 gradientPos = new Vector2(-10000, 0);
+	private static Vector2 targetGradientPos = new Vector2(0, 0);
 	public override void Update(float deltatime)
 	{
 		
@@ -31,6 +34,16 @@ public class MainMenuLayout : UiLayout
 		gruntOffestTarget = Vector2.Clamp(gruntOffestTarget,new Vector2(-275,0),new Vector2(25,0));
 		gruntOffestCurrent = Vector2.Lerp(gruntOffestCurrent,gruntOffestTarget,0.05f);
 
+		gradientPos = Vector2.Lerp(gradientPos, targetGradientPos, 0.05f);
+		menuStack.Left = (int)((25+gradientPos.X) * globalScale.X);
+		socialStack.Left = (int)((-20-gradientPos.X) * globalScale.X);
+		int i = 0;
+		foreach (var wid in menuStack.Widgets)
+		{
+			wid.Left = (int)(gradientPos.X * i*globalScale.X);
+			
+			i++;
+		}
 		base.Update(deltatime);
 	}
 	
@@ -53,6 +66,8 @@ public class MainMenuLayout : UiLayout
 		var deb1 = TextureManager.GetTexture("MainMenu/debrislayer1");
 		var deb2 = TextureManager.GetTexture("MainMenu/debrislayer2");
 		
+		var overlay = TextureManager.GetTexture("MainMenu/overlaygradients");
+		
 		
 		
 		Vector2 center = new Vector2(back.Width / 2f, back.Height / 2f);
@@ -63,7 +78,7 @@ public class MainMenuLayout : UiLayout
 		Matrix transform = Matrix.CreateTranslation(-center.X, -center.Y, 0) *
 		                   Matrix.CreateScale(scale) *
 		                   Matrix.CreateTranslation(center.X, center.Y, 0);
-		var drawscale =  Game1.instance.GraphicsDevice.Viewport.Height/back.Height;
+		float drawscale =  (float)Game1.instance.GraphicsDevice.Viewport.Height/back.Height;
 		
 		Vector2 blankOffset = new Vector2(-200*drawscale, 0);
 		
@@ -85,16 +100,26 @@ public class MainMenuLayout : UiLayout
 		batch.Draw(grunt,  blankOffset+gruntOffestCurrent*0.8f,drawscale*scale,Color.White);
 		batch.Draw(smoke1,  blankOffset+-gruntOffestCurrent*0.5f,drawscale*scale,Color.White);
 		batch.Draw(smoke0,  blankOffset+ gruntOffestCurrent*0.1f,drawscale*scale,Color.White);
+		
+		
+		
+		var chat = TextureManager.GetTexture("MainMenu/butts/chatmenuDisconnected");
 		batch.End();
 		batch.Begin(samplerState: SamplerState.PointClamp);
 		batch.Draw(border,blankOffset,drawscale,Color.White);
+		batch.Draw(overlay,gradientPos+blankOffset,drawscale,Color.White);
+		Vector2 chatpos = new Vector2(0,230)*globalScale.X;
+		batch.Draw(chat,chatpos,drawscale,Color.White);
 		batch.End();
 
 		
 	}
 
+	VerticalStackPanel menuStack;
+	VerticalStackPanel socialStack;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+		gradientPos = new Vector2(-1000, 0);
 		NetworkingManager.Disconnect();
 		MasterServerNetworking.Disconnect();
 		var panel = new Panel()
@@ -103,68 +128,65 @@ public class MainMenuLayout : UiLayout
 		};
 		//return panel;
 
-		var menustack = new HorizontalStackPanel()
+		menuStack = new VerticalStackPanel()
 		{
 			//	Background = new SolidBrush(Color.wh),
-			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Bottom,
+			HorizontalAlignment = HorizontalAlignment.Left,
+			VerticalAlignment = VerticalAlignment.Top,
+			Left = (int)(25 * globalScale.X),
 			Top = (int) (200 * globalScale.Y),
-			Height = (int) (300 * globalScale.Y),
-			Width = (int) (500 * globalScale.X),
-			Spacing = 25,
+			Height = (int) (800 * globalScale.Y),
+			Width = (int) (150 * globalScale.X),
+			Spacing = (int) (5 * globalScale.X),
 
 		};
-		panel.Widgets.Add(menustack);
+		panel.Widgets.Add(menuStack);
 
-
-
-
-
-		var MPStack = new VerticalStackPanel()
+		var tutorial = new SoundTextButton
 		{
-			//	Background = new SolidBrush(new Color(10,10,10)),
+			Text = "Tutorial",
+			Height = (int)(12 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Bottom,
-			Height = (int) (300 * globalScale.Y),
-			Top = (int) (-45 * globalScale.Y)
+			VerticalAlignment = VerticalAlignment.Center
 		};
-		menustack.Widgets.Add(MPStack);
+		tutorial.Click += (a, b) =>
+		{
+	
+			GameManager.StartLocalServer();
 
-		var startlbl = new Label()
-		{
-			TextColor = Color.Red,
-			GridColumn = 0,
-			GridRow = 1,
-			Text = "Start Game",
-			HorizontalAlignment = HorizontalAlignment.Center
+			NetworkingManager.StartTutorial();
+
+			GameLayout.GameLayout.TutorialSequence();
+			Audio.ForcePlayMusic("Warframes");
+			//Audio.OnGameStateChange(GameState.Playing);
+
 		};
-		MPStack.Widgets.Add(startlbl);
+		menuStack.Widgets.Add(tutorial);
 		
-		var reconnect = new SoundButton
+		
+
+///		reconnect.Click += (a, b) =>
+///		{
+///			NetworkingManager.Connect(Game1.config.GetValue("config","LastServer","localhost:52233"),Game1.config.GetValue("config","Name","Operative#"+Random.Shared.Next(1000)));		
+///		};
+
+
+		var multi = new SoundTextButton
 		{
-			GridColumn = 0,
-			GridRow = 2,
-			Text = "Reconnect to last",
+			Text = "Multiplayer",
+			Height = (int)(12 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Stretch
+			VerticalAlignment = VerticalAlignment.Center
 		};
-#if !SINGLEPLAYER_ONLY
-		reconnect.Click += (a, b) =>
-		{
-			NetworkingManager.Connect(Game1.config.GetValue("config","LastServer","localhost:52233"),Game1.config.GetValue("config","Name","Operative#"+Random.Shared.Next(1000)));		
-		};
-#else
-reconnect.TextColor = Color.Gray;	
-#endif
-		MPStack.Widgets.Add(reconnect);
 		
-		var singleplayer = new SoundButton
+		menuStack.Widgets.Add(multi);
+
+		var singleplayer = new SoundTextButton
 		{
-			GridColumn = 0,
-			GridRow = 2,
 			Text = "SinglePlayer",
+			Height = (int)(12 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Stretch
+			VerticalAlignment = VerticalAlignment.Center
 		};
 		singleplayer.Click += (a, b) =>
 		{
@@ -179,28 +201,10 @@ reconnect.TextColor = Color.Gray;
 			});
 
 		};
-		MPStack.Widgets.Add(singleplayer);
+		menuStack.Widgets.Add(singleplayer);
 		
-		var tutorial = new SoundButton
-		{
-			GridColumn = 0,
-			GridRow = 2,
-			Text = "Tutorial",
-			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Stretch
-		};
-		tutorial.Click += (a, b) =>
-		{
-	
-			GameManager.StartLocalServer();
 
-			NetworkingManager.StartTutorial();
-
-			GameLayout.GameLayout.TutorialSequence();
-
-		};
-		MPStack.Widgets.Add(tutorial);
-
+/*
 		
 		var lobybtn = new SoundButton
 		{
@@ -251,15 +255,13 @@ reconnect.TextColor = Color.Gray;
 	btn.TextColor = Color.Gray;		
 #endif
 		MPStack.Widgets.Add(btn);
-
-		var button2 = new SoundButton
+*/
+		var button2 = new SoundTextButton
 		{
-			GridColumn = 1,
-			GridRow = 1,
 			Text = "Map Editor",
-			HorizontalAlignment = HorizontalAlignment.Center,
-			VerticalAlignment = VerticalAlignment.Top,
-			Top = (int)(-80*globalScale.Y),
+			Height = (int)(12 * globalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Center,
 		};
 
 		button2.Click += (s, a) =>
@@ -268,16 +270,14 @@ reconnect.TextColor = Color.Gray;
 
 		};
 
-		menustack.Widgets.Add(button2);
+		menuStack.Widgets.Add(button2);
 			
-		var button3 = new SoundButton
+		var button3 = new SoundTextButton
 		{
-			GridColumn = 2,
-			GridRow = 1,
 			Text = "Settings",
+			Height = (int)(12 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Top,
-			Top = (int)(-80*globalScale.Y),
+			VerticalAlignment = VerticalAlignment.Center,
 		};
 
 		button3.Click += (s, a) =>
@@ -285,16 +285,14 @@ reconnect.TextColor = Color.Gray;
 			UI.SetUI(new SettingsLayout());
 		};
 
-		menustack.Widgets.Add(button3);
+		menuStack.Widgets.Add(button3);
 			
-		var button4 = new SoundButton
+		var button4 = new SoundTextButton
 		{
-			GridColumn = 3,
-			GridRow = 1,
 			Text = "QUIT",
+			Height = (int)(12 * globalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Top,
-			Top = (int)(-80*globalScale.Y),
+			VerticalAlignment = VerticalAlignment.Center,
 		};
 
 		button4.Click += (s, a) =>
@@ -302,16 +300,31 @@ reconnect.TextColor = Color.Gray;
 			Game1.instance.Exit();
 
 		};
+		menuStack.Widgets.Add(button4);
 
+		socialStack = new VerticalStackPanel()
+		{
+			Background = new SolidBrush(Color.Black*0.45f),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Left = (int)(-20 * globalScale.X),
+			Top = (int) (5 * globalScale.X),
+			Height = (int) ((45*3 +15) * globalScale.X),
+			Width = (int) (50 * globalScale.X),
+			Spacing = (int) (5 * globalScale.X),
 
+		};
 		var discord = new ImageButton();
-		discord.Image = new TextureRegion(TextureManager.GetTexture("discord"));
+		discord.Image = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/discord"));
+		discord.OverImage = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/discordClicked"));
 		discord.Background = new SolidBrush(Color.Transparent);
 		discord.OverBackground = new SolidBrush(Color.Transparent);
-		discord.VerticalAlignment = VerticalAlignment.Top;
-		discord.Width = 100;
-		discord.Height = 100;
-		discord.HorizontalAlignment = HorizontalAlignment.Right;
+		discord.PressedBackground = new SolidBrush(Color.Transparent);
+		discord.Width =(int)(45*globalScale.X);
+		discord.Height =(int)(45*globalScale.X);
+		discord.ImageHeight =(int)(45*globalScale.X);
+		discord.ImageWidth =(int)(45*globalScale.X);
+		discord.HorizontalAlignment = HorizontalAlignment.Center;
 		discord.Click += (s, a) =>
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -323,7 +336,54 @@ reconnect.TextColor = Color.Gray;
 				Process.Start("xdg-open", "https://discord.gg/TrmAJbMaQ3");
 			}
 		};
-		panel.Widgets.Add(discord);
+		var twitter = new ImageButton();
+		twitter.Image = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/xitter"));
+		twitter.OverImage = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/xitterClicked"));
+		twitter.Background = new SolidBrush(Color.Transparent);
+		twitter.OverBackground = new SolidBrush(Color.Transparent);
+		twitter.PressedBackground = new SolidBrush(Color.Transparent);
+		twitter.Width =(int)(45*globalScale.X);
+		twitter.Height =(int)(45*globalScale.X);
+		twitter.ImageHeight =(int)(45*globalScale.X);
+		twitter.ImageWidth =(int)(45*globalScale.X);
+		twitter.HorizontalAlignment = HorizontalAlignment.Center;
+		twitter.Click += (s, a) =>
+		{
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Process.Start("explorer", "https://twitter.com/EtetStudios");
+			}
+			else
+			{
+				Process.Start("xdg-open", "https://twitter.com/EtetStudios");
+			}
+		};
+		var itch = new ImageButton();
+		itch.Image = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/itch"));
+		itch.OverImage = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/itchClicked"));
+		itch.Background = new SolidBrush(Color.Transparent);
+		itch.OverBackground = new SolidBrush(Color.Transparent);
+		itch.PressedBackground = new SolidBrush(Color.Transparent);
+		itch.Width =(int)(45*globalScale.X);
+		itch.Height =(int)(45*globalScale.X);
+		itch.ImageHeight =(int)(45*globalScale.X);
+		itch.ImageWidth =(int)(45*globalScale.X);
+		itch.HorizontalAlignment = HorizontalAlignment.Center;
+		itch.Click += (s, a) =>
+		{
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Process.Start("explorer", "https://etetstudios.itch.io/etet");
+			}
+			else
+			{
+				Process.Start("xdg-open", "https://etetstudios.itch.io/etet");
+			}
+		};
+		socialStack.Widgets.Add(discord);
+		socialStack.Widgets.Add(itch);
+		socialStack.Widgets.Add(twitter);
+		panel.Widgets.Add(socialStack);
 
 
 		var version = new Label();
@@ -332,8 +392,7 @@ reconnect.TextColor = Color.Gray;
 		version.HorizontalAlignment = HorizontalAlignment.Left;
 		version.Background = new SolidBrush(Color.Transparent);
 		panel.Widgets.Add(version);
-			
-		menustack.Widgets.Add(button4);
+
 
 		
 		return panel;

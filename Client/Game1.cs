@@ -64,7 +64,9 @@ public class Game1 : Game
 
         
 		DiscordManager.Init();
+		UI.SetUI(new MainMenuLayout());
 		UpdateGameSettings();
+		MainMenuLayout.gradientPos = new Vector2(-1000000, 0);
 	}
 
 	public static RenderTarget2D GlobalRenderTarget;
@@ -82,7 +84,7 @@ public class Game1 : Game
 		UiLayout.Init(GraphicsDevice);
 		GameLayout.Init();
 		
-		UI.SetUI(new MainMenuLayout());
+
 		Audio.Init(Content);
 		
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -102,6 +104,7 @@ public class Game1 : Game
 	public static Vector2Int resolution = new Vector2Int(1280, 720);
 	public void UpdateGameSettings()
 	{
+		_graphics.SynchronizeWithVerticalRetrace = true;
 		//_graphics.HardwareModeSwitch = false;
 		_graphics.PreferredBackBufferWidth = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[0]);
 		resolution.X = int.Parse(config.GetValue("settings", "Resolution", "1280x720").Split("x")[0]);
@@ -124,6 +127,7 @@ public class Game1 : Game
 		Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.7"), System.Globalization.CultureInfo.InvariantCulture);
 		PostProcessing.RemakeRenderTarget();
 		UI.SetUI(null);
+
 	}
 
 	protected override void Update(GameTime gameTime)

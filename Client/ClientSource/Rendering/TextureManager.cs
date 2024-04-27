@@ -69,9 +69,74 @@ public static class TextureManager
 
         return PngTextures[name];
     }
+
+    public static Texture2D GetTextTexture(char c)
+    {
+        string texId;
+        switch (c)
+        {
+            case ' ':
+                return GetTexture("");
+            case '.':
+                texId = "period";
+                break;
+            case ',':
+                texId = "comma";
+                break;
+            case '+':
+                texId = "plus";
+                break;
+            case '-':
+                texId = "minus";
+                break;
+            case '!':
+                texId = "exclamationmark";
+                break;
+            case '?':
+                texId = "questionmark";
+                break;
+            case ':':
+                texId = "colon";
+                break;
+            case ';':
+                texId = "semicolon";
+                break;
+            case '\'':
+                texId = "apostrophe";
+                break;
+            case '(':
+                texId = "leftParentheses";
+                break;
+            case ')':
+                texId = "rightParentheses";
+                break;
+            case '#':
+                texId = "hash";
+                break;
+            case '=':
+                texId = "equal";
+                break;
+            case '\"':
+                texId = "quote";
+                break;
+            default:
+                texId = "" + c;
+                break;
+        }
+
+        Texture2D t;
+        if(HasTexture("text/" + texId)){
+            t= GetTexture("text/" + texId);
+        }else{
+            t = GetTexture("text/broken");
+			
+        }
+
+        return t;
+    }
+
     public static Texture2D GetTexture(string name)
     {
- 
 	
         if (Textures.TryGetValue(name, out var texture))
         {

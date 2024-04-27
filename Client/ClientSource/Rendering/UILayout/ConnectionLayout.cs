@@ -40,14 +40,14 @@ public class ConnectionLayout : UiLayout
 		};
 		grid.Widgets.Add(textBox2);
         
-		var button = new SoundButton
+		var button = new SoundTextButton
 		{
 			GridColumn = 2,
 			GridRow = 1,
 			HorizontalAlignment = HorizontalAlignment.Right,
 			Text = "Connect"
 		};
-		var exit = new SoundButton
+		var exit = new SoundTextButton
 		{
 			GridColumn = 2,
 			GridRow = 2,

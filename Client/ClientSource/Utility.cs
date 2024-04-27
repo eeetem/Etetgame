@@ -212,64 +212,13 @@ public static partial class Utility
 				charsinRow = 0;
 			}
 
-			string texId;
-			switch (car)
+			if(car == ' ')
 			{
-				case ' ':
-					charsinRow++;
-					continue;
-				case '.':
-					texId = "period";
-					break;
-				case ',':
-					texId = "comma";
-					break;
-				case '+':
-					texId = "plus";
-					break;
-				case '-':
-					texId = "minus";
-					break;
-				case '!':
-					texId = "exclamationmark";
-					break;
-				case '?':
-					texId = "questionmark";
-					break;
-				case ':':
-					texId = "colon";
-					break;
-				case ';':
-					texId = "semicolon";
-					break;
-				case '\'':
-					texId = "apostrophe";
-					break;
-				case '(':
-					texId = "leftParentheses";
-					break;
-				case ')':
-					texId = "rightParentheses";
-					break;
-				case '#':
-					texId = "hash";
-					break;
-				case '=':
-					texId = "equal";
-					break;
-				default:
-					texId = "" + car;
-					break;
+				charsinRow++;
+				continue;
 			}
 
-			Texture2D t;
-			if(TextureManager.HasTexture("text/" + texId)){
-				t= TextureManager.GetTexture("text/" + texId);
-			}else{
-				t = TextureManager.GetTexture("text/broken");
-			
-			}
-		
+			var t = TextureManager.GetTextTexture(car);
 
 			spriteBatch.Draw(t, position + new Vector2(8 * charsinRow, 11 * row) * scale, null, c, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
 			charsinRow++;
