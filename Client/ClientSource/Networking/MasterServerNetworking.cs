@@ -31,54 +31,55 @@ public class MasterServerNetworking
 
 
 		Client = new Client( new TcpClient());
-		Message.MaxPayloadSize = 2048*2;
-
+		
 		
 		var msg = Message.Create();
 		msg.AddString(name);
-		bool result = Client.Connect(ipport,message:msg);
+		bool result = Client.Connect(ipport,message:msg,maxConnectionAttempts:3);
 		if (!result)
 		{
 			return false;
 		}
-	
-		Client.TimeoutTime = 11000;
-		Client.HeartbeatInterval = 5000;
 
+		Client.Connection.CanQualityDisconnect = false;
+
+		Client.TimeoutTime = 10000;
+		Client.HeartbeatInterval = 2000;
+		
 		Client.Connected += (a, b) =>
 		{
 			Console.WriteLine($"{Client} Connection to master server established");
-			
-			UI.SetUI(new LobbyBrowserLayout());
-		
+
+			MainMenuLayout.RefreshLobbies();
+
 		};
 		Client.ConnectionFailed += (a, b) =>
 		{
-			UI.ShowMessage("Error", "Could not connect to master server");
+			//UI.ShowMessage("Error", "Could not connect to master server");
 			UI.ShowMessage("Connection Failed",b.Message?.GetString() ?? string.Empty );
 		};
 		Client.Disconnected += (a, b) =>
 		{
 			
-			Console.WriteLine("lost connection to master server");
+			Log.Message("MASTER SERVER","lost connection to master server");
 			if(!NetworkingManager.Connected)//only change ui if we're not in a server
 			{
-				UI.SetUI(new MainMenuLayout());
+				MainMenuLayout.RefreshLobbies();
 				Task t = new Task(() =>
 				{
 					System.Threading.Thread.Sleep(1000);
 					UI.ShowMessage("Lost Connection To Master Server", b.Reason.ToString());
 				});
 				SequenceManager.RunNextAfterFrames(t);
-				
+
 			}
 		};
 		Client.MessageReceived += (a, b) =>
 		{
-			Console.WriteLine("Recived Message: " + ( NetworkingManager.NetworkMessageID)b.MessageId);
+			Log.Message("MASTER SERVER","Recived Message: " + ( NetworkingManager.NetworkMessageID)b.MessageId);
 		};
 
-
+		
 		RefreshServers();
 
 
@@ -116,7 +117,7 @@ public class MasterServerNetworking
 	{
 		string list = message.GetString();
 		Players = list.Split(";").ToList();
-		UI.SetUI(null);
+		MainMenuLayout.RefreshLobbies();
 	}
 		
 		
@@ -139,7 +140,7 @@ public class MasterServerNetworking
 		{
 			Lobbies.Add(message.GetSerializable<LobbyData>());
 		}
-		UI.SetUI(new LobbyBrowserLayout());
+		MainMenuLayout.RefreshLobbies();
 	
 	}
 
@@ -148,4 +149,17 @@ public class MasterServerNetworking
 	{
 		Client?.Update();
 	}
+
+	public static void ChatMSG(string message)
+	{
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
+		msg.AddString(message);
+		Client?.Send(msg);
+	}
+	[MessageHandler((ushort)NetworkingManager.MasterServerNetworkMessageID.Chat)]
+	private static void ReciveChat(Message message)
+	{
+		Chat.ReciveMessage(message.GetString());	
+	}
+
 }

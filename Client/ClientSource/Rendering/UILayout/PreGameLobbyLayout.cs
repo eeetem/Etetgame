@@ -37,8 +37,8 @@ public class PreGameLobbyLayout : MenuLayout
 			Top = 0,
 			Left = 0,
 			Background = new SolidBrush(Color.Black),
-			Width = (int) (140 * globalScale.X),
-			Height = (int) (800 * globalScale.Y),
+			Width = (int) (140 * GlobalScale.X),
+			Height = (int) (800 * GlobalScale.Y),
 			Margin = new Thickness(0),
 			Padding = new Thickness(0)
 		};
@@ -50,8 +50,8 @@ public class PreGameLobbyLayout : MenuLayout
 			Top = 0,
 			Left = 0,
 			Background = new SolidBrush(Color.Black),
-			Width = (int) (120 * globalScale.X),
-			Height = (int) (1000 * globalScale.Y),
+			Width = (int) (120 * GlobalScale.X),
+			Height = (int) (1000 * GlobalScale.Y),
 			Border = new SolidBrush(new Color(31, 81, 255, 240)),
 			BorderThickness = new Thickness(2)
 		};
@@ -63,8 +63,8 @@ public class PreGameLobbyLayout : MenuLayout
 			Top = 0,
 			Left = 0,
 			Background = new SolidBrush(Color.Black),
-			Width = (int) (600 * globalScale.X),
-			Height = (int) (200 * globalScale.Y),
+			Width = (int) (600 * GlobalScale.X),
+			Height = (int) (200 * GlobalScale.Y),
 			VerticalAlignment = VerticalAlignment.Bottom
 
 		};
@@ -78,8 +78,8 @@ public class PreGameLobbyLayout : MenuLayout
 			HorizontalAlignment = HorizontalAlignment.Center,
 			VerticalAlignment = VerticalAlignment.Center,
 			Top = 0,
-			Width = (int) (200 * globalScale.X),
-			Height = (int) (100 * globalScale.Y),
+			Width = (int) (200 * GlobalScale.X),
+			Height = (int) (100 * GlobalScale.Y),
 			Background = new TextureRegion(TextureManager.GetTexture("button")),
 			OverBackground = new TextureRegion(TextureManager.GetTexture("button")),
 			//	Font =DefaultFont.GetFont(50)
@@ -98,14 +98,14 @@ public class PreGameLobbyLayout : MenuLayout
 		{
 			Text = "______________",
 			HorizontalAlignment = HorizontalAlignment.Center,
-			Width = (int) (400 * globalScale.X),
+			Width = (int) (400 * GlobalScale.X),
 		};
 		rightStack.Widgets.Add(linebreak);
 		var options = new TextButton()
 		{
 			Text = "Game Options",
-			Width = (int) (400 * globalScale.X),
-			Height = (int) (100 * globalScale.Y),
+			Width = (int) (400 * GlobalScale.X),
+			Height = (int) (100 * GlobalScale.Y),
 			Padding = Thickness.Zero,
 			Margin = Thickness.Zero,
 
@@ -167,7 +167,7 @@ public class PreGameLobbyLayout : MenuLayout
 		{
 			Text = "______________",
 			HorizontalAlignment = HorizontalAlignment.Center,
-			Width = (int) (400 * globalScale.X),
+			Width = (int) (400 * GlobalScale.X),
 		};
 		rightStack.Widgets.Add(linebreak);
 
@@ -253,7 +253,7 @@ public class PreGameLobbyLayout : MenuLayout
 	{
 		Text = "______________",
 		HorizontalAlignment = HorizontalAlignment.Center,
-		Width = (int)(400*globalScale.X),
+		Width = (int)(400*GlobalScale.X),
 	};
 	rightStack.Widgets.Add(linebreak);
 
@@ -261,7 +261,7 @@ public class PreGameLobbyLayout : MenuLayout
 	var spectatorViewer = new ScrollViewer();
 	var spectatorList = new VerticalStackPanel();
 	spectatorViewer.Content = spectatorList;
-	spectatorViewer.Height = (int) (80 * globalScale.Y);
+	spectatorViewer.Height = (int) (80 * GlobalScale.Y);
 
 	var lbl = new Label()
 	{

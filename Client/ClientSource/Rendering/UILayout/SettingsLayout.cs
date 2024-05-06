@@ -106,9 +106,9 @@ public class SettingsLayout : UiLayout
 		grid.Widgets.Add(fulscrnlbl);
 		var fulscren = new CheckBox()
 		{
-			Top = (int)(50*globalScale.Y),
-			Left = (int)(50*globalScale.X),
-			Scale = globalScale,
+			Top = (int)(50*GlobalScale.Y),
+			Left = (int)(50*GlobalScale.X),
+			Scale = GlobalScale,
 			ImageHeight = 10,
 			ImageWidth = 35,
 			Padding = new Thickness(0),

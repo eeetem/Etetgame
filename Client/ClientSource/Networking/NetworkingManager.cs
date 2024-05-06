@@ -34,7 +34,7 @@ public static partial class NetworkingManager
 	public static bool Connect(string ipport,string name)
 	{
 		Disconnect();
-		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
+		
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		ipport = ipport.Trim();
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());
@@ -71,14 +71,9 @@ public static partial class NetworkingManager
 			{
 				Disconnect();
 				GameLayout.CleanUp();
-				if (MasterServerNetworking.IsConnected)
-				{
-					UI.SetUI(new LobbyBrowserLayout());
-				}
-				else
-				{
-					UI.SetUI(new MainMenuLayout());
-				}
+
+				UI.SetUI(new MainMenuLayout());
+				
 			}, "yes", (a, b) => { Reconnect(); });
 
 		};
@@ -176,7 +171,7 @@ public static partial class NetworkingManager
 		data.SelectedMap = name;
 		GameManager.PreGameData = data;
 					
-		NetworkingManager.SendPreGameUpdate();
+		SendPreGameUpdate();
 	}
 	public static void SendPreGameUpdate()
 	{

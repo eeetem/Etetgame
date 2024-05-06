@@ -62,6 +62,7 @@ public static partial class GameManager
 		{
 			return;
 		}
+		GameState = GameState.Playing;
 		
 		//not a fan of this, should probably be made a single function
 		int i = 0;
@@ -160,7 +161,7 @@ public static partial class GameManager
 		
 		var t = new Task(delegate
 		{
-			GameState = GameState.Playing;
+			
 		
 			var rng = Random.Shared.Next(100);
 			NextTurn();

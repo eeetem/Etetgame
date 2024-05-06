@@ -40,7 +40,7 @@ public static partial class WorldObjectManager
 		if(obj.Type.DestructionConseqences != null)
 		{
 			var cons = obj.Type.DestructionConseqences.GetApplyConsequnces(obj,obj);
-			NetworkingManager.SendSequence(cons);
+			NetworkingManager.AddSequenceToSendQueue(cons);
 		}
 
 #endif

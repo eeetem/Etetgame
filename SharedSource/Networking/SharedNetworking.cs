@@ -9,8 +9,7 @@ public static partial class NetworkingManager
     public enum NetworkMessageID : ushort
     {
 
-        MapDataInitiate =5,
-        //MapDataFinish =6,
+        MapDataInitiate =6,
         GameData =7,
         GameAction =8,
         StartGame =9,

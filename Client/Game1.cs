@@ -13,6 +13,7 @@ using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Riptide;
 using Salaros.Configuration;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
 
@@ -56,7 +57,7 @@ public class Game1 : Game
 		Action.Init();
 		RenderSystem.Init(GraphicsDevice);
 		Utility.Init();
-	
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
 		
 		
 
@@ -66,7 +67,7 @@ public class Game1 : Game
 		DiscordManager.Init();
 		UI.SetUI(new MainMenuLayout());
 		UpdateGameSettings();
-		MainMenuLayout.gradientPos = new Vector2(-1000000, 0);
+		MainMenuLayout.GradientPos = new Vector2(-1000000, 0);
 	}
 
 	public static RenderTarget2D GlobalRenderTarget;

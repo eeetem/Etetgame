@@ -1,10 +1,12 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using DefconNull.Rendering.CustomUIElements;
 using DefconNull.Rendering.UILayout;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 
 namespace DefconNull.Rendering;
@@ -17,7 +19,7 @@ public static class UI
 	{
 		graphicsDevice = graphicsdevice;
 		MyraEnvironment.Game = Game1.instance;
-		//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+	//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
 
 		Desktop = new Desktop();
@@ -128,8 +130,44 @@ public static class UI
 
 	public static void ShowMessage(string title, string content)
 	{
-		var messageBox = Dialog.CreateMessageBox(title,content);
-		messageBox.ShowModal(Desktop);
+		ShowMessage(title + "\n" + content);
+	}
+
+	public static void ShowMessage(string content)
+	{
+
+		List<string> msgs = new List<string>();
+		int i = 0;
+		string m = "";
+		foreach (var c in content)
+		{
+			if (i > 20 || c == '\n')
+			{
+				msgs.Add(m);
+				m = "";
+				i = 0;
+				continue;
+			}
+			i++;
+			m += c;
+		}
+
+		VerticalStackPanel stack = new VerticalStackPanel();
+		foreach (var message in msgs)
+		{
+			stack.Widgets.Add(new TextLabel()
+			{
+				Text = message,
+				Height = (int)(12*UiLayout.GlobalScale.X),
+			});
+		}
+
+		var dialog = new Dialog();
+		dialog.Content = stack;
+		dialog.ShowModal(Desktop);
+		dialog.Background = new SolidBrush(Color.Black * 0.8f);
+		dialog.OverBackground = new SolidBrush(Color.Black * 1f);
+		dialog.Scale = new Vector2(1,1);
 
 	}
 
@@ -174,7 +212,9 @@ public static class UI
 				// ignored
 			}
 		}
-
+		spriteBatch.Begin();
+		spriteBatch.DrawText("ALPHA 4", new Vector2(0, 0), UiLayout.GlobalScale.X,Color.White);
+		spriteBatch.End();
 
 	}
 

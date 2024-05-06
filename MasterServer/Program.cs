@@ -17,17 +17,20 @@ public static class Program
 	static Stopwatch stopWatch = new Stopwatch();
 	public static Dictionary<string, Connection> Players = new Dictionary<string, Connection>();
 	private static Server server = null!;
-		
+	private static void LogNetCode(string msg)
+	{
+		Console.WriteLine(msg);
+	}
 	static void Main(string[] args)
 	{
-		//RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
+		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, true);
 		server = new Server(new TcpServer());
 			
 
-		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
+		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };
 		server.HandleConnection += HandleConnection;
-		server.TimeoutTime = 11000;
-		server.HeartbeatInterval = 5000;
+		server.TimeoutTime = 10000;
+		server.HeartbeatInterval = (int) (MSperTick*2f);
 
 		server.ClientDisconnected += (a, b) =>
 		{
@@ -47,6 +50,7 @@ public static class Program
 			{
 				Players.Remove(disconnectedPlayer);
 			}
+			SendChatMessage(disconnectedPlayer+" connected");
 		};
 
 		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
@@ -72,10 +76,18 @@ public static class Program
 		}
 		if (Players.ContainsKey(name))
 		{
-			var msg = Message.Create();
-			msg.AddString("Player with the same name already exists");
-			server.Reject(connection,msg);
-			return;
+			var exist = Players[name];
+			if (exist.IsNotConnected)
+			{
+				Players.Remove(name);
+			}
+			else
+			{
+				var msg = Message.Create();
+				msg.AddString("Player with the same name already exists");
+				server.Reject(connection, msg);
+				return;
+			}
 		}
 		Players.Add(name,connection);
 
@@ -84,7 +96,7 @@ public static class Program
 		{
 			SendPlayerList(p.Value);
 		}
-		
+		SendChatMessage(name+" connected");
 	}
 
 	public static readonly object syncobj = new object();
@@ -213,6 +225,28 @@ public static class Program
 		}
 
 	}   
+	[MessageHandler((ushort)NetworkingManager.MasterServerNetworkMessageID.Chat)]
+	private static void ReciveChatMsg(ushort senderID,Message message)
+	{
+		string text = message.GetString();
+		text = text.Replace("\n", "");
+		text = text.Replace("[", "");
+		text = text.Replace("]", "");
+		if(server.TryGetClient(senderID, out var con)){
+			string name = Players.First(x=>x.Value == con).Key;
+			text = $"[Green]{name}[-]: {text}";
+			var msg = Message.Create(MessageSendMode.Unreliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
+			msg.AddString(text);
+			server.SendToAll(msg);
+		}
+
+	}
+	private static void SendChatMessage(string message)
+	{
+		var msg = Message.Create(MessageSendMode.Unreliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
+		msg.AddString("[Yellow]"+message+"[-]");
+		server.SendToAll(msg);
+	}
 	public static string ExtractBetweenTags(string STR , string tag)
 	{       
 		string FinalString;     

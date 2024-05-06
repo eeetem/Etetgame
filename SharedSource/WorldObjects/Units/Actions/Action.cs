@@ -72,7 +72,7 @@ public abstract class Action
 		{
 			Task t = new Task(delegate
 			{
-				NetworkingManager.SendSequence(queue);//staggered execution becuase some actions need to wait for FOV update
+				NetworkingManager.AddSequenceToSendQueue(queue);//staggered execution becuase some actions need to wait for FOV update
 			});
 			SequenceManager.RunNextAfterFrames(t,i);
 			i += 2;
