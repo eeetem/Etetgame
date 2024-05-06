@@ -10,7 +10,7 @@ public static class Chat
 	public static void ReciveMessage(string message)
 	{
 		Messages.Enqueue(message);
-		if (Messages.Count > 15)
+		if (Messages.Count > 31)
 		{
 			Messages.Dequeue();
 		}
@@ -44,8 +44,15 @@ public static class Chat
 			if (NetworkingManager.Connected )
 			{
 				NetworkingManager.ChatMSG(message);
+			}else if (MasterServerNetworking.IsConnected)
+			{
+				MasterServerNetworking.ChatMSG(message);
 			}
-			//	MasterServerNetworking.ChatMSG(message);
+			else
+			{
+				ReciveMessage("You are not connected to a server");
+			}
+
 		}
 	}
 	

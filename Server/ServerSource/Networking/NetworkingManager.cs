@@ -24,6 +24,9 @@ public static partial class NetworkingManager
 	public static void Start(ushort port, bool allowSP)
 	{
 		SinglePlayerFeatures = allowSP;
+#if DEBUG
+		SinglePlayerFeatures = true;
+#endif
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 
 		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
@@ -177,7 +180,7 @@ public static partial class NetworkingManager
 			Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
 	
-			SendSequence(act);
+			SendSequenceMessageToConnection(act, connection);
 			SendAllSeenUnitPositions();
 
 			
@@ -442,9 +445,16 @@ public static partial class NetworkingManager
 			sequencesToExecute.Remove(packet.ID);
 		}
 		
+		SendSequenceMessageToPlayer(packet.Actions,player1,true);
+		
+	}
+
+	private static void SendSequenceMessageToPlayer(List<SequenceAction> actions, bool player1, bool waitForPlayerReady = true)
+	{
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
+		var p = GameManager.GetPlayer(player1);
 		List<SequenceAction> actsToSend = new List<SequenceAction>();
-		foreach (var act in packet.Actions)
+		foreach (var act in actions)
 		{
 			var info = act.GenerateInfoActions(player1);
 			actsToSend.AddRange(info);
@@ -475,8 +485,8 @@ public static partial class NetworkingManager
 				a.Return();
 			}
 			
-			p.IsReadyForNextSequence = false;
-			server.Send(msg, p.Connection,false);
+			if(waitForPlayerReady) p!.IsReadyForNextSequence = false;
+			server.Send(msg, p!.Connection,false);
 			foreach (var spec in GameManager.Spectators)
 			{
 				if (spec.Connection != null && spec.Connection.IsConnected)
@@ -487,10 +497,39 @@ public static partial class NetworkingManager
 			msg.Release();
 		}
 
-		
 	}
-	
-		
+
+	private static void SendSequenceMessageToConnection(List<SequenceAction> actions, Connection c)
+	{
+		var originalList = new List<SequenceAction>(actions);
+		foreach (var a in originalList)
+		{
+			if(actions.Contains(a)) continue;
+			a.Return();//release actions that are not being sent
+		}
+		int chunkNumber = 25;
+		if (actions.Count() > chunkNumber)
+		{
+			SendSequenceMessageToConnection(actions.GetRange(0, chunkNumber),c);
+			actions.RemoveRange(0, chunkNumber);
+			SendSequenceMessageToConnection(actions,c);
+			return;
+		}
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
+		msg.Add((ushort)ReplaySequenceTarget.All);
+
+		msg.Add(actions.Count);
+		foreach (var a in actions)
+		{
+			if (!a.Active) throw new Exception("sending inactive sequence");
+			msg.Add((int) a.GetSequenceType());
+			msg.AddSerializable(a);
+			a.Return();
+		}
+		server.Send(msg, c);
+	}
+
+
 
 
 	public static void SendGameData()
@@ -527,14 +566,14 @@ public static partial class NetworkingManager
 			
 	}
 
-	public static void SendSequence(SequenceAction action)
+	public static void AddSequenceToSendQueue(SequenceAction action)
 	{
-		SendSequence(new List<SequenceAction>(){action});
+		AddSequenceToSendQueue(new List<SequenceAction>(){action});
 	}
 
-	public static void SendSequence(IEnumerable<SequenceAction> actions)
+	public static void AddSequenceToSendQueue(IEnumerable<SequenceAction> actions)
 	{
-		SendSequence(actions.ToList());
+		AddSequenceToSendQueue(actions.ToList());
 	}
 
 	static Dictionary<int,Tuple<bool,bool,List<SequenceAction>>> sequencesToExecute = new Dictionary<int, Tuple<bool, bool, List<SequenceAction>>>();
@@ -552,7 +591,7 @@ public static partial class NetworkingManager
 	}
 
 	private static int sequencePacketID = 0;
-	private static void SendSequence(List<SequenceAction> actions)
+	private static void AddSequenceToSendQueue(List<SequenceAction> actions)
 	{
 		var originalList = new List<SequenceAction>(actions);
 		foreach (var a in originalList)
@@ -563,9 +602,9 @@ public static partial class NetworkingManager
 		int chunkNumber = 25;
 		if (actions.Count() > chunkNumber)
 		{
-			SendSequence(actions.GetRange(0, chunkNumber));
+			AddSequenceToSendQueue(actions.GetRange(0, chunkNumber));
 			actions.RemoveRange(0, chunkNumber);
-			SendSequence(actions);
+			AddSequenceToSendQueue(actions);
 			return;
 		}
 		Log.Message("NETWORKING","sequence submited for sending "+actions.Count);
@@ -615,13 +654,13 @@ public static partial class NetworkingManager
 		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
 		{
 			var act = UnitUpdate.Make(GameManager.Player1UnitPositions,true);
-			SendSequence(act);
+			AddSequenceToSendQueue(act);
 		}
 
 		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
 		{
 			var act = UnitUpdate.Make(GameManager.Player2UnitPositions,false);
-			SendSequence(act);
+			AddSequenceToSendQueue(act);
 		}
 		GameManager.PlayerUnitPositionsDirty = false;
 

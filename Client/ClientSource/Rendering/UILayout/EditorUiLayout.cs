@@ -115,8 +115,8 @@ public class EditorUiLayout : MenuLayout
 				
 				
 			var dialog = Dialog.CreateMessageBox("Save Map", panel);
-			dialog.Width = (int)(450f*globalScale.X);
-			dialog.Height = (int) (500f * globalScale.Y);
+			dialog.Width = (int)(450f*GlobalScale.X);
+			dialog.Height = (int) (500f * GlobalScale.Y);
 			dialog.ButtonOk.Click += (sender, args) =>
 			{
 					
@@ -143,7 +143,7 @@ public class EditorUiLayout : MenuLayout
 		load.Text = "load";
 		load.HorizontalAlignment = HorizontalAlignment.Right;
 		load.VerticalAlignment = VerticalAlignment.Top;
-		load.Left = (int)(-100*globalScale.X);
+		load.Left = (int)(-100*GlobalScale.X);
 
 		load.Click += (s, a) =>
 		{ 
@@ -157,7 +157,7 @@ public class EditorUiLayout : MenuLayout
 			panel.Widgets.Add(label);
 				
 			var selection = new ListBox();
-			selection.Top = (int)(30*globalScale.X);
+			selection.Top = (int)(30*GlobalScale.X);
 			panel.Widgets.Add(selection);
 				
 			foreach (var path in filePaths)
@@ -169,8 +169,8 @@ public class EditorUiLayout : MenuLayout
 				selection.Items.Add(item);
 			}
 			var dialog = Dialog.CreateMessageBox("Load Map", panel);
-			dialog.Width = (int)(450f*globalScale.X);
-			dialog.Height = (int) (500f * globalScale.Y);
+			dialog.Width = (int)(450f*GlobalScale.X);
+			dialog.Height = (int) (500f * GlobalScale.Y);
 			dialog.ButtonOk.Click += (sender, args) =>
 			{
 				WorldManager.Instance.LoadMap("./Maps/"+selection.SelectedItem.Text+".mapdata");

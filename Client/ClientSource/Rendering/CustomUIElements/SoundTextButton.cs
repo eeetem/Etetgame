@@ -31,30 +31,33 @@ public sealed class SoundTextButton : Button
 		PressedBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
 		OverBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
 	}
+	public void ForceSelect()
+	{
+		Background = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+		PressedBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+		OverBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+	}
+	public void ForceDeselect()
+	{
+		Background = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelection"));
+		PressedBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+		OverBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+	}
 	public void GenerateText()
 	{
-		var panel = new HorizontalStackPanel();
-		panel.HorizontalAlignment = HorizontalAlignment.Stretch;
-		panel.VerticalAlignment = VerticalAlignment.Stretch;
-		Content = panel;
-		Task.Run(() =>
+		Task.Run((() =>
 		{
-			Thread.Sleep(100);
-			foreach (char c in _text)
+			while (Parent== null)
 			{
 				Thread.Sleep(100);
-				var charImage = new Image();
-				charImage.Background = new SolidBrush(Color.Transparent);
-				charImage.Renderable = new TextureRegion(TextureManager.GetTextTexture(c));
-				if(c == ' ')
-					charImage.Renderable = new ColoredRegion((TextureRegion) charImage.Renderable,Color.Transparent);
-				charImage.VerticalAlignment = VerticalAlignment.Center;
-				charImage.Left = 1;
-				charImage.Height = Height-5;
-				charImage.Width = Height-5;
-				panel.Widgets.Add(charImage);
 			}
-		});
+			var panel = new TextLabel();
+			Content = panel;
+			panel.Height = Height;
+			panel.Width = Width;
+		
+			panel.Text = _text;
+		}));
 
 		
 

@@ -10,7 +10,7 @@ public static partial class NetworkingManager
         LobbyStart = 2,
         LobbyList = 3,
         Refresh = 4,
-        //server
+        Chat =5,
     }
 
 
