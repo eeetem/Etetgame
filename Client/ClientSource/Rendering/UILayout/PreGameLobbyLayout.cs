@@ -2,6 +2,8 @@
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
@@ -12,8 +14,45 @@ namespace DefconNull.Rendering.UILayout;
 
 public class PreGameLobbyLayout : MenuLayout
 {
-	private Panel gameOptionsMenu;
+
 	private bool swapingMap;
+
+	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
+	{
+		base.RenderBehindHud(batch, deltatime);
+		batch.Begin(samplerState: SamplerState.PointClamp);
+		var chatPos = Game1.instance.GraphicsDevice.Viewport.Height - 200 * GlobalScale.X;
+		batch.Draw(TextureManager.GetTexture(""), new Vector2(0, chatPos), null, new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f), 0, Vector2.Zero, new Vector2(150,200)*GlobalScale.X, SpriteEffects.None, 0);
+
+		string chatmsg = "";
+		int extraLines = 0;
+		int width = 35;
+		foreach (var msg in Chat.Messages)
+		{
+			chatmsg += msg + "\n";
+			if (msg.Length > width)
+			{
+				extraLines++;
+			}
+
+			extraLines++;
+		}
+
+		batch.DrawText(chatmsg, new Vector2(5, chatPos),  GlobalScale.X*0.6f, width, Color.White);
+		
+		var bannerScale = GlobalScale.X*0.8f;
+		var banner = TextureManager.GetTexture("Lobby/banner1");
+		batch.Draw(banner, new Vector2(188*bannerScale, Game1.resolution.Y-banner.Height*bannerScale), null, Color.White, 0, Vector2.Zero, bannerScale, SpriteEffects.None, 0);
+		batch.DrawText(GameManager.PreGameData.HostName, new Vector2(188*bannerScale, Game1.resolution.Y-(banner.Height-5)*bannerScale), bannerScale*2f, 20, Color.White);
+		
+		batch.DrawText("VS", new Vector2(490*bannerScale, Game1.resolution.Y-(banner.Height-5)*bannerScale), bannerScale*3f, 20, Color.White);
+		
+		banner = TextureManager.GetTexture("Lobby/banner2");
+		batch.Draw(banner, new Vector2(545*bannerScale, Game1.resolution.Y-banner.Height*bannerScale), null, Color.White, 0, Vector2.Zero, bannerScale, SpriteEffects.None, 0);
+		batch.DrawText(GameManager.PreGameData.Player2Name, new Vector2(545*bannerScale, Game1.resolution.Y-(banner.Height-5)*bannerScale), bannerScale*2f, 20, Color.White);
+		
+		batch.End();
+	}
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
@@ -36,53 +75,107 @@ public class PreGameLobbyLayout : MenuLayout
 			Spacing = 0,
 			Top = 0,
 			Left = 0,
-			Background = new SolidBrush(Color.Black),
+			Background = new SolidBrush(new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f)),
 			Width = (int) (140 * GlobalScale.X),
 			Height = (int) (800 * GlobalScale.Y),
 			Margin = new Thickness(0),
 			Padding = new Thickness(0)
 		};
 		grid1.Widgets.Add(rightStack);
-		var middlePanel = new Panel()
-		{
-			GridColumn = 1,
-			GridRow = 0,
-			Top = 0,
-			Left = 0,
-			Background = new SolidBrush(Color.Black),
-			Width = (int) (120 * GlobalScale.X),
-			Height = (int) (1000 * GlobalScale.Y),
-			Border = new SolidBrush(new Color(31, 81, 255, 240)),
-			BorderThickness = new Thickness(2)
-		};
-		grid1.Widgets.Add(middlePanel);
+		
 		var leftpanel = new Panel()
 		{
-			GridColumn = 0,
-			GridRow = 0,
 			Top = 0,
 			Left = 0,
-			Background = new SolidBrush(Color.Black),
-			Width = (int) (600 * GlobalScale.X),
-			Height = (int) (200 * GlobalScale.Y),
-			VerticalAlignment = VerticalAlignment.Bottom
-
+			Background = new SolidBrush(new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f)),
+			Width = (int) (150 * GlobalScale.X),
+			Height = (int) (480 * GlobalScale.Y),
+			VerticalAlignment = VerticalAlignment.Stretch,
+			HorizontalAlignment = HorizontalAlignment.Left,
 		};
 		grid1.Widgets.Add(leftpanel);
-
-
-
-		var btn = new TextButton()
+		var chat = new TextBox()
 		{
-			Text = "GO",
+			HorizontalAlignment = HorizontalAlignment.Left,
+			VerticalAlignment = VerticalAlignment.Bottom,
+			Width = (int)(150*GlobalScale.X),
+			Height = (int)(10*GlobalScale.X),
+			Left = (int)(0*GlobalScale.X),
+			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+		};
+		chat.KeyDown += (s, a) =>
+		{
+			if (a.Data == Keys.Enter)
+			{
+				Chat.SendMessage(chat.Text);
+				chat.Text = "";
+			}
+		};
+		grid1.Widgets.Add(chat);
+
+		if (GameManager.PreGameData.Player2Name != "None" && GameManager.IsPlayer1)
+		{
+			var kick = new ImageButton()
+			{
+				VerticalAlignment = VerticalAlignment.Bottom,
+				HorizontalAlignment = HorizontalAlignment.Right,
+				Top = (int)(-30*GlobalScale.X),
+				Left = (int)(0*GlobalScale.X),
+				Width = (int)(35*GlobalScale.X),
+				Height = (int)(35*GlobalScale.X),
+				ImageHeight = (int)(35*GlobalScale.X),
+				ImageWidth = (int)(35*GlobalScale.X),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/kick")), Color.White),
+				Background = new SolidBrush(Color.Transparent),
+			};
+			kick.Click += (s, a) => { NetworkingManager.KickRequest(); };
+			grid1.Widgets.Add(kick);
+		}
+		else if (GameManager.PreGameData.SinglePLayerFeatures)
+		{
+			var addAI = new ImageButton()
+			{
+				VerticalAlignment = VerticalAlignment.Bottom,
+				HorizontalAlignment = HorizontalAlignment.Right,
+				Top = (int)(-30*GlobalScale.X),
+				Left = (int)(-35*GlobalScale.X),
+				Width = (int)(35*GlobalScale.X),
+				Height = (int)(35*GlobalScale.X),
+				ImageHeight = (int)(35*GlobalScale.X),
+				ImageWidth = (int)(35*GlobalScale.X),
+				Background = new SolidBrush(Color.Transparent),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/ai")), Color.White),
+			};
+			addAI.Click += (s, a) => { NetworkingManager.AddAI(); };
+			var addPractice = new ImageButton()
+			{
+				VerticalAlignment = VerticalAlignment.Bottom,
+				HorizontalAlignment = HorizontalAlignment.Right,
+				Top = (int)(-30*GlobalScale.X),
+				Left = (int)(0*GlobalScale.X),
+				Width = (int)(35*GlobalScale.X),
+				Height = (int)(35*GlobalScale.X),
+				ImageHeight = (int)(35*GlobalScale.X),
+				ImageWidth = (int)(35*GlobalScale.X),
+				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/tutorial")), Color.White),
+				Background = new SolidBrush(Color.Transparent)
+			};
+			addPractice.Click += (s, a) => { NetworkingManager.PracticeMode();};
+			grid1.Widgets.Add(addAI);
+			grid1.Widgets.Add(addPractice);
+		}
+
+
+		var btn = new ImageButton()
+		{
 			HorizontalAlignment = HorizontalAlignment.Center,
 			VerticalAlignment = VerticalAlignment.Center,
 			Top = 0,
 			Width = (int) (200 * GlobalScale.X),
 			Height = (int) (100 * GlobalScale.Y),
-			Background = new TextureRegion(TextureManager.GetTexture("button")),
-			OverBackground = new TextureRegion(TextureManager.GetTexture("button")),
-			//	Font =DefaultFont.GetFont(50)
+			Background = new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),
+			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.Red)
+
 
 		};
 		if (!GameManager.IsPlayer1)
@@ -94,196 +187,72 @@ public class PreGameLobbyLayout : MenuLayout
 		btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
 		rightStack.Widgets.Add(btn);
 
-		var linebreak = new Label()
+		var label = new TextLabel()
 		{
-			Text = "______________",
-			HorizontalAlignment = HorizontalAlignment.Center,
-			Width = (int) (400 * GlobalScale.X),
-		};
-		rightStack.Widgets.Add(linebreak);
-		var options = new TextButton()
-		{
-			Text = "Game Options",
-			Width = (int) (400 * GlobalScale.X),
-			Height = (int) (100 * GlobalScale.Y),
-			Padding = Thickness.Zero,
-			Margin = Thickness.Zero,
-
-		};
-		rightStack.Widgets.Add(options);
-		options.Click += (s, a) =>
-		{
-			if (UI.Desktop.Widgets.Contains(gameOptionsMenu)) return;
-			gameOptionsMenu = new Panel();
-			gameOptionsMenu.HorizontalAlignment = HorizontalAlignment.Center;
-			gameOptionsMenu.VerticalAlignment = VerticalAlignment.Center;
-			gameOptionsMenu.Background = new SolidBrush(Color.Black);
-			gameOptionsMenu.BorderThickness = new Thickness(1);
-			var stack = new VerticalStackPanel();
-			gameOptionsMenu.Widgets.Add(stack);
-			stack.Spacing = 25;
-			var label = new Label()
-			{
-				Text = "Seconds Per Turn(0 for infinite):",
-				Top = 10,
-			};
-			stack.Widgets.Add(label);
-			var time = new TextBox()
-			{
-				Top = 25,
-			};
-			time.Text = "" + GameManager.PreGameData.TurnTime;
-			stack.Widgets.Add(time);
-			var btn = new SoundTextButton()
-			{
-				Text = "Apply",
-				Top = 25,
-				HorizontalAlignment = HorizontalAlignment.Center,
-			};
-			if (!GameManager.IsPlayer1)
-			{
-				btn.Text = "Close";
-			}
-
-			btn.Click += (s, a) =>
-			{
-				if (int.TryParse(time.Text, out var timeLimit))
-				{
-					var data = GameManager.PreGameData;
-					data.TurnTime = timeLimit;
-					GameManager.PreGameData = data;
-					NetworkingManager.SendPreGameUpdate();
-				}
-
-				UI.Desktop.Widgets.Remove(gameOptionsMenu);
-				gameOptionsMenu = null;
-			};
-			stack.Widgets.Add(btn);
-
-			UI.Desktop.Widgets.Add(gameOptionsMenu);
-		};
-
-		linebreak = new Label()
-		{
-			Text = "______________",
-			HorizontalAlignment = HorizontalAlignment.Center,
-			Width = (int) (400 * GlobalScale.X),
-		};
-		rightStack.Widgets.Add(linebreak);
-
-
-		var lablekick = new HorizontalStackPanel();
-		lablekick.HorizontalAlignment = HorizontalAlignment.Center;
-		rightStack.Widgets.Add(lablekick);
-
-
-
-		var label = new Label()
-		{
-			Text = "Opponent:",
-			VerticalAlignment = VerticalAlignment.Center,
-			HorizontalAlignment = HorizontalAlignment.Center,
-			//	Height = (int)(80*globalScale.Y),
-			Background = new SolidBrush(Color.Black),
-		};
-
-		if (GameManager.PreGameData.Player2Name != "None")
-		{
-			
-			var kick = new ImageButton()
-			{
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Right,
-				Left = -10,
-				Width = 50,
-				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("kick")), Color.White),
-			};
-			kick.Click += (s, a) => { NetworkingManager.KickRequest(); };
-			lablekick.Widgets.Add(kick);
-		}
-		else if (GameManager.PreGameData.SinglePLayerFeatures)
-		{
-			var addAI = new ImageButton()
-			{
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Right,
-				Left = -10,
-				Width = 50,
-				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("AI")), Color.White),
-			};
-			addAI.Click += (s, a) => { NetworkingManager.AddAI(); };
-			var addPractice = new ImageButton()
-			{
-				VerticalAlignment = VerticalAlignment.Center,
-				HorizontalAlignment = HorizontalAlignment.Right,
-				Left = -10,
-				Width = 50,
-				Height = 50,
-				Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("pract")), Color.White),
-			};
-			addPractice.Click += (s, a) => { NetworkingManager.PracticeMode();};
-			lablekick.Widgets.Add(addAI);
-			lablekick.Widgets.Add(addPractice);
-		}
+			Text = "Seconds Per Turn",
+			Height = (int)(10*GlobalScale.X),
 	
-	lablekick.Widgets.Add(label);
-	string oponentName = GameManager.PreGameData.Player2Name;
-		if (!GameManager.IsPlayer1)
-	{
-		oponentName = GameManager.PreGameData.HostName;
-	}
+		};
+		
+		rightStack.Widgets.Add(label);
+		label = new TextLabel()
+		{
+			Text = "(0 for infinite)",
+			Height = (int)(10*GlobalScale.X),
+	
+		};
+		rightStack.Widgets.Add(label);
+		var time = new TextBox()
+		{
+	
+		};
+		time.Text = "" + GameManager.PreGameData.TurnTime;
+		rightStack.Widgets.Add(time);
+		time.KeyboardFocusChanged += (s, a) =>
+		{
+			if (time.Text != "" && GameManager.PreGameData.TurnTime != int.Parse(time.Text))
+			{
+				GameManager.PreGameData = GameManager.PreGameData with {TurnTime = int.Parse(time.Text)};
+				NetworkingManager.SendPreGameUpdate();
+			}
+		};
 
-	var namelable = new Label()
-	{
-		Text = oponentName,
-		VerticalAlignment = VerticalAlignment.Center,
-		HorizontalAlignment = HorizontalAlignment.Center,
-		Background = new SolidBrush(Color.Black),
-		Top = 0,
-		Wrap = true
-	};
-	rightStack.Widgets.Add(namelable);
-
-
+	
 		
 
-	linebreak = new Label()
+	var linebreak = new TextLabel()
 	{
 		Text = "______________",
 		HorizontalAlignment = HorizontalAlignment.Center,
 		Width = (int)(400*GlobalScale.X),
+		Height = (int)(20*GlobalScale.X)
 	};
 	rightStack.Widgets.Add(linebreak);
 
 				
 	var spectatorViewer = new ScrollViewer();
 	var spectatorList = new VerticalStackPanel();
+	spectatorViewer.Background = new SolidBrush(Color.Transparent);
 	spectatorViewer.Content = spectatorList;
 	spectatorViewer.Height = (int) (80 * GlobalScale.Y);
 
-	var lbl = new Label()
+	var lbl = new TextLabel()
 	{
 		Text = "SPECTATORS:",
 		VerticalAlignment = VerticalAlignment.Center,
 		HorizontalAlignment = HorizontalAlignment.Center,
-		Background = new SolidBrush(Color.Black),
+		Height = (int) (10 * GlobalScale.X),
 		Top = 0,
-		Wrap = true
 	};
 	rightStack.Widgets.Add(lbl);
 	foreach (var spectator in GameManager.PreGameData.Spectators)
 	{
-		var spec = new Label()
+		var spec = new TextLabel()
 		{
 			Text = spectator,
 			VerticalAlignment = VerticalAlignment.Center,
 			HorizontalAlignment = HorizontalAlignment.Center,
-			Background = new SolidBrush(Color.Black),
 			Top = 0,
-						
-			Wrap = true
 		};
 		spectatorList.Widgets.Add(spec);
 	}
@@ -317,7 +286,7 @@ public class PreGameLobbyLayout : MenuLayout
 			data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
 			GameManager.PreGameData = data;
 			NetworkingManager.SendPreGameUpdate();
-			var lbl = new Label();
+			var lbl = new TextLabel();
 			lbl.Text = "Swaping Map";
 			lbl.HorizontalAlignment = HorizontalAlignment.Center;
 			lbl.VerticalAlignment = VerticalAlignment.Center;
@@ -350,7 +319,7 @@ communitySelection.SelectedIndexChanged += (s, a) =>
 		GameManager.PreGameData = data;
 					
 		NetworkingManager.SendPreGameUpdate();
-		var lbl = new Label();
+		var lbl = new TextLabel();
 		lbl.Text = "Swaping Map";
 		lbl.HorizontalAlignment = HorizontalAlignment.Center;
 		lbl.VerticalAlignment = VerticalAlignment.Center;
@@ -358,35 +327,38 @@ communitySelection.SelectedIndexChanged += (s, a) =>
 		swapingMap = true;
 	}
 };
+var lbl1 = new TextLabel()
+{
+	Text = "Maps Selection",
+	VerticalAlignment = VerticalAlignment.Top,
+	HorizontalAlignment = HorizontalAlignment.Center,
+	Top = (int)(8*GlobalScale.X),
+	Height = (int)(10*GlobalScale.X)
 
-var tab1 = new TextButton()
+};
+var tab1 = new SoundTextButton()
 {
 	Text = "Official",
 	HorizontalAlignment = HorizontalAlignment.Left,
 	VerticalAlignment = VerticalAlignment.Top,
-	Border = new SolidBrush(new Color(31,81,255,240)),
-	BorderThickness = new Thickness(1)
+	Height = (int)(8*GlobalScale.X),
+	Width = (int)(80*GlobalScale.X),
+	Top = (int)(18*GlobalScale.X)
 };
-var tab2 = new TextButton()
+var tab2 = new SoundTextButton()
 {
 	Text = "Community",
 	HorizontalAlignment = HorizontalAlignment.Right,
 	VerticalAlignment = VerticalAlignment.Top,
-	Border = new SolidBrush(new Color(31,81,255,240)),
-	BorderThickness = new Thickness(1)
+	Height = (int)(8*GlobalScale.X),
+	Width = (int)(80*GlobalScale.X),
+	Top = (int)(18*GlobalScale.X)
+
 };
-var tab3 = new TextButton()
-{
-	Text = "Local",
-	HorizontalAlignment = HorizontalAlignment.Center,
-	VerticalAlignment = VerticalAlignment.Top,
-	Left = -12,
-	Border = new SolidBrush(new Color(31,81,255,240)),
-	BorderThickness = new Thickness(1)
-};
+leftpanel.Widgets.Add(lbl1);
 leftpanel.Widgets.Add(tab1);
 leftpanel.Widgets.Add(tab2);
-leftpanel.Widgets.Add(tab3);
+
 leftpanel.Widgets.Add(officialSelection);
 tab1.Click += (i, a) =>
 {
@@ -400,14 +372,15 @@ tab2.Click += (i, a) =>
 	leftpanel.Widgets.Remove(officialSelection);
 	leftpanel.Widgets.Add(communitySelection);
 };
-tab3.Click += (i, a) =>
+/*
+ tab3.Click += (i, a) =>
 {
 	leftpanel.Widgets.Remove(communitySelection);
 	leftpanel.Widgets.Remove(officialSelection);
 	leftpanel.Widgets.Add(communitySelection);
 	var file = new FileDialog(FileDialogMode.OpenFile)
 	{
-						
+
 	};
 	if (file == null) throw new ArgumentNullException(nameof(file));
 	file.FilePath = "./Maps";
@@ -419,7 +392,7 @@ tab3.Click += (i, a) =>
 	};
 	grid1.Widgets.Add(file);
 
-};
+};*/
 
 				
 return grid1;

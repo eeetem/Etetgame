@@ -148,7 +148,7 @@ public class UnitMove : UnitSequenceAction
 
     public override bool ShouldDo()
     {
-        return Actor != null && !Actor.Paniced;
+        return Actor != null && !Actor.Panicked;
     }
 
     protected override void RunSequenceAction()

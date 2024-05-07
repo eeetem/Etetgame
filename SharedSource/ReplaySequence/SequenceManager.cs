@@ -16,6 +16,22 @@ public class SequenceManager
 {
 	private static readonly Queue<SequenceAction> SequenceQueue = new Queue<SequenceAction>();
 	public static bool SequenceRunning => SequenceQueue.Count > 0 || CurrentSequenceTasks.Count > 0 || nextFrameTasks.Count > 0 || SequenceRunningRightNow;
+	public static bool CurrentFrameTasksRunning
+	{
+		get
+		{
+			foreach (var currentSequenceTask in CurrentSequenceTasks)
+			{
+				if (currentSequenceTask.Status == TaskStatus.Running)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
 	private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
 	public static bool SequenceRunningRightNow;
 	

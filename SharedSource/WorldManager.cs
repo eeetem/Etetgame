@@ -695,7 +695,10 @@ public  partial class WorldManager
 	
 	public WorldObject GetCoverObj(Vector2Int loc,Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true, int pseudoLayer = -1)
 	{
-		
+		while (SequenceManager.SequenceRunningRightNow)
+		{
+			Thread.Sleep(100);
+		}
 		dir = Utility.NormaliseDir(dir);
 		WorldObject biggestCoverObj = nullWorldObject;
 		IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc,pseudoLayer);

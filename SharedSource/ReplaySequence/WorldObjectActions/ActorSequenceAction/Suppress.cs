@@ -99,9 +99,9 @@ public class Suppress : UnitSequenceAction
 			Actor.Panic();
 		}
 
-		if (Actor.Paniced && Actor.Determination > 0)
+		if (Actor.Panicked && Actor.Determination > 0)
 		{
-			Actor.Paniced = false;
+			Actor.Panicked = false;
 		}
 		if(Actor.Determination>Actor.Type.Maxdetermination) Actor.Determination.Current = Actor.Type.Maxdetermination;
 		if(Actor.Determination<0) Actor.Determination.Current = 0;

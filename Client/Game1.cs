@@ -57,7 +57,7 @@ public class Game1 : Game
 		Action.Init();
 		RenderSystem.Init(GraphicsDevice);
 		Utility.Init();
-		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		
 		
 

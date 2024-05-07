@@ -55,6 +55,10 @@ public partial class WorldObject : IDrawable
 					break;
 			}
 		}
+		if (Type.Edge && Type.Faceable && this.Facing == Direction.West)
+		{
+			DrawOrder += 0.1f;
+		}
 
 		DrawOrder += Type.Zoffset;
 		return DrawOrder;

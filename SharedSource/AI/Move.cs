@@ -103,7 +103,7 @@ public class Move : AIAction
 	public override int GetScore()
 	{
 		if(base.GetScore() <= 0) return -100;
-		if(Unit.MovePoints.Current <= 0 || Unit.Paniced)
+		if(Unit.MovePoints.Current <= 0 || Unit.Panicked)
 		{
 			return 0;
 		}

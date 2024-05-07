@@ -55,7 +55,7 @@ namespace DefconNull.WorldObjects
 
 
 			Crouching = data.Crouching;
-			Paniced = data.Panic;
+			Panicked = data.Panic;
 
 
 
@@ -188,7 +188,7 @@ namespace DefconNull.WorldObjects
 			ap.SetToMax();
 			Value det = Determination;
 			
-			if(Paniced) mp--;
+			if(Panicked) mp--;
 			else det.Current++;
 			
 			foreach (var st in new List<StatusEffectInstance>(StatusEffects))
@@ -224,7 +224,7 @@ namespace DefconNull.WorldObjects
 				Determination++;
 			}
 
-			if (Paniced)
+			if (Panicked)
 			{
 #if CLIENT
 				if (WorldObject.IsVisible())
@@ -234,7 +234,7 @@ namespace DefconNull.WorldObjects
 #endif
 
 
-				Paniced = false;
+				Panicked = false;
 				Determination--;
 				MovePoints--;
 				canTurn = false;
@@ -305,14 +305,14 @@ namespace DefconNull.WorldObjects
 			});
 		}
 
-		public bool Paniced { get; set; }
+		public bool Panicked { get; set; }
 
 		public void Panic()
 		{
 
 			
 #if CLIENT
-			if(!Paniced){
+			if(!Panicked){
 				if (WorldObject.IsVisible())
 				{
 					var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
@@ -323,7 +323,7 @@ namespace DefconNull.WorldObjects
 #endif
 
 			Crouching = true;
-			Paniced = true;
+			Panicked = true;
 
 			ClearOverWatch();
 
@@ -436,7 +436,7 @@ namespace DefconNull.WorldObjects
 				CanTurn = u.canTurn;
 				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
-				Panic = u.Paniced;
+				Panic = u.Panicked;
 				
 				StatusEffects = new List<Tuple<string, int>>();
 				foreach (var st in u.StatusEffects)
@@ -508,7 +508,7 @@ namespace DefconNull.WorldObjects
 
 		protected bool Equals(Unit other)
 		{
-			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Paniced == other.Paniced;
+			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
 		}
 
 		public override bool Equals(object? obj)
@@ -536,7 +536,7 @@ namespace DefconNull.WorldObjects
 				hashCode = (hashCode * 397) ^ canTurn.GetHashCode();
 				hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
 				hashCode = (hashCode * 397) ^ IsPlayer1Team.GetHashCode();
-				hashCode = (hashCode * 397) ^ Paniced.GetHashCode();
+				hashCode = (hashCode * 397) ^ Panicked.GetHashCode();
 				return hashCode;
 			}
 		}

@@ -29,7 +29,7 @@ public static partial class NetworkingManager
 #endif
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 
-		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 4);
+		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
 		server.TimeoutTime = 10000;

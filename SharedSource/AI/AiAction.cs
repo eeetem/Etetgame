@@ -186,7 +186,7 @@ public abstract class AIAction
 			{
 				int supressionThisAttack = 0;
 				supressionThisAttack += Math.Min(((Suppress) c).DetDmg, hitUnit.Determination.Current);
-				if(supressionThisAttack >= hitUnit.Determination && !hitUnit.Paniced)
+				if(supressionThisAttack >= hitUnit.Determination && !hitUnit.Panicked)
 				{
 					supressionThisAttack += ((Suppress) c).DetDmg*2;
 				}

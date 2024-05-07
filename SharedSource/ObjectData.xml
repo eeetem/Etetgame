@@ -385,7 +385,7 @@
 
     <action detCost ="2" moveCost="1" actCost="0">
       <name>Command</name>
-      <tip>Give a targeted 1 action point and 1 move point</tip>
+      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight</tip>
       <targetAid>friend,!Officer</targetAid>
 
       <effect range="1" visible ="false">

@@ -104,7 +104,7 @@ public abstract class UiLayout
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		var MousePos = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		//Console.WriteLine(MousePos.X + " " + MousePos.Y);
-		batch.DrawText("X:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/Camera.GetZoom(),Color.Wheat);
+		batch.DrawText("\nX:"+MousePos.X+" Y:"+MousePos.Y,  Camera.GetMouseWorldPos(),  2/Camera.GetZoom(),Color.Wheat);
 		batch.End();
 	}
 	public virtual void RenderFrontHud(SpriteBatch batch, float deltatime)

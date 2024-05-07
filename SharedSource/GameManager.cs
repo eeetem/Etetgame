@@ -319,8 +319,8 @@ public static partial class GameManager
 
     }
 
-    private static readonly List<int> T1Units = new();
-    private static readonly List<int> T2Units = new();
+    private static readonly HashSet<int> T1Units = new();
+    private static readonly HashSet<int> T2Units = new();
 #if CLIENT
 	public static List<Unit> GetMyTeamUnits(int dimension = -1)
 	{

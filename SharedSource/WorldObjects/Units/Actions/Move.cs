@@ -37,9 +37,9 @@ public class Move : Action
 		{
 			return new Tuple<bool, string>(false, "Not enough move points");
 		}
-		if (actor.Paniced)
+		if (actor.Panicked)
 		{
-			return new Tuple<bool, string>(false, "Cannot Move while Paniced");
+			return new Tuple<bool, string>(false, "Cannot Move while Panicked");
 		}
 
 		if (WorldManager.Instance.GetTileAtGrid(args.Target!.Value).UnitAtLocation != null)

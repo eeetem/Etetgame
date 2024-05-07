@@ -127,14 +127,18 @@ public static partial class NetworkingManager
 		if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
 		var data = message.GetSerializable<GameManager.PreGameDataStruct>();
 
-		WorldManager.Instance.LoadMap(data.SelectedMap);
-		
+					
 		GameManager.PreGameData.TurnTime = data.TurnTime;
 		SendPreGameInfo();
-		SendMapData(GameManager.Player1.Connection);
-		if (GameManager.Player2 != null)
-			if (GameManager.Player2.Connection != null)
-				SendMapData(GameManager.Player2.Connection);
+		if (WorldManager.Instance.CurrentMap.Name != data.SelectedMap)
+		{
+			WorldManager.Instance.LoadMap(data.SelectedMap);
+
+			SendMapData(GameManager.Player1.Connection);
+			if (GameManager.Player2 != null)
+				if (GameManager.Player2.Connection != null)
+					SendMapData(GameManager.Player2.Connection);
+		}
 	}
 	[MessageHandler((ushort)NetworkMessageID.Chat)]
 	private static void ReciveChatMsg(ushort senderID,Message message)

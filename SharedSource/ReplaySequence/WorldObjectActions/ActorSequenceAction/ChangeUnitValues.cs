@@ -108,9 +108,9 @@ public class ChangeUnitValues : UnitSequenceAction
 		ActChange.Apply(ref Actor.ActionPoints);
 		MoveChange.Apply(ref Actor.MovePoints);
 		DetChange.Apply(ref Actor.Determination);
-		if(Actor.Determination > 0 && Actor.Paniced)
+		if(Actor.Determination > 0 && Actor.Panicked)
 		{
-			Actor.Paniced = false;
+			Actor.Panicked = false;
 		}
 		if(MoveRangeEffectChange.Value != 0)
 		{

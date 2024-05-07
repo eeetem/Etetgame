@@ -454,8 +454,9 @@ public static partial class GameManager
 	{
 		tutorial = true;
 		WorldManager.Instance.LoadMap("/Maps/Special/tutorial.mapdata");
+       
 		PracticeMode(GameManager.Player1.Connection);
-
+		NetworkingManager.SendMapData(Player1!.Connection!);
 		var t = new Task(delegate
 		{
 
@@ -693,7 +694,7 @@ public static partial class GameManager
 
 	public static void PracticeMode(Connection con)
 	{
-		Player2 = new ClientInstance("Practice Opponent",con);
+		Player2 = new ClientInstance("Practice Mode",con);
 		Player2.IsPracticeOpponent = true;
 		NetworkingManager.SendPreGameInfo();
 	}

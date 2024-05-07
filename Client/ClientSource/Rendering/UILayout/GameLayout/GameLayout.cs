@@ -179,8 +179,7 @@ public class GameLayout : MenuLayout
 			TutorialMove(scout,new Vector2Int(23,39));
 
 			tutorialNote = "[Green]Cover[-]\n" +
-			               "Finally shoot the [Red]enemy[-]" +
-			               "By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
+			               "Finally shoot the [Red]enemy[-] By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
 			               "Using 1 [Green]move[-] and 1 [Orange]action[-] point.";
 			TutorialFire(scout,new Vector2Int(23, 42));
 			
@@ -318,14 +317,14 @@ public class GameLayout : MenuLayout
 			abl.SendToServer(enemyScout1,param);
 			do
 			{
-				Thread.Sleep(1500);
+				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
 			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
 			param.AbilityIndex = 0;
 			abl.SendToServer(enemyScout1,param);
 			do
 			{
-				Thread.Sleep(1500);
+				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
 			
 			
@@ -338,14 +337,14 @@ public class GameLayout : MenuLayout
 			abl.SendToServer(enemyScout2,param);
 			do
 			{
-				Thread.Sleep(1500);
+				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
 			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
 			param.AbilityIndex = 0;
 			abl.SendToServer(enemyScout2,param);
 			do
 			{
-				Thread.Sleep(1500);
+				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
 			
 			NetworkingManager.EndTurn();
@@ -355,7 +354,7 @@ public class GameLayout : MenuLayout
 			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both of them";
 			TutorialFire(grunt, new Vector2Int(29, 44));
 			tutorialNote = "[Green]Suppression[-]\n" +
-			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Paniced[-], were [Red]forcefully crouched[-], next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
+			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Panicked[-], were [Red]forcefully crouched[-], next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
 			               "If you look at your [Blue]determination[-] bar you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
 			               "End your turn by pressing [Orange]end turn[-]";
 			TutorialEndTurn();
@@ -409,7 +408,7 @@ public class GameLayout : MenuLayout
 			               "The [Red]enemy[-] is swarming you with units trying to overwhelm you.\n\n" +
 			               "Thankfully you kept a [Green]Heavy[-] nearby, the heavy has [Green]very high health and determination[-] and is great at [Green]Suppressing units[-]." +
 			               "Heavy can [Green]easily[-] hold off groups of enemies on his own but he's [Red]very slow[-] and can be avoided by more agile units aswell having [Red]mediocre damage output[-] so he needs assistance with finishing off the units he suppresses.\n" +
-			               "\nMove the heavy into position";
+			               "Move the heavy into position";
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
 			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
@@ -428,7 +427,7 @@ public class GameLayout : MenuLayout
 			highlightTile = new Vector2Int(-1, -1);
 
 			tutorialNote = "[Green]The Heavy[-]\n" +
-			               "All the [Red]enemy scouts[-] are [Red]paniced[-]. They're are now easy pickings for your other units.\n\n" +
+			               "All the [Red]enemy scouts[-] are [Red]panicked[-]. They're are now easy pickings for your other units.\n\n" +
 			               "[Orange]End your turn[-] to finish this part of the tutorial.";
 			TutorialEndTurn();
 			MoveCamera.Make(new Vector2Int(35,44),true,0).GenerateTask().RunTaskSynchronously();
@@ -439,7 +438,13 @@ public class GameLayout : MenuLayout
 			               "[Green]Specialist[-] is a support unit for [Green]destroying cover[-] who can also provide [Green]some suppression[-] but [Red]isn't great for a frontal confrontation[-].\n\n" +
 			               "You now understand the basics of the game, you can explore all abilities and strategies by practicing against AI or yourself in the singleplayer modes!\n\n" +
 			               "Press [Orange]ESC[-] to quit to main menu.";
-			tutorial = false;
+			while (UI.currentUi is GameLayout)
+			{
+				Thread.Sleep(1000);
+			}
+			
+				tutorial = false;
+			
 
 
 
@@ -771,7 +776,7 @@ public class GameLayout : MenuLayout
 			highlightTile = new Vector2Int(-1, -1);
 			tutorialActionLock = ActiveActionType.None;
 			tutorialUnitLock = -1;
-			canEndTurnTutorial = false;
+			canEndTurnTutorial = true;
 		}
 		WorldManager.Instance.MakeFovDirty();
 		var panel = new Panel ();
@@ -2173,7 +2178,7 @@ public class GameLayout : MenuLayout
 			var animSheet = TextureManager.GetSpriteSheet("HoverHud/panicSheet", 1, 4);
 			for (int y = 0; y < unit.Type.Maxdetermination; y++)
 			{
-				if (unit.Paniced)
+				if (unit.Panicked)
 				{
 					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
 					batch.Draw(animSheet[(int) panicAnimCounter], DetPos + new Vector2(detWidth * y, 0), null, Color.White, 0, Vector2.Zero, new Vector2(1, 1), SpriteEffects.None, 0);
