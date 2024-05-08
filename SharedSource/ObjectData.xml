@@ -366,7 +366,7 @@
 
     </action>
 
-    <action immideate="true" detCost ="2" moveCost="0" actCost="0" aiExempt="false">
+    <action immideate="true" detCost ="1" moveCost="1" actCost="0" aiExempt="false">
       <name>Rally</name>
       <tip>All nearby friendlies stop panicking and gain full determiation</tip>
 

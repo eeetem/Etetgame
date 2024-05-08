@@ -155,6 +155,8 @@ public static class UI
 			i++;
 			m += c;
 		}
+		if (m.Length>0)
+			msgs.Add(m);
 
 		VerticalStackPanel stack = new VerticalStackPanel();
 		stack.Spacing = 0;

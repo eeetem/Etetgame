@@ -110,6 +110,7 @@ public class WorldConseqences
 		{
 			if(TargetEnv && obj.UnitComponent is null) shouldDo = true;
 		}
+		if(Ignores.Contains(obj.Type.Name)) shouldDo = false;
 
 		if (!shouldDo) return consequences;
 
@@ -122,6 +123,7 @@ public class WorldConseqences
 		{
 			//if(obj.UnitComponent.)
 			UnitSequenceAction.TargetingRequirements req = new UnitSequenceAction.TargetingRequirements(obj.ID);
+
 
 			if (Det != 0)
 			{
