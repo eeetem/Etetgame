@@ -130,6 +130,7 @@ public static class TextureManager
                 break;
             default:
                 texId = "" + c;
+                texId = texId.ToLowerInvariant();
                 break;
         }
 

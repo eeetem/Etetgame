@@ -1567,7 +1567,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/MainMenu/butts/mainSelection.png
 
-#begin CompressedContent/textures/MainMenu/butts/mainSelectionselected.png
+#begin CompressedContent/textures/MainMenu/butts/mainSelectionSelected.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1577,7 +1577,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/butts/mainSelectionselected.png
+/build:CompressedContent/textures/MainMenu/butts/mainSelectionSelected.png
 
 #begin CompressedContent/textures/MainMenu/butts/menubox.png
 /importer:TextureImporter
@@ -1711,7 +1711,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/MainMenu/purpleoverlay.png
 
-#begin CompressedContent/textures/MainMenu/smokelayer0.png
+#begin CompressedContent/textures/MainMenu/smokeLayer0.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1721,9 +1721,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/smokelayer0.png
+/build:CompressedContent/textures/MainMenu/smokeLayer0.png
 
-#begin CompressedContent/textures/MainMenu/smokelayer1.png
+#begin CompressedContent/textures/MainMenu/smokeLayer1.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1733,9 +1733,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/smokelayer1.png
+/build:CompressedContent/textures/MainMenu/smokeLayer1.png
 
-#begin CompressedContent/textures/MainMenu/smokelayer2.png
+#begin CompressedContent/textures/MainMenu/smokeLayer2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1745,9 +1745,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/smokelayer2.png
+/build:CompressedContent/textures/MainMenu/smokeLayer2.png
 
-#begin CompressedContent/textures/MainMenu/smokelayer3.png
+#begin CompressedContent/textures/MainMenu/smokeLayer3.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1757,7 +1757,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/smokelayer3.png
+/build:CompressedContent/textures/MainMenu/smokeLayer3.png
 
 #begin CompressedContent/textures/MainMenu/staticLayer.png
 /importer:TextureImporter
