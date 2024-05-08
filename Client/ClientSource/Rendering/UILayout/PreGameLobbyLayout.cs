@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
 using Microsoft.Xna.Framework;
@@ -51,6 +52,10 @@ public class PreGameLobbyLayout : MenuLayout
 		batch.Draw(banner, new Vector2(545*bannerScale, Game1.resolution.Y-banner.Height*bannerScale), null, Color.White, 0, Vector2.Zero, bannerScale, SpriteEffects.None, 0);
 		batch.DrawText(GameManager.PreGameData.Player2Name, new Vector2(545*bannerScale, Game1.resolution.Y-(banner.Height-5)*bannerScale), bannerScale*2f, 20, Color.White);
 		
+		//centered
+		var pos = new Vector2(Game1.resolution.X / 2f - (WorldManager.Instance.CurrentMap.Name.Length) * GlobalScale.X * 20f, 0);
+		batch.DrawText(WorldManager.Instance.CurrentMap.Name,pos, GlobalScale.X*2f, 20, Color.White);
+		batch.DrawText("By "+WorldManager.Instance.CurrentMap.Author,pos+new Vector2(0,20f*GlobalScale.X),GlobalScale.X, 20, Color.DarkGray);
 		batch.End();
 	}
 
@@ -89,7 +94,7 @@ public class PreGameLobbyLayout : MenuLayout
 			Left = 0,
 			Background = new SolidBrush(new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f)),
 			Width = (int) (150 * GlobalScale.X),
-			Height = (int) (480 * GlobalScale.Y),
+			Height = (int) (440 * GlobalScale.Y),
 			VerticalAlignment = VerticalAlignment.Stretch,
 			HorizontalAlignment = HorizontalAlignment.Left,
 		};
@@ -174,19 +179,21 @@ public class PreGameLobbyLayout : MenuLayout
 			Width = (int) (200 * GlobalScale.X),
 			Height = (int) (100 * GlobalScale.Y),
 			Background = new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),
-			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.Red)
+			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.Red),
+			Padding = new Thickness(0,0,0,(int)(20*GlobalScale.X)),
+			Margin = new Thickness(0,0,0,(int)(20*GlobalScale.X)),
 
 
 		};
 		if (!GameManager.IsPlayer1)
 		{
-			btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("button")), Color.DimGray);
-			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("button")), Color.DimGray);
+			btn.Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")), Color.DimGray);
+			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")), Color.DimGray);
 		}
 
 		btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
 		rightStack.Widgets.Add(btn);
-
+		
 		var label = new TextLabel()
 		{
 			Text = "Seconds Per Turn",
@@ -332,7 +339,7 @@ var lbl1 = new TextLabel()
 	Text = "Maps Selection",
 	VerticalAlignment = VerticalAlignment.Top,
 	HorizontalAlignment = HorizontalAlignment.Center,
-	Top = (int)(8*GlobalScale.X),
+	Top = (int)(10*GlobalScale.X),
 	Height = (int)(10*GlobalScale.X)
 
 };
@@ -343,7 +350,7 @@ var tab1 = new SoundTextButton()
 	VerticalAlignment = VerticalAlignment.Top,
 	Height = (int)(8*GlobalScale.X),
 	Width = (int)(80*GlobalScale.X),
-	Top = (int)(18*GlobalScale.X)
+	Top = (int)(20*GlobalScale.X)
 };
 var tab2 = new SoundTextButton()
 {
@@ -352,7 +359,7 @@ var tab2 = new SoundTextButton()
 	VerticalAlignment = VerticalAlignment.Top,
 	Height = (int)(8*GlobalScale.X),
 	Width = (int)(80*GlobalScale.X),
-	Top = (int)(18*GlobalScale.X)
+	Top = (int)(20*GlobalScale.X)
 
 };
 leftpanel.Widgets.Add(lbl1);

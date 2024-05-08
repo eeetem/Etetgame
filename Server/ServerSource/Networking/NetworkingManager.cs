@@ -221,14 +221,12 @@ public static partial class NetworkingManager
 	public static void Kick(string reason,Connection connection)
 	{
 		Log.Message("NETWORKING","Kicking " + connection.Id + " for " + reason);
-		if (connection.IsConnected)
-		{
-			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.Notify);
-			msg.AddString(reason);
-			server.Reject(connection,msg);
-			server.DisconnectClient(connection,msg);
-		}
-
+	
+		var msg = Message.Create();
+		msg.AddString(reason);
+		server.Reject(connection,msg);
+		server.DisconnectClient(connection,msg);
+	
 		if (GameManager.Player1?.Connection == connection)
 		{
 			GameManager.Player1.Disconnect();

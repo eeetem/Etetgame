@@ -19,7 +19,7 @@ public static class UI
 	{
 		graphicsDevice = graphicsdevice;
 		MyraEnvironment.Game = Game1.instance;
-	//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+		//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
 
 		Desktop = new Desktop();
@@ -37,31 +37,36 @@ public static class UI
 	public static UiLayout currentUi = new MainMenuLayout();
 	private static UiLayout? lastDifferentUI = new MainMenuLayout();
 	private static Widget root = null!;
+	public static readonly object syncobj = new object();
 	public static void SetUI(UiLayout? newUI)
 	{
-
-		UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
-			
-		
-		if (newUI != null)
+		lock (syncobj)
 		{
 			
-			if (currentUi.GetType() != newUI.GetType())
+		
+			UiLayout.SetScale(new Vector2(Game1.resolution.X / 800f * 1f, Game1.resolution.Y / 800f * 1f));
+			
+		
+			if (newUI != null)
 			{
-				lastDifferentUI = currentUi;
-				root = newUI.Generate(Desktop, lastDifferentUI);
-				currentUi = newUI;
+			
+				if (currentUi.GetType() != newUI.GetType())
+				{
+					lastDifferentUI = currentUi;
+					root = newUI.Generate(Desktop, lastDifferentUI);
+					currentUi = newUI;
+				}
+				else
+				{
+					root = currentUi.Generate(Desktop,lastDifferentUI);
+				}
 			}
 			else
 			{
-				root = currentUi.Generate(Desktop,lastDifferentUI);
+				root = currentUi.Generate(Desktop, lastDifferentUI);
 			}
-		}
-		else
-		{
-			root = currentUi.Generate(Desktop, lastDifferentUI);
-		}
 		
+		}
 		Console.WriteLine("Changing UI to: "+currentUi);
 	}
 	private static MouseState lastMouseState;
@@ -120,29 +125,28 @@ public static class UI
 	public static Dialog OptionMessage(string title, string content, string option1text, EventHandler? option1,string option2text, EventHandler? option2)
 	{
 		var messageBox = Dialog.CreateMessageBox(title,content);
-		messageBox.ButtonCancel.Content = new Label() {Text = option1text};
+		messageBox.ButtonCancel.Content = new TextLabel() {Text = option1text,Height = (int)(10*UiLayout.GlobalScale.X)};
 		messageBox.ButtonCancel.Click += option1;
-		messageBox.ButtonOk.Content = new Label() {Text = option2text};
+		messageBox.ButtonOk.Content = new TextLabel() {Text = option2text,Height = (int)(10*UiLayout.GlobalScale.X)};
 		messageBox.ButtonOk.Click += option2;
+		messageBox.Content = GenerateMultiLineText(content);
 		messageBox.ShowModal(Desktop);
 		return messageBox;
 	}
 
-	public static void ShowMessage(string title, string content)
+	private static VerticalStackPanel GenerateMultiLineText(string content)
 	{
-		ShowMessage(title + "\n" + content);
-	}
-
-	public static void ShowMessage(string content)
-	{
-
-		List<string> msgs = new List<string>();
 		int i = 0;
 		string m = "";
+		
+		List<string> msgs = new List<string>();
+
 		foreach (var c in content)
 		{
-			if (i > 20 || c == '\n')
+			if (i > 30 || c == '\n')
 			{
+				if(c != '\n')
+					m+=c;
 				msgs.Add(m);
 				m = "";
 				i = 0;
@@ -153,6 +157,7 @@ public static class UI
 		}
 
 		VerticalStackPanel stack = new VerticalStackPanel();
+		stack.Spacing = 0;
 		foreach (var message in msgs)
 		{
 			stack.Widgets.Add(new TextLabel()
@@ -162,8 +167,20 @@ public static class UI
 			});
 		}
 
+		return stack;
+	}
+	
+	public static void ShowMessage(string title, string content)
+	{
+		ShowMessage(title + "\n" + content);
+	}
+
+	public static void ShowMessage(string content)
+	{
+
+
 		var dialog = new Dialog();
-		dialog.Content = stack;
+		dialog.Content = GenerateMultiLineText(content);
 		dialog.ShowModal(Desktop);
 		dialog.Background = new SolidBrush(Color.Black * 0.8f);
 		dialog.OverBackground = new SolidBrush(Color.Black * 1f);

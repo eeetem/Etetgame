@@ -32,7 +32,8 @@ public static partial class GameManager
 		{
 			preGameData = value;
 			GenerateMapList();
-			UI.SetUI(null);
+			if(UI.currentUi is not MainMenuLayout)
+				UI.SetUI(null);
 		}
 	}
 
@@ -72,7 +73,7 @@ public static partial class GameManager
 	}
 
 
-	public static void EndTurn()
+	public static void TryEndTurn()
 	{
 		if (IsPlayer1 != IsPlayer1Turn) return;
 
@@ -120,13 +121,17 @@ public static partial class GameManager
 		Console.WriteLine("IsPlayer1Turn: " + IsPlayer1Turn);
 			
 		score = data.Score;
+		if (GameState != data.GameState)
+		{
+			Audio.OnGameStateChange(GameState);
+		}
 		GameState = data.GameState;
 		CurrentTurnPercentDone = data.CurrentTurnPercentDone;
 		if (IsPlayer1 == IsPlayer1Turn)
 			CurrentTurnPercentDone = -1;
 		GameLayout.SetPercentComplete(CurrentTurnPercentDone);
 
-		Audio.OnGameStateChange(GameState);
+		//
 		switch (GameState)
 		{
 			case GameState.Lobby:

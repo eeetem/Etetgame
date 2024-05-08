@@ -119,8 +119,12 @@ public class HudActionButton
 		};
 		UIButton.MouseEntered += (o, a) =>
 		{
-			GameLayout.SelectHudAction(this);
-			quickPreview = true;
+			if (SelectedButton == null)
+			{
+				GameLayout.SelectHudAction(this);
+				quickPreview = true;
+			}
+
 		};
 		UIButton.MouseLeft += (o, a) =>
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
 using DefconNull.Rendering.UILayout.GameLayout;
@@ -34,13 +35,17 @@ public static partial class NetworkingManager
 	public static bool Connect(string ipport,string name)
 	{
 		Disconnect();
-		
+
+		if (client != null)
+		{
+			Thread.Sleep(1000);
+			client?.Update();
+			Thread.Sleep(1000);
+		}
+
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 		ipport = ipport.Trim();
 		ipport = ipport.Replace("localhost", GetLocalIPAddress());
-		if(client!=null)
-			client.Disconnect();
-
 		Ipport = ipport;
 		Name = name;
 		

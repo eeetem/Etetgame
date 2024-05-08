@@ -848,7 +848,7 @@ public class GameLayout : MenuLayout
 		endBtn.Click += (o, a) =>
 		{
 			if(canEndTurnTutorial)
-				GameManager.EndTurn();
+				GameManager.TryEndTurn();
 		};
 
 
@@ -2362,6 +2362,8 @@ public class GameLayout : MenuLayout
 	private static void UpdateHudButtons()
 	{
 		if(ConfirmButton is null) return;
+		if(targetBarStack is null) return;
+		if(OverWatchToggle is null) return;
 		foreach (var act in ActionButtons)
 		{
 			act.UpdateIcon();
@@ -2504,6 +2506,11 @@ public class GameLayout : MenuLayout
 
 	public static void SelectHudAction(HudActionButton? hudActionButton)
 	{
+		
+		if (!GameManager.IsMyTurn())
+		{
+			hudActionButton = null;
+		}
 		HudActionButton.SelectedButton = hudActionButton;
 		activeAction = ActiveActionType.Action;
 		if (hudActionButton == null)

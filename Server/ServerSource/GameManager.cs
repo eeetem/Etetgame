@@ -48,7 +48,10 @@ public static partial class GameManager
 	{
 		if (GameState != GameState.Lobby) return;
 		if (Player1 == null || Player2 == null) return;
-
+		if(T1SpawnPoints.Count == 0 || T2SpawnPoints.Count == 0)
+		{
+			return;
+		}
 		GameState = GameState.Setup;
 
 
@@ -62,6 +65,7 @@ public static partial class GameManager
 		{
 			return;
 		}
+
 		GameState = GameState.Playing;
 		
 		//not a fan of this, should probably be made a single function

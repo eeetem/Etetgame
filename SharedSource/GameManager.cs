@@ -183,7 +183,7 @@ public static partial class GameManager
 #if CLIENT
 
 		Audio.OnGameStateChange(GameState.Playing);
-		
+		GameLayout.SelectHudAction(null);
 #endif
 
 

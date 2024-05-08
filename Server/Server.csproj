@@ -44,9 +44,6 @@
       <None Remove="SharedSource\World\WorldActions\**" />
       <None Remove="SharedSource\World\**" />
       <None Remove="obj\**" />
-      <None Update="Maps\testmap.mapdata">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
       <None Update="Maps\Special\tutorial.mapdata">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>

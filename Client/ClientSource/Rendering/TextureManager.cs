@@ -87,7 +87,7 @@ public static class TextureManager
                 texId = "plus";
                 break;
             case '-':
-                texId = "minus";
+                texId = "dash";
                 break;
             case '!':
                 texId = "exclamationmark";
@@ -118,6 +118,15 @@ public static class TextureManager
                 break;
             case '\"':
                 texId = "quote";
+                break;
+            case '\\':
+                texId = "backslash";
+                break;
+            case '/':
+                texId = "forwardslash";
+                break;
+            case '_':
+                texId = "underscore";
                 break;
             default:
                 texId = "" + c;
