@@ -142,33 +142,36 @@ public static partial class GameManager
 
         }
 
-        if (team1Present && !team2Present)
+        if (!PreGameData.SinglePLayerFeatures)
         {
+            if (team1Present && !team2Present)
+            {
 #if CLIENT
 			Audio.PlaySound("capture");
 			Thread.Sleep(2000);
 			Camera.SetPos(capPoint);
 #endif
-            score++;
-        }
-        else if(!team1Present && team2Present){
-				
+                score++;
+            }
+            else if (!team1Present && team2Present)
+            {
+
 #if CLIENT
 			Audio.PlaySound("capture");
 			Thread.Sleep(2000);
 			Camera.SetPos(capPoint);
 #endif
-            score--;
-        }
+                score--;
+            }
 #if CLIENT
 		GameLayout.SetScore(score);
 		Audio.PlaySound("UI/turn");
 #endif
-			
-        if(score > 8)EndGame(true);
-        if(score < -8)EndGame(false);
-    
-        #if SERVER
+
+            if (score > 10) EndGame(true);
+            if (score < -10) EndGame(false);
+        }
+#if SERVER
         if(GetTeamUnits(true).Count == 0)
         {
             EndGame(false);
