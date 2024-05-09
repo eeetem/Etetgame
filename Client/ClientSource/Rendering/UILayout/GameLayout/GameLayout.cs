@@ -175,7 +175,7 @@ public class GameLayout : MenuLayout
 			
 			tutorialNote = "[Green]Cover[-]\n" +
 			               "The [Red]enemy[-] unit is behind [Yellow]High[-] cover, the cover would absorb all your damage.\n\n" +
-			               "Right click to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
+			               "[Yellow]Right click[-] to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
 			TutorialMove(scout,new Vector2Int(23,39));
 
 			tutorialNote = "[Green]Cover[-]\n" +
@@ -184,7 +184,7 @@ public class GameLayout : MenuLayout
 			TutorialFire(scout,new Vector2Int(23, 42));
 			
 			tutorialNote = "[Green]Turning[-]\n" +
-			               "Now that you've killed the [Red]enemy[-] double right click the highlighted tile to face into its direction.\n\n" +
+			               "Now that you've killed the [Red]enemy[-] double [Yellow]right click[-] the highlighted tile to face into its direction.\n\n" +
 			               "You can turn units once per movement.";
 			tutorialActionLock = ActiveActionType.Face;
 			highlightTile = new Vector2Int(25, 39);
@@ -282,7 +282,7 @@ public class GameLayout : MenuLayout
 			SelectUnit(null);
 			TutorialMove(grunt, new Vector2Int(22, 44));
 			tutorialNote = "[Green]Cover[-]\n" +
-			               "You are standing in front of [Green]Light[-] cover. Crouch for better protection by pressing [Yellow]Z[-].";
+			               "You are standing in front of [Green]Light[-] cover. Crouch for better protection by pressing [Yellow]Z[-] and [Yellow]Spacebar[-].";
 			TutorialCrouch(grunt);
 			tutorialNote = "[Green]Cover[-]\n" +
 			               "You're out of [Green]movement points[-]. [Orange]End your turn[-]";
@@ -355,7 +355,7 @@ public class GameLayout : MenuLayout
 			TutorialFire(grunt, new Vector2Int(29, 44));
 			tutorialNote = "[Green]Suppression[-]\n" +
 			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Panicked[-], were [Red]forcefully crouched[-], next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
-			               "If you look at your [Blue]determination[-] bar you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
+			               "If you look at your [Blue]determination[-] bar above your [Green]Grunt[-] you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
 			               "End your turn by pressing [Orange]end turn[-]";
 			TutorialEndTurn();
 			tutorialNote = "";
@@ -412,7 +412,7 @@ public class GameLayout : MenuLayout
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
 			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
-			               "[Blue]Suppress[-] the Scouts\n";
+			               "[Blue]Suppress[-] the Scouts by pressing [Yellow]X[-] and [Yellow]Spacebar[-]\n";
 			tutorialAbilityIndex = 2;
 			tutorialActionLock = ActiveActionType.Action;
 			tutorialUnitLock = heavy.WorldObject.ID;
@@ -443,7 +443,7 @@ public class GameLayout : MenuLayout
 				Thread.Sleep(1000);
 			}
 			
-				tutorial = false;
+			tutorial = false;
 			
 
 

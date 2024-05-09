@@ -295,7 +295,7 @@ namespace DefconNull.WorldObjects
 					return;
 				}
 
-				Log.Message("UNITS", "performing action " + a.Type);
+				Log.Message("UNITS", "performing action " + a.Type + " on " + args.Target + " with " + args.AbilityIndex);
 #if CLIENT
 			a.SendToServer(this,args);
 #elif SERVER

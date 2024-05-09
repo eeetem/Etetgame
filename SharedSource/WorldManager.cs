@@ -241,6 +241,10 @@ public  partial class WorldManager
 			
 	public ConcurrentDictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
 	{
+		while (SequenceManager.SequenceRunningRightNow)
+		{
+			Thread.Sleep(100);
+		}
 
 		int itteration = 0;
 

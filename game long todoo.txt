@@ -11,12 +11,12 @@ corpses
 merge vission and projectile
 
 signing
-i icon
 
 
-spotted while moving bug
 
-
+turn down screenshake
+update overwatch based on LOS
+Capture point
 
 sfx list:
 -throw
