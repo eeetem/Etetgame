@@ -230,9 +230,6 @@
         <Link>Maps\Ground Zero.mapdata</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <Content Include="..\Server\Maps\testmap.mapdata">
-        <Link>Maps\testmap.mapdata</Link>
-      </Content>
       <Content Include="..\SharedSource\ObjectData.xml">
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

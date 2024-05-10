@@ -31,7 +31,7 @@ public class HudActionButton
 	readonly TextureRegion _icon;
 	public string Tooltip;
 	public readonly bool CanOverwatch;
-	private bool selfOnly = false;
+	public readonly bool SelfOnly = false;
 	private readonly Func<Unit,WorldObject,List<SequenceAction>> _getConsequencesTask;
 
 	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> shouldPerformTask, AbilityCost cost, string tooltip, bool selfOnly)
@@ -40,7 +40,7 @@ public class HudActionButton
 		Cost = cost;
 		Tooltip = tooltip;
 		CanOverwatch = false;
-		this.selfOnly = selfOnly;
+		this.SelfOnly = selfOnly;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;
@@ -63,7 +63,7 @@ public class HudActionButton
 		UIButton = imageButton;
 		Cost = abl.GetCost();
 		Tooltip = abl.Tooltip;
-		selfOnly = abl.ImmideateActivation;
+		SelfOnly = abl.ImmideateActivation;
 		CanOverwatch = abl.CanOverWatch;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(abl.Icon);
@@ -145,7 +145,7 @@ public class HudActionButton
 	{
 		List<WorldObject> suggestedTargets = new();
 	
-		if(selfOnly)
+		if(SelfOnly)
 		{
 			suggestedTargets.Add(Owner.WorldObject);
 			return suggestedTargets;

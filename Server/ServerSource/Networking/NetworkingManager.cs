@@ -137,7 +137,6 @@ public static partial class NetworkingManager
 	}
 
 	private static Task? currentMapDataSendTask;
-	private static bool cancelMapSend = false;
 	public static void SendMapData(Connection connection)
 	{
 	
@@ -149,13 +148,11 @@ public static partial class NetworkingManager
 		packet.AddString(WorldManager.Instance.CurrentMap.Author);
 		packet.AddInt(WorldManager.Instance.CurrentMap.unitCount);
 		server.Send(packet,connection);
-		cancelMapSend = true;
 		lock (UpdateLock)
 		{
-			cancelMapSend = false;
 			Thread.Sleep(100);//yeah this is bad
 			Log.Message("NETWORKING","Actually sending map data to " + connection.Id + "...");
-			if(SequenceManager.SequenceRunning || cancelMapSend) return;//we're probably arleady sending it and if not the client will do another request soon
+			if(SequenceManager.SequenceRunning) return;//we're probably arleady sending it and if not the client will do another request soon
 			List<SequenceAction> act = new List<SequenceAction>();
 			int sendTiles = 0;
 			for (int x = 0; x < 100; x++)

@@ -104,7 +104,7 @@ public static class Camera
 			movementDirection += Vector2.UnitX;
 		}
 
-		if (movementDirection.Length() != 0)
+		if (movementDirection.Length() != 0 && !noCancel)
 		{
 			ForceMoving = false;
 			return movementDirection;
@@ -115,8 +115,6 @@ public static class Camera
 			Vector2 difference = MoveTarget - Cam.Position;
 			if (difference.Length() < 25)
 			{
-
-
 				ForceMoving = false;
 				noCancel = false;
 			}

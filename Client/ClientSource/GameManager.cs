@@ -76,17 +76,15 @@ public static partial class GameManager
 	public static void TryEndTurn()
 	{
 		if (IsPlayer1 != IsPlayer1Turn) return;
-
-		foreach (var unit in GetTeamUnits(IsPlayer1))
+		if (!GameLayout.tutorial)
 		{
-			if (unit.MovePoints > 0)
+			foreach (var unit in GetTeamUnits(IsPlayer1))
 			{
-				UI.OptionMessage("Are you sure?", "You have units with unspent move points\nTAB to cycle units with unspent points", "no", (a,b)=> {  }, "yes", (a, b) =>
+				if (unit.MovePoints > 0)
 				{
-						
-					NetworkingManager.EndTurn();
-				});
-				return;
+					UI.OptionMessage("Are you sure?", "You have units with unspent move points\nTAB to cycle units with unspent points", "no", (a, b) => { }, "yes", (a, b) => { NetworkingManager.EndTurn(); });
+					return;
+				}
 			}
 		}
 
@@ -139,8 +137,8 @@ public static partial class GameManager
 				break;
 			case GameState.Setup:
 				
-					var mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
-					UI.SetUI(new SquadCompBuilderLayout());
+				var mySpawnPoints = IsPlayer1 ? T1SpawnPoints : T2SpawnPoints;
+				UI.SetUI(new SquadCompBuilderLayout());
 
 				break;
 			case GameState.Playing:

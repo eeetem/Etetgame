@@ -238,7 +238,7 @@ public class GameLayout : MenuLayout
 
 			tutorialNote = "[Green]Scouts Ability[-]\n" +
 			               "Uh Oh! You're out of [Green]movement points[-]!\n" +
-			               "You can use the scout's special ability by pressing [Green]C[-] to gain more [Green]movement points[-].\n" +
+			               "You can use the scout's special ability by pressing [Yellow]C[-] and [Yellow]Spacebar[-] to gain more [Green]movement points[-].\n" +
 			               "The ability is very strong, however it will use up 3 [Blue]determination[-] leaving you open to be [Red]suppressed[-] if you get shot at.\n" +
 			               "Use it wisely in your games!";
 			tutorialActionLock = ActiveActionType.Action;
@@ -1150,8 +1150,20 @@ public class GameLayout : MenuLayout
 	}
 	
 
+	private static WorldObject? actionTarget;
 
-	public static WorldObject? ActionTarget;
+	public static WorldObject? ActionTarget
+	{
+		get => actionTarget;
+		set
+		{
+			actionTarget = value;
+			if(actionTarget!= null && activeAction == ActiveActionType.Action)
+				Camera.SetPos(actionTarget.TileLocation.Position);
+		}
+		
+		
+	}
 	
 	private static List<WorldObject> suggestedTargets = new();
 	private int GetSelectedTargetIndex() {
@@ -1954,6 +1966,9 @@ public class GameLayout : MenuLayout
 					if(tutorialActionLock == ActiveActionType.None || (tutorialActionLock == ActiveActionType.Face && highlightTile == position))
 						SelectedUnit.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(position));
 					break;
+				case ActiveActionType.Move:
+					activeAction = ActiveActionType.None;
+					break;
 				case ActiveActionType.Action:
 				case ActiveActionType.Overwatch:
 					SelectHudAction(null);
@@ -1982,7 +1997,11 @@ public class GameLayout : MenuLayout
 					}
 					break;
 				case ActiveActionType.Action:
-					
+					if (HudActionButton.SelectedButton.SelfOnly)
+					{
+						ActionTarget = SelectedUnit.WorldObject;
+						break;
+					}
 					var edgeList = tile.GetAllEdges();
 					if (drawExtra && edgeList.Count>0)
 					{

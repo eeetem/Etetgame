@@ -589,7 +589,7 @@ namespace DefconNull.WorldObjects
 			{	
 				var tile = WorldManager.Instance.GetTileAtGrid(position);
 				if(tile.Surface==null) continue;
-				if (action.CanPerform(this, tile.Surface, false, true).Item1)
+				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
 				{
 					result.Add(position);
 				}
