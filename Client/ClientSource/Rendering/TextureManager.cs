@@ -87,7 +87,7 @@ public static class TextureManager
                 texId = "plus";
                 break;
             case '-':
-                texId = "dash";
+                texId = "minus";
                 break;
             case '!':
                 texId = "exclamationmark";

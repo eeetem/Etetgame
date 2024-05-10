@@ -16,7 +16,8 @@ signing
 
 turn down screenshake
 update overwatch based on LOS
-Capture point
+do not delete crashes
+
 
 sfx list:
 -throw
@@ -69,9 +70,6 @@ everything around the grunt
 
 
 
-
-
-
 sprite master list:
 -destruction states
 -windows and doorways
@@ -86,3 +84,6 @@ sprite master list:
 
 
 
+619771
+614279
+601644

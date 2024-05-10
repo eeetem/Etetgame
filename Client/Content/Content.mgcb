@@ -2167,6 +2167,18 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/text/backslash.png
 
+#begin CompressedContent/textures/text/backslash.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/text/backslash.png
+
 #begin CompressedContent/textures/text/broken.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -2406,6 +2418,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/text/f.png
+
+#begin CompressedContent/textures/text/forwardslash.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/text/forwardslash.png
 
 #begin CompressedContent/textures/text/forwardslash.png
 /importer:TextureImporter
@@ -3042,6 +3066,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/text/u.png
+
+#begin CompressedContent/textures/text/underscore.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/text/underscore.png
 
 #begin CompressedContent/textures/text/underscore.png
 /importer:TextureImporter

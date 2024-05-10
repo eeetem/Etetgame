@@ -339,9 +339,9 @@ public static partial class GameManager
     public static List<Unit> GetTeamUnits(bool team1, int dimension = -1)
     {
         
-        List<int>ids = new List<int>();
+        HashSet<int>ids = new HashSet<int>();
 
-        ids = team1 ? new List<int>(T1Units) : new List<int>(T2Units);
+        ids = team1 ? new HashSet<int>(T1Units) : new HashSet<int>(T2Units);
 
         List<Unit> units = new List<Unit>();
 		

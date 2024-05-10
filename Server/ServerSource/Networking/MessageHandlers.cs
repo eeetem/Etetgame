@@ -207,7 +207,7 @@ public static partial class NetworkingManager
 			}
 		}
 
-		if (!(GameManager.Player1 != null && GameManager.Player1.Connection!.Id == senderID) && !(GameManager.Player2 != null && GameManager.Player2.Connection!.Id == senderID))
+		if (!(GameManager.Player1 != null && GameManager.Player1.Connection != null && GameManager.Player1.Connection!.Id == senderID) && !(GameManager.Player2 != null && GameManager.Player2.Connection != null && GameManager.Player2.Connection!.Id == senderID))
 		{
 			Log.Message("NETWORKING","Spectator tried to control a unit");
 			return;
