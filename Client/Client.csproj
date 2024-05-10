@@ -1,0 +1,782 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <TieredCompilation>false</TieredCompilation>
+        <TargetFramework>net8.0</TargetFramework>
+        <ApplicationIcon>Icon.ico</ApplicationIcon>
+        <Nullable>enable</Nullable>
+        <RootNamespace>DefconNull</RootNamespace>
+        <LangVersion>11</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACECOREAPP;CLIENT;COREAPP</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACECOREAPP;CLIENT</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Update="ObjectData.xml">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Maps\map.mapdata">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="config.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Maps\Custom\oldmap.mapdata">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\GradientVector.ttf">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+        <None Update="Content\Icons\Boost.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\breach N clear.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\BreachnClear.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Command.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Flash.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Frag.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\headshot.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Holster.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Holstered.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Rally.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Resupply.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Satchel Charge.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Smoke.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Suppress.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\UnHolster.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Grunt\Crouch.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Grunt\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Grunt\Stand.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Heavy\Crouch.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Heavy\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Heavy\Stand.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Officer\Crouch.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Officer\Icon.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Officer\Stand.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Crouch.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Stand.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Specialist\Crouch.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Specialist\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Specialist\Stand.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\basicHalfWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\basicHalfWallLight.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\basicWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\borderWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\crater.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\destroyedWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\glassWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\paperMache.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\satchel.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\smoke.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\strawWall.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\template.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\capturePoint.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground4.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground5.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground6.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground7.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\ground8.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\spawnPoint1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\spawnPoint2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\water.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\blankRoad.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadBroke0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe4.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\roadStripe5.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\attack.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Reposition.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Smoke Launcher.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\RPG.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Grenade.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Rapid Reload.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\rally.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Rapid Manouvers.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Suppress.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Icons\Repositioning.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Bottom\Crouch.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Bottom\Stand.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\Top\base.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\Smoke.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\end\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\end\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\end\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\end\4.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\loop\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\loop\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\start\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\start\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\start\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\start\3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Smoke\start\4.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOne1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOne2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOne3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwo0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwo1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwo3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOne0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwo2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneDestroyed0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneDestroyed1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneDestroyed2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnehalflite0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnehalflite1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnehalflite2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnelHalf0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnelHalf1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOnelHalf2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed4.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoDestroyed5.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwohalflite0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwohalflite1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwohalflite2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwolHalf0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwolHalf1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwolHalf2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\Tile0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\wood0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneHalf0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneHalf1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallOneHalf2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoHalf0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoHalf1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Brick Walls\BrickWallTwoHalf2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\Tile1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\Tile2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\Tile3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\wood1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\wood2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\wood3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Terrain\Impassable0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOne0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOne1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOne2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOneDestroyed0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOneDestroyed1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowOneDestroyed2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwo1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwo2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwo0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwoDestroyed1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwoDestroyed2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Windows\WindowTwoDestroyed0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Grunt\portrait.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Heavy\portrait.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Officer\portrait.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Scout\portrait.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Units\Specialist\portrait.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\boulder.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\car.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\flowers2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\lappost.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\longBush.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Objects\smallBush.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\carpet.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\grass3.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Environment\Surfaces\pathway0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Icon.ico">
+            <LogicalName>Icon.ico</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Icon.bmp">
+            <LogicalName>Icon.bmp</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <MonoGameContentReference Include="Content\Content.mgcb" />
+    </ItemGroup>
+    <ItemGroup>
+        <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Kotz.ObjectPool" Version="2.1.1" />
+        <PackageReference Include="MD5" Version="2.0.4" />
+        <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+        <PackageReference Include="Myra" Version="1.5.2" />
+        <PackageReference Include="NetDiscordRpc" Version="1.0.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="RiptideNetworking.Riptide" Version="2.2.0" />
+        <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="ClientSource\NetworkingManager.cs">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </Compile>
+      <Compile Include="..\MasterServer\MasterServerData\LobbyData.cs">
+        <Link>ClientSource\MasterServerData\LobbyData.cs</Link>
+      </Compile>
+      <Compile Include="..\MasterServer\MasterServerData\NetworkingManager.cs">
+        <Link>ClientSource\Networking\NetworkingManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\AI.cs">
+        <Link>SharedSource\AI\AI.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\AiAction.cs">
+        <Link>SharedSource\AI\AiAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\Attack.cs">
+        <Link>SharedSource\AI\Attack.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\Move.cs">
+        <Link>SharedSource\AI\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\OverWatch.cs">
+        <Link>SharedSource\AI\OverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\AI\PseudoWorldManager.cs">
+        <Link>SharedSource\AI\PseudoWorldManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\GameManager.cs">
+        <Link>SharedSource\GameManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\IWorldTile.cs">
+        <Link>SharedSource\IWorldTile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Log.cs">
+        <Link>SharedSource\Log.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\SquadMember.cs">
+        <Link>SharedSource\Networking\SquadMember.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Networking\SharedNetworking.cs">
+        <Link>SharedSource\Networking\SharedNetworking.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\PathFinding.cs">
+        <Link>SharedSource\PathFinding.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\PseudoTile.cs">
+        <Link>SharedSource\PseudoTile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\MoveCamera.cs">
+        <Link>SharedSource\ReplaySequence\MoveCamera.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\PlaySound.cs">
+        <Link>SharedSource\ReplaySequence\PlaySound.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\PostProcessingEffect.cs">
+        <Link>SharedSource\ReplaySequence\PostProcessingEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ProjectilAction.cs">
+        <Link>SharedSource\ReplaySequence\ProjectilAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SequenceAction.cs">
+        <Link>SharedSource\ReplaySequence\SequenceAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
+        <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SpotUnit.cs">
+        <Link>SharedSource\ReplaySequence\SpotUnit.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\TileUpdate.cs">
+        <Link>SharedSource\ReplaySequence\TileUpdate.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\UnitUpdate.cs">
+        <Link>SharedSource\ReplaySequence\UnitUpdate.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\ChangeUnitValues.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\CrouchUnit.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\CrouchUnit.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\DelayedAbilityUse.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\DelayedAbilityUse.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\FaceUnit.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\FaceUnit.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\Suppress.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\Suppress.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitMove.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitMove.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitOverWatch.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitOverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitSequenceAction.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitSequenceAction.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\ActorSequenceAction\UnitStatusEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\DeleteWorldObject.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\DeleteWorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\MakeWorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\PlayAnimation.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\PlayAnimation.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\Shoot.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\TakeDamage.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\TakeDamage.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\WorldObjectActions\WorldObjectManager.cs">
+        <Link>SharedSource\ReplaySequence\WorldObjectActions\WorldObjectManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\StructsAndEnums.cs">
+        <Link>SharedSource\StructsAndEnums.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\Utility.cs">
+        <Link>SharedSource\Utility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\AbilityCost.cs">
+        <Link>SharedSource\WorldActions\AbilityCost.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs">
+        <Link>SharedSource\WorldActions\DeliveryMethods\DeliveryMethod.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\ImmideateDelivery.cs">
+        <Link>SharedSource\WorldActions\DeliveryMethods\ImmideateDelivery.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\Projectile.cs">
+        <Link>SharedSource\WorldActions\DeliveryMethods\Projectile.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\DeliveryMethods\VissionCast.cs">
+        <Link>SharedSource\WorldActions\DeliveryMethods\VissionCast.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\Effect.cs">
+        <Link>SharedSource\WorldActions\Effect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\Shootable.cs">
+        <Link>SharedSource\WorldActions\Shootable.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\UnitAbility\UnitAbility.cs">
+        <Link>SharedSource\WorldActions\UnitAbility\UnitAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\WorldConseqences.cs">
+        <Link>SharedSource\WorldActions\WorldConseqences.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldActions\WorldEffect.cs">
+        <Link>SharedSource\WorldActions\WorldEffect.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldManager.cs">
+        <Link>SharedSource\WorldManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Animation.cs">
+        <Link>SharedSource\WorldObjects\Animation.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\PrefabManager.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\PrefabManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\StatusEffectType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\StatusEffectType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\UnitType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\UnitType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\Value.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\Value.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\ValueChange.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\ValueChange.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Prefabs\WorldObjectType.cs">
+        <Link>SharedSource\WorldObjects\Prefabs\WorldObjectType.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Unit.cs">
+        <Link>SharedSource\WorldObjects\Unit.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Action.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Action.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Crouch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Crouch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Face.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Face.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\Move.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\Move.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\OverWatch.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\OverWatch.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\Actions\UseAbility.cs">
+        <Link>SharedSource\WorldObjects\Units\Actions\UseAbility.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\Units\StatusEffectInstance.cs">
+        <Link>SharedSource\WorldObjects\Units\StatusEffectInstance.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldObjects\WorldObject.cs">
+        <Link>SharedSource\WorldObjects\WorldObject.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\WorldTile.cs">
+        <Link>SharedSource\WorldTile.cs</Link>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\SharedSource\ObjectData.xml">
+        <Link>ObjectData.xml</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ClientSource\Rendering\UILayout\GameLayout\" />
+    </ItemGroup>
+
+</Project>

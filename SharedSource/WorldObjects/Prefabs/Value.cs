@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects;
 
 public struct Value
 {
@@ -22,7 +22,7 @@ public struct Value
 	public int Max;
 	public int Current;
 
-	public void Reset()
+	public void SetToMax()
 	{
 		Current = Max;
 	}
@@ -77,6 +77,16 @@ public struct Value
 	public static bool operator <(Value a, int b)
 	{
 		return a.Current < b;
+	}
+
+	public static bool operator >(Value a, Value b)
+	{
+		return a.Current > b.Current;
+	}
+
+	public static bool operator <(Value a, Value b)
+	{
+		return a.Current < b.Current;
 	}
 
 	public static bool operator >(Value a, int b)

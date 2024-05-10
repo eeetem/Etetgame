@@ -1,0 +1,2 @@
+﻿[config]
+MasterServerIP = 109.255.215.173:1630

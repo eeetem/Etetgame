@@ -1,17 +1,26 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using DefconNull.Networking;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldActions.UnitAbility;
+using DefconNull.WorldObjects.Units;
 using Microsoft.Xna.Framework;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.Pathfinding;
 using Riptide;
+using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+
+using DefconNull.Rendering;
 #endif
 
 #nullable enable
 
 
-namespace MultiplayerXeno
+namespace DefconNull.WorldObjects
 {
 	public partial class Unit
 	{
@@ -19,45 +28,45 @@ namespace MultiplayerXeno
 		public UnitType Type { get; private set; }
 
 
-
-		public readonly UsableItem?[] Inventory;
-
-		public Unit(bool isPlayerOneTeam, WorldObject wo, UnitType type, UnitData data)
+		public Unit(WorldObject parent, UnitType type, UnitData data, bool justSpawned)
 		{
 
-			WorldObject = wo;
+			WorldObject = parent;
 			Type = type;
-			IsPlayerOneTeam = isPlayerOneTeam;
+			parent.UnitComponent = this;
+			SetData(data,justSpawned);
 
+		}
 
-			type.Actions.ForEach(extraAction => { Actions.Add((IExtraAction) extraAction.Clone()); });
-			DefaultAttack = (ExtraAction) type.DefaultAttack.Clone();
+		public List<UnitAbility> Abilities => Type.actions;
 
-
-			if (data.Determination == -100)
+		public void SetData(UnitData data, bool justSpawned)
+		{
+			IsPlayer1Team = data.Team1;
+			Determination = new Value(0, Type.Maxdetermination);
+			if (data.Determination != -100)
 			{
-				Determination = type.Maxdetermination;
+				Determination.Current = data.Determination;
 			}
 			else
 			{
-				Determination = data.Determination;
+				Determination.SetToMax();
 			}
 
+
 			Crouching = data.Crouching;
-			Paniced = data.Panic;
-
-#if CLIENT
-			WorldManager.Instance.MakeFovDirty();
-#endif
+			Panicked = data.Panic;
 
 
-			MovePoints = new Value(0, type.MaxMovePoints);
+
+
+			MovePoints = new Value(0, Type.MaxMovePoints);
 			if (data.MovePoints != -100)
 			{
 				MovePoints.Current = data.MovePoints;
 			}
 
-			ActionPoints = new Value(0, type.MaxActionPoints);
+			ActionPoints = new Value(0, Type.MaxActionPoints);
 			if (data.ActionPoints != -100)
 			{
 				ActionPoints.Current = data.ActionPoints;
@@ -68,95 +77,51 @@ namespace MultiplayerXeno
 
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
-
-			Inventory = new UsableItem[type.InventorySize];
-			for (int i = 0; i < type.InventorySize; i++)
+            
+			StatusEffects.Clear();
+			foreach (var effect in data.StatusEffects)//dont apply them since their aplication would already be considered by the rest of the data
 			{
-				if (data.Inventory.Count > i && data.Inventory[i] != "")
+				StatusEffects.Add(new StatusEffectInstance(PrefabManager.StatusEffects[effect.Item1],effect.Item2,this));
+			}
+			
+
+			ClearOverWatch();
+			Overwatch = data.Overwatch;
+			if(Overwatch.Item1 && Overwatch.Item2 == -1) throw new Exception("overwatch is active but no ability is selected");
+			foreach (var t in data.OverWatchedTiles)
+			{
+				OverWatchedTiles.Add(t);
+				WorldManager.Instance.GetTileAtGrid(t).Watch(WorldObject.ID);
+			}
+            
+			if (justSpawned)
+			{
+
+#if SERVER
+				if (Type.SpawnEffect != null)
 				{
-					AddItem(PrefabManager.UseItems[data.Inventory[i]]);
+					Task t = new Task(delegate
+					{
+						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
+						{
+							NetworkingManager.AddSequenceToSendQueue(c);
+						}
+					});
+					SequenceManager.RunNextAfterFrames(t);
 				}
-			}
-
-			overWatch = data.Overwatch;
-			SelectedItemIndex = data.SelectIndex;
-
-			if (data.LastItem != null)
-			{
-				LastItem = PrefabManager.UseItems[data.LastItem];
-			}
-
-			foreach (var effect in data.StatusEffects)
-			{
-				ApplyStatus(effect.Item1, effect.Item2);
-			}
-
-			if (data.JustSpawned)
-			{
+#endif
+				
 				StartTurn();
 			}
+
 		}
-
-
-		public void SelectAnyItem()
-		{
-			if (SelectedItem != null) return;
-			for (int i = 0; i < Inventory.Length; i++)
-			{
-				if (Inventory[i] != null)
-				{
-					DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
-					return;
-				}
-			}
-
-			DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(-1, 0));
-		}
-
-		public void AddItem(UsableItem item)
-		{
-			for (int i = 0; i < Inventory.Length; i++)
-			{
-				if (Inventory[i] == null)
-				{
-					Inventory[i] = item;
-#if SERVER
-					if (SelectedItemIndex == -1)
-					{
-						DoAction(Action.Actions[Action.ActionType.SelectItem], new Vector2Int(i, 0));
-					}
-#endif
-
-					return;
-				}
-			}
-		}
-
-		public void RemoveItem(int index)
-		{
-			Inventory[index] = null;
-		}
-
-		public List<IExtraAction> Actions = new List<IExtraAction>();
-		private ExtraAction DefaultAttack;
-
-		
-		public IExtraAction GetAction(int index)
-		{
-			if(index == -1)
-			{
-				return DefaultAttack;
-			}
-			return Actions[index];
-		}
-
 
 		public bool canTurn { get; set; }
 
 
 		public Value MovePoints;
 		public Value ActionPoints;
-		public int Determination;
+		public Value Determination;
 
 		public bool Crouching { get; set; }
 
@@ -180,107 +145,34 @@ namespace MultiplayerXeno
 			return result;
 		}
 
-		public List<Vector2Int>[] GetPossibleMoveLocations()
+		public List<(Vector2Int,PathFinding.PathFindResult)>[] GetPossibleMoveLocations(int moveRange = -1, int moveOverride = -1, bool generatePaths = false)
 		{
-			if (MovePoints > 0)
+			int mp = MovePoints.Current;
+			if(moveOverride!=-1) mp = moveOverride;
+			if (mp > 0)
 			{
-				List<Vector2Int>[] possibleMoves = new List<Vector2Int>[MovePoints.Current];
-				for (int i = 0; i < MovePoints; i++)
+				if(moveRange==-1) moveRange = GetMoveRange();
+				List<(Vector2Int,PathFinding.PathFindResult)>[] possibleMoves = new List<(Vector2Int,PathFinding.PathFindResult)>[mp];
+				for (int i = 0; i < mp; i++)
 				{
-					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, GetMoveRange() * (i + 1));
+					possibleMoves[i] = PathFinding.GetAllPaths(WorldObject.TileLocation.Position, moveRange * (i + 1),generatePaths);
 				}
 
+				for (int i = mp - 1; i > 0; i--)
+				{
+					possibleMoves[i].RemoveAll(x => possibleMoves[i - 1].Exists(y => y.Item1 == x.Item1));
+				}
 				return possibleMoves;
 			}
 
-			return new List<Vector2Int>[0];
-
-
-
-		}
-
-		public bool IsPlayerOneTeam { get; private set; }
-
-		public HashSet<Projectile> GetOverWatchPositions(Vector2Int target)
-		{
-			var tiles = WorldManager.Instance.GetTilesAround(target,Type.OverWatchSize);
-			HashSet<Projectile> possibleShots = new HashSet<Projectile>();
-			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
-			foreach (var endTile in tiles)
-			{
-			
-				RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full);
-				foreach (var pos in outcome.Path)
-				{
-					positions.Add(pos);
-				}
-
-			}
-
-			foreach (var position in positions)
-			{
-				if (CanHit(position))
-				{
-					foreach (var method in Type.DefaultAttack.WorldAction.DeliveryMethods)
-					{
-						if (method is Shootable)
-						{
-							var proj = ((Shootable)method).MakeProjectile(this, position);
-							possibleShots.Add(proj);
-							break;
-						}
-
-					}
-
-				
-				}
-			}
-
-			return possibleShots;
-		}
-
-
-		public void TakeDamage(int dmg, int detResis)
-		{
-			Console.WriteLine(this + "(health:" + WorldObject.Health + ") hit for " + dmg);
-			if (Determination > 0)
-			{
-				Console.WriteLine("blocked by determination");
-				dmg = dmg - detResis;
-
-			}
-
-			if (dmg <= 0)
-			{
-				Console.WriteLine("0 damage");
-				return;
-			}
-
-
-			WorldObject.Health -= dmg;
-
-			Console.WriteLine("unit hit for: " + dmg);
-			Console.WriteLine("outcome: health=" + WorldObject.Health);
-			if (WorldObject.Health <= 0)
-			{
-				Console.WriteLine("dead");
-				ClearOverWatch();
-	
-				WorldManager.Instance.DeleteWorldObject(WorldObject); //dead
-				
-#if CLIENT
-				Audio.PlaySound("death",WorldObject.TileLocation.Position);
-#endif
-
-			}
-			else
-			{
-#if CLIENT
-				Audio.PlaySound("grunt",WorldObject.TileLocation.Position);
-#endif
-			}
+			return Array.Empty<List<(Vector2Int,PathFinding.PathFindResult)>>();
+            
 
 		}
+
+		public bool IsPlayer1Team { get; private set; }
+		
+		
 
 		public int GetSightRange()
 		{
@@ -288,33 +180,43 @@ namespace MultiplayerXeno
 			return Type.SightRange;
 		}
 
-		public bool CanHit(Vector2Int target, bool lowTarget = false)
+		public (int, int, int) GetPointsNextTurn()
 		{
-			Vector2 shotDir = Vector2.Normalize(target - WorldObject.TileLocation.Position);
-			Projectile proj = new Projectile(WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f) + shotDir / new Vector2(2.5f, 2.5f), target + new Vector2(0.5f, 0.5f), 0, 100, lowTarget, Crouching, 0, 0, 0);
-
-
-			if (proj.Result.hit)
+			Value mp = MovePoints;
+			mp.SetToMax();
+			Value ap = ActionPoints;
+			ap.SetToMax();
+			Value det = Determination;
+			
+			if(Panicked) mp--;
+			else det.Current++;
+			
+			foreach (var st in new List<StatusEffectInstance>(StatusEffects))
 			{
-				var hitobj = WorldManager.Instance.GetObject(proj.Result.HitObjId);
-				if (hitobj!.Type.Edge || hitobj.TileLocation.Position != target)
+				if(st.Duration<=0) continue;
+				//incorrect if status effect doesnt actually affect this unit but whatever
+				var cons = st.Type.Conseqences.GetApplyConsequnces(WorldObject,WorldObject);
+				List<ChangeUnitValues> vals =cons.FindAll(x => x is ChangeUnitValues).ConvertAll(x => (ChangeUnitValues) x);
+				foreach (var v in vals)
 				{
-					return false;
+					v.MoveChange.Apply(ref mp);
+					v.ActChange.Apply(ref ap);
+					v.DetChange.Apply(ref det);
 				}
 			}
 
-			return true;
+			return (mp.Current, ap.Current,det.Current);
 		}
 
 		public void StartTurn()
 		{
-			MovePoints.Reset();
+			MovePoints.SetToMax();
 			canTurn = true;
-			ActionPoints.Reset();
-			MoveRangeEffect.Reset();
+			ActionPoints.SetToMax();
+			MoveRangeEffect.SetToMax();
 			if (Determination < 0)
 			{
-				Determination = 0;
+				Determination.Current = 0;
 			}
 
 			if (Determination < Type.Maxdetermination)
@@ -322,17 +224,17 @@ namespace MultiplayerXeno
 				Determination++;
 			}
 
-			if (Paniced)
+			if (Panicked)
 			{
 #if CLIENT
 				if (WorldObject.IsVisible())
 				{
-					new PopUpText("Recovering From Panic", WorldObject.TileLocation.Position);
+					new PopUpText("Recovering From Panic", WorldObject.TileLocation.Position,Color.White);
 				}
 #endif
 
 
-				Paniced = false;
+				Panicked = false;
 				Determination--;
 				MovePoints--;
 				canTurn = false;
@@ -341,60 +243,87 @@ namespace MultiplayerXeno
 			ClearOverWatch();
 			foreach (var effect in StatusEffects)
 			{
-				effect.Apply(this);
-
+				effect.Apply();
 			}
-#if SERVER
-			SelectAnyItem();
-#endif
 
 
 		}
 
-		public void DoAction(Action a, Vector2Int target)
+		public void DoOverwatch(Vector2Int tile, int ability)
 		{
-#if CLIENT
-			if (!IsMyTeam()) return;
-			if (!GameManager.IsMyTurn()) return;
-#endif
-			var result = a.CanPerform(this, ref target);
-			if (!result.Item1)
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(tile);
+			args.AbilityIndex = ability;
+			DoAction(Action.ActionType.OverWatch,args);
+		}
+		public void DoAbility(WorldObject target, int ability)
+		{
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
+			args.TargetObj = target;
+			args.AbilityIndex = ability;
+			DoAction(Action.ActionType.UseAbility,args);
+		}
+
+		public void DoAction(Action.ActionType type, Action.ActionExecutionParamters args)
+		{
+			Task.Run(() =>
 			{
 #if CLIENT
-				new PopUpText(result.Item2, WorldObject.TileLocation.Position);
-				new PopUpText(result.Item2, target);
+			if(SequenceManager.SequenceRunning) return;
+			if (!GameManager.IsMyTurn()) return;
 #else
-				Console.WriteLine("tried to do action but failed: " + result.Item2);
-#endif
 
-				return;
-			}
+				while (SequenceManager.SequenceRunning)
+				{
+					Thread.Sleep(1000);
+				}
+#endif
+				if (Overwatch.Item1) return;
+				if (IsPlayer1Team != GameManager.IsPlayer1Turn) return;
+
+				var a = Action.Actions[type];
+				var result = a.CanPerform(this, args);
+
+				if (!result.Item1)
+				{
 #if CLIENT
-			a.SendToServer(this, target);
-			a.ExecuteClientSide(this, target);
+				if(args.Target.HasValue){
+					new PopUpText(result.Item2, args.Target.Value,Color.White);
+				}
 #else
-			a.PerformServerSide(this, target);
+					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
+#endif
+					return;
+				}
+
+				Log.Message("UNITS", "performing action " + a.Type + " on " + args.Target + " with " + args.AbilityIndex);
+#if CLIENT
+			a.SendToServer(this,args);
+#elif SERVER
+				a.PerformServerSide(this, args);
 #endif
 
-
+			});
 		}
 
-		public bool Paniced { get; private set; }
+		public bool Panicked { get; set; }
 
 		public void Panic()
 		{
 
+			
 #if CLIENT
-			if (WorldObject.IsVisible())
-			{
-				var t = new PopUpText("Panic!", WorldObject.TileLocation.Position);	
-				t.scale = 2;
-				t.Color = Color.Red;
+			if(!Panicked){
+				if (WorldObject.IsVisible())
+				{
+					var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
+					t.scale = 2;
+				}
+
 			}
 #endif
 
 			Crouching = true;
-			Paniced = true;
+			Panicked = true;
 
 			ClearOverWatch();
 
@@ -402,22 +331,20 @@ namespace MultiplayerXeno
 
 
 
-		public bool overWatch { get; set; }
+		public ValueTuple<bool, int> Overwatch = new ValueTuple<bool, int>(false,-1);
 
 
-		public List<Vector2Int> overWatchedTiles = new List<Vector2Int>();
-
-		
+		public readonly List<Vector2Int> OverWatchedTiles = new List<Vector2Int>();
 
 		public void ClearOverWatch()
 		{
-			overWatch = false;
-			foreach (var tile in overWatchedTiles)
+			Overwatch = new ValueTuple<bool, int>(false,-1);
+			foreach (var tile in OverWatchedTiles)
 			{
-				WorldManager.Instance.GetTileAtGrid(tile).UnWatch(this);
+				((WorldTile)WorldManager.Instance.GetTileAtGrid(tile)).UnWatch(WorldObject.ID);
 			}
 
-			overWatchedTiles.Clear();
+			OverWatchedTiles.Clear();
 		}
 
 	
@@ -425,33 +352,65 @@ namespace MultiplayerXeno
 		public void EndTurn()
 		{
 			
-			StatusEffects.RemoveAll(x => x.duration <= 0);
+			StatusEffects.RemoveAll(x => x.Duration <= 0);
 
 		}
 		
-		
+
 		public void Update(float gameTime)
 		{
-
-
+		
 		}
 		[Serializable]
 		public struct UnitData : IMessageSerializable
 		{
+	
+			public override string ToString()
+			{
+				return $"{nameof(Team1)}: {Team1}, {nameof(ActionPoints)}: {ActionPoints}, {nameof(MovePoints)}: {MovePoints}, {nameof(CanTurn)}: {CanTurn}, {nameof(Determination)}: {Determination}, {nameof(Crouching)}: {Crouching}, {nameof(Panic)}: {Panic}, {nameof(Overwatch)}: {Overwatch}, {nameof(MoveRangeEffect)}: {MoveRangeEffect}, {nameof(OverWatchedTiles)}: {OverWatchedTiles}, {nameof(StatusEffects)}: {StatusEffects}";
+			}
+
 			public bool Team1;
 			public int ActionPoints;
 			public int MovePoints;
 			public bool CanTurn;
+
+			public bool Equals(UnitData other)
+			{
+				return Team1 == other.Team1 && ActionPoints == other.ActionPoints && MovePoints == other.MovePoints && CanTurn == other.CanTurn && Determination == other.Determination && Crouching == other.Crouching && Panic == other.Panic && Overwatch.Equals(other.Overwatch) && MoveRangeEffect == other.MoveRangeEffect && OverWatchedTiles.SequenceEqual(other.OverWatchedTiles) && StatusEffects.SequenceEqual(other.StatusEffects);
+			}
+
+			public override bool Equals(object? obj)
+			{
+				return obj is UnitData other && Equals(other);
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					int hashCode = Team1.GetHashCode();
+					hashCode = (hashCode * 397) ^ ActionPoints;
+					hashCode = (hashCode * 397) ^ MovePoints;
+					hashCode = (hashCode * 397) ^ CanTurn.GetHashCode();
+					hashCode = (hashCode * 397) ^ Determination;
+					hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
+					hashCode = (hashCode * 397) ^ Panic.GetHashCode();
+					hashCode = (hashCode * 397) ^ Overwatch.GetHashCode();
+					hashCode = (hashCode * 397) ^ MoveRangeEffect;
+					hashCode = (hashCode * 397) ^ OverWatchedTiles.GetHashCode();
+					hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
+					return hashCode;
+				}
+			}
+
 			public int Determination;
 			public bool Crouching;
 			public bool Panic;
-			public bool JustSpawned;
-			public bool Overwatch;
-			public int SelectIndex;
-			public string? LastItem;
+			public ValueTuple<bool,int> Overwatch;
 			public int MoveRangeEffect;
+			public List<Vector2Int> OverWatchedTiles = new List<Vector2Int>();
 
-			public List<string> Inventory { get; set; }
 			public List<Tuple<string, int>> StatusEffects { get; set; }
 		
 			public UnitData(bool team1)
@@ -463,44 +422,32 @@ namespace MultiplayerXeno
 				Determination = -100;
 				Crouching = false;
 				Panic = false;
-				JustSpawned = true;//it's always truea nd only set to false in getData
-				Overwatch = false;
-				Inventory = new List<string>();
+				Overwatch = new ValueTuple<bool, int>(false,-1);	
 				StatusEffects = new List<Tuple<string, int>>();
-				SelectIndex = 0;
 				MoveRangeEffect = 0;
-				LastItem = null;
+				OverWatchedTiles = new List<Vector2Int>();
+
 			}
 			public UnitData(Unit u)
 			{
-				Team1 = u.IsPlayerOneTeam;
+				Team1 = u.IsPlayer1Team;
 				ActionPoints = u.ActionPoints.Current;
 				MovePoints = u.MovePoints.Current;
 				CanTurn = u.canTurn;
-				Determination = u.Determination;
+				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
-				JustSpawned = true;
-				Panic = u.Paniced;
-				Inventory = new List<string>();
-				foreach (var i in u.Inventory)
-				{
-					if (i != null)
-					{
-						Inventory.Add(i.Name);
-					}
-					else
-					{
-						Inventory.Add("");
-					}
-				}
+				Panic = u.Panicked;
+				
 				StatusEffects = new List<Tuple<string, int>>();
 				foreach (var st in u.StatusEffects)
 				{
-					StatusEffects.Add(new Tuple<string, int>(st.type.name,st.duration));
+					StatusEffects.Add(new Tuple<string, int>(st.Type.Name,st.Duration));
 				}
-				Overwatch = u.overWatch;
-				SelectIndex = u.SelectedItemIndex;
-				LastItem = u.LastItem?.Name;
+
+				OverWatchedTiles = new List<Vector2Int>();
+				OverWatchedTiles.AddRange(u.OverWatchedTiles);
+				Overwatch = u.Overwatch;
+
 				MoveRangeEffect = u.MoveRangeEffect.Current;
 			}
 
@@ -514,17 +461,13 @@ namespace MultiplayerXeno
 				message.Add(Determination);
 				message.Add(Crouching);
 				message.Add(Panic);
-				message.Add(JustSpawned);
-				message.Add(Overwatch);
-				message.Add(SelectIndex);
-				message.AddNullableString(LastItem);
+				message.Add(Overwatch.Item1);
+				message.Add(Overwatch.Item2);
+
 				message.Add(MoveRangeEffect);
 
-				message.Add(Inventory.Count);
-				foreach (var i in Inventory)
-				{
-					message.Add(i);
-				}
+				message.AddSerializables(OverWatchedTiles.ToArray());
+				
 				message.Add(StatusEffects.Count);
 				foreach (var i in StatusEffects)
 				{
@@ -543,21 +486,14 @@ namespace MultiplayerXeno
 				Determination = message.GetInt();
 				Crouching = message.GetBool();
 				Panic = message.GetBool();
-				JustSpawned = message.GetBool();
-				Overwatch = message.GetBool();
-				SelectIndex = message.GetInt();
-				LastItem = message.GetNullableString();
+				Overwatch = new ValueTuple<bool, int>(message.GetBool(),message.GetInt());
+
 				MoveRangeEffect = message.GetInt();
 
-
-				Inventory = new List<string>();
-				var count = message.GetInt();
-				for (int i = 0; i < count; i++)
-				{
-					Inventory.Add(message.GetString());
-				}
+				OverWatchedTiles = new List<Vector2Int>(message.GetSerializables<Vector2Int>());
+				
 				StatusEffects = new List<Tuple<string, int>>();
-				count = message.GetInt();
+				int count = message.GetInt();
 				for (int i = 0; i < count; i++)
 				{
 					StatusEffects.Add(new Tuple<string, int>(message.GetString(),message.GetInt()));
@@ -566,15 +502,13 @@ namespace MultiplayerXeno
 		}
 		public UnitData GetData()
 		{
-			
-			var data = new UnitData(this);
-			data.JustSpawned = false;
-			return data;
+			return new UnitData(this);
+		
 		}
 
 		protected bool Equals(Unit other)
 		{
-			return WorldObject.Equals(other.WorldObject);
+			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
 		}
 
 		public override bool Equals(object? obj)
@@ -587,89 +521,114 @@ namespace MultiplayerXeno
 
 		public override int GetHashCode()
 		{
-			return WorldObject.GetHashCode();
+			unchecked
+			{
+				int hashCode = Abilities.GetHashCode();
+				hashCode = (hashCode * 397) ^ MovePoints.GetHashCode();
+				hashCode = (hashCode * 397) ^ ActionPoints.GetHashCode();
+				hashCode = (hashCode * 397) ^ Determination.GetHashCode();
+				hashCode = (hashCode * 397) ^ MoveRangeEffect.GetHashCode();
+				hashCode = (hashCode * 397) ^ Overwatch.GetHashCode();
+				hashCode = (hashCode * 397) ^ OverWatchedTiles.GetHashCode();
+				hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
+				hashCode = (hashCode * 397) ^ VisibleTiles.GetHashCode();
+				hashCode = (hashCode * 397) ^ Type.GetHashCode();
+				hashCode = (hashCode * 397) ^ canTurn.GetHashCode();
+				hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
+				hashCode = (hashCode * 397) ^ IsPlayer1Team.GetHashCode();
+				hashCode = (hashCode * 397) ^ Panicked.GetHashCode();
+				return hashCode;
+			}
 		}
 
+
 		public List<StatusEffectInstance> StatusEffects = new List<StatusEffectInstance>();
+		
+
 		public void ApplyStatus(string? effect, int duration)
 		{
-			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration);
+			var statuseffect = new StatusEffectInstance(PrefabManager.StatusEffects[effect],duration,this);
 			StatusEffects.Add(statuseffect);
-			statuseffect.Apply(this);
+			statuseffect.Apply();
 		}
 
 		public void RemoveStatus(string effectName)
 		{
-			StatusEffects.RemoveAll(x => x.type.name == effectName);
+			StatusEffects.RemoveAll(x => x.Type.Name == effectName);
+		}
+		
+		
+		public int Health => WorldObject.Health;
+		public ConcurrentDictionary<Vector2Int, Visibility> VisibleTiles = new ConcurrentDictionary<Vector2Int, Visibility>();
+		
+
+
+
+		public HashSet<Vector2Int> GetOverWatchPositions(Vector2Int target, int abilityIndex)
+		{
+
+			UnitAbility action = Abilities[abilityIndex];
+			if(!action.CanOverWatch) return new HashSet<Vector2Int>();
+
+			var tiles = WorldManager.Instance.GetTilesAround(target, action.OverWatchRange);
+			HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
+			foreach (var endTile in tiles)
+			{
+				WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full,makePath: true);
+
+				foreach (var p in outcome.Path)
+				{
+					positions.Add(p);
+				}
+	
+
+			}
+
+			HashSet<Vector2Int> result = new HashSet<Vector2Int>();
+			foreach (var position in positions)
+			{	
+				var tile = WorldManager.Instance.GetTileAtGrid(position);
+				if(tile.Surface==null) continue;
+				if (action.CanPerform(this, tile.Surface, false, true).Item1)
+				{
+					result.Add(position);
+				}
+			}
+
+			return result;
 		}
 
-		public void Suppress(int supression, bool noPanic = false)
+		public void MoveTo(Vector2Int vector2Int)
 		{
-			if(supression==0) return;
+			if(WorldObject.TileLocation.Position == vector2Int) return;
+			Log.Message("UNITS","units re-located from "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			var oldtile = WorldObject.TileLocation;
+			oldtile.UnitAtLocation = null;
+			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
+
+#if SERVER
+		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
+		{
+			Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			if (GameManager.Player1UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1UnitPositions.Remove(WorldObject.ID);
+	
+			GameManager.Player1UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+		}
+		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
+		{
+			Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+			if (!GameManager.Player2UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2UnitPositions.Remove(WorldObject.ID);
 			
-			Determination-= supression;
-			if (Determination <= 0 && !noPanic)
-			{
-				Panic();
-			}
-
-			if (Paniced && Determination > 0)
-			{
-				Paniced = false;
-			}
-			if(Determination>Type.Maxdetermination) Determination = Type.Maxdetermination;
-			if(Determination<0) Determination = 0;
+			GameManager.Player2UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 		}
+#endif
+			
+			
+			WorldObject.TileLocation = newTile;
+			newTile.UnitAtLocation = this;
+			WorldManager.Instance.MakeFovDirty();
+		}
+
 		
-		public UsableItem? SelectedItem
-		{
-			get
-			{
-				if(SelectedItemIndex == -1) return null;
-				return Inventory[SelectedItemIndex];
-			}
-		}
-		private int _selectedItemIndex = 0;
-		public int SelectedItemIndex
-		{
-			get => _selectedItemIndex;
-			set
-			{
-				
-				_selectedItemIndex = value;
-			}
-		}
-
-		public UsableItem? LastItem;
-		
-
-		public string GetVar(string var,string? param = null)
-		{
-			Console.WriteLine("getting value "+var+" with param "+param);
-			var type = GetType();
-			var field = type.GetField(var);
-			object? value = null;
-			if (field == null)
-			{
-				var property = type.GetProperty(var);
-				value = property?.GetValue(this);
-			}
-			else
-			{
-				value = field?.GetValue(this);
-			}
-
-			if (param == null)
-			{
-				Console.WriteLine("returning "+value);
-				return value.ToString();
-			}
-
-			var innerField = value.GetType().GetField(param);
-			var innerValue = innerField.GetValue(value);
-			Console.WriteLine("returning "+innerValue);
-			return innerValue.ToString();
-
-		}
 	}
 }

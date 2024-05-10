@@ -1,35 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
-[Serializable]
-public class RayCastOutcome//fuck the network library holy moly
-{
-	public Vector2 CollisionPointLong;
-	public Vector2 CollisionPointShort;
-	public Vector2 StartPoint;
-	public Vector2 EndPoint;
-	public Vector2 VectorToCenter;
-	public List<Vector2Int> Path;
-	public int HitObjId{ get; set; }
 
-	public bool hit{ get; set; }
 
-	public RayCastOutcome(Vector2 start, Vector2 end)
-	{
-		CollisionPointLong = new Vector2(0, 0);
-		CollisionPointShort = new Vector2(0, 0);
-		hit = false;
-		EndPoint = end;
-		HitObjId = -1;
-		StartPoint = start;
-		Path = new List<Vector2Int>();
-	
-	}
-}
 public enum Visibility
 {
 	None=0,
@@ -51,7 +27,7 @@ public enum Cover
 	Low=1,//small fences and such, visible when crouch
 	High=2,//small walls and such, hidden when crouched
 	Full=3,//full impassible walls
-	Ignore=1000,//for raycasts
+	Beyond=4//
 }
 [Serializable]
 public enum Direction
@@ -87,7 +63,6 @@ public struct PreviewData
 	}
 
 }
-
 
 public struct Vector2Int : IMessageSerializable
 {
@@ -145,13 +120,13 @@ public struct Vector2Int : IMessageSerializable
 		
 	public static Vector2Int operator-(Vector2Int a, Vector2Int b)
 		=> new Vector2Int(a.X-b.X, a.Y-b.Y);
-	public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => lhs?.X == rhs?.X&&lhs?.Y == rhs?.Y;
+	public static bool operator ==(Vector2Int? lhs, Vector2Int? rhs) => lhs.Equals(rhs);
 	
 	public static bool operator !=(Vector2Int? lhs, Vector2Int? rhs) => !(lhs == rhs);
 	
 	public override string ToString()
 	{
-		return "{X: " + X + " Y:" + Y + "}";
+		return "{X: " + X + " Y: " + Y + "}";
 	}
 	
 	public void Deconstruct(out int X, out int Y)

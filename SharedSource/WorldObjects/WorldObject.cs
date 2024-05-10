@@ -1,98 +1,55 @@
 ﻿#nullable enable
 using System;
-using System.Threading.Tasks;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using MonoGame.Extended;
 using Riptide;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
-
+using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects;
 
 public partial class WorldObject
 {
-
 	
-	
-	public int LifeTime = -100;
-	public WorldObject(WorldObjectType? type, WorldTile tile, WorldObjectData data)
+	public WorldObject(WorldObjectType? type, IWorldTile? tile, WorldObjectData data)
 	{
 		ID = data.ID;
-		
 		if (type == null)
 		{
-			type = new WorldObjectType("nullType",null);
+			type = new WorldObjectType("nullType");
 			Type = type;
 			return;
 		}
 		Type = type;
-
 		TileLocation = tile;
-		if (data.Health == 0 || data.Health == -100)
-		{
-			Health = type.MaxHealth;
-		}
-		else
-		{
-			Health = data.Health;
-		}
-		if (data.Lifetime == -100 || data.Lifetime == 0)//this will cause issues
-		{
-			LifeTime = type.lifetime;
-		}
-		else
-		{
-			LifeTime = data.Lifetime;
-		}
-
-
-
+		SetData(data);
 		Type.SpecialBehaviour(this);
 #if CLIENT
 		DrawTransform = new Transform2(type.Transform.Position, type.Transform.Rotation, type.Transform.Scale);
-		var r = new Random(tile.Position.X + tile.Position.Y +ID);
-		int roll = (r.Next(1000)) % type.TotalVariationsWeight;
-		for (int i = 0; i < type.Variations.Count; i++)
+		int seed = ID;
+		if (tile != null)
 		{
-			if (roll < type.Variations[i].Item2)
-			{
-				spriteVariation = i;
-				break;
-			}
-			roll -= type.Variations[i].Item2;
+			seed = (int)(tile.Position.X + tile.Position.Y + ID);
+		}
 		
-		}
-
-		if (spriteVariation == null)
-		{
-			throw new Exception("failed to generate sprite variation");
-		}
-
+		spriteVariation = Type.GetRandomVariationIndex(seed);
 #endif
-			
-		Health = Math.Clamp(Health, 0, type.MaxHealth);
+
 	}
 
 
-	private WorldTile _tileLocation = null!;
-	public WorldTile TileLocation
+	private IWorldTile _tileLocation = null!;
+	public IWorldTile TileLocation
 	{
 		get => _tileLocation;
-
 		set
 		{
+			if(value == null)
+				throw new Exception("Tile location cannot be null");
 			_tileLocation = value;
-#if CLIENT
-				
-
-			if (_tileLocation != null)
-			{
-				GenerateDrawOrder();
-			}
-#endif
 		}
 	}
 	public Unit? UnitComponent { get;  set; }
@@ -101,43 +58,14 @@ public partial class WorldObject
 
 	public int Health;
 
-	public void Move(Vector2Int position)
-	{
-		if (Type.Edge || Type.Surface)
-		{
-			throw new Exception("attempted to  move and  edge or surface");
-		}
+	
 
-		if (UnitComponent != null)
-		{
-			TileLocation.UnitAtLocation = null;
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			TileLocation = newTile;
-			newTile.UnitAtLocation = UnitComponent;
-		}
-		else
-		{
-			TileLocation.RemoveObject(this);
-			var newTile = WorldManager.Instance.GetTileAtGrid(position);
-			TileLocation = newTile;
-			newTile.PlaceObject(this);
-		}
-
-
-			
-#if CLIENT
-		GenerateDrawOrder();
-#endif
-	}
-		
-		
-
-	public bool fliped = false;//for display back texture
+	public bool Fliped = false;//for display back texture
 
 
 		
 
-	public void Face(Direction dir,bool updateFOV  =true)
+	public void Face(Direction dir,bool updateFov  =true)
 	{
 		if (!Type.Faceable)
 		{
@@ -147,74 +75,44 @@ public partial class WorldObject
 		dir = Utility.ClampFacing(dir);
 
 		Facing = dir;
-#if CLIENT
-		if (updateFOV)
+
+		if (updateFov)
 		{
 			WorldManager.Instance.MakeFovDirty();
 		}
-#endif
+
 			
 	}
 		
 	public void NextTurn()
 	{
-		if (LifeTime != -100)
+		if (Type.lifetimeTick)
 		{
-			LifeTime--;
-			if (LifeTime <= 0)
-			{
-				Destroy();
-					
-			}
+			Health--;
+			if(Health <= 0)WorldObjectManager.Destroy(this);
+			
 		}
 	}
 
 
 
-	public bool destroyed { get; private set; } = false;
+	public bool destroyed { get; set; } = false;
 
-	public void Destroy()
+	
+	public Visibility GetMinimumVisibility(bool dontautoRevealEdges = false)
 	{
-		if(destroyed)return;
-		destroyed = true;
-		
-		
-		if(Type.DesturctionEffect != null)
-		{
-			//wrap this in a task
-
-			Task t = new Task(delegate
-			{
-
-				Type.DesturctionEffect?.Apply(TileLocation.Position,this);
-			});
-			WorldManager.Instance.RunNextFrame(t);
-
-		}
-		
-#if CLIENT
-			if(Equals(GameLayout.SelectedUnit, UnitComponent)){
-				GameLayout.SelectUnit(null);
-			}
-		
-		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
-#else
-		
-
-#endif
-		
-#if SERVER
-WorldManager.Instance.DeleteWorldObject(this);
-#endif
-
-		Console.WriteLine("Destroyed "+ID +" "+Type.TypeName);
-
-	}
-	public Visibility GetMinimumVisibility()
-	{
-		if (Type.Surface || Type.Edge)
+		if (Type.Surface)
 		{
 			return Visibility.None;
+		}
+
+		if (Type.Edge)
+		{
+			if (!dontautoRevealEdges)
+			{
+				return Visibility.None;
+			}
+			return Visibility.Partial;
 		}
 
 		if (UnitComponent != null && UnitComponent.Crouching)
@@ -227,52 +125,20 @@ WorldManager.Instance.DeleteWorldObject(this);
 
 	
 
-	public void TakeDamage(int dmg, int detResist)
-	{
-		if (LifeTime != -100)
-		{
-			LifeTime -= dmg;
-			if (LifeTime <= 0)
-			{
-				Destroy();
-			}
-		}
-		
 
-		if (dmg < 0)
-		{
-			return;
-		}
-		Console.WriteLine(this + " got hit " + TileLocation.Position);
-		if (UnitComponent != null)
-		{//let controlable handle it
-			UnitComponent.TakeDamage(dmg, detResist);
-		}
-		else
-		{
-			Health-= dmg-detResist;
-			if (Health <= 0)
-			{
-				Destroy();
-			}
-		}
-	}
-
-	public void TakeDamage(Projectile proj)
-	{
-		TakeDamage(proj.Dmg,proj.DeterminationResistanceCoefficient);
-	}
-
-	public void Update(float gametime)
+	public void Update(float msDelta)
 	{
 #if CLIENT
-		OverRideColor = null;
 		PreviewData = new PreviewData();//probably very bad memory wise
+		AnimationUpdate(msDelta);
 #endif 
 		if (UnitComponent != null)
 		{
-			UnitComponent.Update(gametime);
+			UnitComponent.Update(msDelta);
 		}
+
+
+	
 	}
 
 	public readonly WorldObjectType Type;	
@@ -301,13 +167,13 @@ WorldManager.Instance.DeleteWorldObject(this);
 	{
 		public Direction Facing;
 		public int ID;
-
+		public string Prefab ="";
+		
 		public bool Fliped;
-		//health
-		public string Prefab;
+        
 		public Unit.UnitData? UnitData;
 		public int Health;
-		public int Lifetime;
+		public bool JustSpawned;
 		public WorldObjectData(string prefab)
 		{
 			Prefab = prefab;
@@ -316,7 +182,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 			UnitData = null;
 			Fliped = false;
 			Health = -100;
-			Lifetime = -100;
+			JustSpawned = true;
 		}
 
 		public void Serialize(Message message)
@@ -326,7 +192,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 			message.AddInt((int)Facing);
 			message.AddBool(Fliped);
 			message.Add(Health);
-			message.Add(Lifetime);
+			message.AddBool(JustSpawned);
 			message.AddBool(UnitData != null);
 			if (UnitData != null)
 			{
@@ -341,7 +207,7 @@ WorldManager.Instance.DeleteWorldObject(this);
 			Facing = (Direction)message.GetInt();
 			Fliped = message.GetBool();
 			Health = message.GetInt();
-			Lifetime = message.GetInt();
+			JustSpawned = message.GetBool();
 			bool hasUnit = message.GetBool();
 			if (hasUnit)
 			{
@@ -352,16 +218,26 @@ WorldManager.Instance.DeleteWorldObject(this);
 				UnitData = null;
 			}
 		}
+
+		public string GetHash()
+		{
+			return Prefab + ID + Health;
+		}
+
+		public override string ToString()
+		{
+			return $"{nameof(Facing)}: {Facing}, {nameof(ID)}: {ID}, {nameof(Prefab)}: {Prefab}, {nameof(Fliped)}: {Fliped}, {nameof(UnitData)}: {UnitData}, {nameof(Health)}: {Health}, {nameof(JustSpawned)}: {JustSpawned}";
+		}
 	}
 
-	public WorldObjectData GetData()
+	public WorldObjectData GetData(bool forceJustSpawned = false)
 	{
-		WorldObjectData data = new WorldObjectData(Type.TypeName);
+		WorldObjectData data = new WorldObjectData(Type.Name);
 		data.Facing = Facing;
 		data.ID = ID;
-		data.Fliped = fliped;
+		data.Fliped = Fliped;
 		data.Health = Health;
-
+		data.JustSpawned = forceJustSpawned;
 		if (UnitComponent != null)
 		{
 			Unit.UnitData cdata = UnitComponent.GetData();
@@ -371,9 +247,10 @@ WorldManager.Instance.DeleteWorldObject(this);
 		return data;
 
 	}
+
 	protected bool Equals(WorldObject other)
 	{
-		return ID == other.ID;
+		return _tileLocation.Equals(other._tileLocation) && ID == other.ID && Health == other.Health && Fliped == other.Fliped && Type.Equals(other.Type) && Equals(UnitComponent, other.UnitComponent) && destroyed == other.destroyed && Facing == other.Facing;
 	}
 
 	public override bool Equals(object? obj)
@@ -386,23 +263,87 @@ WorldManager.Instance.DeleteWorldObject(this);
 
 	public override int GetHashCode()
 	{
-		return ID;
+		unchecked
+		{
+			int hashCode = _tileLocation.GetHashCode();
+			hashCode = (hashCode * 397) ^ ID;
+			hashCode = (hashCode * 397) ^ Health;
+			hashCode = (hashCode * 397) ^ Fliped.GetHashCode();
+			hashCode = (hashCode * 397) ^ Type.GetHashCode();
+			hashCode = (hashCode * 397) ^ (UnitComponent != null ? UnitComponent.GetHashCode() : 0);
+			hashCode = (hashCode * 397) ^ destroyed.GetHashCode();
+			hashCode = (hashCode * 397) ^ (int) Facing;
+			return hashCode;
+		}
 	}
-		
+
 	public bool IsVisible()
 	{
-#if SERVER
-		return true;	
-#else
-		if (TileLocation == null)
+		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
+	}
+	public bool ShouldBeVisibilityUpdated(bool team1)
+	{
+		var vis =  ((WorldTile)TileLocation).GetVisibility(team1);
+		
+		if(Type.Edge)
 		{
-			return true;
+			Visibility vis2;
+			WorldTile t;
+			switch (Facing)
+			{
+				case Direction.North:
+					t = WorldManager.Instance.GetTileAtGrid(TileLocation.Position + new Vector2Int(0, -1));
+					vis2 = t.GetVisibility(team1);
+					if(vis2>vis) vis = vis2;
+					break;
+					
+				case Direction.West:
+					t = WorldManager.Instance.GetTileAtGrid(TileLocation.Position + new Vector2Int(-1, 0));
+					vis2 = t.GetVisibility(team1);
+					if(vis2>vis) vis = vis2;
+					break;
+			}
 		}
 
-		return GetMinimumVisibility() <= TileLocation.Visible;
-#endif
+		return GetMinimumVisibility(true) <= vis;
 	}
+	
 
+
+	public void SetData(WorldObjectData data)
+	{
+		if(data.ID != -1 && data.ID != ID)
+			throw new Exception("Data set ID mismatch");
+		Face(data.Facing,false);
+		Fliped = data.Fliped;
+		if (data.JustSpawned)
+		{
+			Health = Type.MaxHealth;
+#if CLIENT
+			StartAnimation("start");
+#endif
+		}
+		else
+		{
+			Health = data.Health;
+			Health = Math.Clamp(Health, 0, Type.MaxHealth);
+		}
+
+
+		if (data.UnitData != null)
+		{
+			if (UnitComponent != null)
+			{
+				UnitComponent.SetData(data.UnitData.Value, data.JustSpawned);
+			}
+			else
+			{
+				UnitComponent = new Unit(this, (UnitType)Type, data.UnitData.Value, data.JustSpawned);
+			}}
+		else
+		{
+			UnitComponent = null;
+		}
 		
-
+	}
 }

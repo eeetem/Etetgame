@@ -1,18 +1,22 @@
-hour counter: rough estimate may7 (400) + 5
 
-bugs:
-no ghosting destruction -> no wall hack
-lag on greande target;
+UI  enemy progress
+incrementing timer?
 
-alt inspection of unit stats
+jump camera to cant hit target?
+loud death sfx?
+possible usage locations smoke?
+JUMP CAMREA TO HIT TARGET?
+more obvious headshot warning?
+corpses
+merge vission and projectile
+
+signing
 
 
-clearer move boundry.
-crater z-figthing
-inventory desync
 
-UI Rework:
-crouch indicator
+turn down screenshake
+update overwatch based on LOS
+Capture point
 
 sfx list:
 -throw
@@ -34,8 +38,6 @@ sfx list:
 
 
 
-
-
 misc features for later:
 mommentum
 
@@ -47,3 +49,40 @@ everything around the grunt
 -short range grunt
 -dedicated spotter
 -tear gas grenadier
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sprite master list:
+-destruction states
+-windows and doorways
+-roofs
+-misc world objects(things that you can take cover behind that arent walls) + flavour
+-impassible terian
+-vegatation
+-explosion fx
+
+
+
+
+
+

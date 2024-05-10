@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using DefconNull;
+using DefconNull.Networking;
 using Riptide;
 using Riptide.Transports.Tcp;
 using Riptide.Utils;
 
-namespace MultiplayerXeno; // Note: actual namespace depends on the project name.
+namespace MasterServer; // Note: actual namespace depends on the project name.
 
 public static class Program
 {
@@ -14,17 +16,21 @@ public static class Program
 	static readonly float MSperTick = 1000f / tickrate;
 	static Stopwatch stopWatch = new Stopwatch();
 	public static Dictionary<string, Connection> Players = new Dictionary<string, Connection>();
-	private static Server server;
-		
+	private static Server server = null!;
+	private static void LogNetCode(string msg)
+	{
+		Console.WriteLine(msg);
+	}
 	static void Main(string[] args)
 	{
-		RiptideLogger.Initialize(Console.WriteLine, Console.WriteLine,Console.WriteLine,Console.WriteLine, true);
+		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, true);
 		server = new Server(new TcpServer());
 			
 
-		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
+		server.ClientConnected += (a, b) => { Console.WriteLine($" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };
 		server.HandleConnection += HandleConnection;
-
+		server.TimeoutTime = 10000;
+		server.HeartbeatInterval = (int) (MSperTick*2f);
 
 		server.ClientDisconnected += (a, b) =>
 		{
@@ -44,8 +50,11 @@ public static class Program
 			{
 				Players.Remove(disconnectedPlayer);
 			}
+			SendChatMessage(disconnectedPlayer+" connected");
 		};
-	
+
+		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
+
 		server.Start(1630,100);
 			
 		Console.WriteLine("Started master-server");
@@ -56,8 +65,6 @@ public static class Program
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
 	{
-		Console.WriteLine($"{server.ClientCount} new connection");
-
 		string name = connectmessage.GetString();
 		Console.WriteLine("Registering client: " + name);
 		if(name.Contains('.')||name.Contains(';')||name.Contains(':')||name.Contains(',')||name.Contains('[')||name.Contains(']'))
@@ -69,10 +76,18 @@ public static class Program
 		}
 		if (Players.ContainsKey(name))
 		{
-			var msg = Message.Create();
-			msg.AddString("Player with the same name already exists");
-			server.Reject(connection,msg);
-			return;
+			var exist = Players[name];
+			if (exist.IsNotConnected)
+			{
+				Players.Remove(name);
+			}
+			else
+			{
+				var msg = Message.Create();
+				msg.AddString("Player with the same name already exists");
+				server.Reject(connection, msg);
+				return;
+			}
 		}
 		Players.Add(name,connection);
 
@@ -81,30 +96,30 @@ public static class Program
 		{
 			SendPlayerList(p.Value);
 		}
-		
+		SendChatMessage(name+" connected");
 	}
 
 	public static readonly object syncobj = new object();
 
 	private static void SendPlayerList(Connection connection)
 	{
-		var msg = Message.Create(MessageSendMode.Unreliable,  NetMsgIds.NetworkMessageID.PlayerList);
+		var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.MasterServerNetworkMessageID.PlayerList);
 		msg.AddString(String.Join(";", Players.Keys));
 		server.Send(msg,connection);
 	}
 
-	[MessageHandler((ushort)  NetMsgIds.NetworkMessageID.Refresh)]
+	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.Refresh)]
 	private static void RefreshRequest(ushort senderID, Message message)
 	{
 		Console.WriteLine("RequestLobbies");
-		var msg = Message.Create(MessageSendMode.Reliable,  NetMsgIds.NetworkMessageID.LobbyList);
+		var msg = Message.Create(MessageSendMode.Reliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyList);
 		msg.Add(Lobbies.Count);
 		foreach (var lobby in Lobbies)
 		{
 			msg.Add(lobby.Value.Item2);
 		}
 		server.Send(msg, senderID);
-		Connection c = null;
+		Connection? c;
 		server.TryGetClient(senderID, out c);
 		if(c!=null){
 			SendPlayerList(c);
@@ -113,16 +128,17 @@ public static class Program
 	}
 
 
-	[MessageHandler((ushort)  NetMsgIds.NetworkMessageID.LobbyStart)]
+	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyStart)]
 	private static void StartLobby(ushort senderID,Message message)
 	{
+		Console.WriteLine("StartLobby Requested");
 		lock (syncobj)
 		{
 			string name = message.GetString();
 			string pass = message.GetString();
 
 
-			Console.WriteLine("StartLobby");
+			Console.WriteLine("Starting lobby:");
 			int port = GetNextFreePort();
 			Console.WriteLine("Port: " + port); //ddos or spam protection is needed
 			var process = new Process();
@@ -141,16 +157,19 @@ public static class Program
 				
 			List<string> args = new List<string>();
 			args.Add(port.ToString());
+			args.Add("false");
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
-			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data); };
+			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
+			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
-			Console.WriteLine("Creating server log at " + Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log");
+			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
+			Console.WriteLine("Creating server log at " +path);
 			try
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/Logs/");
-				File.Create(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log").Close();
+				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/");
+				File.Create(path).Close();
 			}
 			catch (Exception e)
 			{
@@ -168,11 +187,11 @@ public static class Program
 					Lobbies[port].Item2.Spectators =  Int32.Parse(ExtractBetweenTags(args.Data, "SPECTATORS"));
 				}
 
-				Console.WriteLine("Server(" + port + "): " + args.Data);
+				//Console.WriteLine("Server(" + port + "): " + args.Data);
 				//log
 				if (args.Data != null)
 				{
-					File.AppendAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Logs/Server(" + port+name+")" +id+ ".log", "[" + DateTime.Now + "] " + args.Data + "\n");
+					File.AppendAllText(path, "[" + DateTime.Now + "] " + args.Data + "\n");
 				}
 			};
 			Console.WriteLine("starting...");
@@ -191,7 +210,7 @@ public static class Program
 				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
 				Thread.Sleep(1000);
 				
-				var msg = Message.Create(MessageSendMode.Unreliable,  NetMsgIds.NetworkMessageID.LobbyCreated);
+				var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated);
 				msg.Add(lobbyData);
 				server.Send(msg, senderID);
 
@@ -206,6 +225,28 @@ public static class Program
 		}
 
 	}   
+	[MessageHandler((ushort)NetworkingManager.MasterServerNetworkMessageID.Chat)]
+	private static void ReciveChatMsg(ushort senderID,Message message)
+	{
+		string text = message.GetString();
+		text = text.Replace("\n", "");
+		text = text.Replace("[", "");
+		text = text.Replace("]", "");
+		if(server.TryGetClient(senderID, out var con)){
+			string name = Players.First(x=>x.Value == con).Key;
+			text = $"[Green]{name}[-]: {text}";
+			var msg = Message.Create(MessageSendMode.Unreliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
+			msg.AddString(text);
+			server.SendToAll(msg);
+		}
+
+	}
+	private static void SendChatMessage(string message)
+	{
+		var msg = Message.Create(MessageSendMode.Unreliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
+		msg.AddString("[Yellow]"+message+"[-]");
+		server.SendToAll(msg);
+	}
 	public static string ExtractBetweenTags(string STR , string tag)
 	{       
 		string FinalString;     

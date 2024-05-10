@@ -1,0 +1,16 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C920CBEC_002DC74A_002D47ED_002D8614_002DBB796F88F837_002Fdl_003ASharedSource_003A_002E_002E_003FSharedSource_002Fd_003AWorldObjects_002Ff_003AUnit_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/share/dotnet/sdk/8.0.102/MSBuild.dll</s:String>
+	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MsbuildVersion/@EntryValue">1114112</s:Int64>
+	<s:Boolean x:Key="/Default/Environment/Hierarchy/Build/SolBuilderDuo/RunBuildOnSolutionLoaded/@EntryValue">True</s:Boolean>
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=63f3b7b0_002Dc1b6_002D4961_002Db710_002Dd4a53948f06f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="SequenceActionSeriasabilityTest #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::4556159D-B84F-4296-A7AA-91322006BC5C::net6.0::Tests.Tests.SequenceActionSeriasabilityTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::4556159D-B84F-4296-A7AA-91322006BC5C::net6.0::Tests.Tests.WorldDataSerialisabilityTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::4556159D-B84F-4296-A7AA-91322006BC5C::net6.0::Tests.Tests.PathFindingTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=4556159d_002Db84f_002D4296_002Da7aa_002D91322006bc5c_0023Tests/@EntryIndexedValue">True</s:Boolean>
+	
+	</wpf:ResourceDictionary>

@@ -1,18 +1,23 @@
-﻿namespace MultiplayerXeno;
+﻿using DefconNull.ReplaySequence;
+using DefconNull.WorldActions;
+
+namespace DefconNull.WorldObjects;
 
 public class StatusEffectType
 {
-	public readonly string name;
-	readonly WorldEffect effect;
+	public readonly string Name;
+	public readonly string Tip;
+	public readonly WorldConseqences Conseqences;
 
-	public StatusEffectType(string name, WorldEffect itm)
+	public StatusEffectType(string name, string tip, WorldConseqences itm)
 	{
-		this.name = name;
-		effect = itm;
+		Name = name;
+		Tip = tip;
+		Conseqences = itm;
 	}
 
 	public void Apply(Unit actor)
 	{
-		effect.Apply(actor.WorldObject.TileLocation.Position);
+		SequenceManager.AddSequence(Conseqences.GetApplyConsequnces(actor.WorldObject,actor.WorldObject));
 	}
 }

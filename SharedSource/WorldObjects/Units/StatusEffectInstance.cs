@@ -1,18 +1,34 @@
-﻿namespace MultiplayerXeno;
+﻿
+
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace DefconNull.WorldObjects.Units;
 
 public class StatusEffectInstance
 {
-	public StatusEffectInstance(StatusEffectType type, int duration)
+	public StatusEffectInstance(StatusEffectType type, int duration, Unit owner)
 	{
-		this.type = type;
-		this.duration = duration;
+		Type = type;
+		Duration = duration;
+		Owner = owner;
 	}
-	public readonly StatusEffectType type;
-	public int duration;
 
-	public void Apply(Unit unit)
+	public readonly StatusEffectType Type;
+	public int Duration;
+	public Unit Owner;
+
+	public void Apply()
 	{
-		type.Apply(unit);
-		duration--;
+		Type.Apply(Owner);
+		Log.Message("UNITS", "Applying status effect: " + Type.Name + " to " + Owner.WorldObject.ID);
+		Duration--;
 	}
+#if CLIENT
+	public void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
+	{
+		batch.DrawText("         Status Effect:\n[Green]"+Type.Name+"[-]\n"+Type.Tip, pos, scale, 50, Color.White);
+	}
+#endif
+
 }

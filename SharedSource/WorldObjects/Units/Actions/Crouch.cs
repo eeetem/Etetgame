@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.ReplaySequence;
-#if CLIENT
-using MultiplayerXeno.UILayouts;
-#endif
-namespace MultiplayerXeno;
+
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class Crouch : Action
 {
@@ -13,7 +13,7 @@ public class Crouch : Action
 	}
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
+	public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
 		if (actor.MovePoints <= 0)
 		{
@@ -22,14 +22,8 @@ public class Crouch : Action
 		
 		return new Tuple<bool, string>(true, "");
 	}
-#if CLIENT
-	public override void ExecuteClientSide(Unit actor, Vector2Int target)
-	{
-		base.ExecuteClientSide(actor, target);
-	}
 
-#else
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		Visibility vis = Visibility.Full;//inverted
@@ -37,31 +31,30 @@ public class Crouch : Action
 		{
 			vis = Visibility.Partial;
 		}
-		var shooters = WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position).GetOverWatchShooters(actor,vis);
-		WorldEffect w = new WorldEffect();
-		w.Move.Value = -1;
-		w.TargetFriend = true;
-		w.TargetSelf = true;
+		var shooters = ((WorldTile)WorldManager.Instance.GetTileAtGrid(actor.WorldObject.TileLocation.Position)).GetOverWatchShooters(actor,vis);
+
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.WorldChange(actor.WorldObject.ID,actor.WorldObject.TileLocation.Position,w));
-		queue.Enqueue(new ReplaySequence.Crouch(actor.WorldObject.ID));
+		ChangeUnitValues c = ChangeUnitValues.Make(actor.WorldObject.ID,0,-1);
+		queue.Enqueue(c);
+		
+		CrouchUnit crouch = CrouchUnit.Make(actor.WorldObject.ID);
+		queue.Enqueue(crouch);
 
 		foreach (var shooter in shooters)
 		{
-			queue.Enqueue(new ReplaySequence.DoAction(shooter.WorldObject.ID,actor.WorldObject.TileLocation.Position,-1));
-		}
+			var act = DelayedAbilityUse.Make(shooter.WorldObject.ID,shooter.Overwatch.Item2,actor.WorldObject.TileLocation.Position);
+			queue.Enqueue(act);
 		
-		return queue;
+		}
+		return new Queue<SequenceAction>[] {queue};
+		
 	}
-#endif
+
+
 
 
 #if CLIENT
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
-	{
-		throw new NotImplementedException();
-	}
 
-
+	
 #endif
 }

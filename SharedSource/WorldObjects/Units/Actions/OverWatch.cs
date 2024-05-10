@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldActions.UnitAbility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.ReplaySequence;
 #if CLIENT
 using FontStashSharp;
 #endif
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class OverWatch : Action
 {
@@ -15,62 +16,40 @@ public class OverWatch : Action
 	{
 	}
 
-	
-	public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int position)
-	{
-	
 
-		if (actor.MovePoints <= 0)
-		{
-			return new Tuple<bool, string>(false, "Not enough move points");
-		}
-		if (actor.ActionPoints <= 0)
-		{
-			return new Tuple<bool, string>(false, "Not enough fire points");
-		}
-	
-
-		return new Tuple<bool, string>(true, "");
-	}
-#if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.OverWatch(actor.WorldObject.ID,target));
-		return queue;
+		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target!.Value,args.AbilityIndex));
+		return new Queue<SequenceAction>[] {queue};
 	}
-#endif
 
 
+
+
+
+	public override Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args)
+	{
+	
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
+		return action.HasEnoughPointsToPerform(actor, false);
+	}
 
 #if CLIENT
-	
 
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		
-		//todo mod support, make this not only for shootables
-		foreach (var shot in actor.GetOverWatchPositions(target))
+		foreach (var loc in actor.GetOverWatchPositions(args.Target!.Value,args.AbilityIndex))
 		{
-
-			var tile = WorldManager.Instance.GetTileAtGrid(shot.Result.EndPoint);
+			var tile = WorldManager.Instance.GetTileAtGrid(loc);
 			if (tile.Surface == null) continue;
+			Color c = Color.Green * 0.45f;
 			
-			Color c = Color.Yellow * 0.45f;
-			
-			if (actor.CanHit(shot.Result.EndPoint,true))
-			{
-				c = Color.Green * 0.45f;
-			}
-							
 			Texture2D texture = tile.Surface.GetTexture();
 
-			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position,c );
-			spriteBatch.DrawText(""+shot.Dmg,   Utility.GridToWorldPos(tile.Position),4,Color.White);
+			spriteBatch.Draw(texture, tile.Surface.GetDrawTransform().Position, c);
 		}
-
 	}
 
 #endif
 }
-

@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using DefconNull.Networking;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
-using System.Threading;
-using MultiplayerXeno.ReplaySequence;
-
 #if CLIENT
-using MultiplayerXeno.UILayouts;
+using DefconNull.Rendering.UILayout;
 #endif
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public abstract class Action
 {
 
 	public static readonly Dictionary<ActionType, Action> Actions = new();
 	public readonly ActionType Type;
-	public static Action? ActiveAction { get; private set; }
 
 	public Action(ActionType? type)
 	{
@@ -26,35 +24,6 @@ public abstract class Action
 		Actions.Add((ActionType)type, this);
 	}
 
-	public static void SetActiveAction(ActionType? type)
-	{
-		
-		if (type == null)
-		{
-			ActiveAction = null;
-#if CLIENT
-			GameLayout.UpdateActionButtons();	
-#endif
-			return;
-		}
-		
-
-		ActiveAction = Actions[(ActionType)type];
-		ActiveAction.InitAction();
-#if CLIENT
-		GameLayout.UpdateActionButtons();	
-#endif
-
-	}
-	public static ActionType? GetActiveActionType()
-	{
-		if (ActiveAction != null)
-		{
-			return ActiveAction.Type;
-		}
-
-		return null;
-	}
 
 	public static void Init()
 	{
@@ -62,123 +31,122 @@ public abstract class Action
 		new Move();
 		new Crouch();
 		new OverWatch();
-		new UseItem();
 		new UseAbility();
-		new SelectItem();
 
 	}
 	public enum ActionType
 	{
-		SelectItem=1,
+
 		Move=2,
 		Face=3,
 		Crouch=4,
 		OverWatch = 5,
-		UseItem = 6,
 		UseAbility = 7,
-
-	}
-
-	public virtual void InitAction()
-	{
-#if CLIENT
-		GameLayout.ScreenData = null;
-#endif
-	
-	}
-
-
-	public abstract Tuple<bool, string> CanPerform(Unit actor, ref Vector2Int target);
-
-#if CLIENT
-	public abstract void Preview(Unit actor, Vector2Int target,SpriteBatch spriteBatch);
-
-	public virtual void SendToServer(Unit actor, Vector2Int target)
-	{
-		Console.WriteLine("sending action packet: " + Type + " on " + target + " from " + actor.WorldObject.ID + "");
-		var packet = new GameActionPacket(actor.WorldObject.ID, target, Type);
-		Networking.SendGameAction(packet);
-	}
-#endif
-	
-
-	
-	
-#if CLIENT
-	public virtual void ExecuteClientSide(Unit actor, Vector2Int target)
-	{
-		Action.SetActiveAction(null);
-	}
-#else
-
-	public void PerformServerSide(Unit actor,Vector2Int target)
-	{
-
 		
-		var result = CanPerform(actor, ref target);
-		if(!result.Item1)
+		
+	}
+
+
+	public abstract Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args);
+
+#if CLIENT
+	public virtual void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch){}
+
+	public void SendToServer(Unit actor, ActionExecutionParamters args)
+	{
+		SendToServer(actor.WorldObject.ID,args);
+	}
+	public void SendToServer(int actorID, ActionExecutionParamters args)
+	{
+		var packet = new GameActionPacket(actorID, Type, args);
+		NetworkingManager.SendGameAction(packet);
+	}
+#endif
+
+#if SERVER
+	public void PerformServerSide(Unit actor, ActionExecutionParamters args)
+	{
+		var actions = GetConsequenes(actor,args);
+		int i = 1;
+		foreach (var queue in actions)
 		{
-			Console.WriteLine("Client sent an impossible action: "+result.Item2);
-			return;
+			Task t = new Task(delegate
+			{
+				NetworkingManager.AddSequenceToSendQueue(queue);//staggered execution becuase some actions need to wait for FOV update
+			});
+			SequenceManager.RunNextAfterFrames(t,i);
+			i += 2;
 		}
-		Task.Run(() =>
-		{
-			try
-			{
-				var actions = ExecuteServerSide(actor, target);
-				WorldManager.Instance.AddSequence(actions);
-				Networking.SendSequence(actions);
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				throw;
-			}
-
-		});
-		
-		
 	}
-	public abstract Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target);
+	
 #endif
-	
-	
+	public abstract Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args);
 	public class GameActionPacket : IMessageSerializable
 	{
-		public ActionType Type { get; set; }
+		public ActionExecutionParamters Args { get; set; }
 		public int UnitId { get; set; }
-		
-		public Vector2Int Target { get; set; }
+		public ActionType Type;
 
-		public List<string> Args { get; set; } = new List<string>();
-
-		public GameActionPacket(int unitId, Vector2Int target, ActionType type)
+		public GameActionPacket(int unitId, ActionType actionType, ActionExecutionParamters args)
 		{
 			UnitId = unitId;
-			Target = target;
-			Type = type;
-			Args = new List<string>();
+			Type = actionType;
+			Args = args;
+		}
+		
+		public GameActionPacket()
+		{
 		}
 
-		public GameActionPacket()
+
+		public void Serialize(Message message)
+		{
+			message.Add((int)Type);
+			message.Add(UnitId);
+			message.Add(Args);
+		}
+
+		public void Deserialize(Message message)
+		{
+			Type = (ActionType)message.GetInt();
+			UnitId = message.GetInt();
+			Args = message.GetSerializable<ActionExecutionParamters>();
+		}
+	}
+	
+	
+	public struct ActionExecutionParamters : IMessageSerializable
+	{
+		
+		public Vector2Int? Target;
+		public WorldObject? TargetObj = null;
+		public int AbilityIndex = -1;
+
+		public ActionExecutionParamters(Vector2Int target)
+		{
+			Target = target;
+		}
+
+		public ActionExecutionParamters()
 		{
 			
 		}
 
 		public void Serialize(Message message)
 		{
-			message.Add(UnitId);
-			message.Add(Target);
-			message.Add((int)Type);
-			message.AddStrings(Args.ToArray());
+			message.Add(Target ?? new Vector2Int(-1,-1));
+			message.Add(TargetObj?.ID ?? -1);
+			message.Add(AbilityIndex);
 		}
 
 		public void Deserialize(Message message)
 		{
-			UnitId = message.GetInt();
+			
 			Target = message.GetSerializable<Vector2Int>();
-			Type = (ActionType)message.GetInt();
-			Args = message.GetStrings().ToList();
+			TargetObj = WorldObjectManager.GetObject(message.GetInt());
+			AbilityIndex = message.GetInt();
 		}
 	}
+
+	
 }

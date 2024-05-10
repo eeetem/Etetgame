@@ -1,91 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.ReplaySequence;
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class Face : Action
 {
-	public Face() :base(ActionType.Face)
-	{
-	}
+    public Face() :base(ActionType.Face)
+    {
+    }
 
 	
-	public override Tuple<bool,string> CanPerform(Unit actor, ref Vector2Int position)
-	{
+    public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
+    {
 		
 		
-		var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, position);
-		if (targetDir == actor.WorldObject.Facing)
-		{
-			return new Tuple<bool, string>(false, "Already facing that direction");
-		}//dont let the action happen if the player is already facing that direction 
+        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+        if (targetDir == actor.WorldObject.Facing)
+        {
+            return new Tuple<bool, string>(false, "Already facing that direction");
+        }//dont let the action happen if the player is already facing that direction 
 
 
-		if (!actor.canTurn)
-		{
-			return new Tuple<bool, string>(false, "Can't turn");
-		}
+        if (!actor.canTurn)
+        {
+            return new Tuple<bool, string>(false, "Can't turn");
+        }
 	
 
-		return new Tuple<bool, string>(true, "");
-	}
+        return new Tuple<bool, string>(true, "");
+    }
 
-#if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor,Vector2Int target)
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.Face(actor.WorldObject.ID,target));
-		return queue;
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value));
+		return new Queue<SequenceAction>[] {queue};
 
 	}
-#endif
+
 
 #if CLIENT
 
-	private Vector2Int lastTarget;
-	private Dictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
-	public override void InitAction()
-	{
-		lastTarget = new Vector2Int(0, 0);
-		base.InitAction();
-	}
-	public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
-	{
-		if (lastTarget == new Vector2Int(0, 0))
-		{
-			var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, target);
-			previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
-			lastTarget = target;
-		}
-		if (lastTarget != target)
-		{
-			SetActiveAction(null);
-			
-		}
+    private Vector2Int lastTarget;
+    private IDictionary<Vector2Int,Visibility> previewTiles = new Dictionary<Vector2Int, Visibility>();
+
+    public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
+    {
+        if (actor.WorldObject.TileLocation.Position == args.Target!.Value) return;
+        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+        previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
 		
-		foreach (var visTuple in previewTiles)
-		{
-			WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Key);
-			if (tile.Surface == null) continue;
+        foreach (var visTuple in previewTiles)
+        {
+            WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Key);
+            if (tile.Surface == null) continue;
 
-			Texture2D sprite = tile.Surface.GetTexture();
-			Color c = Color.Pink;
-			if (visTuple.Value == Visibility.Full)
-			{
-				c = Color.Brown * 0.45f;
-			}else if (visTuple.Value == Visibility.Partial)
-			{
-				c = Color.RosyBrown * 0.45f;
-			}
+            Texture2D sprite = tile.Surface.GetTexture();
+            Color c = Color.Pink;
+            if (visTuple.Value == Visibility.Full)
+            {
+                c = Color.Brown * 0.45f;
+            }else if (visTuple.Value == Visibility.Partial)
+            {
+                c = Color.RosyBrown * 0.45f;
+            }
 
-			spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
+            spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
 			
-		}
-	}
+        }
+
+    }
 
 #endif
 
@@ -93,4 +82,3 @@ public class Face : Action
 
 
 }
-

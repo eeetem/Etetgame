@@ -1,23 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Riptide;
+#if CLIENT
+using DefconNull.Rendering.UILayout;
+#endif
 
-namespace MultiplayerXeno;
+namespace DefconNull;
 
-public  static partial class Utility
+public static partial class Utility
 {
+    
+  
+    
     public static void Init()
     {
-        mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        mainThreadId = Thread.CurrentThread.ManagedThreadId;
     }
 
     // Do this when you start your application
     private static int mainThreadId;
 // If called in the non main thread, will return false;
-    public static bool IsMainThread => System.Threading.Thread.CurrentThread.ManagedThreadId == mainThreadId;
+    public static bool IsMainThread => Thread.CurrentThread.ManagedThreadId == mainThreadId;
+
+
+    public static void RunTaskSynchronously(this Task t)
+    {
+        t.Start();
+        t.Wait();
+        if(t.IsFaulted) throw t.Exception!;
+    }
 
     public static void AddNullableString(this Message msg, string? s)
     {
@@ -37,10 +54,8 @@ public  static partial class Utility
         {
             return msg.GetString();
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public static double Distance(Vector2Int from, Vector2Int to)
@@ -71,6 +86,35 @@ public  static partial class Utility
         }
 
         throw new Exception("impossible direction");
+    }
+
+    public static float CalculatePercentile(List<int> numbers, float percentile)
+    {
+        // Make sure the list is sorted
+        numbers.Sort();
+
+        // Calculate the index corresponding to the desired percentile
+        int index = (int)Math.Ceiling(percentile / 100 * numbers.Count) - 1;
+
+        // Check if the index is valid
+        if (index >= 0 && index < numbers.Count)
+        {
+            // If the index is an integer, return the value at that index
+            return numbers[index];
+        }
+        else
+        {
+            // If the index is not an integer, interpolate between the values
+            int lowerIndex = (int)Math.Floor(percentile / 100 * numbers.Count);
+            int upperIndex = (int)Math.Ceiling(percentile / 100 * numbers.Count);
+            
+            double lowerValue = numbers[lowerIndex];
+            double upperValue = numbers[upperIndex];
+            
+            double interpolationFactor = percentile / 100 * numbers.Count - lowerIndex;
+
+            return (float) (lowerValue + interpolationFactor * (upperValue - lowerValue));
+        }
     }
     public static float Lerp(float firstFloat, float secondFloat, float by)
     {
@@ -301,19 +345,19 @@ public  static partial class Utility
         }
 
 
-        if (dir.X < 0.1 && dir.X > -0.1)
+        if (dir.X < 0.3 && dir.X > -0.3)
         {
             return Direction.West;
         }
-        if (dir.X < 1.1 && dir.X > 0.9)
+        if (dir.X < 1.3 && dir.X > 0.7)
         {
             return Direction.East;
         }
-        if (dir.Y < 0.1 && dir.Y > -0.1)
+        if (dir.Y < 0.3 && dir.Y > -0.3)
         {
             return Direction.North;
         }
-        if (dir.Y < 1.1 && dir.Y > 0.9)
+        if (dir.Y < 1.3 && dir.Y > 0.7)
         {
             return Direction.South;
         }
@@ -335,7 +379,7 @@ public  static partial class Utility
     {
         if(!WorldManager.IsPositionValid(pos))return false;
                 
-        WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
+        IWorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);
         if (tile.NorthEdge == edge || tile.WestEdge == edge)
         {
             return true;
@@ -386,7 +430,7 @@ public  static partial class Utility
             return vec.Y > 0? 90
                 : vec.Y == 0? 0
                 : 270;
-        else if (vec.Y == 0) // special cases
+        if (vec.Y == 0) // special cases
             return vec.X >= 0? 0
                 : 180;
         float ret = RadToDeg(Math.Atan(vec.Y/vec.X));

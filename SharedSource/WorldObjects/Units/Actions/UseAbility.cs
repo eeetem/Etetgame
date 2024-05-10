@@ -1,78 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
+using DefconNull.ReplaySequence;
+using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
+using DefconNull.WorldActions.UnitAbility;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MultiplayerXeno.Items;
-using MultiplayerXeno.ReplaySequence;
+using MonoGame.Extended;
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects.Units.Actions;
 
 public class UseAbility : Action
 {
 	
-	
-		public UseAbility() : base(ActionType.UseAbility)
-		{
-		}
-
-		public override Tuple<bool, string> CanPerform(Unit actor,ref  Vector2Int target)
-		{
-			IExtraAction action = actor.GetAction(AbilityIndex);
-
-			return action.CanPerform(actor, ref target);
-
-		}
-
-		public static bool abilityLock = false;
-		private static int _abilityIndex = -1;
-
-		public static int AbilityIndex
-		{
-			get => _abilityIndex;
-			set {
-				if (abilityLock)
-				{
-					return;
-				}
-
-				_abilityIndex = value;
-			}
-		}
-
-#if SERVER
-	public override Queue<SequenceAction> ExecuteServerSide(Unit actor, Vector2Int target)
+	public UseAbility() : base(ActionType.UseAbility)
 	{
-		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(new ReplaySequence.DoAction(actor.WorldObject.ID,target,AbilityIndex));
-		return queue;
+	}
+
+	public override Tuple<bool, string> CanPerform(Unit actor, ActionExecutionParamters args)
+	{
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
+		return action.HasEnoughPointsToPerform(actor,false);
+	}
+
+
+
+
+	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
+	{
+		UnitAbility action = actor.Abilities[args.AbilityIndex];
+		var queue1 = new Queue<SequenceAction>();
+		
+		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
+		queue1.Enqueue(m);
+		
+		var turnact = FaceUnit.Make(actor.WorldObject.ID, args.TargetObj!.TileLocation.Position);
+		queue1.Enqueue(turnact);
+
+		var res = action.GetConsequences(actor, args.TargetObj!);
+		var queue2 = new Queue<SequenceAction>();
+		foreach (var sequenceAction in res)
+		{
+			queue2.Enqueue(sequenceAction);
+		}
+		return new Queue<SequenceAction>[] {queue1,queue2};
 
 
 	}
-#endif
-	
+
 
 
 
 #if CLIENT
-		public override void SendToServer(Unit actor, Vector2Int target)
-		{
-			IExtraAction action = actor.GetAction(AbilityIndex);
-			var packet = new GameActionPacket(actor.WorldObject.ID,target,Type);
-			packet.Args.Add(AbilityIndex.ToString());
-			foreach (var a in action.MakePacketArgs())
-			{
-				packet.Args.Add(a);
-			}
+		private ActionExecutionParamters _lastArgs = new ActionExecutionParamters();
+		private Unit? _lastActor = null;
+		private Vector2Int lastpos = new Vector2Int(-1, -1);
+		List<SequenceAction> _previewCache = new List<SequenceAction>();
 
-			Networking.SendGameAction(packet);
-		
-		}
-		public override void Preview(Unit actor, Vector2Int target, SpriteBatch spriteBatch)
+		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
-			IExtraAction action = actor.GetAction(AbilityIndex);
-			action.Preview(actor, target,spriteBatch);
+			UnitAbility action = actor.Abilities[args.AbilityIndex];
+			if (_lastActor == null || !Equals(_lastArgs, args) || !Equals(lastpos, actor.WorldObject.TileLocation.Position) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
+			{
+				_previewCache = action.GetConsequences(actor, args.TargetObj!);
+				_lastActor = actor;
+				_lastArgs = args;
+			}
+			var pos = actor.WorldObject.TileLocation.Position;
+			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(pos+ new Vector2(0.5f, 0.5f)), Color.Red, 2);
+
+			foreach (var c in _previewCache)
+			{
+				c.Preview(spriteBatch);
+			}
+			
+			
 		}
 
 
 #endif
 
-	
 }

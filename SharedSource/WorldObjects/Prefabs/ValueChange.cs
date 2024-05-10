@@ -1,12 +1,38 @@
 ﻿using Riptide;
 
-namespace MultiplayerXeno;
+namespace DefconNull.WorldObjects;
 
 public struct ValueChange : IMessageSerializable
 {
 	public bool Set = false;
 	public bool Cap = false;
 	public int Value;
+
+	public override string ToString()
+	{
+		return $"{nameof(Set)}: {Set}, {nameof(Cap)}: {Cap}, {nameof(Value)}: {Value}";
+	}
+
+	public bool Equals(ValueChange other)
+	{
+		return Set == other.Set && Cap == other.Cap && Value == other.Value;
+	}
+
+	public override bool Equals(object? obj)
+	{
+		return obj is ValueChange other && Equals(other);
+	}
+
+	public override int GetHashCode()
+	{
+		unchecked
+		{
+			int hashCode = Set.GetHashCode();
+			hashCode = (hashCode * 397) ^ Cap.GetHashCode();
+			hashCode = (hashCode * 397) ^ Value;
+			return hashCode;
+		}
+	}
 
 	public ValueChange()
 	{
@@ -29,6 +55,11 @@ public struct ValueChange : IMessageSerializable
 		Value = message.GetInt();
 	}
 
+	public ValueChange(int input)
+	{
+		Value = input;
+	}
+
 	public ValueChange(string input)
 	{
 		if (input.Contains("[cap]"))
@@ -46,7 +77,7 @@ public struct ValueChange : IMessageSerializable
 		Value = int.Parse(input);
 	}
 
-	public int GetChange(Value field)
+	public readonly int GetChange(Value field)
 	{
 		int newValue = field.Current;
 		if (Set)
@@ -83,7 +114,7 @@ public struct ValueChange : IMessageSerializable
 		return newValue - field.Current;
 	}
 
-	public void Apply(ref Value field)
+	public readonly void Apply(ref Value field)
 	{
 		
 		field += GetChange(field);
