@@ -17,6 +17,7 @@ signing
 turn down screenshake
 update overwatch based on LOS
 do not delete crashes
+practice mode buggy
 
 
 sfx list:
