@@ -19,6 +19,13 @@ update overwatch based on LOS
 do not delete crashes
 practice mode buggy
 
+Grunt special tutorial says press x when it’s the shoot action not the special action.
+you are meant to use his normal shoot for the first bit and then the special in the second bit, is that not clear?
+
+
+Specialist range buff
+
++37128665173
 
 sfx list:
 -throw
@@ -88,3 +95,5 @@ sprite master list:
 619771
 614279
 601644
+
+

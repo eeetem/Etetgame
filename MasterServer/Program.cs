@@ -23,6 +23,10 @@ public static class Program
 	}
 	static void Main(string[] args)
 	{
+		AppDomain currentDomain = default(AppDomain);
+		currentDomain = AppDomain.CurrentDomain;
+		// Handler for unhandled exceptions.
+		currentDomain.UnhandledException += GlobalUnhandledExceptionHandler;
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, true);
 		server = new Server(new TcpServer());
 			
@@ -313,5 +317,14 @@ public static class Program
 			}
 				
 		}
+	}
+	private static void GlobalUnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+	{
+
+	    
+		DateTime date = DateTime.Now;
+			
+		File.WriteAllText("MASTER SERVER Crash"+date.ToFileTime()+".txt", e.ExceptionObject.ToString());
+	
 	}
 }

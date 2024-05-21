@@ -67,13 +67,11 @@ public static partial class GameManager
 		}
 
 		GameState = GameState.Playing;
-		
+		Log.Message("GAME","Initiating starting game....");
 		//not a fan of this, should probably be made a single function
 		int i = 0;
 		if (Player1?.SquadComp == null || Player1.SquadComp.Count == 0)
 		{
-		
-
 			var newComp = new List<SquadMember>();
 			for (int j = 0; j < PrefabManager.UnitPrefabs.Keys.Count; j++)
 			{
@@ -165,41 +163,45 @@ public static partial class GameManager
 		
 		var t = new Task(delegate
 		{
-			
-		
-			var rng = Random.Shared.Next(100);
-			NextTurn();
-			Console.WriteLine("turn rng: "+rng);
-			if (rng > 50 || Player2!.IsAI)
+			Log.Message("GAME","Starting game");
+			Task.Run(() =>
 			{
-				NextTurn();
-			}
-
-			Thread.Sleep(1000); //just in case
-			foreach (var u in T1Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player1UnitPositions.ContainsKey(u))
+				while (SequenceManager.SequenceRunning || !Player1!.HasDeliveredAllMessages || !Player2!.HasDeliveredAllMessages)
 				{
-					Player1UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
+					Thread.Sleep(500);
 				}
+
+				Thread.Sleep(1000); //just in case
+				foreach (var u in T1Units)
+				{
+					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					if (!Player1UnitPositions.ContainsKey(u))
+					{
+						Player1UnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
+					}
 
 				
-			}
-			foreach (var u in T2Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player2UnitPositions.ContainsKey(u))
-				{
-					Player2UnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
 				}
-			}
-			//PlayerUnitPositionsDirty = true;
-			
-			NetworkingManager.SendGameData();
-			WorldManager.Instance.MakeFovDirty();	
-			NetworkingManager.SendAllSeenUnitPositions();
-
+				foreach (var u in T2Units)
+				{
+					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					if (!Player2UnitPositions.ContainsKey(u))
+					{
+						Player2UnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
+					}
+				}
+				//PlayerUnitPositionsDirty = true;
+				var rng = Random.Shared.Next(100);
+				NextTurn();
+				Console.WriteLine("turn rng: "+rng);
+				if (rng > 50 || Player2!.IsAI)
+				{
+					NextTurn();
+				}
+				NetworkingManager.SendGameData();
+				WorldManager.Instance.MakeFovDirty();	
+				NetworkingManager.SendAllSeenUnitPositions();
+			});
 		});
 		SequenceManager.RunNextAfterFrames(t,5);//let units be created and sent before we swtich to playing
 
