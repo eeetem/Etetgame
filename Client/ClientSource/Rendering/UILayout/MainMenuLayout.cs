@@ -115,10 +115,10 @@ public class MainMenuLayout : UiLayout
 		
 		
 		
-		var chat = TextureManager.GetTexture("MainMenu/butts/chatmenuDisconnected");
+		var chat = TextureManager.GetTexture("MainMenu/butts/chatMenuDisconnected");
 		if (MasterServerNetworking.IsConnected)
 		{
-			chat = TextureManager.GetTexture("MainMenu/butts/chatmenuConnected");
+			chat = TextureManager.GetTexture("MainMenu/butts/chatMenuConnected");
 		}
 		batch.End();
 		batch.Begin(samplerState: SamplerState.PointClamp);
