@@ -73,7 +73,7 @@ namespace DefconNull.WorldObjects
 			}
 
 
-			canTurn = data.CanTurn;
+			CanTurn = data.CanTurn;
 
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
@@ -116,9 +116,7 @@ namespace DefconNull.WorldObjects
 
 		}
 
-		public bool canTurn { get; set; }
-
-
+		public bool CanTurn { get; set; }
 		public Value MovePoints;
 		public Value ActionPoints;
 		public Value Determination;
@@ -211,7 +209,7 @@ namespace DefconNull.WorldObjects
 		public void StartTurn()
 		{
 			MovePoints.SetToMax();
-			canTurn = true;
+			CanTurn = true;
 			ActionPoints.SetToMax();
 			MoveRangeEffect.SetToMax();
 			if (Determination < 0)
@@ -237,7 +235,7 @@ namespace DefconNull.WorldObjects
 				Panicked = false;
 				Determination--;
 				MovePoints--;
-				canTurn = false;
+				CanTurn = false;
 			}
 
 			ClearOverWatch();
@@ -431,7 +429,7 @@ namespace DefconNull.WorldObjects
 				Team1 = u.IsPlayer1Team;
 				ActionPoints = u.ActionPoints.Current;
 				MovePoints = u.MovePoints.Current;
-				CanTurn = u.canTurn;
+				CanTurn = u.CanTurn;
 				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
 				Panic = u.Panicked;
@@ -506,7 +504,7 @@ namespace DefconNull.WorldObjects
 
 		protected bool Equals(Unit other)
 		{
-			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
+			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && CanTurn == other.CanTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
 		}
 
 		public override bool Equals(object? obj)
@@ -531,7 +529,7 @@ namespace DefconNull.WorldObjects
 				hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
 				hashCode = (hashCode * 397) ^ VisibleTiles.GetHashCode();
 				hashCode = (hashCode * 397) ^ Type.GetHashCode();
-				hashCode = (hashCode * 397) ^ canTurn.GetHashCode();
+				hashCode = (hashCode * 397) ^ CanTurn.GetHashCode();
 				hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
 				hashCode = (hashCode * 397) ^ IsPlayer1Team.GetHashCode();
 				hashCode = (hashCode * 397) ^ Panicked.GetHashCode();

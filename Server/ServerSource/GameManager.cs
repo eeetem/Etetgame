@@ -160,7 +160,7 @@ public static partial class GameManager
 			}
 
 		}
-		
+		TimeTillNextTurn = PreGameData.TurnTime*1000;
 		var t = new Task(delegate
 		{
 			Log.Message("GAME","Starting game");

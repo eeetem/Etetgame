@@ -21,7 +21,7 @@ public static partial class GameManager
     public static GameState GameState;
     public static float TimeTillNextTurn;
 		
-    private static bool endTurnNextFrame;
+    private static bool endTurnNextFrame = false;
     private static bool playedWarning;
     public static void Update(float delta)
     {

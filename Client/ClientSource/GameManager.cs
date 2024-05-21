@@ -66,7 +66,7 @@ public static partial class GameManager
 	{
 		if(intated)return;
 		intated = true;
-		TimeTillNextTurn = PreGameData.TurnTime*1000;
+		TimeTillNextTurn = 10 + PreGameData.TurnTime*1000;
 		WorldManager.Instance.MakeFovDirty();
 		GameLayout.SelectUnit(null);
 		
