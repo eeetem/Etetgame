@@ -15,7 +15,7 @@ public class CrouchUnit : UnitSequenceAction
 
 	protected override void RunSequenceAction()
 	{
-			Actor.canTurn = true;
+			Actor.CanTurn = true;
 			Actor.Crouching = !Actor.Crouching;
 
 			WorldManager.Instance.MakeFovDirty();

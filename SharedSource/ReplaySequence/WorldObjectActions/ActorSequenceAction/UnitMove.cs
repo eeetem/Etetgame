@@ -154,7 +154,7 @@ public class UnitMove : UnitSequenceAction
     protected override void RunSequenceAction()
     {
  
-        Actor.canTurn = true;
+        Actor.CanTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
         WorldManager.Instance.MakeFovDirty();
         while (Path.Count >0)
@@ -196,7 +196,7 @@ public class UnitMove : UnitSequenceAction
         }
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
-        Actor.canTurn = true;
+        Actor.CanTurn = true;
 
     }
 	

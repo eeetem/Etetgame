@@ -56,7 +56,7 @@ public class FaceUnit : UnitSequenceAction
 			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target);
 			if (targetDir != Actor.WorldObject.Facing)
 			{
-				Actor.canTurn = false;
+				Actor.CanTurn = false;
 				Actor.WorldObject.Face(targetDir);
 			}
 

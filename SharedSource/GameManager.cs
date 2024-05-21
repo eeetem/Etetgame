@@ -21,7 +21,7 @@ public static partial class GameManager
     public static GameState GameState;
     public static float TimeTillNextTurn;
 		
-    private static bool endTurnNextFrame;
+    private static bool endTurnNextFrame = false;
     private static bool playedWarning;
     public static void Update(float delta)
     {
@@ -168,16 +168,27 @@ public static partial class GameManager
 		Audio.PlaySound("UI/turn");
 #endif
 
-            if (score > 10) EndGame(true);
-            if (score < -10) EndGame(false);
+            if (score > 10)
+            {
+                Log.Message("GAME","team 2 lost due to score");
+                EndGame(true);
+            }
+
+            if (score < -10)
+            {
+                Log.Message("GAME","team 1 lost due to score");
+                EndGame(false);
+            }
         }
 #if SERVER
         if(GetTeamUnits(true).Count == 0)
         {
+            Log.Message("GAME","team 1 lost due to no units");
             EndGame(false);
         }
         if(GetTeamUnits(false).Count == 0)
         {
+            Log.Message("GAME","team 2 lost due to no units");
             EndGame(true);
         }
 

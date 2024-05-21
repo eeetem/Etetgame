@@ -25,7 +25,7 @@ public class Face : Action
         }//dont let the action happen if the player is already facing that direction 
 
 
-        if (!actor.canTurn)
+        if (!actor.CanTurn)
         {
             return new Tuple<bool, string>(false, "Can't turn");
         }

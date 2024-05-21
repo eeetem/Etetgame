@@ -1478,7 +1478,7 @@ public class GameLayout : MenuLayout
 			batch.DrawNumberedIcon(SelectedUnit.MovePoints.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos, portraitScale);
 			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 45 * portraitScale);
 			batch.DrawNumberedIcon(SelectedUnit.Determination.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos, portraitScale);
-			if (SelectedUnit.canTurn)
+			if (SelectedUnit.CanTurn)
 			{
 				pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 145 * portraitScale);
 				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/turn"), pos, portraitScale,Color.White);
