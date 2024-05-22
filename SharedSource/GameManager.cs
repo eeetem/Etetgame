@@ -297,7 +297,7 @@ public static partial class GameManager
         public List<string> CustomMapList { get; set; } = new List<string>();
         public List<string> Spectators { get; set; } = new List<string>();
         public string SelectedMap { get; set; } = "";
-        public int TurnTime { get; set; } = 0;
+        public uint TurnTime { get; set; } = 0;
         public bool SinglePLayerFeatures { get; set; } = false;
         public LobbyMode Mode { get; set; } = LobbyMode.Multiplayer;
 
@@ -326,7 +326,7 @@ public static partial class GameManager
             Spectators = message.GetStrings().ToList();
 
             SelectedMap = message.GetString();
-            TurnTime = message.GetInt();
+            TurnTime = message.GetUInt();
             SinglePLayerFeatures = message.GetBool();
             Mode = (LobbyMode)message.GetInt();
         }

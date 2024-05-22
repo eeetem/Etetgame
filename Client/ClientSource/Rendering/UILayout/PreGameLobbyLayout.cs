@@ -219,7 +219,7 @@ public class PreGameLobbyLayout : MenuLayout
 		{
 			if (time.Text != "" && GameManager.PreGameData.TurnTime != int.Parse(time.Text))
 			{
-				GameManager.PreGameData = GameManager.PreGameData with {TurnTime = int.Parse(time.Text)};
+				GameManager.PreGameData = GameManager.PreGameData with {TurnTime = uint.Parse(time.Text)};
 				NetworkingManager.SendPreGameUpdate();
 			}
 		};

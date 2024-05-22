@@ -1798,9 +1798,9 @@ public class GameLayout : MenuLayout
 
 		drawExtra = currentKeyboardState.IsKeyDown(Keys.LeftAlt);
 
-		if (JustPressed(Keys.Enter) || inputBox != null)
+		if (JustPressed(Keys.Enter) && inputBox != null)
 		{
-			inputBox!.Visible = true;
+			inputBox.Visible = true;
 			inputBox.SetKeyboardFocus();
 		}
 
