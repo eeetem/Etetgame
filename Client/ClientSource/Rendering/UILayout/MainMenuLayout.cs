@@ -616,7 +616,7 @@ public class MainMenuLayout : UiLayout
 
 			};
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(80*GlobalScale.X)));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(150*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(60*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -696,7 +696,7 @@ public class MainMenuLayout : UiLayout
 				lobbies.Widgets.Add(new TextLabel()
 				{
 					Text = lobby.Name,
-					Height = (int) (7*GlobalScale.X), 
+					Height = (int) (10*GlobalScale.X), 
 					GridRow = row,
 					GridColumn = 1,
 					

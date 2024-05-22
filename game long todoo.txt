@@ -22,7 +22,7 @@ practice mode buggy
 Grunt special tutorial says press x when it’s the shoot action not the special action.
 you are meant to use his normal shoot for the first bit and then the special in the second bit, is that not clear?
 
-
+master server chat
 Specialist range buff
 
 +37128665173

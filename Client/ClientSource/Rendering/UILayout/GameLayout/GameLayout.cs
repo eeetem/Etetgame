@@ -1791,14 +1791,14 @@ public class GameLayout : MenuLayout
 			}
 			
 		}
-		if(inputBox != null && inputBox.IsKeyboardFocused) return;
+		if(inputBox == null && inputBox.IsKeyboardFocused) return;
 		
 		//if(UI.Desktop.FocusedKeyboardWidget != null) return;
 
 
 		drawExtra = currentKeyboardState.IsKeyDown(Keys.LeftAlt);
 
-		if (JustPressed(Keys.Enter))
+		if (JustPressed(Keys.Enter) || inputBox != null)
 		{
 			inputBox!.Visible = true;
 			inputBox.SetKeyboardFocus();
