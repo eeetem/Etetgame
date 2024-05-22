@@ -32,7 +32,7 @@ public static partial class NetworkingManager
 		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
-		server.TimeoutTime = 10000;
+		server.TimeoutTime = 20000;
         
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
