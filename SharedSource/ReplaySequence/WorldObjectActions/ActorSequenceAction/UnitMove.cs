@@ -118,6 +118,8 @@ public class UnitMove : UnitSequenceAction
             HashSet<int> seenUnits = new HashSet<int>();
             foreach (var spot in Path)
             {
+                if (spot == lastPos)
+                    continue;
                 var tiles = WorldManager.Instance.GetVisibleTiles(spot, Utility.Vec2ToDir(spot-lastPos), Actor.GetSightRange(), Actor.Crouching);
                 foreach (var loc in tiles)
                 {
