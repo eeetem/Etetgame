@@ -176,9 +176,9 @@ public static partial class NetworkingManager
 
 			Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
-	
-			SendSequenceMessageToConnection(act, connection);
 			SendAllSeenUnitPositions();
+			SendSequenceMessageToConnection(act, connection);
+			
 
 			
 		}

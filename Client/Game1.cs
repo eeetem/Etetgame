@@ -13,6 +13,7 @@ using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Riptide;
 using Salaros.Configuration;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -84,7 +85,7 @@ public class Game1 : Game
 		UI.Init(GraphicsDevice);
 		UiLayout.Init(GraphicsDevice);
 		GameLayout.Init();
-		
+		Tracer.Init(Content);
 
 		Audio.Init(Content);
 		
@@ -141,10 +142,15 @@ public class Game1 : Game
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);
 		LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
+		Tracer.Update(gameTime.ElapsedGameTime.Milliseconds);
 		PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 		DiscordManager.Update();
 		Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
+		//if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+		//{
+		//	new Tracer(new Vector2(100,100),Camera.GetMouseWorldPos());
+		//}
 
 		base.Update(gameTime);
 	}

@@ -17,7 +17,7 @@ public class LocalObject : Rendering.IDrawable
 
 	
 
-	public static List<LocalObject> Objects = new List<LocalObject>();
+	public static readonly List<LocalObject> Objects = new List<LocalObject>();
 
 	public LocalObject(Texture2D sprite,Vector2 position, Vector2 velocity,float lifeTime)
 	{

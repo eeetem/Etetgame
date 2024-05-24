@@ -26,10 +26,22 @@ public class Projectile : DeliveryMethod
 	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
 	{
 		List<SequenceAction> list = new List<SequenceAction>();
+		target = Process(actor, target);
+		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
+		list.Add( ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position));
+		return list;
+	}
+
+	public override float GetOptimalRangeAI(float margin)
+	{
+		return range+margin;
+	}
+
+	private WorldObject Process(Unit actor, WorldObject target)
+	{
 		if (target.TileLocation.Position == actor.WorldObject.TileLocation.Position)
 		{
-			list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
-			return list;
+			return target;
 		}
 
 		//if out of range pick furthest point in range
@@ -45,7 +57,7 @@ public class Projectile : DeliveryMethod
 			else
 			{
 				target = actor.WorldObject; //there's no tile so just shoot yourself isntead lmao
-				return list;
+				return target;
 			}
 		}
 
@@ -59,20 +71,18 @@ public class Projectile : DeliveryMethod
 				target = obj;
 			}
 		}
-		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
-		list.Add( ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position));
-		return list;
-	}
 
-	public override float GetOptimalRangeAI(float margin)
-	{
-		return range+margin;
+		return target;
 	}
 
 
 	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
-
+		var newTarget = Process(actor, target);
+		if (newTarget.TileLocation.Position != target.TileLocation.Position)
+		{
+			return new Tuple<bool,bool, string>(false, false, "Cannot hit target");
+		}
 		
 		return new Tuple<bool,bool, string> (true,true, "");
 	}

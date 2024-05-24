@@ -27,16 +27,14 @@ public partial class WorldTile : IWorldTile
 	public List<Unit> GetOverWatchShooters(Unit target,Visibility requiredVis)
 	{
 		List<Unit> shooters = new List<Unit>();
-		//Console.WriteLine("getting overwatch shooters");
 
 		foreach (var id in _watchers)
 		{
 			var watcher = WorldObjectManager.GetObject(id)!.UnitComponent;
 			bool isFriendly = watcher!.IsPlayer1Team == target.IsPlayer1Team;
 
-			Visibility vis = WorldManager.Instance.CanTeamSee(Position, watcher.IsPlayer1Team);
-
-
+			Visibility vis = WorldManager.Instance.CanSee(watcher, Position);
+			
 			Console.WriteLine("overwatch spotted by " + watcher.WorldObject.TileLocation.Position + " is friendly: " + isFriendly + " vis: " + vis);
 			if (!isFriendly && watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher,Surface!,false,true).Item1 && vis >= requiredVis)
 			{
