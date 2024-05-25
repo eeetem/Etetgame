@@ -32,11 +32,11 @@ public class Shootable : Effect
 
 	public Shootable(int dmg, int detRes, ushort supression, int suppresionRange, int dropoff, int shotCount, int shotDelay, float shotSpread, string sound)
 	{
-		this.preDropOffDmg = dmg;
-		this.detResistance = detRes;
-		this.supressionStrenght = supression;
-		this.supressionRange = suppresionRange;
-		this.dropOffRange = dropoff;
+		preDropOffDmg = dmg;
+		detResistance = detRes;
+		supressionStrenght = supression;
+		supressionRange = suppresionRange;
+		dropOffRange = dropoff;
 		this.shotCount = shotCount;
 		this.shotDelay = shotDelay;
 		this.shotSpread = shotSpread;

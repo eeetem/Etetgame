@@ -141,7 +141,7 @@ public class Game1 : Game
 		SequenceManager.Update();
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);
-		LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
+		Particle.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Tracer.Update(gameTime.ElapsedGameTime.Milliseconds);
 		PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);

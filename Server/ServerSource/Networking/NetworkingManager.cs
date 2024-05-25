@@ -648,13 +648,13 @@ public static partial class NetworkingManager
 		
 		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
 		{
-			var act = UnitUpdate.Make(GameManager.Player1UnitPositions,true);
+			var act = UnitUpdate.Make(GameManager.Player1.KnownUnitPositions,true);
 			AddSequenceToSendQueue(act);
 		}
 
 		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
 		{
-			var act = UnitUpdate.Make(GameManager.Player2UnitPositions,false);
+			var act = UnitUpdate.Make(GameManager.Player2.KnownUnitPositions,false);
 			AddSequenceToSendQueue(act);
 		}
 		GameManager.PlayerUnitPositionsDirty = false;

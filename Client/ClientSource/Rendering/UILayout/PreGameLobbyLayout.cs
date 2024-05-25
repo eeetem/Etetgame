@@ -136,7 +136,7 @@ public class PreGameLobbyLayout : MenuLayout
 			kick.Click += (s, a) => { NetworkingManager.KickRequest(); };
 			grid1.Widgets.Add(kick);
 		}
-		else if (GameManager.PreGameData.SinglePLayerFeatures)
+		else if (GameManager.PreGameData.SinglePLayerFeatures && GameManager.IsPlayer1)
 		{
 			var addAI = new ImageButton()
 			{

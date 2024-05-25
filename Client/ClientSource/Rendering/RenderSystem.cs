@@ -63,7 +63,7 @@ public static class RenderSystem
 
 		}
 
-		objs.AddRange(LocalObject.Objects);
+		objs.AddRange(Particle.Objects);
 		
 
 		objs.Sort(new DrawableSort());

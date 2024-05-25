@@ -45,14 +45,8 @@ public class SpotUnit : SequenceAction
 	protected override void RunSequenceAction()
 	{
 #if SERVER
-		if (_player1) // this is sent to clients so make sure we dont override with it a regular unit update
-		{
-			GameManager.Player1UnitPositions[unitId] = spotedUnit!.Value;
-		}
-		else
-		{
-			GameManager.Player2UnitPositions[unitId] = spotedUnit!.Value;
-		}
+		// this is sent to clients so make sure we dont override with it a regular unit update
+		GameManager.GetPlayer(_player1)!.KnownUnitPositions[unitId] = spotedUnit!.Value;
 #else
 		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> dict = new();
 		dict[unitId] = spotedUnit!.Value;

@@ -13,10 +13,7 @@ merge vission and projectile
 signing
 
 
-do not delete crashes
 practice mode buggy
-offer resync
-smoke auto target remove
 specialist overwatch not using determination
 
 Grunt special tutorial says press x when it’s the shoot action not the special action.
@@ -44,63 +41,7 @@ sfx list:
 
 
 
-
-
-misc features for later:
-mommentum
-
-
-starter squad concept:
-everything around the grunt
-
--grunt
--short range grunt
--dedicated spotter
--tear gas grenadier
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sprite master list:
--destruction states
--windows and doorways
--roofs
--misc world objects(things that you can take cover behind that arent walls) + flavour
--impassible terian
--vegatation
--explosion fx
-
-
-
-
-
-
 619771
 614279
 601644
 
-
-   at DefconNull.Rendering.UILayout.GameLayout.GameLayout.ProcessKeyboard() in F:\mystuff\mygames\Defcon NULL\Client\ClientSource\Rendering\UILayout\GameLayout\GameLayout.cs:line 1804
-   at DefconNull.Rendering.UILayout.GameLayout.GameLayout.Update(Single deltatime) in F:\mystuff\mygames\Defcon NULL\Client\ClientSource\Rendering\UILayout\GameLayout\GameLayout.cs:line 1747
-   at DefconNull.Game1.Update(GameTime gameTime) in F:\mystuff\mygames\Defcon NULL\Client\Game1.cs:line 145
-   at Microsoft.Xna.Framework.Game.DoUpdate(GameTime gameTime)
-   at Microsoft.Xna.Framework.Game.Tick()
-   at Microsoft.Xna.Framework.SdlGamePlatform.RunLoop()
-   at Microsoft.Xna.Framework.Game.Run(GameRunBehavior runBehavior)
-   at DefconNull.Program.Main() in F:\mystuff\mygames\Defcon NULL\Client\Program.cs:line 17
