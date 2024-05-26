@@ -13,19 +13,15 @@ merge vission and projectile
 signing
 
 
-
-turn down screenshake
-update overwatch based on LOS
-do not delete crashes
 practice mode buggy
+specialist overwatch not using determination
 
 Grunt special tutorial says press x when it’s the shoot action not the special action.
 you are meant to use his normal shoot for the first bit and then the special in the second bit, is that not clear?
 
-master server chat
+
 Specialist range buff
 
-+37128665173
 
 sfx list:
 -throw
@@ -45,55 +41,7 @@ sfx list:
 
 
 
-
-
-misc features for later:
-mommentum
-
-
-starter squad concept:
-everything around the grunt
-
--grunt
--short range grunt
--dedicated spotter
--tear gas grenadier
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sprite master list:
--destruction states
--windows and doorways
--roofs
--misc world objects(things that you can take cover behind that arent walls) + flavour
--impassible terian
--vegatation
--explosion fx
-
-
-
-
-
-
 619771
 614279
 601644
-
 

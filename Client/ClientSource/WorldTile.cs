@@ -57,8 +57,9 @@ public partial class WorldTile : IWorldTile
 			}
 
 			var res = watcher.Abilities[watcher.Overwatch.Item2].IsPlausibleToPerform(watcher, Surface!, -1);
-			if (res.Item1)
+			if (res.Item1 && watcher.VisibleTiles.ContainsKey(Position))
 			{
+
 				if (watcher.IsMyTeam())
 				{
 					_friendlyWatching = true;

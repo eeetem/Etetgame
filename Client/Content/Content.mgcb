@@ -127,12 +127,6 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/mg.wav
 
-#begin CompressedContent/audio/mg-old1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:CompressedContent/audio/mg-old1.wav
-
 #begin CompressedContent/audio/music/Cavern Dwelling.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -258,6 +252,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:CompressedContent/shaders/outline.fx
+
+#begin CompressedContent/shaders/tracer.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:CompressedContent/shaders/tracer.fx
 
 #begin CompressedContent/textures/coverIndicator.png
 /importer:TextureImporter
@@ -2526,4 +2526,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/text/z.png
+
+#begin CompressedContent/textures/tracer.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/tracer.png
 

@@ -164,7 +164,7 @@ public static class Program
 			args.Add("false");
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
-			process.ErrorDataReceived += (a, b) => { Console.WriteLine("ERROR - Server(" + port + "):" + b.Data?.ToString()); };
+
 			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
@@ -180,7 +180,13 @@ public static class Program
 				Console.WriteLine(e);
 				throw;
 			}
-				
+			process.ErrorDataReceived += (a, b) =>
+			{
+				File.AppendAllText(path,"ERROR - Server(" + port + "):" + b.Data?.ToString());
+				//copy to crashes folder
+				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
+				File.Copy(path, Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log");
+			};
 			process.OutputDataReceived += (sender, args) =>
 			{
 				if (args.Data != null && args.Data.Contains("[UPDATE]"))

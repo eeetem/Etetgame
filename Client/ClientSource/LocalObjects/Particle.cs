@@ -5,28 +5,28 @@ using MonoGame.Extended;
 
 namespace DefconNull.LocalObjects;
 
-public class LocalObject : Rendering.IDrawable
+public class Particle : Rendering.IDrawable
 {
-	private Transform2 Transform;
-	private Vector2 Velocity;
-	private Texture2D sprite;
-	private float lifeTime;
-	private float aliveTime;
+	private readonly Transform2 _transform;
+	private readonly Vector2 _velocity;
+	private readonly Texture2D _sprite;
+	private readonly float _lifeTime;
+	private float _aliveTime;
 	
 	public static readonly object syncobj = new object();
 
 	
 
-	public static List<LocalObject> Objects = new List<LocalObject>();
+	public static readonly List<Particle> Objects = new List<Particle>();
 
-	public LocalObject(Texture2D sprite,Vector2 position, Vector2 velocity,float lifeTime)
+	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity,float lifeTime)
 	{
-		Transform = new Transform2();
-		this.sprite = sprite;//inefficient but fuck it
-		Transform.Position = position;
-		Transform.Scale = new Vector2(6, 6);
-		Velocity = velocity;
-		this.lifeTime = lifeTime;
+		_transform = new Transform2();
+		this._sprite = sprite;//inefficient but fuck it
+		_transform.Position = position;
+		_transform.Scale = new Vector2(6, 6);
+		_velocity = velocity;
+		this._lifeTime = lifeTime;
 		lock (syncobj)
 		{
 			Objects.Add(this);
@@ -38,13 +38,13 @@ public class LocalObject : Rendering.IDrawable
 		lock (syncobj)
 		{
 
-			foreach (var obj in new List<LocalObject>(Objects))
+			foreach (var obj in new List<Particle>(Objects))
 			{
 
-				obj.Transform.Position += obj.Velocity * deltaTime;
-				obj.aliveTime += deltaTime;
+				obj._transform.Position += obj._velocity * deltaTime;
+				obj._aliveTime += deltaTime;
 
-				if (obj.lifeTime != -1 && obj.aliveTime > obj.lifeTime)
+				if (obj._aliveTime > obj._lifeTime)
 				{
 					Objects.Remove(obj);
 				}
@@ -55,24 +55,24 @@ public class LocalObject : Rendering.IDrawable
 
 	public Transform2 GetDrawTransform()
 	{
-		return Transform;
+		return _transform;
 	}
 
 	public Vector2Int GetGridPos()
 	{
-		return Utility.WorldPostoGrid(Transform.Position);
+		return Utility.WorldPostoGrid(_transform.Position);
 	}
 
 	public float GetDrawOrder()
 	{
-		Vector2Int gridpos = Utility.WorldPostoGrid(Transform.Position);
+		Vector2Int gridpos = Utility.WorldPostoGrid(_transform.Position);
 		return gridpos.X + gridpos.Y;
 
 	}
 
 	public Texture2D GetTexture()
 	{
-		return sprite;
+		return _sprite;
 	}
 
 	public Color GetColor()
@@ -87,7 +87,6 @@ public class LocalObject : Rendering.IDrawable
 
 	public bool IsVisible()
 	{
-		
 		Vector2Int pos = GetGridPos();
 		if (!WorldManager.IsPositionValid(pos)) return false;
 		WorldTile tile = WorldManager.Instance.GetTileAtGrid(pos);

@@ -249,10 +249,14 @@ public static class PrefabManager
 		ushort supression = ushort.Parse(xmlElement.Attributes?["supression"]?.InnerText ?? "0");
 		int supressionRange = int.Parse(xmlElement.Attributes?["supressionRange"]?.InnerText ?? "0");
 		int dropoff = int.Parse(xmlElement.Attributes?["dropOffRange"]?.InnerText ?? "10");
+		int shotCount = int.Parse(xmlElement.Attributes?["shotCount"]?.InnerText ?? "3");
+		int shotDelay = int.Parse(xmlElement.Attributes?["shotDelay"]?.InnerText ?? "350");
+		float shotSpread = float.Parse(xmlElement.Attributes?["shotSpread"]?.InnerText ?? "0.5");
+		string sound = xmlElement.Attributes?["shotSound"]?.InnerText ?? "";
 
 
 
-		var shoot = new Shootable(dmg, detRes, supression, supressionRange, dropoff);
+		var shoot = new Shootable(dmg, detRes, supression, supressionRange, dropoff,shotCount,shotDelay,shotSpread,sound);
 		Vector2Int offset = Vector2Int.Parse(xmlElement.Attributes?["offset"]?.InnerText ?? "0,0");
 		shoot.Offset = offset;
 		return shoot;

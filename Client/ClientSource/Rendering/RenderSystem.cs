@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DefconNull.LocalObjects;
 using DefconNull.Rendering.UILayout.GameLayout;
@@ -62,7 +63,8 @@ public static class RenderSystem
 
 		}
 
-		objs.AddRange(LocalObject.Objects);
+		objs.AddRange(Particle.Objects);
+		
 
 		objs.Sort(new DrawableSort());
 
@@ -198,18 +200,9 @@ public static class RenderSystem
 
 		}
 		spriteBatch.End();
+		Tracer.Render(spriteBatch);
 		
-		/*
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
-		foreach (var obj in UnsortedObjs)
-		{
-			if(obj == null)continue;
-			var transform = obj.GetDrawTransform();
-			spriteBatch.DrawString(Game1.SpriteFont,""+Math.Round(Pathfinding.PathFinding.NodeCache[(int) Utility.WorldPostoGrid(transform.Position).X,(int) Utility.WorldPostoGrid(transform.Position).Y].CurrentCost,2),  transform.Position,Color.Wheat, 0, Vector2.Zero, 3, new SpriteEffects(), 0);
 
-		}
-		spriteBatch.End();
-		*/
 	}
 	
 	public class DrawableSort : Comparer<IDrawable>
