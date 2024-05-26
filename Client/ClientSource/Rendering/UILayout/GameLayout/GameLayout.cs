@@ -412,7 +412,7 @@ public class GameLayout : MenuLayout
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
 			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
-			               "[Blue]Suppress[-] the Scouts by pressing [Yellow]X[-] and [Yellow]Spacebar[-]\n";
+			               "[Blue]Suppress[-] the Scouts by pressing [Yellow]C[-] and [Yellow]Spacebar[-]\n";
 			tutorialAbilityIndex = 2;
 			tutorialActionLock = ActiveActionType.Action;
 			tutorialUnitLock = heavy.WorldObject.ID;
