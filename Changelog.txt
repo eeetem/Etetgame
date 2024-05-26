@@ -22,3 +22,4 @@ Alpha 4.1
 -Overwatching units now can only shoot units they personally see themselves(no assited spoting from other friendlies)
 -Fixed overwatching abilities using the determination cost of the ability
 -Fixed master server chat messages appearing in game chat
+-Added selected unit indicator

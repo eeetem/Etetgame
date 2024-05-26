@@ -55,6 +55,8 @@ namespace DefconNull.WorldObjects
 
 
 			Crouching = data.Crouching;
+		
+
 			Panicked = data.Panic;
 
 

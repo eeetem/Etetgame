@@ -155,14 +155,13 @@ public class UnitMove : UnitSequenceAction
 
     protected override void RunSequenceAction()
     {
- 
         Actor.CanTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
         WorldManager.Instance.MakeFovDirty();
+        int walk = 0;
         while (Path.Count >0)
         {
-            
-
+            walk++;
             if (Actor.WorldObject.TileLocation != null)
             {
                 if (Path[0] != Actor.WorldObject.TileLocation.Position)
@@ -179,6 +178,7 @@ public class UnitMove : UnitSequenceAction
             Log.Message("UNITS","moving to: "+Path[0]+" path size left: "+Path.Count);
 					
             Actor.MoveTo(Path[0]);
+            
 
             Path.RemoveAt(0);
 
@@ -186,6 +186,24 @@ public class UnitMove : UnitSequenceAction
 		
 
 #if CLIENT
+            switch (walk)
+            {
+                case 0:
+                    Actor.WorldObject.SetHiddenState("");
+                    break;
+                case 1:
+                    Actor.WorldObject.SetHiddenState("Walk0");
+                    break;
+                case 2:
+                    Actor.WorldObject.SetHiddenState("");
+                    break;
+                case 3:
+                    Actor.WorldObject.SetHiddenState("Walk1");
+                    walk = -1;
+                    break;
+            }
+
+
             if (Actor.WorldObject.IsVisible())
             {
                 Audio.PlaySound("footstep", Utility.GridToWorldPos(Actor.WorldObject.TileLocation.Position));
@@ -199,6 +217,10 @@ public class UnitMove : UnitSequenceAction
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
         Actor.CanTurn = true;
+#if CLIENT
+        Actor.WorldObject.SetHiddenState("");
+#endif
+        
 
     }
 	

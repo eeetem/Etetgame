@@ -48,7 +48,7 @@ public class GameLayout : MenuLayout
 			else
 			{	
 				CompleteIndicator.Visible = true;
-				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100f).ToString("n2") + "%";
+				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100).ToString("n2") + "%";
 			}
 			
 		}
@@ -165,7 +165,7 @@ public class GameLayout : MenuLayout
 			               "There's 3 types of cover. [Green]Low[-], [Yellow]High[-] and [Red]Full[-].\n" +
 			               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
 			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
-			               "[Red]Full[-] - Full walls, cannot bit hit crouching or standing.\n\n" +
+			               "[Red]Full[-] - Full walls, cannot be hit crouching or standing.\n\n" +
 			               "There's colored indicators on your cursor indicating cover of nearby tiles.\n" +
 			               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
 			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))

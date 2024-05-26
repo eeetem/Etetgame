@@ -137,8 +137,8 @@ public class Game1 : Game
 		NetworkingManager.Update();
 		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
-		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 		SequenceManager.Update();
+		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);
 		Particle.Update(gameTime.ElapsedGameTime.Milliseconds);
