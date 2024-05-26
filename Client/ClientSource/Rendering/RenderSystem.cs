@@ -170,7 +170,6 @@ public static class RenderSystem
 				}
 			}
 		}
-			var selected = TextureManager.GetTexture("selection"); 
 			var selectedglow = TextureManager.GetTexture("selectionglow"); 
 			if (GameLayout.SelectedUnit != null)
 			{
@@ -178,7 +177,6 @@ public static class RenderSystem
 				                                          new Vector2(-1.5f,-0.5f));
 				Color cc = Color.White; 
 				spriteBatch.Draw(selectedglow,unitposition , cc);
-				spriteBatch.Draw(selected,unitposition , cc);
 
 			}
 		spriteBatch.End();
