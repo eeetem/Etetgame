@@ -164,10 +164,10 @@ public partial class WorldObject : IDrawable
 	}
 
 
-	public void StartAnimation(string name)
+	public void StartAnimation(string name, int fps)
 	{
 		int count = Type.GetAnimationLenght(spriteVariation, name,GetExtraState());
-		CurrentAnimation = new Animation(name, count);
+		CurrentAnimation = new Animation(name, count, fps);
 	}
 	
 }

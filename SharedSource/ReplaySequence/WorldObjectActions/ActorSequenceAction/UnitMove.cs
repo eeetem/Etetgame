@@ -168,7 +168,7 @@ public class UnitMove : UnitSequenceAction
                     Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
                 
 #if CLIENT
-                Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
+                Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350));
 #else
                 while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
                     Thread.Sleep(10);
@@ -186,22 +186,23 @@ public class UnitMove : UnitSequenceAction
 		
 
 #if CLIENT
-            switch (walk)
-            {
-                case 0:
-                    Actor.WorldObject.SetHiddenState("");
-                    break;
-                case 1:
-                    Actor.WorldObject.SetHiddenState("Walk0");
-                    break;
-                case 2:
-                    Actor.WorldObject.SetHiddenState("");
-                    break;
-                case 3:
-                    Actor.WorldObject.SetHiddenState("Walk1");
-                    walk = -1;
-                    break;
-            }
+            // switch (walk)
+            // {
+           //     case 0:
+           //         Actor.WorldObject.SetHiddenState("");
+           //         break;
+           //     case 1:
+           //         Actor.WorldObject.SetHiddenState("Walk0");
+           //         break;
+           //     case 2:
+           //         Actor.WorldObject.SetHiddenState("");
+           //         break;
+           //     case 3:
+           //         Actor.WorldObject.SetHiddenState("Walk1");
+           //         walk = -1;
+           //         break;
+           // }
+           Actor.WorldObject.StartAnimation("Walk",4);
 
 
             if (Actor.WorldObject.IsVisible())

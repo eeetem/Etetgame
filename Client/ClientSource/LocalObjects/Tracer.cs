@@ -72,7 +72,24 @@ public class Tracer : IDrawable
 	{
 		return Color.Yellow;
 	}
-
+	
+	
+	public static void Render(SpriteBatch spriteBatch)
+	{
+		
+		foreach (var tracer in new List<Tracer>(Tracers))
+		{
+			tracerEffect.Parameters["lifeTime"]?.SetValue(tracer._lifetime/TotalLife);
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:tracerEffect);
+			var texture = tracer.GetTexture();
+			var transform = tracer.GetDrawTransform();
+			var color = tracer.GetColor();
+			spriteBatch.Draw(texture, transform.Position,null,color, transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			spriteBatch.End();
+		}
+	
+	}
+/*
 	public static void Render(SpriteBatch spriteBatch)
 	{
 		foreach (var tracer in new List<Tracer>(Tracers))
@@ -126,5 +143,5 @@ public class Tracer : IDrawable
 
 
 		return segment;
-	}
+	}*/
 }
