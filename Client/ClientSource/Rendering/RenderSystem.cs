@@ -168,15 +168,15 @@ public static class RenderSystem
 				}
 			}
 		}
-			var selected = TextureManager.GetTexture("selection"); //ask about this variable name
-			var selectedglow = TextureManager.GetTexture("selectionglow"); //ask about this variable name
+			var selected = TextureManager.GetTexture("selection"); 
+			var selectedglow = TextureManager.GetTexture("selectionglow"); 
 			if (GameLayout.SelectedUnit != null)
 			{
 				var unitposition = Utility.GridToWorldPos(GameLayout.SelectedUnit.WorldObject.TileLocation.Position +
 				                                          new Vector2(-1.5f,-0.5f));
-				Color cc = Color.White; //ask about this variable name
-				spriteBatch.Draw(selected,unitposition , cc);
+				Color cc = Color.White; 
 				spriteBatch.Draw(selectedglow,unitposition , cc);
+				spriteBatch.Draw(selected,unitposition , cc);
 
 			}
 		spriteBatch.End();
