@@ -167,7 +167,8 @@ public partial class WorldObject : IDrawable
 	public void StartAnimation(string name, int fps = 5)
 	{
 		int count = Type.GetAnimationLenght(spriteVariation, name,GetExtraState());
-		CurrentAnimation = new Animation(name, count, fps);
+		if (count != 0)
+			CurrentAnimation = new Animation(name, count, fps);
 	}
 	
 }

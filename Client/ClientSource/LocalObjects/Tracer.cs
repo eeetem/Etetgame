@@ -89,59 +89,66 @@ public class Tracer : IDrawable
 		}
 	
 	}
-/*
-	public static void Render(SpriteBatch spriteBatch)
-	{
-		foreach (var tracer in new List<Tracer>(Tracers))
-		{
-			// Determine the tiles where the tracer spans over
-			var tiles = GetTilesSpannedByTracer(tracer);
+	
+	
+//	public static void Render(SpriteBatch spriteBatch)
+//	{
+//		// Get the list of all tiles
+//		var tiles = WorldManager.Instance.get
+//			
+//			
+//		HashSet<Vector2Int> positions = new HashSet<Vector2Int>();
+//
+//		WorldManager.RayCastOutcome outcome = WorldManager.Instance.CenterToCenterRaycast(WorldObject.TileLocation.Position,endTile.Position,Cover.Full,makePath: true);
+//
+//		foreach (var p in outcome.Path)
+//			{
+//				positions.Add(p);
+//			}
+//	
+//
+//		
+//
+//			
+//			
+//		HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();
+//		foreach (var position in positions)
+//		{	
+//			var tile = WorldManager.Instance.GetTileAtGrid(position);
+//			if(tile.Surface==null) continue;
+//			if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
+//			{
+//				result.Add(position);
+//			}
+//		}
+//
+//
+//		foreach (var tracer in new List<Tracer>(Tracers))
+//		{
+//			tracerEffect.Parameters["lifeTime"]?.SetValue(tracer._lifetime/TotalLife);
+//			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:tracerEffect);
+//			var texture = tracer.GetTexture();
+//			var transform = tracer.GetDrawTransform();
+//			var color = tracer.GetColor();
+//
+//			// Check if the tracer's position intersects with any of the non-visible tiles
+//			foreach (var tile in tiles)
+//			{
+//				
+//				if (!tile.IsVisible() && tile.GetDrawBounds().Intersects(new Rectangle((int)transform.Position.X, (int)transform.Position.Y, texture.Width, texture.Height)))
+//				{
+//					// Calculate the intersection area and mask out that part of the tracer
+//					var intersection = Rectangle.Intersect(tile.GetDrawBounds(), new Rectangle((int)transform.Position.X, (int)transform.Position.Y, texture.Width, texture.Height));
+//					spriteBatch.Draw(texture, transform.Position, intersection, color, transform.Rotation, Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+//				}
+//				else
+//				{
+//					spriteBatch.Draw(texture, transform.Position, null, color, transform.Rotation, Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+//				}
+//			}
+//
+//			spriteBatch.End();
+//		}
+//	}
 
-			foreach (var tile in tiles)
-			{
-				// Check if the tile is visible
-				if (tile.IsVisible())
-				{
-					// Calculate the segment of the tracer corresponding to this tile
-					var segment = GetTracerSegmentForTile(tracer, tile);
-
-					tracerEffect.Parameters["lifeTime"]?.SetValue(tracer._lifetime/TotalLife);
-					spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:tracerEffect);
-					var texture = tracer.GetTexture();
-					var transform = tracer.GetDrawTransform();
-					var color = tracer.GetColor();
-					spriteBatch.Draw(texture, new Vector2(segment.X,segment.Y), null, color, segment.Rotation, Vector2.Zero, segment.Scale, new SpriteEffects(), 0);
-					spriteBatch.End();
-				}
-			}
-		}
-	}
-	public List<WorldTile> GetTilesSpannedByTracer(Tracer tracer)
-	{
-		List<WorldTile> tiles = new List<WorldTile>();
-
-		// Convert the tracer's start and end positions to grid coordinates
-		WorldTile startTile = WorldManager.Instance.GetTileAtGrid(tracer._start);
-		WorldTile endTile = WorldManager.Instance.GetTileAtGrid(tracer._end);
-
-		// Determine the tiles that the tracer spans over
-		// This could involve iterating over the grid coordinates from startGridPos to endGridPos
-		// and adding each tile to the list
-		// Assuming that the grid is a 2D array of tiles
-		for (int i = startTile.Position.X; i <= endTile.Position.X; i++)
-		{
-			for (int j = startTile.Position.Y; j <= endTile.Position.Y; j++)
-			{
-				tiles.Add(WorldManager.Instance.GetTileAtGrid(new Vector2(i, j)));
-			}
-		}
-
-		return tiles;
-	}
-	public Rectangle GetTracerSegmentForTile(Tracer tracer, WorldTile tile)
-	{
-
-
-		return segment;
-	}*/
 }
