@@ -189,7 +189,8 @@ public class UnitMove : UnitSequenceAction
 
 #if CLIENT
       
-           Actor.WorldObject.StartAnimation("Walk",walkFps);
+            if(Path.Count>1)
+                Actor.WorldObject.StartAnimation("Walk",walkFps);
 
 
             if (Actor.WorldObject.IsVisible())
