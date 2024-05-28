@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using DefconNull.LocalObjects;
 using DefconNull.Rendering.UILayout.GameLayout;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
@@ -14,19 +16,22 @@ namespace DefconNull.Rendering;
 public static class RenderSystem
 {
 	public static GraphicsDevice GraphicsDevice = null!;
-	public static void Init(GraphicsDevice graphicsdevice)
+	public static void Init(GraphicsDevice graphicsdevice, ContentManager c)
 	{
-
 		GraphicsDevice = graphicsdevice;
+		tracerEffect = c.Load<Effect>("CompressedContent/shaders/tracer");
 	}
 
 	public static List<Tuple<Color, List<Vector2Int>>> debugPaths = new List<Tuple<Color, List<Vector2Int>>>();
 	static List<IDrawable> objs = new List<IDrawable>();
+	static List<IDrawable> invisibleObjs = new List<IDrawable>();
 	static List<IDrawable> unsortedObjs = new List<IDrawable>();
+	static Effect tracerEffect = null!;
 	public static void Draw(SpriteBatch spriteBatch)
 	{
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		objs.Clear();
+		invisibleObjs.Clear();
 		unsortedObjs.Clear();
 		
 		foreach (var tile in allTiles)
@@ -183,23 +188,56 @@ public static class RenderSystem
 		
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		
 		foreach (var obj in objs)
 		{
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 
-
-			//if (!obj.IsVisible())//hide tileobjects
-			//{
-			//	continue;
-			//}
+			if (obj is WorldObject)
+			{
+				if (((WorldObject)obj).IsVisible(true))
+				{
+					invisibleObjs.Add(obj);
+					continue;
+				}
+			}
+			if (obj.IsVisible())//hide tileobjects
+			{
+				invisibleObjs.Add(obj);
+				continue;
+			}
 
 			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
 
 		}
 		spriteBatch.End();
-		Tracer.Render(spriteBatch);
+		foreach (var tracer in new List<Tracer>(Tracer.Tracers))
+		{
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+			
+			tracerEffect.Parameters["lifeTime"]?.SetValue(tracer.Lifetime/Tracer.TotalLife);
 		
+			var texture = tracer.GetTexture();
+			var transform = tracer.GetDrawTransform();
+			var color = tracer.GetColor();
+
+			
+			spriteBatch.Draw(texture, transform.Position,null,color, transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			spriteBatch.End();
+		}
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		
+		foreach (var obj in invisibleObjs)
+		{
+			var texture = obj.GetTexture();
+			var transform = obj.GetDrawTransform();
+
+			
+			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+
+		}
+		spriteBatch.End();
 
 	}
 	

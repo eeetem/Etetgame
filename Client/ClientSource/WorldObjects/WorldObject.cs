@@ -148,7 +148,14 @@ public partial class WorldObject : IDrawable
 
 	}
 
+	public bool IsVisible()
+	{
+		return IsVisible(false);
+	}
+
 	public Animation? CurrentAnimation = null;
+	private IDrawable _drawableImplementation;
+
 	public void AnimationUpdate(float msDelta)
 	{
 		CurrentAnimation?.Process(msDelta);

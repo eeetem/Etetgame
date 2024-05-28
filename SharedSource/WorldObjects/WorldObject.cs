@@ -277,9 +277,9 @@ public partial class WorldObject
 		}
 	}
 
-	public bool IsVisible()
+	public bool IsVisible(bool dontautoRevealEdges = false)
 	{
-		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
+		return GetMinimumVisibility(dontautoRevealEdges) <=  ((WorldTile)TileLocation).GetVisibility();
 	}
 	public bool ShouldBeVisibilityUpdated(bool team1)
 	{

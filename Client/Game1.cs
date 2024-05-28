@@ -56,7 +56,7 @@ public class Game1 : Game
 		SequenceAction.InitialisePools();
 		WorldManager.Instance.Init();
 		Action.Init();
-		RenderSystem.Init(GraphicsDevice);
+		
 		Utility.Init();
 		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		
@@ -77,7 +77,7 @@ public class Game1 : Game
 
 	protected override void LoadContent()
 	{
-			
+		RenderSystem.Init(GraphicsDevice,Content);
 		GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 		GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 		GraphicsDevice.SetRenderTarget(null);
@@ -85,8 +85,6 @@ public class Game1 : Game
 		UI.Init(GraphicsDevice);
 		UiLayout.Init(GraphicsDevice);
 		GameLayout.Init();
-		Tracer.Init(Content);
-
 		Audio.Init(Content);
 		
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -147,10 +145,11 @@ public class Game1 : Game
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 		DiscordManager.Update();
 		Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
-		//if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-		//{
-		//	new Tracer(new Vector2(100,100),Camera.GetMouseWorldPos());
-		//}
+		if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+		{
+			var pos = new Vector2(51, 51);
+			new Tracer(Utility.GridToWorldPos(pos),Camera.GetMouseWorldPos());
+		}
 
 		base.Update(gameTime);
 	}

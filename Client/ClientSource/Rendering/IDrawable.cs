@@ -11,6 +11,6 @@ public interface IDrawable
 	public Texture2D GetTexture();
 
 	public Color GetColor();
-
-
+	
+	bool IsVisible();
 }
