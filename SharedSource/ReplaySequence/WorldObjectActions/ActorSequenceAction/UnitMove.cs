@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -152,7 +153,7 @@ public class UnitMove : UnitSequenceAction
     {
         return Actor != null && !Actor.Panicked;
     }
-    const int walkFps = 4;
+    const int walkFps = 6;
 
     protected override void RunSequenceAction()
     {
