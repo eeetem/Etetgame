@@ -182,10 +182,13 @@ public static class Program
 			}
 			process.ErrorDataReceived += (a, b) =>
 			{
-				File.AppendAllText(path,"ERROR - Server(" + port + "):" + b.Data?.ToString());
-				//copy to crashes folder
-				Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
-				File.Copy(path, Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log");
+				if (b.Data?.ToString() != "")
+				{
+					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
+					//copy to crashes folder
+					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
+					File.Copy(path, Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log");
+				}
 			};
 			process.OutputDataReceived += (sender, args) =>
 			{

@@ -100,11 +100,11 @@ namespace DefconNull.WorldObjects
 			{
 
 #if SERVER
-				if (Type.SpawnEffect != null)
+				if (Type.SpaceConseqences != null)
 				{
 					Task t = new Task(delegate
 					{
-						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
+						foreach (var c in Type.SpaceConseqences.GetApplyConsequnces(WorldObject,WorldObject))
 						{
 							NetworkingManager.AddSequenceToSendQueue(c);
 						}

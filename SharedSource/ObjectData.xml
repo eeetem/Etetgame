@@ -8,6 +8,11 @@
       <anim name="end" frames="4"  animFPS="10"/>
     </sprite>
     <name>Smoke</name>
+    <spawnConsequences  range="1">
+      <particles>
+        <particle name="smoke" count="10" velocityXRange="-5,5" velocityYRange="0,5" lifetime="5"/>
+      </particles>
+    </spawnConsequences>
   </object>
 
   <object Faceable = "false" SCover ="1" health="4">

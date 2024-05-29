@@ -192,10 +192,10 @@ public static class PrefabManager
 				
 			
 
-			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
+			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawnConsequences")[0];
 			if (speff != null)
 			{
-				unitType.SpawnEffect = ParseConsequences((XmlElement) speff);
+				unitType.SpaceConseqences = ParseConsequences((XmlElement) speff);
 			}
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	

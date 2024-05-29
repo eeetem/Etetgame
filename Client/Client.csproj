@@ -697,6 +697,9 @@
       <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
         <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
       </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SpawnParticle.cs">
+        <Link>SharedSource\ReplaySequence\SpawnParticle.cs</Link>
+      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SpotUnit.cs">
         <Link>SharedSource\ReplaySequence\SpotUnit.cs</Link>
       </Compile>

@@ -178,7 +178,7 @@ public static partial class NetworkingManager
                     
 			SendAllSeenUnitPositions();
 			SendSequenceMessageToConnection(act, connection);
-			
+			SendAllSeenUnitPositions();
 
 			
 		}
