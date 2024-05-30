@@ -75,7 +75,7 @@ public class SquadCompBuilderLayout : MenuLayout
 				GridColumn = 1,
 				GridRow = 1,
 				Top = -50,	
-				Image = new TextureRegion(TextureManager.GetTexture("Squadcomp/"+ unit + "/Icon"))
+				Image = new TextureRegion(TextureManager.GetTextureFromPNG("Units/"+ unit + "/Icon"))
 				
 				
 			};

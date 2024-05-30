@@ -1807,66 +1807,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/selectionglow.png
 
-#begin CompressedContent/textures/Squadcomp/Grunt/Icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Squadcomp/Grunt/Icon.png
-
-#begin CompressedContent/textures/Squadcomp/Heavy/Icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Squadcomp/Heavy/Icon.png
-
-#begin CompressedContent/textures/Squadcomp/Officer/Icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Squadcomp/Officer/Icon.png
-
-#begin CompressedContent/textures/Squadcomp/Scout/Icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Squadcomp/Scout/Icon.png
-
-#begin CompressedContent/textures/Squadcomp/Specialist/Icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Squadcomp/Specialist/Icon.png
-
 #begin CompressedContent/textures/targetingCursor.png
 /importer:TextureImporter
 /processor:TextureProcessor
