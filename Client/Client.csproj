@@ -600,12 +600,73 @@
         <None Update="Content\Units\Scout\Stand\Walk\1.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Grunt\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Heavy\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Officer\Icon.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Icon.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\Walk\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\Walk\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Specialist\Icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Grunt\Crouch.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Grunt\portrait.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Specialist\Stand.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Specialist\portrait.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Specialist\Crouch.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\walktest1.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\walktest0.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\StandWalk1.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\StandWalk0.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand.aseprite" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\portrait.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\Crouch.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand\**" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Officer\Stand.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Officer\portrait.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Officer\Crouch.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Heavy\Stand.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Heavy\portrait.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Heavy\Crouch.png" />
+        <None Remove="Content\CompressedContent\textures\Squadcomp\Grunt\Stand.png" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
             <LogicalName>Icon.ico</LogicalName>
         </EmbeddedResource>
         <EmbeddedResource Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+        <EmbeddedResource Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand\**" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.bmp">
@@ -841,6 +902,7 @@
       <Compile Include="..\SharedSource\WorldTile.cs">
         <Link>SharedSource\WorldTile.cs</Link>
       </Compile>
+      <Compile Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand\**" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\SharedSource\ObjectData.xml">

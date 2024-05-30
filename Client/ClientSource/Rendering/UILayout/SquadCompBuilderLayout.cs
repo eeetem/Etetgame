@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Thickness = Myra.Graphics2D.Thickness;
 
@@ -61,16 +62,22 @@ public class SquadCompBuilderLayout : MenuLayout
 		foreach (var obj in PrefabManager.UnitPrefabs)
 		{
 			units.Add(obj.Value.Name);
+			
 		}
 
 		foreach (var unit in units)
 		{
-			var unitButton = new TextButton()
+			var unitButton = new ImageTextButton()
 			{
 				Text = unit,
+				Background = null,
+				
 				GridColumn = 1,
 				GridRow = 1,
 				Top = -50,	
+				Image = new TextureRegion(TextureManager.GetTexture("Squadcomp/"+ unit + "/Icon"))
+				
+				
 			};
 			unitButton.Click += (s, a) =>
 			{
