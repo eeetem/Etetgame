@@ -10,7 +10,7 @@
     <name>Smoke</name>
     <spawnConsequences  range="1">
       <particles>
-        <particle name="smoke" count="10" velocityXRange="-5,5" velocityYRange="0,5" lifetime="5"/>
+        <particle name="smoke" count="10" velocityXRange="-5,5" velocityYRange="0,2" accelerationXRange="0,0" accelerationYRange="0,0" lifetimeRange="1000,2000"/>
       </particles>
     </spawnConsequences>
   </object>

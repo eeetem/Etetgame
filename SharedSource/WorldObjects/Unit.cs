@@ -99,19 +99,7 @@ namespace DefconNull.WorldObjects
 			if (justSpawned)
 			{
 
-#if SERVER
-				if (Type.SpaceConseqences != null)
-				{
-					Task t = new Task(delegate
-					{
-						foreach (var c in Type.SpaceConseqences.GetApplyConsequnces(WorldObject,WorldObject))
-						{
-							NetworkingManager.AddSequenceToSendQueue(c);
-						}
-					});
-					SequenceManager.RunNextAfterFrames(t);
-				}
-#endif
+
 				
 				StartTurn();
 			}

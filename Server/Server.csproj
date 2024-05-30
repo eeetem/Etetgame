@@ -47,6 +47,9 @@
       <None Update="Maps\Special\tutorial.mapdata">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Maps\Special\tutorial2.mapdata">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

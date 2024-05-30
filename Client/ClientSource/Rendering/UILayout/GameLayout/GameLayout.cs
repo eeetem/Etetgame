@@ -25,7 +25,7 @@ using WorldObject = DefconNull.WorldObjects.WorldObject;
 
 namespace DefconNull.Rendering.UILayout.GameLayout;
 
-public class GameLayout : MenuLayout
+public partial class GameLayout : MenuLayout
 {
 
 	public static List<Vector2Int>[] PreviewMoves = Array.Empty<List<Vector2Int>>();

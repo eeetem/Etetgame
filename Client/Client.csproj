@@ -600,6 +600,9 @@
         <None Update="Content\Units\Scout\Stand\Walk\1.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\Particles\smoke.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
@@ -850,9 +853,6 @@
         <Link>ObjectData.xml</Link>
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="ClientSource\Rendering\UILayout\GameLayout\" />
     </ItemGroup>
 
 </Project>

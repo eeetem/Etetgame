@@ -145,11 +145,13 @@ public class Game1 : Game
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 		DiscordManager.Update();
 		Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
-		//if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-		//{
+		if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+		{
 		//	var pos = new Vector2(51, 51);
 		//	new Tracer(Utility.GridToWorldPos(pos),Camera.GetMouseWorldPos());
-		//}
+		//	new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/smoke"), Camera.GetMouseWorldPos(), new Vector2(-1,-0.5f),new Vector2(0,0), 50000);
+
+		}
 
 		base.Update(gameTime);
 	}
