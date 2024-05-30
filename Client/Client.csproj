@@ -603,12 +603,37 @@
         <None Update="Content\Particles\smoke.png">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\CrouchDown\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\StandUp\2.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\Walk\0.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\CompressedContent\textures\Squadcomp\Scout\Stand\Walk\1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.ico">
             <LogicalName>Icon.ico</LogicalName>
         </EmbeddedResource>
         <EmbeddedResource Remove="SharedSource\WorldObjects\Controllables\Actions\Attacking\**" />
+        <EmbeddedResource Remove="Content\CompressedContent\textures\Squadcomp\Scout\Stand\**" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Icon.bmp">
