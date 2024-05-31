@@ -72,12 +72,12 @@ jobs:
         dangerous-clean-slate: true
 
     - name: Reboot Develop Master Server
-      uses: appleboy/ssh-action@v1.0.3
+      uses: sudo systemctl restart etetgameServerDevelop.service; ${{ secrets.sudopass }}
       with:
+        command: ls -a
         host: 109.255.215.173
         username: suha
-        password: ${{ secrets.sudopass }}
-        script: sudo systemctl restart etetgameServerDevelop.service; ${{ secrets.sudopass }}
+        passphrase: ${{ secrets.SUDOPASS }}
         
 
    
