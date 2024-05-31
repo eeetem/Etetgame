@@ -14,9 +14,8 @@ jobs:
       matrix:
         configuration: [Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
+    runs-on: ubuntu-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
     env:
       Solution_Name: Defcon NULL.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
 
@@ -72,9 +71,9 @@ jobs:
         dangerous-clean-slate: true
 
     - name: Reboot Develop Master Server
-      uses: sudo systemctl restart etetgameServerDevelop.service; ${{ secrets.sudopass }}
+      uses: garygrossgarten/github-action-ssh@0.7.0
       with:
-        command: ls -a
+        command: sudo systemctl restart etetgameServerDevelop.service; ${{ secrets.sudopass }}
         host: 109.255.215.173
         username: suha
         passphrase: ${{ secrets.SUDOPASS }}
