@@ -54,6 +54,9 @@ jobs:
         protocol: ftps
         local-dir: ./Server/bin/Release/net8.0/linux-x64/publish/
         server-dir: etetgame/develop/
+        timeout: 100000
+        security: loose
+        dangerous-clean-slate: true
 
 
    
