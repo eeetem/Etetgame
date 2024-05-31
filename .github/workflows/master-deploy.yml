@@ -50,7 +50,7 @@ jobs:
         password: ${{ secrets.FTPPASS }}
         protocol: ftps
         local-dir: ./Server/bin/Release/net8.0/linux-x64/publish/
-        server-dir: etetgame/master/
+        server-dir: etetgame/release/
         timeout: 100000
         security: loose
         dangerous-clean-slate: true
@@ -63,10 +63,12 @@ jobs:
         password: ${{ secrets.FTPPASS }}
         protocol: ftps
         local-dir: ./MasterServer/bin/Release/net8.0/linux-x64/publish/
-        server-dir: etetgame/master/
+        server-dir: etetgame/release/
         timeout: 100000
         security: loose
         dangerous-clean-slate: false
+        exclude: |
+          *
 
     - name: Reboot Develop Master Server
       uses: garygrossgarten/github-action-ssh@0.7.0
