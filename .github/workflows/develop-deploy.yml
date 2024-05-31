@@ -68,7 +68,7 @@ jobs:
         server-dir: etetgame/develop/
         timeout: 100000
         security: loose
-        dangerous-clean-slate: true
+        dangerous-clean-slate: false
 
     - name: Reboot Develop Master Server
       uses: garygrossgarten/github-action-ssh@0.7.0
@@ -76,7 +76,7 @@ jobs:
         command: sudo systemctl restart etetgameServerDevelop.service; echo ${{ secrets.SUDOPASS }} | sudo -S true
         host: 109.255.215.173
         username: suha
-        passphrase: ${{ secrets.SUDOPASS }}
+        password: ${{ secrets.SUDOPASS }}
         
 
    
