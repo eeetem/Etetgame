@@ -71,7 +71,7 @@ jobs:
         security: loose
         dangerous-clean-slate: true
 
-    - name: Reboot Server
+    - name: Reboot Develop Server
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: 109.255.215.173
