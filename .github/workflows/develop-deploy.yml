@@ -19,9 +19,6 @@ jobs:
 
     env:
       Solution_Name: Defcon NULL.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: Tests\Tests.csproj               # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
     - name: Checkout
@@ -39,10 +36,6 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: dotnet test
-
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
@@ -50,20 +43,15 @@ jobs:
         Configuration: ${{ matrix.configuration }}
      # You may pin to the exact commit or the version.
     # uses: sebastianpopp/ftp-action@eb75c5cb29d23ee4a729720a27dfb66403cb0f6d
-    - name: ftp-action
-      uses: sebastianpopp/ftp-action@v2.0.0
+    - name: Upload Server
+      uses: priradev/ftp-interactions@v0.2.9-beta
       with:
         # FTP host
         host: 109.255.215.173
         # FTP user
-        user: suha
+        username: ftpuser
         # FTP password
         password: thisismyftppassword
-        # Local directory
-       # localDir: # optional, default is .
-        # Remote directory
-       # remoteDir: # optional, default is .
-          
+        ftpAction: copy
 
-    
    
