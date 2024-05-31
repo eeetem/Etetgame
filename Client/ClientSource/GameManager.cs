@@ -13,6 +13,7 @@ using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Riptide;
 
 namespace DefconNull;
 
@@ -124,6 +125,8 @@ public static partial class GameManager
 			Audio.OnGameStateChange(GameState);
 		}
 		GameState = data.GameState;
+		TimeTillNextTurn = data.TimeTillNextTurn;
+		Log.Message("time till next turn", "" + TimeTillNextTurn);
 		CurrentTurnPercentDone = data.CurrentTurnPercentDone;
 		if (IsPlayer1 == IsPlayer1Turn)
 			CurrentTurnPercentDone = -1;
