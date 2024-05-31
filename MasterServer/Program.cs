@@ -21,6 +21,8 @@ public static class Program
 	{
 		Console.WriteLine(msg);
 	}
+
+	private static ushort startPort = 1630;
 	static void Main(string[] args)
 	{
 		AppDomain currentDomain = default(AppDomain);
@@ -59,7 +61,12 @@ public static class Program
 
 		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
 
-		server.Start(1630,100);
+		startPort = 1630;
+		if(args.Length>0)
+		{
+			startPort = ushort.Parse(args[0]);
+		}
+		server.Start(startPort,100);
 			
 		Console.WriteLine("Started master-server");
 		UpdateLoop();
@@ -273,7 +280,7 @@ public static class Program
 
 	public static int GetNextFreePort()
 	{
-		int port = 1631;
+		int port = startPort;
 		while (Lobbies.ContainsKey(port))
 		{
 			port++;
