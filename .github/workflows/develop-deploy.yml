@@ -73,7 +73,7 @@ jobs:
     - name: Reboot Develop Master Server
       uses: garygrossgarten/github-action-ssh@0.7.0
       with:
-        command: sudo systemctl restart etetgameServerDevelop.service; echo ${{ secrets.SUDOPASS }} | sudo -S true
+        command: echo ${{ secrets.SUDOPASS }} | sudo -S systemctl restart etetgameServerDevelop.service
         host: 109.255.215.173
         username: suha
         password: ${{ secrets.SUDOPASS }}
