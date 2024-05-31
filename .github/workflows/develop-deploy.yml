@@ -58,5 +58,26 @@ jobs:
         security: loose
         dangerous-clean-slate: true
 
+    - name: Upload Master Server
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: 109.255.215.173
+        username: ftpuser
+        password: ${{ secrets.FTPPASS }}
+        protocol: ftps
+        local-dir: ./MasterServer/bin/Release/net8.0/linux-x64/publish/
+        server-dir: etetgame/develop/
+        timeout: 100000
+        security: loose
+        dangerous-clean-slate: true
+
+    - name: Reboot Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 109.255.215.173
+        username: suha
+        password: ${{ secrets.sudopass }}
+        script: sudo systemctl restart etetgameServerDevelop.service; ${{ secrets.sudopass }}
+        
 
    
