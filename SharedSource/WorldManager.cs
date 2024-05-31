@@ -308,7 +308,7 @@ public  partial class WorldManager
 		return resullt;
 	}
 	
-
+	
 	public Visibility VisibilityCast(Vector2Int From,Vector2Int to, int sightRange, bool crouched)
 	{
 		if(Vector2.Distance(From, to) > sightRange)

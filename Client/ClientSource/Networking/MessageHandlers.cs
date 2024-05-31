@@ -76,7 +76,6 @@ public static partial class NetworkingManager
 	}
 
 
-
 	[MessageHandler((ushort)NetworkMessageID.Notify)]
 	private static void ReciveNotify(Message message)
 	{

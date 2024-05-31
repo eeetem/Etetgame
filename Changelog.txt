@@ -15,3 +15,11 @@ Alpha 3.1
 -AI performs it's turn wastly faster
 -Added few unintentionally missing walls
 Alpha 4.0
+Multiplayer!!
+Alpha 4.1
+-Large variety of multiplayer stability and crash fixes
+-Added bullet tracers
+-Overwatching units now can only shoot units they personally see themselves(no assited spoting from other friendlies)
+-Fixed overwatching abilities using the determination cost of the ability
+-Fixed master server chat messages appearing in game chat
+-Added selected unit indicator

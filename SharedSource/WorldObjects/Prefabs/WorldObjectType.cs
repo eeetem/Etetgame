@@ -70,6 +70,7 @@ public partial class WorldObjectType
 	public Cover VisibilityCover = Cover.None;
 	
 	public WorldConseqences? DestructionConseqences;
+	public WorldConseqences? SpawnConseqences;
 
 	//should probably be an enum
 	public bool Faceable { get; set; }
@@ -77,6 +78,7 @@ public partial class WorldObjectType
 	public bool Surface { get; set; }
 	public bool Impassible { get; set; }
 	public int VisibilityObstructFactor { get; set; }
+
 
 	public virtual void Place(WorldObject wo, WorldTile? tile, WorldObject.WorldObjectData data)
 	{

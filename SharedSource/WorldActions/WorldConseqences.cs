@@ -30,6 +30,8 @@ public class WorldConseqences
 	public readonly List<string> RemoveStatus = new List<string>();
 
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
+	public readonly List<SpawnParticle.ParticleParams> ParticleParamsList = new List<SpawnParticle.ParticleParams>();
+
 	
 	public int ExRange;
 	public List<string> Ignores = new List<string>();
@@ -42,7 +44,7 @@ public class WorldConseqences
 	public bool TargetEnv { get; set; }
 	public bool TargetEnemy { get; set; }
 	public bool TargetSelf { get; set; }
-	private object lockObj = new object();
+	private object _lockObj = new object();
 
 
 
@@ -64,7 +66,7 @@ public class WorldConseqences
 			MoveCamera m = MoveCamera.Make(target.TileLocation.Position, true, FogOfWarSpotScatter);
 			list.Add(m);
 		}
-		lock (lockObj)
+		lock (_lockObj)
 		{
 			_ignoreList.Clear();
 
@@ -156,6 +158,12 @@ public class WorldConseqences
 	{
 		var consequences = new List<SequenceAction>();
 
+
+		foreach (var p in ParticleParamsList)
+		{
+			consequences.Add(SpawnParticle.Make(p,tile.Position));
+		}
+		
 		foreach (var edge in tile.GetAllEdges())
 		{
 			consequences.AddRange(ConsequencesOnObject(user,edge));
@@ -190,6 +198,9 @@ public class WorldConseqences
 			consequences.Add(WorldObjectManager.MakeWorldObject.Make(PLaceItemConsequence, tile.Position, user.Facing,user.Fliped)); //fix this
 		}
 
+
+
+	
 
 
 		

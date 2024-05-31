@@ -88,7 +88,7 @@ public static partial class NetworkingManager
 			//Log.Message("RIPTIDE","Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
-		client.TimeoutTime = 10000;
+		client.TimeoutTime = 20000;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif

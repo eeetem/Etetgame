@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using DefconNull.ReplaySequence;
 using DefconNull.WorldActions;
 using DefconNull.WorldActions.DeliveryMethods;
 using DefconNull.WorldActions.UnitAbility;
@@ -116,7 +117,11 @@ public static class PrefabManager
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				type.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
 			} 
-			
+			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawnConsequences")[0];
+			if (speff != null)
+			{
+				type.SpawnConseqences = ParseConsequences((XmlElement) speff);
+			}
 
 
 #if CLIENT
@@ -192,10 +197,10 @@ public static class PrefabManager
 				
 			
 
-			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawneffect")[0];
+			var speff = ((XmlElement) xmlObj).GetElementsByTagName("spawnConsequences")[0];
 			if (speff != null)
 			{
-				unitType.SpawnEffect = ParseConsequences((XmlElement) speff);
+				unitType.SpawnConseqences = ParseConsequences((XmlElement) speff);
 			}
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
@@ -249,10 +254,14 @@ public static class PrefabManager
 		ushort supression = ushort.Parse(xmlElement.Attributes?["supression"]?.InnerText ?? "0");
 		int supressionRange = int.Parse(xmlElement.Attributes?["supressionRange"]?.InnerText ?? "0");
 		int dropoff = int.Parse(xmlElement.Attributes?["dropOffRange"]?.InnerText ?? "10");
+		int shotCount = int.Parse(xmlElement.Attributes?["shotCount"]?.InnerText ?? "3");
+		int shotDelay = int.Parse(xmlElement.Attributes?["shotDelay"]?.InnerText ?? "350");
+		float shotSpread = float.Parse(xmlElement.Attributes?["shotSpread"]?.InnerText ?? "0.5");
+		string sound = xmlElement.Attributes?["shotSound"]?.InnerText ?? "";
 
 
 
-		var shoot = new Shootable(dmg, detRes, supression, supressionRange, dropoff);
+		var shoot = new Shootable(dmg, detRes, supression, supressionRange, dropoff,shotCount,shotDelay,shotSpread,sound);
 		Vector2Int offset = Vector2Int.Parse(xmlElement.Attributes?["offset"]?.InnerText ?? "0,0");
 		shoot.Offset = offset;
 		return shoot;
@@ -382,6 +391,47 @@ public static class PrefabManager
 		{
 			eff.FogOfWarSpot = true;
 			eff.FogOfWarSpotScatter = int.Parse(fowSpot.Attributes?["scatter"]?.InnerText ?? "0");
+		}
+		XmlNode? particles = ((XmlElement) effect).GetElementsByTagName("particles")[0];
+		if (particles != null)
+		{
+			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
+			foreach (var p in particlesList)
+			{
+				var element = (XmlElement) p;
+				var parm = new SpawnParticle.ParticleParams();
+				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
+				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
+	
+				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
+				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
+				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
+				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
+				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
+
+				var splitX = velxRange.Split(',');
+				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
+				parm.VelocityXMax = float.Parse(splitX[1],CultureInfo.InvariantCulture);
+
+				var splitY = velyRange.Split(',');
+				parm.VelocityYMin = float.Parse(splitY[0],CultureInfo.InvariantCulture);
+				parm.VelocityYMax = float.Parse(splitY[1],CultureInfo.InvariantCulture);
+
+				var splitAccX = accxRange.Split(',');
+				parm.AccelerationXMin = float.Parse(splitAccX[0],CultureInfo.InvariantCulture);
+				parm.AccelerationXMax = float.Parse(splitAccX[1],CultureInfo.InvariantCulture);
+
+				var splitAccY = accyRange.Split(',');
+				parm.AccelerationYMin = float.Parse(splitAccY[0],CultureInfo.InvariantCulture);
+				parm.AccelerationYMax = float.Parse(splitAccY[1],CultureInfo.InvariantCulture);
+
+				var splitLife = lifeRange.Split(',');
+				parm.LifetimeMin = float.Parse(splitLife[0],CultureInfo.InvariantCulture);
+				parm.LifetimeMax = float.Parse(splitLife[1],CultureInfo.InvariantCulture);
+	
+				eff.ParticleParamsList.Add(parm);
+			}
+			
 		}
         
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];

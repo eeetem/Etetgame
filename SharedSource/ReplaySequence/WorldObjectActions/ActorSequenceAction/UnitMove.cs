@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -118,6 +119,8 @@ public class UnitMove : UnitSequenceAction
             HashSet<int> seenUnits = new HashSet<int>();
             foreach (var spot in Path)
             {
+                if (spot == lastPos)
+                    continue;
                 var tiles = WorldManager.Instance.GetVisibleTiles(spot, Utility.Vec2ToDir(spot-lastPos), Actor.GetSightRange(), Actor.Crouching);
                 foreach (var loc in tiles)
                 {
@@ -150,24 +153,25 @@ public class UnitMove : UnitSequenceAction
     {
         return Actor != null && !Actor.Panicked;
     }
+    const int walkFps = 6;
 
     protected override void RunSequenceAction()
     {
- 
         Actor.CanTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
         WorldManager.Instance.MakeFovDirty();
+        int walk = 0;
         while (Path.Count >0)
         {
-            
-
+            walk++;
             if (Actor.WorldObject.TileLocation != null)
             {
                 if (Path[0] != Actor.WorldObject.TileLocation.Position)
                     Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
                 
 #if CLIENT
-                Thread.Sleep((int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*200));
+                //(int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*
+                Thread.Sleep( (int) ((1000f/walkFps)*Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState())));
 #else
                 while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
                     Thread.Sleep(10);
@@ -177,6 +181,7 @@ public class UnitMove : UnitSequenceAction
             Log.Message("UNITS","moving to: "+Path[0]+" path size left: "+Path.Count);
 					
             Actor.MoveTo(Path[0]);
+            
 
             Path.RemoveAt(0);
 
@@ -184,6 +189,11 @@ public class UnitMove : UnitSequenceAction
 		
 
 #if CLIENT
+      
+            if(Path.Count>1)
+                Actor.WorldObject.StartAnimation("Walk",walkFps);
+
+
             if (Actor.WorldObject.IsVisible())
             {
                 Audio.PlaySound("footstep", Utility.GridToWorldPos(Actor.WorldObject.TileLocation.Position));
@@ -197,6 +207,10 @@ public class UnitMove : UnitSequenceAction
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
         Actor.CanTurn = true;
+#if CLIENT
+     
+#endif
+        
 
     }
 	

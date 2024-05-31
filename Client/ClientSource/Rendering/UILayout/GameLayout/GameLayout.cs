@@ -25,7 +25,7 @@ using WorldObject = DefconNull.WorldObjects.WorldObject;
 
 namespace DefconNull.Rendering.UILayout.GameLayout;
 
-public class GameLayout : MenuLayout
+public partial class GameLayout : MenuLayout
 {
 
 	public static List<Vector2Int>[] PreviewMoves = Array.Empty<List<Vector2Int>>();
@@ -34,7 +34,7 @@ public class GameLayout : MenuLayout
 	{
 		if (ScoreIndicator != null)
 		{
-			ScoreIndicator.Text = "score: " + score;
+			ScoreIndicator.Text = "" + score;
 		}
 	}
 	public static void SetPercentComplete(float score)
@@ -48,7 +48,7 @@ public class GameLayout : MenuLayout
 			else
 			{	
 				CompleteIndicator.Visible = true;
-				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100f).ToString("n2") + "%";
+				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100).ToString("n2") + "%";
 			}
 			
 		}
@@ -165,7 +165,7 @@ public class GameLayout : MenuLayout
 			               "There's 3 types of cover. [Green]Low[-], [Yellow]High[-] and [Red]Full[-].\n" +
 			               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
 			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
-			               "[Red]Full[-] - Full walls, cannot bit hit crouching or standing.\n\n" +
+			               "[Red]Full[-] - Full walls, cannot be hit crouching or standing.\n\n" +
 			               "There's colored indicators on your cursor indicating cover of nearby tiles.\n" +
 			               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
 			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
@@ -412,7 +412,7 @@ public class GameLayout : MenuLayout
 			TutorialMove(heavy, new Vector2Int(22, 45));
 			tutorialNote = "[Green]The Heavy's ability[-]\n" +
 			               "The [Green]Heavy's[-] special ability [Blue]suppresses[-] units in a small area. It's excellent for punishing overly aggressive [Red]enemy[-] plays.\n" +
-			               "[Blue]Suppress[-] the Scouts by pressing [Yellow]X[-] and [Yellow]Spacebar[-]\n";
+			               "[Blue]Suppress[-] the Scouts by pressing [Yellow]C[-] and [Yellow]Spacebar[-]\n";
 			tutorialAbilityIndex = 2;
 			tutorialActionLock = ActiveActionType.Action;
 			tutorialUnitLock = heavy.WorldObject.ID;
@@ -813,7 +813,7 @@ public class GameLayout : MenuLayout
 			panel.Widgets.Add(swapTeam);
 		}
 #if DEBUG
-		var doAI = new TextButton
+		/*var doAI = new TextButton
 		{
 			Top = (int) (200f * GlobalScale.Y),
 			Left = (int) (-10f * GlobalScale.X),
@@ -823,17 +823,19 @@ public class GameLayout : MenuLayout
 			Text = "FinishTurnWithAI",
 			//Scale = globalScale
 		};
+		
 		doAI.Click += (o, a) =>
 		{
 			NetworkingManager.SendAITurn();
 		};
 		panel.Widgets.Add(doAI);
+		*/
 #endif		
 
 		endBtn = new ImageButton()
 		{
-			Top = (int) (25f * GlobalScale.X),
-			Left = (int) (-10.4f * GlobalScale.X),
+			Top = (int) (26f * GlobalScale.X),
+			Left = (int) (0f * GlobalScale.X),
 			Width = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * GlobalScale.X * 0.9f),
 			Height = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * GlobalScale.X * 0.9f),
 			ImageWidth = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * GlobalScale.X * 0.9f),
@@ -896,9 +898,8 @@ public class GameLayout : MenuLayout
 		{
 			ScoreIndicator = new Label()
 			{
-				Top=150,
-				VerticalAlignment = VerticalAlignment.Top,
-				HorizontalAlignment = HorizontalAlignment.Left
+				Top = (int) (28.5f * GlobalScale.X),
+				Left = (int) (735f * GlobalScale.X),
 			};
 			SetScore(0);
 		}
@@ -1021,7 +1022,7 @@ public class GameLayout : MenuLayout
 
 		panel.Widgets.Add(OverWatchToggle);
 		
-		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
+		/*foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
 			var unitPanel = new ImageButton();
 
@@ -1032,6 +1033,7 @@ public class GameLayout : MenuLayout
 			};
 			_unitBar.Widgets.Add(unitPanel);
 		}
+		*/
 
 		generated = true;
 		if (SelectedUnit == null) return panel;
@@ -1378,8 +1380,9 @@ public class GameLayout : MenuLayout
 		var fraction = GameManager.TimeTillNextTurn / (GameManager.PreGameData.TurnTime * 1000);
 		var displayLenght = totalLenght - totalLenght * fraction;
 		
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), Vector2.Zero, null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), Vector2.Zero, new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/scoreboard"), new Vector2(x:396,y:29), sourceRectangle:null, Color.Gray, 0, Vector2.Zero,scale:1 ,SpriteEffects.None, 0);
 		batch.End();
 		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Width,TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Height),false);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostProcessing.PostProcessing.UIGlowEffect);
@@ -1798,10 +1801,10 @@ public class GameLayout : MenuLayout
 
 		drawExtra = currentKeyboardState.IsKeyDown(Keys.LeftAlt);
 
-		if (JustPressed(Keys.Enter) && inputBox != null)
+		if (JustPressed(Keys.Enter))
 		{
 			inputBox.Visible = true;
-			inputBox.SetKeyboardFocus();
+			inputBox?.SetKeyboardFocus();
 		}
 
 		if (currentKeyboardState.IsKeyDown(Keys.CapsLock) && !lastKeyboardState.IsKeyDown(Keys.CapsLock))
@@ -2454,7 +2457,7 @@ public class GameLayout : MenuLayout
 		}
 	
 
-		if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
+		/*if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
 
 		foreach (var unit in suggestedTargets)
 		{
@@ -2468,6 +2471,7 @@ public class GameLayout : MenuLayout
 			};
 			targetBar!.Widgets.Add(unitPanel);
 		}
+		*/
 
 		targetBarStack!.Proportions!.Clear();
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));

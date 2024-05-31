@@ -10,7 +10,9 @@ using MonoGame.Extended;
 using Riptide;
 
 #if CLIENT
+using DefconNull.LocalObjects;
 using System;
+using System.Threading;
 using DefconNull.Rendering;
 #endif
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -51,16 +53,35 @@ public class Shoot : SequenceAction
 	public int OriginalDamage;
 	public int CoverBlock;
 	public int RangeBlock;
+	public int ShotCount = 5;
+	public int ShotDelay = 300;
+	public float ShotSpread = 0.5f;
+	public string ShotSound = "";
 	public Shootable.Projectile Projectile = new Shootable.Projectile();
-	public static Shoot Make(Shootable.Projectile p, int originalDamage, int coverBlock, int rangeBlock) 
+	public static Shoot Make(Shootable.Projectile p, int originalDamage, int coverBlock, int rangeBlock, int shotCount, int shotDelay, float shotSpread, string sound)
 	{
 		Shoot t = (GetAction(SequenceType.Shoot) as Shoot)!;
 		t.OriginalDamage = originalDamage;
 		t.CoverBlock = coverBlock;
 		t.RangeBlock = rangeBlock;
 		t.Projectile = p;
+		t.ShotCount = shotCount;
+		t.ShotDelay = shotDelay;
+		t.ShotSpread = shotSpread;
+		t.ShotSound = sound;
 		return t;
 	}
+
+	public override bool ShouldDo()
+	{
+#if CLIENT
+		return true;
+#elif SERVER
+		return false;
+#endif
+	}
+	
+
 
 
 #if CLIENT
@@ -192,13 +213,18 @@ public class Shoot : SequenceAction
 		CoverBlock = message.GetInt();
 		RangeBlock = message.GetInt();
 		Projectile = message.GetSerializable<Shootable.Projectile>();
+		ShotSound = message.GetString();
+		ShotCount = message.GetInt();
+		ShotDelay = message.GetInt();
+		ShotSpread = message.GetFloat();
+		
 	}
 #if SERVER
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
 	{
 		return true;
 	}
-		public override List<SequenceAction> GenerateInfoActions(bool player1)
+	public override List<SequenceAction> GenerateInfoActions(bool player1)
 	{
 		if (Projectile.Result.hit)
 		{
@@ -222,7 +248,17 @@ public class Shoot : SequenceAction
 
 	protected override void RunSequenceAction()
 	{
-		
+#if CLIENT
+		for (int i = 0; i < ShotCount; i++)
+		{
+			new Tracer(Utility.GridToWorldPos(Projectile.Result.StartPoint), Utility.GridToWorldPos(Projectile.Result.CollisionPointShort+new Vector2(Random.Shared.NextSingle(-0.5f,0.5f),Random.Shared.NextSingle(-0.5f,0.5f))));
+			Thread.Sleep(ShotDelay);
+			if (ShotSound != "")
+			{
+				Audio.PlaySound(ShotSound,Utility.GridToWorldPos(Projectile.Result.StartPoint));
+			}
+		}
+#endif
 	}
 
 	protected override void SerializeArgs(Message message)
@@ -232,5 +268,12 @@ public class Shoot : SequenceAction
 		message.Add(CoverBlock);
 		message.Add(RangeBlock);
 		message.Add(Projectile);
+		message.Add(ShotSound);
+		message.Add(ShotCount);
+		message.Add(ShotDelay);
+		message.Add(ShotSpread);
+		
+		
+		
 	}
 }

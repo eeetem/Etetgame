@@ -1,5 +1,7 @@
 ﻿#nullable enable
 using System;
+using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using MonoGame.Extended;
 using Riptide;
@@ -277,9 +279,9 @@ public partial class WorldObject
 		}
 	}
 
-	public bool IsVisible()
+	public bool IsVisible(bool dontautoRevealEdges = false)
 	{
-		return GetMinimumVisibility() <=  ((WorldTile)TileLocation).GetVisibility();
+		return GetMinimumVisibility(dontautoRevealEdges) <=  ((WorldTile)TileLocation).GetVisibility();
 	}
 	public bool ShouldBeVisibilityUpdated(bool team1)
 	{
@@ -343,6 +345,23 @@ public partial class WorldObject
 		else
 		{
 			UnitComponent = null;
+		}
+
+		if (data.JustSpawned)
+		{
+#if SERVER
+				if (Type.SpawnConseqences != null)
+				{
+					Task t = new Task(delegate
+					{
+						foreach (var c in Type.SpawnConseqences.GetApplyConsequnces(this,this))
+						{
+							NetworkingManager.AddSequenceToSendQueue(c);
+						}
+					});
+					SequenceManager.RunNextAfterFrames(t);
+				}
+#endif
 		}
 		
 	}

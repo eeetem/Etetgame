@@ -26,6 +26,7 @@ public abstract class SequenceAction :  IMessageSerializable
         UnitUpdate = 108,
         TileUpdate = 109,
         SpotUnit = 110,
+        SpawnParticle = 111,
         
         ChangeUnitValues =0,
         PlayAnimation =1,
@@ -143,6 +144,10 @@ public abstract class SequenceAction :  IMessageSerializable
         {
             return SequenceType.SpotUnit;
         }
+        if (t == typeof(SpawnParticle))
+        {
+            return SequenceType.SpawnParticle;
+        }
         throw new ArgumentOutOfRangeException(nameof(t), t, null);
     }
     public static Type EnumToType(SequenceType t)
@@ -187,6 +192,10 @@ public abstract class SequenceAction :  IMessageSerializable
                 return typeof(UnitUpdate);
             case SequenceType.TileUpdate:
                 return typeof(TileUpdate);
+            case SequenceType.SpotUnit:
+                return typeof(SpotUnit);
+            case SequenceType.SpawnParticle:
+                return typeof(SpawnParticle);
             default:
                 throw new ArgumentOutOfRangeException(nameof(t), t, null);
         }

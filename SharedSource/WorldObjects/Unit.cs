@@ -55,6 +55,8 @@ namespace DefconNull.WorldObjects
 
 
 			Crouching = data.Crouching;
+		
+
 			Panicked = data.Panic;
 
 
@@ -97,19 +99,7 @@ namespace DefconNull.WorldObjects
 			if (justSpawned)
 			{
 
-#if SERVER
-				if (Type.SpawnEffect != null)
-				{
-					Task t = new Task(delegate
-					{
-						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
-						{
-							NetworkingManager.AddSequenceToSendQueue(c);
-						}
-					});
-					SequenceManager.RunNextAfterFrames(t);
-				}
-#endif
+
 				
 				StartTurn();
 			}
@@ -287,6 +277,7 @@ namespace DefconNull.WorldObjects
 				}
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
+					GameManager.PlayerUnitPositionsDirty = true;//re update units and send update to client
 #endif
 					return;
 				}
@@ -606,16 +597,16 @@ namespace DefconNull.WorldObjects
 			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
 			{
 				Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (GameManager.Player1UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1UnitPositions.Remove(WorldObject.ID);
+				if (GameManager.Player1.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
 	
-				GameManager.Player1UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+				GameManager.Player1.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
 			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
 			{
 				Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (!GameManager.Player2UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2UnitPositions.Remove(WorldObject.ID);
+				if (!GameManager.Player2.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
 			
-				GameManager.Player2UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+				GameManager.Player2.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
 #endif
 			

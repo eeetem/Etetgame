@@ -32,7 +32,7 @@ public static partial class NetworkingManager
 		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		//1. Start listen on a portw
 		server = new Server(new TcpServer());
-		server.TimeoutTime = 10000;
+		server.TimeoutTime = 20000;
         
 #if DEBUG
 		server.TimeoutTime = ushort.MaxValue;
@@ -176,7 +176,7 @@ public static partial class NetworkingManager
 
 			Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
-	
+			SendAllSeenUnitPositions();
 			SendSequenceMessageToConnection(act, connection);
 			SendAllSeenUnitPositions();
 
@@ -648,13 +648,13 @@ public static partial class NetworkingManager
 		
 		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
 		{
-			var act = UnitUpdate.Make(GameManager.Player1UnitPositions,true);
+			var act = UnitUpdate.Make(GameManager.Player1.KnownUnitPositions,true);
 			AddSequenceToSendQueue(act);
 		}
 
 		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
 		{
-			var act = UnitUpdate.Make(GameManager.Player2UnitPositions,false);
+			var act = UnitUpdate.Make(GameManager.Player2.KnownUnitPositions,false);
 			AddSequenceToSendQueue(act);
 		}
 		GameManager.PlayerUnitPositionsDirty = false;

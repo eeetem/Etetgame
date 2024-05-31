@@ -241,32 +241,32 @@ public static partial class GameManager
 			var obj = WorldObjectManager.GetObject(u.Key);
 			if (obj == null)
 			{
-				Log.Message("UNITS","creating new unit: "+u.Key);
-				WorldObjectManager.MakeWorldObject.Make(u.Value.Item2,u.Value.Item1).GenerateTask().RunTaskSynchronously();
-				justCreated.Add(u.Key);
-			}
-		}
-		
-		//assign teams to new units
-		foreach (var u in recievedUnitPositions)
-		{
-			if (u.Value.Item2.UnitData!.Value.Team1)
-			{
-				if (!T1Units.Contains(u.Key))
+				if (WorldManager.Instance.GetTileAtGrid(u.Value.Item1).UnitAtLocation == null)//sometimes we can have 2 last seen units on same spot
 				{
-					T1Units.Add(u.Key);
-					Log.Message("UNITS","adding unit to team 1: "+u.Key);
+					Log.Message("UNITS", "creating new unit: " + u.Key);
+					WorldObjectManager.MakeWorldObject.Make(u.Value.Item2, u.Value.Item1).GenerateTask().RunTaskSynchronously();
+					justCreated.Add(u.Key);
+					
+					if (u.Value.Item2.UnitData!.Value.Team1)
+					{
+						if (!T1Units.Contains(u.Key))
+						{
+							T1Units.Add(u.Key);
+							Log.Message("UNITS","adding unit to team 1: "+u.Key);
+						}
+					}
+					else
+					{
+						if (!T2Units.Contains(u.Key))
+						{
+							T2Units.Add(u.Key);
+							Log.Message("UNITS","adding unit to team 2: "+u.Key);
+						}
+					}	
 				}
 			}
-			else
-			{
-				if (!T2Units.Contains(u.Key))
-				{
-					T2Units.Add(u.Key);
-					Log.Message("UNITS","adding unit to team 2: "+u.Key);
-				}
-			}	
 		}
+
 		
 		//update existing units
 		foreach (var u in new List<int>(T1Units))
@@ -288,7 +288,15 @@ public static partial class GameManager
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
-				obj.UnitComponent!.MoveTo(data.Item1);
+				if (WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation == null || WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID == obj.ID)//sometimes we can have 2 last seen units on same spot just get rid of em
+				{
+					obj.UnitComponent!.MoveTo(data.Item1);
+				}
+				else
+				{
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
+
+				}
 			}
 		}
 		foreach (var u in new List<int>(T2Units))
@@ -309,7 +317,15 @@ public static partial class GameManager
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
-				obj.UnitComponent!.MoveTo(data.Item1);
+				if (WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation == null || WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID == obj.ID)//sometimes we can have 2 last seen units on same spot just get rid of em
+				{
+					obj.UnitComponent!.MoveTo(data.Item1);
+				}
+				else
+				{
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
+
+				}
 			}
 		}
 		

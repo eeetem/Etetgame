@@ -23,18 +23,26 @@ public class Shootable : Effect
 	readonly ushort supressionStrenght;
 	readonly int supressionRange;
 	readonly int dropOffRange;
+	readonly int shotCount;
+	readonly int shotDelay;
+	readonly float shotSpread;
+	private readonly string sound;
 	
 
-	public Shootable(int preDropOffDmg, int detResistance, ushort supressionStrenght, int supressionRange, int dropOffRange)
-	{
-		this.preDropOffDmg = preDropOffDmg;
-		this.detResistance = detResistance;
-		this.supressionStrenght = supressionStrenght;
-		this.supressionRange = supressionRange;
-		this.dropOffRange = dropOffRange;
-	}
 
-    
+	public Shootable(int dmg, int detRes, ushort supression, int suppresionRange, int dropoff, int shotCount, int shotDelay, float shotSpread, string sound)
+	{
+		preDropOffDmg = dmg;
+		detResistance = detRes;
+		supressionStrenght = supression;
+		supressionRange = suppresionRange;
+		dropOffRange = dropoff;
+		this.shotCount = shotCount;
+		this.shotDelay = shotDelay;
+		this.shotSpread = shotSpread;
+		this.sound = sound;
+		
+	}
 
 
 	public override float GetOptimalRangeAI()
@@ -351,7 +359,7 @@ public class Shootable : Effect
 
 		
 		
-		var shoot = Shoot.Make(p, preDropOffDmg, coverBlock, rangeBlock);
+		var shoot = Shoot.Make(p, preDropOffDmg, coverBlock, rangeBlock, shotCount, shotDelay, shotSpread, sound);
 		retrunList.Add(shoot);
 		if (p.Result.hit)
 		{

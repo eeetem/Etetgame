@@ -12,7 +12,7 @@ public partial class WorldObject : IDrawable
 	private Transform2 DrawTransform = null!;
 	public int spriteVariation;
 	public PreviewData PreviewData;
-	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver) || _animationQueue.Count > 0;
+	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver);
 
 
 	public Transform2 GetDrawTransform()
@@ -77,20 +77,37 @@ public partial class WorldObject : IDrawable
 			spriteIndex = (int)Facing;
 		}
 
-		string state = "";
-		if (UnitComponent != null)
-		{
-			state = "/Stand";
-			if (UnitComponent!.Crouching)
-			{
-				state = "/Crouch";	
-			}
-		}
+		string state = GetExtraState();
 		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
 		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
 
+	}
+
+	public string GetExtraState()
+	{
+		string state = "";
+		if (UnitComponent != null)
+		{
+			;
+			if (UnitComponent!.Crouching)
+			{
+				state = "/Crouch";	
+			}
+			else
+			{
+				state = "/Stand";
+			}
+		}
+		state += _hiddenState;
+		return state;
+	}
+
+	private string _hiddenState = "";
+	public void SetHiddenState(string state)
+	{
+		_hiddenState = state;
 	}
 
 	public Color GetColor()
@@ -131,21 +148,21 @@ public partial class WorldObject : IDrawable
 
 	}
 
-	private readonly Queue<Animation> _animationQueue = new Queue<Animation>();
+	public bool IsVisible()
+	{
+		return IsVisible(false);
+	}
+
 	public Animation? CurrentAnimation = null;
-	public Animation? Loop = null;
+	private IDrawable _drawableImplementation;
+
 	public void AnimationUpdate(float msDelta)
 	{
 		CurrentAnimation?.Process(msDelta);
-		if (CurrentAnimation == null || CurrentAnimation.IsOver)
+		if(CurrentAnimation?.ShouldStop == true)
 		{
 			CurrentAnimation = null;
-			if (_animationQueue.Count > 0)
-			{
-				CurrentAnimation = _animationQueue.Dequeue();
-			}
 		}
-		
 	}
 
 	public bool IsTransparentUnderMouse()
@@ -154,10 +171,11 @@ public partial class WorldObject : IDrawable
 	}
 
 
-	public void StartAnimation(string name)
+	public void StartAnimation(string name, int fps = 5)
 	{
-		int count = Type.GetAnimationLenght(spriteVariation, name);
-		_animationQueue.Enqueue(new Animation(name,count));
+		int count = Type.GetAnimationLenght(spriteVariation, name,GetExtraState());
+		if (count != 0)
+			CurrentAnimation = new Animation(name, count, fps);
 	}
 	
 }
