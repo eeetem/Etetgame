@@ -157,8 +157,8 @@ public static class Program
 			process.StartInfo.RedirectStandardOutput = true;
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 			{
-				Console.WriteLine("Filename: Server");
-				process.StartInfo.FileName = "Server";
+				Console.WriteLine("Filename: ./Server");
+				process.StartInfo.FileName = "./Server";
 			}
 			else
 			{
