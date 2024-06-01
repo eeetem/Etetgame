@@ -193,6 +193,7 @@ public static class Program
 				{
 					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
 					//copy to crashes folder
+					//copy to crashes folder
 					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
 					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
 					File.Delete(destination);
@@ -282,7 +283,7 @@ public static class Program
 
 	public static int GetNextFreePort()
 	{
-		int port = startPort;
+		int port = startPort+1;
 		while (Lobbies.ContainsKey(port))
 		{
 			port++;
