@@ -194,7 +194,9 @@ public static class Program
 					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
 					//copy to crashes folder
 					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
-					File.Copy(path, Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log");
+					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
+					File.Delete(destination);
+					File.Copy(path, destination);
 				}
 			};
 			process.OutputDataReceived += (sender, args) =>
