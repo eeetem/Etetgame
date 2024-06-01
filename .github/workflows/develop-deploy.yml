@@ -39,7 +39,10 @@ jobs:
     - name: Build MasterServer
       run: dotnet publish .\MasterServer\MasterServer.csproj -c Release --runtime linux-x64
 
-        
+
+    - name: Move Master Server To Server Folder
+      run: move -Force ./MasterServer/bin/Release/net8.0/linux-x64/publish/* ./Server/bin/Release/net8.0/linux-x64/publish/
+    
      # You may pin to the exact commit or the version.
     # uses: sebastianpopp/ftp-action@eb75c5cb29d23ee4a729720a27dfb66403cb0f6d
     - name: Upload Server
@@ -53,21 +56,6 @@ jobs:
         server-dir: etetgame/develop/
         timeout: 100000
         security: loose
-        dangerous-clean-slate: true
-
-    - name: Upload Master Server
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: 109.255.215.173
-        username: ftpuser
-        password: ${{ secrets.FTPPASS }}
-        protocol: ftps
-        local-dir: ./MasterServer/bin/Release/net8.0/linux-x64/publish/
-        server-dir: etetgame/develop/
-        timeout: 100000
-        security: loose
-        dangerous-clean-slate: false
-        exclude: *
 
     - name: Reboot Develop Master Server
       uses: garygrossgarten/github-action-ssh@0.7.0
