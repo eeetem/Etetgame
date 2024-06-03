@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
@@ -349,19 +350,19 @@ public partial class WorldObject
 
 		if (data.JustSpawned)
 		{
-#if SERVER
-				if (Type.SpawnConseqences != null)
+
+			if (Type.SpawnConseqences != null)
+			{
+				Task t = new Task(delegate
 				{
-					Task t = new Task(delegate
+					foreach (var c in Type.SpawnConseqences.GetApplyConsequnces(this,this))
 					{
-						foreach (var c in Type.SpawnConseqences.GetApplyConsequnces(this,this))
-						{
-							NetworkingManager.AddSequenceToSendQueue(c);
-						}
-					});
-					SequenceManager.RunNextAfterFrames(t);
-				}
-#endif
+						SequenceManager.AddSequence(c);
+					}
+				});
+				SequenceManager.RunNextAfterFrames(t);
+			}
+
 		}
 		
 	}

@@ -23,3 +23,6 @@ Alpha 4.1
 -Fixed overwatching abilities using the determination cost of the ability
 -Fixed master server chat messages appearing in game chat
 -Added selected unit indicator
+-Added popups for kick reason being missing
+-Fixed a bug where the settings menu was closed by enemy unit movement
+-Smoke Particles!

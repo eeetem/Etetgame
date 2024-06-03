@@ -145,7 +145,8 @@ public static partial class GameManager
 				StartGame();
 				Task.Run(delegate
 				{
-					UI.SetUI(new GameLayout());
+					if(!(UI.currentUi is GameLayout))
+						UI.SetUI(new GameLayout());
 				});
 				break;
 		}

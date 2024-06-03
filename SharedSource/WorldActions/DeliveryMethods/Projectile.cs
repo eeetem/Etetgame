@@ -1,23 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 #if CLIENT
 using DefconNull.Rendering;
+using DefconNull.LocalObjects;
 #endif
 
 namespace DefconNull.WorldActions.DeliveryMethods;
 
 public class Projectile : DeliveryMethod
-{
-	
+{	
+	readonly string particleName;
+	readonly int particleSpeed;
 	readonly int range;
 	readonly int spot;
 	private readonly bool ignoreUnits;
-	public Projectile(int range, int spot, bool ignoreUnits = false)
+	public Projectile(string particleName, int particleSpeed,int range, int spot, bool ignoreUnits = false)
 	{
+		this.particleName = particleName;
+		this.particleSpeed = particleSpeed;
 		this.range = range;
 		this.spot = spot;
 		this.ignoreUnits = ignoreUnits;
@@ -28,7 +33,7 @@ public class Projectile : DeliveryMethod
 		List<SequenceAction> list = new List<SequenceAction>();
 		target = Process(actor, target);
 		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
-		list.Add( ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position));
+		list.Add(ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, particleName, particleSpeed));
 		return list;
 	}
 

@@ -290,7 +290,9 @@ public static class PrefabManager
 				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				int spot = int.Parse(node.Attributes?["fowSpot"]?.InnerText ?? "3");
 				bool ignoreUnits = bool.Parse(node.Attributes?["ignoreUnits"]?.InnerText ?? "false");
-				dvm = new Projectile(range,spot,ignoreUnits);
+				string particleName = node.Attributes?["particle"]?.InnerText ?? "";
+				int particleSpeed = int.Parse(node.Attributes?["particleSpeed"]?.InnerText ?? "1");
+				dvm = new Projectile(particleName, particleSpeed,range,spot,ignoreUnits);
 			}
 
 
@@ -399,7 +401,7 @@ public static class PrefabManager
 			foreach (var p in particlesList)
 			{
 				var element = (XmlElement) p;
-				var parm = new SpawnParticle.ParticleParams();
+				var parm = new SpawnParticle.RandomisedParticleParams();
 				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
 				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
 	
@@ -408,6 +410,7 @@ public static class PrefabManager
 				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
 				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
 				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
+				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "-0.1,0.1";
 
 				var splitX = velxRange.Split(',');
 				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
@@ -428,7 +431,14 @@ public static class PrefabManager
 				var splitLife = lifeRange.Split(',');
 				parm.LifetimeMin = float.Parse(splitLife[0],CultureInfo.InvariantCulture);
 				parm.LifetimeMax = float.Parse(splitLife[1],CultureInfo.InvariantCulture);
+				
+				var splitRot = rotationRange.Split(',');
+				parm.RotationMin = float.Parse(splitRot[0],CultureInfo.InvariantCulture);
+				parm.RotationMax = float.Parse(splitRot[1],CultureInfo.InvariantCulture);
 	
+				parm.Damping = float.Parse(element.Attributes?["damping"]?.InnerText ?? "0.99",CultureInfo.InvariantCulture);
+				
+				
 				eff.ParticleParamsList.Add(parm);
 			}
 			

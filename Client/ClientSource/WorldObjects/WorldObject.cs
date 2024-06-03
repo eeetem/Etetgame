@@ -55,7 +55,7 @@ public partial class WorldObject : IDrawable
 					break;
 			}
 		}
-		if (Type.Edge && Type.Faceable && this.Facing == Direction.West)
+		if (Type.Edge && Type.Faceable && Facing == Direction.West)
 		{
 			DrawOrder += 0.1f;
 		}

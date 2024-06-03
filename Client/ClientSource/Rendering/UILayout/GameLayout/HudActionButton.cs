@@ -40,7 +40,7 @@ public class HudActionButton
 		Cost = cost;
 		Tooltip = tooltip;
 		CanOverwatch = false;
-		this.SelfOnly = selfOnly;
+		SelfOnly = selfOnly;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;

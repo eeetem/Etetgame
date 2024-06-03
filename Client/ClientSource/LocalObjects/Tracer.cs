@@ -18,8 +18,8 @@ public class Tracer : IDrawable
 	{
 		transform2 = new Transform2();
 		transform2.Scale = new Vector2(10, 10);
-		this._start = start;
-		this._end = end;
+		_start = start;
+		_end = end;
 		Tracers.Add(this);
 	}
 

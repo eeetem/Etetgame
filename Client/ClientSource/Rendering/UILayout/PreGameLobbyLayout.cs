@@ -106,7 +106,7 @@ public class PreGameLobbyLayout : MenuLayout
 			Width = (int)(150*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(0*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{

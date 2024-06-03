@@ -203,9 +203,7 @@ public static class RenderSystem
 		{
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
-			
-
-			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			spriteBatch.Draw(texture, transform.Position+new Vector2(texture.Width/2f,texture.Height/2f),null,obj.GetColor(), transform.Rotation,new Vector2(texture.Width/2f,texture.Height/2f), transform.Scale, new SpriteEffects(), 0);
 
 		}
 		spriteBatch.End();

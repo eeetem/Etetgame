@@ -14,6 +14,8 @@ public class ProjectileAction : SequenceAction
 	
 	public Vector2Int From;
 	public Vector2Int To;
+	private string particleName;
+	private int particleSpeed;
 
 	protected bool Equals(ProjectileAction other)
 	{
@@ -38,17 +40,21 @@ public class ProjectileAction : SequenceAction
 		}
 	}
 
-	public static ProjectileAction Make(Vector2Int from,Vector2Int to) 
+	public static ProjectileAction Make(Vector2Int from,Vector2Int to, string particleName, int particleSpeed)
 	{
 		ProjectileAction t = (GetAction(SequenceType.Projectile) as ProjectileAction)!;
 		t.From = from;
 		t.To = to;
+		t.particleName = particleName;
+		t.particleSpeed = particleSpeed;
 		return t;
 	}
+
+	
 #if SERVER
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
 	{
-		return false;
+		return WorldManager.Instance.GetTileAtGrid(From).IsVisible(Visibility.Partial,player1) || WorldManager.Instance.GetTileAtGrid(To).IsVisible(Visibility.Partial,player1);
 	}
 #endif
 
@@ -61,16 +67,21 @@ public class ProjectileAction : SequenceAction
 	}
 
 	
-	//todo serverside scattering
 	protected override void RunSequenceAction()
 	{
-
+#if SERVER
+		return;
+#else
+	//	new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/"+particleName), Utility.GridToWorldPos(From + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(To+ new Vector2(0.5f, 0.5f)), particleSpeed);
+#endif
 	}
 
 	protected override void SerializeArgs(Message message)
 	{
 		message.Add(From);
 		message.Add(To);
+		message.Add(particleName);
+		message.Add(particleSpeed);
 		
 	}
 
@@ -78,6 +89,8 @@ public class ProjectileAction : SequenceAction
 	{
 		From = message.GetSerializable<Vector2Int>();
 		To = message.GetSerializable<Vector2Int>();
+		particleName = message.GetString();
+		particleSpeed = message.GetInt();
 
 	}
 #if CLIENT

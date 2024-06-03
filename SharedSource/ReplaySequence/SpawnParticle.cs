@@ -12,7 +12,7 @@ public class SpawnParticle : SequenceAction
 	{
 		return SequenceType.SpawnParticle;
 	}
-	public struct ParticleParams : IMessageSerializable
+	public struct RandomisedParticleParams : IMessageSerializable
 	{
 		public string TextureName;
 		public int Count;
@@ -21,6 +21,10 @@ public class SpawnParticle : SequenceAction
 		public float AccelerationXMin, AccelerationXMax;
 		public float AccelerationYMin, AccelerationYMax;
 		public float LifetimeMin, LifetimeMax;
+		public float Damping;
+		public float RotationMax;
+		public float RotationMin;
+
 		public void Serialize(Message message)
 		{
 			message.Add(TextureName);
@@ -35,6 +39,9 @@ public class SpawnParticle : SequenceAction
 			message.Add(AccelerationYMax);
 			message.Add(LifetimeMin);
 			message.Add(LifetimeMax);
+			message.Add(Damping);
+			message.Add(RotationMax);
+			message.Add(RotationMin);
 		}
 
 		public void Deserialize(Message message)
@@ -51,15 +58,18 @@ public class SpawnParticle : SequenceAction
 			AccelerationYMax = message.GetFloat();
 			LifetimeMin = message.GetFloat();
 			LifetimeMax = message.GetFloat();
+			Damping = message.GetFloat();
+			RotationMax = message.GetFloat();
+			RotationMin = message.GetFloat();
 		}
 	}
-	ParticleParams _paramsList;
+	RandomisedParticleParams _paramsList;
 	Vector2Int _position;
 
-	public static SpawnParticle Make(ParticleParams particleParamsList, Vector2Int position) 
+	public static SpawnParticle Make(RandomisedParticleParams randomisedParticleParamsList, Vector2Int position) 
 	{
 		SpawnParticle t = (GetAction(SequenceType.SpawnParticle) as SpawnParticle)!;
-		t._paramsList = particleParamsList;
+		t._paramsList = randomisedParticleParamsList;
 		t._position = position;
 		return t;
 	}
@@ -74,9 +84,10 @@ public class SpawnParticle : SequenceAction
 		for (int i = 0; i < _paramsList.Count; i++)
 		{
 			Vector2 velocity = new Vector2(Random.Shared.NextSingle(_paramsList.VelocityXMin/500f, _paramsList.VelocityXMax/500f), Random.Shared.NextSingle(_paramsList.VelocityYMin/500f, _paramsList.VelocityYMax/500f));
-			Vector2 acceleration = new Vector2(Random.Shared.NextSingle(_paramsList.AccelerationXMin/500f, _paramsList.AccelerationXMax/500f), Random.Shared.NextSingle(_paramsList.AccelerationYMin/500f, _paramsList.AccelerationYMax/500f));
+			Vector2 acceleration = new Vector2(Random.Shared.NextSingle(_paramsList.AccelerationXMin/5000f, _paramsList.AccelerationXMax/5000f), Random.Shared.NextSingle(_paramsList.AccelerationYMin/5000f, _paramsList.AccelerationYMax/5000f));
 			float LifeTime = Random.Shared.NextSingle(_paramsList.LifetimeMin, _paramsList.LifetimeMax);
-			new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/"+_paramsList.TextureName), Utility.GridToWorldPos(_position), velocity,acceleration, LifeTime);
+			float rotationVel = Random.Shared.NextSingle(_paramsList.RotationMin, _paramsList.RotationMax);
+			new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/"+_paramsList.TextureName), Utility.GridToWorldPos(_position), velocity,acceleration,rotationVel,_paramsList.Damping, LifeTime);
 		}
 		
 #endif
@@ -90,7 +101,7 @@ public class SpawnParticle : SequenceAction
 
 	protected override void DeserializeArgs(Message message)
 	{
-		_paramsList = message.GetSerializable<ParticleParams>();
+		_paramsList = message.GetSerializable<RandomisedParticleParams>();
 		_position = message.GetSerializable<Vector2Int>();
 	}
 
@@ -104,7 +115,7 @@ public class SpawnParticle : SequenceAction
 	}
 #if SERVER
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
-	{
+	{ 
 		return WorldManager.Instance.GetTileAtGrid(_position).IsVisible(Visibility.Partial,player1);
 	}
 #endif

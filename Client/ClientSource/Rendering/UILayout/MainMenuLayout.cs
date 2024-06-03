@@ -435,7 +435,7 @@ public class MainMenuLayout : UiLayout
 			Width = (int)((Chatsize.X-20)*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(13*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{

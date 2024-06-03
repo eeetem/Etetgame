@@ -10,7 +10,8 @@
     <name>Smoke</name>
     <spawnConsequences  range="1">
       <particles>
-        <particle name="smoke" count="10" velocityXRange="-5,5" velocityYRange="0,2" accelerationXRange="0,0" accelerationYRange="0,0" lifetimeRange="1000,2000"/>
+        <particle name="smoke" count="25" velocityXRange="-120,120" velocityYRange="35,60" accelerationXRange="0,0" accelerationYRange="-0.5,-1" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,1000"/>
+
       </particles>
     </spawnConsequences>
   </object>
@@ -516,7 +517,8 @@
       
       <effect>
         <delivery>
-          <projectile ignoreUnits="false" range="24" fowSpot="4"/>
+          <projectile particleName="RPG" particleSpeed="1" ignoreUnits="false" range="24" fowSpot="4">
+          </projectile>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>

@@ -14,6 +14,7 @@ using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using Riptide;
 using Salaros.Configuration;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -48,7 +49,9 @@ public class Game1 : Game
 
 	protected override void Initialize()
 	{
+		base.Initialize();
 		Log.Init();
+		UpdateGameSettings();
 		spriteBatch = new SpriteBatch(GraphicsDevice);
 		Camera.Init(GraphicsDevice,Window);
 		//WorldEditSystem.Init();
@@ -62,12 +65,12 @@ public class Game1 : Game
 		
 		
 
-		base.Initialize();
+		
 
         
 		DiscordManager.Init();
 		UI.SetUI(new MainMenuLayout());
-		UpdateGameSettings();
+		
 		MainMenuLayout.GradientPos = new Vector2(-1000000, 0);
 	}
 
@@ -149,7 +152,7 @@ public class Game1 : Game
 		{
 		//	var pos = new Vector2(51, 51);
 		//	new Tracer(Utility.GridToWorldPos(pos),Camera.GetMouseWorldPos());
-		//	new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/smoke"), Camera.GetMouseWorldPos(), new Vector2(-1,-0.5f),new Vector2(0,0), 50000);
+	//		new Particle(TextureManager.GetTextureFromPNG("Particles/smoke"), Camera.GetMouseWorldPos(), new Vector2(Random.Shared.NextSingle(-0.2f,0.2f),Random.Shared.NextSingle(-0f,-0.5f)),new Vector2(Random.Shared.NextSingle(-0.0001f,0.0001f),Random.Shared.NextSingle(-0f,0.0001f)), Random.Shared.NextSingle(-0.1f,0.1f),0.9f,Random.Shared.NextSingle(10000f,20000f));
 
 		}
 
