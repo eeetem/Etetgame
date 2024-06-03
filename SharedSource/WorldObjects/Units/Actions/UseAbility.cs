@@ -28,6 +28,7 @@ public class UseAbility : Action
 	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		UnitAbility action = actor.Abilities[args.AbilityIndex];
+		if (args.TargetObj == null) args.TargetObj = WorldManager.Instance.GetTileAtGrid((Vector2Int)args.Target).Surface;
 		var queue1 = new Queue<SequenceAction>();
 		
 		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
