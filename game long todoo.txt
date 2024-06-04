@@ -19,6 +19,7 @@ only hit units middle of tile
 multiple actions sent at once
 grende preview out of range
 can't be used on officers tooltip
+capture notification broken
 
 
 sfx list:

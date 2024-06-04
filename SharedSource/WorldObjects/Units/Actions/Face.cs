@@ -38,7 +38,7 @@ public class Face : Action
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value));
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value,true));
 		return new Queue<SequenceAction>[] {queue};
 
 	}

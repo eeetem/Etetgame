@@ -141,8 +141,12 @@ public static partial class GameManager
             }
 
         }
+#if CLIENT
+        GameLayout.SetScore(score);
+        Audio.PlaySound("UI/turn");
+#endif
 
-        if (!PreGameData.SinglePLayerFeatures)
+        if (!PreGameData.SinglePLayerFeatures || PreGameData.Player2Name != "AI")
         {
             if (team1Present && !team2Present)
             {
@@ -163,10 +167,6 @@ public static partial class GameManager
 #endif
                 score--;
             }
-#if CLIENT
-		GameLayout.SetScore(score);
-		Audio.PlaySound("UI/turn");
-#endif
 
             if (score > 10)
             {
@@ -212,11 +212,13 @@ public static partial class GameManager
         }
         UpdatePlayerSideUnitPositions(true);
         Program.InformMasterServer();
+        
 #endif
 
         TimeTillNextTurn = PreGameData.TurnTime*1000;
         
-      
+
+
     }
 
 

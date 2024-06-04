@@ -9,6 +9,7 @@ using Riptide;
 #if CLIENT
 using DefconNull.Rendering;
 using DefconNull.Rendering.UILayout;
+using Microsoft.Xna.Framework.Input;
 #endif
 
 namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
@@ -157,6 +158,7 @@ public class UnitMove : UnitSequenceAction
 
     protected override void RunSequenceAction()
     {
+        bool hasClicked = false;
         Actor.CanTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
         WorldManager.Instance.MakeFovDirty();
@@ -170,8 +172,16 @@ public class UnitMove : UnitSequenceAction
                     Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
                 
 #if CLIENT
-                //(int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*
-                Thread.Sleep( (int) ((1000f/walkFps)*Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState())));
+                //(int) *
+                var animLenght = Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
+                int sleepTime = (int) ((1000f / walkFps) * animLenght);
+                if (animLenght == 0)
+                {
+                    sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
+                }
+                if(Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    sleepTime = 10;
+                Thread.Sleep(sleepTime);
 #else
                 while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
                     Thread.Sleep(10);

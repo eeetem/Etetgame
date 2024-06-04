@@ -98,9 +98,6 @@ namespace DefconNull.WorldObjects
             
 			if (justSpawned)
 			{
-
-
-				
 				StartTurn();
 			}
 
@@ -277,7 +274,8 @@ namespace DefconNull.WorldObjects
 				}
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
-					GameManager.PlayerUnitPositionsDirty = true;//re update units and send update to client
+					GameManager.ShouldRecalculateUnitPositions = true;//re update units and send update to client
+					GameManager.ShouldUpdateUnitPositions = true;//re update units and send update to client
 #endif
 					return;
 				}
@@ -578,9 +576,14 @@ namespace DefconNull.WorldObjects
 				if(tile.Surface==null) continue;
 				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
 				{
-					result.Add(position);
+					if(VisibleTiles.ContainsKey(tile.Position) && VisibleTiles[tile.Position] >= Visibility.Partial){
+						
+						result.Add(position);
+					}
+					
 				}
 			}
+			
 
 			return result;
 		}

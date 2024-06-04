@@ -370,7 +370,7 @@ public class Shootable : Effect
 
 				if (hitObj.UnitComponent is not null)
 				{
-					var lookAtAttacker = FaceUnit.Make(hitObj.ID, p.Result.StartPoint);
+					var lookAtAttacker = FaceUnit.Make(hitObj.ID, p.Result.StartPoint,false);
 					retrunList.Add(lookAtAttacker);
 				}
 				var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);

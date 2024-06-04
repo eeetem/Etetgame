@@ -34,7 +34,7 @@ public class UseAbility : Action
 		MoveCamera m = MoveCamera.Make(actor.WorldObject.TileLocation.Position,false,1);
 		queue1.Enqueue(m);
 		
-		var turnact = FaceUnit.Make(actor.WorldObject.ID, args.TargetObj!.TileLocation.Position);
+		var turnact = FaceUnit.Make(actor.WorldObject.ID, args.TargetObj!.TileLocation.Position,false);
 		queue1.Enqueue(turnact);
 
 		var res = action.GetConsequences(actor, args.TargetObj!);
