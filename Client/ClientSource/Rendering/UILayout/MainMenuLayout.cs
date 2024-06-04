@@ -480,7 +480,7 @@ public class MainMenuLayout : UiLayout
 
 	}
 	
-	private void Tutorial()					/////////////////////////////////////////////////////////////////////
+	private void Tutorial()
 	{
 		MakeMenuBox();
 		var tutMenu = new VerticalStackPanel();
@@ -558,7 +558,7 @@ public class MainMenuLayout : UiLayout
 
 		NetworkingManager.StartTutorial();
 
-		GameLayout.GameLayout.TutorialSequence();
+		GameLayout.GameLayout.BasicTutorialSequence();
 		Audio.ForcePlayMusic("Warframes");
 		Audio.OnGameStateChange(GameState.Playing);
 	}
@@ -569,7 +569,7 @@ public class MainMenuLayout : UiLayout
 
 		NetworkingManager.StartTutorial();
 
-		GameLayout.GameLayout.TutorialSequence();
+		GameLayout.GameLayout.AdvancedTutorialSequence();
 		Audio.ForcePlayMusic("Warframes");
 		Audio.OnGameStateChange(GameState.Playing);
 	}
