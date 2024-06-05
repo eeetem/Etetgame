@@ -363,7 +363,6 @@ public class Shootable : Effect
 		retrunList.Add(shoot);
 		if (p.Result.hit)
 		{
-
 			var hitObj =PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{
@@ -376,10 +375,6 @@ public class Shootable : Effect
 				var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);
 				retrunList.Add(act2);
 
-			}
-			else
-			{
-				Console.WriteLine("hitobj is null");
 			}
 		}
 

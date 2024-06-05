@@ -22,7 +22,7 @@ public static class Program
 		Console.WriteLine(msg);
 	}
 
-	private static ushort startPort = 1630;
+	private static ushort startPort = 52233;
 	static void Main(string[] args)
 	{
 		AppDomain currentDomain = default(AppDomain);
@@ -61,7 +61,7 @@ public static class Program
 
 		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
 
-		startPort = 1630;
+
 		if(args.Length>0)
 		{
 			startPort = ushort.Parse(args[0]);
@@ -189,10 +189,10 @@ public static class Program
 			}
 			process.ErrorDataReceived += (a, b) =>
 			{
-				if (b.Data?.ToString() != "")
+				if (b.Data!= null && b.Data.ToString() != "")
 				{
 					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
-					//copy to crashes folder
+
 					//copy to crashes folder
 					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
 					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
