@@ -31,3 +31,4 @@ Alpha 4.1
 -Master server properly captures crashes
 -Specialist range buff
 -Capture point notification fixed
+-Corner Shooting

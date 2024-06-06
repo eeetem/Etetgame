@@ -152,14 +152,14 @@ public static partial class GameManager
             {
                 Score++;
 #if SERVER
-                NetworkingManager.CaptureNotify(capPoint,score);
+                NetworkingManager.CaptureNotify(capPoint,Score);
 #endif
             }
             else if (!team1Present && team2Present)
             {
                 Score--;
 #if SERVER
-                NetworkingManager.CaptureNotify(capPoint,score);
+                NetworkingManager.CaptureNotify(capPoint,Score);
 #endif
             }
 

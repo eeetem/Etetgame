@@ -54,16 +54,18 @@ public class UseAbility : Action
 #if CLIENT
 		private ActionExecutionParamters _lastArgs = new ActionExecutionParamters();
 		private Unit? _lastActor = null;
+		private Vector2Int? _lastActorPos = null;
 		List<SequenceAction> _previewCache = new List<SequenceAction>();
 
 		public override void Preview(Unit actor, ActionExecutionParamters args, SpriteBatch spriteBatch)
 		{
 			UnitAbility action = actor.Abilities[args.AbilityIndex];
-			if (_lastActor == null || !Equals(_lastArgs, args) || _lastActor.WorldObject.TileLocation.Position != actor.WorldObject.TileLocation.Position)
+			if (_lastActor == null || !Equals(_lastArgs, args) || !Equals(_lastActor, actor) || _lastActorPos != actor.WorldObject.TileLocation.Position)
 			{
 				_previewCache = action.GetConsequences(actor, args.TargetObj!);
 				_lastActor = actor;
 				_lastArgs = args;
+				_lastActorPos = actor.WorldObject.TileLocation.Position;
 			}
 			var pos = actor.WorldObject.TileLocation.Position;
 			spriteBatch.DrawLine(Utility.GridToWorldPos(actor.WorldObject.TileLocation.Position + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(pos+ new Vector2(0.5f, 0.5f)), Color.Red, 2);

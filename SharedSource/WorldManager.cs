@@ -603,11 +603,25 @@ public  partial class WorldManager
 				result.hit = false;
 				return result;
 			}
-			Vector2 collisionVector = (Vector2) tile.Position + new Vector2(0.5f, 0.5f) - collisionPointlong;
-
+			
+		
+			
 			if (IsPositionValid(lastCheckingSquare))
 			{
-				WorldObject hitobj = GetCoverObj(lastCheckingSquare,Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables,lastCheckingSquare.Equals(startcell),pseudoLayer);
+				
+				Vector2 middleSquareCenter = new Vector2(checkingSquare.X + 0.5f, checkingSquare.Y + 0.5f);
+				float squareSideLength = 0.4f; // adjust this value as needed
+				Vector2 topLeft = middleSquareCenter + new Vector2(-squareSideLength / 2, squareSideLength / 2);
+				Vector2 topRight = middleSquareCenter + new Vector2(squareSideLength / 2, squareSideLength / 2);
+				Vector2 bottomLeft = middleSquareCenter + new Vector2(-squareSideLength / 2, -squareSideLength / 2);
+				Vector2 bottomRight = middleSquareCenter + new Vector2(squareSideLength / 2, -squareSideLength / 2);
+
+				bool intersectsMiddle = Utility.LineIntersectsLine(startPos, endPos, topLeft, topRight) ||
+				                        Utility.LineIntersectsLine(startPos, endPos, topRight, bottomRight) ||
+				                        Utility.LineIntersectsLine(startPos, endPos, bottomRight, bottomLeft) ||
+				                        Utility.LineIntersectsLine(startPos, endPos, bottomLeft, topLeft);
+				// Check if the ray intersects the middle square
+				WorldObject hitobj = GetCoverObj(lastCheckingSquare,Utility.Vec2ToDir(checkingSquare - lastCheckingSquare), visibilityCast, ignoreControllables || !intersectsMiddle,lastCheckingSquare.Equals(startcell),pseudoLayer);
 
 				if (visibilityCast)
 				{
@@ -877,10 +891,10 @@ public  partial class WorldManager
 		{
 			if (!ignoreContollables)
 			{
-				if (tileAtPos.UnitAtLocation != null && tileAtPos.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileAtPos.UnitAtLocation.WorldObject.Facing == dir || tileAtPos.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileAtPos.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
+				if (tileInDir?.UnitAtLocation != null && tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) )
 				{
 
-					biggestCoverObj = tileAtPos.UnitAtLocation.WorldObject;
+					biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
 
 				}
 			}
