@@ -191,13 +191,14 @@ public static class Program
 			{
 				if (b.Data!= null && b.Data.ToString() != "")
 				{
-					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
+					
 
 					//copy to crashes folder
 					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
 					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
 					File.Delete(destination);
 					File.Copy(path, destination);
+					File.AppendAllText(destination, "ERROR - Server(" + port + "):" + b.Data?.ToString());
 				}
 			};
 			process.OutputDataReceived += (sender, args) =>

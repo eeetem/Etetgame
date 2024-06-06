@@ -1936,7 +1936,6 @@ public partial class GameLayout : MenuLayout
 		Action,
 		None,
 		Overwatch,
-		EnemyPreview
 	}
 
 	private static ActiveActionType activeAction = ActiveActionType.None;

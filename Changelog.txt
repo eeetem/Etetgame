@@ -28,3 +28,6 @@ Alpha 4.1
 -Smoke Particles!
 -Movement animation can be skipped by holding mouse button
 -Fixed action points flickering on/off when watching an enemy use an ability
+-Master server properly captures crashes
+-Specialist range buff
+-Capture point notification fixed

@@ -375,7 +375,7 @@
 
     <action immideate="true" detCost ="1" moveCost="1" actCost="0" aiExempt="false">
       <name>Rally</name>
-      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+      <tip>All nearby friendlies stop panicking and gain full determination, doesn't affect other officers</tip>
 
       
       <effect>
@@ -392,7 +392,7 @@
 
     <action detCost ="2" moveCost="1" actCost="0">
       <name>Command</name>
-      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight</tip>
+      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight. Doesn't affect officers</tip>
       <targetAid>friend,!Officer</targetAid>
 
       <effect range="1" visible ="false">
@@ -517,7 +517,7 @@
       
       <effect>
         <delivery>
-          <projectile particleName="RPG" particleSpeed="1" ignoreUnits="false" range="24" fowSpot="4">
+          <projectile particleName="RPG" particleSpeed="1" ignoreUnits="false" range="26" fowSpot="4">
           </projectile>
         </delivery>
         <consequences range="2">

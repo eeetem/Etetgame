@@ -185,7 +185,8 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
-
+		if(SequenceManager.SequenceRunning) return; //avoid mutliple actions in a single frame if the server lags
+		
 		Log.Message("NETWORKING","Recived Game Action from: " + senderID);
 		if (!GameManager.Player2!.IsPracticeOpponent)
 		{

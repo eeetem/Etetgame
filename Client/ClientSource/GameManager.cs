@@ -118,7 +118,7 @@ public static partial class GameManager
 		Console.WriteLine("IsPlayer1: " + IsPlayer1);
 		Console.WriteLine("IsPlayer1Turn: " + IsPlayer1Turn);
 			
-		score = data.Score;
+		Score = data.Score;
 		if (GameState != data.GameState)
 		{
 			Audio.OnGameStateChange(GameState);

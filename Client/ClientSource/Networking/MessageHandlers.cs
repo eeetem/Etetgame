@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -66,6 +67,14 @@ public static partial class NetworkingManager
 	private static void RecieveEndTrugn(Message message)
 	{
 		GameManager.SetEndTurn();
+	}
+	[MessageHandler((ushort) NetworkMessageID.CaptureNotif)]
+	private static void ReciveCaptureNotif(Message message)
+	{
+		Vector2Int loc = message.GetSerializable<Vector2Int>();
+		Audio.PlaySound("capture");
+		Camera.SetPos(loc);
+		GameManager.Score = message.GetInt();
 	}
 	
 	[MessageHandler((ushort)NetworkMessageID.GameData)]

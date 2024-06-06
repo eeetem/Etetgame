@@ -52,7 +52,9 @@ public static partial class NetworkingManager
 		server.Start(port, 10);
 			
 		Log.Message("NETWORKING","Started server at port" + port);
-		
+
+
+
 	}
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
@@ -670,7 +672,12 @@ public static partial class NetworkingManager
 
 	}
 
-	
 
-
+	public static void CaptureNotify(Vector2Int capPoint, int currentScore)
+	{
+		Message msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.CaptureNotif);
+		msg.AddSerializable(capPoint);
+		msg.Add(currentScore);
+		server.SendToAll(msg);
+	}
 }

@@ -56,7 +56,7 @@ public static partial class GameManager
     public static List<WorldObject> CapturePoints = new List<WorldObject>();
     public static readonly List<Vector2Int> T1SpawnPoints = new();
     public static readonly List<Vector2Int> T2SpawnPoints = new();
-    public static int score;
+    public static int Score;
     public static float CurrentTurnPercentDone;
 
     public static void Register(WorldObject wo)
@@ -142,7 +142,7 @@ public static partial class GameManager
 
         }
 #if CLIENT
-        GameLayout.SetScore(score);
+        GameLayout.SetScore(Score);
         Audio.PlaySound("UI/turn");
 #endif
 
@@ -150,31 +150,27 @@ public static partial class GameManager
         {
             if (team1Present && !team2Present)
             {
-#if CLIENT
-			Audio.PlaySound("capture");
-			Thread.Sleep(2000);
-			Camera.SetPos(capPoint);
+                Score++;
+#if SERVER
+                NetworkingManager.CaptureNotify(capPoint,score);
 #endif
-                score++;
             }
             else if (!team1Present && team2Present)
             {
-
-#if CLIENT
-			Audio.PlaySound("capture");
-			Thread.Sleep(2000);
-			Camera.SetPos(capPoint);
+                Score--;
+#if SERVER
+                NetworkingManager.CaptureNotify(capPoint,score);
 #endif
-                score--;
             }
 
-            if (score > 10)
+            
+            if (Score > 10)
             {
                 Log.Message("GAME","team 2 lost due to score");
                 EndGame(true);
             }
 
-            if (score < -10)
+            if (Score < -10)
             {
                 Log.Message("GAME","team 1 lost due to score");
                 EndGame(false);
@@ -233,7 +229,7 @@ public static partial class GameManager
     {
         GameStateData data = new GameStateData();
         data.IsPlayer1Turn = IsPlayer1Turn;
-        data.Score = score;
+        data.Score = Score;
         data.GameState = GameState;
         var units = GetTeamUnits(IsPlayer1Turn);
         var maxPoints = 0;
