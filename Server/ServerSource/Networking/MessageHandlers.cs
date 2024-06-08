@@ -84,7 +84,7 @@ public static partial class NetworkingManager
 		if(senderID != GameManager.Player1?.Connection?.Id) return;
 		if(!SinglePlayerFeatures) return;
 		if( GameManager.GameState != GameState.Lobby) SendGameData();//incase the ui is desynced
-		GameManager.StartTutorial();
+		GameManager.StartBasicTutorial();
 	}
 	[MessageHandler((ushort)NetworkMessageID.SquadComp)]
 	private static void ReciveSquadComp(ushort senderID,Message message)

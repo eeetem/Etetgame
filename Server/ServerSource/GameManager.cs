@@ -454,7 +454,7 @@ public static partial class GameManager
 
 
 	public static bool tutorial = false;
-	public static void StartTutorial()
+	public static void StartBasicTutorial()
 	{
 		tutorial = true;
 		WorldManager.Instance.LoadMap("/Maps/Special/tutorial.mapdata");
@@ -481,10 +481,10 @@ public static partial class GameManager
 			
 			data = new WorldObject.WorldObjectData("Heavy");
 			cdata = new Unit.UnitData(false);
-			//cdata.Determination = 0;
+			//cdata.Determination = 1;
 			data.UnitData = cdata;
 			data.JustSpawned = false;
-			data.Health = 100;
+			data.Health = 8;
 			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(33, 36));
 			SequenceManager.AddSequence(objMake);
 			GameState = GameState.Playing;
@@ -514,12 +514,24 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
+
+			foreach (var u in T2Units)
+			{
+				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
+				if (unit.Type.Name == "Heavy")
+				{
+					unit.Determination.Current = 0;
+					break;
+				} 
+			}
+			
 			while (IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
 			}
 
 		
+			
 			
 			var del = WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(new Vector2Int(33, 42)).UnitAtLocation!.WorldObject);
 			SequenceManager.AddSequence(del);
