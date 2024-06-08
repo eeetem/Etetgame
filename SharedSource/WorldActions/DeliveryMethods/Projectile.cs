@@ -14,32 +14,35 @@ namespace DefconNull.WorldActions.DeliveryMethods;
 
 public class Projectile : DeliveryMethod
 {	
-	readonly string particleName;
-	readonly int particleSpeed;
-	readonly int range;
-	readonly int spot;
-	private readonly bool ignoreUnits;
-	public Projectile(string particleName, int particleSpeed,int range, int spot, bool ignoreUnits = false)
+	readonly string _particleName;
+	readonly float _particleSpeed;
+	readonly int _range;
+	readonly int _spot;
+	private readonly bool _ignoreUnits;
+	private readonly List<SpawnParticle.RandomisedParticleParams> _particleSpawnParams;
+		
+	public Projectile(string particleName, float particleSpeed,int range, int spot, bool ignoreUnits, List<SpawnParticle.RandomisedParticleParams> particleSpawnParams)
 	{
-		this.particleName = particleName;
-		this.particleSpeed = particleSpeed;
-		this.range = range;
-		this.spot = spot;
-		this.ignoreUnits = ignoreUnits;
+		this._particleName = particleName;
+		this._particleSpeed = particleSpeed;
+		this._range = range;
+		this._spot = spot;
+		this._ignoreUnits = ignoreUnits;
+		_particleSpawnParams = particleSpawnParams;
 	}
 
-	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject target)
+	public override List<SequenceAction> ExectuteAndProcessLocationChild(Unit actor,ref  WorldObject? target)
 	{
 		List<SequenceAction> list = new List<SequenceAction>();
 		target = Process(actor, target);
-		list.Add(MoveCamera.Make(target.TileLocation.Position,true,spot));
-		list.Add(ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, particleName, particleSpeed));
+		list.Add(MoveCamera.Make(target.TileLocation.Position,true,_spot));
+		list.Add(ProjectileAction.Make(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, _particleName, _particleSpeed, _particleSpawnParams));
 		return list;
 	}
 
 	public override float GetOptimalRangeAI(float margin)
 	{
-		return range+margin;
+		return _range+margin;
 	}
 
 	private WorldObject Process(Unit actor, WorldObject target)
@@ -50,11 +53,11 @@ public class Projectile : DeliveryMethod
 		}
 
 		//if out of range pick furthest point in range
-		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > range)
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > _range)
 		{
 
 			Vector2 direction = Vector2.Normalize(target.TileLocation.Position - actor.WorldObject.TileLocation.Position);
-			Vector2 newTargetPosition = actor.WorldObject.TileLocation.Position + direction * range;
+			Vector2 newTargetPosition = actor.WorldObject.TileLocation.Position + direction * _range;
 			if (WorldManager.Instance.GetTileAtGrid(newTargetPosition).Surface != null)
 			{
 				target = WorldManager.Instance.GetTileAtGrid(newTargetPosition).Surface!;
@@ -66,7 +69,7 @@ public class Projectile : DeliveryMethod
 			}
 		}
 
-		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false, ignoreControllables:ignoreUnits);
+		var outcome = WorldManager.Instance.CenterToCenterRaycast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, Cover.Full,visibilityCast: false, ignoreControllables:_ignoreUnits);
 		target = WorldManager.Instance.GetTileAtGrid(outcome.CollisionPointShort).Surface!;
 		if(outcome.HitObjId != -1)
 		{

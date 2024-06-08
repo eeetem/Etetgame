@@ -435,7 +435,7 @@ public static partial class GameManager
 			
 			data = new WorldObject.WorldObjectData("Heavy");
 			cdata = new Unit.UnitData(false);
-			//cdata.Determination = 0;
+			cdata.Determination = 1;
 			data.UnitData = cdata;
 			data.JustSpawned = false;
 			data.Health = 100;

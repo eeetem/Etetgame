@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+
 using DefconNull.WorldActions;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using Riptide;
+
+#if CLIENT
+using DefconNull.LocalObjects;
+#endif
 
 namespace DefconNull.ReplaySequence;
 
@@ -18,12 +24,15 @@ public class SpawnParticle : SequenceAction
 		public int Count;
 		public float VelocityXMin, VelocityXMax;
 		public float VelocityYMin, VelocityYMax;
+		public float ScaleMin, ScaleMax;
 		public float AccelerationXMin, AccelerationXMax;
 		public float AccelerationYMin, AccelerationYMax;
-		public float LifetimeMin, LifetimeMax;
+		public int LifetimeMin, LifetimeMax;
 		public float Damping;
 		public float RotationMax;
 		public float RotationMin;
+		public int SpawnDelay;
+		public float SpawnCounter;
 
 		public void Serialize(Message message)
 		{
@@ -42,6 +51,9 @@ public class SpawnParticle : SequenceAction
 			message.Add(Damping);
 			message.Add(RotationMax);
 			message.Add(RotationMin);
+			message.Add(SpawnDelay);
+			message.Add(ScaleMin);
+			message.Add(ScaleMax);
 		}
 
 		public void Deserialize(Message message)
@@ -56,12 +68,35 @@ public class SpawnParticle : SequenceAction
 			AccelerationXMax = message.GetFloat();
 			AccelerationYMin = message.GetFloat();
 			AccelerationYMax = message.GetFloat();
-			LifetimeMin = message.GetFloat();
-			LifetimeMax = message.GetFloat();
+			LifetimeMin = message.GetInt();
+			LifetimeMax = message.GetInt();
 			Damping = message.GetFloat();
 			RotationMax = message.GetFloat();
 			RotationMin = message.GetFloat();
+			SpawnDelay = message.GetInt();
+			ScaleMin = message.GetFloat();
+			ScaleMax = message.GetFloat();
 		}
+#if CLIENT
+		
+
+		public List<Particle> MakeParticles(Vector2Int position)
+		{
+			var list = new List<Particle>();
+			for (int i = 0; i < Count; i++)
+			{
+				Vector2 velocity = new Vector2(Random.Shared.NextSingle(VelocityXMin / 500f, VelocityXMax / 500f), Random.Shared.NextSingle(VelocityYMin / 500f, VelocityYMax / 500f));
+				Vector2 acceleration = new Vector2(Random.Shared.NextSingle(AccelerationXMin / 5000f, AccelerationXMax / 5000f), Random.Shared.NextSingle(AccelerationYMin / 5000f, AccelerationYMax / 5000f));
+				int LifeTime = Random.Shared.Next(LifetimeMin, LifetimeMax);
+				float rotationVel = Random.Shared.NextSingle(RotationMin, RotationMax);
+				float scale = Random.Shared.NextSingle(ScaleMin, ScaleMax);
+				list.Add(new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/" + TextureName), position, velocity, new Vector2(scale, scale), acceleration, rotationVel, Damping, LifeTime));
+			}
+
+			return list;
+		}
+	
+#endif
 	}
 	RandomisedParticleParams _paramsList;
 	Vector2Int _position;
@@ -81,14 +116,9 @@ public class SpawnParticle : SequenceAction
 #if SERVER
 		return;
 #else
-		for (int i = 0; i < _paramsList.Count; i++)
-		{
-			Vector2 velocity = new Vector2(Random.Shared.NextSingle(_paramsList.VelocityXMin/500f, _paramsList.VelocityXMax/500f), Random.Shared.NextSingle(_paramsList.VelocityYMin/500f, _paramsList.VelocityYMax/500f));
-			Vector2 acceleration = new Vector2(Random.Shared.NextSingle(_paramsList.AccelerationXMin/5000f, _paramsList.AccelerationXMax/5000f), Random.Shared.NextSingle(_paramsList.AccelerationYMin/5000f, _paramsList.AccelerationYMax/5000f));
-			float LifeTime = Random.Shared.NextSingle(_paramsList.LifetimeMin, _paramsList.LifetimeMax);
-			float rotationVel = Random.Shared.NextSingle(_paramsList.RotationMin, _paramsList.RotationMax);
-			new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/"+_paramsList.TextureName), Utility.GridToWorldPos(_position), velocity,acceleration,rotationVel,_paramsList.Damping, LifeTime);
-		}
+
+		_paramsList.MakeParticles(_position);
+
 		
 #endif
 	}

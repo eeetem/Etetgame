@@ -228,7 +228,7 @@ public class UnitMove : UnitSequenceAction
     protected override void SerializeArgs(Message message)
     {
         base.SerializeArgs(message);
-        message.AddSerializables<Vector2Int>(Path.ToArray());
+        message.AddSerializables(Path.ToArray());
     }
 
     protected override void DeserializeArgs(Message message)

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using DefconNull.ReplaySequence;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -11,65 +14,114 @@ public class Particle : Rendering.IDrawable
 	private Vector2 _velocity;
 	private readonly Vector2 _acceleration;
 	private readonly Texture2D _sprite;
-	private readonly float _lifeTime;
-	private float _aliveTime;
+	public readonly int LifeTime;
+	public int AliveTime;
 	private readonly float _damping;
 	private float _rotationVel;
 	private readonly bool _fade;
-	public static readonly object syncobj = new object();
+	private int _particleSpawnCounter = 0;
+	private Vector2 originalScale;
+	private List<SpawnParticle.RandomisedParticleParams> _particleSpawn = new List<SpawnParticle.RandomisedParticleParams>();
 
-	
-
-	public static readonly List<Particle> Objects = new List<Particle>();
-	
+	public static readonly ConcurrentBag<Particle> Objects = new ConcurrentBag<Particle>();
+	private readonly bool _scaleDown;
 
 
-	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 acceleration, float rotationVel, float damping, float lifeTime, bool fade = true)
+	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 Scale, Vector2 acceleration, float rotationVel, float damping, int lifeTime, bool fade = true, bool scaleDown = true)
 	{
+
 		_transform = new Transform2();
 		_sprite = sprite;//inefficient but fuck it
 		_transform.Position = position;
-		_transform.Scale = new Vector2(1, 1);
+		_transform.Scale = Scale;
+		originalScale = Scale;
 		_velocity = velocity;
 		_acceleration = acceleration;
-		_lifeTime = lifeTime;
+		LifeTime = lifeTime;
 		_fade = fade;
+		_scaleDown = scaleDown;
 		_damping = damping;
 		_rotationVel = rotationVel;
-		lock (syncobj)
-		{
-			Objects.Add(this);
-		}
+
+		Objects.Add(this);
+		
 	}
 
-	public static void Update(float deltaTime)
+	public Particle(Texture2D texture, Vector2 start, Vector2 end, float particleSpeed, List<SpawnParticle.RandomisedParticleParams> spawnParticleParams)
 	{
-		lock (syncobj)
+		_sprite = texture;
+		_transform = new Transform2();
+		_transform.Position = start;
+		particleSpeed *= 0.001f;
+		_velocity = (end - start) * particleSpeed;
+		
+		_fade = false;
+		_acceleration = new Vector2(0, 0);
+		_transform.Scale = new Vector2(1, 1);
+		_damping = 1f;
+		_transform.Rotation = (float)Math.Atan2(_velocity.Y, _velocity.X);
+		
+		_particleSpawn = spawnParticleParams;
+		
+		Objects.Add(this);
+		LifeTime = (int)((end - start).Length() / particleSpeed);
+	}
+
+	public static void Update(int deltaTime)
+	{
+		Particle? obj;
+		List<Particle> toReturn = new List<Particle>();
+		while (Objects.TryTake(out obj))
 		{
+			// Update velocity by acceleration
+			obj._velocity += obj._acceleration * deltaTime*deltaTime;
+			//apply damping
+			obj._velocity *= obj._damping;
+			// Update position by velocity
+			obj._transform.Position += obj._velocity * deltaTime;
 
-			foreach (var obj in new List<Particle>(Objects))
+				
+			obj.AliveTime += deltaTime;
+
+			obj._rotationVel *= obj._damping;
+				
+			obj._transform.Rotation += obj._rotationVel;
+
+			if (obj._scaleDown)
 			{
+				obj._transform.Scale = obj.originalScale * (1 - (float)obj.AliveTime / obj.LifeTime);
+			}
+				
 
-				// Update velocity by acceleration
-				obj._velocity += obj._acceleration * deltaTime;
-				//apply damping
-				obj._velocity *= obj._damping;
-				// Update position by velocity
-				obj._transform.Position += obj._velocity * deltaTime;
-				
-				obj._aliveTime += deltaTime;
 
-				obj._rotationVel *= obj._damping;
+			List<SpawnParticle.RandomisedParticleParams> updatedParticleSpawn = new List<SpawnParticle.RandomisedParticleParams>();
+
+			foreach(var p in obj._particleSpawn)
+			{
 				
-				obj._transform.Rotation += obj._rotationVel;
-				
-				if (obj._aliveTime > obj._lifeTime)
+				var newP = p with {SpawnCounter = p.SpawnCounter + deltaTime};
+				if (newP.SpawnCounter > newP.SpawnDelay)
 				{
-					Objects.Remove(obj);
+					newP = newP with {SpawnCounter = 0};
+					//create new particle based on parameters
+					newP.MakeParticles(obj._transform.Position).ForEach(x => x._velocity+=obj._velocity);
 				}
 
+				updatedParticleSpawn.Add(newP);
+			}
+
+			obj._particleSpawn = updatedParticleSpawn;
+			if (obj.AliveTime <= obj.LifeTime)
+			{
+				toReturn.Add(obj);
 			}
 		}
+
+		foreach (var p in toReturn)
+		{
+			Objects.Add(p);
+		}
+		
 	}
 
 	public Transform2 GetDrawTransform()
@@ -99,7 +151,7 @@ public class Particle : Rendering.IDrawable
 		if (_fade)
 		{
 		
-			return Color.White * (1 - _aliveTime / _lifeTime);
+			return Color.White * (1 - (float)AliveTime / LifeTime);
 		}
 		return Color.White;
 		

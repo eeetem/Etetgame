@@ -290,9 +290,12 @@ public static class PrefabManager
 				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				int spot = int.Parse(node.Attributes?["fowSpot"]?.InnerText ?? "3");
 				bool ignoreUnits = bool.Parse(node.Attributes?["ignoreUnits"]?.InnerText ?? "false");
-				string particleName = node.Attributes?["particle"]?.InnerText ?? "";
-				int particleSpeed = int.Parse(node.Attributes?["particleSpeed"]?.InnerText ?? "1");
-				dvm = new Projectile(particleName, particleSpeed,range,spot,ignoreUnits);
+				string particleName = node.Attributes?["particleName"]?.InnerText ?? "";
+				float particleSpeed = float.Parse(node.Attributes?["particleSpeed"]?.InnerText ?? "1");
+				List<SpawnParticle.RandomisedParticleParams> list = new List<SpawnParticle.RandomisedParticleParams>();
+				ParseParticles(node, list);
+				
+				dvm = new Projectile(particleName, particleSpeed,range,spot,ignoreUnits,list);
 			}
 
 
@@ -395,54 +398,7 @@ public static class PrefabManager
 			eff.FogOfWarSpotScatter = int.Parse(fowSpot.Attributes?["scatter"]?.InnerText ?? "0");
 		}
 		XmlNode? particles = ((XmlElement) effect).GetElementsByTagName("particles")[0];
-		if (particles != null)
-		{
-			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
-			foreach (var p in particlesList)
-			{
-				var element = (XmlElement) p;
-				var parm = new SpawnParticle.RandomisedParticleParams();
-				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
-				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
-	
-				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
-				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
-				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
-				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
-				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
-				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "-0.1,0.1";
-
-				var splitX = velxRange.Split(',');
-				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
-				parm.VelocityXMax = float.Parse(splitX[1],CultureInfo.InvariantCulture);
-
-				var splitY = velyRange.Split(',');
-				parm.VelocityYMin = float.Parse(splitY[0],CultureInfo.InvariantCulture);
-				parm.VelocityYMax = float.Parse(splitY[1],CultureInfo.InvariantCulture);
-
-				var splitAccX = accxRange.Split(',');
-				parm.AccelerationXMin = float.Parse(splitAccX[0],CultureInfo.InvariantCulture);
-				parm.AccelerationXMax = float.Parse(splitAccX[1],CultureInfo.InvariantCulture);
-
-				var splitAccY = accyRange.Split(',');
-				parm.AccelerationYMin = float.Parse(splitAccY[0],CultureInfo.InvariantCulture);
-				parm.AccelerationYMax = float.Parse(splitAccY[1],CultureInfo.InvariantCulture);
-
-				var splitLife = lifeRange.Split(',');
-				parm.LifetimeMin = float.Parse(splitLife[0],CultureInfo.InvariantCulture);
-				parm.LifetimeMax = float.Parse(splitLife[1],CultureInfo.InvariantCulture);
-				
-				var splitRot = rotationRange.Split(',');
-				parm.RotationMin = float.Parse(splitRot[0],CultureInfo.InvariantCulture);
-				parm.RotationMax = float.Parse(splitRot[1],CultureInfo.InvariantCulture);
-	
-				parm.Damping = float.Parse(element.Attributes?["damping"]?.InnerText ?? "0.99",CultureInfo.InvariantCulture);
-				
-				
-				eff.ParticleParamsList.Add(parm);
-			}
-			
-		}
+		ParseParticles(particles, eff.ParticleParamsList);
         
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
 		if (valitm != null)
@@ -501,4 +457,61 @@ public static class PrefabManager
 		return eff;
 	}
 
+	private static void ParseParticles(XmlNode? particles, List<SpawnParticle.RandomisedParticleParams> list)
+	{
+		if (particles != null)
+		{
+			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
+			foreach (var p in particlesList)
+			{
+				var element = (XmlElement) p;
+				var parm = new SpawnParticle.RandomisedParticleParams();
+				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
+				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
+	
+				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
+				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
+				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
+				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
+				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
+				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "-0.1,0.1";
+				var scaleRange = element.Attributes?["scaleRange"]?.InnerText ?? "1,1";
+
+				var splitX = velxRange.Split(',');
+				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
+				parm.VelocityXMax = float.Parse(splitX[1],CultureInfo.InvariantCulture);
+
+				var splitY = velyRange.Split(',');
+				parm.VelocityYMin = float.Parse(splitY[0],CultureInfo.InvariantCulture);
+				parm.VelocityYMax = float.Parse(splitY[1],CultureInfo.InvariantCulture);
+
+				var splitAccX = accxRange.Split(',');
+				parm.AccelerationXMin = float.Parse(splitAccX[0],CultureInfo.InvariantCulture);
+				parm.AccelerationXMax = float.Parse(splitAccX[1],CultureInfo.InvariantCulture);
+
+				var splitAccY = accyRange.Split(',');
+				parm.AccelerationYMin = float.Parse(splitAccY[0],CultureInfo.InvariantCulture);
+				parm.AccelerationYMax = float.Parse(splitAccY[1],CultureInfo.InvariantCulture);
+
+				var splitLife = lifeRange.Split(',');
+				parm.LifetimeMin = int.Parse(splitLife[0],CultureInfo.InvariantCulture);
+				parm.LifetimeMax = int.Parse(splitLife[1],CultureInfo.InvariantCulture);
+				
+				var splitRot = rotationRange.Split(',');
+				parm.RotationMin = float.Parse(splitRot[0],CultureInfo.InvariantCulture);
+				parm.RotationMax = float.Parse(splitRot[1],CultureInfo.InvariantCulture);
+				
+				var splitScale = scaleRange.Split(',');
+				parm.ScaleMin = float.Parse(splitScale[0],CultureInfo.InvariantCulture);
+				parm.ScaleMax = float.Parse(splitScale[1],CultureInfo.InvariantCulture);
+	
+				parm.Damping = float.Parse(element.Attributes?["damping"]?.InnerText ?? "0.999",CultureInfo.InvariantCulture);
+				parm.SpawnDelay = int.Parse(element.Attributes?["spawnDelay"]?.InnerText ?? "50",CultureInfo.InvariantCulture);
+				
+				
+				list.Add(parm);
+			}
+			
+		}
+	}
 }

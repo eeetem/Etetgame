@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -15,7 +17,8 @@ public class ProjectileAction : SequenceAction
 	public Vector2Int From;
 	public Vector2Int To;
 	private string particleName;
-	private int particleSpeed;
+	private float particleSpeed;
+	private List<SpawnParticle.RandomisedParticleParams> _particleSpawn = new List<SpawnParticle.RandomisedParticleParams>();
 
 	protected bool Equals(ProjectileAction other)
 	{
@@ -40,15 +43,17 @@ public class ProjectileAction : SequenceAction
 		}
 	}
 
-	public static ProjectileAction Make(Vector2Int from,Vector2Int to, string particleName, int particleSpeed)
+	public static ProjectileAction Make(Vector2Int from,Vector2Int to, string particleName, float particleSpeed, List<SpawnParticle.RandomisedParticleParams> particleSpawn)
 	{
 		ProjectileAction t = (GetAction(SequenceType.Projectile) as ProjectileAction)!;
 		t.From = from;
 		t.To = to;
 		t.particleName = particleName;
 		t.particleSpeed = particleSpeed;
+		t._particleSpawn = particleSpawn;
 		return t;
 	}
+
 
 	
 #if SERVER
@@ -59,7 +64,7 @@ public class ProjectileAction : SequenceAction
 #endif
 
 
-	public override BatchingMode Batching => BatchingMode.Always;
+	public override BatchingMode Batching => BatchingMode.Never;
 
 	public override SequenceType GetSequenceType()
 	{
@@ -72,7 +77,20 @@ public class ProjectileAction : SequenceAction
 #if SERVER
 		return;
 #else
-	//	new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/"+particleName), Utility.GridToWorldPos(From + new Vector2(0.5f, 0.5f)), Utility.GridToWorldPos(To+ new Vector2(0.5f, 0.5f)), particleSpeed);
+		if (particleName != "")
+		{
+			var p = new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/" + particleName),
+				Utility.GridToWorldPos(From + new Vector2(0.5f, 0.5f)),
+				Utility.GridToWorldPos(To + new Vector2(0.5f, 0.5f)), particleSpeed,_particleSpawn);
+			while (p.AliveTime <= p.LifeTime)
+			{
+				Thread.Sleep(100);
+				
+			}
+
+		}
+
+		
 #endif
 	}
 
@@ -82,7 +100,8 @@ public class ProjectileAction : SequenceAction
 		message.Add(To);
 		message.Add(particleName);
 		message.Add(particleSpeed);
-		
+		message.AddSerializables(_particleSpawn.ToArray());
+
 	}
 
 	protected override void DeserializeArgs(Message message)
@@ -90,7 +109,9 @@ public class ProjectileAction : SequenceAction
 		From = message.GetSerializable<Vector2Int>();
 		To = message.GetSerializable<Vector2Int>();
 		particleName = message.GetString();
-		particleSpeed = message.GetInt();
+		particleSpeed = message.GetFloat();
+		_particleSpawn = message.GetSerializables<SpawnParticle.RandomisedParticleParams>().ToList();
+
 
 	}
 #if CLIENT

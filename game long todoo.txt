@@ -13,10 +13,9 @@ merge vission and projectile
 signing
 
 
-
-only hit units middle of tile
-
-capture notification broken
+blowing up smoke with grenade
+half walk
+fix auto target through walls
 
 
 sfx list:
