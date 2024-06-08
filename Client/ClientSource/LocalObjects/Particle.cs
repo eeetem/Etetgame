@@ -52,7 +52,6 @@ public class Particle : Rendering.IDrawable
 		_sprite = texture;
 		_transform = new Transform2();
 		_transform.Position = start;
-		particleSpeed *= 0.001f;
 		_velocity = (end - start) * particleSpeed;
 		
 		_fade = false;
