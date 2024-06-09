@@ -117,7 +117,7 @@ public class SpawnParticle : SequenceAction
 		return;
 #else
 
-		_paramsList.MakeParticles(_position);
+		_paramsList.MakeParticles(Utility.GridToWorldPos(_position));
 
 		
 #endif
