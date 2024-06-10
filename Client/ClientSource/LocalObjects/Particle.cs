@@ -27,7 +27,7 @@ public class Particle : Rendering.IDrawable
 	private readonly bool _scaleDown;
 
 
-	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 Scale, Vector2 acceleration, float rotationVel, float damping, int lifeTime, bool fade = true, bool scaleDown = true)
+	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 Scale, Vector2 acceleration, float rotationVel, float damping, int lifeTime, List<SpawnParticle.RandomisedParticleParams> spawnParticleParamsbool fade = true, bool scaleDown = true)
 	{
 
 		_transform = new Transform2();
@@ -73,6 +73,24 @@ public class Particle : Rendering.IDrawable
 		List<Particle> toReturn = new List<Particle>();
 		while (Objects.TryTake(out obj))
 		{
+			List<SpawnParticle.RandomisedParticleParams> updatedParticleSpawn = new List<SpawnParticle.RandomisedParticleParams>();
+
+			foreach(var p in obj._particleSpawn)
+			{
+				
+				var newP = p with {SpawnCounter = p.SpawnCounter + deltaTime};
+				if (newP.SpawnCounter > newP.SpawnDelay)
+				{
+					newP = newP with {SpawnCounter = 0};
+					//create new particle based on parameters
+					newP.MakeParticles(obj._transform.Position);
+					//.ForEach(x => x._velocity+=obj._velocity);
+				}
+
+				updatedParticleSpawn.Add(newP);
+			}
+			
+			
 			// Update velocity by acceleration
 			obj._velocity += obj._acceleration * deltaTime*deltaTime;
 			//apply damping
@@ -94,21 +112,7 @@ public class Particle : Rendering.IDrawable
 				
 
 
-			List<SpawnParticle.RandomisedParticleParams> updatedParticleSpawn = new List<SpawnParticle.RandomisedParticleParams>();
 
-			foreach(var p in obj._particleSpawn)
-			{
-				
-				var newP = p with {SpawnCounter = p.SpawnCounter + deltaTime};
-				if (newP.SpawnCounter > newP.SpawnDelay)
-				{
-					newP = newP with {SpawnCounter = 0};
-					//create new particle based on parameters
-					newP.MakeParticles(obj._transform.Position).ForEach(x => x._velocity+=obj._velocity);
-				}
-
-				updatedParticleSpawn.Add(newP);
-			}
 
 			obj._particleSpawn = updatedParticleSpawn;
 			if (obj.AliveTime <= obj.LifeTime)

@@ -398,8 +398,11 @@ public static class PrefabManager
 			eff.FogOfWarSpotScatter = int.Parse(fowSpot.Attributes?["scatter"]?.InnerText ?? "0");
 		}
 		XmlNode? particles = ((XmlElement) effect).GetElementsByTagName("particles")[0];
-		ParseParticles(particles, eff.ParticleParamsList);
-        
+		if (particles!= null)
+		{
+			ParseParticles(particles, eff.ParticleParamsList);
+		}
+
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
 		if (valitm != null)
 		{
@@ -457,10 +460,9 @@ public static class PrefabManager
 		return eff;
 	}
 
-	private static void ParseParticles(XmlNode? particles, List<SpawnParticle.RandomisedParticleParams> list)
+	private static void ParseParticles(XmlNode particles, List<SpawnParticle.RandomisedParticleParams> list)
 	{
-		if (particles != null)
-		{
+
 			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
 			foreach (var p in particlesList)
 			{
@@ -468,6 +470,13 @@ public static class PrefabManager
 				var parm = new SpawnParticle.RandomisedParticleParams();
 				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
 				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
+				parm.SpawnList = new List<SpawnParticle.RandomisedParticleParams>();
+				
+				foreach (var c in element.ChildNodes)
+				{
+					ParseParticles((XmlNode)c,parm.SpawnList);
+				}
+
 	
 				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
 				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
@@ -512,6 +521,6 @@ public static class PrefabManager
 				list.Add(parm);
 			}
 			
-		}
+		
 	}
 }

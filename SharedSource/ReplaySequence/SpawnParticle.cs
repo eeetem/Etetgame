@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Net.Mail;
 using DefconNull.WorldActions;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -33,6 +34,7 @@ public class SpawnParticle : SequenceAction
 		public float RotationMin;
 		public int SpawnDelay;
 		public float SpawnCounter;
+		public List<RandomisedParticleParams> SpawnList;
 
 		public void Serialize(Message message)
 		{
@@ -54,6 +56,7 @@ public class SpawnParticle : SequenceAction
 			message.Add(SpawnDelay);
 			message.Add(ScaleMin);
 			message.Add(ScaleMax);
+			message.AddSerializables(SpawnList.ToArray());
 		}
 
 		public void Deserialize(Message message)
@@ -76,6 +79,7 @@ public class SpawnParticle : SequenceAction
 			SpawnDelay = message.GetInt();
 			ScaleMin = message.GetFloat();
 			ScaleMax = message.GetFloat();
+			SpawnList = message.GetSerializables<RandomisedParticleParams>().ToList();
 		}
 #if CLIENT
 		
@@ -90,7 +94,7 @@ public class SpawnParticle : SequenceAction
 				int LifeTime = Random.Shared.Next(LifetimeMin, LifetimeMax);
 				float rotationVel = Random.Shared.NextSingle(RotationMin, RotationMax);
 				float scale = Random.Shared.NextSingle(ScaleMin, ScaleMax);
-				list.Add(new LocalObjects.Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/" + TextureName), position, velocity, new Vector2(scale, scale), acceleration, rotationVel, Damping, LifeTime));
+				list.Add(new Particle(Rendering.TextureManager.GetTextureFromPNG("Particles/" + TextureName), position, velocity, new Vector2(scale, scale), acceleration, rotationVel, Damping, LifeTime,SpawnList));
 			}
 
 			return list;
