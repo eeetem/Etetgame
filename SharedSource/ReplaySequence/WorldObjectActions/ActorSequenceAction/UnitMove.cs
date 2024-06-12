@@ -47,6 +47,8 @@ public class UnitMove : UnitSequenceAction
         return Equals((UnitMove) obj);
     }
 
+    public override BatchingMode Batching => BatchingMode.AsyncAlone;
+
     public override int GetHashCode()
     {
         unchecked
@@ -168,21 +170,36 @@ public class UnitMove : UnitSequenceAction
             walk++;
             if (Actor.WorldObject.TileLocation != null)
             {
-                if (Path[0] != Actor.WorldObject.TileLocation.Position)
-                    Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
-                
+
+                int sleepTime = 10;
 #if CLIENT
                 //(int) *
                 var animLenght = Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
-                int sleepTime = (int) ((1000f / walkFps) * animLenght);
+                sleepTime = (int) ((1000f / walkFps) * animLenght);
                 if (animLenght == 0)
                 {
                     sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
                 }
                 if(Mouse.GetState().LeftButton == ButtonState.Pressed)
-                    sleepTime = 10;
-                Thread.Sleep(sleepTime);
+                    sleepTime = 25;
+#endif
+
+#if CLIENT
+                Thread.Sleep(sleepTime/2); 
 #else
+
+                
+                while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
+                    Thread.Sleep(10);
+#endif
+                
+                if (Path[0] != Actor.WorldObject.TileLocation.Position)
+                    Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
+#if CLIENT
+                Thread.Sleep(sleepTime/2); 
+#else
+
+                
                 while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
                     Thread.Sleep(10);
 #endif
