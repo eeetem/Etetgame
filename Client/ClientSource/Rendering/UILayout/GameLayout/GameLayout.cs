@@ -10,6 +10,7 @@ using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using DefconNull.WorldActions;
+using info.lundin.math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -828,6 +829,26 @@ public class GameLayout : MenuLayout
 			NetworkingManager.SendAITurn();
 		};
 		panel.Widgets.Add(doAI);
+		
+		var ruler = new TextButton
+		{
+			Top = (int)(150f * GlobalScale.Y),
+			Left = (int)(-10f * GlobalScale.X),
+			Width = (int)(60 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Text = "Ruler",
+		};
+		ruler.Click += (o, a) =>
+		{
+			Log.Message("Test","1. ruler button clicked");
+			if (CheckCurrentTool() == null)
+			{
+				Log.Message("Test","2. selected ruler tool");
+				SelectGameTool(new RulerTool());
+			}
+		};
+		panel.Widgets.Add(ruler);
 #endif		
 
 		endBtn = new ImageButton()
@@ -1098,9 +1119,18 @@ public class GameLayout : MenuLayout
 		return panel;
 	}
 
-
-
-
+	private static GameTool currentTool = null;
+	public static void SelectGameTool(GameTool input)
+	{
+		currentTool = input;
+	}
+	public static GameTool CheckCurrentTool()
+	{
+		return currentTool;
+	}
+	
+	
+	
 	private static readonly List<HudActionButton> ActionButtons = new();
 	private static bool ActionForce = false;
 	
@@ -1946,6 +1976,14 @@ public class GameLayout : MenuLayout
 		position = Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99));
 		
 		var tile =WorldManager.Instance.GetTileAtGrid( position);
+		
+		if (rightclick && CheckCurrentTool() is RulerTool)
+		{
+			Log.Message("Test"," 3. click called");
+			currentTool.click(position);
+			currentTool.render();
+			return;
+		}
 
 		if (tile.UnitAtLocation != null&& tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= tile.GetVisibility() && (activeAction == ActiveActionType.None || activeAction == ActiveActionType.Move)) { 
 			SelectUnit(tile.UnitAtLocation);

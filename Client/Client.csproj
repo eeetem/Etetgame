@@ -787,8 +787,5 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="ClientSource\Rendering\UILayout\GameLayout\" />
-    </ItemGroup>
 
 </Project>

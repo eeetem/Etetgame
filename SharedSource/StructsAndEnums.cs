@@ -94,6 +94,11 @@ public struct Vector2Int : IMessageSerializable
 
 	}
 	
+	public static double Distance(Vector2Int from, Vector2Int to)
+	{
+		return Math.Sqrt(SqrDistance(from, to));
+	}
+	
 
 	public int X { get; set; }
 	public int Y { get; set; }
