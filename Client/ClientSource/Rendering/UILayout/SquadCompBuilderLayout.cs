@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -201,6 +202,7 @@ public class SquadCompBuilderLayout : MenuLayout
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderBehindHud(batch, deltatime);
+		if(SequenceManager.SequenceRunningRightNow) return;
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		if (_currentlyPlacing.HasValue)
 		{

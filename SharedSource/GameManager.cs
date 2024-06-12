@@ -375,8 +375,4 @@ public static partial class GameManager
         return list;
     }
 
-    public static bool NoPendingUpdates()
-    {
-        return true;
-    }
 }

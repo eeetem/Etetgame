@@ -205,12 +205,14 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public enum BatchingMode
     {
-        Never,
-        OnlySameType,
+        SyncAlone,
+        AsyncAlone,
+        AsyncBatchSameType,
         Sequential,
-        Always
+        AsycnBatchAlways
     }
-    public virtual BatchingMode Batching => BatchingMode.Never;
+    public virtual BatchingMode Batching => BatchingMode.SyncAlone;
+
     public abstract SequenceType GetSequenceType();
     public bool IsUnitAction => (int) GetSequenceType() < 100;
 
@@ -228,16 +230,16 @@ public abstract class SequenceAction :  IMessageSerializable
     private bool ran = false;
     public Task GenerateTask()
     {
-        Task t = new Task(delegate
-        {
-            if(!Active) throw new Exception("SequenceAction was returned to pool");
-            if(ran) throw new Exception("SequenceAction was run twice");
-            ran = true;
-            Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
-            RunSequenceAction();
-            Return();
-        });
+        Task t = new Task(RunSynchronously);
         return t;
+    }
+    public void RunSynchronously(){
+        if(!Active) throw new Exception("SequenceAction was returned to pool");
+        if(ran) throw new Exception("SequenceAction was run twice");
+        ran = true;
+        Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
+        RunSequenceAction();
+        Return();
     }
     protected abstract void RunSequenceAction();
 

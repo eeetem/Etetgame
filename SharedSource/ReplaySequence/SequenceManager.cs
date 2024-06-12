@@ -80,7 +80,7 @@ public class SequenceManager
 		SequenceRunningRightNow = true;
 		lock (lockObj)
 		{
-			if (CurrentSequenceTasks.Count == 0 && GameManager.NoPendingUpdates())
+			if (CurrentSequenceTasks.Count == 0)
 			{
 				if (SequenceQueue.Count > 0)
 				{
@@ -96,11 +96,17 @@ public class SequenceManager
 
 						act = SequenceQueue.Dequeue();
 					}
-
+			
 					Log.Message("SEQUENCE MANAGER","runnin sequnce task: " + act.GetSequenceType());
-					CurrentSequenceTasks.Add(act.GenerateTask());
-					CurrentSequenceTasks.Last().Start();
-
+					if (act.Batching == SequenceAction.BatchingMode.SyncAlone)
+					{
+						act.RunSynchronously();
+					}
+					else
+					{
+						CurrentSequenceTasks.Add(act.GenerateTask());
+						CurrentSequenceTasks.Last().Start();
+					}
 					int i = 0;
 					//do sequential tasks in queue
 					Stopwatch sw = new Stopwatch();
@@ -117,26 +123,19 @@ public class SequenceManager
 						{
 							break;
 						}
-
-						CurrentSequenceTasks.Last().Wait(100);
-						if(CurrentSequenceTasks.Last().Status != TaskStatus.RanToCompletion)
-						{
-							break;//most likely cause by the task waiting for UI Thread
-						}
-						if(sw.ElapsedMilliseconds >600)//dont freeze the game
+						peeked.RunSynchronously();
+						SequenceQueue.Dequeue();
+						if(sw.ElapsedMilliseconds > 250)//dont freeze the game
 						{
 							break;
 						}
 						
 						Log.Message("SEQUENCE MANAGER",$"sequnceing a  task: {i}{peeked.GetSequenceType()}");
 						i++;
-						StartNextTask();
-						
 					}
 					sw.Stop();
 					//then do parrallel tasks in queue
 					//batch tile updates and other things
-					
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
@@ -148,13 +147,14 @@ public class SequenceManager
 						bool shouldBatch = false;
 						switch (peeked.Batching)
 						{
-							case SequenceAction.BatchingMode.Always:
+							case SequenceAction.BatchingMode.AsycnBatchAlways:
 								shouldBatch = true;
 								break;
-							case SequenceAction.BatchingMode.OnlySameType:
-								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
+							case SequenceAction.BatchingMode.AsyncBatchSameType://batch if last was same type or last task is always batching meaning it's unlikely to interfere
+								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType() || act.Batching == SequenceAction.BatchingMode.AsycnBatchAlways;
 								break;
-							case SequenceAction.BatchingMode.Never:
+							case SequenceAction.BatchingMode.SyncAlone:
+							case SequenceAction.BatchingMode.AsyncAlone:
 							case SequenceAction.BatchingMode.Sequential:
 								shouldBatch = false;
 								break;
@@ -165,7 +165,9 @@ public class SequenceManager
 						
 						Log.Message("SEQUENCE MANAGER",$"batching sequnce task: {i}{peeked.GetSequenceType()}");
 						i++;
-						StartNextTask();
+						act = SequenceQueue.Dequeue();
+						CurrentSequenceTasks.Add(act.GenerateTask());
+						CurrentSequenceTasks.Last().Start();
 
 					}
 
@@ -202,9 +204,9 @@ public class SequenceManager
 		SequenceRunningRightNow = false;
 		if(SequenceQueue.Count == 0 && CurrentSequenceTasks.Count==0 && hasSequece)
 		{
-					
+					WorldManager.Instance.MakeFovDirty();
 #if CLIENT
-					GameLayout.ReMakeMovePreview();
+			GameLayout.movePreviewDirty = true;
 					NetworkingManager.SendSequenceExecuted();
 			
 #else
@@ -217,12 +219,7 @@ public class SequenceManager
 		
 	}
 
-	private static void StartNextTask()
-	{
-		var act = SequenceQueue.Dequeue();
-		CurrentSequenceTasks.Add(act.GenerateTask());
-		CurrentSequenceTasks.Last().Start();
-	}
+
 
 	
 	private static bool hasSequece = false;

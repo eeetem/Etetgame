@@ -98,9 +98,7 @@ public  partial class WorldManager
 		LoadTileObject(data.EastEdge,tile.EastEdge,  GetTileAtGrid(data.Position+new Vector2(1,0)),forceUpdateEverything);
 		LoadTileObject(data.SouthEdge,tile.SouthEdge, GetTileAtGrid(data.Position+new Vector2(0,1)),forceUpdateEverything);
 		//	LoadTileObject(data.UnitAtLocation, tile.UnitAtLocation?.WorldObject, tile,forceUpdateEverything);
-	
-
-
+		
 
 		foreach (var obj in tile.ObjectsAtLocation)
 		{
@@ -127,24 +125,24 @@ public  partial class WorldManager
 				if (tileObject is null)
 				{
 					Log.Message("WORLD MANAGER","desired location is null making obj: " + data.Value.ID);
-					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).RunSynchronously();;
 				}
 				else if (tileObject.ID != data.Value.ID)
 				{
 					Log.Message("WORLD MANAGER","desired location is has an object with a different id(" + tileObject.ID + ")deleting and  making obj: " + data.Value.ID);
-					WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunTaskSynchronously();
-					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).RunSynchronously();;
+					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).RunSynchronously();;
 				}
 				else if (tileObject.GetData().GetHash() != data.Value.GetHash())
 				{
 					Log.Message("WORLD MANAGER","desired location is has an object with a different hash remaking obj: " + data.Value.ID);
-					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.MakeWorldObject.Make(data.Value, tile).RunSynchronously();;
 				}
 			}
 		}
 		else if (tileObject is not null)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).GenerateTask().RunTaskSynchronously();;
+			WorldObjectManager.DeleteWorldObject.Make(tileObject.ID).RunSynchronously();;;
 		}
 	}
 
@@ -189,39 +187,47 @@ public  partial class WorldManager
 		List<Unit> units = new List<Unit>();
 
 		units = GameManager.GetAllUnits();
-
-		Parallel.ForEach(units, seeingUnit =>
+		while (Monitor.IsEntered(WorldObjectManager.WoLock))
 		{
-			var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
-            
-			seeingUnit.VisibleTiles = unitSee;
-#if CLIENT
-            if(!seeingUnit.IsMyTeam())return;//enemy units dont update our FOV
-#endif
-			foreach (var visTuple in unitSee)
+			Thread.Sleep(100);
+		}
+
+		WorldObjectManager.WoReadLock++;
+			Parallel.ForEach(units, seeingUnit =>
 			{
+				var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
 
-               
-				if(GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
+				seeingUnit.VisibleTiles = unitSee;
+#if CLIENT
+				if (!seeingUnit.IsMyTeam()) return; //enemy units dont update our FOV
+#endif
+				foreach (var visTuple in unitSee)
 				{
-					GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team,visTuple.Value);
 
-					var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
 
-					if(spotedUnit == null) continue;
+					if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
+					{
+						GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
+
+						var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
+
+						if (spotedUnit == null) continue;
 
 #if SERVER
 					if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
 					{
 						GameManager.ShowUnitToEnemy(spotedUnit);
 					}
-#endif               
+#endif
+					}
+
 				}
-				
-			}
-            
-		});
-		
+
+			});
+
+
+			WorldObjectManager.WoReadLock--;
+
 #if CLIENT
         foreach (var tile in _gridData)
         {
@@ -241,10 +247,6 @@ public  partial class WorldManager
 			
 	public ConcurrentDictionary<Vector2Int,Visibility> GetVisibleTiles(Vector2Int pos, Direction dir, int range,bool crouched)
 	{
-		while (SequenceManager.SequenceRunningRightNow)
-		{
-			Thread.Sleep(100);
-		}
 
 		int itteration = 0;
 
@@ -713,10 +715,12 @@ public  partial class WorldManager
 	
 	public WorldObject GetCoverObj(Vector2Int loc,Direction dir, bool visibilityCover = false,bool ignoreContollables = false, bool ignoreObjectsAtLoc = true, int pseudoLayer = -1)
 	{
-		while (SequenceManager.SequenceRunningRightNow)
+		while (Monitor.IsEntered(WorldObjectManager.WoLock))
 		{
 			Thread.Sleep(100);
 		}
+
+		WorldObjectManager.WoReadLock++;
 		dir = Utility.NormaliseDir(dir);
 		WorldObject biggestCoverObj = nullWorldObject;
 		IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc,pseudoLayer);
@@ -942,6 +946,7 @@ public  partial class WorldManager
 
 		}
 
+		WorldObjectManager.WoReadLock--;
 		if (biggestCoverObj == null) throw new Exception("Biggest cover obj cannot be null");
 		return biggestCoverObj;
 		
@@ -1150,7 +1155,9 @@ public  partial class WorldManager
 			
         
 	
-		var md5 = hash.GetMD5();
+		string md5 = hash.GetMD5();
+		if (md5 == null)
+			throw new Exception("MD5 hash failed");
 		return md5;
 	}
 }

@@ -471,19 +471,16 @@ public static class PrefabManager
 				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
 				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
 				parm.SpawnList = new List<SpawnParticle.RandomisedParticleParams>();
-				
-				foreach (var c in element.ChildNodes)
-				{
-					ParseParticles((XmlNode)c,parm.SpawnList);
-				}
 
+				ParseParticles(element,parm.SpawnList);
+				
 	
 				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
 				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
 				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
 				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
 				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
-				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "-0.1,0.1";
+				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "0,0";
 				var scaleRange = element.Attributes?["scaleRange"]?.InnerText ?? "1,1";
 
 				var splitX = velxRange.Split(',');

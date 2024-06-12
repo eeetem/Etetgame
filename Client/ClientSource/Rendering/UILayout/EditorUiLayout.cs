@@ -712,24 +712,24 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.UnitAtLocation != null)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tile.UnitAtLocation.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+			WorldObjectManager.DeleteWorldObject.Make(tile.UnitAtLocation.WorldObject.ID).RunSynchronously();;
 			return;
 		}
 		if (tile.NorthEdge != null)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tile.NorthEdge).GenerateTask().RunTaskSynchronously();
+			WorldObjectManager.DeleteWorldObject.Make(tile.NorthEdge).RunSynchronously();;
 			return;
 		}
 		if (tile.WestEdge != null)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tile.WestEdge).GenerateTask().RunTaskSynchronously();
+			WorldObjectManager.DeleteWorldObject.Make(tile.WestEdge).RunSynchronously();;
 			return;
 		}
 		if(Pos.Y != 99){
 			WorldTile southTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.South));
 			if (southTile.NorthEdge != null)
 			{
-				WorldObjectManager.DeleteWorldObject.Make(southTile.NorthEdge).GenerateTask().RunTaskSynchronously();
+				WorldObjectManager.DeleteWorldObject.Make(southTile.NorthEdge).RunSynchronously();;
 				return;
 			}
 		}
@@ -739,14 +739,14 @@ public class EditorUiLayout : MenuLayout
 			WorldTile eastTile = WorldManager.Instance.GetTileAtGrid(Pos+Utility.DirToVec2(Direction.East));
 			if (eastTile.WestEdge != null)
 			{
-				WorldObjectManager.DeleteWorldObject.Make(eastTile.WestEdge).GenerateTask().RunTaskSynchronously();
+				WorldObjectManager.DeleteWorldObject.Make(eastTile.WestEdge).RunSynchronously();;
 				return;
 			}
 		}
 
 		if (tile.ObjectsAtLocation.Count > 0)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tile.ObjectsAtLocation.First()).GenerateTask().RunTaskSynchronously();
+			WorldObjectManager.DeleteWorldObject.Make(tile.ObjectsAtLocation.First()).RunSynchronously();;
 			return;
 		}
 		
@@ -754,7 +754,7 @@ public class EditorUiLayout : MenuLayout
 
 		if (tile.Surface != null)
 		{
-			WorldObjectManager.DeleteWorldObject.Make(tile.Surface).GenerateTask().RunTaskSynchronously();
+			WorldObjectManager.DeleteWorldObject.Make(tile.Surface).RunSynchronously();;
 			return;
 		}
 

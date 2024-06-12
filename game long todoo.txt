@@ -15,7 +15,9 @@ signing
 
 blowing up smoke with grenade
 half walk
-fix auto target through walls
+fix auto target through walls?
+ghost aiming aimbot
+smoke dissapear update
 
 
 sfx list:

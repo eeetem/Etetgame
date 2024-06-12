@@ -114,6 +114,7 @@ public class SpawnParticle : SequenceAction
 	}
 
 
+	public override BatchingMode Batching => BatchingMode.AsycnBatchAlways;
 
 	protected override void RunSequenceAction()
 	{

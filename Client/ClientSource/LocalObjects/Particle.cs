@@ -27,14 +27,14 @@ public class Particle : Rendering.IDrawable
 	private readonly bool _scaleDown;
 
 
-	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 Scale, Vector2 acceleration, float rotationVel, float damping, int lifeTime, List<SpawnParticle.RandomisedParticleParams> spawnParticleParamsbool fade = true, bool scaleDown = true)
+	public Particle(Texture2D sprite,Vector2 position, Vector2 velocity, Vector2 scale, Vector2 acceleration, float rotationVel, float damping, int lifeTime, List<SpawnParticle.RandomisedParticleParams> spawnParticleParams ,bool fade = true, bool scaleDown = true)
 	{
 
 		_transform = new Transform2();
 		_sprite = sprite;//inefficient but fuck it
 		_transform.Position = position;
-		_transform.Scale = Scale;
-		originalScale = Scale;
+		_transform.Scale = scale;
+		originalScale = scale;
 		_velocity = velocity;
 		_acceleration = acceleration;
 		LifeTime = lifeTime;
@@ -42,6 +42,7 @@ public class Particle : Rendering.IDrawable
 		_scaleDown = scaleDown;
 		_damping = damping;
 		_rotationVel = rotationVel;
+		_particleSpawn = spawnParticleParams;
 
 		Objects.Add(this);
 		

@@ -32,3 +32,4 @@ Alpha 4.1
 -Specialist range buff
 -Capture point notification fixed
 -Corner Shooting
+-Vastly sped up map loading

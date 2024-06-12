@@ -323,7 +323,7 @@ public partial class WorldTile : IWorldTile
 			if (_surface != null)
 			{
 				Console.Write("overwritting surface");
-				WorldObjectManager.DeleteWorldObject.Make(_surface.ID).GenerateTask().RunTaskSynchronously();
+				WorldObjectManager.DeleteWorldObject.Make(_surface.ID).RunSynchronously();;
 			}
 			_surface = value;
 		}
@@ -331,18 +331,18 @@ public partial class WorldTile : IWorldTile
 		
 	public void Wipe(bool full360 = false)
 	{
-		if (NorthEdge != null) 	SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(NorthEdge.ID));
-		if (WestEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(WestEdge.ID));
+		if (NorthEdge != null) 	WorldObjectManager.DeleteWorldObject.Make(NorthEdge.ID).RunSynchronously();
+		if (WestEdge != null) WorldObjectManager.DeleteWorldObject.Make(WestEdge.ID).RunSynchronously();;
 		if (full360)
 		{
-			if (SouthEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(SouthEdge.ID));
-			if (EastEdge != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(EastEdge.ID));
+			if (SouthEdge != null) WorldObjectManager.DeleteWorldObject.Make(SouthEdge.ID).RunSynchronously();
+			if (EastEdge != null) WorldObjectManager.DeleteWorldObject.Make(EastEdge.ID).RunSynchronously();
 		}
-		if (UnitAtLocation != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(UnitAtLocation.WorldObject.ID));
-		if (Surface != null) SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(Surface.ID));
+		if (UnitAtLocation != null) WorldObjectManager.DeleteWorldObject.Make(UnitAtLocation.WorldObject.ID).RunSynchronously();
+		if (Surface != null) WorldObjectManager.DeleteWorldObject.Make(Surface.ID).RunSynchronously();
 		foreach (var obj in ObjectsAtLocation)
 		{
-			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
+			WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();
 		}
 		_watchers.Clear();
 		

@@ -7,7 +7,7 @@ namespace DefconNull.ReplaySequence;
 public class PlaySound : SequenceAction
 {
 	
-	public override BatchingMode Batching => BatchingMode.Always;
+	public override BatchingMode Batching => BatchingMode.AsycnBatchAlways;
 	public override SequenceType GetSequenceType()
 	{
 		return SequenceType.PlaySound;
