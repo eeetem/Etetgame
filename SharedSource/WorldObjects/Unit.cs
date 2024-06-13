@@ -242,8 +242,7 @@ namespace DefconNull.WorldObjects
 		}
 		public void DoAbility(WorldObject target, int ability)
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = ability;
 			DoAction(Action.ActionType.UseAbility,args);
 		}
@@ -269,9 +268,9 @@ namespace DefconNull.WorldObjects
 				if (!result.Item1)
 				{
 #if CLIENT
-				if(args.Target.HasValue){
-					new PopUpText(result.Item2, args.Target.Value,Color.White);
-				}
+
+					new PopUpText(result.Item2, args.Target,Color.White);
+				
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
 					GameManager.ShouldRecalculateUnitPositions = true;//re update units and send update to client

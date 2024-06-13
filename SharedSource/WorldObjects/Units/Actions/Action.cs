@@ -118,13 +118,67 @@ public abstract class Action
 	public struct ActionExecutionParamters : IMessageSerializable
 	{
 		
-		public Vector2Int? Target;
-		public WorldObject? TargetObj = null;
+		public Vector2Int Target;
+		public TargetOnTile TargetLoc = TargetOnTile.Surface;
 		public int AbilityIndex = -1;
+
+		public WorldObject GetTarget()
+		{
+			var tile = WorldManager.Instance.GetTileAtGrid(Target);
+			WorldObject? obj = null;
+			switch (TargetLoc)
+			{
+				case TargetOnTile.North:
+					obj = tile.NorthEdge;
+					break;
+				case TargetOnTile.West:
+					obj = tile.WestEdge;
+					break;
+				case TargetOnTile.Unit:
+					obj = tile.UnitAtLocation?.WorldObject;
+					break;
+				case TargetOnTile.Obj:
+					obj = tile.ObjectsAtLocation[0];
+					break;
+				case TargetOnTile.Surface:
+					obj = tile.Surface;
+					break;
+			}
+
+			if (obj == null)
+			{
+				obj = tile.Surface;
+			}
+
+			return obj!;
+		}
+		public enum TargetOnTile
+		{
+			North=0,
+			West=1,
+			Surface=2,
+			Unit=3,
+			Obj=4
+		}
 
 		public ActionExecutionParamters(Vector2Int target)
 		{
 			Target = target;
+			TargetLoc = TargetOnTile.Surface;
+		}
+		public ActionExecutionParamters(WorldObject obj)
+		{
+			Target = obj.TileLocation.Position;
+			if(Equals(obj.TileLocation.UnitAtLocation, obj.UnitComponent))
+				TargetLoc = TargetOnTile.Unit;
+			else if(obj.TileLocation.ObjectsAtLocation.Contains(obj))
+				TargetLoc = TargetOnTile.Obj;
+			else if (Equals(obj.TileLocation.NorthEdge, obj))
+				TargetLoc = TargetOnTile.North;
+			else if (Equals(obj.TileLocation.WestEdge, obj))
+				TargetLoc = TargetOnTile.West;
+			else
+				TargetLoc = TargetOnTile.Surface;
 		}
 
 		public ActionExecutionParamters()
@@ -134,8 +188,8 @@ public abstract class Action
 
 		public void Serialize(Message message)
 		{
-			message.Add(Target ?? new Vector2Int(-1,-1));
-			message.Add(TargetObj?.ID ?? -1);
+			message.Add(Target);
+			message.Add((short)TargetLoc);
 			message.Add(AbilityIndex);
 		}
 
@@ -143,7 +197,7 @@ public abstract class Action
 		{
 			
 			Target = message.GetSerializable<Vector2Int>();
-			TargetObj = WorldObjectManager.GetObject(message.GetInt());
+			TargetLoc = (TargetOnTile) message.GetInt();
 			AbilityIndex = message.GetInt();
 		}
 	}

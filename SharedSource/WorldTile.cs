@@ -331,6 +331,7 @@ public partial class WorldTile : IWorldTile
 		
 	public void Wipe(bool full360 = false)
 	{
+		_watchers.Clear();
 		if (NorthEdge != null) 	WorldObjectManager.DeleteWorldObject.Make(NorthEdge.ID).RunSynchronously();
 		if (WestEdge != null) WorldObjectManager.DeleteWorldObject.Make(WestEdge.ID).RunSynchronously();;
 		if (full360)
@@ -340,11 +341,8 @@ public partial class WorldTile : IWorldTile
 		}
 		if (UnitAtLocation != null) WorldObjectManager.DeleteWorldObject.Make(UnitAtLocation.WorldObject.ID).RunSynchronously();
 		if (Surface != null) WorldObjectManager.DeleteWorldObject.Make(Surface.ID).RunSynchronously();
-		foreach (var obj in ObjectsAtLocation)
-		{
-			WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();
-		}
-		_watchers.Clear();
+		new List<WorldObject>(ObjectsAtLocation).ForEach(x => WorldObjectManager.DeleteWorldObject.Make(x.ID).RunSynchronously());
+			
 		
 
 

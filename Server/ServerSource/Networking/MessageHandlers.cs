@@ -236,7 +236,7 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		Log.Message("NETWORKING","DOING GAME ACTION: " + packet.Type + " " + packet.Args.Target + " " + packet.Args.TargetObj?.ID + " " + packet.Args.AbilityIndex);
+		Log.Message("NETWORKING","DOING GAME ACTION: " + packet.Type + " " + packet.Args.Target + " " + packet.Args.AbilityIndex);
 		controllable.DoAction(packet.Type,packet.Args);
 
 

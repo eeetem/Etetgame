@@ -18,7 +18,7 @@ public class Face : Action
     {
 		
 		
-        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target);
         if (targetDir == actor.WorldObject.Facing)
         {
             return new Tuple<bool, string>(false, "Already facing that direction");
@@ -38,7 +38,7 @@ public class Face : Action
 	{
 
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target!.Value,true));
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target,true));
 		return new Queue<SequenceAction>[] {queue};
 
 	}
@@ -51,8 +51,8 @@ public class Face : Action
 
     public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
     {
-        if (actor.WorldObject.TileLocation.Position == args.Target!.Value) return;
-        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+        if (actor.WorldObject.TileLocation.Position == args.Target) return;
+        var targetDir =  Utility.GetDirection(actor.WorldObject.TileLocation.Position, args.Target);
         previewTiles = WorldManager.Instance.GetVisibleTiles(actor.WorldObject.TileLocation.Position, targetDir, actor.GetSightRange(),actor.Crouching);
 		
         foreach (var visTuple in previewTiles)
