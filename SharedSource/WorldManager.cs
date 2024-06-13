@@ -968,24 +968,23 @@ public  partial class WorldManager
 
 		var topLeft = new Vector2Int(x - range, y - range);
 		var bottomRight = new Vector2Int(x + range, y + range);
-		for (int i = topLeft.X; i < bottomRight.X; i++)
+		for (int i = topLeft.X+1; i < bottomRight.X; i++)
 		{
-			for (int j = topLeft.Y; j < bottomRight.Y; j++)
+			for (int j = topLeft.Y+1; j < bottomRight.Y; j++)
 			{
-				if(Math.Pow(i-x,2) + Math.Pow(j-y,2) < Math.Pow(range,2)){
-					if (IsPositionValid(new Vector2Int(i,j)))
-					{
-						tiles.Add(PseudoWorldManager.GetTileAtGrid(new Vector2Int(i,j),alternateDimension));
-					}
+				if (IsPositionValid(new Vector2Int(i,j)))
+				{
+					tiles.Add(PseudoWorldManager.GetTileAtGrid(new Vector2Int(i,j),alternateDimension));
 				}
 			}
 		}
+		
 
 		if (lineOfSight != null)
 		{
 			foreach (var tile in new List<IWorldTile>(tiles))
 			{
-				if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, visibilityCast: true,ignoreControllables: true).hit)
+				if (CenterToCenterRaycast(pos, tile.Position, (Cover)lineOfSight, visibilityCast: false,ignoreControllables: true).hit)
 				{
 					tiles.Remove(tile);
 				}
