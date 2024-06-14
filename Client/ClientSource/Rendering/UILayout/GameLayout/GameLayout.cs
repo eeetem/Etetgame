@@ -1565,6 +1565,14 @@ public class GameLayout : MenuLayout
 			batch.DrawText(tutorialNote, new Vector2(squareRect.X,squareRect.Y), GlobalScale.X*0.9f, 63, Color.White);
 		}
 		batch.End();
+
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+		if (CheckCurrentTool() != null)
+		{
+			currentTool.render(batch);
+		}
+		batch.End();
+
 		
 	}
 	private static Vector2 infoboxtip = new(0,0);
@@ -1981,7 +1989,6 @@ public class GameLayout : MenuLayout
 		{
 			Log.Message("Test"," 3. click called");
 			currentTool.click(position);
-			currentTool.render();
 			return;
 		}
 
