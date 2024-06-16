@@ -372,15 +372,15 @@ public partial class GameLayout
 			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(29, 44)));
 			MoveCamera.Make(new Vector2Int(29,44),true,0).GenerateTask().RunTaskSynchronously();
 			
-			var param = new Action.ActionExecutionParamters();
+			var param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(enemyScout1));
 			param.AbilityIndex = 1;
-			param.TargetObj = WorldObjectManager.GetObject(enemyScout1);
 			abl.SendToServer(enemyScout1,param);
 			do
 			{
 				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
-			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
+
+			param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(grunt.WorldObject.ID));
 			param.AbilityIndex = 0;
 			abl.SendToServer(enemyScout1,param);
 			do
@@ -392,15 +392,14 @@ public partial class GameLayout
 			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(29, 43)));
 			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
 			
-			param = new Action.ActionExecutionParamters();
+			param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(enemyScout2));
 			param.AbilityIndex = 1;
-			param.TargetObj = WorldObjectManager.GetObject(enemyScout2);
 			abl.SendToServer(enemyScout2,param);
 			do
 			{
 				Thread.Sleep(3000);
 			}while (SequenceManager.SequenceRunning);
-			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
+			param =	new Action.ActionExecutionParamters(WorldObjectManager.GetObject(grunt.WorldObject.ID));
 			param.AbilityIndex = 0;
 			abl.SendToServer(enemyScout2,param);
 			do
