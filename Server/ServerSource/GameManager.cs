@@ -457,7 +457,7 @@ public static partial class GameManager
 	public static void StartBasicTutorial()
 	{
 		tutorial = true;
-		WorldManager.Instance.LoadMap("/Maps/Special/tutorial.mapdata");
+		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap.mapdata");
        
 		PracticeMode(GameManager.Player1.Connection);
 		NetworkingManager.SendMapData(Player1!.Connection!);
@@ -465,7 +465,7 @@ public static partial class GameManager
 		{
 
 			Unit.UnitData cdata = new Unit.UnitData(true);
-			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(16, 35), Direction.East, false, cdata);
+			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(1, 1), Direction.East, false, cdata);
 			SequenceManager.AddSequence(objMake);
 
 
@@ -474,7 +474,7 @@ public static partial class GameManager
 			data.Health = 5;
 			data.Facing = Direction.NorthWest;
 			data.JustSpawned = false;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(23, 42));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(7, 9));
 			SequenceManager.AddSequence(objMake);
 			
 			
@@ -485,7 +485,7 @@ public static partial class GameManager
 			data.UnitData = cdata;
 			data.JustSpawned = false;
 			data.Health = 8;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(33, 36));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(10, 2));
 			SequenceManager.AddSequence(objMake);
 			GameState = GameState.Playing;
 

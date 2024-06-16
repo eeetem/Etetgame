@@ -22,46 +22,60 @@ public partial class GameLayout
 			tutorialNote = "Welcome to [Green]Etetgame![-]\n" +
 			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
 			Thread.Sleep(10000);
-			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\nThese points can be spent to move your units and use their actions/abilities.\n\n" +
+			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\n\nThese points can be spent to move your units and use their actions/abilities.\n\n" +
 			               "At the end of each turn your units will recover all [Orange]action[-] and [Green]movement[-] points.\n\n" +
 			               "Select the [Green]Scout[-] now and double click the highlighted tile to move to it, using one of your [Green]movement points[-].";
 			tutorialActionLock = ActiveActionType.Move;
-			highlightTile = new Vector2Int(19, 38);
+			highlightTile = new Vector2Int(1, 7);
 			var scout = GameManager.GetMyTeamUnits()[0];
-			while (scout.WorldObject.TileLocation.Position != new Vector2Int(19, 38))
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(1, 7))
 			{
 				Thread.Sleep(350);
 			}
 			highlightTile = new Vector2Int(-1, -1);
-			tutorialNote = "[Green]Cover[-]\n" +
-			               "There's 3 types of cover. [Green]Low walls[-], [Yellow]Half walls[-] and [Red]Full walls[-].\n" +
-			               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
-			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
-			               "[Red]Full[-] - Full walls, cannot be hit when crouching or standing.\n\n" +
-			               "There's colored indicators on your cursor indicating the cover of nearby tiles.\n" +
-			               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
-			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
-			{
-				Thread.Sleep(350);
-			}
-			
-			tutorialNote = "[Green]Cover[-]\n" +
-			               "The [Red]enemy[-] unit is behind a[Yellow] Half[-] wall, the cover would absorb all your damage.\n\n" +
-			               "[Yellow]Right click[-] to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
-			TutorialMove(scout,new Vector2Int(23,39));
-
-			tutorialNote = "[Green]Combat[-]\n" +
-			               "Finally shoot the [Red]enemy[-] By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
-			               "Using 1 [Green]movement[-] and 1 [Orange]action[-] point. \n" +
-			               "When aiming at an [Red]enemy[-], their health-bar will highlight the amount of damage they will receive.";
-			               
-			TutorialFire(scout,new Vector2Int(23, 42));
 			
 			tutorialNote = "[Green]Turning[-]\n" +
-			               "Now that you've killed the [Red]enemy[-] double [Yellow]right click[-] the highlighted tile to face into its direction.\n\n" +
-			               "You can turn units once per movement.";
+			               "You can turn to face any direction after each move by double right clicking.\n" +
+			               "Try it on the highlighted tile";
 			tutorialActionLock = ActiveActionType.Face;
-			highlightTile = new Vector2Int(25, 39);
+			highlightTile = new Vector2Int(5, 9);
+
+			tutorialNote = "[Green]Clearing the Map[-]\n" +
+			               "We've cleared this area, move to the highlighted tile to clear the cross angle before proceeding forward\n";
+			tutorialActionLock = ActiveActionType.Move;
+			highlightTile = new Vector2Int(1, 1);
+
+			tutorialNote = "[Green]Clearing the Map[-]" +
+			               "Double right click the highlighted tile to check the cross-fire";
+			tutorialActionLock = ActiveActionType.Face;
+			highlightTile = new Vector2Int(5, 9);
+
+			tutorialNote = "[Green]Ending Turn[-]\n" +
+			               "We have no more movement points remaining so lets end our turn.\n" +
+			               "Click the end turn button located in the top right corner";
+			
+			//tutorialNote = "[Green]Cover[-]\n" +
+			//               "There's 3 types of cover. [Green]Low walls[-], [Yellow]Half walls[-] and [Red]Full walls[-].\n" +
+			//               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
+			//               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
+			//               "[Red]Full[-] - Full walls, cannot be hit when crouching or standing.\n\n" +
+			//               "There's colored indicators on your cursor indicating the cover of nearby tiles.\n" +
+			//               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
+			//while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
+			//{
+			//	Thread.Sleep(350);
+			//}
+			
+			//tutorialNote = "[Green]Cover[-]\n" +
+			//               "The [Red]enemy[-] unit is behind a[Yellow] Half[-] wall, the cover would absorb all your damage.\n\n" +
+			//               "[Yellow]Right click[-] to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
+			//tutorialMove(scout,new Vector2Int(23,39));
+			//tutorialNote = "[Green]Combat[-]\n" +
+			//               "Finally shoot the [Red]enemy[-] By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
+			//               "Using 1 [Green]movement[-] and 1 [Orange]action[-] point. \n" +
+			//               "When aiming at an [Red]enemy[-], their health-bar will highlight the amount of damage they will receive.";
+			               
+			//TutorialFire(scout,new Vector2Int(23, 42));
 
 			while (scout.WorldObject.Facing != Direction.East)
 			{
