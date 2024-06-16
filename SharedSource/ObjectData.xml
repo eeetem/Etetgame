@@ -8,6 +8,11 @@
       <anim name="end" frames="4"  animFPS="10"/>
     </sprite>
     <name>Smoke</name>
+    <spawnConsequences  range="1">
+      <particles>
+        <particle name="smoke" scaleRange="3,3.5" count="25" velocityXRange="-120,120" velocityYRange="35,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,1000"/>
+      </particles>
+    </spawnConsequences>
   </object>
 
   <object Faceable = "false" SCover ="1" health="4">
@@ -294,13 +299,12 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18"/>
+      <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18" shotCount="3" shotDelay="200" shotSpread="0.2" shotSound="rifle"/>
       <tip>A standard attack. [Green]Excellent damage and long range.[-]\n[Green]7[-] Damage drops off every [Yellow]18[-] tiles.\nUnits in range [Green]2[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.24" speed="100"/>
-          <sfx name="rifle3"/>
         </consequences>
       </effect>
     </action>
@@ -310,13 +314,12 @@
       <tip>[Green]15[-] damage shot. Can only target targets with [Red]0 determination[-]. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20"/>
+      <shoot dmg ="15" detRes="15" supression="0" supressionRange="0" dropOffRange="20" shotCount="1" shotDelay="500" shotSpread="0.1" shotSound="rifle"/>
 
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.1" speed="100"/>
-          <sfx name="rifle"/>
         </consequences>
       </effect>
     </action>
@@ -329,8 +332,8 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="5"/>
-      <tip>A standard attack. [Green]Has very high damage but sharp drop off.[-]\n[Green]7[-] Damage drops off every [Yellow]5[-] tiles.\nUnits in range [Green]1[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
+      <shoot dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="5" shotCount="8" shotDelay="0" shotSpread="1" sound=""/>
+      <tip>A standard attack. [Green]Has very high damage but sharp drop off.[-]\n[Green]6[-] Damage drops off every [Yellow]5[-] tiles.\nUnits in range [Green]1[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
@@ -358,13 +361,12 @@
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="6" detRes="2" supression="1" supressionRange="2" dropOffRange="12"/>
+      <shoot dmg ="6" detRes="2" supression="1" supressionRange="2" dropOffRange="12" shotCount="3" shotDelay="150" shotSpread="0.6" shotSound="rifle"/>
       <tip>A standard attack. [Green]Mediocre attack, best used for finishing off weak units[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]2[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]2[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.2" speed="100"/>
-          <sfx name="rifle"/>
         </consequences>
       </effect>
 
@@ -372,7 +374,7 @@
 
     <action immideate="true" detCost ="1" moveCost="1" actCost="0" aiExempt="false">
       <name>Rally</name>
-      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+      <tip>All nearby friendlies stop panicking and gain full determination, doesn't affect other officers</tip>
 
       
       <effect>
@@ -389,7 +391,7 @@
 
     <action detCost ="2" moveCost="1" actCost="0">
       <name>Command</name>
-      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight</tip>
+      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight. Doesn't affect officers</tip>
       <targetAid>friend,!Officer</targetAid>
 
       <effect range="1" visible ="false">
@@ -430,13 +432,12 @@
     <action moveCost="1" actCost="1" overwatch="3">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
-      <shoot dmg ="5" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot dmg ="5" detRes="1" supression="1" supressionRange="3" dropOffRange="12" shotCount="14" shotDelay="70" shotSpread="0.8" shotSound="rifle"/>
       <tip>A standard attack. [Green]Mediocre damage, but excellent supression range[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]3[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="20" speed="50"/>
           <vfx name="noise" target="0.24" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
     </action>
@@ -446,48 +447,43 @@
       <targetAid>enemy</targetAid>
       <tip>Shoot multiple weak shots int a dense area. Great for suppressing groups of enemies and punishing predictable plays</tip>
 
-      <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot dmg ="4" detRes="1" supression="1" supressionRange="3" dropOffRange="12" shotCount="8" shotDelay="60" shotSpread="1.5" shotSound="rifle"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.3" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
 
-      <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"  shotCount="8" shotDelay="50" shotSpread="1.5" shotSound="rifle"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.3" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
 
-      <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="-2,0" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"  shotCount="8" shotDelay="40" shotSpread="1.5" shotSound="rifle"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.3" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
 
-      <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="0,2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"  shotCount="8" shotDelay="30" shotSpread="1.5" shotSound="rifle"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.3" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
 
-      <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"/>
+      <shoot offset ="0,-2" dmg ="2" detRes="1" supression="1" supressionRange="3" dropOffRange="12"  shotCount="8" shotDelay="20" shotSpread="1.5" shotSound="rifle"/>
       <effect>
         <consequences>
           <vfx name="clmagnitude" target="5" speed="50"/>
           <vfx name="noise" target="0.3" speed="100"/>
-          <sfx name="mg"/>
         </consequences>
       </effect>
 
@@ -520,7 +516,9 @@
       
       <effect>
         <delivery>
-          <projectile ignoreUnits="false" range="24" fowSpot="4"/>
+          <projectile particleName="rpg" particleSpeed="1" ignoreUnits="false" range="26" fowSpot="4">
+            <particle name="smoke" spawnDelay="10" count="3" velocityXRange="-10,10" velocityYRange="-10,10" accelerationXRange="0,0" accelerationYRange="-0.02,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="1000,10000"/>
+          </projectile>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>
@@ -530,6 +528,12 @@
           <sfx name="grenade"/>
           <place name="Crater"/>
           <fowSpot scatter="4"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="8" velocityXRange="-100,100" velocityYRange="-100,100" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       
@@ -555,6 +559,12 @@
           <sfx name="grenade"/>
           <place name="Crater"/>
           <fowSpot scatter="4"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       <effect>
@@ -563,6 +573,12 @@
         </delivery>
         <consequences range="2">
           <damage det="0" dmg="3" detRes="1" envRes="0"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       <effect>
@@ -571,6 +587,12 @@
         </delivery>
         <consequences range="1">
           <damage det="0" dmg="3" detRes="0" envRes="0"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
 

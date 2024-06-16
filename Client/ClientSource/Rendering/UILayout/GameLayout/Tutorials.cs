@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.Networking;
 using DefconNull.ReplaySequence;

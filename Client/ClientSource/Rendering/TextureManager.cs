@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.UI;
 
 namespace DefconNull.Rendering;
 
@@ -59,6 +61,10 @@ public static class TextureManager
             return png;
         }
 
+        if (!File.Exists("Content/" + name + ".png"))
+        {
+            name += "/"+ name.Split("/").Last();
+        }
 
         FileStream fileStream = new FileStream("Content/" + name + ".png", FileMode.Open,FileAccess.Read);
 
@@ -144,7 +150,9 @@ public static class TextureManager
 
         return t;
     }
-
+    
+    
+    
     public static Texture2D GetTexture(string name)
     {
 	

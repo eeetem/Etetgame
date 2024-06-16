@@ -20,7 +20,7 @@ public class Suppress : UnitSequenceAction
 		return SequenceType.Suppress;
 	}
 
-	public override BatchingMode Batching => BatchingMode.OnlySameType;
+	public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 	public ushort DetDmg;
 
 	protected bool Equals(Suppress other)

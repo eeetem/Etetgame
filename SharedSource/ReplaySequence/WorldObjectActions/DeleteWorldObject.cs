@@ -45,7 +45,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-		public override BatchingMode Batching => BatchingMode.OnlySameType;
+		public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 
 		private int id;
 		public static DeleteWorldObject Make(int id)
@@ -62,14 +62,15 @@ public static partial class WorldObjectManager
 			return t;
 		}
 
+		public override bool ShouldDo()
+		{
+			return WorldObjects.ContainsKey(id);
+		}
+
 		protected override void RunSequenceAction()
 		{
-			Log.Message("WORLD OBJECT MANAGER","tryint to delete world object: " + id);
-			if (!WorldObjects.ContainsKey(id)) return;
-				
-			Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
 
-				
+			Log.Message("WORLD OBJECT MANAGER","Deleting world object: " + id);
 			WorldObject obj = WorldObjects[id];
 #if CLIENT
 			while (obj.IsAnimating)
@@ -77,10 +78,13 @@ public static partial class WorldObjectManager
 				Thread.Sleep(50);//wait for animation finish this is quite bad tho
 			}
 #endif
-            
 
-			
-			
+
+
+			while (WoReadLock>0)
+			{
+				Thread.Sleep(100);
+			}
 			lock (WoLock)
 			{
 				GameManager.Forget(obj);
@@ -88,8 +92,7 @@ public static partial class WorldObjectManager
 				tile.Remove(id);
 				WorldObjects.Remove(id);
 			}
-				
-			WorldManager.Instance.MakeFovDirty();
+
 		}
 
 

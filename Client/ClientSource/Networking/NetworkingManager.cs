@@ -68,7 +68,7 @@ public static partial class NetworkingManager
 		client.ConnectionFailed += (a, b) =>
 		{
 			Disconnect();
-			//UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
+			UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
 		};
 		client.Disconnected += (a, b) =>
 		{
@@ -88,7 +88,7 @@ public static partial class NetworkingManager
 			//Log.Message("RIPTIDE","Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
-		client.TimeoutTime = 10000;
+		client.TimeoutTime = 20000;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif

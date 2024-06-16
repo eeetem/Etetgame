@@ -115,10 +115,10 @@ public class MainMenuLayout : UiLayout
 		
 		
 		
-		var chat = TextureManager.GetTexture("MainMenu/butts/chatmenuDisconnected");
+		var chat = TextureManager.GetTexture("MainMenu/butts/chatMenuDisconnected");
 		if (MasterServerNetworking.IsConnected)
 		{
-			chat = TextureManager.GetTexture("MainMenu/butts/chatmenuConnected");
+			chat = TextureManager.GetTexture("MainMenu/butts/chatMenuConnected");
 		}
 		batch.End();
 		batch.Begin(samplerState: SamplerState.PointClamp);
@@ -431,7 +431,7 @@ public class MainMenuLayout : UiLayout
 			Width = (int)((Chatsize.X-20)*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(13*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{
@@ -706,7 +706,7 @@ public class MainMenuLayout : UiLayout
 
 			};
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(80*GlobalScale.X)));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(150*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(60*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -786,7 +786,7 @@ public class MainMenuLayout : UiLayout
 				lobbies.Widgets.Add(new TextLabel()
 				{
 					Text = lobby.Name,
-					Height = (int) (7*GlobalScale.X), 
+					Height = (int) (10*GlobalScale.X), 
 					GridRow = row,
 					GridColumn = 1,
 					

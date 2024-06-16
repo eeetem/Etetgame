@@ -62,8 +62,8 @@ public partial class WorldObjectType
         return _variationSheets[spriteVariation].GetSprite(spriteIndex, extraState);
     }
 
-    public int GetAnimationLenght(int spriteVariation, string name)
+    public int GetAnimationLenght(int spriteVariation, string name, string extraState)
     {
-        return _variationSheets[spriteVariation].GetAnimationLenght(name);
+        return _variationSheets[spriteVariation].GetAnimationLenght(extraState, name);
     }
 }

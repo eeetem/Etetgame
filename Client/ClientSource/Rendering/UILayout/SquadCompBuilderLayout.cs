@@ -2,11 +2,13 @@
 
 using System.Collections.Generic;
 using DefconNull.Networking;
+using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Thickness = Myra.Graphics2D.Thickness;
 
@@ -61,16 +63,22 @@ public class SquadCompBuilderLayout : MenuLayout
 		foreach (var obj in PrefabManager.UnitPrefabs)
 		{
 			units.Add(obj.Value.Name);
+			
 		}
 
 		foreach (var unit in units)
 		{
-			var unitButton = new TextButton()
+			var unitButton = new ImageTextButton()
 			{
 				Text = unit,
+				Background = null,
+				
 				GridColumn = 1,
 				GridRow = 1,
 				Top = -50,	
+				Image = new TextureRegion(TextureManager.GetTextureFromPNG("Units/"+ unit + "/Icon"))
+				
+				
 			};
 			unitButton.Click += (s, a) =>
 			{
@@ -194,6 +202,7 @@ public class SquadCompBuilderLayout : MenuLayout
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
 		base.RenderBehindHud(batch, deltatime);
+		if(SequenceManager.SequenceRunningRightNow) return;
 		batch.Begin(transformMatrix: Camera.GetViewMatrix(),sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
 		if (_currentlyPlacing.HasValue)
 		{

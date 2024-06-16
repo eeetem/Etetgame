@@ -40,10 +40,15 @@ public static class Log
         Directory.CreateDirectory(logFolder);
         Directory.CreateDirectory(logFolder+"/"+startTime);
         var files = new DirectoryInfo(logFolder).EnumerateDirectories()
+            
             .OrderByDescending(f => f.CreationTime)
             .Skip(10)
             .ToList();
-        files.ForEach(f => f.Delete(true));
+        files.ForEach(f =>
+        {
+            if(!f.Name.Contains("[CRASH]"))
+                f.Delete(true);
+        });
         
         
         Task.Run(() =>

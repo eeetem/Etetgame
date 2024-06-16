@@ -34,7 +34,7 @@ public partial class GameLayout : MenuLayout
 	{
 		if (ScoreIndicator != null)
 		{
-			ScoreIndicator.Text = "score: " + score;
+			ScoreIndicator.Text = "" + score;
 		}
 	}
 	public static void SetPercentComplete(float score)
@@ -48,7 +48,7 @@ public partial class GameLayout : MenuLayout
 			else
 			{	
 				CompleteIndicator.Visible = true;
-				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100f).ToString("n2") + "%";
+				CompleteIndicator.Text = "Opponents Turn Progress: " + (score*100).ToString("n2") + "%";
 			}
 			
 		}
@@ -56,7 +56,7 @@ public partial class GameLayout : MenuLayout
 
 	public static Unit? SelectedUnit { get; private set;} = null!;
 	public static Unit? SelectedEnemyUnit { get; private set;} = null!;
-
+	public static bool movePreviewDirty = false;
 	public static void SelectUnit(Unit? unit)
 	{
 		if(!generated) return;
@@ -74,8 +74,7 @@ public partial class GameLayout : MenuLayout
 		SelectHudAction(null);
 
 		SelectedUnit = unit;
-		ReMakeMovePreview();
-	
+		movePreviewDirty = true;
 		UI.SetUI( new GameLayout());
 		
 		Camera.SetPos(unit.WorldObject.TileLocation.Position);
@@ -205,7 +204,10 @@ public partial class GameLayout : MenuLayout
 				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
 				batch.End();
 			}
-			
+
+
+
+
 			var healthTexture = TextureManager.GetTexture("GameHud/UnitBar/red");
 			var healthTextureoff = TextureManager.GetTexture("GameHud/UnitBar/redoff");
 			float healthWidth = healthTexture.Width;
@@ -409,6 +411,7 @@ public partial class GameLayout : MenuLayout
 			highlightTile = new Vector2Int(-1, -1);
 			tutorialActionLock = ActiveActionType.None;
 			tutorialUnitLock = -1;
+			tutorialAbilityIndex = -1;
 			canEndTurnTutorial = true;
 		}
 		WorldManager.Instance.MakeFovDirty();
@@ -446,7 +449,7 @@ public partial class GameLayout : MenuLayout
 			panel.Widgets.Add(swapTeam);
 		}
 #if DEBUG
-		var doAI = new TextButton
+		/*var doAI = new TextButton
 		{
 			Top = (int) (200f * GlobalScale.Y),
 			Left = (int) (-10f * GlobalScale.X),
@@ -456,17 +459,19 @@ public partial class GameLayout : MenuLayout
 			Text = "FinishTurnWithAI",
 			//Scale = globalScale
 		};
+		
 		doAI.Click += (o, a) =>
 		{
 			NetworkingManager.SendAITurn();
 		};
 		panel.Widgets.Add(doAI);
+		*/
 #endif		
 
 		endBtn = new ImageButton()
 		{
-			Top = (int) (25f * GlobalScale.X),
-			Left = (int) (-10.4f * GlobalScale.X),
+			Top = (int) (26f * GlobalScale.X),
+			Left = (int) (0f * GlobalScale.X),
 			Width = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * GlobalScale.X * 0.9f),
 			Height = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Height * GlobalScale.X * 0.9f),
 			ImageWidth = (int) (TextureManager.GetTexture("GameHud/UnitBar/end button").Width * GlobalScale.X * 0.9f),
@@ -529,9 +534,8 @@ public partial class GameLayout : MenuLayout
 		{
 			ScoreIndicator = new Label()
 			{
-				Top=150,
-				VerticalAlignment = VerticalAlignment.Top,
-				HorizontalAlignment = HorizontalAlignment.Left
+				Top = (int) (28.5f * GlobalScale.X),
+				Left = (int) (735f * GlobalScale.X),
 			};
 			SetScore(0);
 		}
@@ -654,7 +658,7 @@ public partial class GameLayout : MenuLayout
 
 		panel.Widgets.Add(OverWatchToggle);
 		
-		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
+		/*foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
 			var unitPanel = new ImageButton();
 
@@ -665,6 +669,7 @@ public partial class GameLayout : MenuLayout
 			};
 			_unitBar.Widgets.Add(unitPanel);
 		}
+		*/
 
 		generated = true;
 		if (SelectedUnit == null) return panel;
@@ -830,7 +835,7 @@ public partial class GameLayout : MenuLayout
 		var mousepos = Utility.GridToWorldPos(TileCoordinate+new Vector2(-1.5f,-0.5f));
 		for (int i = 0; i < 8; i++)
 		{
-		
+			if(SequenceManager.SequenceRunningRightNow) break;//get cover gets blocked by sequence manager and freezes the game
 			var indicator = TextureManager.GetSpriteSheet("coverIndicator",3,3)[i];
 			Color c = Color.White;
 			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i,ignoreControllables:true))
@@ -1011,8 +1016,9 @@ public partial class GameLayout : MenuLayout
 		var fraction = GameManager.TimeTillNextTurn / (GameManager.PreGameData.TurnTime * 1000);
 		var displayLenght = totalLenght - totalLenght * fraction;
 		
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), Vector2.Zero, null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), Vector2.Zero, new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/scoreboard"), new Vector2(x:396,y:29), sourceRectangle:null, Color.Gray, 0, Vector2.Zero,scale:1 ,SpriteEffects.None, 0);
 		batch.End();
 		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Width,TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Height),false);
 		batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState:SamplerState.PointClamp,effect:PostProcessing.PostProcessing.UIGlowEffect);
@@ -1111,7 +1117,7 @@ public partial class GameLayout : MenuLayout
 			batch.DrawNumberedIcon(SelectedUnit.MovePoints.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/movePoint"), pos, portraitScale);
 			pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 45 * portraitScale);
 			batch.DrawNumberedIcon(SelectedUnit.Determination.Current.ToString(), TextureManager.GetTexture("HoverHud/Consequences/determinationFlame"), pos, portraitScale);
-			if (SelectedUnit.canTurn)
+			if (SelectedUnit.CanTurn)
 			{
 				pos = new Vector2(145 * portraitScale, Game1.resolution.Y - 145 * portraitScale);
 				batch.Draw(TextureManager.GetTexture("GameHud/BottomBar/turn"), pos, portraitScale,Color.White);
@@ -1378,7 +1384,11 @@ public partial class GameLayout : MenuLayout
 		}
 
 		ProcessKeyboard();
-		
+		if(movePreviewDirty)
+		{
+			movePreviewDirty = false;
+			ReMakeMovePreview();
+		}
 		//bad
 		if (!GameManager.IsMyTurn())
 		{
@@ -1424,7 +1434,7 @@ public partial class GameLayout : MenuLayout
 			}
 			
 		}
-		if(inputBox != null && inputBox.IsKeyboardFocused) return;
+		if(inputBox == null && inputBox.IsKeyboardFocused) return;
 		
 		//if(UI.Desktop.FocusedKeyboardWidget != null) return;
 
@@ -1433,8 +1443,8 @@ public partial class GameLayout : MenuLayout
 
 		if (JustPressed(Keys.Enter))
 		{
-			inputBox!.Visible = true;
-			inputBox.SetKeyboardFocus();
+			inputBox.Visible = true;
+			inputBox?.SetKeyboardFocus();
 		}
 
 		if (currentKeyboardState.IsKeyDown(Keys.CapsLock) && !lastKeyboardState.IsKeyDown(Keys.CapsLock))
@@ -1566,7 +1576,6 @@ public partial class GameLayout : MenuLayout
 		Action,
 		None,
 		Overwatch,
-		EnemyPreview
 	}
 
 	private static ActiveActionType activeAction = ActiveActionType.None;
@@ -2087,7 +2096,7 @@ public partial class GameLayout : MenuLayout
 		}
 	
 
-		if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
+		/*if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
 
 		foreach (var unit in suggestedTargets)
 		{
@@ -2101,6 +2110,7 @@ public partial class GameLayout : MenuLayout
 			};
 			targetBar!.Widgets.Add(unitPanel);
 		}
+		*/
 
 		targetBarStack!.Proportions!.Clear();
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));

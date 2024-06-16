@@ -55,6 +55,8 @@ namespace DefconNull.WorldObjects
 
 
 			Crouching = data.Crouching;
+		
+
 			Panicked = data.Panic;
 
 
@@ -73,7 +75,7 @@ namespace DefconNull.WorldObjects
 			}
 
 
-			canTurn = data.CanTurn;
+			CanTurn = data.CanTurn;
 
 
 			MoveRangeEffect.Current = data.MoveRangeEffect;
@@ -96,29 +98,12 @@ namespace DefconNull.WorldObjects
             
 			if (justSpawned)
 			{
-
-#if SERVER
-				if (Type.SpawnEffect != null)
-				{
-					Task t = new Task(delegate
-					{
-						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
-						{
-							NetworkingManager.AddSequenceToSendQueue(c);
-						}
-					});
-					SequenceManager.RunNextAfterFrames(t);
-				}
-#endif
-				
 				StartTurn();
 			}
 
 		}
 
-		public bool canTurn { get; set; }
-
-
+		public bool CanTurn { get; set; }
 		public Value MovePoints;
 		public Value ActionPoints;
 		public Value Determination;
@@ -211,7 +196,7 @@ namespace DefconNull.WorldObjects
 		public void StartTurn()
 		{
 			MovePoints.SetToMax();
-			canTurn = true;
+			CanTurn = true;
 			ActionPoints.SetToMax();
 			MoveRangeEffect.SetToMax();
 			if (Determination < 0)
@@ -237,7 +222,7 @@ namespace DefconNull.WorldObjects
 				Panicked = false;
 				Determination--;
 				MovePoints--;
-				canTurn = false;
+				CanTurn = false;
 			}
 
 			ClearOverWatch();
@@ -257,8 +242,7 @@ namespace DefconNull.WorldObjects
 		}
 		public void DoAbility(WorldObject target, int ability)
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = ability;
 			DoAction(Action.ActionType.UseAbility,args);
 		}
@@ -269,9 +253,7 @@ namespace DefconNull.WorldObjects
 			{
 #if CLIENT
 			if(SequenceManager.SequenceRunning) return;
-			if (!GameManager.IsMyTurn()) return;
 #else
-
 				while (SequenceManager.SequenceRunning)
 				{
 					Thread.Sleep(1000);
@@ -286,18 +268,20 @@ namespace DefconNull.WorldObjects
 				if (!result.Item1)
 				{
 #if CLIENT
-				if(args.Target.HasValue){
-					new PopUpText(result.Item2, args.Target.Value,Color.White);
-				}
+
+					new PopUpText(result.Item2, args.Target,Color.White);
+				
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
+					GameManager.ShouldRecalculateUnitPositions = true;//re update units and send update to client
+					GameManager.ShouldUpdateUnitPositions = true;//re update units and send update to client
 #endif
 					return;
 				}
 
 				Log.Message("UNITS", "performing action " + a.Type + " on " + args.Target + " with " + args.AbilityIndex);
 #if CLIENT
-			a.SendToServer(this,args);
+				a.SendToServer(this,args);
 #elif SERVER
 				a.PerformServerSide(this, args);
 #endif
@@ -433,7 +417,7 @@ namespace DefconNull.WorldObjects
 				Team1 = u.IsPlayer1Team;
 				ActionPoints = u.ActionPoints.Current;
 				MovePoints = u.MovePoints.Current;
-				CanTurn = u.canTurn;
+				CanTurn = u.CanTurn;
 				Determination = u.Determination.Current;
 				Crouching =	u.Crouching;
 				Panic = u.Panicked;
@@ -508,7 +492,7 @@ namespace DefconNull.WorldObjects
 
 		protected bool Equals(Unit other)
 		{
-			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && canTurn == other.canTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
+			return Abilities.Equals(other.Abilities) && MovePoints.Equals(other.MovePoints) && ActionPoints.Equals(other.ActionPoints) && Determination.Equals(other.Determination) && MoveRangeEffect.Equals(other.MoveRangeEffect) && Overwatch.Equals(other.Overwatch) && OverWatchedTiles.Equals(other.OverWatchedTiles) && StatusEffects.Equals(other.StatusEffects) && VisibleTiles.Equals(other.VisibleTiles) && WorldObject.Equals(other.WorldObject) && Type.Equals(other.Type) && CanTurn == other.CanTurn && Crouching == other.Crouching && IsPlayer1Team == other.IsPlayer1Team && Panicked == other.Panicked;
 		}
 
 		public override bool Equals(object? obj)
@@ -533,7 +517,7 @@ namespace DefconNull.WorldObjects
 				hashCode = (hashCode * 397) ^ StatusEffects.GetHashCode();
 				hashCode = (hashCode * 397) ^ VisibleTiles.GetHashCode();
 				hashCode = (hashCode * 397) ^ Type.GetHashCode();
-				hashCode = (hashCode * 397) ^ canTurn.GetHashCode();
+				hashCode = (hashCode * 397) ^ CanTurn.GetHashCode();
 				hashCode = (hashCode * 397) ^ Crouching.GetHashCode();
 				hashCode = (hashCode * 397) ^ IsPlayer1Team.GetHashCode();
 				hashCode = (hashCode * 397) ^ Panicked.GetHashCode();
@@ -591,9 +575,14 @@ namespace DefconNull.WorldObjects
 				if(tile.Surface==null) continue;
 				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
 				{
-					result.Add(position);
+					if(VisibleTiles.ContainsKey(tile.Position) && VisibleTiles[tile.Position] >= Visibility.Partial){
+						
+						result.Add(position);
+					}
+					
 				}
 			}
+			
 
 			return result;
 		}
@@ -607,20 +596,20 @@ namespace DefconNull.WorldObjects
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
 
 #if SERVER
-		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
-		{
-			Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-			if (GameManager.Player1UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1UnitPositions.Remove(WorldObject.ID);
+			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
+			{
+				Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+				if (GameManager.Player1.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
 	
-			GameManager.Player1UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
-		}
-		if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
-		{
-			Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-			if (!GameManager.Player2UnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2UnitPositions.Remove(WorldObject.ID);
+				GameManager.Player1.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+			}
+			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
+			{
+				Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
+				if (!GameManager.Player2.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
 			
-			GameManager.Player2UnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
-		}
+				GameManager.Player2.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
+			}
 #endif
 			
 			

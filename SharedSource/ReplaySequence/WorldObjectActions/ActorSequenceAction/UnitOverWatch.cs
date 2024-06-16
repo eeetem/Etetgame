@@ -51,6 +51,7 @@ public class UnitOverWatch : UnitSequenceAction
 	{
 			Actor.ActionPoints.Current=0;
 			Actor.MovePoints.Current=0;
+			Actor.Determination -= Actor.Abilities[abilityIndex].DetCost;
 			Actor.Overwatch = new  ValueTuple<bool, int>(true,abilityIndex);
 			var positions = Actor.GetOverWatchPositions(Target,abilityIndex);
 			foreach (var shot in positions)
