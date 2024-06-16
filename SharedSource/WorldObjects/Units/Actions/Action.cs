@@ -197,7 +197,7 @@ public abstract class Action
 		{
 			
 			Target = message.GetSerializable<Vector2Int>();
-			TargetLoc = (TargetOnTile) message.GetInt();
+			TargetLoc = (TargetOnTile) message.GetShort();
 			AbilityIndex = message.GetInt();
 		}
 	}
