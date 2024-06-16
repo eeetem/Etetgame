@@ -465,7 +465,7 @@ public static partial class GameManager
 		{
 
 			Unit.UnitData cdata = new Unit.UnitData(true);
-			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(1, 1), Direction.East, false, cdata);
+			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(15, 14), Direction.East, false, cdata);
 			SequenceManager.AddSequence(objMake);
 
 
