@@ -13,10 +13,9 @@ merge vission and projectile
 signing
 
 
-fix auto target through walls?
-ghost aiming aimbot
-smoke dissapear update
 
+smoke dissapear update
+supress before damage
 
 sfx list:
 -throw

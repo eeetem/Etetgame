@@ -381,22 +381,29 @@ public static partial class GameManager
 				p = Player2;
 				team1 = false;
 			}
+			
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
 					var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 				
-					if(tile.Surface == null) return;//ignore empty tiles
+					if(tile.Surface == null) continue;//ignore empty tiles
 					WorldTile.WorldTileData worldTileData = tile.GetData();
-					p.WorldState.TryAdd(tile.Position,worldTileData);
+					if (!p.WorldState.ContainsKey(tile.Position))
+					{
+						p.WorldState.TryAdd(tile.Position,worldTileData);
+					}
+					
 
 					if (tile.IsVisible(team1:team1))
 					{
 						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
 						{
 							p.WorldState[tile.Position] = worldTileData;
+							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true));
 						}
+						
 
 					}
 					

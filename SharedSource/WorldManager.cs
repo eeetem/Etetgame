@@ -16,6 +16,7 @@ using DefconNull.WorldObjects;
 using MD5Hash;
 using Microsoft.Xna.Framework;
 using Riptide;
+using static DefconNull.WorldManager;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
@@ -203,8 +204,6 @@ public  partial class WorldManager
 #endif
 			foreach (var visTuple in unitSee)
 			{
-
-
 				if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
 				{
 					GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
@@ -218,6 +217,8 @@ public  partial class WorldManager
 					{
 						GameManager.ShowUnitToEnemy(spotedUnit);
 					}
+
+					
 #endif
 				}
 
@@ -1157,14 +1158,17 @@ public  partial class WorldManager
 		}
 		string hash = "";
 
-		foreach (var tile in _gridData)
+		for (int x = 0; x < 100; x++)
 		{
-                
-			hash += tile.GetData().GetHash();
+			for (int y = 0; y < 100; y++)
+			{
+				var tile = _gridData[x, y];
+				hash += tile.GetData().GetHash();
+			}
 		}
-			
-        
-	
+
+
+
 		string md5 = hash.GetMD5();
 		if (md5 == null)
 			throw new Exception("MD5 hash failed");

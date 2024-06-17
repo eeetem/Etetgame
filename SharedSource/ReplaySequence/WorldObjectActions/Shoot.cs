@@ -80,10 +80,9 @@ public class Shoot : SequenceAction
 		return false;
 #endif
 	}
-	
 
 
-
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 #if CLIENT
 
 	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)

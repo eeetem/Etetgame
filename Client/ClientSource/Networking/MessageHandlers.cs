@@ -51,7 +51,8 @@ public static partial class NetworkingManager
 			
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
-			if (WorldManager.Instance.GetMapHash() != hash)
+			var maphash = WorldManager.Instance.GetMapHash();
+			if (maphash != hash)
 			{
 				Log.Message("NETWORKING","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);

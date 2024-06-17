@@ -178,8 +178,21 @@ public static partial class NetworkingManager
 
 			Log.Message("NETWORKING","finished sending map data to " + connection.Id);
                     
+			var player = GameManager.GetPlayer(connection);
+			
 			SendAllSeenUnitPositions();
-			SendSequenceMessageToConnection(act, connection);
+			if (player == null)
+			{
+				SendSequenceMessageToConnection(act,connection);
+			}
+			else
+			{
+				bool player1 = player == GameManager.Player1;
+				act.ForEach(x=>x.FilterForPlayer(player1));
+				SendSequenceMessageToConnection(act,connection);
+				
+			}
+			
 			SendAllSeenUnitPositions();
 
 			
@@ -597,7 +610,7 @@ public static partial class NetworkingManager
 	}
 
 	private static int sequencePacketID = 0;
-	private static void AddSequenceToSendQueue(List<SequenceAction> actions)
+	private static void AddSequenceToSendQueue(List<SequenceAction> actions, bool? player1 = null)
 	{
 		var originalList = new List<SequenceAction>(actions);
 		foreach (var a in originalList)
@@ -616,31 +629,45 @@ public static partial class NetworkingManager
 		Log.Message("NETWORKING","sequence submited for sending "+actions.Count);
 
 
-
+		var playerList = new List<bool>();
+		if(player1 == null)
+		{
+			playerList.Add(true);
+			playerList.Add(false);
+		}
+		else
+		{
+			playerList.Add(player1.Value);
+		}
 		lock (UpdateLock)
 		{
 			sequencePacketID++;
-			var p = GameManager.GetPlayer(true);
 			var t = new Tuple<bool, bool, List<SequenceAction>>(true, true, actions);
-			if (p != null)
+			foreach (var pid in playerList)
 			{
-				var tempActList = new List<SequenceAction>(actions.Count);
-				actions.ForEach(x => tempActList.Add(x.Clone()));
-				var packet = new SequencePacket(sequencePacketID, tempActList);
-				p.SequenceQueue.Enqueue(packet);
-				t= new Tuple<bool, bool, List<SequenceAction>>(false, t.Item2, t.Item3);
+				var p = GameManager.GetPlayer(pid);
+				
+				if (p != null)
+				{
+					var tempActList = new List<SequenceAction>(actions.Count);
+					actions.ForEach(x => tempActList.Add(x.Clone()));
+					var packet = new SequencePacket(sequencePacketID, tempActList);
+					p.SequenceQueue.Enqueue(packet);
+					if (pid)
+					{
+						t= new Tuple<bool, bool, List<SequenceAction>>(false, t.Item2, t.Item3);
+					}
+					else
+					{
+						t= new Tuple<bool, bool, List<SequenceAction>>(t.Item1, false, t.Item3);
+					}
+					
+				}
+				
 			}
-			p = GameManager.GetPlayer(false);
-			if (p != null)
-			{
-				var tempActList = new List<SequenceAction>(actions.Count);
-				actions.ForEach(x => tempActList.Add(x.Clone()));
-				var packet = new SequencePacket(sequencePacketID, tempActList);
-				p.SequenceQueue.Enqueue(packet);
-				t= new Tuple<bool, bool, List<SequenceAction>>(t.Item1, false, t.Item3);
-			}
-
 			sequencesToExecute.Add(sequencePacketID, t);
+
+			
 		}
 
 	}
