@@ -18,17 +18,17 @@ public partial class GameLayout
 			tutorial = true;
 			canEndTurnTutorial = false;
 			tutorialActionLock = ActiveActionType.Move;
-			highlightTile = new Vector2Int(1, 1);
+			highlightTile = new Vector2Int(19, 25);
 			tutorialNote = "Welcome to [Green]Etetgame![-]\n" +
 			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
 			Thread.Sleep(10000);
 			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\n\nThese points can be spent to move your units and use their actions/abilities.\n\n" +
-			               "At the end of each turn your units will recover all [Orange]action[-] and [Green]movement[-] points.\n\n" +
-			               "Select the [Green]Scout[-] now and double click the highlighted tile to move to it, using one of your [Green]movement points[-].";
+			               "At the end of each turn your units will recover all [Orange]action[-] and \n[Green]movement[-] points.\n\n" +
+			               "Select the [Green]Scout[-] and double click the highlighted tile to move to it, using two of your [Green]movement points[-].";
 			tutorialActionLock = ActiveActionType.Move;
-			highlightTile = new Vector2Int(1, 7);
+			highlightTile = new Vector2Int(19, 31);
 			var scout = GameManager.GetMyTeamUnits()[0];
-			while (scout.WorldObject.TileLocation.Position != new Vector2Int(1, 7))
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(19, 31))
 			{
 				Thread.Sleep(350);
 			}
@@ -38,57 +38,111 @@ public partial class GameLayout
 			               "You can turn to face any direction after each move by double right clicking.\n" +
 			               "Try it on the highlighted tile";
 			tutorialActionLock = ActiveActionType.Face;
-			highlightTile = new Vector2Int(5, 9);
-
-			tutorialNote = "[Green]Clearing the Map[-]\n" +
-			               "We've cleared this area, move to the highlighted tile to clear the cross angle before proceeding forward\n";
-			tutorialActionLock = ActiveActionType.Move;
-			highlightTile = new Vector2Int(1, 1);
-
-			tutorialNote = "[Green]Clearing the Map[-]" +
-			               "Double right click the highlighted tile to check the cross-fire";
-			tutorialActionLock = ActiveActionType.Face;
-			highlightTile = new Vector2Int(5, 9);
-
-			tutorialNote = "[Green]Ending Turn[-]\n" +
-			               "We have no more movement points remaining so lets end our turn.\n" +
-			               "Click the end turn button located in the top right corner";
-			
-			//tutorialNote = "[Green]Cover[-]\n" +
-			//               "There's 3 types of cover. [Green]Low walls[-], [Yellow]Half walls[-] and [Red]Full walls[-].\n" +
-			//               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
-			//               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
-			//               "[Red]Full[-] - Full walls, cannot be hit when crouching or standing.\n\n" +
-			//               "There's colored indicators on your cursor indicating the cover of nearby tiles.\n" +
-			//               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
-			//while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(23, 42)).UnitAtLocation!.WorldObject))
-			//{
-			//	Thread.Sleep(350);
-			//}
-			
-			//tutorialNote = "[Green]Cover[-]\n" +
-			//               "The [Red]enemy[-] unit is behind a[Yellow] Half[-] wall, the cover would absorb all your damage.\n\n" +
-			//               "[Yellow]Right click[-] to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
-			//tutorialMove(scout,new Vector2Int(23,39));
-			//tutorialNote = "[Green]Combat[-]\n" +
-			//               "Finally shoot the [Red]enemy[-] By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
-			//               "Using 1 [Green]movement[-] and 1 [Orange]action[-] point. \n" +
-			//               "When aiming at an [Red]enemy[-], their health-bar will highlight the amount of damage they will receive.";
-			               
-			//TutorialFire(scout,new Vector2Int(23, 42));
-
+			highlightTile = new Vector2Int(23, 31);
 			while (scout.WorldObject.Facing != Direction.East)
 			{
 				Thread.Sleep(350);
 			}
-
-			tutorialNote = "[Green]End turn[-]\n" +
-			               "You're out of [Green]movement[-] and [Orange]action[-] points." +
-			               "You can now end your turn by pressing [Orange]end turn[-] button in top right corner";
 			highlightTile = new Vector2Int(-1, -1);
+			
+			tutorialNote = "[Green]Clearing the Map[-]\n" +
+			               "We've cleared this area, move to the highlighted tile to clear the cross angle before proceeding forward\n";
+			tutorialActionLock = ActiveActionType.Move;
+			highlightTile = new Vector2Int(20, 34);
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(20, 34))
+			{
+				Thread.Sleep(350);
+			}
+			highlightTile = new Vector2Int(-1, -1);
+
+			tutorialNote = "[Green]Clearing the Map[-]\n" +
+			               "Double right click the highlighted tile to check the cross-fire";
+			tutorialActionLock = ActiveActionType.Face;
+			highlightTile = new Vector2Int(23, 30);
+			while (scout.WorldObject.Facing != Direction.NorthEast)
+			{
+				Thread.Sleep(350);
+			}
+			highlightTile = new Vector2Int(-1, -1);
+
+			tutorialNote = "[Green]Ending Turn[-]\n" +
+			               "We have no more movement points remaining so lets end our turn.\n" +
+			               "Click the end turn button located in the top right corner";
 			TutorialEndTurn();
 			
-			int heavyId = 0;
+			int gruntId = 0;
+			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+			{
+				if (u.Value.Item2.Prefab == "Grunt")
+				{
+					gruntId = u.Key;
+					break;
+				}
+			}
+
+			var mv = Action.Actions[Action.ActionType.Move];
+			var fc = Action.Actions[Action.ActionType.Face];
+			mv.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(22, 31)));
+			Thread.Sleep(2000);
+			fc.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(20,34)));
+			MoveCamera.Make(new Vector2Int(22,31),true,0).GenerateTask().RunTaskSynchronously();
+			Thread.Sleep(300);
+
+			NetworkingManager.EndTurn();
+			
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "There's 3 types of cover. [Green]Low walls[-], [Yellow]Half walls[-] and [Red]Full walls[-].\n" +
+			               "[Green]Low[-] - [Red]-2[-] damage, [Red]-4[-] if crouched\n" +
+			               "[Yellow]High[-] - [Red]-4[-] damage, Cannot be hit if crouched\n" +
+			               "[Red]Full[-] - Full walls, cannot be hit when crouching or standing.\n\n" +
+			               "There's colored indicators on your cursor indicating the cover of nearby tiles.\n" +
+			               "Press [Yellow]X[-] to select your shoot ability and try to shoot the [Red]enemy[-].";
+			highlightTile = new Vector2Int(22, 31);
+			while (activeAction != ActiveActionType.Action || !Equals(ActionTarget, WorldManager.Instance.GetTileAtGrid(new Vector2Int(22, 31)).UnitAtLocation!.WorldObject))
+			{
+				Thread.Sleep(350);
+			}
+			highlightTile = new Vector2Int(-1, -1);
+			
+			tutorialNote = "[Green]Cover[-]\n" +
+			               "The [Red]grunt[-] is behind a[Yellow] Half[-] wall, the cover would absorb all your damage.\n\n" +
+			               "[Yellow]Right click[-] to de-select the ability and move to highlighted tile to flank the [Red]enemy[-]";
+			highlightTile = new Vector2Int(22, 33);
+			tutorialActionLock = ActiveActionType.Move;
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(22, 33))
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "[Green]Combat[-]\n" +
+			               "Face the [Red]grunt[-] on the highlighted tile";
+			highlightTile = new Vector2Int(22, 31);
+			tutorialActionLock = ActiveActionType.Face;
+			while (scout.WorldObject.Facing != Direction.North)
+			{
+				Thread.Sleep(350);
+			}
+			
+			tutorialNote = "[Green]Combat[-]\n" +
+			               "Finally shoot the [Red]enemy[-] By pressing [Yellow]X[-] and then [Yellow]Spacebar[-],\n\n" +
+			               "Using 1 [Green]movement[-] and 1 [Orange]action[-] point. \n" +
+			               "When aiming at an [Red]enemy[-], their health-bar will highlight the amount of damage they will receive.";
+
+			TutorialFire(scout,new Vector2Int(22, 31));
+
+			tutorialNote = "[Green]Great Work![-]\n" +
+			               "Move to the highlighted tile";
+			highlightTile = new Vector2Int(24, 32);
+			tutorialActionLock = ActiveActionType.Move;
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(24, 32))
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "We are out of movement and action points, lets end our turn for now";
+			TutorialEndTurn();
+			
+			int heavyId = 1;
 			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
 			{
 				if (u.Value.Item2.Prefab == "Heavy")
@@ -98,21 +152,76 @@ public partial class GameLayout
 				}
 			}
 			
+			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
+			Thread.Sleep(2000);
+			fc.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
+			NetworkingManager.EndTurn();
+
+			tutorialNote = "[Green]Crouching[-]\n" +
+			               "Move to the highlighted tile";
+			highlightTile = new Vector2Int(27,32);
+			tutorialActionLock = ActiveActionType.Move;
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(27, 32))
+			{
+				Thread.Sleep(350);
+			}
+			
+			tutorialNote = "[Green]Crouching[-]\n" +
+			               "Turn to the highlighted tile";
+			highlightTile = new Vector2Int(27, 29);
+			tutorialActionLock = ActiveActionType.Face;
+			while (scout.WorldObject.Facing != Direction.North)
+			{
+				Thread.Sleep(350);
+			}
+			
+			MoveCamera.Make(new Vector2Int(27,26),true,0).GenerateTask().RunTaskSynchronously();
+			Thread.Sleep(300);
+
+			tutorialNote = "[Green]Crouching[-]\n" +
+			               "We have spotted another enemy!\n" +
+			               "Crouching behind a half wall will conceal you from enemy view\n\n" +
+			               "Crouch by pressing Z then spacebar";
+			TutorialCrouch(scout);
+
+			tutorialNote = "[Green]Crouching[-]\n" +
+			               "Crouching consumes a movement point.\n" +
+			               "We have one movement point remaining but lets end turn for now.";
+			TutorialEndTurn();
+			
+			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27,28)));
+			NetworkingManager.EndTurn();
+			
+			
+			
+			
+			
+			/*
+			int heavyId = 1;
+			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+			{
+				if (u.Value.Item2.Prefab == "Heavy")
+				{
+					heavyId = u.Key;
+					break;
+				}
+			}
+
 			var mv = Action.Actions[Action.ActionType.Move];
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(31, 36)));
 			MoveCamera.Make(new Vector2Int(32,37),true,0).GenerateTask().RunTaskSynchronously();
 			Thread.Sleep(300);
 			var act = new Action.ActionExecutionParamters(new Vector2Int(29, 43));
 			act.AbilityIndex = 0;
-			
+
 			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
 			NetworkingManager.EndTurn();
-			
+
 			 tutorialNote = "[Green]Crouching[-]\n" +
 			               "The [Red]enemy Heavy[-] is awaiting your approach.\n" +
 			               "Approach him carefully by moving to the highlighted tile.";
 			TutorialMove(scout,new Vector2Int(26,42));
-			
+
 			tutorialNote = "[Green]Crouching[-]\n" +
 			               "You can hide under [Yellow]half cover[-] to avoid being seen.\n" +
 			               "Crouch by pressing [Yellow]Z[-] and then [Yellow]Spacebar[-], this will consume one movement point.";
@@ -127,7 +236,7 @@ public partial class GameLayout
 			               "Lets end our turn and see what the [Red]Heavy[-] does.";
 			tutorialActionLock = ActiveActionType.Action;
 			TutorialEndTurn();
-			
+
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(33, 39)));
 			NetworkingManager.EndTurn();
 
@@ -138,14 +247,14 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]Determination & Suppression[-]\n" +
 			               "Face in the [Red]Heavy's[-] direction";
-			
+
 			highlightTile = new Vector2Int(33, 40);
 			tutorialActionLock = ActiveActionType.Face;
 			tutorialAbilityIndex = -1;
-			
-			tutorialNote = "The [Red]Heavy[-] has exposed himself.\n By hiding behind cover the [Red]Heavy[-] did not expect our unit to be so close \n\n" + 
+
+			tutorialNote = "The [Red]Heavy[-] has exposed himself.\n By hiding behind cover the [Red]Heavy[-] did not expect our unit to be so close \n\n" +
 			               "Lets take advantage of this situation and attack our enemy while they are out in the open.";
-			
+
 			while (scout.WorldObject.Facing != Direction.North)
 			{
 				Thread.Sleep(350);
@@ -162,14 +271,14 @@ public partial class GameLayout
 			               "Panicked units will not regenerate a determination point next turn\n" +
 			               "End your turn as you have no more movement or action points";
 			TutorialEndTurn();
-			
+
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(31, 36)));
 			NetworkingManager.EndTurn();
 
 			tutorialNote = "[Green]Victory![-]\n" +
 			               "Because of the [Red]Heavy's[-] previous [Red]panicked[-] state,\n he is unable to retreat safely.\n\n" +
 			               "Lets first retreat our [Green]Scout[-] to cover before we finish him off and claim [Green]Victory![-]";
-			
+
 			tutorialActionLock = ActiveActionType.Move;
 			highlightTile = new Vector2Int(30, 42);
 			TutorialMove(scout,new Vector2Int(30, 42));
@@ -179,12 +288,12 @@ public partial class GameLayout
 
 			tutorialNote = "Face the heavy";
 			highlightTile = new Vector2Int(33, 39);
-			
+
 			tutorialNote = "shoot him";
 			tutorialActionLock = ActiveActionType.Action;
 			highlightTile = new Vector2Int(33, 39);
 			TutorialFire(scout,new Vector2Int(33, 39));
-			
+
 			bigTutorialNote = true;
 			tutorialNote = "[Green]End of basic tutorial![-]\n" +
 			               "You now understand the basics of the game,\n we recommend you complete the [Orange]advanced tutorial[-] to learn more about the complex mechanics in this game.\n\n" +
@@ -193,9 +302,9 @@ public partial class GameLayout
 			{
 				Thread.Sleep(1000);
 			}
-			
+			*/
 			tutorial = false;
-		});
+		}); 
 	}
     
     public static void AdvancedTutorialSequence()
@@ -561,5 +670,6 @@ public partial class GameLayout
 		}
 		tutorialActionLock = ActiveActionType.None;
 		highlightTile = new Vector2Int(-1, -1);
+		tutorialAbilityIndex = -1;
 	}
 }

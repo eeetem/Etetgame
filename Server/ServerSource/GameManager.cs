@@ -3,6 +3,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using DefconNull.WorldObjects.Units.Actions;
 using Microsoft.Xna.Framework;
 using Riptide;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -419,7 +420,7 @@ public static partial class GameManager
 		{
 
 			Unit.UnitData cdata = new Unit.UnitData(true);
-			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(15, 14), Direction.East, false, cdata);
+			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(19, 25), Direction.East, false, cdata);
 			SequenceManager.AddSequence(objMake);
 
 
@@ -428,7 +429,7 @@ public static partial class GameManager
 			data.Health = 5;
 			data.Facing = Direction.NorthWest;
 			data.JustSpawned = false;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(7, 9));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(25, 33));
 			SequenceManager.AddSequence(objMake);
 			
 			
@@ -439,7 +440,7 @@ public static partial class GameManager
 			data.UnitData = cdata;
 			data.JustSpawned = false;
 			data.Health = 8;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(10, 2));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(28, 26));
 			SequenceManager.AddSequence(objMake);
 			GameState = GameState.Playing;
 
@@ -464,6 +465,7 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
+			
 			while (!IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
