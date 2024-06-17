@@ -17,6 +17,8 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		return t;
 	}
 
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
+
 #if SERVER
 	public override void FilterForPlayer(bool player1)
 	{
