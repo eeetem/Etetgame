@@ -178,7 +178,7 @@ public  partial class WorldManager
 		foreach (var tile in _gridData)
 		{
 #if CLIENT
-            tile.TileVisibility = Visibility.None;
+			tile.TileVisibility = Visibility.None;
 #elif SERVER
 			tile.TileVisibility = new ValueTuple<Visibility, Visibility>(Visibility.None, Visibility.None);
 #endif
@@ -192,28 +192,26 @@ public  partial class WorldManager
 			Thread.Sleep(100);
 		}
 
-		try
+
+		Parallel.ForEach(units, seeingUnit =>
 		{
-			WorldObjectManager.WoReadLock++;
-			Parallel.ForEach(units, seeingUnit =>
-			{
-				var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
+			var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
 
-				seeingUnit.VisibleTiles = unitSee;
+			seeingUnit.VisibleTiles = unitSee;
 #if CLIENT
-				if (!seeingUnit.IsMyTeam()) return; //enemy units dont update our FOV
+			if (!seeingUnit.IsMyTeam()) return; //enemy units dont update our FOV
 #endif
-				foreach (var visTuple in unitSee)
+			foreach (var visTuple in unitSee)
+			{
+
+
+				if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
 				{
+					GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
 
+					var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
 
-					if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
-					{
-						GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
-
-						var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
-
-						if (spotedUnit == null) continue;
+					if (spotedUnit == null) continue;
 
 #if SERVER
 					if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
@@ -221,22 +219,17 @@ public  partial class WorldManager
 						GameManager.ShowUnitToEnemy(spotedUnit);
 					}
 #endif
-					}
-
 				}
 
-			});
-		}
-		finally
-		{
+			}
 
-			WorldObjectManager.WoReadLock--;
-		}
+		});
+
 #if CLIENT
-        foreach (var tile in _gridData)
-        {
-            tile.CalcWatchLevel();
-        }
+		foreach (var tile in _gridData)
+		{
+			tile.CalcWatchLevel();
+		}
 #endif    
         
 #if SERVER
@@ -724,9 +717,6 @@ public  partial class WorldManager
 			Thread.Sleep(100);
 		}
 
-		try
-		{
-			WorldObjectManager.WoReadLock++;
 
 			dir = Utility.NormaliseDir(dir);
 			WorldObject biggestCoverObj = nullWorldObject;
@@ -970,11 +960,7 @@ public  partial class WorldManager
 			
 			if (biggestCoverObj == null) throw new Exception("Biggest cover obj cannot be null");
 			return biggestCoverObj;
-		}
-		finally
-		{
-			WorldObjectManager.WoReadLock--;
-		}
+
 	}
 
 

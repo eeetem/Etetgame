@@ -205,13 +205,13 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public enum BatchingMode
     {
-        SyncAlone,
-        AsyncAlone,
+        BlockingAlone,
+        NonBlockingAlone,
         AsyncBatchSameType,
         Sequential,
         AsycnBatchAlways
     }
-    public virtual BatchingMode Batching => BatchingMode.SyncAlone;
+    public virtual BatchingMode Batching => BatchingMode.BlockingAlone;
 
     public abstract SequenceType GetSequenceType();
     public bool IsUnitAction => (int) GetSequenceType() < 100;

@@ -47,7 +47,7 @@ public class UnitMove : UnitSequenceAction
         return Equals((UnitMove) obj);
     }
 
-    public override BatchingMode Batching => BatchingMode.AsyncAlone;
+    public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 
     public override int GetHashCode()
     {

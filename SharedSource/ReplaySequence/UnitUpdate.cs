@@ -12,7 +12,7 @@ public class UnitUpdate : SequenceAction
 		return SequenceType.UnitUpdate;
 	}
 
-	public override BatchingMode Batching => BatchingMode.SyncAlone;
+	public override BatchingMode Batching => BatchingMode.BlockingAlone;
 
 	private Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)> _unitPositions = new Dictionary<int, (Vector2Int, WorldObject.WorldObjectData)>();
 	private bool _player1;

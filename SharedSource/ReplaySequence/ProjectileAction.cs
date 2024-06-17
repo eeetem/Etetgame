@@ -64,7 +64,7 @@ public class ProjectileAction : SequenceAction
 #endif
 
 
-	public override BatchingMode Batching => BatchingMode.AsyncAlone;
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 
 	public override SequenceType GetSequenceType()
 	{

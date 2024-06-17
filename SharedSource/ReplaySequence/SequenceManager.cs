@@ -98,7 +98,7 @@ public class SequenceManager
 					}
 			
 					Log.Message("SEQUENCE MANAGER","runnin sequnce task: " + act.GetSequenceType());
-					if (act.Batching == SequenceAction.BatchingMode.SyncAlone)
+					if (act.Batching == SequenceAction.BatchingMode.BlockingAlone)
 					{
 						act.RunSynchronously();
 					}
@@ -136,6 +136,7 @@ public class SequenceManager
 					sw.Stop();
 					//then do parrallel tasks in queue
 					//batch tile updates and other things
+					bool batchedTasks = false;
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
@@ -153,8 +154,8 @@ public class SequenceManager
 							case SequenceAction.BatchingMode.AsyncBatchSameType://batch if last was same type or last task is always batching meaning it's unlikely to interfere
 								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType() || act.Batching == SequenceAction.BatchingMode.AsycnBatchAlways;
 								break;
-							case SequenceAction.BatchingMode.SyncAlone:
-							case SequenceAction.BatchingMode.AsyncAlone:
+							case SequenceAction.BatchingMode.BlockingAlone:
+							case SequenceAction.BatchingMode.NonBlockingAlone:
 							case SequenceAction.BatchingMode.Sequential:
 								shouldBatch = false;
 								break;
@@ -165,12 +166,19 @@ public class SequenceManager
 						
 						Log.Message("SEQUENCE MANAGER",$"batching sequnce task: {i}{peeked.GetSequenceType()}");
 						i++;
+						batchedTasks = true;
 						act = SequenceQueue.Dequeue();
 						CurrentSequenceTasks.Add(act.GenerateTask());
 						CurrentSequenceTasks.Last().Start();
-
 					}
 
+					if (batchedTasks)
+					{
+						foreach (var t in CurrentSequenceTasks)
+						{
+							t.Wait(100);
+						}
+					}
 				}
 			}
 			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun))
