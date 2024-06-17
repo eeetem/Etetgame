@@ -241,6 +241,7 @@ public static partial class GameManager
             currentPoints += u.MovePoints.Current;
         }
         data.CurrentTurnPercentDone = 1f - ((float)currentPoints / maxPoints);
+        data.TimeTillNextTurn = TimeTillNextTurn; 
         return data;
     }
 
@@ -252,6 +253,7 @@ public static partial class GameManager
         public float CurrentTurnPercentDone;
 
         public int Score { get; set; }
+        public float TimeTillNextTurn; 
         public GameState GameState { get; set; }
 
 
@@ -261,7 +263,8 @@ public static partial class GameManager
             message.Add(Score);
             message.Add((int)GameState);
             message.Add(CurrentTurnPercentDone);
-
+            message.Add(TimeTillNextTurn); 
+            Log.Message("timeb4send", "" + TimeTillNextTurn);
             message.Add(IsPlayerOne == null);
             if (IsPlayerOne != null) message.Add(IsPlayerOne.Value);
         }
@@ -272,7 +275,7 @@ public static partial class GameManager
             Score = message.GetInt();
             GameState = (GameState)message.GetInt();
             CurrentTurnPercentDone = message.GetFloat();
-    
+            TimeTillNextTurn = message.GetFloat(); 
             bool isNull = message.GetBool();
             if (!isNull) IsPlayerOne = message.GetBool();
         }
