@@ -52,9 +52,9 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 		return GetSprite(Utility.NormaliseDir(dir),extraState);
 	}
 
-	public int GetAnimationLenght(string name)
+	public int GetAnimationLenght(string extraState, string name)
 	{
-		var path = "Content/"+_baseName + "/" + name+_variation.Name+"/";
+		var path = "Content/"+GetFulLName()+ extraState+ "/" + name+"/";
 		if (!Directory.Exists(path)) return 0;
 		var res = Directory.EnumerateFiles(path);
 		return res.Count();

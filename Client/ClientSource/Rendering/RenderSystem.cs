@@ -1,11 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DefconNull.LocalObjects;
 using DefconNull.Rendering.UILayout.GameLayout;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 
@@ -14,19 +15,22 @@ namespace DefconNull.Rendering;
 public static class RenderSystem
 {
 	public static GraphicsDevice GraphicsDevice = null!;
-	public static void Init(GraphicsDevice graphicsdevice)
+	public static void Init(GraphicsDevice graphicsdevice, ContentManager c)
 	{
-
 		GraphicsDevice = graphicsdevice;
+		tracerEffect = c.Load<Effect>("CompressedContent/shaders/tracer");
 	}
 
-	public static List<Tuple<Color, List<Vector2Int>>> debugPaths = new List<Tuple<Color, List<Vector2Int>>>();
+
 	static List<IDrawable> objs = new List<IDrawable>();
 	static List<IDrawable> unsortedObjs = new List<IDrawable>();
+	static List<IDrawable> invisibleTiles = new List<IDrawable>();
+	static Effect tracerEffect = null!;
 	public static void Draw(SpriteBatch spriteBatch)
 	{
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		objs.Clear();
+		invisibleTiles.Clear();
 		unsortedObjs.Clear();
 		
 		foreach (var tile in allTiles)
@@ -69,26 +73,7 @@ public static class RenderSystem
 		objs.Sort(new DrawableSort());
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
-		int count = 0;
-		foreach (var pp in debugPaths)
-		{
-			break;
-			count++;
-
-				for (int i = 0; i < pp.Item2.Count - 1; i++)
-				{
-					var path =  pp.Item2[i];
-					if (path.X < 0 || path.Y < 0) break;
-					var pos = Utility.GridToWorldPos((Vector2) path + new Vector2(0.5f, 0.5f));
-					var nextpos = Utility.GridToWorldPos((Vector2) pp.Item2[i + 1] + new Vector2(0.5f, 0.5f));
-
-					float mul = (float) WorldManager.Instance.GetTileAtGrid(pp.Item2[i + 1]).TraverseCostFrom(path);
-
-
-					spriteBatch.DrawLine(pos, nextpos, pp.Item1, count);
-				}
-			
-		}
+		
 		foreach (var obj in unsortedObjs)
 		{
 			
@@ -96,10 +81,19 @@ public static class RenderSystem
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
 
-			//if (!obj.IsVisible())//hide tileobjects
-			//{
-			//	continue;
-			//}
+			if (obj is WorldObject)
+			{
+				if (!((WorldTile)((WorldObject)obj).TileLocation).IsVisible())
+				{
+					invisibleTiles.Add(obj);
+					continue;
+				}
+			}
+			if (!obj.IsVisible())//hide tileobjects
+			{
+				invisibleTiles.Add(obj);
+				continue;
+			}
 			
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 			
@@ -107,58 +101,91 @@ public static class RenderSystem
 		}
 		spriteBatch.End();
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
-		count = 0;
+		
+		var selectedglow = TextureManager.GetTexture("selectionglow"); 
+		if (GameLayout.SelectedUnit != null)
+		{
+			var unitposition = Utility.GridToWorldPos(GameLayout.SelectedUnit.WorldObject.TileLocation.Position +
+			                                          new Vector2(-1.5f,-0.5f));
+			Color cc = Color.White; 
+			spriteBatch.Draw(selectedglow,unitposition , cc);
 
-			foreach (var moves in GameLayout.PreviewMoves.Reverse())
+		}
+		spriteBatch.End();
+
+		foreach (var tracer in new List<Tracer>(Tracer.Tracers))
+		{
+			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:tracerEffect);
+			
+			tracerEffect.Parameters["lifeTime"]?.SetValue(tracer.Lifetime/Tracer.TotalLife);
+		
+			var texture = tracer.GetTexture();
+			var transform = tracer.GetDrawTransform();
+			var color = tracer.GetColor();
+
+			
+			spriteBatch.Draw(texture, transform.Position,null,color, transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			spriteBatch.End();
+		}
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		
+		
+		
+		foreach (var obj in invisibleTiles)
+		{
+			
+			if(obj == null)continue;
+			var texture = obj.GetTexture();
+			var transform = obj.GetDrawTransform();
+
+			
+			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
+			
+			
+		}
+		int count = 0;
+
+		foreach (var moves in GameLayout.PreviewMoves.Reverse())
+		{
+			Color c = Color.White;
+			switch (count)
 			{
-				Color c = Color.White;
-				switch (count)
-				{
-					case 0:
-						c = Color.Red;
-						break;
-					case 1:
-						c = Color.Orange;
-						break;
-					case 2:
-						c = Color.Yellow;
-						break;
-					case 3:
-						c = Color.GreenYellow;
-						break;
-					case 4:
-						c = Color.Green;
-						break;
-					case 5:
-						c = Color.LightGreen;
-						break;
-					default:
-						c = Color.White;
-						break;
+				case 0:
+					c = Color.Red;
+					break;
+				case 1:
+					c = Color.Orange;
+					break;
+				case 2:
+					c = Color.Yellow;
+					break;
+				case 3:
+					c = Color.GreenYellow;
+					break;
+				case 4:
+					c = Color.Green;
+					break;
+				case 5:
+					c = Color.LightGreen;
+					break;
+				default:
+					c = Color.White;
+					break;
 
-				}
-				spriteBatch.DrawOutline(moves, c, 4f);
-				//foreach (var path in moves)
-				//{	
-//
-				//	var tile = WorldManager.Instance.GetTileAtGrid(path);
-				//	if (tile.Surface != null)
-				//	{
-				//		Texture2D sprite = tile.Surface.GetTexture();
-				//		spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c * 0.1f);
-				//	}
-				//}
+			}
+			spriteBatch.DrawOutline(moves, c, 4f);
 
-				count++;
+
+			count++;
 			
 
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
-				//	if (PathFinding.PathfindingCache.ContainsKey(new Vector2Int(x, y)))
+					//	if (PathFinding.PathfindingCache.ContainsKey(new Vector2Int(x, y)))
 					//{
-				//		spriteBatch.DrawText($"{PathFinding.PathfindingCache[new Vector2Int(x, y)].Item1:F1}",Utility.GridToWorldPos(new Vector2(x,y) + new Vector2(0.4f,0.4f)),2,Color.Yellow);
+					//		spriteBatch.DrawText($"{PathFinding.PathfindingCache[new Vector2Int(x, y)].Item1:F1}",Utility.GridToWorldPos(new Vector2(x,y) + new Vector2(0.4f,0.4f)),2,Color.Yellow);
 					//	spriteBatch.DrawLine(Utility.GridToWorldPos(new Vector2Int(x, y)+new Vector2(0.5f,0.5f)),Utility.GridToWorldPos( PathFinding.PathfindingCache[new Vector2Int(x, y)].Item2+new Vector2(0.5f,0.5f)), Color.Yellow, 2);
 					//}
 
@@ -170,36 +197,18 @@ public static class RenderSystem
 				}
 			}
 		}
-			var selectedglow = TextureManager.GetTexture("selectionglow"); 
-			if (GameLayout.SelectedUnit != null)
-			{
-				var unitposition = Utility.GridToWorldPos(GameLayout.SelectedUnit.WorldObject.TileLocation.Position +
-				                                          new Vector2(-1.5f,-0.5f));
-				Color cc = Color.White; 
-				spriteBatch.Draw(selectedglow,unitposition , cc);
-
-			}
-		spriteBatch.End();
 		
-
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+				
 		foreach (var obj in objs)
 		{
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
-
-
-			//if (!obj.IsVisible())//hide tileobjects
-			//{
-			//	continue;
-			//}
-
-			spriteBatch.Draw(texture, transform.Position,null,obj.GetColor(), transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
+			spriteBatch.Draw(texture, transform.Position+new Vector2(texture.Width/2f,texture.Height/2f),null,obj.GetColor(), transform.Rotation,new Vector2(texture.Width/2f,texture.Height/2f), transform.Scale, new SpriteEffects(), 0);
 
 		}
 		spriteBatch.End();
-		Tracer.Render(spriteBatch);
 		
+
 
 	}
 	
@@ -224,5 +233,3 @@ public static class RenderSystem
 		}
 	}
 }
-			
-

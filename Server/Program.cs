@@ -59,8 +59,9 @@ public static class Program
 
             NetworkingManager.Update();
             GameManager.Update(MSperTick);
-            WorldManager.Instance.Update(MSperTick);
             SequenceManager.Update();
+            WorldManager.Instance.Update(MSperTick);
+           
 				
 
             stopWatch.Stop();

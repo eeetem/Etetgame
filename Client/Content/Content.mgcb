@@ -283,18 +283,6 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/eye.png
 
-#begin CompressedContent/textures/Fire.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:CompressedContent/textures/Fire.png
-
 #begin CompressedContent/textures/GameHud/BottomBar/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -870,6 +858,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/GameHud/UnitBar/redoff.png
+
+#begin CompressedContent/textures/GameHud/UnitBar/scoreboard.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:CompressedContent/textures/GameHud/UnitBar/scoreboard.png
 
 #begin CompressedContent/textures/GameHud/UnitBar/screen.png
 /importer:TextureImporter
@@ -1483,7 +1483,7 @@
 /processorParam:TextureFormat=Color
 /build:CompressedContent/textures/MainMenu/butts/chatbox.png
 
-#begin CompressedContent/textures/MainMenu/butts/chatmenuconnected.png
+#begin CompressedContent/textures/MainMenu/butts/chatMenuConnected.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1493,9 +1493,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/butts/chatmenuconnected.png
+/build:CompressedContent/textures/MainMenu/butts/chatMenuConnected.png
 
-#begin CompressedContent/textures/MainMenu/butts/chatmenuDisconnected.png
+#begin CompressedContent/textures/MainMenu/butts/chatMenuDisconnected.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1505,7 +1505,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:CompressedContent/textures/MainMenu/butts/chatmenuDisconnected.png
+/build:CompressedContent/textures/MainMenu/butts/chatMenuDisconnected.png
 
 #begin CompressedContent/textures/MainMenu/butts/discord.png
 /importer:TextureImporter

@@ -8,6 +8,11 @@
       <anim name="end" frames="4"  animFPS="10"/>
     </sprite>
     <name>Smoke</name>
+    <spawnConsequences  range="1">
+      <particles>
+        <particle name="smoke" scaleRange="3,3.5" count="25" velocityXRange="-120,120" velocityYRange="35,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,1000"/>
+      </particles>
+    </spawnConsequences>
   </object>
 
   <object Faceable = "false" SCover ="1" health="4">
@@ -369,7 +374,7 @@
 
     <action immideate="true" detCost ="1" moveCost="1" actCost="0" aiExempt="false">
       <name>Rally</name>
-      <tip>All nearby friendlies stop panicking and gain full determiation</tip>
+      <tip>All nearby friendlies stop panicking and gain full determination, doesn't affect other officers</tip>
 
       
       <effect>
@@ -386,7 +391,7 @@
 
     <action detCost ="2" moveCost="1" actCost="0">
       <name>Command</name>
-      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight</tip>
+      <tip>Give a targeted 1 action point and 1 move point. Requires line of sight. Doesn't affect officers</tip>
       <targetAid>friend,!Officer</targetAid>
 
       <effect range="1" visible ="false">
@@ -511,7 +516,9 @@
       
       <effect>
         <delivery>
-          <projectile ignoreUnits="false" range="24" fowSpot="4"/>
+          <projectile particleName="rpg" particleSpeed="1" ignoreUnits="false" range="26" fowSpot="4">
+            <particle name="smoke" spawnDelay="10" count="3" velocityXRange="-10,10" velocityYRange="-10,10" accelerationXRange="0,0" accelerationYRange="-0.02,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="1000,10000"/>
+          </projectile>
         </delivery>
         <consequences range="2">
           <damage det="2" dmg="8" detRes="6" envRes="0"/>
@@ -521,6 +528,12 @@
           <sfx name="grenade"/>
           <place name="Crater"/>
           <fowSpot scatter="4"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="8" velocityXRange="-100,100" velocityYRange="-100,100" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       
@@ -546,6 +559,12 @@
           <sfx name="grenade"/>
           <place name="Crater"/>
           <fowSpot scatter="4"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       <effect>
@@ -554,6 +573,12 @@
         </delivery>
         <consequences range="2">
           <damage det="0" dmg="3" detRes="1" envRes="0"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
       <effect>
@@ -562,6 +587,12 @@
         </delivery>
         <consequences range="1">
           <damage det="0" dmg="3" detRes="0" envRes="0"/>
+          <particles>
+            <particle name="smoke" scaleRange="1,3.5" count="1" velocityXRange="-300,300" velocityYRange="0,60" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            <particle name="boom" scaleRange="1,1" count="2" velocityXRange="-200,200" velocityYRange="-200,200" accelerationXRange="0,0" accelerationYRange="0,0" damping="0.9999" lifetimeRange="900,1200">
+              <particle name="darkSmoke" scaleRange="0.5,1.5" spawnDelay="50" count="3" velocityXRange="-50,50" velocityYRange="-50,50" accelerationXRange="0,0" accelerationYRange="-0.05,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="500,2000"/>
+            </particle>
+          </particles>
         </consequences>
       </effect>
 

@@ -52,7 +52,9 @@ public static partial class NetworkingManager
 		server.Start(port, 10);
 			
 		Log.Message("NETWORKING","Started server at port" + port);
-		
+
+
+
 	}
 
 	private static void HandleConnection(Connection connection, Message connectmessage)
@@ -178,7 +180,7 @@ public static partial class NetworkingManager
                     
 			SendAllSeenUnitPositions();
 			SendSequenceMessageToConnection(act, connection);
-			
+			SendAllSeenUnitPositions();
 
 			
 		}
@@ -341,11 +343,20 @@ public static partial class NetworkingManager
 		SendSequenceIfShould(false);//second playerirst because of ai and practice mode
 		SendSequenceIfShould(true);
 		
-		if (!SequenceManager.SequenceRunning && GameManager.PlayerUnitPositionsDirty && !HasPendingMessages)
+		if (!SequenceManager.SequenceRunning &!HasPendingMessages)
 		{
-			GameManager.UpdatePlayerSideUnitPositions();//make sure up to date info
-			SendAllSeenUnitPositions();
+			if (GameManager.ShouldRecalculateUnitPositions)
+			{
+				GameManager.UpdatePlayerSideUnitPositions();//make sure up to date info
+			}
+			if (GameManager.ShouldUpdateUnitPositions)
+			{
+				SendAllSeenUnitPositions();
+			}
+		
 		}
+
+
 		lock (UpdateLock)
 		{
 			server.Update();
@@ -657,11 +668,16 @@ public static partial class NetworkingManager
 			var act = UnitUpdate.Make(GameManager.Player2.KnownUnitPositions,false);
 			AddSequenceToSendQueue(act);
 		}
-		GameManager.PlayerUnitPositionsDirty = false;
+		GameManager.ShouldUpdateUnitPositions = false;
 
 	}
 
-	
 
-
+	public static void CaptureNotify(Vector2Int capPoint, int currentScore)
+	{
+		Message msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.CaptureNotif);
+		msg.AddSerializable(capPoint);
+		msg.Add(currentScore);
+		server.SendToAll(msg);
+	}
 }

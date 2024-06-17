@@ -249,7 +249,7 @@ public class Shoot : SequenceAction
 	protected override void RunSequenceAction()
 	{
 #if CLIENT
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < ShotCount; i++)
 		{
 			new Tracer(Utility.GridToWorldPos(Projectile.Result.StartPoint), Utility.GridToWorldPos(Projectile.Result.CollisionPointShort+new Vector2(Random.Shared.NextSingle(-0.5f,0.5f),Random.Shared.NextSingle(-0.5f,0.5f))));
 			Thread.Sleep(ShotDelay);

@@ -55,6 +55,8 @@ namespace DefconNull.WorldObjects
 
 
 			Crouching = data.Crouching;
+		
+
 			Panicked = data.Panic;
 
 
@@ -96,21 +98,6 @@ namespace DefconNull.WorldObjects
             
 			if (justSpawned)
 			{
-
-#if SERVER
-				if (Type.SpawnEffect != null)
-				{
-					Task t = new Task(delegate
-					{
-						foreach (var c in Type.SpawnEffect.GetApplyConsequnces(WorldObject,WorldObject))
-						{
-							NetworkingManager.AddSequenceToSendQueue(c);
-						}
-					});
-					SequenceManager.RunNextAfterFrames(t);
-				}
-#endif
-				
 				StartTurn();
 			}
 
@@ -255,8 +242,7 @@ namespace DefconNull.WorldObjects
 		}
 		public void DoAbility(WorldObject target, int ability)
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = ability;
 			DoAction(Action.ActionType.UseAbility,args);
 		}
@@ -282,12 +268,13 @@ namespace DefconNull.WorldObjects
 				if (!result.Item1)
 				{
 #if CLIENT
-				if(args.Target.HasValue){
-					new PopUpText(result.Item2, args.Target.Value,Color.White);
-				}
+
+					new PopUpText(result.Item2, args.Target,Color.White);
+				
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
-					GameManager.PlayerUnitPositionsDirty = true;//re update units and send update to client
+					GameManager.ShouldRecalculateUnitPositions = true;//re update units and send update to client
+					GameManager.ShouldUpdateUnitPositions = true;//re update units and send update to client
 #endif
 					return;
 				}
@@ -588,9 +575,14 @@ namespace DefconNull.WorldObjects
 				if(tile.Surface==null) continue;
 				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
 				{
-					result.Add(position);
+					if(VisibleTiles.ContainsKey(tile.Position) && VisibleTiles[tile.Position] >= Visibility.Partial){
+						
+						result.Add(position);
+					}
+					
 				}
 			}
+			
 
 			return result;
 		}

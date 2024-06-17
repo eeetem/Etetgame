@@ -13,14 +13,9 @@ merge vission and projectile
 signing
 
 
-practice mode buggy
-specialist overwatch not using determination
-
-Grunt special tutorial says press x when it’s the shoot action not the special action.
-you are meant to use his normal shoot for the first bit and then the special in the second bit, is that not clear?
-
-
-Specialist range buff
+fix auto target through walls?
+ghost aiming aimbot
+smoke dissapear update
 
 
 sfx list:

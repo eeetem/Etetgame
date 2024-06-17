@@ -20,7 +20,7 @@ public class OverWatch : Action
 	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
-		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target!.Value,args.AbilityIndex));
+		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target,args.AbilityIndex));
 		return new Queue<SequenceAction>[] {queue};
 	}
 
@@ -39,7 +39,7 @@ public class OverWatch : Action
 
 	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
-		foreach (var loc in actor.GetOverWatchPositions(args.Target!.Value,args.AbilityIndex))
+		foreach (var loc in actor.GetOverWatchPositions(args.Target,args.AbilityIndex))
 		{
 			var tile = WorldManager.Instance.GetTileAtGrid(loc);
 			if (tile.Surface == null) continue;

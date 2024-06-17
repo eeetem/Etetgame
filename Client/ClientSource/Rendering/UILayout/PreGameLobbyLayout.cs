@@ -23,7 +23,7 @@ public class PreGameLobbyLayout : MenuLayout
 		base.RenderBehindHud(batch, deltatime);
 		batch.Begin(samplerState: SamplerState.PointClamp);
 		var chatPos = Game1.instance.GraphicsDevice.Viewport.Height - 200 * GlobalScale.X;
-		batch.Draw(TextureManager.GetTexture(""), new Vector2(0, chatPos), null, new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f), 0, Vector2.Zero, new Vector2(150,200)*GlobalScale.X, SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture(""), new Vector2(0, chatPos), null, new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f), 0, Vector2.Zero, new Vector2(150,200)*GlobalScale.X, SpriteEffects.None, 0);
 
 		string chatmsg = "";
 		int extraLines = 0;
@@ -80,7 +80,7 @@ public class PreGameLobbyLayout : MenuLayout
 			Spacing = 0,
 			Top = 0,
 			Left = 0,
-			Background = new SolidBrush(new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f)),
+			Background = new SolidBrush(new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f)),
 			Width = (int) (140 * GlobalScale.X),
 			Height = (int) (800 * GlobalScale.Y),
 			Margin = new Thickness(0),
@@ -92,7 +92,7 @@ public class PreGameLobbyLayout : MenuLayout
 		{
 			Top = 0,
 			Left = 0,
-			Background = new SolidBrush(new Color(29f / 255f, 33f / 255f, 42f / 255f, 0.95f)),
+			Background = new SolidBrush(new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f)),
 			Width = (int) (150 * GlobalScale.X),
 			Height = (int) (440 * GlobalScale.Y),
 			VerticalAlignment = VerticalAlignment.Stretch,
@@ -106,7 +106,7 @@ public class PreGameLobbyLayout : MenuLayout
 			Width = (int)(150*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(0*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{

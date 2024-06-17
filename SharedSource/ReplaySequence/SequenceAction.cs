@@ -26,6 +26,7 @@ public abstract class SequenceAction :  IMessageSerializable
         UnitUpdate = 108,
         TileUpdate = 109,
         SpotUnit = 110,
+        SpawnParticle = 111,
         
         ChangeUnitValues =0,
         PlayAnimation =1,
@@ -143,6 +144,10 @@ public abstract class SequenceAction :  IMessageSerializable
         {
             return SequenceType.SpotUnit;
         }
+        if (t == typeof(SpawnParticle))
+        {
+            return SequenceType.SpawnParticle;
+        }
         throw new ArgumentOutOfRangeException(nameof(t), t, null);
     }
     public static Type EnumToType(SequenceType t)
@@ -187,6 +192,10 @@ public abstract class SequenceAction :  IMessageSerializable
                 return typeof(UnitUpdate);
             case SequenceType.TileUpdate:
                 return typeof(TileUpdate);
+            case SequenceType.SpotUnit:
+                return typeof(SpotUnit);
+            case SequenceType.SpawnParticle:
+                return typeof(SpawnParticle);
             default:
                 throw new ArgumentOutOfRangeException(nameof(t), t, null);
         }
@@ -196,12 +205,14 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public enum BatchingMode
     {
-        Never,
-        OnlySameType,
+        BlockingAlone,
+        NonBlockingAlone,
+        AsyncBatchSameType,
         Sequential,
-        Always
+        AsycnBatchAlways
     }
-    public virtual BatchingMode Batching => BatchingMode.Never;
+    public virtual BatchingMode Batching => BatchingMode.BlockingAlone;
+
     public abstract SequenceType GetSequenceType();
     public bool IsUnitAction => (int) GetSequenceType() < 100;
 
@@ -219,16 +230,16 @@ public abstract class SequenceAction :  IMessageSerializable
     private bool ran = false;
     public Task GenerateTask()
     {
-        Task t = new Task(delegate
-        {
-            if(!Active) throw new Exception("SequenceAction was returned to pool");
-            if(ran) throw new Exception("SequenceAction was run twice");
-            ran = true;
-            Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
-            RunSequenceAction();
-            Return();
-        });
+        Task t = new Task(RunSynchronously);
         return t;
+    }
+    public void RunSynchronously(){
+        if(!Active) throw new Exception("SequenceAction was returned to pool");
+        if(ran) throw new Exception("SequenceAction was run twice");
+        ran = true;
+        Log.Message("SEQUENCE MANAGER","executing sequence action: "+this);
+        RunSequenceAction();
+        Return();
     }
     protected abstract void RunSequenceAction();
 

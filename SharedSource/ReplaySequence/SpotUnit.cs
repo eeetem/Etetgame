@@ -14,7 +14,7 @@ public class SpotUnit : SequenceAction
 		return SequenceType.SpotUnit;
 	}
 
-	public override BatchingMode Batching => BatchingMode.OnlySameType;
+	public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 
 	
 	private (Vector2Int, WorldObject.WorldObjectData)? spotedUnit = new();

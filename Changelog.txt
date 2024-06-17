@@ -22,3 +22,14 @@ Alpha 4.1
 -Overwatching units now can only shoot units they personally see themselves(no assited spoting from other friendlies)
 -Fixed overwatching abilities using the determination cost of the ability
 -Fixed master server chat messages appearing in game chat
+-Added selected unit indicator
+-Added popups for kick reason being missing
+-Fixed a bug where the settings menu was closed by enemy unit movement
+-Smoke Particles!
+-Movement animation can be skipped by holding mouse button
+-Fixed action points flickering on/off when watching an enemy use an ability
+-Master server properly captures crashes
+-Specialist range buff
+-Capture point notification fixed
+-Corner Shooting
+-Vastly sped up map loading

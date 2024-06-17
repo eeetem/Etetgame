@@ -17,6 +17,8 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		return t;
 	}
 
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
+
 #if SERVER
 	public override void FilterForPlayer(bool player1)
 	{
@@ -53,7 +55,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		//but we'll see
 		Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
 		{
-			if(x.ShouldDo()){x.GenerateTask().RunTaskSynchronously();}
+			if(x.ShouldDo()){x.RunSynchronously();;}
 		});
 
 	}

@@ -16,11 +16,9 @@ public static partial class GameManager
 	public static ClientInstance? Player2;
 	public static List<ClientInstance> Spectators = new();
 	public static PreGameDataStruct PreGameData = new();
-	
-	
 
-	
-	
+
+
 	public static ClientInstance? GetPlayer(bool isPlayer1)
 	{
 		if (isPlayer1)
@@ -229,7 +227,8 @@ public static partial class GameManager
 		}
 	}
 
-	public static bool PlayerUnitPositionsDirty = false;
+	public static bool ShouldUpdateUnitPositions = false;
+	public static bool ShouldRecalculateUnitPositions=  false;
 
 	private static void UpdatePlayerSideUnitPositionsForPlayer(bool player1,bool newTurn = false)
 	{
@@ -247,14 +246,14 @@ public static partial class GameManager
 			{
 				c.KnownUnitPositions.Remove(pos.Key);
 				Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" is null");
-				PlayerUnitPositionsDirty = true;
+				ShouldUpdateUnitPositions = true;
 			}
 			else if(t.UnitAtLocation.WorldObject.ID != pos.Key){
 				c.KnownUnitPositions.Remove(pos.Key);
 				c.KnownUnitPositions.Remove(t.UnitAtLocation.WorldObject.ID);
 				c.KnownUnitPositions.Add(t.UnitAtLocation.WorldObject.ID,(pos.Value.Item1,t.UnitAtLocation.WorldObject.GetData()));
 				Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" is not the same as the one at the tile");
-				PlayerUnitPositionsDirty = true;
+				ShouldUpdateUnitPositions = true;
 			}
 			else
 			{
@@ -263,7 +262,8 @@ public static partial class GameManager
 				{
 					c.KnownUnitPositions[pos.Key] = unitData;
 					Log.Message("UNITPOSITIONS","P1 unit at pos: "+pos.Value.Item1+" has different data");
-					PlayerUnitPositionsDirty = true;
+					
+					ShouldUpdateUnitPositions = true;
 				}
 			}
 		}
@@ -286,7 +286,7 @@ public static partial class GameManager
 	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
 		Log.Message("UNITPOSITIONS","updating unit positions");
-		
+		GameManager.ShouldRecalculateUnitPositions = false;
 		UpdatePlayerSideUnitPositionsForPlayer(true,newTurn);
 		UpdatePlayerSideUnitPositionsForPlayer(false,newTurn);
 	}
@@ -298,12 +298,12 @@ public static partial class GameManager
 		if (!c.KnownUnitPositions.ContainsKey(spotedUnit.WorldObject.ID))
 		{
 			c.KnownUnitPositions.Add(spotedUnit.WorldObject.ID,(spotedUnit.WorldObject.TileLocation.Position,spotedUnit.WorldObject.GetData()));
-			PlayerUnitPositionsDirty = true;
+			ShouldUpdateUnitPositions = true;
 
 		}else if (c.KnownUnitPositions[spotedUnit.WorldObject.ID].Item1 != spotedUnit.WorldObject.TileLocation.Position)
 		{
 			c.KnownUnitPositions[spotedUnit.WorldObject.ID] = (spotedUnit.WorldObject.TileLocation.Position,spotedUnit.WorldObject.GetData());
-			PlayerUnitPositionsDirty = true;
+			ShouldUpdateUnitPositions = true;
 		}
 		
 	}
@@ -323,7 +323,7 @@ public static partial class GameManager
 		public List<SquadMember>?  SquadComp { get; private set; }
 		public bool IsPracticeOpponent { get; set; }
 	
-		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || PlayerUnitPositionsDirty;
+		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || ShouldUpdateUnitPositions;
 	
 		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
 	
@@ -435,7 +435,7 @@ public static partial class GameManager
 			
 			data = new WorldObject.WorldObjectData("Heavy");
 			cdata = new Unit.UnitData(false);
-			//cdata.Determination = 0;
+			cdata.Determination = 1;
 			data.UnitData = cdata;
 			data.JustSpawned = false;
 			data.Health = 100;

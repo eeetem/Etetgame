@@ -56,7 +56,7 @@ public static partial class GameManager
     public static List<WorldObject> CapturePoints = new List<WorldObject>();
     public static readonly List<Vector2Int> T1SpawnPoints = new();
     public static readonly List<Vector2Int> T2SpawnPoints = new();
-    public static int score;
+    public static int Score;
     public static float CurrentTurnPercentDone;
 
     public static void Register(WorldObject wo)
@@ -141,40 +141,36 @@ public static partial class GameManager
             }
 
         }
+#if CLIENT
+        GameLayout.SetScore(Score);
+        Audio.PlaySound("UI/turn");
+#endif
 
-        if (!PreGameData.SinglePLayerFeatures)
+        if (!PreGameData.SinglePLayerFeatures || PreGameData.Player2Name != "AI")
         {
             if (team1Present && !team2Present)
             {
-#if CLIENT
-			Audio.PlaySound("capture");
-			Thread.Sleep(2000);
-			Camera.SetPos(capPoint);
+                Score++;
+#if SERVER
+                NetworkingManager.CaptureNotify(capPoint,Score);
 #endif
-                score++;
             }
             else if (!team1Present && team2Present)
             {
-
-#if CLIENT
-			Audio.PlaySound("capture");
-			Thread.Sleep(2000);
-			Camera.SetPos(capPoint);
+                Score--;
+#if SERVER
+                NetworkingManager.CaptureNotify(capPoint,Score);
 #endif
-                score--;
             }
-#if CLIENT
-		GameLayout.SetScore(score);
-		Audio.PlaySound("UI/turn");
-#endif
 
-            if (score > 10)
+            
+            if (Score > 10)
             {
                 Log.Message("GAME","team 2 lost due to score");
                 EndGame(true);
             }
 
-            if (score < -10)
+            if (Score < -10)
             {
                 Log.Message("GAME","team 1 lost due to score");
                 EndGame(false);
@@ -212,11 +208,13 @@ public static partial class GameManager
         }
         UpdatePlayerSideUnitPositions(true);
         Program.InformMasterServer();
+        
 #endif
 
         TimeTillNextTurn = PreGameData.TurnTime*1000;
         
-      
+
+
     }
 
 
@@ -231,7 +229,7 @@ public static partial class GameManager
     {
         GameStateData data = new GameStateData();
         data.IsPlayer1Turn = IsPlayer1Turn;
-        data.Score = score;
+        data.Score = Score;
         data.GameState = GameState;
         var units = GetTeamUnits(IsPlayer1Turn);
         var maxPoints = 0;
@@ -377,8 +375,4 @@ public static partial class GameManager
         return list;
     }
 
-    public static bool NoPendingUpdates()
-    {
-        return true;
-    }
 }

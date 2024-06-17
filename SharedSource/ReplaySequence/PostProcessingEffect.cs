@@ -46,7 +46,7 @@ public class PostProcessingEffect : SequenceAction
 		}
 	}
 
-	public override BatchingMode Batching => BatchingMode.Always;
+	public override BatchingMode Batching => BatchingMode.AsycnBatchAlways;
 	public string Parameter = "";
 	public float Target;
 	public float Speed;

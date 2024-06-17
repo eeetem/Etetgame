@@ -118,7 +118,7 @@ public static partial class GameManager
 		Console.WriteLine("IsPlayer1: " + IsPlayer1);
 		Console.WriteLine("IsPlayer1Turn: " + IsPlayer1Turn);
 			
-		score = data.Score;
+		Score = data.Score;
 		if (GameState != data.GameState)
 		{
 			Audio.OnGameStateChange(GameState);
@@ -145,7 +145,8 @@ public static partial class GameManager
 				StartGame();
 				Task.Run(delegate
 				{
-					UI.SetUI(new GameLayout());
+					if(!(UI.currentUi is GameLayout))
+						UI.SetUI(new GameLayout());
 				});
 				break;
 		}
@@ -231,7 +232,7 @@ public static partial class GameManager
 				if (!recievedUnitPositions.ContainsKey(u.WorldObject.ID))
 				{
 					Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
-					WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).GenerateTask().RunTaskSynchronously(); //queue up deletion
+					WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).RunSynchronously();; //queue up deletion
 				}
 			}
 		}
@@ -244,7 +245,7 @@ public static partial class GameManager
 				if (WorldManager.Instance.GetTileAtGrid(u.Value.Item1).UnitAtLocation == null)//sometimes we can have 2 last seen units on same spot
 				{
 					Log.Message("UNITS", "creating new unit: " + u.Key);
-					WorldObjectManager.MakeWorldObject.Make(u.Value.Item2, u.Value.Item1).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.MakeWorldObject.Make(u.Value.Item2, u.Value.Item1).RunSynchronously();;
 					justCreated.Add(u.Key);
 					
 					if (u.Value.Item2.UnitData!.Value.Team1)
@@ -284,7 +285,7 @@ public static partial class GameManager
 				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
 				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
 				{
-					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).RunSynchronously();;
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
@@ -294,7 +295,7 @@ public static partial class GameManager
 				}
 				else
 				{
-					WorldObjectManager.DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();;
 
 				}
 			}
@@ -313,7 +314,7 @@ public static partial class GameManager
 				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
 				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
 				{
-					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).RunSynchronously();;
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
@@ -323,7 +324,7 @@ public static partial class GameManager
 				}
 				else
 				{
-					WorldObjectManager.DeleteWorldObject.Make(obj.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();;
 
 				}
 			}

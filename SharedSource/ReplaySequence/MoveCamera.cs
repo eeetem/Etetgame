@@ -52,7 +52,7 @@ public class MoveCamera : SequenceAction
 #endif
 
 
-	public override BatchingMode Batching => BatchingMode.Never;
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 
 	public override SequenceType GetSequenceType()
 	{

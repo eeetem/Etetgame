@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Color = Microsoft.Xna.Framework.Color;
 
 namespace DefconNull;
@@ -10,6 +11,8 @@ public partial class WorldTile : IWorldTile
 {
 	private bool _enemyWatching;
 	private bool _friendlyWatching;
+
+
 	public Color GetTileColor()
 	{
 		Color color = Color.White;
@@ -76,5 +79,10 @@ public partial class WorldTile : IWorldTile
 
 		}
 	}
-    
+
+	public Rectangle GetDrawBounds()
+	{
+		var corner = Utility.GridToWorldPos(Position);
+		return new Rectangle((int)corner.X, (int)corner.Y, 64, 64);
+	}
 }
