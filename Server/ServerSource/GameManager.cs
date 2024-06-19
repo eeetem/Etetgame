@@ -381,7 +381,7 @@ public static partial class GameManager
 				p = Player2;
 				team1 = false;
 			}
-			
+			if (p == null) continue;
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
