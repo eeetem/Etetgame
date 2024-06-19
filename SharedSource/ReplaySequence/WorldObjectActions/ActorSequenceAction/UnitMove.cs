@@ -156,7 +156,6 @@ public class UnitMove : UnitSequenceAction
     {
         return Actor != null && !Actor.Panicked;
     }
-    const int walkFps = 6;
 
     protected override void RunSequenceAction()
     {
@@ -174,9 +173,9 @@ public class UnitMove : UnitSequenceAction
                 int sleepTime = 10;
 #if CLIENT
                 //(int) *
-                var animLenght = Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
-                sleepTime = (int) ((1000f / walkFps) * animLenght);
-                if (animLenght == 0)
+                var anim = Actor.Type.GetAnimation(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
+                sleepTime = (int) ((1000f / anim.Item2) *  anim.Item1);
+                if (anim.Item1 == 0)
                 {
                     sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
                 }
@@ -218,7 +217,7 @@ public class UnitMove : UnitSequenceAction
 #if CLIENT
       
             if(Path.Count>1)
-                Actor.WorldObject.StartAnimation("Walk",walkFps);
+                Actor.WorldObject.StartAnimation("Walk");
 
 
             if (Actor.WorldObject.IsVisible())

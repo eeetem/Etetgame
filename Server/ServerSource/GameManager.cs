@@ -167,8 +167,7 @@ public static partial class GameManager
 				{
 					Thread.Sleep(500);
 				}
-
-				Thread.Sleep(1000); //just in case
+				
 				foreach (var u in T1Units)
 				{
 					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
@@ -195,6 +194,7 @@ public static partial class GameManager
 				{
 					NextTurn();
 				}
+				Thread.Sleep(1000);
 				NetworkingManager.SendGameData();
 				WorldManager.Instance.MakeFovDirty();	
 				NetworkingManager.SendAllSeenUnitPositions();

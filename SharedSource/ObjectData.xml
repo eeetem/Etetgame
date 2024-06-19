@@ -3,9 +3,8 @@
 
 
   <object VCover = "+5" Faceable = "false" SCover ="0" health="5" lifetime="true" z="0.3">
-    <sprite source="Environment/Smoke" fames="2"  animFPS="1">
-      <anim name="start" frames="5" animFPS="10"/>
-      <anim name="end" frames="4"  animFPS="10"/>
+    <sprite source="Environment/Smoke">
+      <anim name="loop" fps="1"/>
     </sprite>
     <name>Smoke</name>
     <spawnConsequences  range="1">

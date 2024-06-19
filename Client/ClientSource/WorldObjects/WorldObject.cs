@@ -79,7 +79,12 @@ public partial class WorldObject : IDrawable
 
 		string state = GetExtraState();
 		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
-		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
+		if(CurrentAnimation != null)
+		{
+			state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
+		}
+
+		
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
 
@@ -154,7 +159,6 @@ public partial class WorldObject : IDrawable
 	}
 
 	public Animation? CurrentAnimation = null;
-	private IDrawable _drawableImplementation;
 
 	public void AnimationUpdate(float msDelta)
 	{
@@ -163,6 +167,11 @@ public partial class WorldObject : IDrawable
 		{
 			CurrentAnimation = null;
 		}
+		if(CurrentAnimation == null)
+		{
+			StartAnimation("loop");
+		}
+		
 	}
 
 	public bool IsTransparentUnderMouse()
@@ -171,11 +180,12 @@ public partial class WorldObject : IDrawable
 	}
 
 
-	public void StartAnimation(string name, int fps = 5)
+	public void StartAnimation(string name)
 	{
-		int count = Type.GetAnimationLenght(spriteVariation, name,GetExtraState());
-		if (count != 0)
-			CurrentAnimation = new Animation(name, count, fps);
+		
+		(int, int) anim = Type.GetAnimation(spriteVariation, name,GetExtraState());
+		if (anim.Item1 != 0)
+			CurrentAnimation = new Animation(name, anim.Item1, anim.Item2);
 	}
 	
 }

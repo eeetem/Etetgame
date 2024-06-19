@@ -52,12 +52,25 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 		return GetSprite(Utility.NormaliseDir(dir),extraState);
 	}
 
-	public int GetAnimationLenght(string extraState, string name)
+	private readonly Dictionary<string,int> _animations = new Dictionary<string,int>();
+	static readonly object AnimationLock = new object();
+	public int GetAnimation(string extraState, string name)
 	{
 		var path = "Content/"+GetFulLName()+ extraState+ "/" + name+"/";
-		if (!Directory.Exists(path)) return 0;
-		var res = Directory.EnumerateFiles(path);
-		return res.Count();
+		lock (AnimationLock)
+		{
+			if(_animations.TryGetValue(path, out int lenght)) return lenght;
+	
+			if (!Directory.Exists(path))
+			{
+				_animations.Add(path, 0);
+				return 0;
+			}
+
+			var res = Directory.EnumerateFiles(path);
+			_animations.Add(path, res.Count());
+			return _animations[path];
+		}
 	}
 
 	public string GetVariationName()
