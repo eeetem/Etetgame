@@ -51,14 +51,17 @@ public static partial class NetworkingManager
 			
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
+			/*
 			var maphash = WorldManager.Instance.GetMapHash();
 			if (maphash != hash)
 			{
+				return;
 				Log.Message("NETWORKING","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);
 				client?.Send(msg);
 			
 			}
+			*/
 			
 			
 		});
