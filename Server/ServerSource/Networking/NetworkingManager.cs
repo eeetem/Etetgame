@@ -257,6 +257,7 @@ public static partial class NetworkingManager
 			name = GameManager.Player1.Name;
 			GameManager.Player1.Disconnect();
 			SendChatMessage(name+" left the game");
+
 		}else if (e.Client == GameManager.Player2?.Connection)
 		{
 			name = GameManager.Player2.Name;
@@ -421,7 +422,7 @@ public static partial class NetworkingManager
 	
 
 		//execute the sequence serverside if all players have it
-		if(sequencesToExecute[packet.ID].Item1 && (sequencesToExecute[packet.ID].Item2))
+		if((sequencesToExecute[packet.ID].Item1 || !GameManager.Player1!.IsConnected) && (sequencesToExecute[packet.ID].Item2|| !GameManager.Player2!.IsConnected) )
 		{
 			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);

@@ -101,14 +101,14 @@ public  partial class WorldManager
 		//	LoadTileObject(data.UnitAtLocation, tile.UnitAtLocation?.WorldObject, tile,forceUpdateEverything);
 		
 
-		foreach (var obj in tile.ObjectsAtLocation)
+		foreach (var obj in new List<WorldObject>(tile.ObjectsAtLocation))
 		{
-			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
+			WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();
 		}
 	
 		foreach (var obj in data.ObjectsAtLocation)
 		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(obj, tile));
+			WorldObjectManager.MakeWorldObject.Make(obj, tile).RunSynchronously();
 		}
 
 

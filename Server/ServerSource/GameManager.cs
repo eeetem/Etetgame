@@ -317,7 +317,8 @@ public static partial class GameManager
 	
 	public class ClientInstance
 	{
-		public Connection? Connection { get; private set; }
+		public Connection? Connection { get;  set; }
+		public bool IsConnected => Connection != null && Connection.IsConnected;
 		public string Name;
 		public bool IsAI;
 		public List<SquadMember>?  SquadComp { get; private set; }
