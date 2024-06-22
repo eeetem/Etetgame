@@ -152,6 +152,8 @@ public static class Program
 			Console.WriteLine("Starting lobby:");
 			int port = GetNextFreePort();
 			Console.WriteLine("Port: " + port); //ddos or spam protection is needed
+			Console.WriteLine("Name: " + name); //ddos or spam protection is needed
+			Console.WriteLine("Pass: " + pass); //ddos or spam protection is needed
 			var process = new Process();
 			process.StartInfo.RedirectStandardError = true;
 			process.StartInfo.RedirectStandardOutput = true;
@@ -172,7 +174,7 @@ public static class Program
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
 
-			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
+			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") "+name+" Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
 			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
@@ -201,6 +203,7 @@ public static class Program
 					}
 
 					File.AppendAllText(destination, "ERROR - Server(" + port + "):" + b.Data?.ToString()+"\n");
+					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString()+"\n");
 				}
 			};
 			process.OutputDataReceived += (sender, args) =>

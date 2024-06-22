@@ -78,6 +78,28 @@ public static partial class Utility
 
         return null;
     }
+    public static void AddNullableBool(this Message msg, bool? s)
+    {
+        if (s is null)
+        {
+            msg.Add(false);
+        }
+        else
+        {
+            msg.Add(true);
+            msg.AddBool(s.Value);
+        }
+    }
+    public static bool? GetNullableBool(this Message msg)
+    {
+        if (msg.GetBool())
+        {
+            return msg.GetBool();
+        }
+
+        return null;
+    }
+
 
     public static double Distance(Vector2Int from, Vector2Int to)
     {

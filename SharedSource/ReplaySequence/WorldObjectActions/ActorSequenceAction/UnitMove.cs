@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 #if CLIENT
@@ -112,7 +113,7 @@ public class UnitMove : UnitSequenceAction
         {
             if (Path.Count > 0)
             {
-                b.Add(SpotUnit.Make(Actor.WorldObject.ID, Path[0],player1));
+                GameManager.SpotUnit(GameManager.GetPlayer(player1)!, Actor.WorldObject.ID, (Path[0], Actor.WorldObject.GetData()));
             }
         }
         else//spot everyone else the unit will see
@@ -120,6 +121,11 @@ public class UnitMove : UnitSequenceAction
             Vector2Int lastPos = Actor.WorldObject.TileLocation.Position;
             HashSet<Vector2Int> seenTiles = new HashSet<Vector2Int>();
             HashSet<int> seenUnits = new HashSet<int>();
+            HashSet<int> alreadySeenUnitsToUpdate = new HashSet<int>();
+            var p = GameManager.GetPlayer(player1);
+            if (p == null) return b;
+            
+            
             foreach (var spot in Path)
             {
                 if (spot == lastPos)
@@ -128,25 +134,44 @@ public class UnitMove : UnitSequenceAction
                 foreach (var loc in tiles)
                 {
                     var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
-                    if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
-                        seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
+                    if (tile.UnitAtLocation != null)
+                    {
+                        if (tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
+                            seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
+
+                        foreach (var unit in p.KnownUnitPositions)
+                        {
+                            if (unit.Value.Item1 == loc.Key)
+                            {
+                                
+                            }
+                        }
+                        if(p.KnownUnitPositions.ContainsKey(tile.UnitAtLocation.WorldObject.ID) && p.KnownUnitPositions[tile.UnitAtLocation.WorldObject.ID].Item1 != loc.Key)
+                            alreadySeenUnitsToUpdate.Add(tile.UnitAtLocation.WorldObject.ID);
+                    }
+                    
                     if(loc.Value>Visibility.None)
                         seenTiles.Add(loc.Key);
+                    
                 }
                 lastPos = spot;
             }
 
             foreach (var u in seenUnits)
             {
-                b.Add(SpotUnit.Make(u, player1));
+                var unit = WorldObjectManager.GetObject(u); ;
+                GameManager.SpotUnit(GameManager.GetPlayer(player1)!,u,(unit!.TileLocation.Position, unit.GetData()));
             }
+            
+          
             foreach (var t in seenTiles)
             {
                 b.Add(TileUpdate.Make(t,false));
             }
            
+           
         }
-
+        b.Add(UnitUpdate.Make(player1));
         return b;
     }
 #endif

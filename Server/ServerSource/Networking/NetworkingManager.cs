@@ -279,6 +279,7 @@ public static partial class NetworkingManager
 			Thread.Sleep(15000);
 			if (server.ClientCount == 0)
 			{
+				m
 				Environment.Exit(0);
 			}});
 
@@ -381,8 +382,8 @@ public static partial class NetworkingManager
 	{
 		var p = GameManager.GetPlayer(player1);
 		if(p== null) return;
+		if (!p.IsConnected) return;
 		if(!p.HasDeliveredAllMessages) return;
-		
 		if(p.SequenceQueue.Count == 0 || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
 		{
 			return;
@@ -390,7 +391,7 @@ public static partial class NetworkingManager
 		SequencePacket packet;
 		if (!p.SequenceQueue.TryDequeue(out packet!)) return;
 		
-		
+		Log.Message("NETWORKING","Sending sequence to: "+player1+" with ID: "+packet.ID);
 		if (player1)
 		{
 			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(true, sequencesToExecute[packet.ID].Item2, sequencesToExecute[packet.ID].Item3);
@@ -400,31 +401,34 @@ public static partial class NetworkingManager
 			sequencesToExecute[packet.ID] = new Tuple<bool, bool, List<SequenceAction>>(sequencesToExecute[packet.ID].Item1, true, sequencesToExecute[packet.ID].Item3);
 		}
 
-		if (p.Connection == null || !p.Connection.IsConnected)//just discard all the shit since we have no connection and they will re-recive everything anyways when connecting
+		if (!p.IsConnected)//just discard all the shit since we have no connection and they will re-recive everything anyways when connecting
 		{
 			packet.Actions.ForEach(x=>x.Return());
 			return;
 		}
-
-		List<SequenceAction> toRemove = new List<SequenceAction>();
-		packet.Actions.ForEach(x =>
+		
+		foreach (var act in packet.Actions.ToList())
 		{
-			if (!x.ShouldSendToPlayerServerCheck(player1))
+			act.FilterForPlayer(player1);
+			if (!act.ShouldSendToPlayerServerCheck(player1))
 			{
-				toRemove.Add(x);
+				packet.Actions.Remove(act);
+				act.Return();
 			}
-		});
-		foreach (var sequenceAction in toRemove)
-		{
-			packet.Actions.Remove(sequenceAction);
-			sequenceAction.Return();
+			
+			var infoacts = act.GenerateInfoActions(player1);
+			infoacts.ForEach(x=>x.FilterForPlayer(player1));
+			packet.Actions.AddRange(infoacts);
 		}
+		
 	
 
 		//execute the sequence serverside if all players have it
 		if((sequencesToExecute[packet.ID].Item1 || !GameManager.Player1!.IsConnected) && (sequencesToExecute[packet.ID].Item2|| !GameManager.Player2!.IsConnected) )
 		{
 			Log.Message("NETWORKING", "all players have recived sequence: "+packet.ID);
+
+
 			var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.ReplaySequence);
 			msg.Add((ushort) ReplaySequenceTarget.All);
 			msg.Add(sequencesToExecute[packet.ID].Item3.Count);
@@ -469,19 +473,11 @@ public static partial class NetworkingManager
 		
 	}
 
-	private static void SendSequenceMessageToPlayer(List<SequenceAction> actions, bool player1, bool waitForPlayerReady = true)
+	private static void SendSequenceMessageToPlayer(List<SequenceAction> actsToSend, bool player1, bool waitForPlayerReady = true)
 	{
 		Log.Message("NETWORKING","Preping sequence for: "+player1);
 		var p = GameManager.GetPlayer(player1);
-		List<SequenceAction> actsToSend = new List<SequenceAction>();
-		foreach (var act in actions)
-		{
-			var info = act.GenerateInfoActions(player1);
-			actsToSend.AddRange(info);
-			actsToSend.Add(act);
-		}
-		actsToSend.ForEach(x=>x.FilterForPlayer(player1));
-
+		
 		if (actsToSend.Count>0)
 		{
 			Log.Message("NETWORKING", "Sending sequence to player: " + player1);
@@ -627,8 +623,7 @@ public static partial class NetworkingManager
 			AddSequenceToSendQueue(actions);
 			return;
 		}
-		Log.Message("NETWORKING","sequence submited for sending "+actions.Count);
-
+		
 
 		var playerList = new List<bool>();
 		if(player1 == null)
@@ -642,7 +637,10 @@ public static partial class NetworkingManager
 		}
 		lock (UpdateLock)
 		{
+			
+
 			sequencePacketID++;
+			Log.Message("NETWORKING","sequence added to queues with id for sending: "+sequencePacketID);
 			var t = new Tuple<bool, bool, List<SequenceAction>>(true, true, actions);
 			foreach (var pid in playerList)
 			{
@@ -684,18 +682,10 @@ public static partial class NetworkingManager
 	public static void SendAllSeenUnitPositions()
 	{
 		Log.Message("UNITS","sending unit position updates");
-		
-		if (GameManager.Player1 != null && GameManager.Player1.Connection != null)
-		{
-			var act = UnitUpdate.Make(GameManager.Player1.KnownUnitPositions,true);
-			AddSequenceToSendQueue(act);
-		}
 
-		if (GameManager.Player2 != null && GameManager.Player2.Connection != null)
-		{
-			var act = UnitUpdate.Make(GameManager.Player2.KnownUnitPositions,false);
-			AddSequenceToSendQueue(act);
-		}
+		var act = UnitUpdate.Make();
+		AddSequenceToSendQueue(act);
+			
 		GameManager.ShouldUpdateUnitPositions = false;
 
 	}

@@ -230,9 +230,14 @@ public static partial class GameManager
 	public static bool ShouldUpdateUnitPositions = false;
 	public static bool ShouldRecalculateUnitPositions=  false;
 
+	public static void SpotUnit(ClientInstance p, int unitId,(Vector2Int, WorldObject.WorldObjectData) spotedUnit)
+	{
+		p.KnownUnitPositions[unitId] = spotedUnit;
+	}
+
 	private static void UpdatePlayerSideUnitPositionsForPlayer(bool player1,bool newTurn = false)
 	{
-		ClientInstance c = GetPlayer(player1)!;
+		ClientInstance? c = GetPlayer(player1);
 		if(c == null) return;
 		foreach (var pos in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(c.KnownUnitPositions))
 		{
@@ -285,7 +290,7 @@ public static partial class GameManager
 	}
 	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
-		Log.Message("UNITPOSITIONS","updating unit positions");
+		Log.Message("UNIT","updating unit positions");
 		GameManager.ShouldRecalculateUnitPositions = false;
 		UpdatePlayerSideUnitPositionsForPlayer(true,newTurn);
 		UpdatePlayerSideUnitPositionsForPlayer(false,newTurn);
@@ -318,7 +323,7 @@ public static partial class GameManager
 	public class ClientInstance
 	{
 		public Connection? Connection { get;  set; }
-		public bool IsConnected => Connection != null && Connection.IsConnected;
+		public bool IsConnected => Connection != null && (Connection.IsConnected || Connection.IsConnecting || Connection.IsPending);
 		public string Name;
 		public bool IsAI;
 		public List<SquadMember>?  SquadComp { get; private set; }
@@ -344,6 +349,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
+			SequenceQueue.Clear();
 			IsReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -364,8 +370,8 @@ public static partial class GameManager
 
 		public void Disconnect()
 		{
-			Connection = null;
 			MessagesToBeDelivered.Clear();
+			SequenceQueue.Clear();
 		}
 
 		

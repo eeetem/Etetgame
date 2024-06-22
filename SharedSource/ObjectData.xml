@@ -324,7 +324,7 @@
     </action>
   </unit>
 
-  <unit health="8" moveRange = "5" moves="3" determination="3" sightrange="18">
+  <unit health="9" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
 
     <action moveCost="1" actCost="1" overwatch="2">
@@ -515,7 +515,7 @@
       
       <effect>
         <delivery>
-          <projectile particleName="rpg" particleSpeed="1" ignoreUnits="false" range="26" fowSpot="4">
+          <projectile particleName="rpg" particleSpeed="1" ignoreUnits="false" range="22" fowSpot="4">
             <particle name="smoke" spawnDelay="10" count="3" velocityXRange="-10,10" velocityYRange="-10,10" accelerationXRange="0,0" accelerationYRange="-0.02,-0.01" rotationRange="-0.5,0.5" damping="0.98" lifetimeRange="1000,10000"/>
           </projectile>
         </delivery>
