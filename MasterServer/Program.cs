@@ -191,14 +191,16 @@ public static class Program
 			{
 				if (b.Data!= null && b.Data.ToString() != "")
 				{
-					
-
-					//copy to crashes folder
-					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
 					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
-					File.Delete(destination);
-					File.Copy(path, destination);
-					File.AppendAllText(destination, "ERROR - Server(" + port + "):" + b.Data?.ToString());
+					if (!File.Exists(destination))
+					{
+						//copy to crashes folder
+						Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
+						File.Delete(destination);
+						File.Copy(path, destination);
+					}
+
+					File.AppendAllText(destination, "ERROR - Server(" + port + "):" + b.Data?.ToString()+"\n");
 				}
 			};
 			process.OutputDataReceived += (sender, args) =>

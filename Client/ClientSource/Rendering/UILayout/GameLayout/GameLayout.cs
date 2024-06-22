@@ -1747,7 +1747,7 @@ public partial class GameLayout : MenuLayout
 		}
 
 		ProcessKeyboard();
-		if(movePreviewDirty)
+		if(movePreviewDirty && !SequenceManager.SequenceRunning)
 		{
 			movePreviewDirty = false;
 			ReMakeMovePreview();

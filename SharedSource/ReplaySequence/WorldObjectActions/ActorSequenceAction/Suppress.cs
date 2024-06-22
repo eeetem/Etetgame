@@ -44,6 +44,10 @@ public class Suppress : UnitSequenceAction
 		}
 	}
 
+	public override bool ShouldDo()
+	{
+		return base.ShouldDo() && Actor != null;//actors can get destroyed by a previous sequence action
+	}
 
 	public static Suppress Make(ushort detDmg, int actorID) 
 	{

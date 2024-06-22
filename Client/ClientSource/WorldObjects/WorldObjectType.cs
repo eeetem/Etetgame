@@ -39,8 +39,10 @@ public partial class WorldObjectType
         throw new Exception("failed to generate sprite variation");
 		
     }
-    public virtual void GenerateSpriteSheet(string name,List<SpriteVariation> variations)
+    Dictionary<string,int> animationFps = new Dictionary<string, int>();
+    public virtual void GenerateSpriteSheet(string name,List<SpriteVariation> variations, Dictionary<string,int> animations)
     {
+        animationFps = animations;
         if(variations.Count==0){
             variations.Add(new SpriteVariation("", 1));
         }
@@ -62,8 +64,14 @@ public partial class WorldObjectType
         return _variationSheets[spriteVariation].GetSprite(spriteIndex, extraState);
     }
 
-    public int GetAnimationLenght(int spriteVariation, string name, string extraState)
+    
+    public (int,int) GetAnimation(int spriteVariation, string name, string extraState)
     {
-        return _variationSheets[spriteVariation].GetAnimationLenght(extraState, name);
+        int fps = 5;
+        if(animationFps.ContainsKey(name)){
+            fps = animationFps[name];
+        }
+        int lenght = _variationSheets[spriteVariation].GetAnimation(extraState, name);
+        return (lenght, fps);
     }
 }

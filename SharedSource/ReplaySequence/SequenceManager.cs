@@ -152,7 +152,7 @@ public class SequenceManager
 								shouldBatch = true;
 								break;
 							case SequenceAction.BatchingMode.AsyncBatchSameType://batch if last was same type or last task is always batching meaning it's unlikely to interfere
-								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType() || act.Batching == SequenceAction.BatchingMode.AsycnBatchAlways;
+								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
 								break;
 							case SequenceAction.BatchingMode.BlockingAlone:
 							case SequenceAction.BatchingMode.NonBlockingAlone:

@@ -167,8 +167,7 @@ public static partial class GameManager
 				{
 					Thread.Sleep(500);
 				}
-
-				Thread.Sleep(1000); //just in case
+				
 				foreach (var u in T1Units)
 				{
 					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
@@ -195,6 +194,7 @@ public static partial class GameManager
 				{
 					NextTurn();
 				}
+				Thread.Sleep(1000);
 				NetworkingManager.SendGameData();
 				WorldManager.Instance.MakeFovDirty();	
 				NetworkingManager.SendAllSeenUnitPositions();
@@ -317,7 +317,8 @@ public static partial class GameManager
 	
 	public class ClientInstance
 	{
-		public Connection? Connection { get; private set; }
+		public Connection? Connection { get;  set; }
+		public bool IsConnected => Connection != null && Connection.IsConnected;
 		public string Name;
 		public bool IsAI;
 		public List<SquadMember>?  SquadComp { get; private set; }
@@ -381,22 +382,29 @@ public static partial class GameManager
 				p = Player2;
 				team1 = false;
 			}
+			if (p == null) continue;
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
 					var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 				
-					if(tile.Surface == null) return;//ignore empty tiles
+					if(tile.Surface == null) continue;//ignore empty tiles
 					WorldTile.WorldTileData worldTileData = tile.GetData();
-					p.WorldState.TryAdd(tile.Position,worldTileData);
+					if (!p.WorldState.ContainsKey(tile.Position))
+					{
+						p.WorldState.TryAdd(tile.Position,worldTileData);
+					}
+					
 
 					if (tile.IsVisible(team1:team1))
 					{
 						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
 						{
 							p.WorldState[tile.Position] = worldTileData;
+							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true));
 						}
+						
 
 					}
 					
