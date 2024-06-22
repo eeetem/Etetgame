@@ -1,4 +1,3 @@
-map loading bug
 
 
 sfx list:
@@ -18,8 +17,4 @@ sfx list:
 
 
 
-
-619771
-614279
-601644
 

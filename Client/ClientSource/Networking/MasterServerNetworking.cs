@@ -124,9 +124,14 @@ public class MasterServerNetworking
 	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated)]
 	private static void ReciveCreatedLobby(Message message)
 	{
-		Console.WriteLine("Connecting to started lobbby...");
+		Log.Message("NETWORKING", "Connecting to started lobbby...");
 		var data = message.GetSerializable<LobbyData>();
-		var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
+		for (int i = 0; i < 5; i++)
+		{
+			
+			var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
+		}
+		
 		Console.WriteLine("result: "+result);
 	
 	}
