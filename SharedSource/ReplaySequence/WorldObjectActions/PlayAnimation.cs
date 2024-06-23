@@ -10,6 +10,7 @@ public class PlayAnimation : SequenceAction
         return SequenceType.PlayAnimation;
     }
 
+    public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
     protected override void RunSequenceAction()
     {
 #if CLIENT
@@ -46,7 +47,6 @@ public class PlayAnimation : SequenceAction
     string _animation = "";
     public static PlayAnimation Make(int objId, string animation)
     {
-   
         PlayAnimation t = (GetAction(SequenceType.PlayAnimation) as PlayAnimation)!;
         t._objId = objId;
         t._animation = animation;

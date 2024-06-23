@@ -65,6 +65,7 @@ public static partial class NetworkingManager
 		if (currentPlayer?.Connection?.Id != senderID && !currentPlayer!.IsPracticeOpponent)
 		{
 			//out of turn action. perhaps desync or hax? kick perhaps
+			NetworkingManager.SendGameData();
 			return;
 		}
 
@@ -133,11 +134,7 @@ public static partial class NetworkingManager
 		if (WorldManager.Instance.CurrentMap.Name != data.SelectedMap)
 		{
 			WorldManager.Instance.LoadMap(data.SelectedMap);
-			do
-			{
-				Thread.Sleep(1000);
-			} while (SequenceManager.SequenceRunning);
-			
+
 			SendMapData(GameManager.Player1.Connection);
 			if (GameManager.Player2 != null)
 				if (GameManager.Player2.Connection != null)

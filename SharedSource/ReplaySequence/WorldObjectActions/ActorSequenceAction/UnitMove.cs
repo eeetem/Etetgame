@@ -74,6 +74,7 @@ public class UnitMove : UnitSequenceAction
     public override bool ShouldSendToPlayerServerCheck(bool player1)
     {
         if (base.ShouldSendToPlayerServerCheck(player1)) return true;
+        if (Path.Count == 0) return false;
         foreach (var pos in Path)
         {
             var wtile = (WorldTile) WorldManager.Instance.GetTileAtGrid(pos);
@@ -106,9 +107,9 @@ public class UnitMove : UnitSequenceAction
         }
     }
 
-    public override List<SequenceAction> GenerateInfoActions(bool player1)
+    public override List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
     {
-        var b =  base.GenerateInfoActions(player1);
+        var b =  base.SendPrerequesteInfoToPlayer(player1);
         if (Actor.IsPlayer1Team != player1)//spot the unit that will walk in
         {
             if (Path.Count > 0)
@@ -139,15 +140,26 @@ public class UnitMove : UnitSequenceAction
                         if (tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
                             seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
 
-                        foreach (var unit in p.KnownUnitPositions)
+                        
+                    }
+                    foreach (var knownUnit in p.KnownUnitPositions.ToList())
+                    {
+                        if (knownUnit.Value.Item1 == loc.Key)
                         {
-                            if (unit.Value.Item1 == loc.Key)
+                            var realUnit = WorldObjectManager.GetObject(knownUnit.Key);
+                            if (realUnit != null && realUnit.TileLocation.Position != loc.Key)
                             {
-                                
+                                if (knownUnit.Value.Item2.UnitData!.Value.Crouching && loc.Value > Visibility.Partial)
+                                {
+                                    p.KnownUnitPositions.Remove(knownUnit.Key);
+                                }
+                                else if (!knownUnit.Value.Item2.UnitData.Value.Crouching && loc.Value > Visibility.None)
+                                {
+                                    p.KnownUnitPositions.Remove(knownUnit.Key);
+                                }
                             }
+                                    
                         }
-                        if(p.KnownUnitPositions.ContainsKey(tile.UnitAtLocation.WorldObject.ID) && p.KnownUnitPositions[tile.UnitAtLocation.WorldObject.ID].Item1 != loc.Key)
-                            alreadySeenUnitsToUpdate.Add(tile.UnitAtLocation.WorldObject.ID);
                     }
                     
                     if(loc.Value>Visibility.None)
@@ -179,7 +191,9 @@ public class UnitMove : UnitSequenceAction
 
     public override bool ShouldDo()
     {
+        if (Path.Count == 0) return false;
         return Actor != null && !Actor.Panicked;
+        
     }
 
     protected override void RunSequenceAction()
@@ -200,6 +214,7 @@ public class UnitMove : UnitSequenceAction
                 //(int) *
                 var anim = Actor.Type.GetAnimation(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
                 sleepTime = (int) ((1000f / anim.Item2) *  anim.Item1);
+                sleepTime += 25;
                 if (anim.Item1 == 0)
                 {
                     sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
@@ -241,7 +256,7 @@ public class UnitMove : UnitSequenceAction
 
 #if CLIENT
       
-            if(Path.Count>1)
+            if(Path.Count>0)
                 Actor.WorldObject.StartAnimation("Walk");
 
 

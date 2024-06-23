@@ -134,11 +134,14 @@ public static class PrefabManager
 
 			var defaultSpritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["source"]?.InnerText;
 			var anims = new Dictionary<string, int>();
-			foreach (var child in  (xmlObj.GetElementsByTagName("sprite")[0])?.ChildNodes!)
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
 			{
-				var obj = (XmlElement) child;
-				if(obj.Name != "anim") continue;
-				anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
 			}
 
 
@@ -210,9 +213,19 @@ public static class PrefabManager
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
 			} 
-
+			var anims = new Dictionary<string, int>();
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
+			{
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
+			}
+		
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>(),new Dictionary<string, int>());//this is a bit inconsistent but eeeh
+			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>(),anims);//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);

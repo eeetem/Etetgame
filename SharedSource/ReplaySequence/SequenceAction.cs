@@ -17,6 +17,7 @@ public abstract class SequenceAction :  IMessageSerializable
     {
         PlaySound = 100,
         PostProcessingEffect =101,
+        PlayAnimation =111,
         TakeDamage = 102,
         Shoot =103,
         MakeWorldObject =104,
@@ -26,17 +27,16 @@ public abstract class SequenceAction :  IMessageSerializable
         UnitUpdate = 108,
         TileUpdate = 109,
         SpotUnit = 110,
-        SpawnParticle = 111,
+        SpawnParticle = 112,
+        
         
         ChangeUnitValues =0,
-        PlayAnimation =1,
         Move=2,
         Face=3,
         Crouch=4,
         //UseItem = 5,
         //SelectItem = 6,
         Suppress = 7,
-        //PlayAnimation =8,
         Overwatch = 9,
         UnitStatusEffect =10,
         //	AbilityToggle = 11,
@@ -214,7 +214,8 @@ public abstract class SequenceAction :  IMessageSerializable
     public virtual BatchingMode Batching => BatchingMode.BlockingAlone;
 
     public abstract SequenceType GetSequenceType();
-    public bool IsUnitAction => (int) GetSequenceType() < 100;
+    public bool IsUnitAction => ((int) GetSequenceType()) < 100;
+    
 
     public SequenceAction()
     {
@@ -334,7 +335,7 @@ public abstract class SequenceAction :  IMessageSerializable
 
     public bool Active { private set; get; } = false;
 
-    public virtual List<SequenceAction> GenerateInfoActions(bool player1)
+    public virtual List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
     {
         return new List<SequenceAction>();
     }

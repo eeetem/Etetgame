@@ -3,9 +3,10 @@
 
 
   <object VCover = "+5" Faceable = "false" SCover ="0" health="5" lifetime="true" z="0.3">
-    <sprite source="Environment/Smoke">
+    <sprite source="Environment/Smoke"/>
+    <animations>
       <anim name="loop" fps="1"/>
-    </sprite>
+    </animations>
     <name>Smoke</name>
     <spawnConsequences  range="1">
       <particles>
@@ -326,6 +327,10 @@
 
   <unit health="9" moveRange = "5" moves="3" determination="3" sightrange="18">
     <name>Scout</name>
+    <animations>
+      <anim name="Rapid Maneuvers" fps="10"/>
+    </animations>
+    
 
     <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
@@ -343,17 +348,17 @@
     </action>
 
     <action immideate="true" moveCost="0" actCost="0" detCost ="3">
-      <name>Rapid Manouvers</name>
+      <name>Rapid Maneuvers</name>
       <tip>Restores actions points and gives 5 movement points with short range. Great for covering lots of ground and maneuvering in close quarters</tip>
       <effect>
         <consequences  range="1">
-          <applystatus status="Rapid Manouvers" duration="1"/>
+          <applystatus status="Rapid Maneuvers" duration="1"/>
         </consequences>
       </effect>
     </action>
   </unit>
 
-  <unit health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="3"  sightrange="20">
+  <unit health="8" z="0.1" moveRange = "6" moves="2" actions="1" determination="4"  sightrange="20">
     <name>Officer</name>
 
     <action moveCost="1" actCost="1" overwatch="2">
@@ -618,7 +623,7 @@
   </statuseffect>
 
   <statuseffect>
-    <name>Rapid Manouvers</name>
+    <name>Rapid Maneuvers</name>
     <tip>Restores action points and gives 5 movement points, while reducing movement range</tip>
       <consequences range="1">
         <values act ="1[set]" move="5" moveRange="-3"/>

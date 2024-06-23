@@ -330,9 +330,24 @@ public static partial class GameManager
 		public bool IsPracticeOpponent { get; set; }
 	
 		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || ShouldUpdateUnitPositions;
-	
-		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
-	
+		
+		private readonly ConcurrentQueue<NetworkingManager.SequencePacket> _sequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
+		public bool HasSequencesToSend => _sequenceQueue.Count > 0;
+		public NetworkingManager.SequencePacket GetNextSequence()
+		{
+			if (_sequenceQueue.TryDequeue(out var seq))
+			{
+				return seq;
+			}
+			throw new Exception("No sequence to get");
+		}
+		public void AddToSequenceQueue(NetworkingManager.SequencePacket packet)
+		{
+			if(this.IsAI) return;
+			if(!this.IsConnected) return;
+			_sequenceQueue.Enqueue(packet);
+		}
+		
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
 		public bool IsReadyForNextSequence = false;
 		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI || IsPracticeOpponent;
@@ -349,7 +364,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
-			SequenceQueue.Clear();
+			_sequenceQueue.Clear();
 			IsReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -371,7 +386,7 @@ public static partial class GameManager
 		public void Disconnect()
 		{
 			MessagesToBeDelivered.Clear();
-			SequenceQueue.Clear();
+			_sequenceQueue.Clear();
 		}
 
 		

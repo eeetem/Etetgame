@@ -223,7 +223,7 @@ public class Shoot : SequenceAction
 	{
 		return true;
 	}
-	public override List<SequenceAction> GenerateInfoActions(bool player1)
+	public override List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
 	{
 		if (Projectile.Result.hit)
 		{
@@ -235,12 +235,12 @@ public class Shoot : SequenceAction
 				if (attacker == null)
 				{
 					Log.Message("ERROR","Attacker not found for shooting reveal "+tile);
-					return base.GenerateInfoActions(player1);
+					return base.SendPrerequesteInfoToPlayer(player1);
 				}
 				return new List<SequenceAction>(){SpotUnit.Make(attacker.WorldObject.ID,player1)};
 			}
 		}
-		return base.GenerateInfoActions(player1);
+		return base.SendPrerequesteInfoToPlayer(player1);
 	}
 
 #endif

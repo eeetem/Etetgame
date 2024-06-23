@@ -19,7 +19,7 @@ public static partial class NetworkingManager
 	private static Server server = null!;
 	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
 	private static bool SinglePlayerFeatures = false;
-	public static bool HasPendingMessages => (GameManager.Player1!= null && (!GameManager.Player1.HasDeliveredAllMessages || GameManager.Player1.SequenceQueue.Count >0)) || (GameManager.Player2 != null && (!GameManager.Player2.HasDeliveredAllMessages || GameManager.Player2.SequenceQueue.Count >0));
+	public static bool HasPendingMessages => (GameManager.Player1!= null && (!GameManager.Player1.HasDeliveredAllMessages || GameManager.Player1.HasSequencesToSend)) || (GameManager.Player2 != null && (!GameManager.Player2.HasDeliveredAllMessages || GameManager.Player2.HasSequencesToSend));
 
 	public static void Start(ushort port, bool allowSP)
 	{
@@ -41,6 +41,10 @@ public static partial class NetworkingManager
 		server.ClientConnected += (a, b) => { Log.Message("NETWORKING",$" {b.Client.Id} connected (Clients: {server.ClientCount}), awaiting registration...."); };//todo kick without registration
 		server.HandleConnection += HandleConnection;
 		server.ClientDisconnected += ClientDisconnected;
+		server.MessageReceived += (msg, args) =>
+		{
+			Log.Message("NETWORKING",$"Message received from {args.FromConnection} with ID {args.MessageId}");
+		};
 
 
 		if (!SinglePlayerFeatures)
@@ -384,12 +388,12 @@ public static partial class NetworkingManager
 		if(p== null) return;
 		if (!p.IsConnected) return;
 		if(!p.HasDeliveredAllMessages) return;
-		if(p.SequenceQueue.Count == 0 || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
+		if(!p.HasSequencesToSend || !p.HasDeliveredAllMessages || !p.ReadyForNextSequence)
 		{
 			return;
 		}
-		SequencePacket packet;
-		if (!p.SequenceQueue.TryDequeue(out packet!)) return;
+
+		SequencePacket packet = p.GetNextSequence();
 		
 		Log.Message("NETWORKING","Sending sequence to: "+player1+" with ID: "+packet.ID);
 		if (player1)
@@ -406,7 +410,8 @@ public static partial class NetworkingManager
 			packet.Actions.ForEach(x=>x.Return());
 			return;
 		}
-		
+
+		List<SequenceAction> actsToDo = new List<SequenceAction>();
 		foreach (var act in packet.Actions.ToList())
 		{
 			act.FilterForPlayer(player1);
@@ -414,14 +419,18 @@ public static partial class NetworkingManager
 			{
 				packet.Actions.Remove(act);
 				act.Return();
+				continue;
 			}
 			
-			var infoacts = act.GenerateInfoActions(player1);
+			var infoacts = act.SendPrerequesteInfoToPlayer(player1);
 			infoacts.ForEach(x=>x.FilterForPlayer(player1));
-			packet.Actions.AddRange(infoacts);
+			actsToDo.AddRange(infoacts);
+			actsToDo.Add(act);
 		}
 		
-	
+			
+		SendSequenceMessageToPlayer(actsToDo,player1,true);
+
 
 		//execute the sequence serverside if all players have it
 		if((sequencesToExecute[packet.ID].Item1 || !GameManager.Player1!.IsConnected) && (sequencesToExecute[packet.ID].Item2|| !GameManager.Player2!.IsConnected) )
@@ -450,27 +459,11 @@ public static partial class NetworkingManager
 				server.Send(msg, GameManager.Player1!.Connection,false);
 			}
 			msg.Release();
-			
-			List<SequenceAction> actsToExecute = new List<SequenceAction>();
-			foreach (var act in packet.Actions)
-			{
-				var info = act.GenerateInfoActions(true);
-				info.ForEach(x=>x.FilterForPlayer(true));
-				actsToExecute.AddRange(info);
-				
-				info = act.GenerateInfoActions(false);
-				info.ForEach(x=>x.FilterForPlayer(false));
-				actsToExecute.AddRange(info);
-				
-				actsToExecute.Add(act);
 
-			}
 			SequenceManager.AddSequence(sequencesToExecute[packet.ID].Item3);
 			sequencesToExecute.Remove(packet.ID);
 		}
-		
-		SendSequenceMessageToPlayer(packet.Actions,player1,true);
-		
+
 	}
 
 	private static void SendSequenceMessageToPlayer(List<SequenceAction> actsToSend, bool player1, bool waitForPlayerReady = true)
@@ -651,7 +644,7 @@ public static partial class NetworkingManager
 					var tempActList = new List<SequenceAction>(actions.Count);
 					actions.ForEach(x => tempActList.Add(x.Clone()));
 					var packet = new SequencePacket(sequencePacketID, tempActList);
-					p.SequenceQueue.Enqueue(packet);
+					p.AddToSequenceQueue(packet);
 					if (pid)
 					{
 						t= new Tuple<bool, bool, List<SequenceAction>>(false, t.Item2, t.Item3);

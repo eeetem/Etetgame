@@ -77,11 +77,12 @@ public partial class WorldObject : IDrawable
 			spriteIndex = (int)Facing;
 		}
 
-		string state = GetExtraState();
+		var state = GetExtraState();
 		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
 		if(CurrentAnimation != null)
 		{
-			state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
+			state.Clear();
+			state.Add(CurrentAnimation.GetState(Type.GetVariationName(spriteVariation)));
 		}
 
 		
@@ -90,30 +91,28 @@ public partial class WorldObject : IDrawable
 
 	}
 
-	public string GetExtraState()
+	public List<string> GetExtraState()
 	{
-		string state = "";
+		List<string> state = new List<string>();
 		if (UnitComponent != null)
 		{
-			;
 			if (UnitComponent!.Crouching)
 			{
-				state = "/Crouch";	
+				state.Add("/Crouch");
 			}
 			else
 			{
-				state = "/Stand";
+				state.Add("/Stand");
+			}
+
+			foreach (var eff in UnitComponent.StatusEffects)
+			{
+				state.Add(eff.Type.Name);
 			}
 		}
-		state += _hiddenState;
 		return state;
 	}
 
-	private string _hiddenState = "";
-	public void SetHiddenState(string state)
-	{
-		_hiddenState = state;
-	}
 
 	public Color GetColor()
 	{
@@ -183,9 +182,9 @@ public partial class WorldObject : IDrawable
 	public void StartAnimation(string name)
 	{
 		
-		(int, int) anim = Type.GetAnimation(spriteVariation, name,GetExtraState());
+		(int, int,List<string>) anim = Type.GetAnimation(spriteVariation, name,GetExtraState());
 		if (anim.Item1 != 0)
-			CurrentAnimation = new Animation(name, anim.Item1, anim.Item2);
+			CurrentAnimation = new Animation(name,  string.Join("",anim.Item3),anim.Item1, anim.Item2);
 	}
 	
 }

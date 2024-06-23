@@ -1,7 +1,5 @@
 
 
-ghosts dont update
-crash after disconnect?
 
 sfx list:
 -throw
