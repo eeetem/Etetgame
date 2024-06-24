@@ -36,6 +36,7 @@ public class UnitUpdate : SequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		message.AddNullableBool(_player1);
+		
 		message.Add(_unitPositions.Count);
 		foreach (var u in _unitPositions)
 		{

@@ -280,10 +280,9 @@ public static partial class NetworkingManager
 		SendPreGameInfo();
 #if !DEBUG
 				Task.Run(() => { 
-			Thread.Sleep(15000);
+			Thread.Sleep(30000);
 			if (server.ClientCount == 0)
 			{
-				m
 				Environment.Exit(0);
 			}});
 
