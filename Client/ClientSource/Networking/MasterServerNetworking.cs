@@ -126,7 +126,7 @@ public class MasterServerNetworking
 	{
 		Log.Message("NETWORKING", "Connecting to started lobbby...");
 		var data = message.GetSerializable<LobbyData>();
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			Log.Message("NETWORKING", "Connecting to started lobbby attempt "+i+"...");
 			var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);

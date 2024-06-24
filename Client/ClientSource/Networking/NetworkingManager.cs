@@ -68,7 +68,7 @@ public static partial class NetworkingManager
 		client.ConnectionFailed += (a, b) =>
 		{
 			Disconnect();
-			UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
+			//UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
 		};
 		client.Disconnected += (a, b) =>
 		{
