@@ -25,7 +25,7 @@ public static partial class NetworkingManager
 	{
 		SinglePlayerFeatures = allowSP;
 #if DEBUG
-		//SinglePlayerFeatures = true;
+		SinglePlayerFeatures = false;
 #endif
 		RiptideLogger.Initialize(LogNetCode, LogNetCode,LogNetCode,LogNetCode, false);
 
