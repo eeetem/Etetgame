@@ -681,6 +681,7 @@ public static partial class GameManager
 
 	public static void PracticeMode(Connection con)
 	{
+		
 		Player2 = new ClientInstance("Practice Mode",con);
 		Player2.IsPracticeOpponent = true;
 		NetworkingManager.SendPreGameInfo();

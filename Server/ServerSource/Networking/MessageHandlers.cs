@@ -258,6 +258,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.PracticeMode)]
 	private static void PracticeMode(ushort senderID, Message message)
 	{
+		return;
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
 		GameManager.PracticeMode(GameManager.Player1!.Connection);

@@ -239,7 +239,7 @@ public static class Program
 				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
 				Thread.Sleep(1000);
 				
-				var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated);
+				var msg = Message.Create(MessageSendMode.Reliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated);
 				msg.Add(lobbyData);
 				server.Send(msg, senderID);
 

@@ -3,7 +3,7 @@
 public class Animation
 {
 	private int _currentFrame = 0;
-	private readonly string _name;
+	public readonly string Name;
 	private readonly float _msPerFrame = 0;
 	float _elapsedMsSinceLastFrame = 0;
 	private readonly int _lastFrame;
@@ -12,7 +12,7 @@ public class Animation
 	public Animation(string name, string baseState, int frameCount, int FPS=5)
 	{
 		_baseState = baseState;
-		_name = name;
+		Name = name;
 		_lastFrame = frameCount-1;
 		_msPerFrame = 1000 / (float)FPS;
 	}
@@ -39,6 +39,6 @@ public class Animation
 			ShouldStop = true;
 		}
 
-		return _baseState+"/" + _name + spriteVariation + "/" + frame;
+		return _baseState+"/" + Name + spriteVariation + "/" + frame;
 	}
 }

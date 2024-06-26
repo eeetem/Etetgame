@@ -29,14 +29,16 @@ public class UnitUpdate : SequenceAction
 #if SERVER
 		return;
 #else
+		if(_player1 == null) return;
 		GameManager.UpdateUnitPositions(_player1.Value, _unitPositions, true);
 #endif
 	}
 
 	protected override void SerializeArgs(Message message)
 	{
+
+			
 		message.AddNullableBool(_player1);
-		
 		message.Add(_unitPositions.Count);
 		foreach (var u in _unitPositions)
 		{
