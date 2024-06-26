@@ -168,8 +168,7 @@ public static partial class GameManager
 				{
 					Thread.Sleep(500);
 				}
-
-				Thread.Sleep(1000); //just in case
+				
 				foreach (var u in T1Units)
 				{
 					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
@@ -196,6 +195,7 @@ public static partial class GameManager
 				{
 					NextTurn();
 				}
+				Thread.Sleep(1000);
 				NetworkingManager.SendGameData();
 				WorldManager.Instance.MakeFovDirty();	
 				NetworkingManager.SendAllSeenUnitPositions();
@@ -231,9 +231,14 @@ public static partial class GameManager
 	public static bool ShouldUpdateUnitPositions = false;
 	public static bool ShouldRecalculateUnitPositions=  false;
 
+	public static void SpotUnit(ClientInstance p, int unitId,(Vector2Int, WorldObject.WorldObjectData) spotedUnit)
+	{
+		p.KnownUnitPositions[unitId] = spotedUnit;
+	}
+
 	private static void UpdatePlayerSideUnitPositionsForPlayer(bool player1,bool newTurn = false)
 	{
-		ClientInstance c = GetPlayer(player1)!;
+		ClientInstance? c = GetPlayer(player1);
 		if(c == null) return;
 		foreach (var pos in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(c.KnownUnitPositions))
 		{
@@ -286,7 +291,7 @@ public static partial class GameManager
 	}
 	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
-		Log.Message("UNITPOSITIONS","updating unit positions");
+		Log.Message("UNIT","updating unit positions");
 		GameManager.ShouldRecalculateUnitPositions = false;
 		UpdatePlayerSideUnitPositionsForPlayer(true,newTurn);
 		UpdatePlayerSideUnitPositionsForPlayer(false,newTurn);
@@ -318,16 +323,32 @@ public static partial class GameManager
 	
 	public class ClientInstance
 	{
-		public Connection? Connection { get; private set; }
+		public Connection? Connection { get;  set; }
+		public bool IsConnected => Connection != null && (Connection.IsConnected || Connection.IsConnecting || Connection.IsPending);
 		public string Name;
 		public bool IsAI;
 		public List<SquadMember>?  SquadComp { get; private set; }
 		public bool IsPracticeOpponent { get; set; }
 	
 		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || ShouldUpdateUnitPositions;
-	
-		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
-	
+		
+		private readonly ConcurrentQueue<NetworkingManager.SequencePacket> _sequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
+		public bool HasSequencesToSend => _sequenceQueue.Count > 0;
+		public NetworkingManager.SequencePacket GetNextSequence()
+		{
+			if (_sequenceQueue.TryDequeue(out var seq))
+			{
+				return seq;
+			}
+			throw new Exception("No sequence to get");
+		}
+		public void AddToSequenceQueue(NetworkingManager.SequencePacket packet)
+		{
+			if(this.IsAI) return;
+			if(!this.IsConnected) return;
+			_sequenceQueue.Enqueue(packet);
+		}
+		
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
 		public bool IsReadyForNextSequence = false;
 		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI || IsPracticeOpponent;
@@ -344,6 +365,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
+			_sequenceQueue.Clear();
 			IsReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -364,8 +386,8 @@ public static partial class GameManager
 
 		public void Disconnect()
 		{
-			Connection = null;
 			MessagesToBeDelivered.Clear();
+			_sequenceQueue.Clear();
 		}
 
 		
@@ -382,22 +404,29 @@ public static partial class GameManager
 				p = Player2;
 				team1 = false;
 			}
+			if (p == null) continue;
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
 					var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 				
-					if(tile.Surface == null) return;//ignore empty tiles
+					if(tile.Surface == null) continue;//ignore empty tiles
 					WorldTile.WorldTileData worldTileData = tile.GetData();
-					p.WorldState.TryAdd(tile.Position,worldTileData);
+					if (!p.WorldState.ContainsKey(tile.Position))
+					{
+						p.WorldState.TryAdd(tile.Position,worldTileData);
+					}
+					
 
 					if (tile.IsVisible(team1:team1))
 					{
 						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
 						{
 							p.WorldState[tile.Position] = worldTileData;
+							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true));
 						}
+						
 
 					}
 					
@@ -663,6 +692,7 @@ public static partial class GameManager
 
 	public static void PracticeMode(Connection con)
 	{
+		
 		Player2 = new ClientInstance("Practice Mode",con);
 		Player2.IsPracticeOpponent = true;
 		NetworkingManager.SendPreGameInfo();

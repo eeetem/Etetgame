@@ -58,12 +58,13 @@ public class TileUpdate : SequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		message.Add(_data);
-
+		message.Add(force);
 	}
 
 	protected override void DeserializeArgs(Message message)
 	{
 		_data = message.GetSerializable<WorldTile.WorldTileData>();
+		force = message.GetBool();
 	}
 #if SERVER
 	public override void FilterForPlayer(bool player1)

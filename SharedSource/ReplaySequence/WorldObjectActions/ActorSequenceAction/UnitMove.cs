@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Riptide;
 #if CLIENT
@@ -47,7 +48,7 @@ public class UnitMove : UnitSequenceAction
         return Equals((UnitMove) obj);
     }
 
-    public override BatchingMode Batching => BatchingMode.AsyncAlone;
+    public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 
     public override int GetHashCode()
     {
@@ -73,6 +74,7 @@ public class UnitMove : UnitSequenceAction
     public override bool ShouldSendToPlayerServerCheck(bool player1)
     {
         if (base.ShouldSendToPlayerServerCheck(player1)) return true;
+        if (Path.Count == 0) return false;
         foreach (var pos in Path)
         {
             var wtile = (WorldTile) WorldManager.Instance.GetTileAtGrid(pos);
@@ -105,14 +107,14 @@ public class UnitMove : UnitSequenceAction
         }
     }
 
-    public override List<SequenceAction> GenerateInfoActions(bool player1)
+    public override List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
     {
-        var b =  base.GenerateInfoActions(player1);
+        var b =  base.SendPrerequesteInfoToPlayer(player1);
         if (Actor.IsPlayer1Team != player1)//spot the unit that will walk in
         {
             if (Path.Count > 0)
             {
-                b.Add(SpotUnit.Make(Actor.WorldObject.ID, Path[0],player1));
+                GameManager.SpotUnit(GameManager.GetPlayer(player1)!, Actor.WorldObject.ID, (Path[0], Actor.WorldObject.GetData()));
             }
         }
         else//spot everyone else the unit will see
@@ -120,6 +122,11 @@ public class UnitMove : UnitSequenceAction
             Vector2Int lastPos = Actor.WorldObject.TileLocation.Position;
             HashSet<Vector2Int> seenTiles = new HashSet<Vector2Int>();
             HashSet<int> seenUnits = new HashSet<int>();
+            HashSet<int> alreadySeenUnitsToUpdate = new HashSet<int>();
+            var p = GameManager.GetPlayer(player1);
+            if (p == null) return b;
+            
+            
             foreach (var spot in Path)
             {
                 if (spot == lastPos)
@@ -128,25 +135,55 @@ public class UnitMove : UnitSequenceAction
                 foreach (var loc in tiles)
                 {
                     var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
-                    if (tile.UnitAtLocation != null && tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
-                        seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
+                    if (tile.UnitAtLocation != null)
+                    {
+                        if (tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
+                            seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
+
+                        
+                    }
+                    foreach (var knownUnit in p.KnownUnitPositions.ToList())
+                    {
+                        if (knownUnit.Value.Item1 == loc.Key)
+                        {
+                            var realUnit = WorldObjectManager.GetObject(knownUnit.Key);
+                            if (realUnit != null && realUnit.TileLocation.Position != loc.Key)
+                            {
+                                if (knownUnit.Value.Item2.UnitData!.Value.Crouching && loc.Value > Visibility.Partial)
+                                {
+                                    p.KnownUnitPositions.Remove(knownUnit.Key);
+                                }
+                                else if (!knownUnit.Value.Item2.UnitData.Value.Crouching && loc.Value > Visibility.None)
+                                {
+                                    p.KnownUnitPositions.Remove(knownUnit.Key);
+                                }
+                            }
+                                    
+                        }
+                    }
+                    
                     if(loc.Value>Visibility.None)
                         seenTiles.Add(loc.Key);
+                    
                 }
                 lastPos = spot;
             }
 
             foreach (var u in seenUnits)
             {
-                b.Add(SpotUnit.Make(u, player1));
+                var unit = WorldObjectManager.GetObject(u); ;
+                GameManager.SpotUnit(GameManager.GetPlayer(player1)!,u,(unit!.TileLocation.Position, unit.GetData()));
             }
+            
+          
             foreach (var t in seenTiles)
             {
                 b.Add(TileUpdate.Make(t,false));
             }
            
+           
         }
-
+        b.Add(UnitUpdate.Make(player1));
         return b;
     }
 #endif
@@ -154,9 +191,10 @@ public class UnitMove : UnitSequenceAction
 
     public override bool ShouldDo()
     {
+        if (Path.Count == 0) return false;
         return Actor != null && !Actor.Panicked;
+        
     }
-    const int walkFps = 6;
 
     protected override void RunSequenceAction()
     {
@@ -174,9 +212,10 @@ public class UnitMove : UnitSequenceAction
                 int sleepTime = 10;
 #if CLIENT
                 //(int) *
-                var animLenght = Actor.Type.GetAnimationLenght(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
-                sleepTime = (int) ((1000f / walkFps) * animLenght);
-                if (animLenght == 0)
+                var anim = Actor.Type.GetAnimation(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
+                sleepTime = (int) ((1000f / anim.Item2) *  anim.Item1);
+                sleepTime += 25;
+                if (anim.Item1 == 0)
                 {
                     sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
                 }
@@ -217,8 +256,8 @@ public class UnitMove : UnitSequenceAction
 
 #if CLIENT
       
-            if(Path.Count>1)
-                Actor.WorldObject.StartAnimation("Walk",walkFps);
+            if(Path.Count>0)
+                Actor.WorldObject.StartAnimation("Walk");
 
 
             if (Actor.WorldObject.IsVisible())

@@ -122,10 +122,7 @@ public static partial class WorldObjectManager
 
 
             if(wo is null) throw new Exception("Created a null worldobject");
-            while (WoReadLock>0)
-            {
-	            Thread.Sleep(100);
-            }
+
             lock (WoLock)
             {
 	            type.Place(wo, tile, data);

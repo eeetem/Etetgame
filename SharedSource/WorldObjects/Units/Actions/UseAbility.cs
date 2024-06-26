@@ -36,6 +36,8 @@ public class UseAbility : Action
 		
 		var turnact = FaceUnit.Make(actor.WorldObject.ID, args.Target,false);
 		queue1.Enqueue(turnact);
+		var anim = PlayAnimation.Make(actor.WorldObject.ID, action.Name);
+		queue1.Enqueue(anim);
 
 		var res = action.GetConsequences(actor, args.GetTarget());
 		var queue2 = new Queue<SequenceAction>();

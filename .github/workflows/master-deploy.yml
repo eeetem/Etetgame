@@ -1,4 +1,4 @@
-name: Develop Deploy
+name: Master Deploy
 
 on:
   push:

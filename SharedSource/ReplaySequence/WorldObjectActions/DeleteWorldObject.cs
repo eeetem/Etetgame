@@ -81,10 +81,7 @@ public static partial class WorldObjectManager
 
 
 
-			while (WoReadLock>0)
-			{
-				Thread.Sleep(100);
-			}
+	
 			lock (WoLock)
 			{
 				GameManager.Forget(obj);

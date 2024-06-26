@@ -20,6 +20,7 @@ public class OverWatch : Action
 	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
 		var queue = new Queue<SequenceAction>();
+		queue.Enqueue(FaceUnit.Make(actor.WorldObject.ID,args.Target,true));
 		queue.Enqueue(UnitOverWatch.Make(actor.WorldObject.ID,args.Target,args.AbilityIndex));
 		return new Queue<SequenceAction>[] {queue};
 	}

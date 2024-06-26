@@ -875,6 +875,13 @@ public class MainMenuLayout : UiLayout
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
 					MasterServerNetworking.CreateLobby(txt.Text);
+					var dialog = Dialog.CreateMessageBox("Creating Server...", new TextLabel()
+					{
+						Text = "Please Wait...",
+						Height = (int)(10*GlobalScale.X),
+					});
+
+					dialog.ShowModal(UI.Desktop);
 				};
 				dialog.Width = (int)(200*GlobalScale.X);
 				dialog.Height = (int)(80*GlobalScale.X);

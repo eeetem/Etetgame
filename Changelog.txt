@@ -33,3 +33,6 @@ Alpha 4.1
 -Capture point notification fixed
 -Corner Shooting
 -Vastly sped up map loading
+-Animations
+-Consistent lobby creation
+-Scout hp buff

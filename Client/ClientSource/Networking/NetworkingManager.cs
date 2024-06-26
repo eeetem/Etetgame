@@ -15,7 +15,7 @@ namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
-	private static Client? client;
+	public static Client? client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;
@@ -68,7 +68,7 @@ public static partial class NetworkingManager
 		client.ConnectionFailed += (a, b) =>
 		{
 			Disconnect();
-			UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
+			//UI.OptionMessage("Connection Failed",b.Message?.GetString() ?? string.Empty, "OK",(sender, args) => {Disconnect();},"OK",(sender, args) => {Disconnect();});
 		};
 		client.Disconnected += (a, b) =>
 		{

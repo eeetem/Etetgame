@@ -16,6 +16,7 @@ using DefconNull.WorldObjects;
 using MD5Hash;
 using Microsoft.Xna.Framework;
 using Riptide;
+using static DefconNull.WorldManager;
 #if CLIENT
 using DefconNull.Rendering.UILayout.GameLayout;
 #endif
@@ -100,14 +101,14 @@ public  partial class WorldManager
 		//	LoadTileObject(data.UnitAtLocation, tile.UnitAtLocation?.WorldObject, tile,forceUpdateEverything);
 		
 
-		foreach (var obj in tile.ObjectsAtLocation)
+		foreach (var obj in new List<WorldObject>(tile.ObjectsAtLocation))
 		{
-			SequenceManager.AddSequence(WorldObjectManager.DeleteWorldObject.Make(obj.ID));
+			WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();
 		}
 	
 		foreach (var obj in data.ObjectsAtLocation)
 		{
-			SequenceManager.AddSequence(WorldObjectManager.MakeWorldObject.Make(obj, tile));
+			WorldObjectManager.MakeWorldObject.Make(obj, tile).RunSynchronously();
 		}
 
 
@@ -178,7 +179,7 @@ public  partial class WorldManager
 		foreach (var tile in _gridData)
 		{
 #if CLIENT
-            tile.TileVisibility = Visibility.None;
+			tile.TileVisibility = Visibility.None;
 #elif SERVER
 			tile.TileVisibility = new ValueTuple<Visibility, Visibility>(Visibility.None, Visibility.None);
 #endif
@@ -192,47 +193,44 @@ public  partial class WorldManager
 			Thread.Sleep(100);
 		}
 
-		WorldObjectManager.WoReadLock++;
-			Parallel.ForEach(units, seeingUnit =>
-			{
-				var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
 
-				seeingUnit.VisibleTiles = unitSee;
+		Parallel.ForEach(units, seeingUnit =>
+		{
+			var unitSee = GetVisibleTiles(seeingUnit.WorldObject.TileLocation.Position, seeingUnit.WorldObject.Facing, seeingUnit.GetSightRange(), seeingUnit.Crouching);
+
+			seeingUnit.VisibleTiles = unitSee;
 #if CLIENT
-				if (!seeingUnit.IsMyTeam()) return; //enemy units dont update our FOV
+			if (!seeingUnit.IsMyTeam()) return; //enemy units dont update our FOV
 #endif
-				foreach (var visTuple in unitSee)
+			foreach (var visTuple in unitSee)
+			{
+				if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
 				{
+					GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
 
+					var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
 
-					if (GetTileAtGrid(visTuple.Key).GetVisibility(seeingUnit.IsPlayer1Team) < visTuple.Value)
-					{
-						GetTileAtGrid(visTuple.Key).SetVisibility(seeingUnit.IsPlayer1Team, visTuple.Value);
-
-						var spotedUnit = GetTileAtGrid(visTuple.Key).UnitAtLocation;
-
-						if (spotedUnit == null) continue;
+					if (spotedUnit == null) continue;
 
 #if SERVER
 					if (spotedUnit.IsPlayer1Team != seeingUnit.IsPlayer1Team && spotedUnit.WorldObject.GetMinimumVisibility() <= visTuple.Value)
 					{
 						GameManager.ShowUnitToEnemy(spotedUnit);
 					}
-#endif
-					}
 
+					
+#endif
 				}
 
-			});
+			}
 
-
-			WorldObjectManager.WoReadLock--;
+		});
 
 #if CLIENT
-        foreach (var tile in _gridData)
-        {
-            tile.CalcWatchLevel();
-        }
+		foreach (var tile in _gridData)
+		{
+			tile.CalcWatchLevel();
+		}
 #endif    
         
 #if SERVER
@@ -720,236 +718,250 @@ public  partial class WorldManager
 			Thread.Sleep(100);
 		}
 
-		WorldObjectManager.WoReadLock++;
-		dir = Utility.NormaliseDir(dir);
-		WorldObject biggestCoverObj = nullWorldObject;
-		IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc,pseudoLayer);
-		foreach (var obj in tileAtPos.ObjectsAtLocation)
-		{
-			if(obj.GetCover(false)>biggestCoverObj.GetCover(false))
-			{
-				biggestCoverObj = obj;
-			}
-		}
-		IWorldTile? tileInDir =null;
-		if(IsPositionValid(tileAtPos.Position + Utility.DirToVec2(dir)))
-		{
-			tileInDir = PseudoWorldManager.GetTileAtGrid(tileAtPos.Position + Utility.DirToVec2(dir),pseudoLayer);
-		}
-            
 
-		WorldObject coverObj;
-		switch (dir)
-		{
-			case Direction.East:
-				if(tileInDir?.WestEdge != null && tileInDir.WestEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = tileInDir.WestEdge;
-				}
-				break;
-			case Direction.North:
-				if(tileAtPos.NorthEdge != null && tileAtPos.NorthEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = tileAtPos.NorthEdge;
-				}
-				break;
-				
-			case Direction.West:
-				if(tileAtPos.WestEdge != null && tileAtPos.WestEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = tileAtPos.WestEdge;
-				}
-				break;
-			case Direction.South:
-				if(tileInDir?.NorthEdge != null && tileInDir.NorthEdge.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = tileInDir.NorthEdge;
-				}
-				break;
-			case Direction.SouthWest:
-				coverObj = GetCoverObj(loc,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				coverObj = GetCoverObj(loc,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				if (tileInDir == null)
-				{
-					break;
-				}
-				coverObj = GetCoverObj(tileInDir.Position,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				coverObj = GetCoverObj(tileInDir.Position,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-					
-
-				if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				break;
-			case Direction.SouthEast:
-				coverObj = GetCoverObj(loc,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				coverObj = GetCoverObj(loc,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover)  > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				if (tileInDir == null)
-				{
-					break;
-				}
-				coverObj = GetCoverObj(tileInDir.Position,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				coverObj = GetCoverObj(tileInDir.Position,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-					
-
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				break;
-			case Direction.NorthWest:
-				coverObj = GetCoverObj(loc,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				coverObj = GetCoverObj(loc,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				if (tileInDir == null)
-				{
-					break;
-				}
-
-				coverObj = GetCoverObj(tileInDir.Position,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				coverObj = GetCoverObj(tileInDir.Position,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-					
-				break;
-			case Direction.NorthEast:
-				coverObj = GetCoverObj(loc,Direction.North,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-				coverObj = GetCoverObj(loc,Direction.East,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				if (tileInDir == null)
-				{
-					break;
-				}
-				coverObj = GetCoverObj(tileInDir.Position,Direction.West,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-				if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-
-				coverObj = GetCoverObj(tileInDir.Position,Direction.South,visibilityCover,ignoreContollables,ignoreObjectsAtLoc,pseudoLayer);
-					
-
-				if(coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = coverObj;
-				}
-					
-				break;
-				
-		}
-
-		if (!ignoreObjectsAtLoc)
-		{
-			if (!ignoreContollables)
-			{
-				if (tileInDir?.UnitAtLocation != null && tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) )
-				{
-
-					biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
-
-				}
-			}
-
+			dir = Utility.NormaliseDir(dir);
+			WorldObject biggestCoverObj = nullWorldObject;
+			IWorldTile tileAtPos = PseudoWorldManager.GetTileAtGrid(loc, pseudoLayer);
 			foreach (var obj in tileAtPos.ObjectsAtLocation)
 			{
-				if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+				if (obj.GetCover(false) > biggestCoverObj.GetCover(false))
 				{
 					biggestCoverObj = obj;
 				}
 			}
-		}
+
+			IWorldTile? tileInDir = null;
+			if (IsPositionValid(tileAtPos.Position + Utility.DirToVec2(dir)))
+			{
+				tileInDir = PseudoWorldManager.GetTileAtGrid(tileAtPos.Position + Utility.DirToVec2(dir), pseudoLayer);
+			}
+
+
+			WorldObject coverObj;
+			switch (dir)
+			{
+				case Direction.East:
+					if (tileInDir?.WestEdge != null && tileInDir.WestEdge.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileInDir.WestEdge;
+					}
+
+					break;
+				case Direction.North:
+					if (tileAtPos.NorthEdge != null && tileAtPos.NorthEdge.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileAtPos.NorthEdge;
+					}
+
+					break;
+
+				case Direction.West:
+					if (tileAtPos.WestEdge != null && tileAtPos.WestEdge.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileAtPos.WestEdge;
+					}
+
+					break;
+				case Direction.South:
+					if (tileInDir?.NorthEdge != null && tileInDir.NorthEdge.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = tileInDir.NorthEdge;
+					}
+
+					break;
+				case Direction.SouthWest:
+					coverObj = GetCoverObj(loc, Direction.South, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(loc, Direction.West, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.North, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.East, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+
+
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					break;
+				case Direction.SouthEast:
+					coverObj = GetCoverObj(loc, Direction.South, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(loc, Direction.East, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.North, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.West, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+
+
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					break;
+				case Direction.NorthWest:
+					coverObj = GetCoverObj(loc, Direction.North, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(loc, Direction.West, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.East, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.South, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+
+					break;
+				case Direction.NorthEast:
+					coverObj = GetCoverObj(loc, Direction.North, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(loc, Direction.East, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					if (tileInDir == null)
+					{
+						break;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.West, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					coverObj = GetCoverObj(tileInDir.Position, Direction.South, visibilityCover, ignoreContollables, ignoreObjectsAtLoc, pseudoLayer);
+
+
+					if (coverObj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = coverObj;
+					}
+
+					break;
+
+			}
+
+			if (!ignoreObjectsAtLoc)
+			{
+				if (!ignoreContollables)
+				{
+					if (tileInDir?.UnitAtLocation != null && tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
+
+					}
+				}
+
+				foreach (var obj in tileAtPos.ObjectsAtLocation)
+				{
+					if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = obj;
+					}
+				}
+			}
+
+
+			//this code is broken but unutill objs at loc can provide cover it doesnt matter
+			if (tileInDir != null)
+			{
+
+				if (!ignoreContollables && tileInDir.UnitAtLocation != null)
+				{
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == dir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
+					{
+
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
+
+					}
+
+					Direction inverseDir = Utility.NormaliseDir(dir - 4);
+					if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == inverseDir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
+					{
+
+						biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
+
+					}
+				}
+
+				foreach (var obj in tileInDir.ObjectsAtLocation)
+				{
+
+					if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
+					{
+						biggestCoverObj = obj;
+					}
+				}
+
+
+			}
 			
-        
-		//this code is broken but unutill objs at loc can provide cover it doesnt matter
-		if (tileInDir != null)
-		{
+			if (biggestCoverObj == null) throw new Exception("Biggest cover obj cannot be null");
+			return biggestCoverObj;
 
-			if (!ignoreContollables && tileInDir.UnitAtLocation != null)
-			{
-				if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == dir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(dir - 1)))
-				{
-
-					biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
-
-				}
-
-				Direction inverseDir = Utility.NormaliseDir(dir - 4);
-				if (tileInDir.UnitAtLocation.WorldObject.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover) && (tileInDir.UnitAtLocation.WorldObject.Facing == inverseDir || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 1) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir + 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 2) || tileInDir.UnitAtLocation.WorldObject.Facing == Utility.NormaliseDir(inverseDir - 1))) //only hit people from the front
-				{
-
-					biggestCoverObj = tileInDir.UnitAtLocation.WorldObject;
-
-				}
-			}
-			foreach (var obj in tileInDir.ObjectsAtLocation)
-			{
-
-				if (obj.GetCover(visibilityCover) > biggestCoverObj.GetCover(visibilityCover))
-				{
-					biggestCoverObj = obj;
-				}
-			}
-            
-
-		}
-
-		WorldObjectManager.WoReadLock--;
-		if (biggestCoverObj == null) throw new Exception("Biggest cover obj cannot be null");
-		return biggestCoverObj;
-		
 	}
 
 
@@ -1146,14 +1158,17 @@ public  partial class WorldManager
 		}
 		string hash = "";
 
-		foreach (var tile in _gridData)
+		for (int x = 0; x < 100; x++)
 		{
-                
-			hash += tile.GetData().GetHash();
+			for (int y = 0; y < 100; y++)
+			{
+				var tile = _gridData[x, y];
+				hash += tile.GetData().GetHash();
+			}
 		}
-			
-        
-	
+
+
+
 		string md5 = hash.GetMD5();
 		if (md5 == null)
 			throw new Exception("MD5 hash failed");

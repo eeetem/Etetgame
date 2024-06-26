@@ -13,6 +13,7 @@ using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Riptide;
 
 namespace DefconNull;
 
@@ -203,7 +204,11 @@ public static partial class GameManager
 	
 	public static void UpdateUnitPositions(bool player1, Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
 	{
-		if(!spectating && player1 != IsPlayer1) throw new Exception("Recieved unit update for wrong team");
+		if(!spectating && player1 != IsPlayer1)
+		{
+			Log.Message("WARN","Recieved unit positions for wrong player");
+			return;
+		}
 		if (spectating)
 		{
 			if (fullUpdate)

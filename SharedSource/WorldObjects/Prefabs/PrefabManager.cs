@@ -133,8 +133,16 @@ public static class PrefabManager
 
 
 			var defaultSpritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["source"]?.InnerText;
-			var defaultFrames = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["frames"]?.InnerText ?? "1");
-			var defaultanimFps = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["animFPS"]?.InnerText ?? "1");
+			var anims = new Dictionary<string, int>();
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
+			{
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
+			}
 
 
 			var xmlNodeList = xmlObj.GetElementsByTagName("sprite")[0]?.ChildNodes;
@@ -163,7 +171,7 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-			type.GenerateSpriteSheet(defaultSpritename,spriteVariations);//this is a bit inconsistent but eeeh
+			type.GenerateSpriteSheet(defaultSpritename,spriteVariations,anims);//this is a bit inconsistent but eeeh
 #endif
 		}
 
@@ -205,9 +213,19 @@ public static class PrefabManager
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
 			} 
-
+			var anims = new Dictionary<string, int>();
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
+			{
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
+			}
+		
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>());//this is a bit inconsistent but eeeh
+			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>(),anims);//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);

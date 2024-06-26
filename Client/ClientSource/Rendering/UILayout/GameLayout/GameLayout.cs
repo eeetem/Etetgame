@@ -1323,6 +1323,13 @@ public partial class GameLayout : MenuLayout
 
 #endif
 
+		batch.Begin(samplerState: SamplerState.PointClamp);
+		var ping = NetworkingManager.client.SmoothRTT.ToString() + "ms" + " avg send attmp:" + Math.Floor(NetworkingManager.client.Connection.Metrics.RollingReliableSends.Mean);
+		if(NetworkingManager.client.SmoothRTT > 150 || NetworkingManager.client.Connection.Metrics.RollingReliableSends.Mean > 10)
+			batch.DrawText(ping, Game1.resolution - new Vector2Int(ping.Length*17,25), 2, 100, Color.Red);
+		else
+			batch.DrawText(ping, Game1.resolution - new Vector2Int(ping.Length*9,25), 1, 100, Color.White);
+		batch.End();
 	}
 
 	private Vector2Int _mouseTileCoordinate = new(0, 0);
@@ -1384,7 +1391,7 @@ public partial class GameLayout : MenuLayout
 		}
 
 		ProcessKeyboard();
-		if(movePreviewDirty)
+		if(movePreviewDirty && !SequenceManager.SequenceRunning)
 		{
 			movePreviewDirty = false;
 			ReMakeMovePreview();

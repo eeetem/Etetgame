@@ -51,13 +51,17 @@ public static partial class NetworkingManager
 			
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
-			if (WorldManager.Instance.GetMapHash() != hash)
+			/*
+			var maphash = WorldManager.Instance.GetMapHash();
+			if (maphash != hash)
 			{
+				return;
 				Log.Message("NETWORKING","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);
 				client?.Send(msg);
 			
 			}
+			*/
 			
 			
 		});
@@ -66,6 +70,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
 	private static void RecieveEndTrugn(Message message)
 	{
+		Log.Message("NETWORKING","end turn recieved");
 		GameManager.SetEndTurn();
 	}
 	[MessageHandler((ushort) NetworkMessageID.CaptureNotif)]
@@ -80,6 +85,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
 	{
+		Log.Message("NETWORKING","recived game data");
 		GameManager.GameStateData data = message.GetSerializable<GameManager.GameStateData>();
 		GameManager.SetData(data);
 	}
