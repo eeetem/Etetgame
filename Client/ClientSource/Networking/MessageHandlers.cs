@@ -70,6 +70,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
 	private static void RecieveEndTrugn(Message message)
 	{
+		Log.Message("NETWORKING","end turn recieved");
 		GameManager.SetEndTurn();
 	}
 	[MessageHandler((ushort) NetworkMessageID.CaptureNotif)]
@@ -84,6 +85,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
 	{
+		Log.Message("NETWORKING","recived game data");
 		GameManager.GameStateData data = message.GetSerializable<GameManager.GameStateData>();
 		GameManager.SetData(data);
 	}

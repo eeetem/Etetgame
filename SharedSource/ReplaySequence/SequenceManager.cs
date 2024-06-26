@@ -218,7 +218,7 @@ public class SequenceManager
 					NetworkingManager.SendSequenceExecuted();
 			
 #else
-			NetworkingManager.SendGameData();
+			
 			GameManager.ShouldRecalculateUnitPositions = true;
 #endif
 			hasSequece = false;
