@@ -206,8 +206,8 @@ public partial class GameLayout
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27,28)));
 			NetworkingManager.EndTurn();
 
-			tutorialNote = "title" +
-			               "flank the heavy by moving to the highlighted tile";
+			tutorialNote = "[Green]Determination & Suppression[-]\n" +
+			               "Move to the highlighted tile to peak the heavy";
 			highlightTile = new Vector2Int(30, 32);
 			tutorialActionLock = ActiveActionType.Move;
 			while (scout.WorldObject.TileLocation.Position != new Vector2Int(30, 32))
@@ -215,8 +215,10 @@ public partial class GameLayout
 				Thread.Sleep(350);
 			}
 
-			tutorialNote = "title" +
-			               "face the enemy";
+			tutorialNote = "[Green]Determination & Suppression[-]\n" +
+			               "Face towards the enemy.\n\n" +
+			               "Shooting at or near an enemy will remove of of their determination points.";
+			
 			highlightTile = new Vector2Int(27, 28);
 			tutorialActionLock = ActiveActionType.Face;
 			while (scout.WorldObject.Facing != Direction.NorthWest)
@@ -224,24 +226,26 @@ public partial class GameLayout
 				Thread.Sleep(350);
 			}
 
-			tutorialNote = "title" +
-			               "expalin panic";
+			tutorialNote = "[Green]Panic[-]\n" +
+			               "Once a unit's determination points reach zero they will enter a panicked state.\n" +
+			               "Once panicked, that unit will immediately crouch and regenerate one less movement point next turn.\n" +
+			               "Panicked units will also not regenerate a determination point next turn";
 			TutorialFire(scout, new Vector2Int(27, 28));
 
-			tutorialNote = "title" +
-			               "end turn";
+			tutorialNote = "[Green]Panic[-]\n" +
+			               "Lets end our turn";
 			TutorialEndTurn();
 			
 			
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(24,27)));
 			NetworkingManager.EndTurn();
 
-			tutorialNote = "title" +
-			               "un-crouch";
+			tutorialNote = "[Green]Un-crouching[-]\n" +
+			               "Un-crouch by pressing the Z key then spacebar.";
 			TutorialCrouch(scout);
 
-			tutorialNote = "title" +
-			               "chase down the heavy while hes vurnerable";
+			tutorialNote = "[Green]Finish them[-]\n" +
+			               "Chase down the heavy while hes vulnerable";
 			highlightTile = new Vector2Int(28, 28);
 			tutorialActionLock = ActiveActionType.Move;
 			while (scout.WorldObject.TileLocation.Position != new Vector2Int(28, 28))
@@ -249,8 +253,8 @@ public partial class GameLayout
 				Thread.Sleep(350);
 			}
 
-			tutorialNote = "title" +
-			               "face him";
+			tutorialNote = "[Green]Finish them[-]\n" +
+			               "Face the heavy";
 			highlightTile = new Vector2Int(24, 27);
 			tutorialActionLock = ActiveActionType.Face;
 			while (scout.WorldObject.Facing != Direction.NorthWest)
@@ -258,111 +262,10 @@ public partial class GameLayout
 				Thread.Sleep(350);
 			}
 
-			tutorialNote = "title" +
-			               "Finish him";
+			tutorialNote = "[Green]Finish them[-]\n" +
+			               "Fire!";
 			TutorialFire(scout, new Vector2Int(24,27));
-			
-			
-			
-			
-			
-			/*
-			int heavyId = 1;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
-			{
-				if (u.Value.Item2.Prefab == "Heavy")
-				{
-					heavyId = u.Key;
-					break;
-				}
-			}
 
-			var mv = Action.Actions[Action.ActionType.Move];
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(31, 36)));
-			MoveCamera.Make(new Vector2Int(32,37),true,0).GenerateTask().RunTaskSynchronously();
-			Thread.Sleep(300);
-			var act = new Action.ActionExecutionParamters(new Vector2Int(29, 43));
-			act.AbilityIndex = 0;
-
-			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
-			NetworkingManager.EndTurn();
-
-			 tutorialNote = "[Green]Crouching[-]\n" +
-			               "The [Red]enemy Heavy[-] is awaiting your approach.\n" +
-			               "Approach him carefully by moving to the highlighted tile.";
-			TutorialMove(scout,new Vector2Int(26,42));
-
-			tutorialNote = "[Green]Crouching[-]\n" +
-			               "You can hide under [Yellow]half cover[-] to avoid being seen.\n" +
-			               "Crouch by pressing [Yellow]Z[-] and then [Yellow]Spacebar[-], this will consume one movement point.";
-			TutorialCrouch(scout);
-
-			tutorialNote = "[Green]Hiding[-]\n" +
-			               "Now that you're hidden, you can walk towards the [Red]Heavy[-].\n";
-			TutorialMove(scout,new Vector2Int(29,42));
-
-			tutorialNote = "[Green]Hiding[-]\n" +
-			               "Uh Oh! You're out of [Green]movement points[-]!\n" +
-			               "Lets end our turn and see what the [Red]Heavy[-] does.";
-			tutorialActionLock = ActiveActionType.Action;
-			TutorialEndTurn();
-
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(33, 39)));
-			NetworkingManager.EndTurn();
-
-			tutorialNote = "[Green]Hiding[-]\n" +
-			               "Approach the corner to peak the [Red]Heavy[-]";
-			tutorialAbilityIndex = -1;
-			TutorialMove(scout, new Vector2Int(33, 42));
-
-			tutorialNote = "[Green]Determination & Suppression[-]\n" +
-			               "Face in the [Red]Heavy's[-] direction";
-
-			highlightTile = new Vector2Int(33, 40);
-			tutorialActionLock = ActiveActionType.Face;
-			tutorialAbilityIndex = -1;
-
-			tutorialNote = "The [Red]Heavy[-] has exposed himself.\n By hiding behind cover the [Red]Heavy[-] did not expect our unit to be so close \n\n" +
-			               "Lets take advantage of this situation and attack our enemy while they are out in the open.";
-
-			while (scout.WorldObject.Facing != Direction.North)
-			{
-				Thread.Sleep(350);
-			}
-
-			tutorialNote = "[Green]Determination & Suppression[-]\n" +
-			               "Fire at the [Red]Heavy[-]!\n" +
-			               "Shooting at or near an [Red]enemy[-] will suppress one of their determination points";
-			TutorialFire(scout,new Vector2Int(33, 39));
-
-			tutorialNote = "[Green]Panic[-]\n" +
-			               "Once a units determination reaches 0 they will be [Red]Panicked[-].\n" +
-			               "Panicked units will immediately crouch and regenerate one less movement points next turn.\n\n" +
-			               "Panicked units will not regenerate a determination point next turn\n" +
-			               "End your turn as you have no more movement or action points";
-			TutorialEndTurn();
-
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(31, 36)));
-			NetworkingManager.EndTurn();
-
-			tutorialNote = "[Green]Victory![-]\n" +
-			               "Because of the [Red]Heavy's[-] previous [Red]panicked[-] state,\n he is unable to retreat safely.\n\n" +
-			               "Lets first retreat our [Green]Scout[-] to cover before we finish him off and claim [Green]Victory![-]";
-
-			tutorialActionLock = ActiveActionType.Move;
-			highlightTile = new Vector2Int(30, 42);
-			TutorialMove(scout,new Vector2Int(30, 42));
-
-			tutorialNote = "Stand up by using the crouch ability again, so we dont shoot the wall";
-			TutorialCrouch(scout);
-
-			tutorialNote = "Face the heavy";
-			highlightTile = new Vector2Int(33, 39);
-
-			tutorialNote = "shoot him";
-			tutorialActionLock = ActiveActionType.Action;
-			highlightTile = new Vector2Int(33, 39);
-			TutorialFire(scout,new Vector2Int(33, 39));
 
 			bigTutorialNote = true;
 			tutorialNote = "[Green]End of basic tutorial![-]\n" +
@@ -372,8 +275,8 @@ public partial class GameLayout
 			{
 				Thread.Sleep(1000);
 			}
-			*/
 			tutorial = false;
+			
 		}); 
 	}
     
