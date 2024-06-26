@@ -74,28 +74,14 @@ public partial class GameLayout
 			               "Click the end turn button located in the top right corner";
 			TutorialEndTurn();
 			
-			int gruntId = 0;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
-			{
-				if (u.Value.Item2.Prefab == "Grunt")
-				{
-					gruntId = u.Key;
-					break;
-				}
-			}
-
-			var mv = Action.Actions[Action.ActionType.Move];
-			var fc = Action.Actions[Action.ActionType.Face];
-			mv.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(22, 31)));
-			do
-			{
-				Thread.Sleep(300);
-			}while (SequenceManager.SequenceRunning);
-			fc.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(20,34)));
+			
 			MoveCamera.Make(new Vector2Int(22,31),true,0).RunSynchronously();
-			Thread.Sleep(300);
 
-			NetworkingManager.EndTurn();
+			
+			while (!GameManager.IsMyTurn())
+			{
+				Thread.Sleep(1000);
+			}
 			
 			tutorialNote = "[Green]Cover[-]\n" +
 			               "There's 3 types of cover. [Green]Low walls[-], [Yellow]Half walls[-] and [Red]Full walls[-].\n" +
@@ -152,24 +138,11 @@ public partial class GameLayout
 
 			tutorialNote = "We are out of movement and action points, lets end our turn for now";
 			TutorialEndTurn();
-			
-			int heavyId = 1;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+
+			while (!GameManager.IsMyTurn())
 			{
-				if (u.Value.Item2.Prefab == "Heavy")
-				{
-					heavyId = u.Key;
-					break;
-				}
+				Thread.Sleep(1000);
 			}
-			
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
-			do
-			{
-				Thread.Sleep(300);
-			}while (SequenceManager.SequenceRunning);
-			fc.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
-			NetworkingManager.EndTurn();
 
 			tutorialNote = "[Green]Crouching[-]\n" +
 			               "Move to the highlighted tile";
@@ -203,8 +176,8 @@ public partial class GameLayout
 			               "We have one movement point remaining but lets end turn for now.";
 			TutorialEndTurn();
 			
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27,28)));
-			NetworkingManager.EndTurn();
+			//mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27,28)));
+		
 
 			tutorialNote = "[Green]Determination & Suppression[-]\n" +
 			               "Move to the highlighted tile to peak the heavy";
@@ -237,8 +210,7 @@ public partial class GameLayout
 			TutorialEndTurn();
 			
 			
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(24,27)));
-			NetworkingManager.EndTurn();
+			//mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(24,27)));
 
 			tutorialNote = "[Green]Un-crouching[-]\n" +
 			               "Un-crouch by pressing the Z key then spacebar.";

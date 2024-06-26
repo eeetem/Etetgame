@@ -481,11 +481,7 @@ public static partial class GameManager
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
 				Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
 			}
-			foreach (var u in T2Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player2.KnownUnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
-			}
+
 			NetworkingManager.SendGameData();
 			WorldManager.Instance.MakeFovDirty();
 			NetworkingManager.SendAllSeenUnitPositions();
@@ -495,6 +491,25 @@ public static partial class GameManager
 				Thread.Sleep(1000);
 			}
 
+			Unit grunt = null!;
+			foreach (var u in T2Units)
+			{
+				
+				if (WorldObjectManager.GetObject(u)!.Type.Name == "Grunt")
+				{
+					grunt = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
+				}
+			}
+			grunt.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(22, 31)));
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
+			grunt.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(new Vector2Int(20,34)));
+			
+			SetEndTurn();
+			
 			while (!IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
@@ -514,6 +529,26 @@ public static partial class GameManager
 					break;
 				} 
 			}
+			
+			Unit heavy = null!;
+			foreach (var u in T2Units)
+			{
+				
+				if (WorldObjectManager.GetObject(u)!.Type.Name == "Heavy")
+				{
+					heavy = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
+				}
+			}
+			
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
+			heavy.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
+
+			SetEndTurn();
 			
 			/*
 			 
