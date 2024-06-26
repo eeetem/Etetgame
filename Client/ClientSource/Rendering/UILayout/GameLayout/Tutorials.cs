@@ -27,6 +27,10 @@ public partial class GameLayout
 			               "Select the [Green]Scout[-] and double click the highlighted tile to move to it, using two of your [Green]movement points[-].";
 			tutorialActionLock = ActiveActionType.Move;
 			highlightTile = new Vector2Int(19, 31);
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
 			var scout = GameManager.GetMyTeamUnits()[0];
 			while (scout.WorldObject.TileLocation.Position != new Vector2Int(19, 31))
 			{
@@ -83,9 +87,12 @@ public partial class GameLayout
 			var mv = Action.Actions[Action.ActionType.Move];
 			var fc = Action.Actions[Action.ActionType.Face];
 			mv.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(22, 31)));
-			Thread.Sleep(2000);
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
 			fc.SendToServer(gruntId, new Action.ActionExecutionParamters(new Vector2Int(20,34)));
-			MoveCamera.Make(new Vector2Int(22,31),true,0).GenerateTask().RunTaskSynchronously();
+			MoveCamera.Make(new Vector2Int(22,31),true,0).RunSynchronously();
 			Thread.Sleep(300);
 
 			NetworkingManager.EndTurn();
@@ -129,6 +136,10 @@ public partial class GameLayout
 			               "When aiming at an [Red]enemy[-], their health-bar will highlight the amount of damage they will receive.";
 
 			TutorialFire(scout,new Vector2Int(22, 31));
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
 
 			tutorialNote = "[Green]Great Work![-]\n" +
 			               "Move to the highlighted tile";
@@ -153,7 +164,10 @@ public partial class GameLayout
 			}
 			
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
-			Thread.Sleep(2000);
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
 			fc.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
 			NetworkingManager.EndTurn();
 
@@ -175,7 +189,7 @@ public partial class GameLayout
 				Thread.Sleep(350);
 			}
 			
-			MoveCamera.Make(new Vector2Int(27,26),true,0).GenerateTask().RunTaskSynchronously();
+			MoveCamera.Make(new Vector2Int(27,26),true,0).RunSynchronously();
 			Thread.Sleep(300);
 
 			tutorialNote = "[Green]Crouching[-]\n" +
@@ -191,6 +205,62 @@ public partial class GameLayout
 			
 			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(27,28)));
 			NetworkingManager.EndTurn();
+
+			tutorialNote = "title" +
+			               "flank the heavy by moving to the highlighted tile";
+			highlightTile = new Vector2Int(30, 32);
+			tutorialActionLock = ActiveActionType.Move;
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(30, 32))
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "title" +
+			               "face the enemy";
+			highlightTile = new Vector2Int(27, 28);
+			tutorialActionLock = ActiveActionType.Face;
+			while (scout.WorldObject.Facing != Direction.NorthWest)
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "title" +
+			               "expalin panic";
+			TutorialFire(scout, new Vector2Int(27, 28));
+
+			tutorialNote = "title" +
+			               "end turn";
+			TutorialEndTurn();
+			
+			
+			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(24,27)));
+			NetworkingManager.EndTurn();
+
+			tutorialNote = "title" +
+			               "un-crouch";
+			TutorialCrouch(scout);
+
+			tutorialNote = "title" +
+			               "chase down the heavy while hes vurnerable";
+			highlightTile = new Vector2Int(28, 28);
+			tutorialActionLock = ActiveActionType.Move;
+			while (scout.WorldObject.TileLocation.Position != new Vector2Int(28, 28))
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "title" +
+			               "face him";
+			highlightTile = new Vector2Int(24, 27);
+			tutorialActionLock = ActiveActionType.Face;
+			while (scout.WorldObject.Facing != Direction.NorthWest)
+			{
+				Thread.Sleep(350);
+			}
+
+			tutorialNote = "title" +
+			               "Finish him";
+			TutorialFire(scout, new Vector2Int(24,27));
 			
 			
 			

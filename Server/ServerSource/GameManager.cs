@@ -465,12 +465,17 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
-			
+
 			while (!IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
 			}
 
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
 			foreach (var u in T2Units)
 			{
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
@@ -481,18 +486,8 @@ public static partial class GameManager
 				} 
 			}
 			
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-
-		
-			
-			
-			var del = WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(new Vector2Int(33, 42)).UnitAtLocation!.WorldObject);
-			SequenceManager.AddSequence(del);
-
-			
+			/*
+			 
 			cdata = new Unit.UnitData(true);
 			cdata.Determination = 2;
 			objMake = WorldObjectManager.MakeWorldObject.Make("Grunt", new Vector2Int(18, 43), Direction.East, false, cdata);
@@ -657,8 +652,10 @@ public static partial class GameManager
 				}
 			}
 			NetworkingManager.SendAllSeenUnitPositions();
-			SetEndTurn();
-		});
+			SetEndTurn(); */
+			
+			
+		}); 
 		t.Start();
 
 
