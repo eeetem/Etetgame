@@ -169,13 +169,9 @@ public static partial class NetworkingManager
 					WorldTile tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 					if (tile.NorthEdge != null || tile.WestEdge != null || tile.Surface != null || tile.ObjectsAtLocation.Count != 0 || tile.UnitAtLocation != null)
 					{
-						act.Add(TileUpdate.Make(new Vector2Int(x, y),true));
+						act.Add(TileUpdate.Make(new Vector2Int(x, y),true,false));
 						sendTiles++;
-						//	if (sendTiles >30)
-						//	{
-						//		Thread.Sleep(10);
-						//		sendTiles = 0;
-						//	}
+
 					}
 				}
 			}

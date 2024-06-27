@@ -139,12 +139,11 @@ public class UnitMove : UnitSequenceAction
                     {
                         if (tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= loc.Value && tile.UnitAtLocation.IsPlayer1Team != player1)
                             seenUnits.Add(tile.UnitAtLocation.WorldObject.ID);
-
                         
                     }
                     foreach (var knownUnit in p.KnownUnitPositions.ToList())
                     {
-                        if (knownUnit.Value.Item1 == loc.Key)
+                        if (knownUnit.Value.Item1 == loc.Key && knownUnit.Value.Item2.UnitData!.Value.Team1 != player1)
                         {
                             var realUnit = WorldObjectManager.GetObject(knownUnit.Key);
                             if (realUnit != null && realUnit.TileLocation.Position != loc.Key)
@@ -178,7 +177,7 @@ public class UnitMove : UnitSequenceAction
           
             foreach (var t in seenTiles)
             {
-                b.Add(TileUpdate.Make(t,false));
+                b.Add(TileUpdate.Make(t,false,true));
             }
            
            
@@ -201,7 +200,6 @@ public class UnitMove : UnitSequenceAction
         bool hasClicked = false;
         Actor.CanTurn = true;
         Log.Message("UNITS", "starting movement task for: " + Actor.WorldObject.ID + " " + Actor.WorldObject.TileLocation.Position+ " path size: "+Path.Count);
-        WorldManager.Instance.MakeFovDirty();
         int walk = 0;
         while (Path.Count >0)
         {
@@ -209,7 +207,7 @@ public class UnitMove : UnitSequenceAction
             if (Actor.WorldObject.TileLocation != null)
             {
 
-                int sleepTime = 10;
+                int sleepTime = 0;
 #if CLIENT
                 //(int) *
                 var anim = Actor.Type.GetAnimation(Actor.WorldObject.spriteVariation, "Walk", Actor.WorldObject.GetExtraState());
@@ -217,7 +215,7 @@ public class UnitMove : UnitSequenceAction
                 sleepTime += 25;
                 if (anim.Item1 == 0)
                 {
-                    sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*350f);
+                    sleepTime = (int) (WorldManager.Instance.GetTileAtGrid(Path[0]).TraverseCostFrom(Actor.WorldObject.TileLocation.Position)*300f);
                 }
                 if(Mouse.GetState().LeftButton == ButtonState.Pressed)
                     sleepTime = 25;
@@ -225,22 +223,13 @@ public class UnitMove : UnitSequenceAction
 
 #if CLIENT
                 Thread.Sleep(sleepTime/2); 
-#else
-
-                
-                while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
-                    Thread.Sleep(10);
+     
 #endif
                 
                 if (Path[0] != Actor.WorldObject.TileLocation.Position)
                     Actor.WorldObject.Face(Utility.Vec2ToDir(Path[0] - Actor.WorldObject.TileLocation.Position));
 #if CLIENT
                 Thread.Sleep(sleepTime/2); 
-#else
-
-                
-                while (WorldManager.Instance.FovDirty) //make sure we get all little turns and moves updated serverside
-                    Thread.Sleep(10);
 #endif
             }
 
@@ -273,10 +262,10 @@ public class UnitMove : UnitSequenceAction
         Log.Message("UNITS","movement task is done for: "+Actor.WorldObject.ID+" "+Actor.WorldObject.TileLocation.Position);
 			
         Actor.CanTurn = true;
-#if CLIENT
-     
+#if SERVER
+        GameManager.ShouldRecalculateUnitPositions = true;
+        GameManager.ShouldUpdateUnitPositions = true;
 #endif
-        
 
     }
 	
