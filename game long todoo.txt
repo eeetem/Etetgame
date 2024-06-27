@@ -1,5 +1,6 @@
 
-
+jump to hit traget 
+officer mroe obvious
 
 sfx list:
 -throw
