@@ -469,7 +469,7 @@ public static partial class GameManager
 			data.UnitData = cdata;
 			data.JustSpawned = false;
 			data.Health = 8;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(28, 26));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(29, 26));
 			SequenceManager.AddSequence(objMake);
 			GameState = GameState.Playing;
 
@@ -514,7 +514,26 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
-
+			
+			Unit heavy = null!;
+			foreach (var u in T2Units)
+			{
+				
+				if (WorldObjectManager.GetObject(u)!.Type.Name == "Heavy")
+				{
+					heavy = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
+				}
+			}
+			
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(28, 26)));
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
+			
+			SetEndTurn();
+			
 			while (IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
@@ -530,17 +549,6 @@ public static partial class GameManager
 				} 
 			}
 			
-			Unit heavy = null!;
-			foreach (var u in T2Units)
-			{
-				
-				if (WorldObjectManager.GetObject(u)!.Type.Name == "Heavy")
-				{
-					heavy = WorldObjectManager.GetObject(u)!.UnitComponent!;
-					break;
-				}
-			}
-			
 			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
 			do
 			{
@@ -548,6 +556,34 @@ public static partial class GameManager
 			}while (SequenceManager.SequenceRunning);
 			heavy.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
 
+			SetEndTurn();
+			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
+			foreach (var u in T2Units)
+			{
+				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
+				if (unit.Type.Name == "Heavy")
+				{
+					unit.Determination.Current = 0;
+					break;
+				} 
+			}
+			
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(27, 28)));
+			
+			SetEndTurn();
+			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(24, 27)));
+			
 			SetEndTurn();
 			
 			/*
