@@ -106,7 +106,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
-				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}
@@ -152,7 +151,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
-				T2Units.Add(objMake.data.ID);
 				i++;
 
 			}
@@ -514,6 +512,10 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
 			
 			Unit heavy = null!;
 			foreach (var u in T2Units)
@@ -534,6 +536,11 @@ public static partial class GameManager
 			
 			SetEndTurn();
 			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(100);
+			}
+
 			while (IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);

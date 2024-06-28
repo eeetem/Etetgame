@@ -69,7 +69,7 @@ public static partial class WorldObjectManager
 				NextId++;
 			}
 		}
-
+		Log.Message("WORLD OBJECT MANAGER","Generated new id: " + NextId);
 		return NextId;
 	}
 
