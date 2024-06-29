@@ -65,6 +65,7 @@ public static partial class NetworkingManager
 		if (currentPlayer?.Connection?.Id != senderID && !currentPlayer!.IsPracticeOpponent)
 		{
 			//out of turn action. perhaps desync or hax? kick perhaps
+			NetworkingManager.SendGameData();
 			return;
 		}
 
@@ -185,7 +186,8 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort)NetworkMessageID.GameAction)]
 	private static void ParseGameAction(ushort senderID, Message message)
 	{
-
+		if(SequenceManager.SequenceRunning) return; //avoid mutliple actions in a single frame if the server lags
+		
 		Log.Message("NETWORKING","Recived Game Action from: " + senderID);
 		if (!GameManager.Player2!.IsPracticeOpponent)
 		{
@@ -235,7 +237,7 @@ public static partial class NetworkingManager
 			return;
 		}
 
-		Log.Message("NETWORKING","DOING GAME ACTION: " + packet.Type + " " + packet.Args.Target + " " + packet.Args.TargetObj?.ID + " " + packet.Args.AbilityIndex);
+		Log.Message("NETWORKING","DOING GAME ACTION: " + packet.Type + " " + packet.Args.Target + " " + packet.Args.AbilityIndex);
 		controllable.DoAction(packet.Type,packet.Args);
 
 
@@ -256,6 +258,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.PracticeMode)]
 	private static void PracticeMode(ushort senderID, Message message)
 	{
+		return;
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
 		GameManager.PracticeMode(GameManager.Player1!.Connection);

@@ -9,10 +9,10 @@ namespace DefconNull.WorldActions.DeliveryMethods;
 public class VissionCast : DeliveryMethod
 {
 	
-	readonly int range;
+	readonly int _range;
 	public VissionCast(int range)
 	{
-		this.range = range;
+		this._range = range;
 	}
 
 
@@ -29,17 +29,17 @@ public class VissionCast : DeliveryMethod
 
 	public override float GetOptimalRangeAI(float margin)
 	{
-		return range+margin;
+		return _range+margin;
 	}
 
 
 	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
-		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) >= range)
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) >= _range)
 		{
 			return new Tuple<bool,bool, string> (false, false,"Too Far");
 		}
-		if (Visibility.None == WorldManager.Instance.VisibilityCast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, range,actor.Crouching))
+		if (Visibility.None == WorldManager.Instance.VisibilityCast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, _range,actor.Crouching))
 		{
 			return new Tuple<bool,bool, string> (false, false,"No Sight");
 		}

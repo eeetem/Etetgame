@@ -173,9 +173,7 @@ public class UnitAbility
 
 	public Tuple<bool,bool, string>  IsPlausibleToPerform(Unit actor, WorldObject target,int dimension = -1)
 	{
-		
 		return Effects[0].CanPerform(actor, target,dimension);
-
 	}
 
 

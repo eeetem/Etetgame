@@ -98,9 +98,6 @@ namespace DefconNull.WorldObjects
             
 			if (justSpawned)
 			{
-
-
-				
 				StartTurn();
 			}
 
@@ -245,8 +242,7 @@ namespace DefconNull.WorldObjects
 		}
 		public void DoAbility(WorldObject target, int ability)
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target.TileLocation.Position);
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = ability;
 			DoAction(Action.ActionType.UseAbility,args);
 		}
@@ -272,12 +268,13 @@ namespace DefconNull.WorldObjects
 				if (!result.Item1)
 				{
 #if CLIENT
-				if(args.Target.HasValue){
-					new PopUpText(result.Item2, args.Target.Value,Color.White);
-				}
+
+					new PopUpText(result.Item2, args.Target,Color.White);
+				
 #else
 					Log.Message("UNITS", "tried to do action but failed: " + result.Item2);
-					GameManager.PlayerUnitPositionsDirty = true;//re update units and send update to client
+					GameManager.ShouldRecalculateUnitPositions = true;//re update units and send update to client
+					GameManager.ShouldUpdateUnitPositions = true;//re update units and send update to client
 #endif
 					return;
 				}
@@ -578,9 +575,14 @@ namespace DefconNull.WorldObjects
 				if(tile.Surface==null) continue;
 				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
 				{
-					result.Add(position);
+					if(VisibleTiles.ContainsKey(tile.Position) && VisibleTiles[tile.Position] >= Visibility.Partial){
+						
+						result.Add(position);
+					}
+					
 				}
 			}
+			
 
 			return result;
 		}
@@ -594,17 +596,17 @@ namespace DefconNull.WorldObjects
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
 
 #if SERVER
-			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
+			if(IsPlayer1Team || newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
 			{
 				Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (GameManager.Player1.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
+				if (GameManager.Player1!.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
 	
 				GameManager.Player1.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
-			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
+			if(!IsPlayer1Team || newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
 			{
 				Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (!GameManager.Player2.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
+				if (!GameManager.Player2!.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
 			
 				GameManager.Player2.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
@@ -613,7 +615,10 @@ namespace DefconNull.WorldObjects
 			
 			WorldObject.TileLocation = newTile;
 			newTile.UnitAtLocation = this;
+#if CLIENT
 			WorldManager.Instance.MakeFovDirty();
+#endif
+			
 		}
 
 		

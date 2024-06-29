@@ -1,27 +1,6 @@
 
-UI  enemy progress
-incrementing timer?
-
-jump camera to cant hit target?
-loud death sfx?
-possible usage locations smoke?
-JUMP CAMREA TO HIT TARGET?
-more obvious headshot warning?
-corpses
-merge vission and projectile
-
-signing
-
-
-practice mode buggy
-specialist overwatch not using determination
-
-Grunt special tutorial says press x when it’s the shoot action not the special action.
-you are meant to use his normal shoot for the first bit and then the special in the second bit, is that not clear?
-
-
-Specialist range buff
-
+jump to hit traget 
+officer mroe obvious
 
 sfx list:
 -throw
@@ -40,8 +19,4 @@ sfx list:
 
 
 
-
-619771
-614279
-601644
 

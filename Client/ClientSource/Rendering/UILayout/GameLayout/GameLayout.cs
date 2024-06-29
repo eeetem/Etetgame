@@ -56,7 +56,7 @@ public partial class GameLayout : MenuLayout
 
 	public static Unit? SelectedUnit { get; private set;} = null!;
 	public static Unit? SelectedEnemyUnit { get; private set;} = null!;
-
+	public static bool movePreviewDirty = false;
 	public static void SelectUnit(Unit? unit)
 	{
 		if(!generated) return;
@@ -74,8 +74,7 @@ public partial class GameLayout : MenuLayout
 		SelectHudAction(null);
 
 		SelectedUnit = unit;
-		ReMakeMovePreview();
-	
+		movePreviewDirty = true;
 		UI.SetUI( new GameLayout());
 		
 		Camera.SetPos(unit.WorldObject.TileLocation.Position);
@@ -139,6 +138,7 @@ public partial class GameLayout : MenuLayout
 	private static int tutorialUnitLock = -1;
 	public static void TutorialSequence()
 	{
+		return;
 		Task.Run(() =>
 		{
 			bigTutorialNote = false;
@@ -199,28 +199,15 @@ public partial class GameLayout : MenuLayout
 			               "You can now end your turn by pressing [Orange]end turn[-] button in top right corner";
 			highlightTile = new Vector2Int(-1, -1);
 			TutorialEndTurn();
-			
-			int heavyId = 0;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
+
+
+			MoveCamera.Make(new Vector2Int(32,37),true,0).RunSynchronously();;
+			while (!GameManager.IsPlayer1Turn)
 			{
-				if (u.Value.Item2.Prefab == "Heavy")
-				{
-					heavyId = u.Key;
-					break;
-				}
+				Thread.Sleep(300);
 			}
-			
-			var mv = Action.Actions[Action.ActionType.Move];
-			var ow = Action.Actions[Action.ActionType.OverWatch];
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(32, 37)));
-			MoveCamera.Make(new Vector2Int(32,37),true,0).GenerateTask().RunTaskSynchronously();
-			Thread.Sleep(300);
-			var act = new Action.ActionExecutionParamters(new Vector2Int(29, 43));
-			act.AbilityIndex = 0;
-			ow.SendToServer(heavyId,act);
-			
-			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
-			NetworkingManager.EndTurn();
+			MoveCamera.Make(new Vector2Int(29,43),true,0).RunSynchronously();;
+
 
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
 			               "The [Red]enemy Heavy[-] is awaiting your approach and has [Purple]overwatched[-] it. If you enter the area you will be automatically attacked.\n" +
@@ -289,66 +276,14 @@ public partial class GameLayout : MenuLayout
 			TutorialEndTurn();
 			tutorialNote = "";
 
-			int enemyScout1 = 0;
-			int enemyScout2 = 0;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
-			{
-				if (u.Value.Item2.Prefab == "Scout" && !u.Value.Item2.UnitData.Value.Team1)
-				{
-					if(enemyScout1 == 0)
-					{
-						enemyScout1 = u.Key;
-					}
-					else
-					{
-						enemyScout2 = u.Key;
-						break;
-					}
-				}
-			}
-			var abl = Action.Actions[Action.ActionType.UseAbility];
-			
-			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(29, 44)));
-			MoveCamera.Make(new Vector2Int(29,44),true,0).GenerateTask().RunTaskSynchronously();
-			
-			var param = new Action.ActionExecutionParamters();
-			param.AbilityIndex = 1;
-			param.TargetObj = WorldObjectManager.GetObject(enemyScout1);
-			abl.SendToServer(enemyScout1,param);
+			MoveCamera.Make(new Vector2Int(29,43),true,0).RunSynchronously();;
+
 			do
 			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
-			param.AbilityIndex = 0;
-			abl.SendToServer(enemyScout1,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
+				Thread.Sleep(1500);
+			}while(!GameManager.IsMyTurn());
 			
 			
-			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(29, 43)));
-			MoveCamera.Make(new Vector2Int(29,43),true,0).GenerateTask().RunTaskSynchronously();
-			
-			param = new Action.ActionExecutionParamters();
-			param.AbilityIndex = 1;
-			param.TargetObj = WorldObjectManager.GetObject(enemyScout2);
-			abl.SendToServer(enemyScout2,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			param.TargetObj = WorldObjectManager.GetObject(grunt.WorldObject.ID);
-			param.AbilityIndex = 0;
-			abl.SendToServer(enemyScout2,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			
-			NetworkingManager.EndTurn();
-			Thread.Sleep(1500);
 			tutorialNote = "[Green]Suppression[-]\n" +
 			               "The [Red]Enemy Scouts[-] are being reckless. They used their ability using up determination and grouped up.\n" +
 			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both of them";
@@ -359,14 +294,14 @@ public partial class GameLayout : MenuLayout
 			               "End your turn by pressing [Orange]end turn[-]";
 			TutorialEndTurn();
 			tutorialNote = "";
-			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
-			MoveCamera.Make(new Vector2Int(34,44),true,0).GenerateTask().RunTaskSynchronously();
+			//mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
+			MoveCamera.Make(new Vector2Int(34,44),true,0).RunSynchronously();;
 			do
 			{
 				Thread.Sleep(1500);
 			}while (SequenceManager.SequenceRunning);
-			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(34, 43)));
-			MoveCamera.Make(new Vector2Int(34,43),true,0).GenerateTask().RunTaskSynchronously();
+			//mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(34, 43)));
+			MoveCamera.Make(new Vector2Int(34,43),true,0).RunSynchronously();;
 			NetworkingManager.EndTurn();
 			
 			tutorialNote = "[Green]The Grunt[-]\n" +
@@ -397,7 +332,7 @@ public partial class GameLayout : MenuLayout
 			} while (SequenceManager.SequenceRunning);
 			TutorialEndTurn();
 			tutorialNote = "";
-			MoveCamera.Make(new Vector2Int(29, 44),true,0).GenerateTask().RunTaskSynchronously();
+			MoveCamera.Make(new Vector2Int(29, 44),true,0).RunSynchronously();;
 
 			do
 			{
@@ -430,7 +365,7 @@ public partial class GameLayout : MenuLayout
 			               "All the [Red]enemy scouts[-] are [Red]panicked[-]. They're are now easy pickings for your other units.\n\n" +
 			               "[Orange]End your turn[-] to finish this part of the tutorial.";
 			TutorialEndTurn();
-			MoveCamera.Make(new Vector2Int(35,44),true,0).GenerateTask().RunTaskSynchronously();
+			MoveCamera.Make(new Vector2Int(35,44),true,0).RunSynchronously();;
 			bigTutorialNote = true;
 			tutorialNote = "[Green]End of tutorial![-]\n" +
 			               "The game currently has 2 other units, the [Green]Officer[-] and the [Green]Specialist[-].\n\n" +
@@ -778,6 +713,7 @@ public partial class GameLayout : MenuLayout
 			highlightTile = new Vector2Int(-1, -1);
 			tutorialActionLock = ActiveActionType.None;
 			tutorialUnitLock = -1;
+			tutorialAbilityIndex = -1;
 			canEndTurnTutorial = true;
 		}
 		WorldManager.Instance.MakeFovDirty();
@@ -905,6 +841,13 @@ public partial class GameLayout : MenuLayout
 			};
 			SetScore(0);
 		}
+
+		else
+		{
+			ScoreIndicator.Top = (int) (28.5f * GlobalScale.X);
+			ScoreIndicator.Left = (int) (735f * GlobalScale.X);
+		}
+
 		panel.Widgets.Add(ScoreIndicator);
 		
 		
@@ -1198,7 +1141,7 @@ public partial class GameLayout : MenuLayout
 		var mousepos = Utility.GridToWorldPos(TileCoordinate+new Vector2(-1.5f,-0.5f));
 		for (int i = 0; i < 8; i++)
 		{
-		
+			if(SequenceManager.SequenceRunningRightNow) break;//get cover gets blocked by sequence manager and freezes the game
 			var indicator = TextureManager.GetSpriteSheet("coverIndicator",3,3)[i];
 			Color c = Color.White;
 			switch (WorldManager.Instance.GetCover(TileCoordinate,(Direction) i,ignoreControllables:true))
@@ -1686,6 +1629,13 @@ public partial class GameLayout : MenuLayout
 
 #endif
 
+		batch.Begin(samplerState: SamplerState.PointClamp);
+		var ping = NetworkingManager.client.SmoothRTT.ToString() + "ms" + " avg send attmp:" + Math.Floor(NetworkingManager.client.Connection.Metrics.RollingReliableSends.Mean);
+		if(NetworkingManager.client.SmoothRTT > 150 || NetworkingManager.client.Connection.Metrics.RollingReliableSends.Mean > 10)
+			batch.DrawText(ping, Game1.resolution - new Vector2Int(ping.Length*17,25), 2, 100, Color.Red);
+		else
+			batch.DrawText(ping, Game1.resolution - new Vector2Int(ping.Length*9,25), 1, 100, Color.White);
+		batch.End();
 	}
 
 	private Vector2Int _mouseTileCoordinate = new(0, 0);
@@ -1696,6 +1646,7 @@ public partial class GameLayout : MenuLayout
 		base.Update(deltatime);
 		_tooltipRects.Clear();
 		var count = 0;
+
 	
 
 		//moves selected contorlable to the top
@@ -1747,7 +1698,11 @@ public partial class GameLayout : MenuLayout
 		}
 
 		ProcessKeyboard();
-		
+		if(movePreviewDirty && !SequenceManager.SequenceRunning)
+		{
+			movePreviewDirty = false;
+			ReMakeMovePreview();
+		}
 		//bad
 		if (!GameManager.IsMyTurn())
 		{
@@ -1758,6 +1713,7 @@ public partial class GameLayout : MenuLayout
 			if (endBtn != null) endBtn.Image = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("GameHud/UnitBar/end button")), Color.White);
 		}
 		_lastMouseTileCoordinate = _mouseTileCoordinate;
+		
 		
 	}
 
@@ -1935,7 +1891,6 @@ public partial class GameLayout : MenuLayout
 		Action,
 		None,
 		Overwatch,
-		EnemyPreview
 	}
 
 	private static ActiveActionType activeAction = ActiveActionType.None;
@@ -2385,6 +2340,7 @@ public partial class GameLayout : MenuLayout
 		if(ConfirmButton is null) return;
 		if(targetBarStack is null) return;
 		if(OverWatchToggle is null) return;
+		if (SelectedUnit == null || SelectedUnit.Health <= 0) return;
 		foreach (var act in ActionButtons)
 		{
 			act.UpdateIcon();

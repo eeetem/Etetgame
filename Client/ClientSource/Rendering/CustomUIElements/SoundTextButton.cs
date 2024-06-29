@@ -22,14 +22,18 @@ public sealed class SoundTextButton : Button
 			GenerateText();
 		}
 	}
+
 	private string _text = "";
 
-	public SoundTextButton() : base()
+	public SoundTextButton(Color? c = null) : base()
 	{
-
-		Background = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelection"));
-		PressedBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
-		OverBackground = new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected"));
+		if (c == null)
+		{
+			c = Color.White;
+		}
+		Background = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelection")),c.Value);
+		PressedBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected")),c.Value);
+		OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("MainMenu/butts/mainSelectionSelected")),c.Value);
 	}
 	public void ForceSelect()
 	{

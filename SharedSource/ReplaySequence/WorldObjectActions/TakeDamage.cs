@@ -47,7 +47,7 @@ public static partial class WorldObjectManager
 			return SequenceType.TakeDamage;
 		}
 
-		public override BatchingMode Batching => BatchingMode.OnlySameType;
+		public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 		public int Dmg;
 		public int DetResistance;
 		public int EnvResistance;

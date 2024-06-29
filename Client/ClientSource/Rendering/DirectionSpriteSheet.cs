@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DefconNull.Rendering;
@@ -27,10 +29,25 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 	{
 		return _variation.Weight;
 	}
-	private void GenerateSheetForState(string state)
+	private void GenerateSheetForState( List<string> extraState)
 	{
-		Texture2D tex = TextureManager.GetTextureFromPNG(GetFulLName()+state);
-		
+		string state = string.Join("", extraState);
+		Texture2D tex;
+		while (true)
+		{
+			try
+			{
+				string realState = string.Join("", extraState);
+				tex = TextureManager.GetTextureFromPNG(GetFulLName() + realState);
+			} catch (Exception)
+			{
+				extraState.RemoveAt(extraState.Count - 1);
+				continue;
+			}
+			break;
+		}
+
+
 		if (!_faceable)
 		{
 			_spriteSheets.Add(state,new Texture2D[1]{tex});
@@ -40,24 +57,53 @@ public class DirectionSpriteSheet//this operates on the whole folder looking for
 		_spriteSheets.Add(state,Utility.MakeSpriteSheet(tex, 3, 3));
 	}
 
-	public Texture2D GetSprite(Direction dir, string extraState="")
+	public Texture2D GetSprite(Direction dir,  List<string> extraState)
 	{
-		if(!_spriteSheets.ContainsKey(extraState)) GenerateSheetForState(extraState);
-		var sheet = _spriteSheets[extraState];
+		string joined = string.Join("", extraState);
+		if(!_spriteSheets.ContainsKey(joined)) GenerateSheetForState(extraState);
+		var sheet = _spriteSheets[joined];
 		if(!_faceable) return sheet[0];
 		return sheet[(int) dir];
 	}
-	public Texture2D GetSprite(int dir, string extraState="")
+	public Texture2D GetSprite(int dir,  List<string> extraState)
 	{
 		return GetSprite(Utility.NormaliseDir(dir),extraState);
 	}
 
-	public int GetAnimationLenght(string extraState, string name)
+	private readonly Dictionary<string,(int,List<string>)> _animations = new Dictionary<string, (int, List<string>)>();
+	static readonly object AnimationLock = new object();
+	public (int,List<string>) GetAnimation(List<string> extraState, string name)
 	{
-		var path = "Content/"+GetFulLName()+ extraState+ "/" + name+"/";
-		if (!Directory.Exists(path)) return 0;
-		var res = Directory.EnumerateFiles(path);
-		return res.Count();
+
+		lock (AnimationLock)
+		{
+			var state = string.Join("", extraState);
+			var originalpath = "Content/"+GetFulLName()+state + "/" + name+"/";
+			if(_animations.TryGetValue(originalpath, out (int, List<string>) lenght)) return lenght;
+
+			var realpath = originalpath;
+			while (extraState.Count>0)
+			{
+				var realState = string.Join("", extraState);
+				realpath = "Content/"+GetFulLName()+realState + "/" + name+"/";
+				if (!Directory.Exists(realpath))
+				{
+					extraState.RemoveAt(extraState.Count - 1);
+					continue;
+				}
+				break;
+			}
+			if (!Directory.Exists(realpath))
+			{
+				_animations.Add(originalpath, (0,extraState));
+				return _animations[originalpath];
+			}
+			
+
+			var res = Directory.EnumerateFiles(realpath);
+			_animations.Add(originalpath, (res.Count(),extraState));
+			return _animations[originalpath];
+		}
 	}
 
 	public string GetVariationName()

@@ -10,7 +10,7 @@ namespace DefconNull;
 
 public static partial class Utility
 {
-
+	
 	public static void DrawOutline(this SpriteBatch spriteBatch, IEnumerable<Vector2Int> area, Color c, float thickness)
 	{
 		HashSet<Vector2Int> tiles = new HashSet<Vector2Int>();

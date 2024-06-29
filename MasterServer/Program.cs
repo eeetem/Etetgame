@@ -21,6 +21,8 @@ public static class Program
 	{
 		Console.WriteLine(msg);
 	}
+
+	private static ushort startPort = 52233;
 	static void Main(string[] args)
 	{
 		AppDomain currentDomain = default(AppDomain);
@@ -59,7 +61,12 @@ public static class Program
 
 		server.MessageReceived += (a, b) => { Console.WriteLine($"Received message from {b.FromConnection.Id}: {b.MessageId}"); };
 
-		server.Start(1630,100);
+
+		if(args.Length>0)
+		{
+			startPort = ushort.Parse(args[0]);
+		}
+		server.Start(startPort,100);
 			
 		Console.WriteLine("Started master-server");
 		UpdateLoop();
@@ -145,6 +152,8 @@ public static class Program
 			Console.WriteLine("Starting lobby:");
 			int port = GetNextFreePort();
 			Console.WriteLine("Port: " + port); //ddos or spam protection is needed
+			Console.WriteLine("Name: " + name); //ddos or spam protection is needed
+			Console.WriteLine("Pass: " + pass); //ddos or spam protection is needed
 			var process = new Process();
 			process.StartInfo.RedirectStandardError = true;
 			process.StartInfo.RedirectStandardOutput = true;
@@ -165,7 +174,7 @@ public static class Program
 			args.Add(pass);
 			process.StartInfo.Arguments = string.Join(" ", args);
 
-			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") Exited"); };
+			process.Exited += (a, b) => { Console.WriteLine("Server(" + port + ") "+name+" Exited"); };
 			DateTime date = DateTime.Now;
 			long id = date.ToFileTime();
 			string path = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Server"+ name +"(" + port + ")" + id + ".log";
@@ -182,12 +191,19 @@ public static class Program
 			}
 			process.ErrorDataReceived += (a, b) =>
 			{
-				if (b.Data?.ToString() != "")
+				if (b.Data!= null && b.Data.ToString() != "")
 				{
-					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString());
-					//copy to crashes folder
-					Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
-					File.Copy(path, Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log");
+					var destination = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/Server" + name + "(" + port + ")" + id + ".log";
+					if (!File.Exists(destination))
+					{
+						//copy to crashes folder
+						Directory.CreateDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) + "/Logs/Crashes/");
+						File.Delete(destination);
+						File.Copy(path, destination);
+					}
+
+					File.AppendAllText(destination, "ERROR - Server(" + port + "):" + b.Data?.ToString()+"\n");
+					File.AppendAllText(path, "ERROR - Server(" + port + "):" + b.Data?.ToString()+"\n");
 				}
 			};
 			process.OutputDataReceived += (sender, args) =>
@@ -223,7 +239,7 @@ public static class Program
 				Lobbies.Add(port, new Tuple<Process, LobbyData>(process, lobbyData));
 				Thread.Sleep(1000);
 				
-				var msg = Message.Create(MessageSendMode.Unreliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated);
+				var msg = Message.Create(MessageSendMode.Reliable,  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated);
 				msg.Add(lobbyData);
 				server.Send(msg, senderID);
 
@@ -273,7 +289,7 @@ public static class Program
 
 	public static int GetNextFreePort()
 	{
-		int port = 1631;
+		int port = startPort+1;
 		while (Lobbies.ContainsKey(port))
 		{
 			port++;

@@ -30,7 +30,7 @@ public class WorldConseqences
 	public readonly List<string> RemoveStatus = new List<string>();
 
 	public List<Tuple<string,string,string>> Effects = new List<Tuple<string, string, string>>();
-	public readonly List<SpawnParticle.ParticleParams> ParticleParamsList = new List<SpawnParticle.ParticleParams>();
+	public readonly List<SpawnParticle.RandomisedParticleParams> ParticleParamsList = new List<SpawnParticle.RandomisedParticleParams>();
 
 	
 	public int ExRange;

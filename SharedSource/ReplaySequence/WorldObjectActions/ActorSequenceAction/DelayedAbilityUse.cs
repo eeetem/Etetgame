@@ -17,15 +17,17 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		return t;
 	}
 
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
+
 #if SERVER
 	public override void FilterForPlayer(bool player1)
 	{
 		return;
 	}
 
-	public override List<SequenceAction> GenerateInfoActions(bool player1)
+	public override List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
 	{
-		var b =  base.GenerateInfoActions(player1);
+		var b =  base.SendPrerequesteInfoToPlayer(player1);
 		if (Actor.IsPlayer1Team != player1)
 		{
 			b.Add(SpotUnit.Make(Actor.WorldObject.ID, player1));
@@ -53,7 +55,7 @@ public class DelayedAbilityUse  : UnitSequenceAction
 		//but we'll see
 		Actor.Abilities[abilityIndex].GetConsequences(Actor, WorldManager.Instance.GetTileAtGrid(target).Surface!).ForEach(x =>
 		{
-			if(x.ShouldDo()){x.GenerateTask().RunTaskSynchronously();}
+			if(x.ShouldDo()){x.RunSynchronously();;}
 		});
 
 	}

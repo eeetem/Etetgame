@@ -15,7 +15,7 @@ namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
-	private static Client? client;
+	public static Client? client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;

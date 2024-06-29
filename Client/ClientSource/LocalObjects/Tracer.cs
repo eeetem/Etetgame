@@ -18,10 +18,15 @@ public class Tracer : IDrawable
 	{
 		transform2 = new Transform2();
 		transform2.Scale = new Vector2(10, 10);
-		this._start = start;
-		this._end = end;
-		Tracers.Add(this);
+		_start = start;
+		_end = end;
+		lock (syncobj)
+		{
+			Tracers.Add(this);
+		}
+		
 	}
+	public static readonly object syncobj = new object();
 
 	public static readonly List<Tracer> Tracers = new List<Tracer>();
 	public float Lifetime = TotalLife;
@@ -33,12 +38,15 @@ public class Tracer : IDrawable
 
 	public static void Update(float delta)
 	{
-		foreach (var tracer in new List<Tracer>(Tracers))
+		lock (syncobj)
 		{
-			tracer.Lifetime -= delta;
-			if (tracer.Lifetime <= 0)
+			foreach (var tracer in new List<Tracer>(Tracers))
 			{
-				Tracers.Remove(tracer);
+				tracer.Lifetime -= delta;
+				if (tracer.Lifetime <= 0)
+				{
+					Tracers.Remove(tracer);
+				}
 			}
 		}
 	}
@@ -49,8 +57,6 @@ public class Tracer : IDrawable
 		var height =1;
 		transform2.Rotation = (float)Math.Atan2(_end.Y - _start.Y, _end.X - _start.X);
 		transform2.Position = _start;
-		
-		
 		transform2.Scale = new Vector2(Vector2.Distance(_start, _end)/GetTexture().Width, height);
 		return transform2;
 	}

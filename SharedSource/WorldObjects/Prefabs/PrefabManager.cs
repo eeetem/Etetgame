@@ -133,8 +133,16 @@ public static class PrefabManager
 
 
 			var defaultSpritename = xmlObj.GetElementsByTagName("sprite")[0]?.Attributes["source"]?.InnerText;
-			var defaultFrames = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["frames"]?.InnerText ?? "1");
-			var defaultanimFps = int.Parse(xmlObj.GetElementsByTagName("sprite")[0]?.Attributes?["animFPS"]?.InnerText ?? "1");
+			var anims = new Dictionary<string, int>();
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
+			{
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
+			}
 
 
 			var xmlNodeList = xmlObj.GetElementsByTagName("sprite")[0]?.ChildNodes;
@@ -163,7 +171,7 @@ public static class PrefabManager
 			WorldObjectPrefabs.Add(name,type);
 				
 #if CLIENT
-			type.GenerateSpriteSheet(defaultSpritename,spriteVariations);//this is a bit inconsistent but eeeh
+			type.GenerateSpriteSheet(defaultSpritename,spriteVariations,anims);//this is a bit inconsistent but eeeh
 #endif
 		}
 
@@ -205,9 +213,19 @@ public static class PrefabManager
 			if(xmlObj!.GetElementsByTagName("destroyConsequences").Count > 0){
 				unitType.DestructionConseqences = ParseConsequences(xmlObj.GetElementsByTagName("destroyConsequences")[0]!);	
 			} 
-
+			var anims = new Dictionary<string, int>();
+			if (xmlObj.GetElementsByTagName("animations")[0] != null)
+			{
+				foreach (var child in  (xmlObj.GetElementsByTagName("animations")[0]).ChildNodes!)
+				{
+					var obj = (XmlElement) child;
+					if(obj.Name != "anim") continue;
+					anims.Add(obj.GetAttribute("name"),int.Parse(obj.GetAttribute("fps")));
+				}
+			}
+		
 #if CLIENT
-			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>());//this is a bit inconsistent but eeeh
+			unitType.GenerateSpriteSheet("Units/"+name, new List<SpriteVariation>(),anims);//this is a bit inconsistent but eeeh
 #endif
 			WorldObjectPrefabs.Add(name,unitType);
 			UnitPrefabs.Add(name,unitType);
@@ -290,7 +308,12 @@ public static class PrefabManager
 				int range = int.Parse(node.Attributes?["range"]?.InnerText ?? "10");
 				int spot = int.Parse(node.Attributes?["fowSpot"]?.InnerText ?? "3");
 				bool ignoreUnits = bool.Parse(node.Attributes?["ignoreUnits"]?.InnerText ?? "false");
-				dvm = new Projectile(range,spot,ignoreUnits);
+				string particleName = node.Attributes?["particleName"]?.InnerText ?? "";
+				float particleSpeed = float.Parse(node.Attributes?["particleSpeed"]?.InnerText ?? "1");
+				List<SpawnParticle.RandomisedParticleParams> list = new List<SpawnParticle.RandomisedParticleParams>();
+				ParseParticles(node, list);
+				
+				dvm = new Projectile(particleName, particleSpeed,range,spot,ignoreUnits,list);
 			}
 
 
@@ -393,47 +416,11 @@ public static class PrefabManager
 			eff.FogOfWarSpotScatter = int.Parse(fowSpot.Attributes?["scatter"]?.InnerText ?? "0");
 		}
 		XmlNode? particles = ((XmlElement) effect).GetElementsByTagName("particles")[0];
-		if (particles != null)
+		if (particles!= null)
 		{
-			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
-			foreach (var p in particlesList)
-			{
-				var element = (XmlElement) p;
-				var parm = new SpawnParticle.ParticleParams();
-				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
-				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
-	
-				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
-				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
-				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
-				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
-				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
-
-				var splitX = velxRange.Split(',');
-				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
-				parm.VelocityXMax = float.Parse(splitX[1],CultureInfo.InvariantCulture);
-
-				var splitY = velyRange.Split(',');
-				parm.VelocityYMin = float.Parse(splitY[0],CultureInfo.InvariantCulture);
-				parm.VelocityYMax = float.Parse(splitY[1],CultureInfo.InvariantCulture);
-
-				var splitAccX = accxRange.Split(',');
-				parm.AccelerationXMin = float.Parse(splitAccX[0],CultureInfo.InvariantCulture);
-				parm.AccelerationXMax = float.Parse(splitAccX[1],CultureInfo.InvariantCulture);
-
-				var splitAccY = accyRange.Split(',');
-				parm.AccelerationYMin = float.Parse(splitAccY[0],CultureInfo.InvariantCulture);
-				parm.AccelerationYMax = float.Parse(splitAccY[1],CultureInfo.InvariantCulture);
-
-				var splitLife = lifeRange.Split(',');
-				parm.LifetimeMin = float.Parse(splitLife[0],CultureInfo.InvariantCulture);
-				parm.LifetimeMax = float.Parse(splitLife[1],CultureInfo.InvariantCulture);
-	
-				eff.ParticleParamsList.Add(parm);
-			}
-			
+			ParseParticles(particles, eff.ParticleParamsList);
 		}
-        
+
 		XmlNode? valitm = ((XmlElement) effect).GetElementsByTagName("values")[0];
 		if (valitm != null)
 		{
@@ -491,4 +478,64 @@ public static class PrefabManager
 		return eff;
 	}
 
+	private static void ParseParticles(XmlNode particles, List<SpawnParticle.RandomisedParticleParams> list)
+	{
+
+			var particlesList = ((XmlElement) particles).GetElementsByTagName("particle");
+			foreach (var p in particlesList)
+			{
+				var element = (XmlElement) p;
+				var parm = new SpawnParticle.RandomisedParticleParams();
+				parm.TextureName = element.Attributes?["name"]?.InnerText ?? "";
+				parm.Count = int.Parse(element.Attributes?["count"]?.InnerText ?? "1");
+				parm.SpawnList = new List<SpawnParticle.RandomisedParticleParams>();
+
+				ParseParticles(element,parm.SpawnList);
+				
+	
+				var velxRange = element.Attributes?["velocityXRange"]?.InnerText ?? "0,0";
+				var velyRange = element.Attributes?["velocityYRange"]?.InnerText ?? "0,0";
+				var accxRange = element.Attributes?["accelerationXRange"]?.InnerText ?? "0,0";
+				var accyRange = element.Attributes?["accelerationYRange"]?.InnerText ?? "0,0";
+				var lifeRange = element.Attributes?["lifetimeRange"]?.InnerText ?? "1,1";
+				var rotationRange = element.Attributes?["rotationRange"]?.InnerText ?? "0,0";
+				var scaleRange = element.Attributes?["scaleRange"]?.InnerText ?? "1,1";
+
+				var splitX = velxRange.Split(',');
+				parm.VelocityXMin = float.Parse(splitX[0],CultureInfo.InvariantCulture);
+				parm.VelocityXMax = float.Parse(splitX[1],CultureInfo.InvariantCulture);
+
+				var splitY = velyRange.Split(',');
+				parm.VelocityYMin = float.Parse(splitY[0],CultureInfo.InvariantCulture);
+				parm.VelocityYMax = float.Parse(splitY[1],CultureInfo.InvariantCulture);
+
+				var splitAccX = accxRange.Split(',');
+				parm.AccelerationXMin = float.Parse(splitAccX[0],CultureInfo.InvariantCulture);
+				parm.AccelerationXMax = float.Parse(splitAccX[1],CultureInfo.InvariantCulture);
+
+				var splitAccY = accyRange.Split(',');
+				parm.AccelerationYMin = float.Parse(splitAccY[0],CultureInfo.InvariantCulture);
+				parm.AccelerationYMax = float.Parse(splitAccY[1],CultureInfo.InvariantCulture);
+
+				var splitLife = lifeRange.Split(',');
+				parm.LifetimeMin = int.Parse(splitLife[0],CultureInfo.InvariantCulture);
+				parm.LifetimeMax = int.Parse(splitLife[1],CultureInfo.InvariantCulture);
+				
+				var splitRot = rotationRange.Split(',');
+				parm.RotationMin = float.Parse(splitRot[0],CultureInfo.InvariantCulture);
+				parm.RotationMax = float.Parse(splitRot[1],CultureInfo.InvariantCulture);
+				
+				var splitScale = scaleRange.Split(',');
+				parm.ScaleMin = float.Parse(splitScale[0],CultureInfo.InvariantCulture);
+				parm.ScaleMax = float.Parse(splitScale[1],CultureInfo.InvariantCulture);
+	
+				parm.Damping = float.Parse(element.Attributes?["damping"]?.InnerText ?? "0.999",CultureInfo.InvariantCulture);
+				parm.SpawnDelay = int.Parse(element.Attributes?["spawnDelay"]?.InnerText ?? "50",CultureInfo.InvariantCulture);
+				
+				
+				list.Add(parm);
+			}
+			
+		
+	}
 }

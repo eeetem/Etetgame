@@ -22,7 +22,7 @@ public class Move : Action
 	public override Tuple<bool,string> CanPerform(Unit actor, ActionExecutionParamters args)
 	{
 		
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target);
 		if (result.Cost <= 0)
 		{
 			return new Tuple<bool, string>(false, "No path found");
@@ -42,7 +42,7 @@ public class Move : Action
 			return new Tuple<bool, string>(false, "Cannot Move while Panicked");
 		}
 
-		if (WorldManager.Instance.GetTileAtGrid(args.Target!.Value).UnitAtLocation != null)
+		if (WorldManager.Instance.GetTileAtGrid(args.Target).UnitAtLocation != null)
 		{
 			return new Tuple<bool, string>(false, "Tile is occupied");
 		}
@@ -53,7 +53,7 @@ public class Move : Action
 
 	public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecutionParamters args)
 	{
-		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+		PathFinding.PathFindResult result = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target);
 		int moveUse = 1;
 		while (result.Cost > actor.GetMoveRange()*moveUse)
 		{
@@ -130,7 +130,7 @@ public class Move : Action
 	public override void Preview(Unit actor, ActionExecutionParamters args,SpriteBatch spriteBatch)
 	{
 		if (SequenceManager.SequenceRunning) return;
-		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target!.Value);
+		previewPath = PathFinding.GetPath(actor.WorldObject.TileLocation.Position, args.Target);
 		
 
 		for (int index = 0; index < previewPath.Path.Count - 1; index++)
@@ -160,7 +160,7 @@ public class Move : Action
 
 		for (int i = 0; i < moveUse; i++)
 		{
-			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(args.Target.Value) + new Vector2(-20 * moveUse, -30) + new Vector2(50, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
+			spriteBatch.Draw(TextureManager.GetTexture("HoverHud/movepoint"), Utility.GridToWorldPos(args.Target) + new Vector2(-20 * moveUse, -30) + new Vector2(50, 0) * i, null, Color.White, 0f, Vector2.Zero, 4.5f, SpriteEffects.None, 0f);
 		}
 		
 	}

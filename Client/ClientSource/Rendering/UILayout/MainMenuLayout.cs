@@ -184,16 +184,18 @@ public class MainMenuLayout : UiLayout
 		};
 		panel.Widgets.Add(_menuStack);
 
-		var tutorial = new SoundTextButton
+		var tutorial = new SoundTextButton(Color.Gray)
 		{
-			Text = "Tutorial",
-			Height = (int)(12 * GlobalScale.X),
+			Text = "Tutorial-Coming Soon",
+			Height = (int)(9 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Center
+			VerticalAlignment = VerticalAlignment.Center,
+		//	Color = Color.Black
+			
 		};
 		tutorial.Click += (a, b) =>
 		{
-	
+			return;
 			GameManager.StartLocalServer();
 
 			NetworkingManager.StartTutorial();
@@ -435,7 +437,7 @@ public class MainMenuLayout : UiLayout
 			Width = (int)((Chatsize.X-20)*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(13*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{
@@ -785,6 +787,13 @@ public class MainMenuLayout : UiLayout
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
 					MasterServerNetworking.CreateLobby(txt.Text);
+					var dialog = Dialog.CreateMessageBox("Creating Server...", new TextLabel()
+					{
+						Text = "Please Wait...",
+						Height = (int)(10*GlobalScale.X),
+					});
+
+					dialog.ShowModal(UI.Desktop);
 				};
 				dialog.Width = (int)(200*GlobalScale.X);
 				dialog.Height = (int)(80*GlobalScale.X);

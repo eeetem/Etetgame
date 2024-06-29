@@ -12,7 +12,7 @@ public partial class WorldObject : IDrawable
 	private Transform2 DrawTransform = null!;
 	public int spriteVariation;
 	public PreviewData PreviewData;
-	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver);
+	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver && CurrentAnimation.Name != "loop");
 
 
 	public Transform2 GetDrawTransform()
@@ -55,7 +55,7 @@ public partial class WorldObject : IDrawable
 					break;
 			}
 		}
-		if (Type.Edge && Type.Faceable && this.Facing == Direction.West)
+		if (Type.Edge && Type.Faceable && Facing == Direction.West)
 		{
 			DrawOrder += 0.1f;
 		}
@@ -77,38 +77,42 @@ public partial class WorldObject : IDrawable
 			spriteIndex = (int)Facing;
 		}
 
-		string state = GetExtraState();
+		var state = GetExtraState();
 		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
-		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
+		if(CurrentAnimation != null)
+		{
+			state.Clear();
+			state.Add(CurrentAnimation.GetState(Type.GetVariationName(spriteVariation)));
+		}
+
+		
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
 
 	}
 
-	public string GetExtraState()
+	public List<string> GetExtraState()
 	{
-		string state = "";
+		List<string> state = new List<string>();
 		if (UnitComponent != null)
 		{
-			;
 			if (UnitComponent!.Crouching)
 			{
-				state = "/Crouch";	
+				state.Add("/Crouch");
 			}
 			else
 			{
-				state = "/Stand";
+				state.Add("/Stand");
+			}
+
+			foreach (var eff in UnitComponent.StatusEffects)
+			{
+				state.Add(eff.Type.Name);
 			}
 		}
-		state += _hiddenState;
 		return state;
 	}
 
-	private string _hiddenState = "";
-	public void SetHiddenState(string state)
-	{
-		_hiddenState = state;
-	}
 
 	public Color GetColor()
 	{
@@ -154,7 +158,6 @@ public partial class WorldObject : IDrawable
 	}
 
 	public Animation? CurrentAnimation = null;
-	private IDrawable _drawableImplementation;
 
 	public void AnimationUpdate(float msDelta)
 	{
@@ -163,6 +166,11 @@ public partial class WorldObject : IDrawable
 		{
 			CurrentAnimation = null;
 		}
+		if(CurrentAnimation == null)
+		{
+			StartAnimation("loop");
+		}
+		
 	}
 
 	public bool IsTransparentUnderMouse()
@@ -171,11 +179,12 @@ public partial class WorldObject : IDrawable
 	}
 
 
-	public void StartAnimation(string name, int fps = 5)
+	public void StartAnimation(string name)
 	{
-		int count = Type.GetAnimationLenght(spriteVariation, name,GetExtraState());
-		if (count != 0)
-			CurrentAnimation = new Animation(name, count, fps);
+		
+		(int, int,List<string>) anim = Type.GetAnimation(spriteVariation, name,GetExtraState());
+		if (anim.Item1 != 0)
+			CurrentAnimation = new Animation(name,  string.Join("",anim.Item3),anim.Item1, anim.Item2);
 	}
 	
 }

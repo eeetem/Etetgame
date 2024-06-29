@@ -21,10 +21,10 @@ public class CrouchUnit : UnitSequenceAction
 	{
 		if(Actor.Crouching)
 		{
-			return BatchingMode.Never;//uncrouch and animation start should happen on the same tick
+			return BatchingMode.BlockingAlone;//uncrouch and animation start should happen on the same tick
 		}
 
-		return BatchingMode.Always;
+		return BatchingMode.AsycnBatchAlways;
 		
 	}
 
