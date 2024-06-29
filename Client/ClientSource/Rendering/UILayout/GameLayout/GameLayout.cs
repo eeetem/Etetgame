@@ -1038,6 +1038,16 @@ public partial class GameLayout : MenuLayout
 
 	
 		generated = true;
+
+		if (SelectedUnit == null)
+		{
+			Task.Run(() =>
+			{
+				Thread.Sleep(1000);
+				SelectUnit(null);
+			});
+		}
+			
 		return panel;
 	}
 
