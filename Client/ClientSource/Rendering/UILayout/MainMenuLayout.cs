@@ -184,10 +184,10 @@ public class MainMenuLayout : UiLayout
 		};
 		panel.Widgets.Add(_menuStack);
 
-		var tutorial = new SoundTextButton(Color.Gray)
+		var tutorial = new SoundTextButton
 		{
-			Text = "Tutorial-Coming Soon",
-			Height = (int)(9 * GlobalScale.X),
+			Text = "Tutorial",
+			Height = (int)(12 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Center,
 		//	Color = Color.Black

@@ -438,7 +438,6 @@ public static partial class GameManager
 	public static bool tutorial = false;
 	public static void StartBasicTutorial()
 	{
-return;
 		tutorial = true;
 		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap3.mapdata");
        
