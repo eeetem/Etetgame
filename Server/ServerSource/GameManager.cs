@@ -438,6 +438,7 @@ public static partial class GameManager
 	public static bool tutorial = false;
 	public static void StartBasicTutorial()
 	{
+return;
 		tutorial = true;
 		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap3.mapdata");
        
@@ -508,6 +509,7 @@ public static partial class GameManager
 			
 			SetEndTurn();
 			
+
 			while (!IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);

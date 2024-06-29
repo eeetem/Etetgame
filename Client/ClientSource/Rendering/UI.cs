@@ -232,7 +232,7 @@ public static class UI
 			}
 		}
 		spriteBatch.Begin(samplerState:SamplerState.PointClamp);
-		spriteBatch.DrawText("ALPHA 4", new Vector2(0, 0), UiLayout.GlobalScale.X,Color.White);
+		spriteBatch.DrawText("ALPHA 5", new Vector2(0, 0), UiLayout.GlobalScale.X,Color.White);
 		spriteBatch.End();
 
 	}

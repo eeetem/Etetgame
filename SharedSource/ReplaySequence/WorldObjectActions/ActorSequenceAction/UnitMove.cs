@@ -126,12 +126,24 @@ public class UnitMove : UnitSequenceAction
             var p = GameManager.GetPlayer(player1);
             if (p == null) return b;
             
-            
+            Direction lastFace = Actor.WorldObject.Facing;
             foreach (var spot in Path)
             {
                 if (spot == lastPos)
                     continue;
-                var tiles = WorldManager.Instance.GetVisibleTiles(spot, Utility.Vec2ToDir(spot-lastPos), Actor.GetSightRange(), Actor.Crouching);
+                Direction face = Utility.Vec2ToDir(spot-lastPos);
+                var tiles = WorldManager.Instance.GetVisibleTiles(spot, face, Actor.GetSightRange(), Actor.Crouching);
+                var moreTiles = WorldManager.Instance.GetVisibleTiles(spot, lastFace, Actor.GetSightRange(), Actor.Crouching);
+                foreach (var keyValuePair in moreTiles)
+                {
+                    if (!tiles.ContainsKey(keyValuePair.Key))
+                    {
+                        tiles.TryAdd(keyValuePair.Key,keyValuePair.Value);
+                    }else if (keyValuePair.Value > tiles[keyValuePair.Key])
+                    {
+                        tiles[keyValuePair.Key] = keyValuePair.Value;
+                    }
+                }
                 foreach (var loc in tiles)
                 {
                     var tile = WorldManager.Instance.GetTileAtGrid(loc.Key);
@@ -166,6 +178,7 @@ public class UnitMove : UnitSequenceAction
                     
                 }
                 lastPos = spot;
+                lastFace = face;
             }
 
             foreach (var u in seenUnits)
