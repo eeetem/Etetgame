@@ -439,6 +439,7 @@ public static partial class GameManager
 	public static bool tutorial = false;
 	public static void StartTutorial()
 	{
+return;
 		tutorial = true;
 		WorldManager.Instance.LoadMap("/Maps/Special/tutorial.mapdata");
        
@@ -480,11 +481,7 @@ public static partial class GameManager
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
 				Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
 			}
-			foreach (var u in T2Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player2.KnownUnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
-			}
+
 			NetworkingManager.SendGameData();
 			WorldManager.Instance.MakeFovDirty();
 			NetworkingManager.SendAllSeenUnitPositions();
@@ -493,6 +490,26 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
+						
+			Unit Heavy = null!;
+			foreach (var u in T2Units)
+			{
+				if (WorldObjectManager.GetObject(u)!.UnitComponent!.Type.Name == "Heavy")
+				{
+					Heavy = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
+				}
+			}
+			
+
+			Heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(32, 37)));
+			do
+			{
+				Thread.Sleep(300);
+			} while (SequenceManager.SequenceRunning);
+
+			Heavy.DoOverwatch(new Vector2Int(29, 43),0);
+			SetEndTurn();
 			while (!IsPlayer1Turn)
 			{
 				Thread.Sleep(1000);
