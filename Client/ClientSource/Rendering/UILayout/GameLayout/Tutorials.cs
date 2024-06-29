@@ -179,8 +179,7 @@ public partial class GameLayout
 			highlightTile = new Vector2Int(-1,-1);
 
 			tutorialNote = "[Green]Determination & Suppression[-]\n" +
-			               "Face towards the [Red]enemy[-].\n\n" +
-			               "Shooting at or near an [Red]enemy[-] will remove of of their [Blue]determination points[-].";
+			               "Face towards the [Red]enemy[-]";
 			
 			highlightTile = new Vector2Int(27, 28);
 			tutorialActionLock = ActiveActionType.Face;
@@ -191,6 +190,7 @@ public partial class GameLayout
 			highlightTile = new Vector2Int(-1,-1);
 
 			tutorialNote = "[Green]Panic[-]\n" +
+			               "Shooting at or near an [Red]enemy[-] will remove of of their [Blue]determination points[-].\n\n" +
 			               "Once a unit's [Blue]determination points[-] reach zero they will enter a [Red]panicked[-] state.\n" +
 			               "Once [Red]panicked[-], that unit will immediately [Orange]crouch[-] and regenerate one less [Green]movement point[-] [PaleVioletRed]next turn[-].\n" +
 			               "[Red]Panicked[-] units will also not regenerate a [Blue]determination point[-] [PaleVioletRed]\nnext turn[-].\n\n" + 
