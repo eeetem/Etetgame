@@ -16,10 +16,10 @@ public class PlayAnimation : SequenceAction
 #if CLIENT
         var obj = WorldObjectManager.GetObject(_objId);
         obj.StartAnimation(_animation);
-        while(obj.IsAnimating) 
-        {
-            Thread.Sleep(100);
-        }
+        //while(obj.IsAnimating) 
+        //{
+        //    Thread.Sleep(100);
+        //}
 #endif
         
     }
