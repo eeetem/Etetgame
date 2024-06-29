@@ -549,10 +549,6 @@ public partial class GameLayout
 			}
 			
 			tutorial = false;
-			
-
-
-
 		});
 	}
 
