@@ -439,7 +439,7 @@ public static partial class GameManager
 	public static void StartBasicTutorial()
 	{
 		tutorial = true;
-		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap.mapdata");
+		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap3.mapdata");
        
 		PracticeMode(Player1.Connection);
 		NetworkingManager.SendMapData(Player1!.Connection!);

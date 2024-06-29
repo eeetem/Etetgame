@@ -482,6 +482,8 @@ public class MainMenuLayout : UiLayout
 	
 	private void Tutorial()
 	{
+		BasicTutorial();
+		/*
 		MakeMenuBox();
 		var tutMenu = new VerticalStackPanel();
 		tutMenu.HorizontalAlignment = HorizontalAlignment.Left;
@@ -550,6 +552,7 @@ public class MainMenuLayout : UiLayout
 		btn.ForceSelect();
 		btn2.ForceDeselect();
 		btn3.ForceDeselect();
+		*/
 	}
 
 	private static void BasicTutorial()

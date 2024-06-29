@@ -22,7 +22,7 @@ public partial class GameLayout
 			tutorialNote = "Welcome to [Green]Etetgame![-]\n" +
 			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
 			Thread.Sleep(5000);
-			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\n\nThese points can be spent to move your units and use their actions/abilities.\n\n" +
+			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\n\nThese points can be spent to move your units and use their abilities.\n\n" +
 			               "At the end of each turn your units will recover all [Orange]action[-] and \n[Green]movement[-] points.\n\n" +
 			               "Select the [Green]Scout[-] and double click the highlighted tile to move to it, using two of your [Green]movement points[-].";
 			tutorialActionLock = ActiveActionType.Move;
@@ -71,7 +71,7 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]Ending Turn[-]\n" +
 			               "We have no more [Green]movement points[-] remaining so lets end our turn.\n" +
-			               "Click the [Orange]end turn[-] button located in the top right corner";
+			               "Click the [PaleVioletRed]end turn[-] button located in the top right corner";
 			TutorialEndTurn();
 			
 			
@@ -131,7 +131,7 @@ public partial class GameLayout
 			}
 			highlightTile = new Vector2Int(-1,-1);
 			
-			tutorialNote = "We are out of [Green]movement[-] and [Orange]action[-] points, lets [Orange]end turn[-] for now";
+			tutorialNote = "We are out of [Green]movement[-] and [Orange]action[-] points, lets [PaleVioletRed]end turn[-] for now";
 			TutorialEndTurn();
 
 			tutorialNote = "[Green]Crouching[-]\n" +
@@ -165,7 +165,7 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]Crouching[-]\n" +
 			               "Crouching consumes a [Green]movement[-] point.\n" +
-			               "We have one movement point remaining but lets [Orange]end turn[-] for now.";
+			               "We have one movement point remaining but lets [PaleVioletRed]end turn[-] for now.";
 			TutorialEndTurn();
 
 			tutorialNote = "[Green]Determination & Suppression[-]\n" +
@@ -180,7 +180,7 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]Determination & Suppression[-]\n" +
 			               "Face towards the [Red]enemy[-].\n\n" +
-			               "Shooting at or near an [Red]enemy[-] will remove of of their [Orange]determination points[-].";
+			               "Shooting at or near an [Red]enemy[-] will remove of of their [Blue]determination points[-].";
 			
 			highlightTile = new Vector2Int(27, 28);
 			tutorialActionLock = ActiveActionType.Face;
@@ -191,14 +191,14 @@ public partial class GameLayout
 			highlightTile = new Vector2Int(-1,-1);
 
 			tutorialNote = "[Green]Panic[-]\n" +
-			               "Once a unit's [Orange]determination points[-] reach zero they will enter a [Red]panicked[-] state.\n" +
-			               "Once [Red]panicked[-], that unit will immediately [Orange]crouch[-] and regenerate one less [Green]movement point[-] next turn.\n" +
-			               "[Red]Panicked[-] units will also not regenerate a [Orange]determination point[-] next turn\n\n" + 
+			               "Once a unit's [Blue]determination points[-] reach zero they will enter a [Red]panicked[-] state.\n" +
+			               "Once [Red]panicked[-], that unit will immediately [Orange]crouch[-] and regenerate one less [Green]movement point[-] [PaleVioletRed]next turn[-].\n" +
+			               "[Red]Panicked[-] units will also not regenerate a [Blue]determination point[-] [PaleVioletRed]\nnext turn[-].\n\n" + 
 			               "Shoot the [Red]enemy[-]!";
 			TutorialFire(scout, new Vector2Int(27, 28));
 
 			tutorialNote = "[Green]Panic[-]\n" +
-			               "Great work the [Red]enemy[-] is [Red]panicked[-], \nLets [Orange]end turn[-].";
+			               "Great work the [Red]enemy[-] is [Red]panicked[-], \nLets [PaleVioletRed]end turn[-].";
 			TutorialEndTurn();
 
 			tutorialNote = "[Green]Un-crouching[-]\n" +
@@ -230,10 +230,9 @@ public partial class GameLayout
 			tutorialNote = "[Green]Victory![-]" +
 			               "Well done you've finished the basic tutorial";
 			Thread.Sleep(4000);
-
-			bigTutorialNote = true;
+			
 			tutorialNote = "[Green]End of basic tutorial![-]\n" +
-			               "You now understand the basics of the game,\nwe recommend you complete the [Orange]advanced tutorial[-] to learn more about the complex mechanics in this game.\n\n" +
+			               "You now understand the basics of the game,\nexplore all the units and abilities by playing against the AI in single-player mode.\n\n" + //we recommend you complete the [Orange]advanced tutorial[-] to learn more about the complex mechanics in this game
 			               "Press [Orange]ESC[-] to quit to main menu.";
 			while (UI.currentUi is GameLayout)
 			{
@@ -303,7 +302,7 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]End turn[-]\n" +
 			               "You're out of [Green]movement[-] and [Orange]action[-] points." +
-			               "You can now end your turn by pressing [Orange]end turn[-] button in top right corner";
+			               "You can now end your turn by pressing [PaleVioletRed]end turn[-] button in top right corner";
 			highlightTile = new Vector2Int(-1, -1);
 			TutorialEndTurn();
 			
@@ -462,7 +461,7 @@ public partial class GameLayout
 			tutorialNote = "[Green]Suppression[-]\n" +
 			               "The [Red]Scouts[-] have been shot while on 0 [Blue]determination[-] and are now [Red]Panicked[-], were [Red]forcefully crouched[-], next turn [Red]Will loose a move point[-], and [Red]Will not regenerate determination[-].\n\n" +
 			               "If you look at your [Blue]determination[-] bar above your [Green]Grunt[-] you will see that you have 2 full [Blue]determination[-] and 1 [Orange]regenerating[-] meaning next turn you'll have 3 [Blue]determination[-], which is enough to use [Green]Grunt's[-] special ability.\n" +
-			               "End your turn by pressing [Orange]end turn[-]";
+			               "End your turn by pressing [PaleVioletRed]end turn[-]";
 			TutorialEndTurn();
 			tutorialNote = "";
 			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
@@ -495,7 +494,7 @@ public partial class GameLayout
 			tutorialNote = "[Green]The Grunt[-]\n" +
 			               "Keep in mind if the enemy has a [Red]Grunt[-] nearby they can [Yellow]\"Counter-Snipe\"[-] your [Green]Grunt[-] as using the ability will leave grunt on 0 [Blue]determination[-].\n\n" +
 			               "The [Red]Scout[-] has been [Green]eliminated[-].\n" +
-			               "End your turn by pressing [Orange]end turn[-]";
+			               "End your turn by pressing [PaleVioletRed]end turn[-]";
 			highlightTile = new Vector2Int(-1, -1);
 			do
 			{
