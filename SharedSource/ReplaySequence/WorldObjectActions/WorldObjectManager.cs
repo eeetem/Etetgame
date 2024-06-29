@@ -35,6 +35,7 @@ public static partial class WorldObjectManager
 #if CLIENT
 		obj.StartAnimation("end");
 #endif
+		
 		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)

@@ -137,13 +137,14 @@ public class SequenceManager
 					//then do parrallel tasks in queue
 					//batch tile updates and other things
 					bool batchedTasks = false;
+					sw.Restart();
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
 						{
 							break;
 						}
-
+				
 						var peeked = SequenceQueue.Peek();
 						bool shouldBatch = false;
 						switch (peeked.Batching)
@@ -170,15 +171,25 @@ public class SequenceManager
 						act = SequenceQueue.Dequeue();
 						CurrentSequenceTasks.Add(act.GenerateTask());
 						CurrentSequenceTasks.Last().Start();
+						if (sw.ElapsedMilliseconds > 100)
+						{
+							break;
+						}
 					}
+					
 
 					if (batchedTasks)
 					{
 						foreach (var t in CurrentSequenceTasks)
 						{
-							t.Wait(100);
+							if (sw.ElapsedMilliseconds > 150)
+							{
+								break;//dont freeze
+							}
+							t.Wait(25);
 						}
 					}
+					sw.Stop();
 				}
 			}
 			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun))
