@@ -296,7 +296,7 @@
   <unit health="13" moveRange = "6" moves="2" determination="2" z="0.1">
     <name>Grunt</name>
     <action moveCost="1" actCost="1" overwatch="2">
-      <name>Attack</name>
+      <name>Shoot</name>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="16" shotCount="3" shotDelay="200" shotSpread="0.2" shotSound="rifle"/>
@@ -329,11 +329,12 @@
     <name>Scout</name>
     <animations>
       <anim name="Rapid Maneuvers" fps="10"/>
+      <anim name="Shoot" fps="8"/>
     </animations>
     
 
     <action moveCost="1" actCost="1" overwatch="2">
-      <name>Attack</name>
+      <name>Shoot</name>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="6" detRes="1" supression="1" supressionRange="1" dropOffRange="5" shotCount="8" shotDelay="0" shotSpread="1" sound=""/>
@@ -362,7 +363,7 @@
     <name>Officer</name>
 
     <action moveCost="1" actCost="1" overwatch="2">
-      <name>Attack</name>
+      <name>Shoot</name>
       <targetAid>enemy</targetAid>
 
       <shoot dmg ="6" detRes="2" supression="1" supressionRange="2" dropOffRange="12" shotCount="3" shotDelay="150" shotSpread="0.6" shotSound="rifle"/>
@@ -434,7 +435,7 @@
     <name>Heavy</name>
 
     <action moveCost="1" actCost="1" overwatch="3">
-      <name>Attack</name>
+      <name>Shoot</name>
       <targetAid>enemy</targetAid>
       <shoot dmg ="5" detRes="1" supression="1" supressionRange="3" dropOffRange="12" shotCount="14" shotDelay="70" shotSpread="0.8" shotSound="rifle"/>
       <tip>A standard attack. [Green]Mediocre damage, but excellent supression range[-]\n[Green]6[-] Damage drops off every [Yellow]12[-] tiles.\nUnits in range [Green]3[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>

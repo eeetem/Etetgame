@@ -106,7 +106,6 @@ public static partial class WorldObjectManager
             else
             {
                 data.ID = GetNextId();
-                Log.Message("WORLD OBJECT MANAGER","Generated new id: " + data.ID);
             }
 
 		

@@ -136,7 +136,7 @@ public partial class GameLayout : MenuLayout
 	private static Vector2Int highlightTile = new Vector2Int(-1,-1);
 	public static bool tutorial = false;
 	private static int tutorialUnitLock = -1;
-	
+
 	public static void Init()
 	{
 		hoverHudRenderTarget = new RenderTarget2D(graphicsDevice,250,150);

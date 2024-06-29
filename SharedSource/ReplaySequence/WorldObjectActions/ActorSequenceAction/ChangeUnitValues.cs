@@ -231,8 +231,8 @@ public class ChangeUnitValues : UnitSequenceAction
 			var t = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 			if(t.Surface is null)return;
 			Texture2D sprite = t.Surface.GetTexture();
-			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Yellow * 0.2f);
-			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Green, 0.5f);
+			spriteBatch.Draw(sprite, t.Surface.GetDrawTransform().Position, Color.Yellow * 0.7f);
+			spriteBatch.DrawOutline(new List<WorldTile>(){t}, Color.Green, 1.5f);
 		}
 	}
 
