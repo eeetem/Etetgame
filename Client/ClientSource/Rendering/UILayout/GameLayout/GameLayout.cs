@@ -901,6 +901,11 @@ public partial class GameLayout : MenuLayout
 			};
 			SetScore(0);
 		}
+		else
+		{
+			ScoreIndicator.Top = (int) (28.5f * GlobalScale.X);
+			ScoreIndicator.Left = (int) (735f * GlobalScale.X);
+		}
 		
 
 		panel.Widgets.Add(ScoreIndicator);

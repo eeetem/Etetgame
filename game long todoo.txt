@@ -1,6 +1,7 @@
 
 jump to hit traget 
 officer mroe obvious
+smoke dissapear lag
 
 sfx list:
 -throw
