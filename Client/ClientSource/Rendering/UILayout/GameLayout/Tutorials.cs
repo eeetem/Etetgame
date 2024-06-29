@@ -21,7 +21,7 @@ public partial class GameLayout
 			highlightTile = new Vector2Int(19, 25);
 			tutorialNote = "Welcome to [Green]Etetgame![-]\n" +
 			               "Use WASD to move the camera and mouse wheel to zoom in and out!\n";
-			Thread.Sleep(10000);
+			Thread.Sleep(5000);
 			tutorialNote = "Each unit has a set number of [Green]movement[-] points and [Orange]action[-] points.\n\nThese points can be spent to move your units and use their actions/abilities.\n\n" +
 			               "At the end of each turn your units will recover all [Orange]action[-] and \n[Green]movement[-] points.\n\n" +
 			               "Select the [Green]Scout[-] and double click the highlighted tile to move to it, using two of your [Green]movement points[-].";
@@ -193,7 +193,8 @@ public partial class GameLayout
 			tutorialNote = "[Green]Panic[-]\n" +
 			               "Once a unit's [Orange]determination points[-] reach zero they will enter a [Red]panicked[-] state.\n" +
 			               "Once [Red]panicked[-], that unit will immediately [Orange]crouch[-] and regenerate one less [Green]movement point[-] next turn.\n" +
-			               "[Red]Panicked[-] units will also not regenerate a [Orange]determination point[-] next turn";
+			               "[Red]Panicked[-] units will also not regenerate a [Orange]determination point[-] next turn\n\n" + 
+			               "Shoot the [Red]enemy[-]!";
 			TutorialFire(scout, new Vector2Int(27, 28));
 
 			tutorialNote = "[Green]Panic[-]\n" +
@@ -215,16 +216,16 @@ public partial class GameLayout
 
 			tutorialNote = "[Green]Finish them[-]\n" +
 			               "Face the [Red]enemy[-]";
-			highlightTile = new Vector2Int(24, 27);
+			highlightTile = new Vector2Int(25, 28);
 			tutorialActionLock = ActiveActionType.Face;
-			while (scout.WorldObject.Facing != Direction.NorthWest)
+			while (scout.WorldObject.Facing != Direction.West)
 			{
 				Thread.Sleep(350);
 			}
 
 			tutorialNote = "[Green]Finish them[-]\n" +
 			               "Fire!";
-			TutorialFire(scout, new Vector2Int(24,27));
+			TutorialFire(scout, new Vector2Int(25,28));
 
 			tutorialNote = "[Green]Victory![-]" +
 			               "Well done you've finished the basic tutorial";
@@ -232,7 +233,7 @@ public partial class GameLayout
 
 			bigTutorialNote = true;
 			tutorialNote = "[Green]End of basic tutorial![-]\n" +
-			               "You now understand the basics of the game,\n we recommend you complete the [Orange]advanced tutorial[-] to learn more about the complex mechanics in this game.\n\n" +
+			               "You now understand the basics of the game,\nwe recommend you complete the [Orange]advanced tutorial[-] to learn more about the complex mechanics in this game.\n\n" +
 			               "Press [Orange]ESC[-] to quit to main menu.";
 			while (UI.currentUi is GameLayout)
 			{
