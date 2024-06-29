@@ -577,14 +577,14 @@ public partial class GameLayout : MenuLayout
    bool twoLayer = false;
 
 
-	float scale = (float)(_unitBar.MaxHeight / _unitBar.Widgets.Count) / realHeight;
+	float scale = (float)(_unitBar.MaxHeight / 8) / realHeight;
 	if (realHeight * scale * _unitBar.Widgets.Count > _unitBar.MaxHeight)
 	{
 		twoLayer = true;
 	}
 	else
 	{ 
-		scale = Math.Min((float)(_unitBar.MaxHeight / _unitBar.Widgets.Count / realHeight), (float)(_unitBar.MaxHeight / realHeight));
+		scale = Math.Min((float)(_unitBar.MaxHeight / 8 / realHeight), (float)(_unitBar.MaxHeight / realHeight));
 	}
 
 	int h = (int)(realHeight * scale);

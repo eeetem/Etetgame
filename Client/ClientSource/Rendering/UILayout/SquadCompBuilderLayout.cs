@@ -87,7 +87,7 @@ public class SquadCompBuilderLayout : MenuLayout
 			
 			var unitButton = new ImageButton()
 			{
-				Top = -50,	
+				Top = (int)(-50 * GlobalScale.X),	
 				Height = (int?)( 100 * GlobalScale.Y),
 				Width = (int?)( 85 * GlobalScale.X),
 				ImageHeight = (int?) (100 * GlobalScale.Y),
