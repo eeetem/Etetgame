@@ -45,7 +45,7 @@
       <None Remove="SharedSource\World\**" />
       <None Remove="obj\**" />
       <None Update="Maps\Special\tutorial.mapdata">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="Maps\Special\tutorial2.mapdata">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

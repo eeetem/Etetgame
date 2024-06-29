@@ -138,6 +138,7 @@ public partial class GameLayout : MenuLayout
 	private static int tutorialUnitLock = -1;
 	public static void TutorialSequence()
 	{
+		return;
 		Task.Run(() =>
 		{
 			bigTutorialNote = false;
@@ -198,28 +199,15 @@ public partial class GameLayout : MenuLayout
 			               "You can now end your turn by pressing [Orange]end turn[-] button in top right corner";
 			highlightTile = new Vector2Int(-1, -1);
 			TutorialEndTurn();
-			
-			int heavyId = 0;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
-			{
-				if (u.Value.Item2.Prefab == "Heavy")
-				{
-					heavyId = u.Key;
-					break;
-				}
-			}
-			
-			var mv = Action.Actions[Action.ActionType.Move];
-			var ow = Action.Actions[Action.ActionType.OverWatch];
-			mv.SendToServer(heavyId, new Action.ActionExecutionParamters(new Vector2Int(32, 37)));
+
+
 			MoveCamera.Make(new Vector2Int(32,37),true,0).RunSynchronously();;
-			Thread.Sleep(300);
-			var act = new Action.ActionExecutionParamters(new Vector2Int(29, 43));
-			act.AbilityIndex = 0;
-			ow.SendToServer(heavyId,act);
-			
+			while (!GameManager.IsPlayer1Turn)
+			{
+				Thread.Sleep(300);
+			}
 			MoveCamera.Make(new Vector2Int(29,43),true,0).RunSynchronously();;
-			NetworkingManager.EndTurn();
+
 
 			tutorialNote = "[Green]Overwatch and Hiding[-]\n" +
 			               "The [Red]enemy Heavy[-] is awaiting your approach and has [Purple]overwatched[-] it. If you enter the area you will be automatically attacked.\n" +
@@ -288,64 +276,14 @@ public partial class GameLayout : MenuLayout
 			TutorialEndTurn();
 			tutorialNote = "";
 
-			int enemyScout1 = 0;
-			int enemyScout2 = 0;
-			foreach (var u in GameManager.lastRecievedUnitPositionsP2)
-			{
-				if (u.Value.Item2.Prefab == "Scout" && !u.Value.Item2.UnitData.Value.Team1)
-				{
-					if(enemyScout1 == 0)
-					{
-						enemyScout1 = u.Key;
-					}
-					else
-					{
-						enemyScout2 = u.Key;
-						break;
-					}
-				}
-			}
-			var abl = Action.Actions[Action.ActionType.UseAbility];
-			
-			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(29, 44)));
-			MoveCamera.Make(new Vector2Int(29,44),true,0).RunSynchronously();;
-			
-			var param = new Action.ActionExecutionParamters( WorldObjectManager.GetObject(enemyScout1)!);
-			param.AbilityIndex = 1;
-			abl.SendToServer(enemyScout1,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(grunt.WorldObject.ID)!);
-			param.AbilityIndex = 0;
-			abl.SendToServer(enemyScout1,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			
-			
-			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(29, 43)));
 			MoveCamera.Make(new Vector2Int(29,43),true,0).RunSynchronously();;
-			
-			param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(enemyScout2)!);
-			param.AbilityIndex = 1;
-			abl.SendToServer(enemyScout2,param);
+
 			do
 			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
-			param = new Action.ActionExecutionParamters(WorldObjectManager.GetObject(grunt.WorldObject.ID)!);
-			param.AbilityIndex = 0;
-			abl.SendToServer(enemyScout2,param);
-			do
-			{
-				Thread.Sleep(3000);
-			}while (SequenceManager.SequenceRunning);
+				Thread.Sleep(1500);
+			}while(!GameManager.IsMyTurn());
 			
-			NetworkingManager.EndTurn();
-			Thread.Sleep(1500);
+			
 			tutorialNote = "[Green]Suppression[-]\n" +
 			               "The [Red]Enemy Scouts[-] are being reckless. They used their ability using up determination and grouped up.\n" +
 			               "[Red]Fire[-] at the [Red]Scout[-] by pressing [Green]X[-], the area of effect [Blue]suppression[-] will suppress both of them";
@@ -356,13 +294,13 @@ public partial class GameLayout : MenuLayout
 			               "End your turn by pressing [Orange]end turn[-]";
 			TutorialEndTurn();
 			tutorialNote = "";
-			mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
+			//mv.SendToServer(enemyScout1, new Action.ActionExecutionParamters(new Vector2Int(34, 44)));
 			MoveCamera.Make(new Vector2Int(34,44),true,0).RunSynchronously();;
 			do
 			{
 				Thread.Sleep(1500);
 			}while (SequenceManager.SequenceRunning);
-			mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(34, 43)));
+			//mv.SendToServer(enemyScout2, new Action.ActionExecutionParamters(new Vector2Int(34, 43)));
 			MoveCamera.Make(new Vector2Int(34,43),true,0).RunSynchronously();;
 			NetworkingManager.EndTurn();
 			

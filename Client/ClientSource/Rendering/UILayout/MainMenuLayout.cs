@@ -184,16 +184,18 @@ public class MainMenuLayout : UiLayout
 		};
 		panel.Widgets.Add(_menuStack);
 
-		var tutorial = new SoundTextButton
+		var tutorial = new SoundTextButton(Color.Gray)
 		{
-			Text = "Tutorial",
-			Height = (int)(12 * GlobalScale.X),
+			Text = "Tutorial-Coming Soon",
+			Height = (int)(9 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Center
+			VerticalAlignment = VerticalAlignment.Center,
+		//	Color = Color.Black
+			
 		};
 		tutorial.Click += (a, b) =>
 		{
-	
+			return;
 			GameManager.StartLocalServer();
 
 			NetworkingManager.StartTutorial();

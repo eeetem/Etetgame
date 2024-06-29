@@ -61,6 +61,7 @@ public static partial class GameManager
 
     public static void Register(WorldObject wo)
     {
+        Log.Message("GAME MANAGER","registering unit with id: "+wo.ID);
         if(wo.UnitComponent != null)
         {
             if(wo.UnitComponent.IsPlayer1Team)
