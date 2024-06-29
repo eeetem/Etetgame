@@ -514,224 +514,225 @@ public partial class GameLayout : MenuLayout
 
 
 	public static void MakeUnitBarRenders(SpriteBatch batch)
+{
+    if (_unitBar == null || _unitBar.Widgets.Count == 0) return;
+    if (GameManager.GetMyTeamUnits().Count == 0) return;
+    
+    GameManager.GetMyTeamUnits().Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
+    int totalUnits = GameManager.GetMyTeamUnits().Count;
+    int maxHeight = (int)(_unitBar.MaxHeight * GlobalScale.Y);
+    int itemHeight = maxHeight / totalUnits;
+    _unitBar.Spacing = 5;
+
+    int rowCounter = 0;
+
+    foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
+    {
+        if (!unitBarRenderTargets.ContainsKey(unit.WorldObject.ID))
+        {
+            unitBarRenderTargets.Add(unit.WorldObject.ID, new RenderTarget2D(graphicsDevice, TextureManager.GetTexture("GameHud/UnitBar/Background").Width, TextureManager.GetTexture("GameHud/UnitBar/Background").Height));
+        }
+
+        graphicsDevice.SetRenderTarget(unitBarRenderTargets[unit.WorldObject.ID]);
+        graphicsDevice.Clear(Color.Transparent);
+        batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
+        batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Background"), Vector2.Zero, Color.White);
+
+        int i;
+        if (unit.ActionPoints > 0 || unit.MovePoints > 0)
+        {
+            batch.End();
+            PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("GameHud/UnitBar/screen").Width, TextureManager.GetTexture("GameHud/UnitBar/screen").Height));
+            batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
+            batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
+            batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name + "/Icon"), Vector2.Zero, Color.White);
+            batch.DrawText(rowCounter + 1 + "", new Vector2(10, 5), Color.White);
+            batch.End();
+
+            PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(5, 5));
+            batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
+
+            int notchpos = 0;
+            for (i = 0; i < unit.MovePoints; i++)
+            {
+                batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/moveNotch"), new Vector2(6 * notchpos, 0), Color.White);
+                notchpos++;
+            }
+
+            for (i = 0; i < unit.ActionPoints; i++)
+            {
+                batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/fireNotch"), new Vector2(6 * notchpos, 0), Color.White);
+                notchpos++;
+            }
+            batch.End();
+        }
+        else
+        {
+            batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
+            batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name + "/Icon"), Vector2.Zero, Color.White);
+            batch.DrawText(rowCounter + 1 + "", new Vector2(10, 5), Color.White);
+            batch.End();
+        }
+
+        var healthTexture = TextureManager.GetTexture("GameHud/UnitBar/red");
+        var healthTextureoff = TextureManager.GetTexture("GameHud/UnitBar/redoff");
+        float healthWidth = healthTexture.Width;
+        float healthHeight = healthTexture.Height;
+        int baseWidth = TextureManager.GetTexture("GameHud/UnitBar/Background").Width;
+        float healthBarWidth = (healthWidth + 1) * unit.WorldObject.Type.MaxHealth;
+        float emtpySpace = baseWidth - healthBarWidth;
+        Vector2 healthBarPos = new Vector2(emtpySpace / 2f, 22);
+
+        for (int y = 0; y < unit.WorldObject.Type.MaxHealth; y++)
+        {
+            var indicator = healthTexture;
+            bool health = !(y >= unit.WorldObject.Health);
+            if (health)
+            {
+                PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
+                batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
+                indicator = healthTexture;
+            }
+            else
+            {
+                batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+                indicator = healthTextureoff;
+            }
+
+            batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            batch.End();
+        }
+
+        healthTexture = TextureManager.GetTexture("GameHud/UnitBar/green");
+        healthTextureoff = TextureManager.GetTexture("GameHud/UnitBar/greenoff");
+        healthWidth = healthTexture.Width;
+        healthHeight = healthTexture.Height;
+        healthBarWidth = (healthWidth + 1) * unit.Type.Maxdetermination;
+        emtpySpace = baseWidth - healthBarWidth;
+        healthBarPos = new Vector2(emtpySpace / 2f, 25);
+
+        for (int y = 0; y < unit.Type.Maxdetermination; y++)
+        {
+            var indicator = healthTexture;
+            bool health = !(y >= unit.Determination);
+            if (health)
+            {
+                PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
+                batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
+                indicator = healthTexture;
+            }
+            else
+            {
+                batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
+                indicator = healthTextureoff;
+            }
+
+            batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
+            batch.End();
+        }
+
+        rowCounter++;
+    }
+
+    Debug.Assert(unitBarRenderTargets != null, nameof(unitBarRenderTargets) + " != null");
+
+   int realWidth = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Width;
+   int realHeight = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Height;
+
+   bool twoLayer = false;
+
+
+	float scale = (float)(_unitBar.MaxHeight / _unitBar.Widgets.Count) / realHeight;
+	if (realHeight * scale * _unitBar.Widgets.Count > _unitBar.MaxHeight)
 	{
-		if(_unitBar == null ||  _unitBar.Widgets.Count == 0) return;
-		if( GameManager.GetMyTeamUnits().Count == 0) return;
-		int columCounter = 0;
-		//sort by id
-		GameManager.GetMyTeamUnits().Sort((a, b) => a.WorldObject.ID.CompareTo(b.WorldObject.ID));
-		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
-		{
-			if (!unitBarRenderTargets.ContainsKey(unit.WorldObject.ID))
+		twoLayer = true;
+	}
+	else
+	{ 
+		scale = Math.Min((float)(_unitBar.MaxHeight / _unitBar.Widgets.Count / realHeight), (float)(_unitBar.MaxHeight / realHeight));
+	}
+
+	int h = (int)(realHeight * scale);
+	if (h % realHeight > 0) { h += realHeight - h % realHeight; }
+	float actualScale = (float)h / realHeight;
+	actualScale *= 0.95f;
+	int w = (int)(realWidth * actualScale);
+	rowCounter = 0;
+	
+	if (!twoLayer)
+	{
+	    _unitBar.Top = (int)((_unitBar.MaxHeight - (h * _unitBar.Widgets.Count)) / 2f);
+	}
+
+
+	foreach (var unit in GameManager.GetMyTeamUnits())
+	{
+	    if (_unitBar.Widgets.Count > rowCounter)
+	    {
+		    ImageButton elem = (ImageButton)_unitBar.Widgets[rowCounter];
+			elem.Height = h; 
+			elem.ImageHeight = h;
+			elem.Width = w; 
+			elem.ImageWidth = w;
+			elem.Background = new SolidBrush(Color.Transparent);
+			elem.FocusedBackground = new SolidBrush(Color.Transparent);
+			elem.OverBackground = new SolidBrush(Color.Transparent);
+			elem.PressedBackground = new SolidBrush(Color.Transparent);
+			elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
+			elem.Image = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
+			if (unit.Equals(SelectedUnit))
 			{
-				unitBarRenderTargets.Add(unit.WorldObject.ID, new RenderTarget2D(graphicsDevice, TextureManager.GetTexture("GameHud/UnitBar/Background").Width, TextureManager.GetTexture("GameHud/UnitBar/Background").Height));
-
-			}
-
-			graphicsDevice.SetRenderTarget(unitBarRenderTargets[unit.WorldObject.ID]);
-			graphicsDevice.Clear(Color.Transparent);
-			batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp);
-			batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Background"), Vector2.Zero, Color.White);
-			int i;
-			if (unit.ActionPoints > 0 || unit.MovePoints > 0)
-			{
-				batch.End();
-				PostProcessing.PostProcessing.ApplyUIEffect( new Vector2(TextureManager.GetTexture("GameHud/UnitBar/screen").Width, TextureManager.GetTexture("GameHud/UnitBar/screen").Height));
-				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
-				batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
-				batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
-				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
-				batch.End();
-
-				PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(5,5));
-				batch.Begin(sortMode: SpriteSortMode.Deferred, samplerState: SamplerState.AnisotropicClamp, effect: PostProcessing.PostProcessing.UIGlowEffect);
-
-				int notchpos = 0;
-				for (i = 0; i < unit.MovePoints; i++)
-				{
-					
-					batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/moveNotch"), new Vector2(6 * notchpos, 0), Color.White);
-					notchpos++;
-				}
-
-				for (i = 0; i < unit.ActionPoints; i++)
-				{
-					batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/fireNotch"), new Vector2(6 * notchpos, 0), Color.White);
-					
-					notchpos++;
-				}
-				batch.End();
+			    elem.Left = 15;
 			}
 			else
 			{
-				batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/screen"), Vector2.Zero, Color.White);
-				batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
-				batch.DrawText(columCounter + 1 + "", new Vector2(10, 5), Color.White);
-				batch.End();
+			    elem.Left = 0;
 			}
+			Console.WriteLine($"Unit {unit.WorldObject.ID} - Height: {elem.Height}, Width: {elem.Width}, Position: {elem.Top}"); 
+	    }
+	    rowCounter++;
+	}
+
+    if (targetBar == null || targetBar.Widgets.Count < suggestedTargets.Count) return;
+    if (suggestedTargets.Count == 0) return;
+
+    foreach (var wo in suggestedTargets)
+    {
+	    var unit = wo.UnitComponent;
+	    if (!targetBarRenderTargets.ContainsKey(wo.ID))
+	    {
+		    targetBarRenderTargets.Add(wo.ID,
+			    new RenderTarget2D(graphicsDevice,
+				    TextureManager.GetTextureFromPNG("Units/" + wo.Type.Name + "/Icon").Width,
+				    TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name + "/Icon").Height));
+	    }
+
+	    graphicsDevice.SetRenderTarget(targetBarRenderTargets[wo.ID]);
+	    graphicsDevice.Clear(Color.Transparent);
+	    if (unit != null && unit.IsMyTeam())
+	    {
+		    PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Green);
+	    }
+	    else
+	    {
+		    PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Red);
+	    }
+
+	    batch.Begin(samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.OutLineEffect);
+	    batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name + "/Icon"), Vector2.Zero, Color.White);
+	    batch.End();
+    }
 
 
 
 
-			var healthTexture = TextureManager.GetTexture("GameHud/UnitBar/red");
-			var healthTextureoff = TextureManager.GetTexture("GameHud/UnitBar/redoff");
-			float healthWidth = healthTexture.Width;
-			float healthHeight = healthTexture.Height;
-			int baseWidth = TextureManager.GetTexture("GameHud/UnitBar/Background").Width;
-			float healthBarWidth = (healthWidth + 1) * unit.WorldObject.Type.MaxHealth;
-			float emtpySpace = baseWidth - healthBarWidth;
-			Vector2 healthBarPos = new Vector2(emtpySpace / 2f, 22);
-
-
-			for (int y = 0; y < unit.WorldObject.Type.MaxHealth; y++)
-			{
-				var indicator = healthTexture;
-				bool health = !(y >= unit.WorldObject.Health);
-				if (health)
-				{
-					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-					indicator = healthTexture;
-				}
-				else
-				{
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-					indicator = healthTextureoff;
-				}
-
-				batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-				batch.End();
-			}
-
-			healthTexture = TextureManager.GetTexture("GameHud/UnitBar/green");
-			healthTextureoff = TextureManager.GetTexture("GameHud/UnitBar/greenoff");
-			healthWidth = healthTexture.Width;
-			healthHeight = healthTexture.Height;
-			healthBarWidth = (healthWidth + 1) * unit.Type.Maxdetermination;
-			emtpySpace = baseWidth - healthBarWidth;
-			healthBarPos = new Vector2(emtpySpace / 2f, 25);
-
-
-			for (int y = 0; y < unit.Type.Maxdetermination; y++)
-			{
-				var indicator = healthTexture;
-				bool health = !(y >= unit.Determination);
-				if (health)
-				{
-					PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(healthWidth, healthHeight));
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, effect: PostProcessing.PostProcessing.UIGlowEffect);
-					indicator = healthTexture;
-				}
-				else
-				{
-					batch.Begin(sortMode: SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead);
-					indicator = healthTextureoff;
-				}
-
-				batch.Draw(indicator, healthBarPos + new Vector2((healthWidth + 1) * y, 0), null, Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 0);
-				batch.End();
-			}
-
-			columCounter++;
-		}
-
-		Debug.Assert(unitBarRenderTargets != null, nameof(unitBarRenderTargets) + " != null");
-		int realWidth = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Width;
-		int realHeight = unitBarRenderTargets[GameManager.GetMyTeamUnits()[0].WorldObject.ID].Height;
-		//float scale = (float) (_unitBar.MaxWidth! / _unitBar.Widgets.Count/realWidth);
-
-		bool twoLayer = false;
-
-		float scale = (float) (_unitBar.MaxHeight! / 2 /realHeight);
-		if (realWidth * scale * _unitBar.Widgets.Count > _unitBar.MaxWidth!)//only go for two layer if just downscaling to two layer size is not enough
-		{
-			twoLayer = true;
-		}
-		else
-		{
-			scale = Math.Min((float) (_unitBar.MaxWidth! / _unitBar.Widgets.Count/realWidth),(float)(_unitBar.MaxHeight! /realHeight));
-		}
-		
-		int w = (int) (realWidth * scale);
-		if (w % realWidth > 0) { w+= realWidth - w % realWidth; }
-		float actualScale =  (float) w/realWidth;
-		actualScale *= 0.95f;
-		int h = (int) (realHeight * actualScale);
-		columCounter = 0;
-		if (!twoLayer)
-		{
-			_unitBar.Top = (int) ( (_unitBar.MaxHeight! - h)/2f);
-		}
-
-		foreach (var unit in GameManager.GetMyTeamUnits())
-		{
-			
-			if(_unitBar.Widgets.Count > columCounter ){
-				ImageButton elem = (ImageButton)_unitBar.Widgets[columCounter];
-				int colum = columCounter;
-				if(twoLayer&& columCounter >= _unitBar.Widgets.Count/2){
-					colum = columCounter - _unitBar.Widgets.Count/2;
-					elem.GridRow = 1;
-				}
-				else
-				{
-					elem.GridRow = 0;
-				}
-				elem.GridColumn = colum;
-				elem.Width = w;
-				elem.ImageWidth = w;
-				elem.Height = h;
-				elem.ImageHeight = h;
-				elem.Background = new SolidBrush(Color.Transparent);
-				elem.FocusedBackground = new SolidBrush(Color.Transparent);
-				elem.OverBackground = new SolidBrush(Color.Transparent);
-				elem.PressedBackground = new SolidBrush(Color.Transparent);
-				elem.PressedImage = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
-				elem.Image = new TextureRegion(unitBarRenderTargets[unit.WorldObject.ID]);
-				if (unit.Equals(SelectedUnit)){
-					elem.Top = 10;
-				}
-				else
-				{
-					elem.Top = 0;
-				}
-			}
-			columCounter++;
-		}
-
-		if(targetBar == null ||  targetBar.Widgets.Count < suggestedTargets.Count) return;
-		if( suggestedTargets.Count == 0) return;
-		foreach (var wo in suggestedTargets)
-		{
-			var unit = wo.UnitComponent;
-			if (!targetBarRenderTargets.ContainsKey(wo.ID))
-			{
-				targetBarRenderTargets.Add(wo.ID, new RenderTarget2D(graphicsDevice, TextureManager.GetTextureFromPNG("Units/" + wo.Type.Name+"/Icon").Width,TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon").Height));
-
-			}
-			graphicsDevice.SetRenderTarget(targetBarRenderTargets[wo.ID]);
-			graphicsDevice.Clear(Color.Transparent);
-			if (unit != null && unit.IsMyTeam())
-			{
-				PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Green);	
-			}
-			else
-			{
-				PostProcessing.PostProcessing.SetOutlineEffectColor(Color.Red);
-			}
-
-			batch.Begin(samplerState: SamplerState.PointClamp, effect: PostProcessing.PostProcessing.OutLineEffect);
-			batch.Draw(TextureManager.GetTextureFromPNG("Units/" + unit.Type.Name+"/Icon"), Vector2.Zero, Color.White);
-			batch.End();
-		}
-		
-		
-		columCounter = 0;
+    
+        rowCounter = 0;
 		foreach (var unit in suggestedTargets)
 		{
-			ImageButton elem = (ImageButton)targetBar.Widgets[columCounter];
+			ImageButton elem = (ImageButton)targetBar.Widgets[rowCounter];
 			elem.GridRow = 0;
-			elem.GridColumn = columCounter;
+			elem.GridColumn = rowCounter;
 			elem.Width = w;
 			elem.ImageWidth = w;
 			elem.Height = h;
@@ -750,7 +751,7 @@ public partial class GameLayout : MenuLayout
 				elem.Top = 0;
 			}
 			
-			columCounter++;
+			rowCounter++;
 			
 			
 		}
@@ -758,7 +759,8 @@ public partial class GameLayout : MenuLayout
 
 	}
 
-	private static Grid? _unitBar;
+	
+	private static VerticalStackPanel _unitBar;
 	private static Grid? targetBar;
 	private static HorizontalStackPanel? targetBarStack;
 	private static ImageButton? ConfirmButton;
@@ -903,9 +905,8 @@ public partial class GameLayout : MenuLayout
 			};
 			SetScore(0);
 		}
-		
-
 		panel.Widgets.Add(ScoreIndicator);
+		
 		
 		if (CompleteIndicator == null)
 		{
@@ -920,31 +921,29 @@ public partial class GameLayout : MenuLayout
 		panel.Widgets.Add(CompleteIndicator);
 
 
-		_unitBar = new Grid()
+		_unitBar = new VerticalStackPanel()
 		{
-			GridColumnSpan = 4,
-			GridRowSpan = 1,
-			RowSpacing = 2,
-			ColumnSpacing = 2,
-			HorizontalAlignment = HorizontalAlignment.Center,
+			HorizontalAlignment = HorizontalAlignment.Left,
 			VerticalAlignment = VerticalAlignment.Top,
-			MaxWidth = (int)(365f*GlobalScale.X),
-			//Width = (int)(365f*globalScale.X),
-			MaxHeight = (int)(26f*GlobalScale.X),
-			//Height = (int)(38f*globalScale.X),
+			MaxWidth = (int)(182f*GlobalScale.X),
+			//Width = (int)(56f*GlobalScale.X),
+			MaxHeight = (int)(300f*GlobalScale.X),
+			//Height = (int)(365f*GlobalScale.X),
 			Top = (int)(0f*GlobalScale.Y),
-			Left = (int)(-5f*GlobalScale.X),
+			Left = (int)(0f*GlobalScale.X),
 			//ShowGridLines = true,
 		};
 		panel.Widgets.Add(_unitBar);
+		
+		
+		
+		
 		targetBarStack = new HorizontalStackPanel();
 		targetBarStack.HorizontalAlignment = HorizontalAlignment.Center;
 		targetBarStack.VerticalAlignment = VerticalAlignment.Bottom;
 		targetBarStack.Top = (int) (-230 * GlobalScale.Y);
 		targetBarStack.MaxWidth = (int) (365f * GlobalScale.X);
 		//	targetBarStack.Width = (int) (365f * globalScale.X);
-	
-		
 		targetBar = new Grid()
 		{
 			GridColumnSpan = 4,
@@ -1022,7 +1021,7 @@ public partial class GameLayout : MenuLayout
 
 		panel.Widgets.Add(OverWatchToggle);
 		
-		/*foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
+		foreach (var unit in new List<Unit>(GameManager.GetMyTeamUnits()))
 		{
 			var unitPanel = new ImageButton();
 
@@ -1033,7 +1032,7 @@ public partial class GameLayout : MenuLayout
 			};
 			_unitBar.Widgets.Add(unitPanel);
 		}
-		*/
+		
 
 		generated = true;
 		if (SelectedUnit == null) return panel;
@@ -1380,8 +1379,8 @@ public partial class GameLayout : MenuLayout
 		var fraction = GameManager.TimeTillNextTurn / (GameManager.PreGameData.TurnTime * 1000);
 		var displayLenght = totalLenght - totalLenght * fraction;
 		
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
-		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29), new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29) , null, Color.Gray, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/Timer"), new Vector2(x:-46,y:-29) , new Rectangle(0,0,190+(int)displayLenght,80), Color.White, 0, Vector2.Zero,1 ,SpriteEffects.None, 0);
 		batch.Draw(TextureManager.GetTexture("GameHud/UnitBar/scoreboard"), new Vector2(x:396,y:29), sourceRectangle:null, Color.Gray, 0, Vector2.Zero,scale:1 ,SpriteEffects.None, 0);
 		batch.End();
 		PostProcessing.PostProcessing.ApplyUIEffect(new Vector2(TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Width,TextureManager.GetTexture("GameHud/UnitBar/enemyTurn").Height),false);
@@ -2457,7 +2456,7 @@ public partial class GameLayout : MenuLayout
 		}
 	
 
-		/*if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
+		if (suggestedTargets.Count < 2) targetBarStack.Visible = false;
 
 		foreach (var unit in suggestedTargets)
 		{
@@ -2471,7 +2470,7 @@ public partial class GameLayout : MenuLayout
 			};
 			targetBar!.Widgets.Add(unitPanel);
 		}
-		*/
+		
 
 		targetBarStack!.Proportions!.Clear();
 		targetBarStack!.Proportions!.Add(new Proportion(ProportionType.Pixels, 40));

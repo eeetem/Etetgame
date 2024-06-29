@@ -19,7 +19,7 @@ public static class UI
 	{
 		graphicsDevice = graphicsdevice;
 		MyraEnvironment.Game = Game1.instance;
-		//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+		// MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
 
 		Desktop = new Desktop();

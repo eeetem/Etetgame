@@ -1,8 +1,10 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 using DefconNull.Networking;
 using DefconNull.WorldObjects;
+using FontStashSharp.RichText;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -40,13 +42,27 @@ public class SquadCompBuilderLayout : MenuLayout
 		freeslots = new Label()
 		{
 			Text = "Free Units: "+(WorldManager.Instance.CurrentMap.unitCount-MyComposition.Count),
+			Top = 15,
+			HorizontalAlignment = HorizontalAlignment.Center,
+			
 		};
 		otherfreeslots = new Label()
 		{
-			Top = 50,
+			Top = 15,
 			Text = "Free Units(team 2): "+(WorldManager.Instance.CurrentMap.unitCount-OtherComposition.Count),
-			Visible = GameManager.spectating
+			Visible = GameManager.spectating,
+			TextAlign = TextHorizontalAlignment.Center
 		};
+
+		var freeSlotsBackground = new Image()
+		{
+			Background = new TextureRegion(TextureManager.GetTexture("/Lobby/FreeUnitsBackground")),
+			HorizontalAlignment = HorizontalAlignment.Center,
+			Height = (int?) (55 * GlobalScale.Y),
+			Width = (int?) (150 * GlobalScale.X),
+			Top = 5,
+		};
+		panel.Widgets.Add(freeSlotsBackground);
 		panel.Widgets.Add(freeslots);
 		panel.Widgets.Add(otherfreeslots);
 
@@ -67,35 +83,46 @@ public class SquadCompBuilderLayout : MenuLayout
 
 		foreach (var unit in units)
 		{
-			var unitButton = new ImageTextButton()
+			
+			var unitButton = new ImageButton()
 			{
-				Text = unit,
-				Background = null,
-				
-				GridColumn = 1,
-				GridRow = 1,
 				Top = -50,	
-				Image = new TextureRegion(TextureManager.GetTextureFromPNG("Units/"+ unit + "/Icon"))
-				
-				
+				Height = (int?)( 100 * GlobalScale.Y),
+				Width = (int?)( 85 * GlobalScale.X),
+				ImageHeight = (int?) (100 * GlobalScale.Y),
+				ImageWidth = (int?) (85 * GlobalScale.X),
+				Image = new TextureRegion(TextureManager.GetTextureFromPNG("Units/"+ unit + "/LobbyIcon")),
+				OverImage =  new ColoredRegion(new TextureRegion(TextureManager.GetTextureFromPNG("Units/"+ unit + "/LobbyIcon")),Color.Goldenrod),
 			};
 			unitButton.Click += (s, a) =>
 			{
+				//unitButton.Top = -15;
 				if (MyComposition.Count >= WorldManager.Instance.CurrentMap.unitCount)
 				{
 					return;
 				}
 				StartPlacing(unit);
+				
 			};
 			unitStack.Widgets.Add(unitButton);
 		}
 
 
-		var confirm = new TextButton
+		var confirm = new ImageButton()
 		{
 			VerticalAlignment = VerticalAlignment.Bottom,
 			HorizontalAlignment = HorizontalAlignment.Center,
-			Text = "Confirm"
+			
+			Top = 0,	
+			Height = (int?)( 45 * GlobalScale.Y),
+			Width = (int?)( 85 * GlobalScale.X),
+			ImageHeight = (int?) (45 * GlobalScale.Y),
+			ImageWidth = (int?) (85 * GlobalScale.X),
+			Image = new TextureRegion(TextureManager.GetTexture("/Lobby/Confirm")),
+			PressedBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/Confirm")),Color.Goldenrod),
+			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/Confirm")),Color.Goldenrod),
+			OverImage =  new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/Confirm")),Color.Goldenrod),
+			
 		};
 		confirm.Click += (s, a) =>
 		{
@@ -126,6 +153,7 @@ public class SquadCompBuilderLayout : MenuLayout
 	private static void StartPlacing(string unit)
 	{
 		_currentlyPlacing = new SquadMember(unit);
+		
 	}
 
 	private Panel? itemMenu;

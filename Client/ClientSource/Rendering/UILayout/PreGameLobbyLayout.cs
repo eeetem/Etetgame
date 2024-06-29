@@ -9,7 +9,6 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Myra.Graphics2D.UI.File;
 
 namespace DefconNull.Rendering.UILayout;
 
@@ -23,7 +22,7 @@ public class PreGameLobbyLayout : MenuLayout
 		base.RenderBehindHud(batch, deltatime);
 		batch.Begin(samplerState: SamplerState.PointClamp);
 		var chatPos = Game1.instance.GraphicsDevice.Viewport.Height - 200 * GlobalScale.X;
-		batch.Draw(TextureManager.GetTexture(""), new Vector2(0, chatPos), null, new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f), 0, Vector2.Zero, new Vector2(150,200)*GlobalScale.X, SpriteEffects.None, 0);
+		batch.Draw(TextureManager.GetTexture(""), new Vector2(0, chatPos), null, new Color(242f / 255f, 190f / 255f, 0f / 255f)*0.2f, 0, Vector2.Zero, new Vector2(150,200)*GlobalScale.X, SpriteEffects.None, 0);
 
 		string chatmsg = "";
 		int extraLines = 0;
@@ -60,63 +59,102 @@ public class PreGameLobbyLayout : MenuLayout
 	}
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
-	{
-		swapingMap = false;
-		WorldManager.Instance.MakeFovDirty();
-		var grid1 = new Grid()
-		{
+{
+    swapingMap = false;
+    WorldManager.Instance.MakeFovDirty();
+    var grid1 = new Grid()
+    {
+    };
+    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
+    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 
-		};
-		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
-		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+    var rightStack = new VerticalStackPanel()
+    {
+        GridColumn = 2,
+        GridRow = 0,
+        Spacing = 0,
+        Top = 0,
+        Left = 0,
+        Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f) * 0.2f),
+        Width = (int)(140 * GlobalScale.X),
+        Height = (int)(800 * GlobalScale.Y),
+        Margin = new Thickness(0),
+        Padding = new Thickness(0)
+    };
+    grid1.Widgets.Add(rightStack);
 
+    var leftpanel = new Panel()
+    {
+        Top = 0,
+        Left = 0,
+        Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f)*0.2f),
+        Width = (int)(150 * GlobalScale.X),
+        Height = (int)(440 * GlobalScale.Y),
+        VerticalAlignment = VerticalAlignment.Stretch,
+        HorizontalAlignment = HorizontalAlignment.Left,
+    };
+    grid1.Widgets.Add(leftpanel);
 
+    var chat = new TextBox()
+    {
+	    Background = new SolidBrush(Color.Black),
+        HorizontalAlignment = HorizontalAlignment.Left,
+        VerticalAlignment = VerticalAlignment.Bottom,
+        Width = (int)(150 * GlobalScale.X),
+        Height = (int)(10 * GlobalScale.X),
+        Left = (int)(0 * GlobalScale.X),
+        Font = UiLayout.DefaultFont.GetFont(5 * GlobalScale.X)
+    };
+    chat.KeyDown += (s, a) =>
+    {
+        if (a.Data == Keys.Enter)
+        {
+            Chat.SendMessage(chat.Text);
+            chat.Text = "";
+        }
+    };
+    grid1.Widgets.Add(chat);
 
-		var rightStack = new VerticalStackPanel()
-		{
-			GridColumn = 2,
-			GridRow = 0,
-			Spacing = 0,
-			Top = 0,
-			Left = 0,
-			Background = new SolidBrush(new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f)),
-			Width = (int) (140 * GlobalScale.X),
-			Height = (int) (800 * GlobalScale.Y),
-			Margin = new Thickness(0),
-			Padding = new Thickness(0)
-		};
-		grid1.Widgets.Add(rightStack);
-		
-		var leftpanel = new Panel()
-		{
-			Top = 0,
-			Left = 0,
-			Background = new SolidBrush(new Color(26f / 255f, 19f / 255f, 15f / 255f, 0.95f)),
-			Width = (int) (150 * GlobalScale.X),
-			Height = (int) (440 * GlobalScale.Y),
-			VerticalAlignment = VerticalAlignment.Stretch,
-			HorizontalAlignment = HorizontalAlignment.Left,
-		};
-		grid1.Widgets.Add(leftpanel);
-		var chat = new TextBox()
-		{
-			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Bottom,
-			Width = (int)(150*GlobalScale.X),
-			Height = (int)(10*GlobalScale.X),
-			Left = (int)(0*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
-		};
-		chat.KeyDown += (s, a) =>
-		{
-			if (a.Data == Keys.Enter)
-			{
-				Chat.SendMessage(chat.Text);
-				chat.Text = "";
-			}
-		};
-		grid1.Widgets.Add(chat);
+    
+    /*var overlayLeftPanel = new Image()
+    {
+        GridColumn = 0,
+        GridRow = 0,
+        Top = 0,
+        Left = 0,
+        Width = leftpanel.Width,
+        Height = leftpanel.Height,
+        Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/LeftPanelOverlay"))
+    };
+    grid1.Widgets.Add(overlayLeftPanel);
+	*/
+    var overlayRightPanel = new Image()
+    {
+        GridColumn = 2,
+        GridRow = 0,
+        Top = 170,
+        Left = 0,
+        Width = rightStack.Width,
+        Height = rightStack.Height,
+	    Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/RightPanelOverlay"))
+    };
+    grid1.Widgets.Add(overlayRightPanel);
+	
+    /*
+    var overlayChat = new Image()
+    {
+        GridColumn = 0,
+        GridRow = 0,
+        Top = chat.Top,
+        Left = chat.Left,
+        Width = chat.Width,
+        Height = chat.Height,
+        Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/ChatOverlay"))
+    };
+    grid1.Widgets.Add(overlayChat);
+    */
+    
 
 		if (GameManager.PreGameData.Player2Name != "None" && GameManager.IsPlayer1)
 		{
@@ -178,8 +216,9 @@ public class PreGameLobbyLayout : MenuLayout
 			Top = 0,
 			Width = (int) (200 * GlobalScale.X),
 			Height = (int) (100 * GlobalScale.Y),
+			PressedBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.DarkGoldenrod),
 			Background = new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),
-			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.Red),
+			OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")),Color.DarkGoldenrod),
 			Padding = new Thickness(0,0,0,(int)(20*GlobalScale.X)),
 			Margin = new Thickness(0,0,0,(int)(20*GlobalScale.X)),
 
@@ -191,12 +230,17 @@ public class PreGameLobbyLayout : MenuLayout
 			btn.OverBackground = new ColoredRegion(new TextureRegion(TextureManager.GetTexture("Lobby/startButton")), Color.DimGray);
 		}
 
-		btn.Click += (s, a) => { NetworkingManager.SendStartGame(); };
+		btn.Click += (s, a) =>
+		{
+			
+			NetworkingManager.SendStartGame();
+		};
 		rightStack.Widgets.Add(btn);
 		
 		var label = new TextLabel()
 		{
 			Text = "Seconds Per Turn",
+			HorizontalAlignment = HorizontalAlignment.Center,
 			Height = (int)(10*GlobalScale.X),
 	
 		};
@@ -205,13 +249,15 @@ public class PreGameLobbyLayout : MenuLayout
 		label = new TextLabel()
 		{
 			Text = "(0 for infinite)",
+			HorizontalAlignment = HorizontalAlignment.Center,
 			Height = (int)(10*GlobalScale.X),
 	
 		};
 		rightStack.Widgets.Add(label);
 		var time = new TextBox()
 		{
-	
+			HorizontalAlignment = HorizontalAlignment.Center,
+			Width = (int)(120f*GlobalScale.X)
 		};
 		time.Text = "" + GameManager.PreGameData.TurnTime;
 		rightStack.Widgets.Add(time);
@@ -273,7 +319,7 @@ public class PreGameLobbyLayout : MenuLayout
 	var officialSelection = new ListBox()
 	{
 		HorizontalAlignment = HorizontalAlignment.Stretch,
-		VerticalAlignment = VerticalAlignment.Bottom
+		VerticalAlignment = VerticalAlignment.Bottom,
 	};
 	officialSelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
 	foreach (var path in GameManager.MapList)
@@ -281,6 +327,12 @@ public class PreGameLobbyLayout : MenuLayout
 		var item = new ListItem()
 		{
 			Text = path.Key,
+			
+		};
+		var image = new ImageButton()
+		{
+			Image = new TextureRegion(TextureManager.GetTexture("Lobby/MapBackground")),
+			
 		};
 		officialSelection.Items.Add(item);
 	}
@@ -311,9 +363,14 @@ foreach (var path in GameManager.CustomMapList)
 {
 	var item = new ListItem()
 	{
+		
 		Text = path.Key,
+		Image = new TextureRegion(TextureManager.GetTexture("Lobby/MapBackground")),
+		ImageTextSpacing = 150
 						
 	};
+
+
 					
 	communitySelection.Items.Add(item);
 }
