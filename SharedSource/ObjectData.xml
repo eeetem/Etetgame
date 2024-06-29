@@ -293,13 +293,13 @@
     </destroyConsequences>
   </object>
 
-  <unit health="13" moveRange = "6" moves="2" determination="3" z="0.1">
+  <unit health="13" moveRange = "6" moves="2" determination="2" z="0.1">
     <name>Grunt</name>
     <action moveCost="1" actCost="1" overwatch="2">
       <name>Attack</name>
       <targetAid>enemy</targetAid>
 
-      <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="18" shotCount="3" shotDelay="200" shotSpread="0.2" shotSound="rifle"/>
+      <shoot dmg ="7" detRes="1" supression="1" supressionRange="2" dropOffRange="16" shotCount="3" shotDelay="200" shotSpread="0.2" shotSound="rifle"/>
       <tip>A standard attack. [Green]Excellent damage and long range.[-]\n[Green]7[-] Damage drops off every [Yellow]18[-] tiles.\nUnits in range [Green]2[-] will loose [Blue]1[-] determination.\nDetermined units will dodge [Red]1[-] less damage.</tip>
       <effect>
         <consequences>
@@ -309,7 +309,7 @@
       </effect>
     </action>
 
-    <action detCost ="3" moveCost="1" actCost="1">
+    <action detCost ="2" moveCost="1" actCost="1">
       <name>Headshot</name>
       <tip>[Green]15[-] damage shot. Can only target targets with [Red]0 determination[-]. Great for punishing reckless ability usage</tip>
       <targetAid>enemy</targetAid>

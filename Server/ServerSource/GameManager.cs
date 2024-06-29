@@ -422,7 +422,7 @@ public static partial class GameManager
 						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
 						{
 							p.WorldState[tile.Position] = worldTileData;
-							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true));
+							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true,false));
 						}
 						
 

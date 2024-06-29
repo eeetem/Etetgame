@@ -220,6 +220,7 @@ public class SequenceManager
 #else
 			
 			GameManager.ShouldRecalculateUnitPositions = true;
+
 #endif
 			hasSequece = false;
 		}

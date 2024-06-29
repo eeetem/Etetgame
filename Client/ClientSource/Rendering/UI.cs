@@ -100,7 +100,7 @@ public static class UI
 		{
 			return; //let myra do it's thing
 		}
-
+		
 		var mouseState = Mouse.GetState();
 		Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)

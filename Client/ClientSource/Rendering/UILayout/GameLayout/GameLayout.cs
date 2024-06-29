@@ -539,6 +539,11 @@ public partial class GameLayout : MenuLayout
 			};
 			SetScore(0);
 		}
+		else
+		{
+			ScoreIndicator.Top = (int) (28.5f * GlobalScale.X);
+			ScoreIndicator.Left = (int) (735f * GlobalScale.X);
+		}
 		
 
 		panel.Widgets.Add(ScoreIndicator);
@@ -2032,6 +2037,7 @@ public partial class GameLayout : MenuLayout
 		if(ConfirmButton is null) return;
 		if(targetBarStack is null) return;
 		if(OverWatchToggle is null) return;
+		if (SelectedUnit == null || SelectedUnit.Health <= 0) return;
 		foreach (var act in ActionButtons)
 		{
 			act.UpdateIcon();
