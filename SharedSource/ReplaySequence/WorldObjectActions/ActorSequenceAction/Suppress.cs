@@ -20,7 +20,7 @@ public class Suppress : UnitSequenceAction
 		return SequenceType.Suppress;
 	}
 
-	public override BatchingMode Batching => BatchingMode.OnlySameType;
+	public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 	public ushort DetDmg;
 
 	protected bool Equals(Suppress other)
@@ -44,6 +44,10 @@ public class Suppress : UnitSequenceAction
 		}
 	}
 
+	public override bool ShouldDo()
+	{
+		return base.ShouldDo() && Actor != null;//actors can get destroyed by a previous sequence action
+	}
 
 	public static Suppress Make(ushort detDmg, int actorID) 
 	{

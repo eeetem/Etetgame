@@ -21,7 +21,7 @@
 
     <ItemGroup>
       <PackageReference Include="Kotz.ObjectPool" Version="2.1.1" />
-      <PackageReference Include="MD5" Version="2.0.4" />
+      <PackageReference Include="MD5" Version="2.1.5" />
       <PackageReference Include="MonoGame.Extended" Version="3.8.0" />
       <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -45,8 +45,18 @@
       <None Remove="SharedSource\World\**" />
       <None Remove="obj\**" />
       <None Update="Maps\Special\tutorial.mapdata">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Special\BasicTutorialMap.mapdata">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Maps\Special\BasicTutorialMap2.mapdata">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Maps\Special\BasicTutorialMap3.mapdata">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+
     </ItemGroup>
 
     <ItemGroup>
@@ -107,14 +117,17 @@
       <Compile Include="..\SharedSource\ReplaySequence\PostProcessingEffect.cs">
         <Link>SharedSource\ReplaySequence\PostProcessingEffect.cs</Link>
       </Compile>
-      <Compile Include="..\SharedSource\ReplaySequence\ProjectilAction.cs">
-        <Link>SharedSource\ReplaySequence\ProjectilAction.cs</Link>
-      </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SequenceAction.cs">
         <Link>SharedSource\ReplaySequence\SequenceAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SequenceManager.cs">
         <Link>SharedSource\ReplaySequence\SequenceManager.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\SpawnParticle.cs">
+        <Link>SharedSource\ReplaySequence\SpawnParticle.cs</Link>
+      </Compile>
+      <Compile Include="..\SharedSource\ReplaySequence\ProjectileAction.cs">
+        <Link>SharedSource\ReplaySequence\ProjectileAction.cs</Link>
       </Compile>
       <Compile Include="..\SharedSource\ReplaySequence\SpotUnit.cs">
         <Link>SharedSource\ReplaySequence\SpotUnit.cs</Link>

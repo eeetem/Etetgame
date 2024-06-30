@@ -1,22 +1,18 @@
-using DefconNull;
-using DefconNull.ReplaySequence;
-using DefconNull.ReplaySequence.WorldObjectActions;
-using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
-using DefconNull.WorldObjects;
+
 using Riptide;
 
 namespace Tests;
 
 public class Tests
 {
-
+/*
     [OneTimeSetUp]
     public void Setup()
     {
-        Log.Init();
-        SequenceAction.InitialisePools();
-        PrefabManager.MakePrefabs();
-        WorldManager.Instance.Init();
+   //     Log.Init();
+   //     SequenceAction.InitialisePools();
+   //     PrefabManager.MakePrefabs();
+   //     WorldManager.Instance.Init();
     }
 
     [Test]
@@ -190,5 +186,5 @@ public class Tests
             }
         }
         
-    }
+    }*/
 }

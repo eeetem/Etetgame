@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DefconNull.Rendering;
 using DefconNull.ReplaySequence;
 using DefconNull.WorldObjects;
+using Microsoft.Xna.Framework;
 using Myra.Graphics2D.UI;
 using Riptide;
 
@@ -50,13 +51,17 @@ public static partial class NetworkingManager
 			
 			UI.Desktop.Widgets.Remove(mapLoadMsg);
 			WorldManager.Instance.Maploading = false;
-			if (WorldManager.Instance.GetMapHash() != hash)
+			/*
+			var maphash = WorldManager.Instance.GetMapHash();
+			if (maphash != hash)
 			{
+				return;
 				Log.Message("NETWORKING","Map Hash Mismatch, resending");
 				var msg = Message.Create(MessageSendMode.Reliable, (ushort)NetworkMessageID.MapReaload);
 				client?.Send(msg);
 			
 			}
+			*/
 			
 			
 		});
@@ -65,16 +70,25 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.EndTurn)]
 	private static void RecieveEndTrugn(Message message)
 	{
+		Log.Message("NETWORKING","end turn recieved");
 		GameManager.SetEndTurn();
+	}
+	[MessageHandler((ushort) NetworkMessageID.CaptureNotif)]
+	private static void ReciveCaptureNotif(Message message)
+	{
+		Vector2Int loc = message.GetSerializable<Vector2Int>();
+		Audio.PlaySound("capture");
+		Camera.SetPos(loc);
+		GameManager.Score = message.GetInt();
 	}
 	
 	[MessageHandler((ushort)NetworkMessageID.GameData)]
 	private static void ReciveGameUpdate(Message message)
 	{
+		Log.Message("NETWORKING","recived game data");
 		GameManager.GameStateData data = message.GetSerializable<GameManager.GameStateData>();
 		GameManager.SetData(data);
 	}
-
 
 
 	[MessageHandler((ushort)NetworkMessageID.Notify)]

@@ -36,9 +36,11 @@ public override Queue<SequenceAction>[] GetConsequenes(Unit actor, ActionExecuti
 		var queue = new Queue<SequenceAction>();
 		ChangeUnitValues c = ChangeUnitValues.Make(actor.WorldObject.ID,0,-1);
 		queue.Enqueue(c);
+
 		
 		CrouchUnit crouch = CrouchUnit.Make(actor.WorldObject.ID);
-		queue.Enqueue(crouch);
+	queue.Enqueue(crouch);
+
 
 		foreach (var shooter in shooters)
 		{

@@ -7,6 +7,7 @@ namespace DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 public class FaceUnit : UnitSequenceAction
 {
 	public Vector2Int Target;
+	private bool usePoint;
 
 	protected bool Equals(FaceUnit other)
 	{
@@ -35,11 +36,12 @@ public class FaceUnit : UnitSequenceAction
 		return  "Face: "+ base.ToString()+ $"{nameof(Target)}: {Target}";
 	}
 
-	public static FaceUnit Make(int actorID, Vector2Int target) 
+	public static FaceUnit Make(int actorID, Vector2Int target,bool usePoint) 
 	{
 		FaceUnit t = (GetAction(SequenceType.Face) as FaceUnit)!;
 		t.Target = target;
 		t.Requirements = new TargetingRequirements(actorID);
+		t.usePoint = usePoint;
 
 		return t;
 	}
@@ -56,7 +58,8 @@ public class FaceUnit : UnitSequenceAction
 			var targetDir = Utility.GetDirection(Actor.WorldObject.TileLocation.Position, Target);
 			if (targetDir != Actor.WorldObject.Facing)
 			{
-				Actor.canTurn = false;
+				if(usePoint)
+					Actor.CanTurn = false;
 				Actor.WorldObject.Face(targetDir);
 			}
 
@@ -67,12 +70,14 @@ public class FaceUnit : UnitSequenceAction
 	{
 		base.SerializeArgs(message);
 		message.AddSerializable(Target);
+		message.AddBool(usePoint);
 	}
 
 	protected override void DeserializeArgs(Message message)
 	{
 		base.DeserializeArgs(message);
 		Target = message.GetSerializable<Vector2Int>();
+		usePoint = message.GetBool();
 	}
 #if CLIENT
 	public override void Preview(SpriteBatch spriteBatch)

@@ -16,12 +16,14 @@ public class TileUpdate : SequenceAction
 	public override BatchingMode Batching => BatchingMode.Sequential;
 	private WorldTile.WorldTileData _data = new WorldTile.WorldTileData();
 	private bool force = false;
+	private bool showTruth = false;
 	
-	public static TileUpdate Make(Vector2Int location, bool force) 
+	public static TileUpdate Make(Vector2Int location, bool force, bool showTruth) 
 	{
 		TileUpdate t = (GetAction(SequenceType.TileUpdate) as TileUpdate)!;
 		t._data = WorldManager.Instance.GetTileAtGrid(location).GetData();
 		t.force = force;
+		t.showTruth = showTruth;
 		return t;
 	}
 	public static TileUpdate Make(WorldTile.WorldTileData data,bool force) 
@@ -29,6 +31,7 @@ public class TileUpdate : SequenceAction
 		TileUpdate t = (GetAction(SequenceType.TileUpdate) as TileUpdate)!;
 		t._data = data;
 		t.force = force;
+		t.showTruth = false;
 		return t;
 	}
 	public override bool ShouldDo()
@@ -58,16 +61,24 @@ public class TileUpdate : SequenceAction
 	protected override void SerializeArgs(Message message)
 	{
 		message.Add(_data);
-
+		message.Add(force);
+		message.Add(showTruth);
 	}
 
 	protected override void DeserializeArgs(Message message)
 	{
 		_data = message.GetSerializable<WorldTile.WorldTileData>();
+		force = message.GetBool();
+		showTruth = message.GetBool();
 	}
 #if SERVER
 	public override void FilterForPlayer(bool player1)
 	{
+		if (showTruth)
+		{
+			_data = WorldManager.Instance.GetTileAtGrid(_data.Position).GetData();
+			return;
+		}
 		var p = GameManager.GetPlayer(player1);
 		if (p.WorldState.TryGetValue(_data.Position, out var value))
 		{

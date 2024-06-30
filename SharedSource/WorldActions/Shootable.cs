@@ -23,18 +23,26 @@ public class Shootable : Effect
 	readonly ushort supressionStrenght;
 	readonly int supressionRange;
 	readonly int dropOffRange;
+	readonly int shotCount;
+	readonly int shotDelay;
+	readonly float shotSpread;
+	private readonly string sound;
 	
 
-	public Shootable(int preDropOffDmg, int detResistance, ushort supressionStrenght, int supressionRange, int dropOffRange)
-	{
-		this.preDropOffDmg = preDropOffDmg;
-		this.detResistance = detResistance;
-		this.supressionStrenght = supressionStrenght;
-		this.supressionRange = supressionRange;
-		this.dropOffRange = dropOffRange;
-	}
 
-    
+	public Shootable(int dmg, int detRes, ushort supression, int suppresionRange, int dropoff, int shotCount, int shotDelay, float shotSpread, string sound)
+	{
+		preDropOffDmg = dmg;
+		detResistance = detRes;
+		supressionStrenght = supression;
+		supressionRange = suppresionRange;
+		dropOffRange = dropoff;
+		this.shotCount = shotCount;
+		this.shotDelay = shotDelay;
+		this.shotSpread = shotSpread;
+		this.sound = sound;
+		
+	}
 
 
 	public override float GetOptimalRangeAI()
@@ -182,36 +190,7 @@ public class Shootable : Effect
 				result = WorldManager.Instance.Raycast(from, to, Cover.Full,false,pseudoLayer:dimension);
 			}
 
-			//if we reached the end tile but didnt hit anything, autolock onto the unit on the tile
-			if (!result.Value.hit) {
-				var tile = PseudoWorldManager.GetTileAtGrid(to,dimension);
-				if (targetObj.TileLocation == tile && !targetObj.Type.Surface)
-				{
-					result = new WorldManager.RayCastOutcome(from, to) {
-						hit = true,
-						HitObjId = targetObj.ID,
-						CollisionPointLong = to,
-						CollisionPointShort = to,
-					};
-				}
-				else
-				{
-					var obj = tile.UnitAtLocation;
-					if (obj != null) {
-						var controllable = obj;
-						if (controllable.Crouching && targetLow == false) {
-							// Do nothing if targetLow is false
-						} else {
-							result = new WorldManager.RayCastOutcome(from, to) {
-								hit = true,
-								HitObjId = obj.WorldObject.ID,
-								CollisionPointLong = to,
-								CollisionPointShort = to,
-							};
-						}
-					}
-				}
-			}
+			
 
 		
 		}
@@ -351,27 +330,22 @@ public class Shootable : Effect
 
 		
 		
-		var shoot = Shoot.Make(p, preDropOffDmg, coverBlock, rangeBlock);
+		var shoot = Shoot.Make(p, preDropOffDmg, coverBlock, rangeBlock, shotCount, shotDelay, shotSpread, sound);
 		retrunList.Add(shoot);
 		if (p.Result.hit)
 		{
-
 			var hitObj =PseudoWorldManager.GetObject(p.Result.HitObjId,dimension);
 			if (hitObj != null)
 			{
 
 				if (hitObj.UnitComponent is not null)
 				{
-					var lookAtAttacker = FaceUnit.Make(hitObj.ID, p.Result.StartPoint);
+					var lookAtAttacker = FaceUnit.Make(hitObj.ID, p.Result.StartPoint,false);
 					retrunList.Add(lookAtAttacker);
 				}
 				var act2 = WorldObjectManager.TakeDamage.Make(p.Dmg, detResistance, hitObj.ID);
 				retrunList.Add(act2);
 
-			}
-			else
-			{
-				Console.WriteLine("hitobj is null");
 			}
 		}
 

@@ -13,6 +13,7 @@ using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
+using Riptide;
 
 namespace DefconNull;
 
@@ -66,7 +67,7 @@ public static partial class GameManager
 	{
 		if(intated)return;
 		intated = true;
-		TimeTillNextTurn = PreGameData.TurnTime*1000;
+		TimeTillNextTurn = 10 + PreGameData.TurnTime*1000;
 		WorldManager.Instance.MakeFovDirty();
 		GameLayout.SelectUnit(null);
 		
@@ -118,7 +119,7 @@ public static partial class GameManager
 		Console.WriteLine("IsPlayer1: " + IsPlayer1);
 		Console.WriteLine("IsPlayer1Turn: " + IsPlayer1Turn);
 			
-		score = data.Score;
+		Score = data.Score;
 		if (GameState != data.GameState)
 		{
 			Audio.OnGameStateChange(GameState);
@@ -145,7 +146,8 @@ public static partial class GameManager
 				StartGame();
 				Task.Run(delegate
 				{
-					UI.SetUI(new GameLayout());
+					if(!(UI.currentUi is GameLayout))
+						UI.SetUI(new GameLayout());
 				});
 				break;
 		}
@@ -202,7 +204,11 @@ public static partial class GameManager
 	
 	public static void UpdateUnitPositions(bool player1, Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> recievedUnitPositions, bool fullUpdate)
 	{
-		if(!spectating && player1 != IsPlayer1) throw new Exception("Recieved unit update for wrong team");
+		if(!spectating && player1 != IsPlayer1)
+		{
+			Log.Message("WARN","Recieved unit positions for wrong player");
+			return;
+		}
 		if (spectating)
 		{
 			if (fullUpdate)
@@ -231,7 +237,7 @@ public static partial class GameManager
 				if (!recievedUnitPositions.ContainsKey(u.WorldObject.ID))
 				{
 					Log.Message("UNITS","deleting non-existant unit: "+u.WorldObject.ID);
-					WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).GenerateTask().RunTaskSynchronously(); //queue up deletion
+					WorldObjectManager.DeleteWorldObject.Make(u.WorldObject.ID).RunSynchronously();; //queue up deletion
 				}
 			}
 		}
@@ -241,32 +247,32 @@ public static partial class GameManager
 			var obj = WorldObjectManager.GetObject(u.Key);
 			if (obj == null)
 			{
-				Log.Message("UNITS","creating new unit: "+u.Key);
-				WorldObjectManager.MakeWorldObject.Make(u.Value.Item2,u.Value.Item1).GenerateTask().RunTaskSynchronously();
-				justCreated.Add(u.Key);
-			}
-		}
-		
-		//assign teams to new units
-		foreach (var u in recievedUnitPositions)
-		{
-			if (u.Value.Item2.UnitData!.Value.Team1)
-			{
-				if (!T1Units.Contains(u.Key))
+				if (WorldManager.Instance.GetTileAtGrid(u.Value.Item1).UnitAtLocation == null)//sometimes we can have 2 last seen units on same spot
 				{
-					T1Units.Add(u.Key);
-					Log.Message("UNITS","adding unit to team 1: "+u.Key);
+					Log.Message("UNITS", "creating new unit: " + u.Key);
+					WorldObjectManager.MakeWorldObject.Make(u.Value.Item2, u.Value.Item1).RunSynchronously();;
+					justCreated.Add(u.Key);
+					
+					if (u.Value.Item2.UnitData!.Value.Team1)
+					{
+						if (!T1Units.Contains(u.Key))
+						{
+							T1Units.Add(u.Key);
+							Log.Message("UNITS","adding unit to team 1: "+u.Key);
+						}
+					}
+					else
+					{
+						if (!T2Units.Contains(u.Key))
+						{
+							T2Units.Add(u.Key);
+							Log.Message("UNITS","adding unit to team 2: "+u.Key);
+						}
+					}	
 				}
 			}
-			else
-			{
-				if (!T2Units.Contains(u.Key))
-				{
-					T2Units.Add(u.Key);
-					Log.Message("UNITS","adding unit to team 2: "+u.Key);
-				}
-			}	
 		}
+
 		
 		//update existing units
 		foreach (var u in new List<int>(T1Units))
@@ -284,11 +290,19 @@ public static partial class GameManager
 				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
 				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
 				{
-					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).RunSynchronously();;
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
-				obj.UnitComponent!.MoveTo(data.Item1);
+				if (WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation == null || WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID == obj.ID)//sometimes we can have 2 last seen units on same spot just get rid of em
+				{
+					obj.UnitComponent!.MoveTo(data.Item1);
+				}
+				else
+				{
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();;
+
+				}
 			}
 		}
 		foreach (var u in new List<int>(T2Units))
@@ -305,11 +319,19 @@ public static partial class GameManager
 				if(obj!.IsVisible() && obj.GetData().Equals(data.Item2) && !justCreated.Contains(u)) continue;//ignore units that are visible since they are fully updated with sequence actions
 				if (obj.TileLocation.Position != data.Item1 && WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation != null)
 				{
-					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).GenerateTask().RunTaskSynchronously();
+					WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID).RunSynchronously();;
 				}
 				Log.Message("UNITS","moving unit to known position and loading data: "+u + " " + data.Item1);
 				obj!.SetData(data.Item2);
-				obj.UnitComponent!.MoveTo(data.Item1);
+				if (WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation == null || WorldManager.Instance.GetTileAtGrid(data.Item1).UnitAtLocation!.WorldObject.ID == obj.ID)//sometimes we can have 2 last seen units on same spot just get rid of em
+				{
+					obj.UnitComponent!.MoveTo(data.Item1);
+				}
+				else
+				{
+					WorldObjectManager.DeleteWorldObject.Make(obj.ID).RunSynchronously();;
+
+				}
 			}
 		}
 		

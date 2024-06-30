@@ -15,7 +15,7 @@ namespace DefconNull.Networking;
 
 public static partial class NetworkingManager
 {
-	private static Client? client;
+	public static Client? client;
 	private static string Ipport="";
 	private static string Name="";
 	public static bool Connected => client != null && client.IsConnected;
@@ -88,7 +88,7 @@ public static partial class NetworkingManager
 			//Log.Message("RIPTIDE","Recived Message: " + (NetworkMessageID)b.MessageId);
 		};
 
-		client.TimeoutTime = 10000;
+		client.TimeoutTime = 20000;
 #if DEBUG
 		client.TimeoutTime = ushort.MaxValue;
 #endif

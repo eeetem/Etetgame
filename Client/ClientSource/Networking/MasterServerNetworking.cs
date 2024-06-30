@@ -124,10 +124,17 @@ public class MasterServerNetworking
 	[MessageHandler((ushort)  NetworkingManager.MasterServerNetworkMessageID.LobbyCreated)]
 	private static void ReciveCreatedLobby(Message message)
 	{
-		Console.WriteLine("Connecting to started lobbby...");
+		Log.Message("NETWORKING", "Connecting to started lobbby...");
 		var data = message.GetSerializable<LobbyData>();
-		var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
-		Console.WriteLine("result: "+result);
+		for (int i = 0; i < 10; i++)
+		{
+			Log.Message("NETWORKING", "Connecting to started lobbby attempt "+i+"...");
+			var result = NetworkingManager.Connect(Ipport.Split(":")[0]+":"+data.Port,Name);
+			Log.Message("NETWORKING", "result: "+result);
+			if(result)
+				break;
+		}
+		
 	
 	}
 		
@@ -155,11 +162,16 @@ public class MasterServerNetworking
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkingManager.MasterServerNetworkMessageID.Chat);
 		msg.AddString(message);
 		Client?.Send(msg);
+		
 	}
-	[MessageHandler((ushort)NetworkingManager.MasterServerNetworkMessageID.Chat)]
+
+	[MessageHandler((ushort) NetworkingManager.MasterServerNetworkMessageID.Chat)]
 	private static void ReciveChat(Message message)
 	{
-		Chat.ReciveMessage(message.GetString());	
+		if (!NetworkingManager.Connected)
+		{
+			Chat.ReciveMessage(message.GetString());
+		}
 	}
 
 }

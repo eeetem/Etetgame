@@ -13,6 +13,8 @@ using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using Riptide;
 using Salaros.Configuration;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -47,7 +49,9 @@ public class Game1 : Game
 
 	protected override void Initialize()
 	{
+		base.Initialize();
 		Log.Init();
+		UpdateGameSettings();
 		spriteBatch = new SpriteBatch(GraphicsDevice);
 		Camera.Init(GraphicsDevice,Window);
 		//WorldEditSystem.Init();
@@ -55,18 +59,18 @@ public class Game1 : Game
 		SequenceAction.InitialisePools();
 		WorldManager.Instance.Init();
 		Action.Init();
-		RenderSystem.Init(GraphicsDevice);
+		
 		Utility.Init();
 		Message.MaxPayloadSize = 2048 * (int)Math.Pow(2, 5);
 		
 		
 
-		base.Initialize();
+		
 
         
 		DiscordManager.Init();
 		UI.SetUI(new MainMenuLayout());
-		UpdateGameSettings();
+		
 		MainMenuLayout.GradientPos = new Vector2(-1000000, 0);
 	}
 
@@ -76,7 +80,7 @@ public class Game1 : Game
 
 	protected override void LoadContent()
 	{
-			
+		RenderSystem.Init(GraphicsDevice,Content);
 		GlobalRenderTarget = new RenderTarget2D(GraphicsDevice, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 		GraphicsDevice.SetRenderTarget(GlobalRenderTarget);
 		GraphicsDevice.SetRenderTarget(null);
@@ -84,8 +88,6 @@ public class Game1 : Game
 		UI.Init(GraphicsDevice);
 		UiLayout.Init(GraphicsDevice);
 		GameLayout.Init();
-		
-
 		Audio.Init(Content);
 		
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -136,15 +138,17 @@ public class Game1 : Game
 		NetworkingManager.Update();
 		MasterServerNetworking.Update();
 		GameManager.Update(gameTime.ElapsedGameTime.Milliseconds);
-		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 		SequenceManager.Update();
+		WorldManager.Instance.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Audio.Update(gameTime.ElapsedGameTime.Milliseconds);
 		Camera.Update(gameTime);
-		LocalObject.Update(gameTime.ElapsedGameTime.Milliseconds);
+		Particle.Update(gameTime.ElapsedGameTime.Milliseconds);
+		Tracer.Update(gameTime.ElapsedGameTime.Milliseconds);
 		PopUpText.Update(gameTime.ElapsedGameTime.Milliseconds);
 		UI.Update(gameTime.ElapsedGameTime.Milliseconds);
 		DiscordManager.Update();
 		Chat.Update(gameTime.ElapsedGameTime.Milliseconds);
+
 
 		base.Update(gameTime);
 	}
