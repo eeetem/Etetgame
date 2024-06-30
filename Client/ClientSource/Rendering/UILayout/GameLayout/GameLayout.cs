@@ -867,13 +867,14 @@ public partial class GameLayout : MenuLayout
 		_unitBar = new VerticalStackPanel()
 		{
 			HorizontalAlignment = HorizontalAlignment.Left,
-			VerticalAlignment = VerticalAlignment.Top,
+			VerticalAlignment = VerticalAlignment.Top ,
 			MaxWidth = (int)(182f*GlobalScale.X),
 			//Width = (int)(56f*GlobalScale.X),
 			MaxHeight = (int)(300f*GlobalScale.X),
 			//Height = (int)(365f*GlobalScale.X),
 			Top = (int)(0f*GlobalScale.Y),
 			Left = (int)(0f*GlobalScale.X),
+			
 			//ShowGridLines = true,
 		};
 		panel.Widgets.Add(_unitBar);
@@ -1378,6 +1379,8 @@ public partial class GameLayout : MenuLayout
 		}
 		batch.DrawText(chatmsg,new Vector2(15,-7*extraLines+240*GlobalScale.Y),1.5f,width,Color.White);
 		batch.End();
+
+		
 		
 		if(SelectedUnit!=null)
 		{
