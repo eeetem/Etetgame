@@ -831,7 +831,7 @@ public partial class GameLayout : MenuLayout
 		*/
 		var ruler = new TextButton
 		{
-			Top = (int)(150f * GlobalScale.Y),
+			Top = (int)(160f * GlobalScale.Y),
 			Left = (int)(-10f * GlobalScale.X),
 			Width = (int)(60 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Right,
@@ -840,14 +840,32 @@ public partial class GameLayout : MenuLayout
 		};
 		ruler.Click += (o, a) =>
 		{
-			Log.Message("Test","1. ruler button clicked");
+			//Log.Message("Test","1. ruler button clicked");
 			if (CheckCurrentTool() == null)
 			{
-				Log.Message("Test","2. selected ruler tool");
+				//Log.Message("Test","2. selected ruler tool");
 				SelectGameTool(new RulerTool());
 			}
 		};
 		panel.Widgets.Add(ruler);
+		
+		var FOVtool = new TextButton
+		{
+			Top = (int)(195f * GlobalScale.Y),
+			Left = (int)(-10f * GlobalScale.X),
+			Width = (int)(80 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Text = "FOVTool",
+		};
+		FOVtool.Click += (o, a) =>
+		{
+			if (CheckCurrentTool() == null)
+			{
+				SelectGameTool(new FOVTool());
+			}
+		};
+		panel.Widgets.Add(FOVtool);
 #endif		
 
 		endBtn = new ImageButton()
@@ -1984,16 +2002,15 @@ public partial class GameLayout : MenuLayout
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		
 
 		position = Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99));
 		
 		var tile =WorldManager.Instance.GetTileAtGrid( position);
-		
-		if (rightclick && CheckCurrentTool() is RulerTool)
+
+		if (CheckCurrentTool() != null)
 		{
 			Log.Message("Test"," 3. click called");
-			currentTool.click(position);
+			currentTool.click(position, rightclick);
 			return;
 		}
 
