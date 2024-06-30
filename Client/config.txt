@@ -1,2 +1,2 @@
 ﻿[config]
-MasterServerIP = 109.255.215.173:1695
+MasterServerIP = 109.255.215.173:1600
