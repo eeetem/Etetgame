@@ -71,7 +71,7 @@ public class AI
 						||
 						NetworkingManager.HasPendingMessages ||
 						!GameManager.Player1!.ReadyForNextSequence ||
-						GameManager.Player1.SequenceQueue.Count > 0
+						GameManager.Player1.HasSequencesToSend
 #endif
 					);
 

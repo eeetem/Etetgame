@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework.Graphics;
@@ -52,7 +53,7 @@ public static partial class WorldObjectManager
 		}
 #endif
 
-        public override BatchingMode Batching => BatchingMode.Sequential;
+        public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
 
         private Vector2Int _position = new Vector2Int(0, 0);
         public WorldObject.WorldObjectData data = new WorldObject.WorldObjectData("basicFloor");
@@ -93,14 +94,18 @@ public static partial class WorldObjectManager
             Log.Message("WORLD OBJECT MANAGER","DOING:"+ this);
             if (data.ID != -1 ) //if it has a pre defined id - delete the old obj - otherwise we can handle other id stuff when creatng it
             {
-                Log.Message("WORLD OBJECT MANAGER","deleting object with same if if exists");
-                DeleteWorldObject.Make(data.ID).GenerateTask().RunTaskSynchronously();
-
+	            Log.Message("WORLD OBJECT MANAGER","deleting object with same if if exists");
+	            bool delete = false;
+	            lock (WoLock)
+	            {
+		            if (WorldObjects.ContainsKey(data.ID)) delete = true;
+			          
+	            }
+	            if(delete)  DeleteWorldObject.Make(data.ID).RunSynchronously();;
             }
             else
             {
                 data.ID = GetNextId();
-                Log.Message("WORLD OBJECT MANAGER","Generated new id: " + data.ID);
             }
 
 		
@@ -113,25 +118,20 @@ public static partial class WorldObjectManager
             tile = WorldManager.Instance.GetTileAtGrid(_position);
             wo = new WorldObject(type, tile, data);
 				
-            type.Place(wo, tile, data);
-	
+
 
             if(wo is null) throw new Exception("Created a null worldobject");
+
             lock (WoLock)
             {
-                if (!WorldObjects.ContainsKey(wo.ID))
-                {
-                    WorldObjects[wo.ID] = wo;
-                }
-                else
-                {
-                    WorldObjects.Add(wo.ID,wo);
-                }
-					
+	            type.Place(wo, tile, data);
+	            if (!WorldObjects.TryAdd(wo.ID, wo))
+	            {
+		            WorldObjects[wo.ID] = wo;
+	            }
             }
 			
 			GameManager.Register(wo);
-            WorldManager.Instance.MakeFovDirty();
         }
 
         protected bool Equals(MakeWorldObject other)

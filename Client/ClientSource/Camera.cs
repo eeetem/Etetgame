@@ -139,8 +139,6 @@ public static class Camera
 	private static int lastScroll;
 	public static void Update(GameTime gameTime)
 	{
-			
-			
 		var state = Mouse.GetState();
 		float diff = (state.ScrollWheelValue - lastScroll)*(Cam.Zoom/3000);
 		lastScroll = state.ScrollWheelValue;
@@ -155,9 +153,7 @@ public static class Camera
 		Cam.Position = Vector2.Clamp(Cam.Position, new Vector2(-15000, -1000), new Vector2(15000, 12000));
 		velocity *= gameTime.GetElapsedSeconds()*45;
 
-
 		AudioListener.Position =  new Vector3(Cam.Center/150f,0);
 		AudioListener.Velocity = new Vector3(velocity/150f,10);
-
 	}
 }

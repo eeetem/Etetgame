@@ -115,10 +115,10 @@ public class MainMenuLayout : UiLayout
 		
 		
 		
-		var chat = TextureManager.GetTexture("MainMenu/butts/chatmenuDisconnected");
+		var chat = TextureManager.GetTexture("MainMenu/butts/chatMenuDisconnected");
 		if (MasterServerNetworking.IsConnected)
 		{
-			chat = TextureManager.GetTexture("MainMenu/butts/chatmenuConnected");
+			chat = TextureManager.GetTexture("MainMenu/butts/chatMenuConnected");
 		}
 		batch.End();
 		batch.Begin(samplerState: SamplerState.PointClamp);
@@ -189,18 +189,17 @@ public class MainMenuLayout : UiLayout
 			Text = "Tutorial",
 			Height = (int)(12 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Center
+			VerticalAlignment = VerticalAlignment.Center,
+		//	Color = Color.Black
+			
 		};
 		tutorial.Click += (a, b) =>
 		{
-	
-			GameManager.StartLocalServer();
-
-			NetworkingManager.StartTutorial();
-
-			GameLayout.GameLayout.TutorialSequence();
-			Audio.ForcePlayMusic("Warframes");
-			//Audio.OnGameStateChange(GameState.Playing);
+			_lastSelected?.ForceDeselect();
+			_lastSelected = tutorial;
+			tutorial.ForceSelect();
+			Tutorial();
+			
 
 		};
 		_menuStack.Widgets.Add(tutorial);
@@ -435,7 +434,7 @@ public class MainMenuLayout : UiLayout
 			Width = (int)((Chatsize.X-20)*GlobalScale.X),
 			Height = (int)(10*GlobalScale.X),
 			Left = (int)(13*GlobalScale.X),
-			Font = UiLayout.DefaultFont.GetFont(5*GlobalScale.X)
+			Font = DefaultFont.GetFont(5*GlobalScale.X)
 		};
 		chat.KeyDown += (s, a) =>
 		{
@@ -483,7 +482,104 @@ public class MainMenuLayout : UiLayout
 	
 
 	}
+	
+	private void Tutorial()
+	{
+		BasicTutorial();
+		/*
+		MakeMenuBox();
+		var tutMenu = new VerticalStackPanel();
+		tutMenu.HorizontalAlignment = HorizontalAlignment.Left;
+		tutMenu.VerticalAlignment = VerticalAlignment.Center;
+		tutMenu.Spacing = (int)(20*GlobalScale.X);
+		var btn = new SoundTextButton
+		{
+			Text = "Basic Tutorial",
+			Height = (int)(12 * GlobalScale.X),
+			Width =	(int)(190 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
 
+		var btn2 = new SoundTextButton
+		{
+			Text = "Advanced Tutorial",
+			Height = (int)(12 * GlobalScale.X),
+			Width =	(int)(190 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
+		
+		var btn3 = new SoundTextButton
+		{
+			Text = "Unit Tutorials",
+			Height = (int)(12 * GlobalScale.X),
+			Width =	(int)(190 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Stretch
+		};
+		
+		btn.Click += (s, a) =>
+		{
+			btn.ForceSelect();
+			btn2.ForceDeselect();
+			btn3.ForceDeselect();
+			BasicTutorial();
+		};
+		btn2.Click += (s, a) =>
+		{
+			btn2.ForceSelect();
+			btn.ForceDeselect();
+			btn3.ForceDeselect();
+			AdvancedTutorial();
+		};
+		btn3.Click += (s, a) =>
+		{
+			btn3.ForceSelect();
+			btn2.ForceDeselect();
+			btn.ForceDeselect();
+			// another sub menu to display each unit type
+		};
+		tutMenu.Widgets.Add(btn);
+		tutMenu.Widgets.Add(btn2);
+		tutMenu.Widgets.Add(btn3);
+		
+		_subPanel = new Panel();
+		_subPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+		_subPanel.VerticalAlignment = VerticalAlignment.Stretch;
+		_subPanel.Top = (int)(28*GlobalScale.X);
+		_subPanel.Width = _menuBox.Width;
+		_subPanel.Height = _menuBox.Height - (int) (28 * GlobalScale.X);
+		_menuBox.Widgets.Add(_subPanel);
+		_menuBox.Widgets.Add(tutMenu);
+		btn.ForceSelect();
+		btn2.ForceDeselect();
+		btn3.ForceDeselect();
+		*/
+	}
+
+	private static void BasicTutorial()
+	{
+		GameManager.StartLocalServer();
+
+		NetworkingManager.StartTutorial();
+
+		GameLayout.GameLayout.BasicTutorialSequence();
+		Audio.ForcePlayMusic("Warframes");
+		Audio.OnGameStateChange(GameState.Playing);
+	}
+	
+	private static void AdvancedTutorial()
+	{
+		GameManager.StartLocalServer();
+
+		NetworkingManager.StartTutorial();
+
+		GameLayout.GameLayout.AdvancedTutorialSequence();
+		Audio.ForcePlayMusic("Warframes");
+		Audio.OnGameStateChange(GameState.Playing);
+	}
+	
 	private static Panel _subPanel = null!;
 	private void Multiplayer()
 	{
@@ -616,7 +712,7 @@ public class MainMenuLayout : UiLayout
 
 			};
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(80*GlobalScale.X)));
+			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(150*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Pixels,(int)(60*GlobalScale.X)));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 			lobbies.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
@@ -696,7 +792,7 @@ public class MainMenuLayout : UiLayout
 				lobbies.Widgets.Add(new TextLabel()
 				{
 					Text = lobby.Name,
-					Height = (int) (7*GlobalScale.X), 
+					Height = (int) (10*GlobalScale.X), 
 					GridRow = row,
 					GridColumn = 1,
 					
@@ -785,6 +881,13 @@ public class MainMenuLayout : UiLayout
 				dialog.ButtonOk.Click += (sender, args) =>
 				{
 					MasterServerNetworking.CreateLobby(txt.Text);
+					var dialog = Dialog.CreateMessageBox("Creating Server...", new TextLabel()
+					{
+						Text = "Please Wait...",
+						Height = (int)(10*GlobalScale.X),
+					});
+
+					dialog.ShowModal(UI.Desktop);
 				};
 				dialog.Width = (int)(200*GlobalScale.X);
 				dialog.Height = (int)(80*GlobalScale.X);

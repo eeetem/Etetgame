@@ -40,7 +40,7 @@ public class HudActionButton
 		Cost = cost;
 		Tooltip = tooltip;
 		CanOverwatch = false;
-		this.SelfOnly = selfOnly;
+		SelfOnly = selfOnly;
 		OwnerID = owner.WorldObject.ID;
 		_icon = new TextureRegion(icon);
 		_executeTask = executeTask;
@@ -75,15 +75,13 @@ public class HudActionButton
 		};
 		_previewTask = (unit, target, batch) =>
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = abl.Index;
 			Action.Actions[Action.ActionType.UseAbility].Preview(unit, args,batch);
 		};
 		_getConsequencesTask = (unit, target) =>
 		{
-			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters();
-			args.TargetObj = target;
+			Action.ActionExecutionParamters args = new Action.ActionExecutionParamters(target);
 			args.AbilityIndex = abl.Index;
 			List<SequenceAction> consequences = new();
 			var arr =  Action.Actions[Action.ActionType.UseAbility].GetConsequenes(unit, args);

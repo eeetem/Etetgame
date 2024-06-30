@@ -19,7 +19,7 @@ public static class UI
 	{
 		graphicsDevice = graphicsdevice;
 		MyraEnvironment.Game = Game1.instance;
-		//	MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
+		// MyraEnvironment.DrawWidgetsFrames = true; MyraEnvironment.DrawTextGlyphsFrames = true;
 	
 
 		Desktop = new Desktop();
@@ -100,7 +100,7 @@ public static class UI
 		{
 			return; //let myra do it's thing
 		}
-
+		
 		var mouseState = Mouse.GetState();
 		Vector2Int gridClick = Utility.WorldPostoGrid(Camera.GetMouseWorldPos());
 		if (lastMouseState.LeftButton == ButtonState.Pressed && mouseState.LeftButton == ButtonState.Released)
@@ -232,7 +232,7 @@ public static class UI
 			}
 		}
 		spriteBatch.Begin(samplerState:SamplerState.PointClamp);
-		spriteBatch.DrawText("ALPHA 4", new Vector2(0, 0), UiLayout.GlobalScale.X,Color.White);
+		spriteBatch.DrawText("ALPHA 5", new Vector2(0, 0), UiLayout.GlobalScale.X,Color.White);
 		spriteBatch.End();
 
 	}

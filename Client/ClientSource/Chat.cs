@@ -27,7 +27,7 @@ public static class Chat
 			ticker -= delta;
 			if(ticker <= 0)
 			{
-				ticker = 60000;
+				ticker = 30000;
 				Messages.Dequeue();
 				if (Messages.Count == 0)
 				{

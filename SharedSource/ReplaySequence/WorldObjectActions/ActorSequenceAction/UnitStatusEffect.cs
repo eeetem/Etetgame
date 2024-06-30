@@ -20,7 +20,7 @@ public class UnitStatusEffect  : UnitSequenceAction
 		return SequenceType.UnitStatusEffect;
 	}
 
-	public override BatchingMode Batching => BatchingMode.Always;
+	public override BatchingMode Batching => BatchingMode.AsycnBatchAlways;
 
 	public static UnitStatusEffect Make(TargetingRequirements actorID, bool addNotRemove, string effectName, int duration = 0)
 	{

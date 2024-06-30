@@ -12,7 +12,7 @@ public partial class WorldObject : IDrawable
 	private Transform2 DrawTransform = null!;
 	public int spriteVariation;
 	public PreviewData PreviewData;
-	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver) || _animationQueue.Count > 0;
+	public bool IsAnimating => (CurrentAnimation != null && !CurrentAnimation.IsOver && CurrentAnimation.Name != "loop");
 
 
 	public Transform2 GetDrawTransform()
@@ -55,7 +55,7 @@ public partial class WorldObject : IDrawable
 					break;
 			}
 		}
-		if (Type.Edge && Type.Faceable && this.Facing == Direction.West)
+		if (Type.Edge && Type.Faceable && Facing == Direction.West)
 		{
 			DrawOrder += 0.1f;
 		}
@@ -77,21 +77,42 @@ public partial class WorldObject : IDrawable
 			spriteIndex = (int)Facing;
 		}
 
-		string state = "";
-		if (UnitComponent != null)
-		{
-			state = "/Stand";
-			if (UnitComponent!.Crouching)
-			{
-				state = "/Crouch";	
-			}
-		}
+		var state = GetExtraState();
 		if(destroyed && CurrentAnimation == null) return new Texture2D(Game1.instance.GraphicsDevice, 1, 1);//could cause garbage collector issues
-		state+= CurrentAnimation?.GetState(Type.GetVariationName(spriteVariation)) ?? "";
+		if(CurrentAnimation != null)
+		{
+			state.Clear();
+			state.Add(CurrentAnimation.GetState(Type.GetVariationName(spriteVariation)));
+		}
+
+		
 		var baseSprite = Type.GetSprite(spriteVariation, spriteIndex,state);
 		return baseSprite;
 
 	}
+
+	public List<string> GetExtraState()
+	{
+		List<string> state = new List<string>();
+		if (UnitComponent != null)
+		{
+			if (UnitComponent!.Crouching)
+			{
+				state.Add("/Crouch");
+			}
+			else
+			{
+				state.Add("/Stand");
+			}
+
+			foreach (var eff in UnitComponent.StatusEffects)
+			{
+				state.Add(eff.Type.Name);
+			}
+		}
+		return state;
+	}
+
 
 	public Color GetColor()
 	{
@@ -131,19 +152,23 @@ public partial class WorldObject : IDrawable
 
 	}
 
-	private readonly Queue<Animation> _animationQueue = new Queue<Animation>();
+	public bool IsVisible()
+	{
+		return IsVisible(false);
+	}
+
 	public Animation? CurrentAnimation = null;
-	public Animation? Loop = null;
+
 	public void AnimationUpdate(float msDelta)
 	{
 		CurrentAnimation?.Process(msDelta);
-		if (CurrentAnimation == null || CurrentAnimation.IsOver)
+		if(CurrentAnimation?.ShouldStop == true)
 		{
 			CurrentAnimation = null;
-			if (_animationQueue.Count > 0)
-			{
-				CurrentAnimation = _animationQueue.Dequeue();
-			}
+		}
+		if(CurrentAnimation == null)
+		{
+			StartAnimation("loop");
 		}
 		
 	}
@@ -156,8 +181,10 @@ public partial class WorldObject : IDrawable
 
 	public void StartAnimation(string name)
 	{
-		int count = Type.GetAnimationLenght(spriteVariation, name);
-		_animationQueue.Enqueue(new Animation(name,count));
+		
+		(int, int,List<string>) anim = Type.GetAnimation(spriteVariation, name,GetExtraState());
+		if (anim.Item1 != 0)
+			CurrentAnimation = new Animation(name,  string.Join("",anim.Item3),anim.Item1, anim.Item2);
 	}
 	
 }

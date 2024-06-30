@@ -35,6 +35,7 @@ public static partial class WorldObjectManager
 #if CLIENT
 		obj.StartAnimation("end");
 #endif
+		
 		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)
@@ -55,14 +56,13 @@ public static partial class WorldObjectManager
 		return null;
 	}
 	
-	
-	private static readonly object IdAquireLock = new object();
+
 	private static int NextId;
-	private static readonly object WoLock = new object();
+	public static readonly object WoLock = new object();
 	private static readonly Dictionary<int, WorldObject> WorldObjects = new Dictionary<int, WorldObject>(){};
 	private static int GetNextId()
 	{
-		lock (IdAquireLock)
+		lock (WoLock)
 		{
 			NextId++;
 			while (WorldObjects.ContainsKey(NextId)) //skip all the server-side force assinged IDs
@@ -70,9 +70,10 @@ public static partial class WorldObjectManager
 				NextId++;
 			}
 		}
-
+		Log.Message("WORLD OBJECT MANAGER","Generated new id: " + NextId);
 		return NextId;
 	}
+
 
 
 }

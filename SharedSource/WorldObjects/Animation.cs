@@ -3,15 +3,17 @@
 public class Animation
 {
 	private int _currentFrame = 0;
-	private readonly string _name;
+	public readonly string Name;
 	private readonly float _msPerFrame = 0;
 	float _elapsedMsSinceLastFrame = 0;
-	private readonly int _frameCount;
+	private readonly int _lastFrame;
+	private readonly string _baseState = "";
 
-	public Animation(string name, int frameCount, int FPS=5)
+	public Animation(string name, string baseState, int frameCount, int FPS=5)
 	{
-		_name = name;
-		_frameCount = frameCount;
+		_baseState = baseState;
+		Name = name;
+		_lastFrame = frameCount-1;
 		_msPerFrame = 1000 / (float)FPS;
 	}
 
@@ -25,11 +27,18 @@ public class Animation
 		}
 	}
 
-	public bool IsOver => _currentFrame >= _frameCount;
+	public bool IsOver => _currentFrame >= _lastFrame;
+	public bool ShouldStop;
 
 	public string GetState(string spriteVariation)
 	{
-		if (IsOver) return "";
-		return "/"+_name+spriteVariation+"/"+_currentFrame.ToString();
+		var frame = _currentFrame;
+		if(frame>_lastFrame)
+		{
+			frame = _lastFrame;
+			ShouldStop = true;
+		}
+
+		return _baseState+"/" + Name + spriteVariation + "/" + frame;
 	}
 }

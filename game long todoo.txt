@@ -1,23 +1,6 @@
 
-UI  enemy progress
-incrementing timer?
-
-jump camera to cant hit target?
-loud death sfx?
-possible usage locations smoke?
-JUMP CAMREA TO HIT TARGET?
-more obvious headshot warning?
-corpses
-merge vission and projectile
-
-signing
-
-
-
-turn down screenshake
-update overwatch based on LOS
-do not delete crashes
-
+jump to hit traget 
+officer mroe obvious
 
 sfx list:
 -throw
@@ -37,53 +20,3 @@ sfx list:
 
 
 
-
-
-misc features for later:
-mommentum
-
-
-starter squad concept:
-everything around the grunt
-
--grunt
--short range grunt
--dedicated spotter
--tear gas grenadier
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sprite master list:
--destruction states
--windows and doorways
--roofs
--misc world objects(things that you can take cover behind that arent walls) + flavour
--impassible terian
--vegatation
--explosion fx
-
-
-
-
-
-
-619771
-614279
-601644

@@ -28,7 +28,7 @@ public partial class UnitType : WorldObjectType
 
 	public readonly List<UnitAbility> actions;
 
-	public WorldConseqences? SpawnEffect { get; set; }
+
 
 
 	public override void Place(WorldObject wo, WorldTile tile, WorldObject.WorldObjectData data)

@@ -40,10 +40,15 @@ public static class Log
         Directory.CreateDirectory(logFolder);
         Directory.CreateDirectory(logFolder+"/"+startTime);
         var files = new DirectoryInfo(logFolder).EnumerateDirectories()
+            
             .OrderByDescending(f => f.CreationTime)
             .Skip(10)
             .ToList();
-        files.ForEach(f => f.Delete(true));
+        files.ForEach(f =>
+        {
+            if(!f.Name.Contains("[CRASH]"))
+                f.Delete(true);
+        });
         
         
         Task.Run(() =>
@@ -63,9 +68,14 @@ public static class Log
         
     }
     
-    private static List<string> generalIgnoreList = new List<string>()
+    private static readonly List<string> GeneralIgnoreList = new List<string>()
     {
 
+    };
+    private static List<string> seperateFileList = new List<string>()
+    {
+        "WARN",
+        "ERROR"
     };
     public static void Message(string category, string message)
     {
@@ -78,12 +88,19 @@ public static class Log
         msg.Append("]");
         msg.Append(message);
 
-        if (generalIgnoreList.Contains(category))
+        if (GeneralIgnoreList.Contains(category))
         {
             lock (lockObject)
             {
                 GetLogStream(category).WriteLine(msg);
             }
+        }else if (seperateFileList.Contains(category))
+        {
+            lock (lockObject)
+            {
+                GetLogStream(category).WriteLine(msg);
+            }
+            GeneralLog(msg.ToString());
         }
         else
         {

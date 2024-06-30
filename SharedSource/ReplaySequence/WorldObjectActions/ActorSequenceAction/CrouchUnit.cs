@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -13,12 +15,45 @@ public class CrouchUnit : UnitSequenceAction
 		return SequenceType.Crouch;
 	}
 
+	public override BatchingMode Batching => ShouldBatch();
+
+	private BatchingMode ShouldBatch()
+	{
+		if(Actor.Crouching)
+		{
+			return BatchingMode.BlockingAlone;//uncrouch and animation start should happen on the same tick
+		}
+
+		return BatchingMode.AsycnBatchAlways;
+		
+	}
+
 	protected override void RunSequenceAction()
 	{
-			Actor.canTurn = true;
+		Actor.CanTurn = true;
+#if CLIENT
+		//animation should be always played in standing state so you can see units stand up behind cover
+		if (Actor.Crouching)
+		{
 			Actor.Crouching = !Actor.Crouching;
+			Actor.WorldObject.StartAnimation("StandUp");
+		}
+		else
+		{
+			Actor.WorldObject.StartAnimation("CrouchDown");
+			while (Actor.WorldObject.IsAnimating)
+			{
+				Thread.Sleep(100);
+			}
+			Actor.WorldObject.CurrentAnimation = null;
+			Actor.Crouching = !Actor.Crouching;
+		}
 
-			WorldManager.Instance.MakeFovDirty();
+
+#else
+Actor.Crouching = !Actor.Crouching;
+#endif
+		WorldManager.Instance.MakeFovDirty();
 
 
 	}
@@ -39,4 +74,5 @@ public class CrouchUnit : UnitSequenceAction
 		t.Requirements = new TargetingRequirements(actorID);
 		return t;
 	}
+	
 }
