@@ -162,11 +162,10 @@ public static partial class GameManager
 			Log.Message("GAME","Starting game");
 			Task.Run(() =>
 			{
-				while (SequenceManager.SequenceRunning || !Player1!.HasDeliveredAllMessages || !Player2!.HasDeliveredAllMessages)
+				do
 				{
-					Thread.Sleep(500);
-				}
-				
+					Thread.Sleep(1500);
+				} while (SequenceManager.SequenceRunning || !Player1!.HasDeliveredAllMessages || !Player2!.HasDeliveredAllMessages);
 				foreach (var u in T1Units)
 				{
 					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;

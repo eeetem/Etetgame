@@ -330,6 +330,8 @@
     <animations>
       <anim name="Rapid Maneuvers" fps="10"/>
       <anim name="Shoot" fps="8"/>
+      <anim name="walk" fps="10"/>
+      
     </animations>
     
 

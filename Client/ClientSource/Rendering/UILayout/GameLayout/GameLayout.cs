@@ -745,7 +745,7 @@ public partial class GameLayout : MenuLayout
 		{
 			Task.Run(() =>
 			{
-				Thread.Sleep(1000);
+				Thread.Sleep(5000);
 				SelectUnit(null);
 			});
 		}
