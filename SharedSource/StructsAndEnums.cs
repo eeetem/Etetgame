@@ -94,6 +94,18 @@ public struct Vector2Int : IMessageSerializable
 
 	}
 	
+	public static double Distance(Vector2Int from, Vector2Int to)
+	{
+		return Math.Sqrt(SqrDistance(from, to));
+	}
+
+	public static Vector2Int Midpoint(Vector2Int from, Vector2Int to)
+	{
+		int x = from.X + to.X;
+		int y = from.Y + to.Y;
+		return new Vector2Int(x / 2, y / 2);
+	}
+	
 
 	public int X { get; set; }
 	public int Y { get; set; }

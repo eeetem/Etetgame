@@ -10,6 +10,7 @@ using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.ReplaySequence.WorldObjectActions.ActorSequenceAction;
 using DefconNull.WorldActions;
+using info.lundin.math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -478,6 +479,43 @@ public partial class GameLayout : MenuLayout
 		};
 		panel.Widgets.Add(doAI);
 		*/
+		var ruler = new TextButton
+		{
+			Top = (int)(160f * GlobalScale.Y),
+			Left = (int)(-10f * GlobalScale.X),
+			Width = (int)(60 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Text = "Ruler",
+		};
+		ruler.Click += (o, a) =>
+		{
+			//Log.Message("Test","1. ruler button clicked");
+			if (CheckCurrentTool() == null)
+			{
+				//Log.Message("Test","2. selected ruler tool");
+				SelectGameTool(new RulerTool());
+			}
+		};
+		panel.Widgets.Add(ruler);
+		
+		var FOVtool = new TextButton
+		{
+			Top = (int)(195f * GlobalScale.Y),
+			Left = (int)(-10f * GlobalScale.X),
+			Width = (int)(80 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Text = "FOVTool",
+		};
+		FOVtool.Click += (o, a) =>
+		{
+			if (CheckCurrentTool() == null)
+			{
+				SelectGameTool(new FOVTool());
+			}
+		};
+		panel.Widgets.Add(FOVtool);
 #endif		
 
 		endBtn = new ImageButton()
@@ -755,9 +793,18 @@ public partial class GameLayout : MenuLayout
 		return panel;
 	}
 
-
-
-
+	private static GameTool currentTool = null;
+	public static void SelectGameTool(GameTool input)
+	{
+		currentTool = input;
+	}
+	public static GameTool CheckCurrentTool()
+	{
+		return currentTool;
+	}
+	
+	
+	
 	private static readonly List<HudActionButton> ActionButtons = new();
 	private static bool ActionForce = false;
 	
@@ -1195,6 +1242,14 @@ public partial class GameLayout : MenuLayout
 			batch.DrawText(tutorialNote, new Vector2(squareRect.X,squareRect.Y), GlobalScale.X*0.9f, 63, Color.White);
 		}
 		batch.End();
+
+		batch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp);
+		if (CheckCurrentTool() != null)
+		{
+			currentTool.render(batch);
+		}
+		batch.End();
+
 		
 	}
 	private static Vector2 infoboxtip = new(0,0);
@@ -1611,11 +1666,16 @@ public partial class GameLayout : MenuLayout
 	public override void MouseDown(Vector2Int position, bool rightclick)
 	{
 		base.MouseDown(position, rightclick);
-		
 
 		position = Vector2.Clamp(position, Vector2.Zero, new Vector2(99, 99));
 		
 		var tile =WorldManager.Instance.GetTileAtGrid( position);
+
+		if (CheckCurrentTool() != null)
+		{
+			currentTool.click(position, rightclick);
+			return;
+		}
 
 		if (tile.UnitAtLocation != null&& tile.UnitAtLocation.WorldObject.GetMinimumVisibility() <= tile.GetVisibility() && (activeAction == ActiveActionType.None || activeAction == ActiveActionType.Move)) { 
 			SelectUnit(tile.UnitAtLocation);
