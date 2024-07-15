@@ -3,6 +3,7 @@ using DefconNull.Networking;
 using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
+using DefconNull.WorldObjects.Units.Actions;
 using Microsoft.Xna.Framework;
 using Riptide;
 using Action = DefconNull.WorldObjects.Units.Actions.Action;
@@ -105,7 +106,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
-				T1Units.Add(objMake.data.ID);
 				i++;
 
 			}
@@ -151,7 +151,6 @@ public static partial class GameManager
 			{
 				var objMake = WorldObjectManager.MakeWorldObject.Make(spawn.Prefab, spawn.Position, Direction.North,false, cdata);
 				SequenceManager.AddSequence(objMake);
-				T2Units.Add(objMake.data.ID);
 				i++;
 
 			}
@@ -163,12 +162,10 @@ public static partial class GameManager
 			Log.Message("GAME","Starting game");
 			Task.Run(() =>
 			{
-				while (SequenceManager.SequenceRunning || !Player1!.HasDeliveredAllMessages || !Player2!.HasDeliveredAllMessages)
+				do
 				{
-					Thread.Sleep(500);
-				}
-
-				Thread.Sleep(1000); //just in case
+					Thread.Sleep(1500);
+				} while (SequenceManager.SequenceRunning || !Player1!.HasDeliveredAllMessages || !Player2!.HasDeliveredAllMessages);
 				foreach (var u in T1Units)
 				{
 					Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
@@ -195,6 +192,7 @@ public static partial class GameManager
 				{
 					NextTurn();
 				}
+				Thread.Sleep(1000);
 				NetworkingManager.SendGameData();
 				WorldManager.Instance.MakeFovDirty();	
 				NetworkingManager.SendAllSeenUnitPositions();
@@ -230,9 +228,14 @@ public static partial class GameManager
 	public static bool ShouldUpdateUnitPositions = false;
 	public static bool ShouldRecalculateUnitPositions=  false;
 
+	public static void SpotUnit(ClientInstance p, int unitId,(Vector2Int, WorldObject.WorldObjectData) spotedUnit)
+	{
+		p.KnownUnitPositions[unitId] = spotedUnit;
+	}
+
 	private static void UpdatePlayerSideUnitPositionsForPlayer(bool player1,bool newTurn = false)
 	{
-		ClientInstance c = GetPlayer(player1)!;
+		ClientInstance? c = GetPlayer(player1);
 		if(c == null) return;
 		foreach (var pos in new Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)>(c.KnownUnitPositions))
 		{
@@ -285,7 +288,7 @@ public static partial class GameManager
 	}
 	public static void UpdatePlayerSideUnitPositions(bool newTurn = false)
 	{
-		Log.Message("UNITPOSITIONS","updating unit positions");
+		Log.Message("UNIT","updating unit positions");
 		GameManager.ShouldRecalculateUnitPositions = false;
 		UpdatePlayerSideUnitPositionsForPlayer(true,newTurn);
 		UpdatePlayerSideUnitPositionsForPlayer(false,newTurn);
@@ -317,16 +320,32 @@ public static partial class GameManager
 	
 	public class ClientInstance
 	{
-		public Connection? Connection { get; private set; }
+		public Connection? Connection { get;  set; }
+		public bool IsConnected => Connection != null && (Connection.IsConnected || Connection.IsConnecting || Connection.IsPending);
 		public string Name;
 		public bool IsAI;
 		public List<SquadMember>?  SquadComp { get; private set; }
 		public bool IsPracticeOpponent { get; set; }
 	
 		public bool HasDeliveredAllMessages => MessagesToBeDelivered.Count == 0 || ShouldUpdateUnitPositions;
-	
-		public ConcurrentQueue<NetworkingManager.SequencePacket> SequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
-	
+		
+		private readonly ConcurrentQueue<NetworkingManager.SequencePacket> _sequenceQueue = new ConcurrentQueue<NetworkingManager.SequencePacket>();
+		public bool HasSequencesToSend => _sequenceQueue.Count > 0;
+		public NetworkingManager.SequencePacket GetNextSequence()
+		{
+			if (_sequenceQueue.TryDequeue(out var seq))
+			{
+				return seq;
+			}
+			throw new Exception("No sequence to get");
+		}
+		public void AddToSequenceQueue(NetworkingManager.SequencePacket packet)
+		{
+			if(this.IsAI) return;
+			if(!this.IsConnected) return;
+			_sequenceQueue.Enqueue(packet);
+		}
+		
 		private List<ushort> MessagesToBeDelivered = new List<ushort>();
 		public bool IsReadyForNextSequence = false;
 		public bool ReadyForNextSequence => IsReadyForNextSequence || IsAI || IsPracticeOpponent;
@@ -343,6 +362,7 @@ public static partial class GameManager
 		public void Reconnect(Connection? con)
 		{
 			MessagesToBeDelivered.Clear();
+			_sequenceQueue.Clear();
 			IsReadyForNextSequence = true;
 			Connection = con;
 			if (Connection != null) Connection.ReliableDelivered += ProcessDelivery;
@@ -363,8 +383,8 @@ public static partial class GameManager
 
 		public void Disconnect()
 		{
-			Connection = null;
 			MessagesToBeDelivered.Clear();
+			_sequenceQueue.Clear();
 		}
 
 		
@@ -381,22 +401,29 @@ public static partial class GameManager
 				p = Player2;
 				team1 = false;
 			}
+			if (p == null) continue;
 			for (int x = 0; x < 100; x++)
 			{
 				for (int y = 0; y < 100; y++)
 				{
 					var tile = WorldManager.Instance.GetTileAtGrid(new Vector2Int(x, y));
 				
-					if(tile.Surface == null) return;//ignore empty tiles
+					if(tile.Surface == null) continue;//ignore empty tiles
 					WorldTile.WorldTileData worldTileData = tile.GetData();
-					p.WorldState.TryAdd(tile.Position,worldTileData);
+					if (!p.WorldState.ContainsKey(tile.Position))
+					{
+						p.WorldState.TryAdd(tile.Position,worldTileData);
+					}
+					
 
 					if (tile.IsVisible(team1:team1))
 					{
 						if (!p.WorldState[tile.Position]!.Equals(worldTileData))
 						{
 							p.WorldState[tile.Position] = worldTileData;
+							NetworkingManager.AddSequenceToSendQueue(TileUpdate.Make(tile.Position,true,false));
 						}
+						
 
 					}
 					
@@ -408,10 +435,10 @@ public static partial class GameManager
 
 
 	public static bool tutorial = false;
-	public static void StartTutorial()
+	public static void StartBasicTutorial()
 	{
 		tutorial = true;
-		WorldManager.Instance.LoadMap("/Maps/Special/tutorial.mapdata");
+		WorldManager.Instance.LoadMap("/Maps/Special/BasicTutorialMap3.mapdata");
        
 		PracticeMode(Player1.Connection);
 		NetworkingManager.SendMapData(Player1!.Connection!);
@@ -419,7 +446,7 @@ public static partial class GameManager
 		{
 
 			Unit.UnitData cdata = new Unit.UnitData(true);
-			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(16, 35), Direction.East, false, cdata);
+			var objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(19, 25), Direction.East, false, cdata);
 			SequenceManager.AddSequence(objMake);
 
 
@@ -428,7 +455,7 @@ public static partial class GameManager
 			data.Health = 5;
 			data.Facing = Direction.NorthWest;
 			data.JustSpawned = false;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(23, 42));
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(25, 33));
 			SequenceManager.AddSequence(objMake);
 			
 			
@@ -438,8 +465,8 @@ public static partial class GameManager
 			cdata.Determination = 1;
 			data.UnitData = cdata;
 			data.JustSpawned = false;
-			data.Health = 100;
-			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(33, 36));
+			data.Health = 7;
+			objMake = WorldObjectManager.MakeWorldObject.Make(data, new Vector2Int(28, 26));
 			SequenceManager.AddSequence(objMake);
 			GameState = GameState.Playing;
 
@@ -451,11 +478,7 @@ public static partial class GameManager
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
 				Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
 			}
-			foreach (var u in T2Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player2.KnownUnitPositions.Add(u,(unit.WorldObject.TileLocation.Position,unit.WorldObject.GetData()));
-			}
+
 			NetworkingManager.SendGameData();
 			WorldManager.Instance.MakeFovDirty();
 			NetworkingManager.SendAllSeenUnitPositions();
@@ -464,194 +487,134 @@ public static partial class GameManager
 			{
 				Thread.Sleep(1000);
 			}
-			while (!IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
 
-		
-			
-			var del = WorldObjectManager.DeleteWorldObject.Make(WorldManager.Instance.GetTileAtGrid(new Vector2Int(33, 42)).UnitAtLocation!.WorldObject);
-			SequenceManager.AddSequence(del);
-
-			
-			cdata = new Unit.UnitData(true);
-			cdata.Determination = 2;
-			objMake = WorldObjectManager.MakeWorldObject.Make("Grunt", new Vector2Int(18, 43), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			
-			cdata = new Unit.UnitData(false);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(39, 45), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-
-			cdata = new Unit.UnitData(false);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(39, 44), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			
-			while (SequenceManager.SequenceRunning) Thread.Sleep(100);
-			
-			foreach (var u in T1Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
-			}
-
+			Unit grunt = null!;
 			foreach (var u in T2Units)
 			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player2.KnownUnitPositions.ContainsKey(u))
+				
+				if (WorldObjectManager.GetObject(u)!.Type.Name == "Grunt")
 				{
-					Player2.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
+					grunt = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
 				}
 			}
-
-			NetworkingManager.SendAllSeenUnitPositions();
+			grunt.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(22, 31)));
+			do
+			{
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
+			grunt.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(new Vector2Int(20,34)));
+			
 			SetEndTurn();
 			
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (!IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (!IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (!IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
-			while (IsPlayer1Turn)
-			{
-				Thread.Sleep(1000);
-			}
 
-			foreach (var u in T2Units)
+			while (!IsPlayer1Turn)
 			{
-				var d = WorldObjectManager.DeleteWorldObject.Make(u);
-				SequenceManager.AddSequence(d);
+				Thread.Sleep(1000);
 			}
-			cdata = new Unit.UnitData(true);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Heavy", new Vector2Int(20, 45), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			cdata = new Unit.UnitData(false);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(28, 40), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			cdata = new Unit.UnitData(false);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(29, 40), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			cdata = new Unit.UnitData(false);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Scout", new Vector2Int(30, 40), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			do
+			while (IsPlayer1Turn)
 			{
-				Thread.Sleep(1500);
-			} while (SequenceManager.SequenceRunning);
-			foreach (var u in T2Units)
-			{
-				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player2.KnownUnitPositions.ContainsKey(u))
-				{
-					Player2.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
-				}
+				Thread.Sleep(1000);
 			}
 			
-			foreach (var u in T1Units)
+			Unit heavy = null!;
+			foreach (var u in T2Units)
+			{
+				
+				if (WorldObjectManager.GetObject(u)!.Type.Name == "Heavy")
+				{
+					heavy = WorldObjectManager.GetObject(u)!.UnitComponent!;
+					break;
+				}
+			}
+			foreach (var u in T2Units)
 			{
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player1.KnownUnitPositions.ContainsKey(u))
+				if (unit.Type.Name == "Heavy")
 				{
-					Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
-				}
+					unit.Determination.Current = 1;
+					break;
+				} 
 			}
-			List<Vector2Int> poses = new List<Vector2Int>();
-			poses.Add(new Vector2Int(28, 45));
-			poses.Add(new Vector2Int(29, 44));
-			poses.Add(new Vector2Int(29, 43));
-
-			foreach (var u in Player2.KnownUnitPositions.ToList())
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(27, 26)));
+			do
 			{
-				if (!u.Value.Item2.UnitData!.Value.Team1)
-				{
-
-					WorldObjectManager.GetObject(u.Key)!.UnitComponent!.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(poses[0]));
-					poses.RemoveAt(0);
-					do
-					{
-						Thread.Sleep(1500);
-					} while (SequenceManager.SequenceRunning);
-
-				}
-			}
+				Thread.Sleep(300);
+			}while (SequenceManager.SequenceRunning);
+			heavy.DoAction(Action.ActionType.Face, new Action.ActionExecutionParamters(new Vector2Int(26,31)));
+			
 			SetEndTurn();
-
-			do
-			{
-				Thread.Sleep(2000);
-			} while (IsPlayer1Turn);
 			
-			foreach (var u in T1Units)
+			while (!IsPlayer1Turn)
 			{
-				var d = WorldObjectManager.DeleteWorldObject.Make(u);
-				SequenceManager.AddSequence(d);
+				Thread.Sleep(100);
 			}
+
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
 			foreach (var u in T2Units)
 			{
-				var d = WorldObjectManager.DeleteWorldObject.Make(u);
-				SequenceManager.AddSequence(d);
-			}
-			do
-			{
-				Thread.Sleep(1500);
-			} while (SequenceManager.SequenceRunning);
-
-	
-			cdata = new Unit.UnitData(true);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Officer", new Vector2Int(35, 43), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			
-			
-			cdata = new Unit.UnitData(true);
-			objMake = WorldObjectManager.MakeWorldObject.Make("Specialist", new Vector2Int(35, 45), Direction.East, false, cdata);
-			SequenceManager.AddSequence(objMake);
-			do
-			{
-				Thread.Sleep(1500);
-			} while (SequenceManager.SequenceRunning);
-						
-			foreach (var u in T1Units)
-			{
 				Unit unit = WorldObjectManager.GetObject(u)!.UnitComponent!;
-				if (!Player1.KnownUnitPositions.ContainsKey(u))
+				if (unit.Type.Name == "Heavy")
 				{
-					Player1.KnownUnitPositions.Add(u, (unit.WorldObject.TileLocation.Position, unit.WorldObject.GetData()));
-				}
+					unit.Determination.Current = 1;
+					break;
+				} 
 			}
-			NetworkingManager.SendAllSeenUnitPositions();
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(27, 28)));
+
 			SetEndTurn();
-		});
+			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(100);
+			}
+
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
+			heavy.DoAction(Action.ActionType.Move, new Action.ActionExecutionParamters(new Vector2Int(25, 28)));
+			
+			SetEndTurn();
+			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(100);
+			}
+
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+			
+			SetEndTurn();
+			
+			while (!IsPlayer1Turn)
+			{
+				Thread.Sleep(100);
+			}
+
+			while (IsPlayer1Turn)
+			{
+				Thread.Sleep(1000);
+			}
+		}); 
 		t.Start();
-
-
 	}
 
+	public static void StartAdvancedTutorial()
+	{
+		
+	}
+	
 	public static void PracticeMode(Connection con)
 	{
+		
 		Player2 = new ClientInstance("Practice Mode",con);
 		Player2.IsPracticeOpponent = true;
 		NetworkingManager.SendPreGameInfo();

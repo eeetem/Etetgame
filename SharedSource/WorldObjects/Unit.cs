@@ -596,17 +596,17 @@ namespace DefconNull.WorldObjects
 			var newTile = WorldManager.Instance.GetTileAtGrid(vector2Int);
 
 #if SERVER
-			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
+			if(IsPlayer1Team || newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: true)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),true))
 			{
 				Log.Message("UNITS","moving for player 1 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (GameManager.Player1.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
+				if (GameManager.Player1!.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player1.KnownUnitPositions.Remove(WorldObject.ID);
 	
 				GameManager.Player1.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
-			if(newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
+			if(!IsPlayer1Team || newTile.IsVisible(WorldObject.GetMinimumVisibility(),team1: false)||((WorldTile)oldtile).IsVisible(WorldObject.GetMinimumVisibility(),team1: false))
 			{
 				Log.Message("UNITS","moving for player 2 "+WorldObject.TileLocation.Position+" to "+vector2Int);
-				if (!GameManager.Player2.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
+				if (!GameManager.Player2!.KnownUnitPositions.ContainsKey(WorldObject.ID)) GameManager.Player2.KnownUnitPositions.Remove(WorldObject.ID);
 			
 				GameManager.Player2.KnownUnitPositions[WorldObject.ID] = (newTile.Position, WorldObject.GetData());
 			}
@@ -615,7 +615,10 @@ namespace DefconNull.WorldObjects
 			
 			WorldObject.TileLocation = newTile;
 			newTile.UnitAtLocation = this;
+#if CLIENT
 			WorldManager.Instance.MakeFovDirty();
+#endif
+			
 		}
 
 		

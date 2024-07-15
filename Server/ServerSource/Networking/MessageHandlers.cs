@@ -65,6 +65,7 @@ public static partial class NetworkingManager
 		if (currentPlayer?.Connection?.Id != senderID && !currentPlayer!.IsPracticeOpponent)
 		{
 			//out of turn action. perhaps desync or hax? kick perhaps
+			NetworkingManager.SendGameData();
 			return;
 		}
 
@@ -84,7 +85,7 @@ public static partial class NetworkingManager
 		if(senderID != GameManager.Player1?.Connection?.Id) return;
 		if(!SinglePlayerFeatures) return;
 		if( GameManager.GameState != GameState.Lobby) SendGameData();//incase the ui is desynced
-		GameManager.StartTutorial();
+		GameManager.StartBasicTutorial();
 	}
 	[MessageHandler((ushort)NetworkMessageID.SquadComp)]
 	private static void ReciveSquadComp(ushort senderID,Message message)
@@ -257,6 +258,7 @@ public static partial class NetworkingManager
 	[MessageHandler((ushort) NetworkMessageID.PracticeMode)]
 	private static void PracticeMode(ushort senderID, Message message)
 	{
+		return;
 		if(!SinglePlayerFeatures) return;
 		if (GameManager.Player2 != null) return;
 		GameManager.PracticeMode(GameManager.Player1!.Connection);

@@ -10,15 +10,16 @@ public class PlayAnimation : SequenceAction
         return SequenceType.PlayAnimation;
     }
 
+    public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
     protected override void RunSequenceAction()
     {
 #if CLIENT
         var obj = WorldObjectManager.GetObject(_objId);
         obj.StartAnimation(_animation);
-        while(obj.IsAnimating) 
-        {
-            Thread.Sleep(100);
-        }
+        //while(obj.IsAnimating) 
+        //{
+        //    Thread.Sleep(100);
+        //}
 #endif
         
     }
@@ -46,7 +47,6 @@ public class PlayAnimation : SequenceAction
     string _animation = "";
     public static PlayAnimation Make(int objId, string animation)
     {
-   
         PlayAnimation t = (GetAction(SequenceType.PlayAnimation) as PlayAnimation)!;
         t._objId = objId;
         t._animation = animation;

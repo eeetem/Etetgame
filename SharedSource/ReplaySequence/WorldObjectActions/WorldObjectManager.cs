@@ -35,6 +35,7 @@ public static partial class WorldObjectManager
 #if CLIENT
 		obj.StartAnimation("end");
 #endif
+		
 		SequenceManager.AddSequence(DeleteWorldObject.Make(obj.ID));
 #if SERVER
 		if(obj.Type.DestructionConseqences != null)
@@ -69,7 +70,7 @@ public static partial class WorldObjectManager
 				NextId++;
 			}
 		}
-
+		Log.Message("WORLD OBJECT MANAGER","Generated new id: " + NextId);
 		return NextId;
 	}
 

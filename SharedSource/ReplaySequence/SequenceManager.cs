@@ -137,13 +137,14 @@ public class SequenceManager
 					//then do parrallel tasks in queue
 					//batch tile updates and other things
 					bool batchedTasks = false;
+					sw.Restart();
 					while (true)
 					{
 						if (SequenceQueue.Count == 0)
 						{
 							break;
 						}
-
+				
 						var peeked = SequenceQueue.Peek();
 						bool shouldBatch = false;
 						switch (peeked.Batching)
@@ -152,7 +153,7 @@ public class SequenceManager
 								shouldBatch = true;
 								break;
 							case SequenceAction.BatchingMode.AsyncBatchSameType://batch if last was same type or last task is always batching meaning it's unlikely to interfere
-								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType() || act.Batching == SequenceAction.BatchingMode.AsycnBatchAlways;
+								shouldBatch = peeked.GetSequenceType() == act.GetSequenceType();
 								break;
 							case SequenceAction.BatchingMode.BlockingAlone:
 							case SequenceAction.BatchingMode.NonBlockingAlone:
@@ -170,15 +171,25 @@ public class SequenceManager
 						act = SequenceQueue.Dequeue();
 						CurrentSequenceTasks.Add(act.GenerateTask());
 						CurrentSequenceTasks.Last().Start();
+						if (sw.ElapsedMilliseconds > 100)
+						{
+							break;
+						}
 					}
+					
 
 					if (batchedTasks)
 					{
 						foreach (var t in CurrentSequenceTasks)
 						{
-							t.Wait(100);
+							if (sw.ElapsedMilliseconds > 150)
+							{
+								break;//dont freeze
+							}
+							t.Wait(25);
 						}
 					}
+					sw.Stop();
 				}
 			}
 			else if (CurrentSequenceTasks.TrueForAll((t) => t.Status != TaskStatus.Running && t.Status != TaskStatus.WaitingToRun))
@@ -218,8 +229,9 @@ public class SequenceManager
 					NetworkingManager.SendSequenceExecuted();
 			
 #else
-			NetworkingManager.SendGameData();
+			
 			GameManager.ShouldRecalculateUnitPositions = true;
+
 #endif
 			hasSequece = false;
 		}

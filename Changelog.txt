@@ -16,7 +16,7 @@ Alpha 3.1
 -Added few unintentionally missing walls
 Alpha 4.0
 Multiplayer!!
-Alpha 4.1
+Alpha 5
 -Large variety of multiplayer stability and crash fixes
 -Added bullet tracers
 -Overwatching units now can only shoot units they personally see themselves(no assited spoting from other friendlies)
@@ -29,7 +29,11 @@ Alpha 4.1
 -Movement animation can be skipped by holding mouse button
 -Fixed action points flickering on/off when watching an enemy use an ability
 -Master server properly captures crashes
--Specialist range buff
 -Capture point notification fixed
 -Corner Shooting
 -Vastly sped up map loading
+-Animations
+-Consistent lobby creation
+-Scout hp buff
+-Officer Determination Buff
+-Grunt Determination Nerf

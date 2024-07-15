@@ -101,7 +101,15 @@ public abstract class UnitSequenceAction : SequenceAction
 	
 	public override bool ShouldDo()
 	{
-		if (Requirements.ActorID != -1) return true;
+		if (Requirements.ActorID != -1)
+		{
+			if (Actor == null)
+			{
+				Log.Message("SEQUENCE MANAGER", "attempted to execute a seqeunce action with null actor");
+				return false;
+			}
+			return true;
+		}
 		if (Requirements.Position == new Vector2Int(-1, -1)) return false;
 		var tile = WorldManager.Instance.GetTileAtGrid(Requirements.Position);
 		if(tile.UnitAtLocation == null) return false;
@@ -112,9 +120,8 @@ public abstract class UnitSequenceAction : SequenceAction
 	}
 #if SERVER
 	public override bool ShouldSendToPlayerServerCheck(bool player1)
-	{ ;
-		if (Actor == null) return false;
-
+	{
+		if (!ShouldDo()) return false;
 		var wtile = (WorldTile) (Actor.WorldObject.TileLocation);
 		return wtile.IsVisible(Actor.WorldObject.GetMinimumVisibility(),player1);
 	}

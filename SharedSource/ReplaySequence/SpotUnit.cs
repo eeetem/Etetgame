@@ -46,7 +46,7 @@ public class SpotUnit : SequenceAction
 	{
 #if SERVER
 		// this is sent to clients so make sure we dont override with it a regular unit update
-		GameManager.GetPlayer(_player1)!.KnownUnitPositions[unitId] = spotedUnit!.Value;
+		GameManager.SpotUnit(GameManager.GetPlayer(_player1)!, unitId, spotedUnit!.Value);
 #else
 		Dictionary<int,(Vector2Int,WorldObject.WorldObjectData)> dict = new();
 		dict[unitId] = spotedUnit!.Value;

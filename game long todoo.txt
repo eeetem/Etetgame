@@ -1,22 +1,6 @@
 
-UI  enemy progress
-incrementing timer?
-
-jump camera to cant hit target?
-loud death sfx?
-possible usage locations smoke?
-JUMP CAMREA TO HIT TARGET?
-more obvious headshot warning?
-corpses
-merge vission and projectile
-
-signing
-
-
-fix auto target through walls?
-ghost aiming aimbot
-smoke dissapear update
-
+jump to hit traget 
+officer mroe obvious
 
 sfx list:
 -throw
@@ -35,8 +19,4 @@ sfx list:
 
 
 
-
-619771
-614279
-601644
 

@@ -80,10 +80,9 @@ public class Shoot : SequenceAction
 		return false;
 #endif
 	}
-	
 
 
-
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 #if CLIENT
 
 	public override void DrawTooltip(Vector2 pos, float scale, SpriteBatch batch)
@@ -224,7 +223,7 @@ public class Shoot : SequenceAction
 	{
 		return true;
 	}
-	public override List<SequenceAction> GenerateInfoActions(bool player1)
+	public override List<SequenceAction> SendPrerequesteInfoToPlayer(bool player1)
 	{
 		if (Projectile.Result.hit)
 		{
@@ -236,12 +235,12 @@ public class Shoot : SequenceAction
 				if (attacker == null)
 				{
 					Log.Message("ERROR","Attacker not found for shooting reveal "+tile);
-					return base.GenerateInfoActions(player1);
+					return base.SendPrerequesteInfoToPlayer(player1);
 				}
 				return new List<SequenceAction>(){SpotUnit.Make(attacker.WorldObject.ID,player1)};
 			}
 		}
-		return base.GenerateInfoActions(player1);
+		return base.SendPrerequesteInfoToPlayer(player1);
 	}
 
 #endif
@@ -249,6 +248,7 @@ public class Shoot : SequenceAction
 	protected override void RunSequenceAction()
 	{
 #if CLIENT
+		
 		for (int i = 0; i < ShotCount; i++)
 		{
 			new Tracer(Utility.GridToWorldPos(Projectile.Result.StartPoint), Utility.GridToWorldPos(Projectile.Result.CollisionPointShort+new Vector2(Random.Shared.NextSingle(-0.5f,0.5f),Random.Shared.NextSingle(-0.5f,0.5f))));

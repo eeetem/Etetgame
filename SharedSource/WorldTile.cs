@@ -294,10 +294,18 @@ public partial class WorldTile : IWorldTile
 				_unitAtLocation = null;
 				return;
 			}
-			if (_unitAtLocation != null)
+#if CLIENT
+			if (_unitAtLocation != null && TileVisibility != Visibility.None)//it's ok to override ghosts
 			{
 				throw new Exception("attempted to place a Unit("+value.WorldObject.ID+") over an existing one("+_unitAtLocation.WorldObject.ID+")");
 			}
+#else
+			if(_unitAtLocation != null){
+				throw new Exception("attempted to place a Unit("+value.WorldObject.ID+") over an existing one("+_unitAtLocation.WorldObject.ID+")");
+			}
+#endif
+
+
 
 			_unitAtLocation = value;
 		}
