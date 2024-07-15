@@ -36,7 +36,6 @@ public class RulerTool : GameTool
         
             //get midpoint of 2 points
             midpoint = Vector2Int.Midpoint(location1.Value, location2.Value);
-            //Log.Message("Test"," 6. midpoint is "+midpoint);
             
             return;
         }
@@ -49,7 +48,6 @@ public class RulerTool : GameTool
         
         //deselects tool after 3rd click, as 3rd click calls method again which reaches the next line
         GameLayout.SelectGameTool(null);
-        //Log.Message("Test"," 7. tool deselected");
     }
 
     public override void render(SpriteBatch spriteBatch)

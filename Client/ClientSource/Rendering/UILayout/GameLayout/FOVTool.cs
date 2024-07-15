@@ -14,12 +14,14 @@ public class FOVTool : GameTool
     private bool toggleCrouch = false;
     public override void click(Vector2Int clickPosition, bool rightclick)
     {
+        //assigns 1st click to postion the fovtool will look from
         if (location1 == null && !rightclick)
         {
             location1 = clickPosition;
             return;
         }
 
+        //assigns the direction and range of the fov tool based on the 2nd click
         if (location2 == null && !rightclick)
         {
             location2 = clickPosition;
@@ -28,7 +30,6 @@ public class FOVTool : GameTool
             direction = Utility.Vec2ToDir(location2.Value - location1.Value);
             
             previewTiles = WorldManager.Instance.GetVisibleTiles(location1.Value, direction, (int)distance, toggleCrouch);
-            Log.Message("Test", "direction is: "+direction + ", distance is: "+distance);
             return;
         }
 
@@ -40,7 +41,7 @@ public class FOVTool : GameTool
             return;
         }
 
-        //lets user to finish using tool with 3rd left click
+        //lets user finish using tool with 3rd left click
         if (!rightclick && location2 != null)
         {
             GameLayout.SelectGameTool(null);

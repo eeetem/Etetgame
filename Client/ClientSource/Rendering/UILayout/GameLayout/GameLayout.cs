@@ -2009,7 +2009,6 @@ public partial class GameLayout : MenuLayout
 
 		if (CheckCurrentTool() != null)
 		{
-			Log.Message("Test"," 3. click called");
 			currentTool.click(position, rightclick);
 			return;
 		}
