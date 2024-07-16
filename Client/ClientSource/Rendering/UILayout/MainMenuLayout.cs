@@ -223,6 +223,47 @@ public class MainMenuLayout : UiLayout
 		};
 		
 		_menuStack.Widgets.Add(multi);
+		
+		var host = new SoundTextButton
+		{
+			Text = "Host Local Server",
+			Height = (int)(12 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Center
+		};
+		host.Click += (a, b) =>
+		{
+			//lobby creation popup
+			var popup = new Panel();
+			var lbl = new TextLabel()
+			{
+				Top = -10,
+				Height = (int)(10*GlobalScale.X),
+				Width = (int)(150*GlobalScale.X),
+				Text = "Enter Port:"
+			};
+			popup.Widgets.Add(lbl);
+			var txt = new TextBox()
+			{
+				Top = 25,
+				Height = (int)(25*GlobalScale.X),
+				Width = (int)(150*GlobalScale.X),
+				Text = "52233"
+			};
+			popup.Widgets.Add(txt);
+
+			var dialog = Dialog.CreateMessageBox("Creating Local Server...", popup);
+			dialog.ButtonOk.Click += (sender, args) =>
+			{
+				GameManager.StartLocalServer(int.Parse(txt.Text));
+			};
+			dialog.Width = (int)(200*GlobalScale.X);
+			dialog.Height = (int)(80*GlobalScale.X);
+				
+			dialog.ShowModal(UI.Desktop);
+		};
+		
+		_menuStack.Widgets.Add(host);
 
 		var singleplayer = new SoundTextButton
 		{

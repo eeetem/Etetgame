@@ -156,12 +156,11 @@ public static partial class GameManager
 	}
 
 	static Process? localServerProcess = null;
-	public static void StartLocalServer()
+	public static void StartLocalServer(int port = 522330)
 	{
 		Console.WriteLine("Starting local server:");
 		string name = "LocalServer";
 		string pass = "";
-		int port = 52233;
 		Console.WriteLine("Port: " + port); //ddos or spam protection is needed
 #if RELEASE // only run server in release mode since we always have a server running while debugging
 		if(localServerProcess != null)
