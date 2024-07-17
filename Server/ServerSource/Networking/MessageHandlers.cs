@@ -1,4 +1,5 @@
-﻿using DefconNull.ReplaySequence;
+﻿using System.Reflection;
+using DefconNull.ReplaySequence;
 using DefconNull.ReplaySequence.WorldObjectActions;
 using DefconNull.WorldObjects;
 using Microsoft.Xna.Framework;
@@ -131,15 +132,16 @@ public static partial class NetworkingManager
 					
 		GameManager.PreGameData.TurnTime = data.TurnTime;
 		SendPreGameInfo();
-		if (WorldManager.Instance.CurrentMap.Name != data.SelectedMap)
-		{
-			WorldManager.Instance.LoadMap(data.SelectedMap);
 
-			SendMapData(GameManager.Player1.Connection);
-			if (GameManager.Player2 != null)
-				if (GameManager.Player2.Connection != null)
-					SendMapData(GameManager.Player2.Connection);
-		}
+	}
+	[MessageHandler((ushort)NetworkMessageID.SelectMap)]
+	private static void SelectMap(ushort senderID, Message message)
+	{
+		if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
+		string path = message.GetString();
+		NetworkingManager.SelectMap(path);
+
+
 	}
 	[MessageHandler((ushort)NetworkMessageID.Chat)]
 	private static void ReciveChatMsg(ushort senderID,Message message)
@@ -165,14 +167,39 @@ public static partial class NetworkingManager
 		text = $"{name}: {text}";
 		SendChatMessage(text);
 	}
-
-	//[MessageHandler((ushort) NetworkMessageID.MapUpload)]
+	
+	private static PriorityQueue<string,int> uploadBuffer = new PriorityQueue<string,int>();
+	[MessageHandler((ushort) NetworkMessageID.MapUpload)]
 	private static void ReciveMapUpload(ushort senderID, Message message)
 	{
-		//var data = message.GetSerializable<WorldManager.MapData>();
-		//File.Delete(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Custom/" + data.Name + ".mapdata");
-		//File.WriteAllText(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Custom/" + data.Name + ".mapdata", data.ToJSON());
-		//SendPreGameInfo();
+		if(senderID != GameManager.Player1?.Connection?.Id  || GameManager.GameState != GameState.Lobby) return;
+		int index = message.GetInt();
+		var json = message.GetString();
+		if(json == "FINISH")
+		{
+			string final = "";
+			while (uploadBuffer.Count > 0)
+			{
+				final += uploadBuffer.Dequeue();
+			}
+			uploadBuffer.Clear();
+			var data = WorldManager.MapData.FromJSON(final);
+			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Custom/" + data.Name + ".mapdata";
+			if (File.Exists(path))
+			{
+				File.Delete(path);
+			}
+
+			File.WriteAllText(path, final);
+			SelectMap(path);
+			SendPreGameInfo();
+			return;
+		}
+		uploadBuffer.Enqueue(json,index);
+		
+		
+		
+
 	}
 
 	private static List<ushort> ClientsReadyForMap = new List<ushort>();

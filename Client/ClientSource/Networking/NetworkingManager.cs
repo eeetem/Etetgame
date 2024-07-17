@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -125,9 +126,26 @@ public static partial class NetworkingManager
 
 	public static void UploadMap(string path)
 	{
-		//var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapUpload);
-		//	msg.Add(WorldManager.MapData.FromJSON(File.ReadAllText(path)));
-		////client?.Send(msg);
+		var text = File.ReadAllText(path);
+		//split every 5000 characters
+		int i = 0;
+		Message? msg;
+		while (text.Length>0)
+		{
+			var sample = text.Substring(0, Math.Min(5000, text.Length));
+			text = text.Remove(0, Math.Min(5000, text.Length));
+			msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapUpload);	
+			msg.Add(i);
+			msg.AddString(sample);
+			client?.Send(msg);
+			i++;
+		}
+		
+		msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.MapUpload);	
+		msg.Add(i);
+		msg.AddString("FINISH");
+		client?.Send(msg);
+
 	}
 
 	private static void Reconnect()
@@ -171,13 +189,11 @@ public static partial class NetworkingManager
 		client?.Send(msg);
 	}
 
-	public static void SwapMap(string name)
+	public static void SwapMap(string path)
 	{
-		var data = GameManager.PreGameData;
-		data.SelectedMap = name;
-		GameManager.PreGameData = data;
-					
-		SendPreGameUpdate();
+		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.SelectMap);
+		msg.AddString(path);
+		client?.Send(msg);
 	}
 	public static void SendPreGameUpdate()
 	{

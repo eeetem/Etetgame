@@ -156,7 +156,7 @@ public static partial class GameManager
 	}
 
 	static Process? localServerProcess = null;
-	public static void StartLocalServer(int port = 522330)
+	public static void StartLocalServer(int port = 52233)
 	{
 		Console.WriteLine("Starting local server:");
 		string name = "LocalServer";

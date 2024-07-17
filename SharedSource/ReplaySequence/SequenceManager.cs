@@ -35,7 +35,7 @@ public class SequenceManager
 	private static readonly List<Task> CurrentSequenceTasks = new List<Task>();
 	public static bool SequenceRunningRightNow;
 	
-	private static object lockObj = new object();
+	public static object SequenceLock = new object();
     
     
 	private static List<Tuple<Task,int>> nextFrameTasks = new List<Tuple<Task,int>>();
@@ -78,7 +78,7 @@ public class SequenceManager
 		}
 		
 		SequenceRunningRightNow = true;
-		lock (lockObj)
+		lock (SequenceLock)
 		{
 			if (CurrentSequenceTasks.Count == 0)
 			{
@@ -249,7 +249,7 @@ public class SequenceManager
 		hasSequece = true;
 		if(action==null) throw new ArgumentNullException(nameof(action));
 
-		lock (lockObj)
+		lock (SequenceLock)
 		{
 			Log.Message("SEQUENCE MANAGER","adding sequnce task: " + action);
 			SequenceQueue.Enqueue(action);

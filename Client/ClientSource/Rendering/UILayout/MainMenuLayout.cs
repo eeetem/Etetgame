@@ -205,6 +205,27 @@ public class MainMenuLayout : UiLayout
 		_menuStack.Widgets.Add(tutorial);
 		
 		
+		var singleplayer = new SoundTextButton
+		{
+			Text = "SinglePlayer",
+			Height = (int)(12 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Center
+		};
+		singleplayer.Click += (a, b) =>
+		{
+			GameManager.StartLocalServer();
+			NetworkingManager.AddAI();
+			Task.Run(() =>
+			{
+				Thread.Sleep(2500);
+				NetworkingManager.SwapMap("/Maps/Ground Zero.mapdata");
+				Thread.Sleep(2500);
+				//	NetworkingManager.SendStartGame();
+			});
+
+		};
+		_menuStack.Widgets.Add(singleplayer);
 
 
 		var multi = new SoundTextButton
@@ -265,27 +286,6 @@ public class MainMenuLayout : UiLayout
 		
 		_menuStack.Widgets.Add(host);
 
-		var singleplayer = new SoundTextButton
-		{
-			Text = "SinglePlayer",
-			Height = (int)(12 * GlobalScale.X),
-			HorizontalAlignment = HorizontalAlignment.Stretch,
-			VerticalAlignment = VerticalAlignment.Center
-		};
-		singleplayer.Click += (a, b) =>
-		{
-			GameManager.StartLocalServer();
-			NetworkingManager.AddAI();
-			Task.Run(() =>
-			{
-				Thread.Sleep(2500);
-				NetworkingManager.SwapMap("/Maps/Ground Zero.mapdata");
-				Thread.Sleep(2500);
-			//	NetworkingManager.SendStartGame();
-			});
-
-		};
-		_menuStack.Widgets.Add(singleplayer);
 		
 
 /*

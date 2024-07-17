@@ -9,6 +9,7 @@ public static partial class NetworkingManager
     public enum NetworkMessageID : ushort
     {
 
+        
         MapDataInitiate =6,
         GameData =7,
         GameAction =8,
@@ -16,7 +17,7 @@ public static partial class NetworkingManager
         EndTurn =10,
         SquadComp =11,
         CaptureNotif =12,
-        //TileUpdate =13,
+        MapUpload =13,
         MapDataInitiateConfirm = 14,
         ReplaySequence = 15,
         Notify = 16,
@@ -29,7 +30,10 @@ public static partial class NetworkingManager
         MapReaload = 23,
         StartTutorial = 24,
         SequenceFinished = 25,
-        
+        SelectMap = 26,
+
+
+     
     }
 
     public enum ReplaySequenceTarget : ushort

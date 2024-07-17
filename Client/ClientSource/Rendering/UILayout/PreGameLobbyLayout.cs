@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using DefconNull.Networking;
 using DefconNull.Rendering.CustomUIElements;
@@ -15,7 +16,7 @@ namespace DefconNull.Rendering.UILayout;
 public class PreGameLobbyLayout : MenuLayout
 {
 
-	private bool swapingMap;
+	
 
 	public override void RenderBehindHud(SpriteBatch batch, float deltatime)
 	{
@@ -59,101 +60,101 @@ public class PreGameLobbyLayout : MenuLayout
 	}
 
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
-{
-    swapingMap = false;
-    WorldManager.Instance.MakeFovDirty();
-    var grid1 = new Grid()
-    {
-    };
-    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
-    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
-    grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+	{
+	
+		WorldManager.Instance.MakeFovDirty();
+		var grid1 = new Grid()
+		{
+		};
+		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Fill));
+		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+		grid1.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 
-    var rightStack = new VerticalStackPanel()
-    {
-        GridColumn = 2,
-        GridRow = 0,
-        Spacing = 0,
-        Top = 0,
-        Left = 0,
-        Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f) * 0.2f),
-        Width = (int)(140 * GlobalScale.X),
-        Height = (int)(800 * GlobalScale.Y),
-        Margin = new Thickness(0),
-        Padding = new Thickness(0)
-    };
-    grid1.Widgets.Add(rightStack);
+		var rightStack = new VerticalStackPanel()
+		{
+			GridColumn = 2,
+			GridRow = 0,
+			Spacing = 0,
+			Top = 0,
+			Left = 0,
+			Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f) * 0.2f),
+			Width = (int)(140 * GlobalScale.X),
+			Height = (int)(800 * GlobalScale.Y),
+			Margin = new Thickness(0),
+			Padding = new Thickness(0)
+		};
+		grid1.Widgets.Add(rightStack);
 
-    var leftpanel = new Panel()
-    {
-        Top = 0,
-        Left = 0,
-        Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f)*0.2f),
-        Width = (int)(150 * GlobalScale.X),
-        Height = (int)(440 * GlobalScale.Y),
-        VerticalAlignment = VerticalAlignment.Stretch,
-        HorizontalAlignment = HorizontalAlignment.Left,
-    };
-    grid1.Widgets.Add(leftpanel);
+		var leftpanel = new Panel()
+		{
+			Top = 0,
+			Left = 0,
+			Background = new SolidBrush(new Color(242f / 255f, 190f / 255f, 0f / 255f)*0.2f),
+			Width = (int)(150 * GlobalScale.X),
+			Height = (int)(440 * GlobalScale.Y),
+			VerticalAlignment = VerticalAlignment.Stretch,
+			HorizontalAlignment = HorizontalAlignment.Left,
+		};
+		grid1.Widgets.Add(leftpanel);
 
-    var chat = new TextBox()
-    {
-	    Background = new SolidBrush(Color.Black),
-        HorizontalAlignment = HorizontalAlignment.Left,
-        VerticalAlignment = VerticalAlignment.Bottom,
-        Width = (int)(150 * GlobalScale.X),
-        Height = (int)(10 * GlobalScale.X),
-        Left = (int)(0 * GlobalScale.X),
-        Font = UiLayout.DefaultFont.GetFont(5 * GlobalScale.X)
-    };
-    chat.KeyDown += (s, a) =>
-    {
-        if (a.Data == Keys.Enter)
-        {
-            Chat.SendMessage(chat.Text);
-            chat.Text = "";
-        }
-    };
-    grid1.Widgets.Add(chat);
+		var chat = new TextBox()
+		{
+			Background = new SolidBrush(Color.Black),
+			HorizontalAlignment = HorizontalAlignment.Left,
+			VerticalAlignment = VerticalAlignment.Bottom,
+			Width = (int)(150 * GlobalScale.X),
+			Height = (int)(10 * GlobalScale.X),
+			Left = (int)(0 * GlobalScale.X),
+			Font = UiLayout.DefaultFont.GetFont(5 * GlobalScale.X)
+		};
+		chat.KeyDown += (s, a) =>
+		{
+			if (a.Data == Keys.Enter)
+			{
+				Chat.SendMessage(chat.Text);
+				chat.Text = "";
+			}
+		};
+		grid1.Widgets.Add(chat);
 
     
-    /*var overlayLeftPanel = new Image()
-    {
-        GridColumn = 0,
-        GridRow = 0,
-        Top = 0,
-        Left = 0,
-        Width = leftpanel.Width,
-        Height = leftpanel.Height,
-        Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/LeftPanelOverlay"))
-    };
-    grid1.Widgets.Add(overlayLeftPanel);
-	*/
-    var overlayRightPanel = new Image()
-    {
-        GridColumn = 2,
-        GridRow = 0,
-        Top = 170,
-        Left = 0,
-        Width = rightStack.Width,
-        Height = rightStack.Height,
-	    Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/RightPanelOverlay"))
-    };
-    grid1.Widgets.Add(overlayRightPanel);
+		/*var overlayLeftPanel = new Image()
+		{
+		    GridColumn = 0,
+		    GridRow = 0,
+		    Top = 0,
+		    Left = 0,
+		    Width = leftpanel.Width,
+		    Height = leftpanel.Height,
+		    Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/LeftPanelOverlay"))
+		};
+		grid1.Widgets.Add(overlayLeftPanel);
+		*/
+		var overlayRightPanel = new Image()
+		{
+			GridColumn = 2,
+			GridRow = 0,
+			Top = 170,
+			Left = 0,
+			Width = rightStack.Width,
+			Height = rightStack.Height,
+			Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/RightPanelOverlay"))
+		};
+		grid1.Widgets.Add(overlayRightPanel);
 	
-    /*
-    var overlayChat = new Image()
-    {
-        GridColumn = 0,
-        GridRow = 0,
-        Top = chat.Top,
-        Left = chat.Left,
-        Width = chat.Width,
-        Height = chat.Height,
-        Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/ChatOverlay"))
-    };
-    grid1.Widgets.Add(overlayChat);
-    */
+		/*
+		var overlayChat = new Image()
+		{
+		    GridColumn = 0,
+		    GridRow = 0,
+		    Top = chat.Top,
+		    Left = chat.Left,
+		    Width = chat.Width,
+		    Height = chat.Height,
+		    Renderable = new TextureRegion(TextureManager.GetTexture("Lobby/ChatOverlay"))
+		};
+		grid1.Widgets.Add(overlayChat);
+		*/
     
 
 		if (GameManager.PreGameData.Player2Name != "None" && GameManager.IsPlayer1)
@@ -273,192 +274,192 @@ public class PreGameLobbyLayout : MenuLayout
 	
 		
 
-	var linebreak = new TextLabel()
-	{
-		Text = "______________",
-		HorizontalAlignment = HorizontalAlignment.Center,
-		Width = (int)(400*GlobalScale.X),
-		Height = (int)(20*GlobalScale.X)
-	};
-	rightStack.Widgets.Add(linebreak);
+		var linebreak = new TextLabel()
+		{
+			Text = "______________",
+			HorizontalAlignment = HorizontalAlignment.Center,
+			Width = (int)(400*GlobalScale.X),
+			Height = (int)(20*GlobalScale.X)
+		};
+		rightStack.Widgets.Add(linebreak);
 
 				
-	var spectatorViewer = new ScrollViewer();
-	var spectatorList = new VerticalStackPanel();
-	spectatorViewer.Background = new SolidBrush(Color.Transparent);
-	spectatorViewer.Content = spectatorList;
-	spectatorViewer.Height = (int) (80 * GlobalScale.Y);
+		var spectatorViewer = new ScrollViewer();
+		var spectatorList = new VerticalStackPanel();
+		spectatorViewer.Background = new SolidBrush(Color.Transparent);
+		spectatorViewer.Content = spectatorList;
+		spectatorViewer.Height = (int) (80 * GlobalScale.Y);
 
-	var lbl = new TextLabel()
-	{
-		Text = "SPECTATORS:",
-		VerticalAlignment = VerticalAlignment.Center,
-		HorizontalAlignment = HorizontalAlignment.Center,
-		Height = (int) (10 * GlobalScale.X),
-		Top = 0,
-	};
-	rightStack.Widgets.Add(lbl);
-	foreach (var spectator in GameManager.PreGameData.Spectators)
-	{
-		var spec = new TextLabel()
+		var lbl = new TextLabel()
 		{
-			Text = spectator,
+			Text = "SPECTATORS:",
 			VerticalAlignment = VerticalAlignment.Center,
 			HorizontalAlignment = HorizontalAlignment.Center,
+			Height = (int) (10 * GlobalScale.X),
 			Top = 0,
 		};
-		spectatorList.Widgets.Add(spec);
-	}
-		
-	rightStack.Widgets.Add(spectatorViewer);
-		
-				
-				
-				
-	///LEFT STACK///
-	var officialSelection = new ListBox()
-	{
-		HorizontalAlignment = HorizontalAlignment.Stretch,
-		VerticalAlignment = VerticalAlignment.Bottom,
-	};
-	officialSelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
-	foreach (var path in GameManager.MapList)
-	{
-		var item = new ListItem()
+		rightStack.Widgets.Add(lbl);
+		foreach (var spectator in GameManager.PreGameData.Spectators)
 		{
-			Text = path.Key,
-			
-		};
-		var image = new ImageButton()
-		{
-			Image = new TextureRegion(TextureManager.GetTexture("Lobby/MapBackground")),
-			
-		};
-		officialSelection.Items.Add(item);
-	}
-				
-	officialSelection.SelectedIndexChanged += (s, a) =>
-	{
-		if (!swapingMap)
-		{
-			var data = GameManager.PreGameData;
-			data.SelectedMap = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
-			GameManager.PreGameData = data;
-			NetworkingManager.SendPreGameUpdate();
-			var lbl = new TextLabel();
-			lbl.Text = "Swaping Map";
-			lbl.HorizontalAlignment = HorizontalAlignment.Center;
-			lbl.VerticalAlignment = VerticalAlignment.Center;
-			leftpanel.Widgets.Add(lbl);
-			swapingMap = true;
+			var spec = new TextLabel()
+			{
+				Text = spectator,
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				Top = 0,
+			};
+			spectatorList.Widgets.Add(spec);
 		}
-	};
-var communitySelection = new ListBox()
-{
-	HorizontalAlignment = HorizontalAlignment.Stretch,
-	VerticalAlignment = VerticalAlignment.Bottom
-};
-communitySelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
-foreach (var path in GameManager.CustomMapList)
-{
-	var item = new ListItem()
-	{
 		
-		Text = path.Key,
-		Image = new TextureRegion(TextureManager.GetTexture("Lobby/MapBackground")),
-		ImageTextSpacing = 150
-						
-	};
+		rightStack.Widgets.Add(spectatorViewer);
+		
+				
+		var lbl1 = new TextLabel()
+		{
+			Text = "Maps Selection",
+			VerticalAlignment = VerticalAlignment.Top,
+			HorizontalAlignment = HorizontalAlignment.Center,
+			Top = (int)(10*GlobalScale.X),
+			Height = (int)(10*GlobalScale.X)
+
+		};
+		var tab1 = new SoundTextButton()
+		{
+			Text = "Official",
+			HorizontalAlignment = HorizontalAlignment.Left,
+			VerticalAlignment = VerticalAlignment.Top,
+			Height = (int)(8*GlobalScale.X),
+			Width = (int)(80*GlobalScale.X),
+			Top = (int)(20*GlobalScale.X)
+		};
+		var tab2 = new SoundTextButton()
+		{
+			Text = "Community",
+			HorizontalAlignment = HorizontalAlignment.Right,
+			VerticalAlignment = VerticalAlignment.Top,
+			Height = (int)(8*GlobalScale.X),
+			Width = (int)(80*GlobalScale.X),
+			Top = (int)(20*GlobalScale.X)
+
+		};
+
+		var tab3 = new SoundTextButton()
+		{
+			Text = "Local",
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Top,
+			Height = (int)(8*GlobalScale.X),
+			Width = (int)(80*GlobalScale.X),
+			Top = (int)(35*GlobalScale.X)
+
+		};
+		
+		leftpanel.Widgets.Add(lbl1);
+		leftpanel.Widgets.Add(tab1);
+		leftpanel.Widgets.Add(tab2);
+		leftpanel.Widgets.Add(tab3);
+				
+		///LEFT STACK///
+	
+		var localSelection = new ListBox()
+		{
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Bottom,
+		};
+		string[] localmaps = Directory.GetFiles("./Maps/", "*.mapdata");
+		foreach (var map in localmaps)
+		{
+			
+			var item = new ListItem()
+			{
+				Text = map.Split("/").Last().Split(".").First(),
+			};
+			item.SelectedChanged += (s, a) =>
+			{
+				if (item.IsSelected)
+				{
+					NetworkingManager.UploadMap(map);
+					tab2.OnTouchDown();
+				}
+			};
+			localSelection.Items.Add(item);
+			
+		}
+	
+		var officialSelection = new ListBox()
+		{
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Bottom,
+		};
+		officialSelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
+		foreach (var path in GameManager.MapList)
+		{
+			var item = new ListItem()
+			{
+				Text = path.Key,
+			
+			};
+
+			officialSelection.Items.Add(item);
+		}
+				
+		officialSelection.SelectedIndexChanged += (s, a) =>
+		{
+			
+				string path  = GameManager.MapList[officialSelection.Items[(int) officialSelection.SelectedIndex].Text];
+				NetworkingManager.SwapMap(path);
 
 
-					
-	communitySelection.Items.Add(item);
-}
-communitySelection.SelectedIndexChanged += (s, a) =>
-{
-	if (!swapingMap)
-	{
-		var data = GameManager.PreGameData;
-		data.SelectedMap = GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
-		GameManager.PreGameData = data;
-					
-		NetworkingManager.SendPreGameUpdate();
-		var lbl = new TextLabel();
-		lbl.Text = "Swaping Map";
-		lbl.HorizontalAlignment = HorizontalAlignment.Center;
-		lbl.VerticalAlignment = VerticalAlignment.Center;
-		leftpanel.Widgets.Add(lbl);
-		swapingMap = true;
-	}
-};
-var lbl1 = new TextLabel()
-{
-	Text = "Maps Selection",
-	VerticalAlignment = VerticalAlignment.Top,
-	HorizontalAlignment = HorizontalAlignment.Center,
-	Top = (int)(10*GlobalScale.X),
-	Height = (int)(10*GlobalScale.X)
+		};
+		var communitySelection = new ListBox()
+		{
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Bottom
+		};
+		communitySelection.ListBoxStyle.ListItemStyle.LabelStyle.Font = DefaultFont.GetFont(20);
+		foreach (var path in GameManager.CustomMapList)
+		{
+			var item = new ListItem()
+			{
+				Text = path.Key,
+			};
+			communitySelection.Items.Add(item);
+		}
+		communitySelection.SelectedIndexChanged += (s, a) =>
+		{
+		
+				string path  =  GameManager.CustomMapList[communitySelection.Items[(int) communitySelection.SelectedIndex].Text];
+				NetworkingManager.SwapMap(path);
+				
+			
+		};
 
-};
-var tab1 = new SoundTextButton()
-{
-	Text = "Official",
-	HorizontalAlignment = HorizontalAlignment.Left,
-	VerticalAlignment = VerticalAlignment.Top,
-	Height = (int)(8*GlobalScale.X),
-	Width = (int)(80*GlobalScale.X),
-	Top = (int)(20*GlobalScale.X)
-};
-var tab2 = new SoundTextButton()
-{
-	Text = "Community",
-	HorizontalAlignment = HorizontalAlignment.Right,
-	VerticalAlignment = VerticalAlignment.Top,
-	Height = (int)(8*GlobalScale.X),
-	Width = (int)(80*GlobalScale.X),
-	Top = (int)(20*GlobalScale.X)
 
-};
-leftpanel.Widgets.Add(lbl1);
-leftpanel.Widgets.Add(tab1);
-leftpanel.Widgets.Add(tab2);
+		leftpanel.Widgets.Add(officialSelection);
+		tab1.Click += (i, a) =>
+		{
+			leftpanel.Widgets.Remove(officialSelection);
+			leftpanel.Widgets.Remove(communitySelection);
+			leftpanel.Widgets.Remove(localSelection);
+			leftpanel.Widgets.Add(officialSelection);
+		};
+		tab2.Click += (i, a) =>
+		{
+			leftpanel.Widgets.Remove(communitySelection);
+			leftpanel.Widgets.Remove(officialSelection);
+			leftpanel.Widgets.Remove(localSelection);
+			leftpanel.Widgets.Add(communitySelection);
+		};
+		tab3.Click += (i, a) =>
+		{
+			leftpanel.Widgets.Remove(communitySelection);
+			leftpanel.Widgets.Remove(officialSelection);
+			leftpanel.Widgets.Remove(localSelection);
+			leftpanel.Widgets.Add(localSelection);
+		};
 
-leftpanel.Widgets.Add(officialSelection);
-tab1.Click += (i, a) =>
-{
-	leftpanel.Widgets.Remove(officialSelection);
-	leftpanel.Widgets.Remove(communitySelection);
-	leftpanel.Widgets.Add(officialSelection);
-};
-tab2.Click += (i, a) =>
-{
-	leftpanel.Widgets.Remove(communitySelection);
-	leftpanel.Widgets.Remove(officialSelection);
-	leftpanel.Widgets.Add(communitySelection);
-};
-/*
- tab3.Click += (i, a) =>
-{
-	leftpanel.Widgets.Remove(communitySelection);
-	leftpanel.Widgets.Remove(officialSelection);
-	leftpanel.Widgets.Add(communitySelection);
-	var file = new FileDialog(FileDialogMode.OpenFile)
-	{
-
-	};
-	if (file == null) throw new ArgumentNullException(nameof(file));
-	file.FilePath = "./Maps";
-	file.ButtonOk.Click += (o, e) =>
-	{
-		var path = file.FilePath;
-		NetworkingManager.UploadMap(path);
-		file.Close();
-	};
-	grid1.Widgets.Add(file);
-
-};*/
 
 				
-return grid1;
-}
+		return grid1;
+	}
 }
