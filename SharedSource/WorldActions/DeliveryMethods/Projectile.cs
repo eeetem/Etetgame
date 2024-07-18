@@ -84,10 +84,22 @@ public class Projectile : DeliveryMethod
 	}
 
 
-	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
+	public override Tuple<bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
 		//var newTarget = Process(actor, target);
-		return new Tuple<bool,bool, string> (true,true, "");
+		return new Tuple<bool, string> (true, "");
 	}
 
+	public override Tuple<bool, string> IsRecommendedToPerform(Unit actor, WorldObject target, int dimension = -1)
+	{
+		var parent =  base.IsRecommendedToPerform(actor, target, dimension);
+		if (!parent.Item1) return parent;
+		
+		//out of range check
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) > _range)
+		{
+			return new Tuple<bool, string> (false,"Out of range");
+		}
+		return new Tuple<bool, string>(true,"");
+	}
 }

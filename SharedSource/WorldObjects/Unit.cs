@@ -573,7 +573,7 @@ namespace DefconNull.WorldObjects
 			{	
 				var tile = WorldManager.Instance.GetTileAtGrid(position);
 				if(tile.Surface==null) continue;
-				if (action.IsPlausibleToPerform(this, tile.Surface, -1).Item1)
+				if (action.CanPerform(this, tile.Surface, -1).Item1)
 				{
 					if(VisibleTiles.ContainsKey(tile.Position) && VisibleTiles[tile.Position] >= Visibility.Partial){
 						

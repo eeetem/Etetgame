@@ -23,7 +23,7 @@ public class HudActionButton
 	public Unit? Owner => WorldObjectManager.GetObject(OwnerID)?.UnitComponent;
 	private readonly Action<Unit,WorldObject> _executeTask;
 	private readonly Action<Unit,Vector2Int>? _executeOverWatchTask;
-	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _shouldPerformTask;
+	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _recommendedToPerformTask;
 	private readonly Func<Unit,WorldObject,Tuple<bool,string>> _canPerformTask;
 	private readonly Action<Unit,WorldObject,SpriteBatch>? _previewTask;
 	private readonly Action<Unit,Vector2Int,SpriteBatch>? _previewOverwatchTask;
@@ -33,8 +33,9 @@ public class HudActionButton
 	public readonly bool CanOverwatch;
 	public readonly bool SelfOnly = false;
 	private readonly Func<Unit,WorldObject,List<SequenceAction>> _getConsequencesTask;
+	private bool _suggestTargets = false;
 
-	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> shouldPerformTask, AbilityCost cost, string tooltip, bool selfOnly)
+	public HudActionButton(ImageButton imageButton,Texture2D icon ,Unit owner ,Action<Unit,WorldObject> executeTask, Func<Unit,WorldObject,Tuple<bool,string>> recommendedToPerformTask, AbilityCost cost, string tooltip, bool selfOnly)
 	{
 		UIButton = imageButton;
 		Cost = cost;
@@ -46,8 +47,8 @@ public class HudActionButton
 		_executeTask = executeTask;
 		_previewTask = null;
 		_getConsequencesTask = (unit, target) => new List<SequenceAction>();
-		_shouldPerformTask = shouldPerformTask;
-		_canPerformTask = shouldPerformTask;
+		_recommendedToPerformTask = recommendedToPerformTask;
+		_canPerformTask = recommendedToPerformTask;
 		UIButton.Click += (o, a) =>
 		{
 			SelectedButton = this;
@@ -61,6 +62,8 @@ public class HudActionButton
 	public HudActionButton(ImageButton imageButton, UnitAbility abl, Unit owner)
 	{
 		UIButton = imageButton;
+		_suggestTargets = abl.TargetAids.Count > 0;//if we dont have any target aids dont suggest any targets, this is hacky and doesnt cover all possible edge cases, but rihgt now it's only relavent to the smoke and it works
+
 		Cost = abl.GetCost();
 		Tooltip = abl.Tooltip;
 		SelfOnly = abl.ImmideateActivation;
@@ -95,7 +98,11 @@ public class HudActionButton
 
 			return consequences;
 		};
-		_shouldPerformTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, true, false);
+		_recommendedToPerformTask = (unit, vector2Int) =>
+		{
+		
+			return abl.CanPerform(unit, vector2Int, true, false);
+		};
 		_canPerformTask = (unit, vector2Int) => abl.CanPerform(unit, vector2Int, false, false);
 		if (CanOverwatch)
 		{
@@ -142,6 +149,8 @@ public class HudActionButton
 	public List<WorldObject> GetSuggestedTargets(List<Unit> targetsToCheck)
 	{
 		List<WorldObject> suggestedTargets = new();
+		if(_suggestTargets == false)
+			return suggestedTargets;
 	
 		if(SelfOnly)
 		{
@@ -150,7 +159,7 @@ public class HudActionButton
 		}
 		foreach (var target in targetsToCheck)
 		{
-			if (_shouldPerformTask(Owner,target.WorldObject).Item1
+			if (_recommendedToPerformTask(Owner,target.WorldObject).Item1
 			    && WorldManager.Instance.CanTeamSee(target.WorldObject.TileLocation.Position, Owner.IsPlayer1Team) >= target.WorldObject.GetMinimumVisibility())
 			{
 				suggestedTargets.Add(target.WorldObject);
@@ -229,7 +238,8 @@ public class HudActionButton
 	}
 	public Tuple<bool,string> ShouldBeAbleToPerform(WorldObject target)
 	{
-		return _shouldPerformTask(Owner,target);
+		if (!_suggestTargets) return new Tuple<bool, string>(true, "");
+		return _recommendedToPerformTask(Owner,target);
 	}
 
 	public void OverwatchAction(Vector2Int actionTarget)

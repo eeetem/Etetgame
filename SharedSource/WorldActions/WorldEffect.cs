@@ -50,7 +50,12 @@ public class WorldEffect : Effect
 		return changes;
 
 	}
-	
+
+	protected override Tuple<bool, string> IsRecommendedToPerformChild(Unit actor, WorldObject target, int dimension)
+	{
+		return DeliveryMethod.IsRecommendedToPerform(actor, target,dimension);
+	}
+
 	public Tuple<WorldObject,HashSet<IWorldTile>> GetAffectedTiles(Unit actor, WorldObject target)
 	{
 		var tiles = new HashSet<IWorldTile>();
@@ -74,7 +79,7 @@ public class WorldEffect : Effect
 
 
 
-	protected override Tuple<bool,bool, string>  CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
+	protected override Tuple<bool, string>  CanPerformChild(Unit actor, WorldObject target, int dimension = -1)
 	{
 		return DeliveryMethod.CanPerform(actor, target,dimension);
 	}
