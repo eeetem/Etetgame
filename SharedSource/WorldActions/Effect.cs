@@ -13,40 +13,51 @@ public abstract class Effect
 	public Vector2Int Offset = new Vector2Int(0, 0);
 	public abstract float GetOptimalRangeAI();
     
-	public Tuple<bool,bool, string> CanPerform(Unit actor, WorldObject target, int dimension =-1)
+	public Tuple<bool, string> CanPerform(Unit actor, WorldObject target, int dimension =-1)
 	{
-		if (Offset != new Vector2Int(0,0))
+		var tile = GetTargetTile(actor, target);
+		if (tile == null)
 		{
-			var sfc = WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position + Offset).Surface;
-			if (sfc != null)
-			{
-				return CanPerformChild(actor,sfc, dimension);
-			}
-
-			return new Tuple<bool,bool, string> (false,false,"Can't target empty tile");
+			return new Tuple<bool, string> (false,"Can't target empty tile");
 		}
-
-		return CanPerformChild(actor,target,dimension);
+		return CanPerformChild(actor,tile,dimension);
 	}
-	protected abstract Tuple<bool,bool, string>  CanPerformChild(Unit actor, WorldObject target,int dimension = -1);
+	protected abstract Tuple<bool, string>  CanPerformChild(Unit actor, WorldObject target,int dimension = -1);
 	
 	public List<SequenceAction> GetConsequences(Unit actor, WorldObject target,int dimension = -1)
 	{
+		var tile = GetTargetTile(actor, target);
+		if (tile == null)
+		{
+			return new List<SequenceAction>();
+		}
+		return GetConsequencesChild(actor,tile,dimension);
+	}
+	
+	private WorldObject? GetTargetTile(Unit actor, WorldObject target)
+	{
 		if (Offset != new Vector2Int(0,0))
 		{
 			var sfc = WorldManager.Instance.GetTileAtGrid(target.TileLocation.Position + Offset).Surface;
-			if (sfc != null)
-			{
-				return GetConsequencesChild(actor,sfc, dimension);
-			}
-
-			return new List<SequenceAction>();
+			return sfc;
 		}
 
-		return GetConsequencesChild(actor,target,dimension);
+		return target;
 	}
 	
 	protected abstract List<SequenceAction> GetConsequencesChild(Unit actor, WorldObject target,int dimension = -1);
 
 
+	public Tuple<bool, string> IsRecommendedToPerform(Unit actor, WorldObject target, int dimension)
+	{
+		var tile = GetTargetTile(actor, target);
+		if (tile == null)
+		{
+			return new Tuple<bool, string> (false,"Can't target empty tile");
+		}
+		
+		return IsRecommendedToPerformChild(actor,tile,dimension);
+	}
+
+	protected abstract Tuple<bool, string> IsRecommendedToPerformChild(Unit actor, WorldObject target, int dimension);
 }

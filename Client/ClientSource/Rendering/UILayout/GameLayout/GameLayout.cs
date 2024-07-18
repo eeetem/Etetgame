@@ -324,7 +324,6 @@ public partial class GameLayout : MenuLayout
 				{
 					elem.Left = 0;
 				}
-				Console.WriteLine($"Unit {unit.WorldObject.ID} - Height: {elem.Height}, Width: {elem.Width}, Position: {elem.Top}"); 
 			}
 			rowCounter++;
 		}

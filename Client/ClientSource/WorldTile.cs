@@ -59,7 +59,7 @@ public partial class WorldTile : IWorldTile
 				continue;
 			}
 
-			var res = watcher.Abilities[watcher.Overwatch.Item2].IsPlausibleToPerform(watcher, Surface!, -1);
+			var res = watcher.Abilities[watcher.Overwatch.Item2].CanPerform(watcher, Surface!, -1);
 			if (res.Item1 && watcher.VisibleTiles.ContainsKey(Position))
 			{
 

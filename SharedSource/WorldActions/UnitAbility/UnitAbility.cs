@@ -89,33 +89,29 @@ public class UnitAbility
 		
 		if (consultTargetAids)
 		{
-			var aids = IsValidTarget(actor, target);
+			var aids = IsRecommendedTargetType(actor, target);
 			if (!aids.Item1)
 			{
 				return aids;
 			}
+
+			return IsRecommendedToPerform(actor, target, dimension);
 			
 		}
-		var res2 = IsPlausibleToPerform(actor,target,dimension);
-		if (!res2.Item1)//if impossible return
+		else
 		{
-			return new Tuple<bool, string>(res2.Item1, res2.Item3);
+			return CanPerform(actor, target, dimension);
 		}
-		if(consultTargetAids && !res2.Item2)//unadvisable execution
-		{
-			return new Tuple<bool, string>(res2.Item2, res2.Item3);
-		}
-		
-		
 	
 
 		return new Tuple<bool, string>(true, "");
 	
 	}
+	
 
-	public Tuple<bool,string> IsValidTarget(Unit actor, WorldObject target)
+	public Tuple<bool,string> IsRecommendedTargetType(Unit actor, WorldObject target)
 	{
-		if (TargetAids.Count == 0) return new Tuple<bool, string>(true, "");
+		if (TargetAids.Count == 0) return new Tuple<bool, string>(false, "");
 		foreach (var t in TargetAids)
 		{
 			var str = t;
@@ -171,9 +167,14 @@ public class UnitAbility
 		return new Tuple<bool, string>(true, "");
 	}
 
-	public Tuple<bool,bool, string>  IsPlausibleToPerform(Unit actor, WorldObject target,int dimension = -1)
+	public Tuple<bool, string>  CanPerform(Unit actor, WorldObject target,int dimension = -1)
 	{
 		return Effects[0].CanPerform(actor, target,dimension);
+	}
+	
+	public Tuple<bool, string>  IsRecommendedToPerform(Unit actor, WorldObject target,int dimension = -1)
+	{
+		return Effects[0].IsRecommendedToPerform(actor, target,dimension);
 	}
 
 

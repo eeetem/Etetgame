@@ -205,6 +205,27 @@ public class MainMenuLayout : UiLayout
 		_menuStack.Widgets.Add(tutorial);
 		
 		
+		var singleplayer = new SoundTextButton
+		{
+			Text = "SinglePlayer",
+			Height = (int)(12 * GlobalScale.X),
+			HorizontalAlignment = HorizontalAlignment.Stretch,
+			VerticalAlignment = VerticalAlignment.Center
+		};
+		singleplayer.Click += (a, b) =>
+		{
+			GameManager.StartLocalServer();
+			NetworkingManager.AddAI();
+			Task.Run(() =>
+			{
+				Thread.Sleep(2500);
+				NetworkingManager.SwapMap("/Maps/Ground Zero.mapdata");
+				Thread.Sleep(2500);
+				//	NetworkingManager.SendStartGame();
+			});
+
+		};
+		_menuStack.Widgets.Add(singleplayer);
 
 
 		var multi = new SoundTextButton
@@ -223,28 +244,48 @@ public class MainMenuLayout : UiLayout
 		};
 		
 		_menuStack.Widgets.Add(multi);
-
-		var singleplayer = new SoundTextButton
+		
+		var host = new SoundTextButton
 		{
-			Text = "SinglePlayer",
+			Text = "Host Local Server",
 			Height = (int)(12 * GlobalScale.X),
 			HorizontalAlignment = HorizontalAlignment.Stretch,
 			VerticalAlignment = VerticalAlignment.Center
 		};
-		singleplayer.Click += (a, b) =>
+		host.Click += (a, b) =>
 		{
-			GameManager.StartLocalServer();
-			NetworkingManager.AddAI();
-			Task.Run(() =>
+			//lobby creation popup
+			var popup = new Panel();
+			var lbl = new TextLabel()
 			{
-				Thread.Sleep(2500);
-				NetworkingManager.SwapMap("/Maps/Ground Zero.mapdata");
-				Thread.Sleep(2500);
-			//	NetworkingManager.SendStartGame();
-			});
+				Top = -10,
+				Height = (int)(10*GlobalScale.X),
+				Width = (int)(150*GlobalScale.X),
+				Text = "Enter Port:"
+			};
+			popup.Widgets.Add(lbl);
+			var txt = new TextBox()
+			{
+				Top = 25,
+				Height = (int)(25*GlobalScale.X),
+				Width = (int)(150*GlobalScale.X),
+				Text = "52233"
+			};
+			popup.Widgets.Add(txt);
 
+			var dialog = Dialog.CreateMessageBox("Creating Local Server...", popup);
+			dialog.ButtonOk.Click += (sender, args) =>
+			{
+				GameManager.StartLocalServer(int.Parse(txt.Text));
+			};
+			dialog.Width = (int)(200*GlobalScale.X);
+			dialog.Height = (int)(80*GlobalScale.X);
+				
+			dialog.ShowModal(UI.Desktop);
 		};
-		_menuStack.Widgets.Add(singleplayer);
+		
+		_menuStack.Widgets.Add(host);
+
 		
 
 /*

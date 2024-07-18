@@ -37,3 +37,7 @@ Alpha 5
 -Scout hp buff
 -Officer Determination Buff
 -Grunt Determination Nerf
+ALPHA 6
+-community map browser is working
+-local server hosting is now possible
+-smoke grenades no longer auto-target random units

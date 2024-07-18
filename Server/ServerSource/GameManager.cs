@@ -619,4 +619,10 @@ public static partial class GameManager
 		Player2.IsPracticeOpponent = true;
 		NetworkingManager.SendPreGameInfo();
 	}
+
+	public static void ResetMap()
+	{
+		if (Player1!=null) Player1.WorldState.Clear();
+		if (Player2!=null) Player2.WorldState.Clear();
+	}
 }

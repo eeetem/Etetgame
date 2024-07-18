@@ -17,7 +17,6 @@ namespace DefconNull.Networking;
 public static partial class NetworkingManager
 {
 	private static Server server = null!;
-	private static string selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)+"/Maps/Ground Zero.mapdata";
 	private static bool SinglePlayerFeatures = false;
 	public static bool HasPendingMessages => (GameManager.Player1!= null && (!GameManager.Player1.HasDeliveredAllMessages || GameManager.Player1.HasSequencesToSend)) || (GameManager.Player2 != null && (!GameManager.Player2.HasDeliveredAllMessages || GameManager.Player2.HasSequencesToSend));
 
@@ -48,16 +47,25 @@ public static partial class NetworkingManager
 
 
 		if (!SinglePlayerFeatures)
-		{
-			selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata";
-			//selectedMap = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/testmap.mapdata";
-			WorldManager.Instance.LoadMap(selectedMap);
+		{ 
+			SelectMap(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/Maps/Ground Zero.mapdata");
 		}
 		server.Start(port, 10);
 			
 		Log.Message("NETWORKING","Started server at port" + port);
 
 
+
+	}
+
+	private static void SelectMap(string path)
+	{
+
+		WorldManager.Instance.LoadMap(path);
+		SendMapData(GameManager.Player1.Connection);
+		if (GameManager.Player2 != null)
+			if (GameManager.Player2.Connection != null)
+				SendMapData(GameManager.Player2.Connection);
 
 	}
 
@@ -329,8 +337,6 @@ public static partial class NetworkingManager
 		data.SinglePLayerFeatures = SinglePlayerFeatures;
 		
 
-
-		data.SelectedMap = selectedMap;
 		data.TurnTime = GameManager.PreGameData.TurnTime;
 
 		var msg = Message.Create(MessageSendMode.Reliable, NetworkMessageID.PreGameData);

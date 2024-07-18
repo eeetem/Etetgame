@@ -33,19 +33,17 @@ public class VissionCast : DeliveryMethod
 	}
 
 
-	public override Tuple<bool,bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
+	public override Tuple<bool, string>  CanPerform(Unit actor, WorldObject target, int dimension = -1)
 	{
-		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) >= _range)
-		{
-			return new Tuple<bool,bool, string> (false, false,"Too Far");
-		}
 		if (Visibility.None == WorldManager.Instance.VisibilityCast(actor.WorldObject.TileLocation.Position, target.TileLocation.Position, _range,actor.Crouching))
 		{
-			return new Tuple<bool,bool, string> (false, false,"No Sight");
+			return new Tuple<bool, string> (false,"No Sight");
 		}
-		
-		return new Tuple<bool,bool, string> (true, true, "");
+		if (Vector2.Distance(actor.WorldObject.TileLocation.Position, target.TileLocation.Position) >= _range)
+		{
+			return new Tuple<bool, string> (false,"Too Far");
+		}
+		return new Tuple<bool, string> (true, "");
 	}
-
 
 }
