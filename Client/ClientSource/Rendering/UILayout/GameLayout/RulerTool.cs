@@ -52,6 +52,26 @@ public class RulerTool : GameTool
 
     public override void render(SpriteBatch spriteBatch)
     {
+        //case switch draws text giving instructions for tool
+        var mousePos = Camera.GetMouseWorldPos();
+        
+        switch (location1)
+        {
+            case null:
+                spriteBatch.DrawText("Ruler Selected: right click first position",(new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 45/Camera.GetZoom())),2/Camera.GetZoom(),Color.Wheat);
+                break;
+            default:
+                if (location2 == null)
+                {
+                    spriteBatch.DrawText("Ruler Selected: right click second position", (new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 45/Camera.GetZoom())), 2/Camera.GetZoom(),Color.Wheat);
+                }
+                else
+                {
+                    spriteBatch.DrawText("Ruler Selected: right click to close",(new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 45/Camera.GetZoom())) ,2/Camera.GetZoom(),Color.Wheat);
+                }
+                break;
+        }
+        
         if (location1 != null && location2 != null)
         {
             //draw lines from loc1 to loc2 using midpoint

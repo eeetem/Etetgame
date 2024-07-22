@@ -478,6 +478,9 @@ public partial class GameLayout : MenuLayout
 		};
 		panel.Widgets.Add(doAI);
 		*/
+		
+#endif		
+		
 		var ruler = new TextButton
 		{
 			Top = (int)(160f * GlobalScale.Y),
@@ -489,10 +492,8 @@ public partial class GameLayout : MenuLayout
 		};
 		ruler.Click += (o, a) =>
 		{
-			//Log.Message("Test","1. ruler button clicked");
 			if (CheckCurrentTool() == null)
 			{
-				//Log.Message("Test","2. selected ruler tool");
 				SelectGameTool(new RulerTool());
 			}
 		};
@@ -515,7 +516,6 @@ public partial class GameLayout : MenuLayout
 			}
 		};
 		panel.Widgets.Add(FOVtool);
-#endif		
 
 		endBtn = new ImageButton()
 		{

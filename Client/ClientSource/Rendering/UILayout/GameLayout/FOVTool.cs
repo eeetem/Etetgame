@@ -50,6 +50,27 @@ public class FOVTool : GameTool
 
     public override void render(SpriteBatch spriteBatch)
     {
+        //case switch draws text giving instructions for tool
+        var mousePos = Camera.GetMouseWorldPos();
+        
+        switch (location1)
+        {
+            case null:
+                spriteBatch.DrawText("FOVTool Selected: left click a position",(new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 65/Camera.GetZoom())),2/Camera.GetZoom(),Color.Wheat);
+                break;
+            default:
+                if (location2 == null)
+                {
+                    spriteBatch.DrawText("FOVTool Selected: left click a direction", (new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 65/Camera.GetZoom())), 2/Camera.GetZoom(),Color.Wheat);
+                }
+                else
+                {
+                    spriteBatch.DrawText("FOVTool Selected: right click to toggle crouch",(new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 65/Camera.GetZoom())) ,2/Camera.GetZoom(),Color.Wheat);
+                    spriteBatch.DrawText("FOVTool Selected: left click to close",(new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 85/Camera.GetZoom())) ,2/Camera.GetZoom(),Color.Wheat);
+                }
+                break;
+        }
+        
         foreach (var visTuple in previewTiles)
         {
             WorldTile tile = WorldManager.Instance.GetTileAtGrid(visTuple.Key);
@@ -68,6 +89,6 @@ public class FOVTool : GameTool
             spriteBatch.Draw(sprite, tile.Surface.GetDrawTransform().Position, c);
 			
         }
-        spriteBatch.DrawText("\nRange:"+(int)distance+ " Crouched:"+toggleCrouch,  (Camera.GetMouseWorldPos()+new Microsoft.Xna.Framework.Vector2(35, 35)),  2/Camera.GetZoom(),Color.Wheat);
+        spriteBatch.DrawText("\nRange:"+(int)distance+ " Crouched:"+toggleCrouch,  (new Vector2(mousePos.X + 2/Camera.GetZoom(), mousePos.Y + 20/Camera.GetZoom())),  2/Camera.GetZoom(),Color.Wheat);
     }
 }
