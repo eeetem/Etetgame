@@ -190,8 +190,8 @@ public static class RenderSystem
 		spriteBatch.End();
 		GraphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		
-		fogofwarEffect.Parameters["DistanceFactorBlend"]?.SetValue(10.5f);
-		fogofwarEffect.Parameters["Halo"]?.SetValue(0.01f);
+		fogofwarEffect.Parameters["DistanceFactorBlend"]?.SetValue(50.5f);
+		fogofwarEffect.Parameters["Halo"]?.SetValue(0.001f);
 		fogofwarEffect.Parameters["TextureHeight"]?.SetValue(fogofwarRenderTarget2D.Height);
 		fogofwarEffect.Parameters["TextureWidth"]?.SetValue(fogofwarRenderTarget2D.Width);
 		spriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:fogofwarEffect);

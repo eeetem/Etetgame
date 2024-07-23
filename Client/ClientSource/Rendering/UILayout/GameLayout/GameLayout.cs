@@ -838,8 +838,6 @@ public partial class GameLayout : MenuLayout
 
 		}
 
-	
-
 		if (activeAction == ActiveActionType.Action)
 		{
 			HudActionButton.SelectedButton!.PerformAction(ActionTarget);
@@ -2271,6 +2269,10 @@ public partial class GameLayout : MenuLayout
 		}
 		ActionTarget = null;
 		ActionForce = false;
+		if (hudActionButton != null && hudActionButton.SelfOnly)
+		{
+			ActionTarget = SelectedUnit.WorldObject;
+		}
 		
 		UpdateHudButtons();
 	}
