@@ -17,6 +17,9 @@ public interface IWorldTile
 	void PlaceObject(WorldObject worldObject);
 	bool Traversible(Vector2Int fromPosition,bool ignoreControllables = false);
 	double TraverseCostFrom(Vector2Int tileLocationPosition);
+	
+	bool IsVisible();
+	Visibility GetVisibility();
 
 	List<WorldObject> GetAllEdges();
 }

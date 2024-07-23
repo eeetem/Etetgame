@@ -98,6 +98,16 @@ public class PseudoTile : IWorldTile
 		return _realParent.TraverseCostFrom(tileLocationPosition);
 	}
 
+	public bool IsVisible()
+	{
+		return _realParent.IsVisible();
+	}
+
+	public Visibility GetVisibility()
+	{
+		return _realParent.GetVisibility();
+	}
+
 	public List<WorldObject> GetAllEdges()
 	{
 		return _realParent.GetAllEdges();

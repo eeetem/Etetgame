@@ -182,6 +182,16 @@ public partial class WorldTile : IWorldTile
 
 	}
 
+	public bool IsVisible()
+	{
+		return IsVisible(Visibility.Partial,null);
+	}
+
+	public Visibility GetVisibility()
+	{
+		return GetVisibility(null);
+	}
+
 
 	private WorldObject? _northEdge;
 	public WorldObject? NorthEdge{

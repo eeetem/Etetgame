@@ -235,6 +235,12 @@
 /processorParam:DebugMode=Auto
 /build:CompressedContent/shaders/distort.fx
 
+#begin CompressedContent/shaders/fogofwar.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:CompressedContent/shaders/fogofwar.fx
+
 #begin CompressedContent/shaders/Glow.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -246,6 +252,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:CompressedContent/shaders/lc.fx
+
+#begin CompressedContent/shaders/light.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:CompressedContent/shaders/light.fx
 
 #begin CompressedContent/shaders/outline.fx
 /importer:EffectImporter

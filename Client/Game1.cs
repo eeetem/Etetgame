@@ -129,6 +129,7 @@ public class Game1 : Game
 		Audio.MusicVolume = float.Parse(config.GetValue("settings", "musicVol", "0.2"), System.Globalization.CultureInfo.InvariantCulture);
 		Audio.SoundVolume = float.Parse(config.GetValue("settings", "sfxVol", "0.7"), System.Globalization.CultureInfo.InvariantCulture);
 		PostProcessing.RemakeRenderTarget();
+		RenderSystem.MakeRenderTargets();
 		UI.SetUI(null);
 
 	}

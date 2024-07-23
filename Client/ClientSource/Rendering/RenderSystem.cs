@@ -19,35 +19,70 @@ public static class RenderSystem
 	{
 		GraphicsDevice = graphicsdevice;
 		tracerEffect = c.Load<Effect>("CompressedContent/shaders/tracer");
+		lightEffect = c.Load<Effect>("CompressedContent/shaders/light");
+		fogofwarEffect = c.Load<Effect>("CompressedContent/shaders/fogofwar");
+		MakeRenderTargets();
 	}
 
+	public static void MakeRenderTargets()
+	{
+		fogofwarRenderTarget2D = new RenderTarget2D(GraphicsDevice, Game1.resolution.X, Game1.resolution.Y, false, SurfaceFormat.Color, DepthFormat.None);
+	}
 
 	static List<IDrawable> objs = new List<IDrawable>();
-	static List<IDrawable> unsortedObjs = new List<IDrawable>();
+	static List<IDrawable> FogOfWarObjs = new List<IDrawable>();
+	static List<IDrawable> tiles = new List<IDrawable>();
 	static List<IDrawable> invisibleTiles = new List<IDrawable>();
 	static Effect tracerEffect = null!;
+	static Effect lightEffect = null!;
+	static Effect fogofwarEffect = null!;
+	static RenderTarget2D fogofwarRenderTarget2D = null!;
 	public static void Draw(SpriteBatch spriteBatch)
 	{
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		objs.Clear();
 		invisibleTiles.Clear();
-		unsortedObjs.Clear();
+		tiles.Clear();
+		FogOfWarObjs.Clear();
 		
 		foreach (var tile in allTiles)
 		{
 			if (tile.Surface != null)
 			{
-				unsortedObjs.Add(tile.Surface);
+				if (tile.Surface.TileLocation.IsVisible())
+				{
+					tiles.Add(tile.Surface);
+				}
+				else
+				{
+					invisibleTiles.Add(tile.Surface);	
+				}
+				
 			}
 
 			if (tile.NorthEdge != null)
 			{
-				objs.Add(tile.NorthEdge);
+				if (tile.NorthEdge.InFogOfWar())
+				{
+					FogOfWarObjs.Add(tile.NorthEdge);
+				}
+				else
+				{
+					objs.Add(tile.NorthEdge);
+				}
+				
 			}
 
 			if (tile.WestEdge != null)
 			{
-				objs.Add(tile.WestEdge);
+				if (tile.WestEdge.InFogOfWar())
+				{
+					FogOfWarObjs.Add(tile.WestEdge);
+				}
+				else
+				{
+					objs.Add(tile.WestEdge);
+				}
 			}
 
 			if (tile.UnitAtLocation != null)
@@ -61,7 +96,14 @@ public static class RenderSystem
 
 			foreach (var item in tile.ObjectsAtLocation)
 			{
-				objs.Add(item);
+				if (item.InFogOfWar())
+				{
+					FogOfWarObjs.Add(item);
+				}
+				else
+				{
+					objs.Add(item);
+				}
 			}
 		
 
@@ -71,10 +113,12 @@ public static class RenderSystem
 		
 
 		objs.Sort(new DrawableSort());
+		FogOfWarObjs.Sort(new DrawableSort());
 
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
 		
-		foreach (var obj in unsortedObjs)
+		//draw tiles under everything first
+		foreach (var obj in tiles)
 		{
 			
 			if(obj == null)continue;
@@ -82,19 +126,7 @@ public static class RenderSystem
 			var transform = obj.GetDrawTransform();
 
 			if (obj is WorldObject)
-			{
-				if (!((WorldTile)((WorldObject)obj).TileLocation).IsVisible())
-				{
-					invisibleTiles.Add(obj);
-					continue;
-				}
-			}
-			if (!obj.IsVisible())//hide tileobjects
-			{
-				invisibleTiles.Add(obj);
-				continue;
-			}
-			
+				
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 			
 			
@@ -113,6 +145,7 @@ public static class RenderSystem
 		}
 		spriteBatch.End();
 
+		//draw tracers
 		foreach (var tracer in new List<Tracer>(Tracer.Tracers))
 		{
 			spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:tracerEffect);
@@ -127,13 +160,13 @@ public static class RenderSystem
 			spriteBatch.Draw(texture, transform.Position,null,color, transform.Rotation,Vector2.Zero, transform.Scale, new SpriteEffects(), 0);
 			spriteBatch.End();
 		}
+		
+		GraphicsDevice.SetRenderTarget(fogofwarRenderTarget2D);
+		GraphicsDevice.Clear(Color.Transparent);
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
-		
-		
-		
+		//draw invisible tiles over tracers to hide them in FOW
 		foreach (var obj in invisibleTiles)
 		{
-			
 			if(obj == null)continue;
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
@@ -141,10 +174,31 @@ public static class RenderSystem
 			
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 			
-			
 		}
-		int count = 0;
 
+		int count = 0;
+		spriteBatch.End();
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		foreach (var obj in FogOfWarObjs)
+		{
+			var texture = obj.GetTexture();
+			var transform = obj.GetDrawTransform();
+
+			spriteBatch.Draw(texture, transform.Position+new Vector2(texture.Width/2f,texture.Height/2f),null,obj.GetColor(), transform.Rotation,new Vector2(texture.Width/2f,texture.Height/2f), transform.Scale, new SpriteEffects(), 0);
+
+		}
+		spriteBatch.End();
+		GraphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
+		
+		fogofwarEffect.Parameters["DistanceFactorBlend"]?.SetValue(10.5f);
+		fogofwarEffect.Parameters["Halo"]?.SetValue(0.01f);
+		fogofwarEffect.Parameters["TextureHeight"]?.SetValue(fogofwarRenderTarget2D.Height);
+		fogofwarEffect.Parameters["TextureWidth"]?.SetValue(fogofwarRenderTarget2D.Width);
+		spriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:fogofwarEffect);
+		spriteBatch.Draw(fogofwarRenderTarget2D,Vector2.Zero,Color.White);
+		spriteBatch.End();
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		
 		foreach (var moves in GameLayout.PreviewMoves.Reverse())
 		{
 			Color c = Color.White;
@@ -197,12 +251,25 @@ public static class RenderSystem
 				}
 			}
 		}
+		spriteBatch.End();
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate);
+		//main draw loop
+
+		lightEffect.Parameters["BloomThreshold"]?.SetValue(1f);
+		lightEffect.Parameters["BloomIntensity"]?.SetValue(5f);
+		lightEffect.Parameters["BaseIntensity"]?.SetValue(1f);
+		lightEffect.Parameters["BloomSaturation"]?.SetValue(1f);
+		lightEffect.Parameters["BaseSaturation"]?.SetValue(1f);
+		lightEffect.Parameters["Halo"]?.SetValue(1f);
+
 		
-				
 		foreach (var obj in objs)
 		{
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
+			lightEffect.Parameters["TextureHeight"]?.SetValue(texture.Height);
+			lightEffect.Parameters["TextureWidth"]?.SetValue(texture.Width);
+
 			spriteBatch.Draw(texture, transform.Position+new Vector2(texture.Width/2f,texture.Height/2f),null,obj.GetColor(), transform.Rotation,new Vector2(texture.Width/2f,texture.Height/2f), transform.Scale, new SpriteEffects(), 0);
 
 		}

@@ -43,6 +43,40 @@ public partial class WorldObject
 
 	}
 
+	public bool InFogOfWar()
+	{
+		if (TileLocation.IsVisible()) return false;
+		if (Type.Edge)
+		{
+			switch (Facing)
+			{
+				case Direction.North:
+					var pos = TileLocation.Position + new Vector2Int(0, -1);
+					var tile = WorldManager.Instance.GetTileAtGrid(pos);
+					if (tile.GetVisibility() >= Visibility.Partial) return false;
+					break;
+				case Direction.West:
+					pos = TileLocation.Position + new Vector2Int(-1, 0);
+					tile = WorldManager.Instance.GetTileAtGrid(pos);
+					if (tile.GetVisibility() >= Visibility.Partial) return false;
+					break;
+				case Direction.East:
+					pos = TileLocation.Position + new Vector2Int(1, 0);
+					tile = WorldManager.Instance.GetTileAtGrid(pos);
+					if (tile.GetVisibility() >= Visibility.Partial) return false;
+					break;
+				case Direction.South:
+					pos = TileLocation.Position + new Vector2Int(0, 1);
+					tile = WorldManager.Instance.GetTileAtGrid(pos);
+					if (tile.GetVisibility() >= Visibility.Partial) return false;
+					break;
+			}
+
+		}
+
+		return true;
+	}
+
 
 	private IWorldTile _tileLocation = null!;
 	public IWorldTile TileLocation
