@@ -17,9 +17,7 @@ public static partial class GameManager
 	public static ClientInstance? Player2;
 	public static List<ClientInstance> Spectators = new();
 	public static PreGameDataStruct PreGameData = new();
-
-
-
+	
 	public static ClientInstance? GetPlayer(bool isPlayer1)
 	{
 		if (isPlayer1)

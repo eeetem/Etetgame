@@ -171,11 +171,13 @@ public class HudActionButton
 
 	public void Preview(WorldObject actionTarget, SpriteBatch batch)
 	{
+		if (Owner==null) return;
 		_previewTask?.Invoke(Owner, actionTarget, batch);
 	}
 
 	public Tuple<bool,string> IsAbleToPerform(WorldObject target)
 	{
+		if (Owner==null) return new Tuple<bool, string>(false, "Owner is null");
 		return _canPerformTask(Owner,target);
 	}
 

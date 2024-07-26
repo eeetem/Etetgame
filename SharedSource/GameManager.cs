@@ -291,13 +291,7 @@ public static partial class GameManager
 		public PreGameDataStruct()
 		{
 		}
-
-		public enum LobbyMode
-		{
-			Multiplayer,
-			Practice,
-			Aiskirmish
-		}
+		
 		public string HostName { get; set; } = "";
 		public string Player2Name { get; set; } = "";
 		public List<string> MapList { get; set; } = new List<string>();
@@ -306,8 +300,6 @@ public static partial class GameManager
 
 		public uint TurnTime { get; set; } = 0;
 		public bool SinglePLayerFeatures { get; set; } = false;
-		public LobbyMode Mode { get; set; } = LobbyMode.Multiplayer;
-
 		public void Serialize(Message message)
 		{
 			message.Add(HostName);
@@ -319,7 +311,7 @@ public static partial class GameManager
 
 			message.Add(TurnTime);
 			message.Add(SinglePLayerFeatures);
-			message.Add((int)Mode);
+	
 		}
 
 		public void Deserialize(Message message)
@@ -333,7 +325,6 @@ public static partial class GameManager
 
 			TurnTime = message.GetUInt();
 			SinglePLayerFeatures = message.GetBool();
-			Mode = (LobbyMode)message.GetInt();
 		}
 
 	}

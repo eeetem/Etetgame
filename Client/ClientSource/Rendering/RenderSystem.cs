@@ -27,6 +27,7 @@ public static class RenderSystem
 	public static void MakeRenderTargets()
 	{
 		fogofwarRenderTarget2D = new RenderTarget2D(GraphicsDevice, Game1.resolution.X, Game1.resolution.Y, false, SurfaceFormat.Color, DepthFormat.None);
+		tileRenderTarget = new RenderTarget2D(GraphicsDevice, Game1.resolution.X, Game1.resolution.Y, false, SurfaceFormat.Color, DepthFormat.None);
 	}
 
 	static List<IDrawable> objs = new List<IDrawable>();
@@ -37,8 +38,12 @@ public static class RenderSystem
 	static Effect lightEffect = null!;
 	static Effect fogofwarEffect = null!;
 	static RenderTarget2D fogofwarRenderTarget2D = null!;
-	public static void Draw(SpriteBatch spriteBatch)
+	static RenderTarget2D tileRenderTarget = null!;
+	static float counter = 0;
+	public static void Draw(SpriteBatch spriteBatch, int delta)
 	{
+		counter += delta*0.001f;
+		var anim = (float) Math.Sin(counter);
 		List<WorldTile> allTiles = WorldManager.Instance.GetAllTiles();
 		objs.Clear();
 		invisibleTiles.Clear();
@@ -115,8 +120,10 @@ public static class RenderSystem
 		objs.Sort(new DrawableSort());
 		FogOfWarObjs.Sort(new DrawableSort());
 
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), sortMode: SpriteSortMode.Texture);
 		
+		GraphicsDevice.SetRenderTarget(tileRenderTarget);
+		GraphicsDevice.Clear(Color.Transparent);
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Texture);
 		//draw tiles under everything first
 		foreach (var obj in tiles)
 		{
@@ -124,14 +131,18 @@ public static class RenderSystem
 			if(obj == null)continue;
 			var texture = obj.GetTexture();
 			var transform = obj.GetDrawTransform();
-
-			if (obj is WorldObject)
-				
+		
 			spriteBatch.Draw(texture,transform.Position,obj.GetColor());
 			
 			
 		}
 		spriteBatch.End();
+		GraphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
+		
+		spriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:lightEffect);
+		spriteBatch.Draw(tileRenderTarget,Vector2.Zero,Color.White);
+		spriteBatch.End();
+		
 		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix());
 		
 		var selectedglow = TextureManager.GetTexture("selectionglow"); 
@@ -163,7 +174,7 @@ public static class RenderSystem
 		
 		GraphicsDevice.SetRenderTarget(fogofwarRenderTarget2D);
 		GraphicsDevice.Clear(Color.Transparent);
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred);
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Texture, effect:PostProcessing.PostProcessing.DistortEffect);
 		//draw invisible tiles over tracers to hide them in FOW
 		foreach (var obj in invisibleTiles)
 		{
@@ -190,8 +201,8 @@ public static class RenderSystem
 		spriteBatch.End();
 		GraphicsDevice.SetRenderTarget(Game1.GlobalRenderTarget);
 		
-		fogofwarEffect.Parameters["DistanceFactorBlend"]?.SetValue(50.5f);
-		fogofwarEffect.Parameters["Halo"]?.SetValue(0.001f);
+		fogofwarEffect.Parameters["DistanceFactorBlend"]?.SetValue(6f+ 1f*anim);
+		fogofwarEffect.Parameters["Halo"]?.SetValue(0.03f);
 		fogofwarEffect.Parameters["TextureHeight"]?.SetValue(fogofwarRenderTarget2D.Height);
 		fogofwarEffect.Parameters["TextureWidth"]?.SetValue(fogofwarRenderTarget2D.Width);
 		spriteBatch.Begin(samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Deferred, effect:fogofwarEffect);
@@ -252,15 +263,18 @@ public static class RenderSystem
 			}
 		}
 		spriteBatch.End();
-		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate);
+		spriteBatch.Begin(transformMatrix: Camera.GetViewMatrix(), samplerState: SamplerState.PointClamp, sortMode: SpriteSortMode.Immediate,effect:lightEffect);
 		//main draw loop
 
-		lightEffect.Parameters["BloomThreshold"]?.SetValue(1f);
-		lightEffect.Parameters["BloomIntensity"]?.SetValue(5f);
-		lightEffect.Parameters["BaseIntensity"]?.SetValue(1f);
-		lightEffect.Parameters["BloomSaturation"]?.SetValue(1f);
+		lightEffect.Parameters["BloomThreshold"]?.SetValue(0.25f);
+		
+		lightEffect.Parameters["BloomIntensity"]?.SetValue(0.9f);
+		lightEffect.Parameters["BaseIntensity"]?.SetValue(0.1f);
+		
+		lightEffect.Parameters["BloomSaturation"]?.SetValue(0.8f);
 		lightEffect.Parameters["BaseSaturation"]?.SetValue(1f);
-		lightEffect.Parameters["Halo"]?.SetValue(1f);
+		
+		lightEffect.Parameters["Halo"]?.SetValue(0.1f);
 
 		
 		foreach (var obj in objs)

@@ -290,10 +290,10 @@ public static class PostProcessing
 
 		DistortEffect.Parameters["xfps"].SetValue(dxcounter);
 		DistortEffect.Parameters["yfps"].SetValue(dycounter);
-		DistortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]+ GetNoise() * 0.1f);
-		DistortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]+ GetNoise() * 0.1f);
-		DistortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]+ GetNoise() * 0.1f);
-		DistortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]+ GetNoise() * 0.1f);
+		DistortEffect.Parameters["xamplitude"].SetValue(EffectParams["dxamplitude"]+ GetNoise()*0.01f);
+		DistortEffect.Parameters["yamplitude"].SetValue(EffectParams["dyamplitude"]+ GetNoise()*0.01f);
+		DistortEffect.Parameters["xfrequency"].SetValue(EffectParams["dxfrequency"]+ GetNoise()*0.01f);
+		DistortEffect.Parameters["yfrequency"].SetValue(EffectParams["dyfrequency"]+ GetNoise()*0.01f);
 		
 		
 

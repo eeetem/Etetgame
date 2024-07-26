@@ -57,7 +57,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     
 
     // Combine the two images with adjusted halo effect
-    float4 result = halo * Halo; // Adjust Halo value for blending
+    float4 result = halo * Halo*input.Color; // Adjust Halo value for blending
 
     return result;
 }

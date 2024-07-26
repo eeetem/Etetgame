@@ -1,11 +1,22 @@
-// Pixel shader combines the bloom image with the original
-// scene, using tweakable intensity levels and saturation.
-// This is the final step in applying a bloom postprocess.
-
+#if OPENGL
+	#define SV_POSITION POSITION
+	#define VS_SHADERMODEL vs_3_0
+	#define PS_SHADERMODEL ps_3_0
+#else
+	#define VS_SHADERMODEL vs_4_0_level_9_1
+	#define PS_SHADERMODEL ps_4_0_level_9_1
+#endif
 sampler2D SpriteTextureSampler = sampler_state
 {
 	Texture = <SpriteTexture>;
 };
+struct VertexShaderOutput
+{
+    float4 Position : SV_POSITION;
+    float4 Color : COLOR0;
+    float2 TextureCoordinates : TEXCOORD0;
+};
+
 
 float BloomIntensity = 2;
 float BaseIntensity = 1;
@@ -43,43 +54,48 @@ float4 GetBloomTexture(float4 c)
      // Above threshold, proceed with original bloom calculation.
      return saturate((c - BloomThreshold) / (1 - BloomThreshold));
 }
-float4 PixelShaderFunction(float2 texCoord : TEXCOORD0) : COLOR0
+float4 GetBloomForPixel(float2 texCoord)
+{    
+         // Look up the bloom and original base image colors.
+         float4 bloom = GetBloomTexture(tex2D(SpriteTextureSampler, texCoord));
+         float4 base = tex2D(SpriteTextureSampler, texCoord);
+         
+         // Adjust color saturation and intensity.
+         float a = base.a;
+         bloom = AdjustSaturation(bloom, BloomSaturation) * BloomIntensity;
+         base = AdjustSaturation(base, BaseSaturation) * BaseIntensity;
+         base.a = a;
+         return  base + bloom;
+}
+float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
-    // Look up the bloom and original base image colors.
-    float4 bloom = GetBloomTexture(tex2D(SpriteTextureSampler, texCoord));
-    float4 base = tex2D(SpriteTextureSampler, texCoord);
+
+    float2 texCoord = input.TextureCoordinates;
     
-    // Adjust color saturation and intensity.
-    float a = base.a;
-    bloom = AdjustSaturation(bloom, BloomSaturation) * BloomIntensity;
-    base = AdjustSaturation(base, BaseSaturation) * BaseIntensity;
-    base.a = a;
-    
-    
-      // Inside PixelShaderFunction, calculate texSize using the global variables
+    float4 bloom = GetBloomForPixel(texCoord);
+
+   // Inside PixelShaderFunction, calculate texSize using the global variables
       float2 texSize = float2(1.0 / TextureWidth, 1.0 / TextureHeight);
-        float4 halo = float4(0, 0, 0, 0);
+       float4 halo = float4(0, 0, 0, 0);
     
-        for (int i = -1; i <= 1; i++)
+        for (int i = -3; i <= 3; i++)
         {
-            for (int j = -1; j <= 1; j++)
+            for (int j = -3; j <= 3; j++)
             {
                 if (i == 0 && j == 0) continue; // Skip the current pixel
                 float2 neighborCoord = texCoord + float2(i, j) * texSize;
-                float4 neighbor = tex2D(SpriteTextureSampler, neighborCoord);
+                float4 neighbor = GetBloomForPixel(texCoord);
                 float distanceFactor = 1.0 - length(float2(i, j)) * 0.5; // Adjust for smoother blending
                 // Apply a condition to ensure halo is only added around intended pixels
-                if (neighbor.a > 0 && distanceFactor > 0) // Example condition, adjust based on actual use case
+                if (distanceFactor > 0) // Example condition, adjust based on actual use case
                 {
                     neighbor.rgb *= distanceFactor; // Modify this logic to blend halo effect smoothly
                     halo += neighbor;
                 }
             }
         }
-    
-
     // Combine the two images with adjusted halo effect
-    float4 result = base + bloom + halo * Halo; // Adjust Halo value for blending
+    float4 result =  bloom + halo * Halo*input.Color; // Adjust Halo value for blending
 
     // Darken down the base image in areas where there is a lot of bloom,
     // to prevent things looking excessively burned-out.
@@ -94,6 +110,6 @@ technique BloomCombine
 {
     pass Pass1
     {
-        PixelShader = compile ps_2_0 PixelShaderFunction();
+        PixelShader = compile PS_SHADERMODEL PixelShaderFunction();
     }
 }

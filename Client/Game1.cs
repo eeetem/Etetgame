@@ -161,7 +161,7 @@ public class Game1 : Game
 
 		GraphicsDevice.Clear(Color.Black);
 			
-		RenderSystem.Draw(spriteBatch);
+		RenderSystem.Draw(spriteBatch,gameTime.ElapsedGameTime.Milliseconds);
 		UI.Render(gameTime.ElapsedGameTime.Milliseconds,spriteBatch);//potentially move this into the render system!	Long live Forg!
 		PopUpText.Draw(spriteBatch);
 
