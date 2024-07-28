@@ -137,7 +137,11 @@ public static partial class WorldObjectManager
 					Log.Message("UNITS","dead");
 					unit.ClearOverWatch();
 #if CLIENT
-					GameLayout.AddStress(100);
+					if (unit.IsMyTeam())
+					{
+						GameLayout.AddStress(100);
+					}
+
 					Audio.PlaySound("death",Utility.GridToWorldPos(obj.TileLocation.Position));
 #endif
 				}

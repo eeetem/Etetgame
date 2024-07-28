@@ -54,11 +54,11 @@ float4 GetBloomTexture(float4 c)
      // Above threshold, proceed with original bloom calculation.
      return saturate((c - BloomThreshold) / (1 - BloomThreshold));
 }
-float4 GetBloomForPixel(float2 texCoord)
+float4 GetBloomForPixel(float2 texCoord,float4 color)
 {    
          // Look up the bloom and original base image colors.
-         float4 bloom = GetBloomTexture(tex2D(SpriteTextureSampler, texCoord));
-         float4 base = tex2D(SpriteTextureSampler, texCoord);
+         float4 bloom = GetBloomTexture(tex2D(SpriteTextureSampler, texCoord))*color;
+         float4 base = tex2D(SpriteTextureSampler, texCoord)*color;
          
          // Adjust color saturation and intensity.
          float a = base.a;
@@ -72,7 +72,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 
     float2 texCoord = input.TextureCoordinates;
     
-    float4 bloom = GetBloomForPixel(texCoord);
+    float4 bloom = GetBloomForPixel(texCoord,input.Color);
 
    // Inside PixelShaderFunction, calculate texSize using the global variables
       float2 texSize = float2(1.0 / TextureWidth, 1.0 / TextureHeight);
@@ -84,7 +84,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
             {
                 if (i == 0 && j == 0) continue; // Skip the current pixel
                 float2 neighborCoord = texCoord + float2(i, j) * texSize;
-                float4 neighbor = GetBloomForPixel(texCoord);
+                float4 neighbor = GetBloomForPixel(texCoord,input.Color);
                 float distanceFactor = 1.0 - length(float2(i, j)) * 0.5; // Adjust for smoother blending
                 // Apply a condition to ensure halo is only added around intended pixels
                 if (distanceFactor > 0) // Example condition, adjust based on actual use case
@@ -95,7 +95,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
             }
         }
     // Combine the two images with adjusted halo effect
-    float4 result =  bloom + halo * Halo*input.Color; // Adjust Halo value for blending
+    float4 result =  bloom + halo * Halo; // Adjust Halo value for blending
 
     // Darken down the base image in areas where there is a lot of bloom,
     // to prevent things looking excessively burned-out.
