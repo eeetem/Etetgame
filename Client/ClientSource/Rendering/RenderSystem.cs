@@ -272,7 +272,7 @@ public static class RenderSystem
 		lightEffect.Parameters["BaseIntensity"]?.SetValue(0.1f);
 		
 		lightEffect.Parameters["BloomSaturation"]?.SetValue(0.8f);
-		lightEffect.Parameters["BaseSaturation"]?.SetValue(1f);
+		lightEffect.Parameters["BaseSaturation"]?.SetValue(2f);
 		
 		lightEffect.Parameters["Halo"]?.SetValue(0.1f);
 

@@ -11,6 +11,7 @@ Texture2D SpriteTexture;
 float4 tint;
 float4 max;
 float4 min;
+float grayscaleMag;
 
 sampler2D SpriteTextureSampler = sampler_state
 {
@@ -29,6 +30,15 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	float4 color = tex2D(SpriteTextureSampler, input.Cords);
 	color = color * tint;
 	color = clamp(color,min,max);
+	
+	
+	    // Calculate the grayscale value by averaging the RGB channels
+    float grayscale = dot(color.rgb, float3(0.3333, 0.3333, 0.3333));
+    
+        // Interpolate between full color and grayscale based on the "transition" parameter
+    float3 finalColor = lerp(color.rgb, grayscale, grayscaleMag);
+    
+    color = float4(finalColor, 1.0f);
 	return color;
 
 }

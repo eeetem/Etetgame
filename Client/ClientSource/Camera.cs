@@ -153,7 +153,7 @@ public static class Camera
 		Cam.Position = Vector2.Clamp(Cam.Position, new Vector2(-15000, -1000), new Vector2(15000, 12000));
 		velocity *= gameTime.GetElapsedSeconds()*45;
 
-		AudioListener.Position =  new Vector3(Cam.Center/150f,0);
-		AudioListener.Velocity = new Vector3(velocity/150f,10);
+		AudioListener.Position =  new Vector3(Cam.Center,0);
+		AudioListener.Velocity = new Vector3(velocity,10);
 	}
 }

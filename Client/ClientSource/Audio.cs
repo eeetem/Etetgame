@@ -9,7 +9,7 @@ namespace DefconNull;
 
 public static class Audio
 {
-	private static List<Tuple<SoundEffectInstance, AudioEmitter>> activeSounds = new List<Tuple<SoundEffectInstance, AudioEmitter>>();
+	private static List<Tuple<SoundEffectInstance, float,float, Vector2?>> activeSounds = new List<Tuple<SoundEffectInstance, float,float,Vector2?>>();
 	public static readonly object syncobj = new object();
 	public static readonly object audioLoadSync = new object();
 	private static ContentManager content = null!;
@@ -105,13 +105,9 @@ public static class Audio
 	}
 
 
-	public static void PlaySound(string name, Vector2Int? location = null , float pitchVariationScale = 1)
+	public static void PlaySound(string name, Vector2? location = null , float pitchVariationScale = 1, float volume = 1, float rangeMod = 1)
 	{
-		if (location == null)
-		{
-			location = Camera.GetPos();
-		}
-
+		
 		string sfxID = name;
 		switch (name)
 		{
@@ -132,36 +128,81 @@ public static class Audio
 			case "grunt":
 				sfxID = "damage/grunt" + Random.Shared.Next(1, 2);
 				break;
+			case "panic":
+					sfxID = "damage/panic"+Random.Shared.Next(1,5);
+					pitchVariationScale = 0.5f;
+					volume = 0.25f;
+					rangeMod = 0.1f;
+				break;
+				
+
 		}
 
 
 		
 		SoundEffectInstance instance = GetSound(sfxID).CreateInstance();
 		instance.Pitch += (float) ((Random.Shared.NextDouble() - 0.5f) / 2f) * pitchVariationScale;
-		instance.Volume = SoundVolume;
-			
-		AudioEmitter emitter = new AudioEmitter();
-		emitter.Position = new Vector3((Vector2) location /150f, 0);
-		instance.Apply3D(Camera.AudioListener, emitter);
+		instance.Volume = SoundVolume*volume;
+		ApplySoundPan(instance, volume,rangeMod, location);
 		instance.Play();
 			
 		lock (syncobj)
 		{
-			activeSounds.Add(new Tuple<SoundEffectInstance, AudioEmitter>(instance,emitter));
+			activeSounds.Add(new Tuple<SoundEffectInstance, float,float, Vector2?>(instance, volume,rangeMod, location));
 		}
 	
 	}
-	
-	
-	
+
+
+	static void ApplySoundPan(SoundEffectInstance effectInstance, float volumeMod, float rangeMod, Vector2? source)
+	{
+		
+		float MaxRadius = 2000 *rangeMod;
+		int MinRadius = 50;
+		Vector2 camPos = Camera.GetPos();
+		if(source == null)
+		{
+			source = Camera.GetPos();
+		}
+		float distance = Vector2.Distance(source.Value, camPos);
+		float pan = 0f;
+		float volume = 1f;
+
+		if (distance <= MaxRadius)
+		{
+			if (distance > MinRadius)
+			{
+				float ratio = (distance / MaxRadius);
+
+				volume = 1 - ratio;
+
+				var differenceX = (source - camPos).Value.X;
+
+				if (differenceX != 0)
+				{
+					var differenceAbs = MathF.Abs(differenceX);
+
+					if (differenceAbs >= MinRadius / 2f)
+						pan = ratio * (differenceX / differenceAbs);
+				}
+
+			}
+		}
+		else volume = 0f;
+
+		effectInstance.Volume = volume*volumeMod;
+		effectInstance.Pan = pan;
+		
+	}
 
 	public static void Update(float gametime)
 	{
+		
 		lock (syncobj)
 		{
-			foreach (var sound in  new List<Tuple<SoundEffectInstance, AudioEmitter>>(activeSounds))
+			foreach (var sound in  new List<Tuple<SoundEffectInstance, float,float, Vector2?>>(activeSounds))
 			{
-				sound.Item1.Apply3D(Camera.AudioListener, sound.Item2);
+				ApplySoundPan(sound.Item1, sound.Item2, sound.Item3,sound.Item4);
 				if (sound.Item1.State == SoundState.Stopped)
 				{
 					activeSounds.Remove(sound);

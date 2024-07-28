@@ -79,6 +79,28 @@ public partial class GameLayout : MenuLayout
 		UI.SetUI( new GameLayout());
 		
 		Camera.SetPos(unit.WorldObject.TileLocation.Position);
+		UpdateStress();
+
+
+	}
+	private static void UpdateStress()
+	{
+		if(SelectedUnit!= null)
+			permStressTarget =  (1 - SelectedUnit.Determination.Current/(float)SelectedUnit.Determination.Max)*10;
+		else
+		{
+			permStressTarget = 0;
+		}
+		
+		int totalDetermCapacity = 0;
+		int totalDeterm = 0;
+		foreach (var u in GameManager.GetMyTeamUnits())
+		{
+			totalDetermCapacity += u.Type.Maxdetermination;
+			totalDeterm += u.Determination.Current;
+		}
+		if(totalDetermCapacity == 0) return;//devide by 0
+		permStressTarget += (1 - totalDeterm/(float)totalDetermCapacity)*20;
 	}
 
 	public static readonly int[,,] AIMoveCache = new int[100,100,2];
@@ -407,6 +429,7 @@ public partial class GameLayout : MenuLayout
 	private static bool generated = false;
 	public override Widget Generate(Desktop desktop, UiLayout? lastLayout)
 	{
+		UpdateStress();
 		Task.Run(() =>
 		{
 			if (SelectedUnit == null)
@@ -1408,12 +1431,45 @@ public partial class GameLayout : MenuLayout
 
 	private Vector2Int _mouseTileCoordinate = new(0, 0);
 	private Vector2Int _lastMouseTileCoordinate = new(0, 0);
+	private static float tempStressTarget = 0;
+	private static float permStressTarget = 0;
+	private static float permStress = 0;
+	private static float tempStress = 0;
 
+	public static void AddStress(float i)
+	{
+		tempStressTarget += i;
+	}
+
+	public static float GetStress()
+	{
+		return Math.Clamp(tempStress + permStress, 0, 100);
+	}
+
+	private float timeTillNextBeat = 0;
 	public override void Update(float deltatime)
 	{
 		base.Update(deltatime);
 		_tooltipRects.Clear();
 		var count = 0;
+		timeTillNextBeat -= deltatime;
+		if (timeTillNextBeat <= 0 && SelectedUnit != null)
+		{
+			
+			Audio.PlaySound("heartbeat",volume:GetStress()/100f,location:Utility.GridToWorldPos(SelectedUnit.WorldObject.TileLocation.Position));
+			float determpercent = SelectedUnit.Determination.Current / (float)SelectedUnit.Type.Maxdetermination;
+			//heartbeat range 65 - 120 bpm based on determination
+			var bpm = float.Lerp(120, 65, determpercent);
+			if (SelectedUnit.Panicked) bpm = 150;
+			timeTillNextBeat = 60*1000 / bpm;
+		}
+
+		if (tempStressTarget > 0)
+		{
+			tempStressTarget -= deltatime / 100f;
+		}
+		tempStress = Math.Clamp(tempStress + (tempStressTarget - tempStress) * 0.1f, 0, 100);
+		permStress = Math.Clamp(permStress + (permStressTarget - permStress) * 0.1f, 0, 100);
 	
 
 		//moves selected contorlable to the top
@@ -2281,4 +2337,6 @@ public partial class GameLayout : MenuLayout
 	{
 		ActionButtons.Clear();
 	}
+
+
 }

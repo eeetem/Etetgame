@@ -135,6 +135,11 @@ float1 fps;
 float1 staticAlpha = 0.05;
 float overlayalpha = 1;
 
+float vignetteParam = 2.0;
+
+float grayScale = 1.0f;
+
+
 float4 loose_connection(float2 texture_size, float2 video_size, float frame_count, float2 texCoord, sampler2D decal,sampler2D overlay)
 {
 	float2 LUTeffectiveCoord = float2(texCoord.xy * texture_size.xy / video_size.xy);
@@ -148,6 +153,10 @@ float4 loose_connection(float2 texture_size, float2 video_size, float frame_coun
 	res = lerp(res, play, show_overlay);
  
 	float4 final = float4(res + clamp(float3(col, col, col), 0.0,staticAlpha), 1.0);
+	float2 magnitudeVed = texCoord -= 0.5;
+	
+	final = final * (1.0 - length(magnitudeVed) * vignetteParam);
+	
 
 	return final;
 }

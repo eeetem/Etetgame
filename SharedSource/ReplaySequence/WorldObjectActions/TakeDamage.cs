@@ -8,6 +8,7 @@ using Riptide;
 
 #if CLIENT
 using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout.GameLayout;
 using Microsoft.Xna.Framework;
 #endif
 
@@ -136,13 +137,14 @@ public static partial class WorldObjectManager
 					Log.Message("UNITS","dead");
 					unit.ClearOverWatch();
 #if CLIENT
-					Audio.PlaySound("death",obj.TileLocation.Position);
+					GameLayout.AddStress(100);
+					Audio.PlaySound("death",Utility.GridToWorldPos(obj.TileLocation.Position));
 #endif
 				}
 				else
 				{
 #if CLIENT
-					Audio.PlaySound("grunt",obj.TileLocation.Position);
+					Audio.PlaySound("grunt",Utility.GridToWorldPos(obj.TileLocation.Position));
 #endif
 				}
 				unit.ClearOverWatch();

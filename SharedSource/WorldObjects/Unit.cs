@@ -15,6 +15,7 @@ using Action = DefconNull.WorldObjects.Units.Actions.Action;
 #if CLIENT
 
 using DefconNull.Rendering;
+using DefconNull.Rendering.UILayout.GameLayout;
 #endif
 
 #nullable enable
@@ -302,10 +303,15 @@ namespace DefconNull.WorldObjects
 					var t = new PopUpText("Panic!", WorldObject.TileLocation.Position,Color.Red);	
 					t.scale = 2;
 				}
+				Audio.PlaySound("panic",Utility.GridToWorldPos(WorldObject.TileLocation.Position));
+			}
 
+			if (IsMyTeam())
+			{
+				GameLayout.AddStress(50);
 			}
 #endif
-
+	
 			Crouching = true;
 			Panicked = true;
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DefconNull.Rendering.UILayout.GameLayout;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -217,8 +218,8 @@ public static class PostProcessing
 	private static int flickerIndex;
 	public static void Apply(float deltaTime)
 	{
-		
 
+		float stress = GameLayout.GetStress();
 		clcounter += deltaTime/1000 * EffectParams["clspeed"];
 		dxcounter += deltaTime/1000 * EffectParams["dxspeed"];
 		dycounter += deltaTime/1000 * EffectParams["dyspeed"];
@@ -271,9 +272,10 @@ public static class PostProcessing
 		ConnectionEffect.Parameters["textureSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
 		ConnectionEffect.Parameters["videoSize"].SetValue(new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height));
 		ConnectionEffect.Parameters["fps"].SetValue(clcounter);
-		ConnectionEffect.Parameters["staticAlpha"].SetValue(EffectParams["clalpha"] + GetNoise() * 0.01f);
-		ConnectionEffect.Parameters["magnitude"].SetValue(EffectParams["clmagnitude"] + GetNoise() * 1f);
+		ConnectionEffect.Parameters["staticAlpha"].SetValue(EffectParams["clalpha"]+stress/100 + GetNoise() * 0.01f);
+		ConnectionEffect.Parameters["magnitude"].SetValue(EffectParams["clmagnitude"]+stress/4 + GetNoise() * 1f);
 		ConnectionEffect.Parameters["overlayalpha"].SetValue(EffectParams["overlayalpha"] + GetNoise() * 0.05f);
+		ConnectionEffect.Parameters["vignetteParam"].SetValue(GetNoise()*2f + stress/100f);
 		if (overlayTexture != null)
 		{
 			ConnectionEffect.Parameters["overlay"].SetValue(overlayTexture);
@@ -284,9 +286,9 @@ public static class PostProcessing
 		}
 
 		ColorEffect.Parameters["max"].SetValue(new Vector4(EffectParams["maxR"]+ GetNoise() * 0.5f,EffectParams["maxG"]+ GetNoise() *0.5f,EffectParams["maxB"]+ GetNoise() *0.5f,1));
-		ColorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"]+ GetNoise() * 0.5f,EffectParams["minG"]+ GetNoise() *0.5f,EffectParams["minB"]+ GetNoise() * 0.5f,1));
-		ColorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+ GetNoise() * 1f ,EffectParams["tintG"]+ GetNoise() *1f,EffectParams["tintB"]+ GetNoise() * 1f,1));
-			
+		ColorEffect.Parameters["min"].SetValue(new Vector4(EffectParams["minR"],EffectParams["minG"]+ GetNoise() *0.5f,EffectParams["minB"]+ GetNoise() * 0.5f,1));
+		ColorEffect.Parameters["tint"].SetValue(new Vector4(EffectParams["tintR"]+stress/100f,EffectParams["tintG"],EffectParams["tintB"],1));
+		ColorEffect.Parameters["grayscaleMag"].SetValue(stress/100f);
 
 		DistortEffect.Parameters["xfps"].SetValue(dxcounter);
 		DistortEffect.Parameters["yfps"].SetValue(dycounter);
@@ -342,7 +344,6 @@ public static class PostProcessing
 		combinedSpriteBatch.Draw(combinedRender2, combinedRender2.Bounds, Color.White);
 		combinedSpriteBatch.End();
 		
-
 
 
 		combinedRender.GraphicsDevice.SetRenderTarget(null);

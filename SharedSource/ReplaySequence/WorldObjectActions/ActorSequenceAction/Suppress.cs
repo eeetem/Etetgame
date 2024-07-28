@@ -20,7 +20,7 @@ public class Suppress : UnitSequenceAction
 		return SequenceType.Suppress;
 	}
 
-	public override BatchingMode Batching => BatchingMode.AsyncBatchSameType;
+	public override BatchingMode Batching => BatchingMode.NonBlockingAlone;
 	public ushort DetDmg;
 
 	protected bool Equals(Suppress other)
@@ -101,6 +101,9 @@ public class Suppress : UnitSequenceAction
 		if (Actor.Determination <= 0)
 		{
 			Actor.Panic();
+#if CLIENT
+		Camera.SetPos(Actor.WorldObject.TileLocation.Position);	
+#endif
 		}
 
 		if (Actor.Panicked && Actor.Determination > 0)

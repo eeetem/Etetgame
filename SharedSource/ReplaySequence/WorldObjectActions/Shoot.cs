@@ -255,7 +255,7 @@ public class Shoot : SequenceAction
 			Thread.Sleep(ShotDelay);
 			if (ShotSound != "")
 			{
-				Audio.PlaySound(ShotSound,Utility.GridToWorldPos(Projectile.Result.StartPoint));
+				Audio.PlaySound(ShotSound,Utility.GridToWorldPos(Projectile.Result.StartPoint),1f,0.8f,3f);
 			}
 		}
 #endif

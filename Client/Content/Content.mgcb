@@ -19,11 +19,35 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/bang.wav
 
+#begin CompressedContent/audio/bang.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/bang.wav
+
+#begin CompressedContent/audio/bang-old1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/bang-old1.wav
+
 #begin CompressedContent/audio/capture.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:CompressedContent/audio/capture.wav
+
+#begin CompressedContent/audio/capture.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/capture.wav
+
+#begin CompressedContent/audio/damage/death1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/death1.wav
 
 #begin CompressedContent/audio/damage/death1.wav
 /importer:WavImporter
@@ -37,6 +61,18 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/damage/death2.wav
 
+#begin CompressedContent/audio/damage/death2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/death2.wav
+
+#begin CompressedContent/audio/damage/death3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/death3.wav
+
 #begin CompressedContent/audio/damage/death3.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -49,11 +85,53 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/damage/grunt1.wav
 
+#begin CompressedContent/audio/damage/grunt1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/grunt1.wav
+
 #begin CompressedContent/audio/damage/grunt2.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:CompressedContent/audio/damage/grunt2.wav
+
+#begin CompressedContent/audio/damage/grunt2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/grunt2.wav
+
+#begin CompressedContent/audio/damage/panic1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/panic1.wav
+
+#begin CompressedContent/audio/damage/panic2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/panic2.wav
+
+#begin CompressedContent/audio/damage/panic3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/panic3.wav
+
+#begin CompressedContent/audio/damage/panic4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/panic4.wav
+
+#begin CompressedContent/audio/damage/wilhelm.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/damage/wilhelm.wav
 
 #begin CompressedContent/audio/damage/wilhelm.wav
 /importer:WavImporter
@@ -121,6 +199,24 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/grenade.wav
 
+#begin CompressedContent/audio/grenade.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/grenade.wav
+
+#begin CompressedContent/audio/heartbeat.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/heartbeat.wav
+
+#begin CompressedContent/audio/mg.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/mg.wav
+
 #begin CompressedContent/audio/mg.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -169,6 +265,18 @@
 /processorParam:Quality=Best
 /build:CompressedContent/audio/rifle.wav
 
+#begin CompressedContent/audio/rifle.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/rifle.wav
+
+#begin CompressedContent/audio/rifle3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/rifle3.wav
+
 #begin CompressedContent/audio/rifle3.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -180,6 +288,18 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:CompressedContent/audio/shotgun.wav
+
+#begin CompressedContent/audio/shotgun.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/shotgun.wav
+
+#begin CompressedContent/audio/smoke.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:CompressedContent/audio/smoke.wav
 
 #begin CompressedContent/audio/smoke.wav
 /importer:WavImporter
